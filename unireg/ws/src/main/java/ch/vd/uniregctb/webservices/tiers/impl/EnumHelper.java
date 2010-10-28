@@ -12,6 +12,7 @@ import ch.vd.uniregctb.webservices.tiers.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers.EtatCivil;
 import ch.vd.uniregctb.webservices.tiers.EtatDeclaration;
 import ch.vd.uniregctb.webservices.tiers.ForFiscal;
+import ch.vd.uniregctb.webservices.tiers.ForFiscal.MotifFor;
 import ch.vd.uniregctb.webservices.tiers.ModeCommunication;
 import ch.vd.uniregctb.webservices.tiers.PeriodeDecompte;
 import ch.vd.uniregctb.webservices.tiers.PeriodiciteDecompte;
@@ -22,7 +23,6 @@ import ch.vd.uniregctb.webservices.tiers.TarifImpotSource;
 import ch.vd.uniregctb.webservices.tiers.TypeActivite;
 import ch.vd.uniregctb.webservices.tiers.TypeDocument;
 import ch.vd.uniregctb.webservices.tiers.TypeRecherche;
-import ch.vd.uniregctb.webservices.tiers.ForFiscal.MotifFor;
 
 public abstract class EnumHelper {
 
@@ -38,7 +38,7 @@ public abstract class EnumHelper {
 		return value;
 	}
 
-	public static EtatCivil coreToWeb(ch.vd.registre.civil.model.EnumTypeEtatCivil etatCivil) {
+	public static EtatCivil coreToWeb(ch.vd.uniregctb.interfaces.model.TypeEtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}

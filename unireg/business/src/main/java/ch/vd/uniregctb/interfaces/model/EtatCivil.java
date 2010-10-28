@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 
 public interface EtatCivil {
 
@@ -25,7 +24,7 @@ public interface EtatCivil {
      *
      * @return le type de l'état civil.
      */
-    EnumTypeEtatCivil getTypeEtatCivil();
+    TypeEtatCivil getTypeEtatCivil();
 
 	/**
 	 * @return le numéro d'individu du conjoint.

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.situationfamille;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,8 +20,6 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -117,7 +114,7 @@ public class ComparerSituationFamilleProcessor {
 			final Long numeroIndividu = personne.getNumeroIndividu();
 			if(numeroIndividu!=null){
 				EtatCivil etatCivil =  serviceCivil.getEtatCivilActif(numeroIndividu,null);
-				if(!situation.getEtatCivil().equals(ch.vd.uniregctb.type.EtatCivil.from(etatCivil.getTypeEtatCivil()))){
+				if(!situation.getEtatCivil().equals(etatCivil.getTypeEtatCivil().asCore())){
 					rapport.get().addSituationsDifferentes(situation,etatCivil);
 				}
 			}

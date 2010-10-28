@@ -5,17 +5,17 @@ import annotation.Etape;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
-import ch.vd.uniregctb.interfaces.model.EtatCivilList;
-import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.EtatCivilList;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -73,7 +73,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 
 				addOrigine(indMikkel, MockPays.Danemark, null, RegDate.get(1961, 3, 12));
 				addNationalite(indMikkel, MockPays.Danemark, RegDate.get(1961, 3, 12), null, 0);
-				addEtatCivil(indMikkel, dateVeuvage, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(indMikkel, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indMikkel, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RuelleDuCarroz, null, RegDate.get(1974, 3, 3), avantDateMariage);
 				addAdresse(indMikkel, EnumTypeAdresse.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, dateMariage, null);
 			}
@@ -135,7 +135,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 				final MockEtatCivil etatCivil = new MockEtatCivil();
 				etatCivil.setDateDebutValidite(dateVeuvage);
 				etatCivil.setNoSequence(etatsCivils.size());
-				etatCivil.setTypeEtatCivil(EnumTypeEtatCivil.VEUF);
+				etatCivil.setTypeEtatCivil(TypeEtatCivil.VEUF);
 				etatsCivils.add(etatCivil);
 			}
 		});

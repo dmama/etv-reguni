@@ -4,19 +4,20 @@ import java.util.Set;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -76,9 +77,9 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 				addPermis(jean, EnumTypePermis.ETABLLISSEMENT, date(2001, 7, 11), null, 0, false);
 				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2004, 1,
 						15), null);
-				addEtatCivil(jean, date(2004, 1, 15), EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(jean, DATE_MARIAGE, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(jean, DATE_SEPARATION, EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(jean, date(2004, 1, 15), TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(jean, DATE_MARIAGE, TypeEtatCivil.MARIE);
+				addEtatCivil(jean, DATE_SEPARATION, TypeEtatCivil.SEPARE);
 				jean.setDateDeces(DATE_DECES);
 
 				MockIndividu georgette = addIndividu(noIndGeorgette, date(1951, 11, 3), "Matala Bambi", "Georgette", false);
@@ -87,9 +88,9 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 				addNationalite(georgette, MockPays.France, date(1951, 11, 3), null, 0);
 				addAdresse(georgette, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
 						2008, 8, 11), null);
-				addEtatCivil(georgette, date(1951, 11, 3), EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(georgette, DATE_MARIAGE, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(georgette, DATE_SEPARATION, EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(georgette, date(1951, 11, 3), TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(georgette, DATE_MARIAGE, TypeEtatCivil.MARIE);
+				addEtatCivil(georgette, DATE_SEPARATION, TypeEtatCivil.SEPARE);
 
 				// note: dans l'état séparé, les individus sont toujours liés (conjoint-conjoint)
 				jean.setConjoint(georgette);

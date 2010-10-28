@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.mariage;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -10,6 +9,7 @@ import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -76,8 +76,8 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 			final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjointTrouve.getNoTechnique(), getDate());
 			//Si le conjoint n'a pas d'état civil ou son état civil est différent de marié, on renvoie null
 			if (etatCivilConjoint!=null ) {
-				if (EnumTypeEtatCivil.MARIE.equals(etatCivilConjoint.getTypeEtatCivil()) || EnumTypeEtatCivil.PACS.equals(etatCivilConjoint.getTypeEtatCivil())) {
-					return conjointTrouve ;
+				if (TypeEtatCivil.MARIE == etatCivilConjoint.getTypeEtatCivil() || TypeEtatCivil.PACS == etatCivilConjoint.getTypeEtatCivil()) {
+					return conjointTrouve;
 				}
 
 			}

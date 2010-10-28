@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
 public class MockEtatCivil implements EtatCivil {
 
@@ -12,7 +12,7 @@ public class MockEtatCivil implements EtatCivil {
 
 	private Long numeroConjoint;
 
-	private EnumTypeEtatCivil typeEtatCivil;
+	private TypeEtatCivil typeEtatCivil;
 
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
@@ -30,11 +30,11 @@ public class MockEtatCivil implements EtatCivil {
 		this.noSequence = noSequence;
 	}
 
-	public EnumTypeEtatCivil getTypeEtatCivil() {
+	public TypeEtatCivil getTypeEtatCivil() {
 		return typeEtatCivil;
 	}
 
-	public void setTypeEtatCivil(EnumTypeEtatCivil typeEtatCivil) {
+	public void setTypeEtatCivil(TypeEtatCivil typeEtatCivil) {
 		this.typeEtatCivil = typeEtatCivil;
 	}
 	public Long getNumeroConjoint() {

@@ -3,8 +3,6 @@
  */
 package ch.vd.uniregctb.type;
 
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
-
 /**
  * <!-- begin-user-doc -->
  * Longueur de colonne : 34
@@ -73,39 +71,6 @@ public enum EtatCivil {
 	 */
 	PARTENARIAT_DISSOUS_DECES ("Partenariat dissous décès");
 
-	public static EtatCivil from(EnumTypeEtatCivil etat) {
-		if (etat == null) {
-			return null;
-		}
-		else if (EnumTypeEtatCivil.CELIBATAIRE.equals(etat)) {
-			return CELIBATAIRE;
-		}
-		else if (EnumTypeEtatCivil.DIVORCE.equals(etat)) {
-			return DIVORCE;
-		}
-		else if (EnumTypeEtatCivil.MARIE.equals(etat)) {
-			return MARIE;
-		}
-		else if (EnumTypeEtatCivil.PACS.equals(etat)) {
-			return LIE_PARTENARIAT_ENREGISTRE;
-		}
-		else if (EnumTypeEtatCivil.PACS_ANNULE.equals(etat)) {
-			return PARTENARIAT_DISSOUS_JUDICIAIREMENT;
-		}
-		else if (EnumTypeEtatCivil.PACS_INTERROMPU.equals(etat)) {
-			return PARTENARIAT_DISSOUS_JUDICIAIREMENT;
-		}
-		else if (EnumTypeEtatCivil.SEPARE.equals(etat)) {
-			return SEPARE;
-		}
-		else if (EnumTypeEtatCivil.VEUF.equals(etat)) {
-			return VEUF;
-		}
-		else {
-			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etat.getName() + "]");
-		}
-	}
-
 	private String format;
 
 	EtatCivil(String format) {
@@ -115,5 +80,4 @@ public enum EtatCivil {
 	public String format() {
 		return format;
 	}
-
 }

@@ -8,12 +8,11 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -4813,7 +4812,7 @@ public class AdresseServiceTest extends BusinessTest {
 				virginie.setDateDeces(dateDeces);
 
 				marieIndividus(paul, virginie, dateMariage);
-				addEtatCivil(paul, dateDeces, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(paul, dateDeces, TypeEtatCivil.VEUF);
 
 				final MockIndividu ronald = addIndividu(noIndividuTuteurPrincipal, date(1945, 3, 17), "MacDonald", "Ronald", false);
 				addAdresse(ronald, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);

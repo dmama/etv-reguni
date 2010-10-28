@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
@@ -86,7 +85,7 @@ public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSi
 		final Long contribuableId = situation.getContribuablePrincipalId();
 		final String etatCivilLocal = situation.getEtatCivil().name();
 		final RegDate debutEtatCivilLocal = situation.getDateDebut();
-		final String etatCivilHost = ch.vd.uniregctb.type.EtatCivil.from(etatCivil.getTypeEtatCivil()).name();
+		final String etatCivilHost = etatCivil.getTypeEtatCivil().asCore().name();
 		final RegDate debutEtatCivilHost = etatCivil.getDateDebutValidite();
 		listeSituationsDifferentes.add(new SituationsDifferentes(id, contribuableId, etatCivilLocal, debutEtatCivilLocal, etatCivilHost, debutEtatCivilHost));
 

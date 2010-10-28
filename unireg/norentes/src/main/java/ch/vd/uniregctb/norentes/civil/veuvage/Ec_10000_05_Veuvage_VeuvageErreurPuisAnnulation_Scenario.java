@@ -8,12 +8,12 @@ import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -79,7 +79,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 
 				addOrigine(indPierre, MockPays.Suisse, null, dateNaissance);
 				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null, 0);
-				addEtatCivil(indPierre, dateVeuvage, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 			}
 		});
 	}
@@ -161,12 +161,12 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 
 		final EtatCivil ecVeuf = ecs.getEtatCivilAt(dateVeuvage);
 		assertNotNull(ecVeuf, "Pas d'état civil à la date de veuvage?");
-		assertEquals(EnumTypeEtatCivil.VEUF, ecVeuf.getTypeEtatCivil(), "Devrait être veuf");
+		assertEquals(TypeEtatCivil.VEUF, ecVeuf.getTypeEtatCivil(), "Devrait être veuf");
 		ecs.remove(ecVeuf);
 
 		final EtatCivil ecMarie = ecs.getEtatCivilAt(dateVeuvage);
 		assertNotNull(ecMarie, "Pas d'état civil à la date de veuvage?");
-		assertEquals(EnumTypeEtatCivil.MARIE, ecMarie.getTypeEtatCivil(), "Devrait être marié, puisque le veuvage est annulé");
+		assertEquals(TypeEtatCivil.MARIE, ecMarie.getTypeEtatCivil(), "Devrait être marié, puisque le veuvage est annulé");
 
 		final long id = addEvenementCivil(TypeEvenementCivil.ANNUL_VEUVAGE, noIndPierre, dateVeuvage, communeMariage.getNoOFS());
 		commitAndStartTransaction();

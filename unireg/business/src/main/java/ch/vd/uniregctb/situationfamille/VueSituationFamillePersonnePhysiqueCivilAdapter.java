@@ -19,7 +19,7 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 
 	public VueSituationFamillePersonnePhysiqueCivilAdapter(ch.vd.uniregctb.interfaces.model.EtatCivil etatCourant,
 			ch.vd.uniregctb.interfaces.model.EtatCivil etatSuivant, boolean nullAllowed) {
-		this.etatCivil = EtatCivil.from(etatCourant.getTypeEtatCivil());
+		this.etatCivil = etatCourant.getTypeEtatCivil().asCore();
 		this.dateDebut = etatCourant.getDateDebutValidite();
 		if (etatSuivant == null) {
 			this.dateFin =null;
@@ -31,7 +31,7 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 					this.dateFin = null;
 				else {
 				throw new InterfaceDataException("L'état civil [" + etatCivil.name() + "] commençant le " + dateDebut
-						+ " est suivi par l'état civil [" + EtatCivil.from(etatSuivant.getTypeEtatCivil())
+						+ " est suivi par l'état civil [" + etatSuivant.getTypeEtatCivil().asCore()
 						+ "] qui possède une date de début nulle !");
 				}
 			}
@@ -42,7 +42,7 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 	}
 
 	public VueSituationFamillePersonnePhysiqueCivilAdapter(ch.vd.uniregctb.interfaces.model.EtatCivil etatCourant, RegDate dateDebut, RegDate dateFin) {
-		this.etatCivil = EtatCivil.from(etatCourant.getTypeEtatCivil());
+		this.etatCivil = etatCourant.getTypeEtatCivil().asCore();
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 	}

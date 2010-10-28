@@ -6,22 +6,22 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -171,17 +171,17 @@ public class DemenagementHandler extends EvenementCivilHandlerBase {
 					throw new EvenementCivilHandlerException("Impossible de récupérer l'état civil courant de l'individu");
 				}
 
-				EnumTypeEtatCivil typeEtatCivilIndividu = etatCivilIndividu.getTypeEtatCivil();
+				TypeEtatCivil typeEtatCivilIndividu = etatCivilIndividu.getTypeEtatCivil();
 				ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
-				if (forPrincipalHabitant != null && !typeEtatCivilIndividu.equals(EnumTypeEtatCivil.SEPARE)) {
+				if (forPrincipalHabitant != null && typeEtatCivilIndividu != TypeEtatCivil.SEPARE) {
 					throw new EvenementCivilHandlerException(
-						"l'habitant possède un for principal actif alors qu'il a un conjoint et qu'il n'est pas séparé");
+							"l'habitant possède un for principal actif alors qu'il a un conjoint et qu'il n'est pas séparé");
 				}
 
 				ForFiscalPrincipal forPrincipalConjoint = conjoint.getForFiscalPrincipalAt(null);
-				if (forPrincipalConjoint != null && !typeEtatCivilIndividu.equals(EnumTypeEtatCivil.SEPARE)) {
+				if (forPrincipalConjoint != null && typeEtatCivilIndividu != TypeEtatCivil.SEPARE) {
 					throw new EvenementCivilHandlerException(
-						"le conjoint possède un for principal actif");
+							"le conjoint possède un for principal actif");
 				}
 
 				/*

@@ -7,7 +7,6 @@ import annotation.Etape;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -15,6 +14,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -81,7 +81,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 				addNationalite(indJulie, MockPays.France, dateNaissance, null, 0);
 				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null, 1);
 				addPermis(indJulie, EnumTypePermis.ANNUEL, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), 0, false);
-				addEtatCivil(indJulie, dateNaissance, EnumTypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(indJulie, dateNaissance, TypeEtatCivil.CELIBATAIRE);
 				addAdresse(indJulie, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateObtentionPermis, null);
 				addAdresse(indJulie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, "Case Postale 2133431", dateObtentionPermis, null);
 			}

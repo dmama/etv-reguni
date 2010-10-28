@@ -10,6 +10,7 @@ import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.impl.EtatCivilImpl;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -45,6 +46,6 @@ public class IndividuImplTest extends WithoutSpringTest {
 		assertNotNull(etatCivil);
 		assertEquals(0, etatCivil.getNoSequence());
 		assertNull(etatCivil.getDateDebutValidite());
-		assertEquals(EnumTypeEtatCivil.DIVORCE, etatCivil.getTypeEtatCivil());
+		assertEquals(TypeEtatCivil.DIVORCE, etatCivil.getTypeEtatCivil());
 	}
 }

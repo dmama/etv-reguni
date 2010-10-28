@@ -10,10 +10,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -75,7 +75,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noIndMonsieur, date(1956, 12, 5), "Talon", "Achille", true);
-				addEtatCivil(monsieur, date(2005, 6, 1), EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(monsieur, date(2005, 6, 1), TypeEtatCivil.SEPARE);
 			}
 		});
 

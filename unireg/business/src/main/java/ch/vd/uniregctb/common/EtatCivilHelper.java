@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.common;
 
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
 /**
  *
@@ -18,8 +18,8 @@ public class EtatCivilHelper {
 	public static boolean estMarieOuPacse(EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
-		final EnumTypeEtatCivil type = etatCivil.getTypeEtatCivil();
-		return type == EnumTypeEtatCivil.MARIE || type == EnumTypeEtatCivil.PACS;
+		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
+		return type == TypeEtatCivil.MARIE || type == TypeEtatCivil.PACS;
 	}
 
 	/**
@@ -38,8 +38,8 @@ public class EtatCivilHelper {
 	public static boolean estSepare(EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
-		final EnumTypeEtatCivil type = etatCivil.getTypeEtatCivil();
-		return type == EnumTypeEtatCivil.SEPARE || type == EnumTypeEtatCivil.PACS_INTERROMPU;
+		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
+		return type == TypeEtatCivil.SEPARE || type == TypeEtatCivil.PACS_INTERROMPU;
 	}
 
 	/**
@@ -50,8 +50,8 @@ public class EtatCivilHelper {
 	public static boolean estDivorce(EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
-		final EnumTypeEtatCivil type = etatCivil.getTypeEtatCivil();
-		return type == EnumTypeEtatCivil.DIVORCE || type == EnumTypeEtatCivil.PACS_ANNULE;
+		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
+		return type == TypeEtatCivil.DIVORCE || type == TypeEtatCivil.PACS_ANNULE;
 	}
 
 	/**
@@ -60,29 +60,11 @@ public class EtatCivilHelper {
 	public static boolean estVeuf(EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
-		final EnumTypeEtatCivil type = etatCivil.getTypeEtatCivil();
-		return type == EnumTypeEtatCivil.VEUF;
+		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
+		return type == TypeEtatCivil.VEUF;
 	}
 
-	public static String getString(EnumTypeEtatCivil typeEtatCivil) {
-
-		if (typeEtatCivil.equals(EnumTypeEtatCivil.CELIBATAIRE))
-			return ch.vd.uniregctb.type.EtatCivil.CELIBATAIRE.name();
-		else if (typeEtatCivil.equals(EnumTypeEtatCivil.DIVORCE))
-			return ch.vd.uniregctb.type.EtatCivil.DIVORCE.name();
-		else if (typeEtatCivil.equals(EnumTypeEtatCivil.MARIE))
-			return ch.vd.uniregctb.type.EtatCivil.MARIE.name();
-		else if (typeEtatCivil.equals(EnumTypeEtatCivil.VEUF))
-			return ch.vd.uniregctb.type.EtatCivil.VEUF.name();
-		else if (typeEtatCivil.equals(EnumTypeEtatCivil.PACS))
-			return ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE.name();
-		else if (typeEtatCivil.equals(EnumTypeEtatCivil.PACS_ANNULE))
-			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT.name();
-		else if (typeEtatCivil.equals(EnumTypeEtatCivil.PACS_INTERROMPU))
-			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT.name();
-		else if (typeEtatCivil.equals(EnumTypeEtatCivil.SEPARE))
-			return ch.vd.uniregctb.type.EtatCivil.SEPARE.name();
-
-		throw new IllegalArgumentException("Etat civil non géré " + typeEtatCivil.getName());
+	public static String getString(TypeEtatCivil typeEtatCivil) {
+		return typeEtatCivil.asCore().name();
 	}
 }

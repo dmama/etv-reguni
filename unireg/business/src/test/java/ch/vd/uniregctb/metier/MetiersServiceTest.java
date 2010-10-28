@@ -13,7 +13,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -1396,10 +1396,10 @@ public class MetiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, dateNaissance, "Dutrou", "Fabrice", true);
-				addEtatCivil(fabrice, dateNaissance, EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(fabrice, dateMariage, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(fabrice, dateSeparation, EnumTypeEtatCivil.SEPARE);
-				addEtatCivil(fabrice, dateVeuvage, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(fabrice, dateNaissance, TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(fabrice, dateMariage, TypeEtatCivil.MARIE);
+				addEtatCivil(fabrice, dateSeparation, TypeEtatCivil.SEPARE);
+				addEtatCivil(fabrice, dateVeuvage, TypeEtatCivil.VEUF);
 			}
 		});
 
@@ -1448,10 +1448,10 @@ public class MetiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, dateNaissance, "Dutrou", "Fabrice", true);
-				addEtatCivil(fabrice, dateNaissance, EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(fabrice, dateMariage, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(fabrice, dateSeparation, EnumTypeEtatCivil.SEPARE);
-				addEtatCivil(fabrice, dateVeuvage, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(fabrice, dateNaissance, TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(fabrice, dateMariage, TypeEtatCivil.MARIE);
+				addEtatCivil(fabrice, dateSeparation, TypeEtatCivil.SEPARE);
+				addEtatCivil(fabrice, dateVeuvage, TypeEtatCivil.VEUF);
 			}
 		});
 
@@ -1504,10 +1504,10 @@ public class MetiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, dateNaissance, "Dutrou", "Fabrice", true);
-				addEtatCivil(fabrice, dateNaissance, EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(fabrice, dateMariage, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(fabrice, dateSeparation, EnumTypeEtatCivil.SEPARE);
-				addEtatCivil(fabrice, dateVeuvage, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(fabrice, dateNaissance, TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(fabrice, dateMariage, TypeEtatCivil.MARIE);
+				addEtatCivil(fabrice, dateSeparation, TypeEtatCivil.SEPARE);
+				addEtatCivil(fabrice, dateVeuvage, TypeEtatCivil.VEUF);
 			}
 		});
 
@@ -1553,7 +1553,7 @@ public class MetiersServiceTest extends BusinessTest {
 				addNationalite(mr, MockPays.Suisse, date(1948, 1, 26), null, 1);
 				addNationalite(mme, MockPays.Suisse, date(1948, 9, 4), null, 1);
 				marieIndividus(mr, mme, date(1971, 4, 17));
-				addEtatCivil(mme, dateDeces, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(mme, dateDeces, TypeEtatCivil.VEUF);
 				mr.setDateDeces(dateDeces);
 			}
 		});

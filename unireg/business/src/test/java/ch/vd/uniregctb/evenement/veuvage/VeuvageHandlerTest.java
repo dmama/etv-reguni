@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.evenement.veuvage;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +7,10 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -25,6 +20,11 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -86,7 +86,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 				marieIndividu(mikkel, RegDate.get(1986, 4, 8));
 				addOrigine(mikkel, MockPays.Danemark, null, dateNaissanceMikkel);
 				addNationalite(mikkel, MockPays.Danemark, dateNaissanceMikkel, null, 0);
-				addEtatCivil(mikkel, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(mikkel, DATE_VEUVAGE, TypeEtatCivil.VEUF);
 				
 				final RegDate dateNaissanceRyan = RegDate.get(1961, 3, 1);
 				final MockIndividu ryan = addIndividu(NO_INDIVIDU_VEUF_AVEC_FOR, dateNaissanceRyan, "Bolomé", "Ryan", true);
@@ -94,10 +94,10 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 				marieIndividu(ryan, RegDate.get(1986, 4, 8));
 				addOrigine(ryan, MockPays.Suisse, MockCommune.Renens, dateNaissanceRyan);
 				addNationalite(ryan, MockPays.Suisse, dateNaissanceRyan, null, 0);
-				addEtatCivil(ryan, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(ryan, DATE_VEUVAGE, TypeEtatCivil.VEUF);
 
 				final MockIndividu pierre = getIndividu(NO_INDIVIDU_VEUF);
-				addEtatCivil(pierre, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(pierre, DATE_VEUVAGE, TypeEtatCivil.VEUF);
 			}
 		});
 		loadDatabase(DB_UNIT_DATA_FILE);

@@ -5,15 +5,15 @@ import annotation.Etape;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -71,7 +71,7 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 
 				addOrigine(indPierre, MockPays.Suisse, null, RegDate.get(1953, 11, 2));
 				addNationalite(indPierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null, 0);
-				addEtatCivil(indPierre, dateVeuvage, EnumTypeEtatCivil.VEUF);
+				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indPierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 			}
 		});

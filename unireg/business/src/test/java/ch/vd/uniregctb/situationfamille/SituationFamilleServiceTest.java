@@ -1,26 +1,35 @@
 package ch.vd.uniregctb.situationfamille;
 
-import ch.vd.uniregctb.tiers.*;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille.Source;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleDAO;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class SituationFamilleServiceTest extends BusinessTest {
 
@@ -167,8 +176,8 @@ public class SituationFamilleServiceTest extends BusinessTest {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Dupont", "Pierre", true);
 
 				// Ajoute des état-civil à celui par défaut
-				addEtatCivil(individu, dateMariage, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(individu, dateDivorce, EnumTypeEtatCivil.DIVORCE);
+				addEtatCivil(individu, dateMariage, TypeEtatCivil.MARIE);
+				addEtatCivil(individu, dateDivorce, TypeEtatCivil.DIVORCE);
 			}
 		});
 
@@ -217,8 +226,8 @@ public class SituationFamilleServiceTest extends BusinessTest {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Dupont", "Pierre", true);
 
 				// Ajoute des état-civil à celui par défaut
-				addEtatCivil(individu, dateMariage, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(individu, dateDivorce, EnumTypeEtatCivil.DIVORCE);
+				addEtatCivil(individu, dateMariage, TypeEtatCivil.MARIE);
+				addEtatCivil(individu, dateDivorce, TypeEtatCivil.DIVORCE);
 			}
 		});
 
@@ -284,8 +293,8 @@ public class SituationFamilleServiceTest extends BusinessTest {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Dupont", "Pierre", true);
 
 				// Ajoute des état-civil à celui par défaut
-				addEtatCivil(individu, dateMariage, EnumTypeEtatCivil.MARIE);
-				addEtatCivil(individu, dateDivorce, EnumTypeEtatCivil.DIVORCE);
+				addEtatCivil(individu, dateMariage, TypeEtatCivil.MARIE);
+				addEtatCivil(individu, dateDivorce, TypeEtatCivil.DIVORCE);
 
 			}
 		});
@@ -621,8 +630,8 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, date(1945, 1, 4), "Dupont", "Pierre", true);
 
-				addEtatCivil(individu, date(1965, 6, 3), EnumTypeEtatCivil.MARIE);
-				addEtatCivil(individu, date(1976, 12, 24), EnumTypeEtatCivil.DIVORCE);
+				addEtatCivil(individu, date(1965, 6, 3), TypeEtatCivil.MARIE);
+				addEtatCivil(individu, date(1976, 12, 24), TypeEtatCivil.DIVORCE);
 
 				individu.setDateDeces(date(2004, 5, 1));
 			}
@@ -663,7 +672,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissanceCivile, "Dupont", "Pierre", true);
 
 				// Ajoute l'état-civil marié
-				addEtatCivil(individu, dateMariageCivile, EnumTypeEtatCivil.MARIE);
+				addEtatCivil(individu, dateMariageCivile, TypeEtatCivil.MARIE);
 			}
 		});
 

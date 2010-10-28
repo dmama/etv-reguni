@@ -1,31 +1,34 @@
 package ch.vd.uniregctb.evenement.reconciliation;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -244,7 +247,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		final MockEtatCivil separation = new MockEtatCivil();
 		separation.setDateDebutValidite(dateSeparation);
 		separation.setNoSequence(individu.getEtatsCivils().size());
-		separation.setTypeEtatCivil(EnumTypeEtatCivil.SEPARE);
+		separation.setTypeEtatCivil(TypeEtatCivil.SEPARE);
 		if (noIndConjoint != null) {
 		    separation.setNumeroConjoint(noIndConjoint);
 		}
@@ -255,7 +258,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		final MockEtatCivil marie = new MockEtatCivil();
 		marie.setDateDebutValidite(dateReconciliation);
 		marie.setNoSequence(individu.getEtatsCivils().size());
-		marie.setTypeEtatCivil(EnumTypeEtatCivil.MARIE);
+		marie.setTypeEtatCivil(TypeEtatCivil.MARIE);
 		if (noIndConjoint != null) {
 		    marie.setNumeroConjoint(noIndConjoint);
 		}

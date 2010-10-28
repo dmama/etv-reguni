@@ -10,14 +10,12 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.couple.CoupleHelper;
-import ch.vd.uniregctb.couple.manager.CoupleRecapManager;
-import ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -61,9 +59,9 @@ public class CoupleRecapValidatorTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 5, 7), "Petipoint", "Justin", true);
-				addEtatCivil(individu, date(1970, 5, 7), EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(individu, date(1990, 10, 1), EnumTypeEtatCivil.MARIE);
-				addEtatCivil(individu, date(2000, 2, 1), EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(individu, date(1970, 5, 7), TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(individu, date(1990, 10, 1), TypeEtatCivil.MARIE);
+				addEtatCivil(individu, date(2000, 2, 1), TypeEtatCivil.SEPARE);
 			}
 		});
 
@@ -101,9 +99,9 @@ public class CoupleRecapValidatorTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1970, 5, 7), "Petipoint", "Justin", true);
-				addEtatCivil(individu, date(1970, 5, 7), EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(individu, date(1990, 10, 1), EnumTypeEtatCivil.MARIE);
-				addEtatCivil(individu, date(2000, 2, 1), EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(individu, date(1970, 5, 7), TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(individu, date(1990, 10, 1), TypeEtatCivil.MARIE);
+				addEtatCivil(individu, date(2000, 2, 1), TypeEtatCivil.SEPARE);
 			}
 		});
 

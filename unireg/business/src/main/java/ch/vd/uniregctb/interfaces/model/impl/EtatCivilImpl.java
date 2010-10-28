@@ -3,8 +3,8 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
 public class EtatCivilImpl implements EtatCivil, Serializable {
 
@@ -12,7 +12,7 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 	
 	private final RegDate dateDebut;
 	private final int noSequence;
-	private final EnumTypeEtatCivil typeEtatCivil;
+	private final TypeEtatCivil typeEtatCivil;
 	private final Long numeroConjoint;
 
 	public static EtatCivilImpl get(ch.vd.registre.civil.model.EtatCivil target) {
@@ -25,7 +25,7 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 	private EtatCivilImpl(ch.vd.registre.civil.model.EtatCivil target) {
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.noSequence = target.getNoSequence();
-		this.typeEtatCivil = target.getTypeEtatCivil();
+		this.typeEtatCivil = TypeEtatCivil.get(target.getTypeEtatCivil());
 		this.numeroConjoint = ((ch.vd.registre.civil.model.impl.EtatCivilImpl)target).getNoTechniqueConjoint(); // cast : hack en attendant la résolution de [INTER-158]
 	}
 
@@ -37,7 +37,7 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 		return noSequence;
 	}
 
-	public EnumTypeEtatCivil getTypeEtatCivil() {
+	public TypeEtatCivil getTypeEtatCivil() {
 		return typeEtatCivil;
 	}
 

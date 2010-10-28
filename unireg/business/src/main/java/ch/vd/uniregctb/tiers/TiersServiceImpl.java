@@ -40,7 +40,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -69,6 +68,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -219,14 +219,14 @@ public class TiersServiceImpl implements TiersService {
 				if (ind != null) {
 					Collection<ch.vd.uniregctb.interfaces.model.EtatCivil> colEtatCivil = ind.getEtatsCivils();
 					int numSeq = 0;
-					EnumTypeEtatCivil etatCivilDuCivil = null;
+					TypeEtatCivil etatCivilDuCivil = null;
 					for (ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil : colEtatCivil) {
 						if (etatCivil.getNoSequence() > numSeq) {
 							etatCivilDuCivil = etatCivil.getTypeEtatCivil();
 						}
 					}
 					if (etatCivilDuCivil != null && (
-							!sitFam.getEtatCivil().equals(EtatCivil.from(etatCivilDuCivil)) ||
+							!sitFam.getEtatCivil().equals(etatCivilDuCivil.asCore()) ||
 									sitFam.getNombreEnfants() == 0)) {
 						situationFamilleService.closeSituationFamille(nonHabitant, date);
 					}

@@ -13,17 +13,17 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.AdapterCallback;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -281,16 +281,16 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		return String.format("Contribuable %s / Individu n°%d: l'état civil %s n'a pas de date de début !",
 							FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),
 							habitant.getNumeroIndividu(),
-							ch.vd.uniregctb.type.EtatCivil.from(etat.getTypeEtatCivil()));
+							etat.getTypeEtatCivil().asCore());
 	}
 
 	private RegDate findDateDebutEtatCivil(EtatCivil etatCivil, PersonnePhysique habitant, Individu individu) {
 		RegDate dateDebutEtatCivil = null;
-		if (etatCivil.getTypeEtatCivil().equals(EnumTypeEtatCivil.CELIBATAIRE)) {
+		if (etatCivil.getTypeEtatCivil()== TypeEtatCivil.CELIBATAIRE) {
 			dateDebutEtatCivil = individu.getDateNaissance();
 		}
-		else if (etatCivil.getTypeEtatCivil().equals(EnumTypeEtatCivil.MARIE)
-				|| etatCivil.getTypeEtatCivil().equals(EnumTypeEtatCivil.PACS)) {
+		else if (etatCivil.getTypeEtatCivil()==TypeEtatCivil.MARIE
+				|| etatCivil.getTypeEtatCivil()==TypeEtatCivil.PACS) {
 			Set<RapportEntreTiers> rapports = habitant.getRapportsSujet();
 			if (rapports != null) {
 				for (RapportEntreTiers rapport : rapports) {
@@ -439,7 +439,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		if (pp.isConnuAuCivil() && takeCivilAsDefault) {
 			final Individu individu = tiersService.getIndividu(pp);
 			final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), date);
-			return etatCivil == null ? null : ch.vd.uniregctb.type.EtatCivil.from(etatCivil.getTypeEtatCivil());
+			return etatCivil == null ? null : etatCivil.getTypeEtatCivil().asCore();
 		}
 
 		return null;
@@ -471,7 +471,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		final SituationFamille lastSituationFamille = situations.get(situations.size() - 1);
 		Assert.notNull(lastSituationFamille);
 
-		if (lastSituationFamille.getId().longValue() != idSituationFamille) {
+		if (lastSituationFamille.getId() != idSituationFamille) {
 			throw new ValidationException(idSituationFamille, "Seule la dernière situation de famille peut être annulée.");
 		}
 
@@ -479,7 +479,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 			// Recherche de la situation de famille précédente si elle existe
 			// on reouvre la situation de famille precedente
-			SituationFamille situationFamillePrecedente = null;
+			SituationFamille situationFamillePrecedente;
 			if (situations.size() > 1
 					&& situations.get(situations.size() - 2).getDateFin() == situationFamille.getDateDebut().getOneDayBefore()) {
 				situationFamillePrecedente = situations.get(situations.size() - 2);

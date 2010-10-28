@@ -12,12 +12,12 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -120,7 +120,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 
 			// état civil pour traitement
 			final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(contribuable.getNumeroIndividu(), mariage.getDate());
-			final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = ch.vd.uniregctb.type.EtatCivil.from(etatCivil.getTypeEtatCivil());
+			final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
 			
 			// [UNIREG-780] : détection et reprise d'un ancien ménage auquel ont appartenu les deux contribuables
 			boolean remariage = false;

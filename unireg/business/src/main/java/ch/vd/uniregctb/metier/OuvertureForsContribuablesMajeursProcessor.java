@@ -18,7 +18,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -35,6 +34,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.OuvertureForsResults.ErreurType;
@@ -170,7 +170,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		private boolean domicilieDansLeCanton;
 		private Integer numeroOfsAutoriteFiscale;
 
-		private EnumTypeEtatCivil etatCivil;
+		private TypeEtatCivil etatCivil;
 		private boolean hasPermisC;
 		private boolean hasNationaliteSuisse;
 
@@ -222,11 +222,11 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
 		}
 
-		public EnumTypeEtatCivil getEtatCivil() {
+		public TypeEtatCivil getEtatCivil() {
 			return etatCivil;
 		}
 
-		public void setEtatCivil(EnumTypeEtatCivil etatCivil) {
+		public void setEtatCivil(TypeEtatCivil etatCivil) {
 			this.etatCivil = etatCivil;
 		}
 
@@ -299,9 +299,9 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		fillEtatCivilPermisEtNationalite(habitant, data, dateReference);
 
 		// Vérification de cohérence sur l'état civil
-		final EnumTypeEtatCivil etatCivil = data.getEtatCivil();
-		if (etatCivil != null && !EnumTypeEtatCivil.CELIBATAIRE.equals(etatCivil)) {
-			String message = "L'habitant possède un état civil [" + etatCivil.getName() + "] différent de CELIBATAIRE :"
+		final TypeEtatCivil etatCivil = data.getEtatCivil();
+		if (etatCivil != null && TypeEtatCivil.CELIBATAIRE != etatCivil) {
+			String message = "L'habitant possède un état civil [" + etatCivil + "] différent de CELIBATAIRE :"
 					+ " soit il est marié et son ménage commun manque,"
 					+ " soit il est veuf/séparé/divorcé et son for principal n'a pas été rouvert correctement."
 					+ " Traitement automatique impossible.";

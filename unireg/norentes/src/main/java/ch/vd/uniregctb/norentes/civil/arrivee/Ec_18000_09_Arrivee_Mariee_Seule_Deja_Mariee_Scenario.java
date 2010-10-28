@@ -4,19 +4,20 @@ import java.util.Set;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -71,8 +72,8 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 				addPermis(jean, EnumTypePermis.ETABLLISSEMENT, date(2001, 7, 11), null, 0, false);
 				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2004, 1,
 						15), null);
-				addEtatCivil(jean, date(2004, 1, 15), EnumTypeEtatCivil.DIVORCE);
-				addEtatCivil(jean, date(2008, 7, 26), EnumTypeEtatCivil.MARIE);
+				addEtatCivil(jean, date(2004, 1, 15), TypeEtatCivil.DIVORCE);
+				addEtatCivil(jean, date(2008, 7, 26), TypeEtatCivil.MARIE);
 
 				MockIndividu georgette = addIndividu(noIndGeorgette, date(1951, 11, 3), "Matala Bambi", "Georgette", false);
 				addPermis(georgette, EnumTypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), 0, false);
@@ -84,9 +85,9 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 						2008, 8, 15), date(2009, 6, 12));
 				addAdresse(georgette, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(
 						2009, 6, 13), null);
-				addEtatCivil(georgette, date(1951, 11, 3), EnumTypeEtatCivil.CELIBATAIRE);
-				addEtatCivil(georgette, date(2008, 7, 26), EnumTypeEtatCivil.MARIE);
-				addEtatCivil(georgette, date(2009, 6, 13), EnumTypeEtatCivil.MARIE);
+				addEtatCivil(georgette, date(1951, 11, 3), TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(georgette, date(2008, 7, 26), TypeEtatCivil.MARIE);
+				addEtatCivil(georgette, date(2009, 6, 13), TypeEtatCivil.MARIE);
 			}
 
 		});
