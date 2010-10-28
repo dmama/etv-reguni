@@ -2,8 +2,8 @@ package ch.vd.uniregctb.norentes.civil.annulation.veuvage;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement annulation de veuvage d'une personne veuve seule.
@@ -64,7 +65,7 @@ public class Ec_10001_01_AnnulationVeuvage_MarieSeul_Scenario extends EvenementC
 				marieIndividu(indAndre, dateMariage);
 				addOrigine(indAndre, MockPays.France, null, indAndre.getDateNaissance());
 				addNationalite(indAndre, MockPays.France, indAndre.getDateNaissance(), null, 0);
-				addPermis(indAndre, EnumTypePermis.FRONTALIER, RegDate.get(1980, 3, 1), null, 0, false);
+				addPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(1980, 3, 1), null, 0, false);
 			}
 		});
 	}

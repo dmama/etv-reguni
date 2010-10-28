@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class DefaultMockServiceCivil extends MockServiceCivil {
 
@@ -63,15 +63,15 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 
 		addOrigine(bea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 		addNationalite(bea, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-		addPermis(bea, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+		addPermis(bea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 		addOrigine(helene, MockPays.France, null, RegDate.get(1963, 8, 20));
 		addNationalite(helene, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-		addPermis(helene, EnumTypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, 0, false);
+		addPermis(helene, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, 0, false);
 
 		addOrigine(sophie, MockPays.Suisse, null, RegDate.get(1973, 8, 20));
 		addNationalite(sophie, MockPays.Suisse, RegDate.get(1973, 8, 20), null, 0);
-		addPermis(sophie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1973, 8, 20), null, 0, false);
+		addPermis(sophie, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, 0, false);
 
 		addOrigine(pierre, MockPays.Suisse, null, RegDate.get(1953, 11, 2));
 		addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null, 0);

@@ -2,8 +2,8 @@ package ch.vd.uniregctb.norentes.civil.annulationpermis;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -14,6 +14,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement annulation de permis d'une personne celibataire.
@@ -60,7 +61,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 				indJulie = addIndividu(noIndJulie, dateNaissance, "Goux", "Julie", false);
 				addOrigine(indJulie, MockPays.France, null, RegDate.get(1961, 3, 12));
 				addNationalite(indJulie, MockPays.France, RegDate.get(1961, 3, 12), null, 0);
-				addPermis(indJulie, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermis, null, 0, false);
+				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, 0, false);
 			}
 		});
 	}
@@ -90,7 +91,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 
 		{
 			// annulation du permis
-			searchPermis(noIndJulie, EnumTypePermis.ETABLLISSEMENT, dateAnnulationPermis.year()).setDateAnnulation(dateAnnulationPermis);
+			searchPermis(noIndJulie, TypePermis.ETABLISSEMENT, dateAnnulationPermis.year()).setDateAnnulation(dateAnnulationPermis);
 		}
 
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, noIndJulie, dateObtentionPermis, commune.getNoOFS());

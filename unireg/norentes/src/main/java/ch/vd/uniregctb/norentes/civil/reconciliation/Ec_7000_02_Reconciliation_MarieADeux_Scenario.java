@@ -2,8 +2,8 @@ package ch.vd.uniregctb.norentes.civil.reconciliation;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -15,6 +15,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement réconciliation d'un couple de mariés.
@@ -74,7 +75,7 @@ public class Ec_7000_02_Reconciliation_MarieADeux_Scenario extends EvenementCivi
 
 				addOrigine(indBea, MockPays.Suisse, commune, RegDate.get(1963, 8, 20));
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(indBea, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(indBea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				addOrigine(indMomo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);

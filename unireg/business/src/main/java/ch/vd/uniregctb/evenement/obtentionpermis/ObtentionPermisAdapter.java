@@ -6,7 +6,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
@@ -17,6 +16,7 @@ import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Adapter pour l'obtention de permis.
@@ -90,7 +90,7 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 	 * (non-Javadoc)
 	 * @see ch.vd.uniregctb.evenement.obtentionpermis.ObtentionPermis#getTypePermis()
 	 */
-	public EnumTypePermis getTypePermis() {
+	public TypePermis getTypePermis() {
 		return permis.getTypePermis();
 	}
 

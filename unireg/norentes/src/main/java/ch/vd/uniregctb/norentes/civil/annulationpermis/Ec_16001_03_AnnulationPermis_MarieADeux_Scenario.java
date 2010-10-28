@@ -2,8 +2,8 @@ package ch.vd.uniregctb.norentes.civil.annulationpermis;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -15,6 +15,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement annulation de permis d'une personne mariée.
@@ -73,7 +74,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 
 				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermis, null, 0, false);
+				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, 0, false);
 
 				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
@@ -139,7 +140,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 
 		{
 			// annulation du permis
-			searchPermis(noIndMomo, EnumTypePermis.ETABLLISSEMENT, dateAnnulationPermis.year()).setDateAnnulation(dateAnnulationPermis);
+			searchPermis(noIndMomo, TypePermis.ETABLISSEMENT, dateAnnulationPermis.year()).setDateAnnulation(dateAnnulationPermis);
 		}
 
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, noIndMomo, dateObtentionPermis, communeMariage.getNoOFS());

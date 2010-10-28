@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Test de l'adapter du deces :
@@ -217,9 +217,9 @@ public class DecesAdapterTest extends WithoutSpringTest {
 			addOrigine(simone, MockPays.France, null, RegDate.get(1977, 4, 19));
 
 			/* permis */
-			addPermis(julien, EnumTypePermis.FRONTALIER, RegDate.get(1986, 11, 2), RegDate.get(1991, 11, 1), 0, false);
-			addPermis(julien, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1991, 11, 2), null, 1, false);
-			addPermis(melanie, EnumTypePermis.FRONTALIER, RegDate.get(1995, 11, 2), null, 0, false);
+			addPermis(julien, TypePermis.FRONTALIER, RegDate.get(1986, 11, 2), RegDate.get(1991, 11, 1), 0, false);
+			addPermis(julien, TypePermis.ETABLISSEMENT, RegDate.get(1991, 11, 2), null, 1, false);
+			addPermis(melanie, TypePermis.FRONTALIER, RegDate.get(1995, 11, 2), null, 0, false);
 		}
 	};
 

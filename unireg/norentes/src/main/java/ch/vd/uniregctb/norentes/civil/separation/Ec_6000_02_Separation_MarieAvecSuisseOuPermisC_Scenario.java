@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -20,6 +19,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scenario d'un événement divorce d'une personne de nationalité suisse avec un étranger avec permis C.
@@ -83,7 +83,7 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 
 				addOrigine(indMomo, MockPays.France, null, dateNaissanceMomo);
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null, 0);
-				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, dateNaissanceMomo, null, 0, false);
+				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateNaissanceMomo, null, 0, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateSeparation, null);
 

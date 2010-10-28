@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.annulationpermis;
 
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Evenement d'obtention d'un permis.
@@ -14,7 +14,7 @@ public interface AnnulationPermis extends EvenementCivil {
 	/**
 	 * Type du permis obtenu.
 	 */
-	EnumTypePermis getTypePermis();
+	TypePermis getTypePermis();
 	
 	
 

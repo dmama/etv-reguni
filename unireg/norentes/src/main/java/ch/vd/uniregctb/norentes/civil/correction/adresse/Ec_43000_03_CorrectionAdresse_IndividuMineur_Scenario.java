@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends EvenementCivilScenario {
 
@@ -56,7 +56,7 @@ public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends Evene
 				addOrigine(indConceicao, MockPays.Espagne, null, indConceicao.getDateNaissance());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null, 0);
 
-				addPermis(indConceicao, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 5, 21), null, 1, false);
+				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, 1, false);
 
 				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, naissance, dateCorrection.getOneDayBefore());

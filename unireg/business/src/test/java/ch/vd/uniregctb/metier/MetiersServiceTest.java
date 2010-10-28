@@ -12,7 +12,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
@@ -46,6 +45,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static org.junit.Assert.assertEquals;
@@ -346,8 +346,8 @@ public class MetiersServiceTest extends BusinessTest {
 				addAdresse(mme, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
 				addNationalite(m, MockPays.RoyaumeUni, dateNaissanceM, null, 1);
 				addNationalite(mme, MockPays.RoyaumeUni, dateNaissanceMme, null, 1);
-				addPermis(m, EnumTypePermis.ETABLLISSEMENT, dateMariage, null, 1, false);
-				addPermis(mme, EnumTypePermis.ETABLLISSEMENT, dateMariage, null, 1, false);
+				addPermis(m, TypePermis.ETABLISSEMENT, dateMariage, null, 1, false);
+				addPermis(mme, TypePermis.ETABLISSEMENT, dateMariage, null, 1, false);
 			}
 		});
 
@@ -2083,7 +2083,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				addNationalite(m, MockPays.Suisse, date(1972, 11, 4), null, 1);
 				addNationalite(mme, MockPays.France, date(1977, 8, 16), null, 1);
-				addPermis(mme, EnumTypePermis.ANNUEL, date(2002, 7, 18), null, 1, false);
+				addPermis(mme, TypePermis.ANNUEL, date(2002, 7, 18), null, 1, false);
 				marieIndividus(m, mme, dateMariage);
 			}
 		});

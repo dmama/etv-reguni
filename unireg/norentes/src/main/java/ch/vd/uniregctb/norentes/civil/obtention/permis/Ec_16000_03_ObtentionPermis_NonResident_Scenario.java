@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementCivilScenario {
 
@@ -60,8 +60,8 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 				indMomo = addIndividu(noIndMomo, dateNaissanceMomo, "Durant", "Maurice", true);
 
 				addOrigine(indMomo, MockPays.France, null, dateNaissanceMomo);
-				addPermis(indMomo, EnumTypePermis.ANNUEL, dateObtentionPermisB, dateObtentionPermisC.getOneDayBefore(), 0, false);
-				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermisC, null, 1, false);
+				addPermis(indMomo, TypePermis.ANNUEL, dateObtentionPermisB, dateObtentionPermisC.getOneDayBefore(), 0, false);
+				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermisC, null, 1, false);
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null, 0);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateObtentionPermisB, null);
 			}

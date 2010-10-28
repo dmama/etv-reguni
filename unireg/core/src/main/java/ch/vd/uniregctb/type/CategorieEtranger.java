@@ -3,8 +3,6 @@
  */
 package ch.vd.uniregctb.type;
 
-import ch.vd.registre.civil.model.EnumTypePermis;
-
 /**
  * <!-- begin-user-doc -->
  * Longueur de colonne : 35
@@ -93,45 +91,45 @@ public enum CategorieEtranger {
 	 */
 	_13_NON_ATTRIBUEE;
 	
-	public static CategorieEtranger enumToCategorie(EnumTypePermis permis) {
+	public static CategorieEtranger enumToCategorie(TypePermis permis) {
 		if (permis == null)
 			return null;
 		
-		if (EnumTypePermis.ANNUEL.equals(permis)) {
+		if (TypePermis.ANNUEL.equals(permis)) {
 			return _02_PERMIS_SEJOUR_B;
 		}
-		else if (EnumTypePermis.ETABLLISSEMENT.equals(permis)) {
+		else if (TypePermis.ETABLISSEMENT.equals(permis)) {
 			return _03_ETABLI_C;
 		}
-		else if (EnumTypePermis.FRONTALIER.equals(permis)) {
+		else if (TypePermis.FRONTALIER.equals(permis)) {
 			return _06_FRONTALIER_G;
 		}
-		else if (EnumTypePermis.SUISSE_SOURCIER.equals(permis)) {
+		else if (TypePermis.SUISSE_SOURCIER.equals(permis)) {
 			return null;
 		}
-		else if (EnumTypePermis.PROVISOIRE.equals(permis)) {
+		else if (TypePermis.PROVISOIRE.equals(permis)) {
 			return _05_ETRANGER_ADMIS_PROVISOIREMENT_F;
 		}
-		else if (EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION.equals(permis)) {
+		else if (TypePermis.REQUERANT_ASILE_AVANT_DECISION.equals(permis)) {
 			return _08_REQUERANT_ASILE_N;
 		}
-		else if (EnumTypePermis.REQUERANT_ASILE_REFUSE.equals(permis)) {
+		else if (TypePermis.REQUERANT_ASILE_REFUSE.equals(permis)) {
 			return _05_ETRANGER_ADMIS_PROVISOIREMENT_F;
 		}
-		else if (EnumTypePermis.COURTE_DUREE.equals(permis)) {
+		else if (TypePermis.COURTE_DUREE.equals(permis)) {
 			return _07_PERMIS_SEJOUR_COURTE_DUREE_L;
 		}
-		else if (EnumTypePermis.DIPLOMATE.equals(permis)) {
+		else if (TypePermis.DIPLOMATE.equals(permis)) {
 			return _11_DIPLOMATE;
 		}
-		else if (EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL.equals(permis)) {
+		else if (TypePermis.FONCTIONNAIRE_INTERNATIONAL.equals(permis)) {
 			return _12_FONCTIONNAIRE_INTERNATIONAL;
 		}
-		else if (EnumTypePermis.PERSONNE_A_PROTEGER.equals(permis)) {
+		else if (TypePermis.PERSONNE_A_PROTEGER.equals(permis)) {
 			return _09_A_PROTEGER_S;
 		}
 		else {
-			throw new IllegalArgumentException("Type de permis inconnu = [" + permis.getName() + "]");
+			throw new IllegalArgumentException("Type de permis inconnu = [" + permis + "]");
 		}
 	}
 }

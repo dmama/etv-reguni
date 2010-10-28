@@ -6,7 +6,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -25,6 +24,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un mariage entre Suisse et Etranger Permis B
@@ -79,7 +79,7 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 				addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceMaria, null);
 
 				addNationalite(indRafa, MockPays.France, dateNaissanceRafa, null, 0);
-				addPermis(indRafa, EnumTypePermis.ANNUEL, RegDate.get(2006, 5, 3), null, 1, false);
+				addPermis(indRafa, TypePermis.ANNUEL, RegDate.get(2006, 5, 3), null, 1, false);
 				addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceRafa, null);
 
 				marieIndividus(indRafa, indMaria, dateMariage);

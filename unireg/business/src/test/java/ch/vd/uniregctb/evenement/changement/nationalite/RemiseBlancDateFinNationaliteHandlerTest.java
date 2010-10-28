@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.changement.nationalite;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -17,6 +14,9 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
+
+import static org.junit.Assert.assertTrue;
 
 public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -41,7 +41,7 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 				addDefaultAdressesTo(marine);
 				addOrigine(marine, MockPays.France, null, RegDate.get(1973, 8, 20));
 				addNationalite(marine, MockPays.Suisse, RegDate.get(1973, 8, 20), DATE_FIN_NATIONALITE, 0);
-				addPermis(marine, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1973, 8, 20), null, 0, false);
+				addPermis(marine, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, 0, false);
 			}
 
 		});

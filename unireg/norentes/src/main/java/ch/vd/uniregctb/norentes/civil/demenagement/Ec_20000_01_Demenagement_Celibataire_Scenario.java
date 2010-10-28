@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Test norentes de l'événement "déménagement d'un célibataire dans la commune".
@@ -63,7 +63,7 @@ public class Ec_20000_01_Demenagement_Celibataire_Scenario extends EvenementCivi
 				addOrigine(indConceicao, MockPays.Espagne, null, indConceicao.getDateNaissance());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null, 0);
 
-				addPermis(indConceicao, EnumTypePermis.PROVISOIRE, RegDate.get(2008, 5, 21), null, 1, false);
+				addPermis(indConceicao, TypePermis.PROVISOIRE, RegDate.get(2008, 5, 21), null, 1, false);
 
 				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						RegDate.get(2008, 4, 1), RegDate.get(2008, 6, 30));

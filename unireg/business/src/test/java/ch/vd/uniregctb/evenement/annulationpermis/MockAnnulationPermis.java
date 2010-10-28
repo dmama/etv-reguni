@@ -1,23 +1,22 @@
 package ch.vd.uniregctb.evenement.annulationpermis;
 
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class MockAnnulationPermis extends MockEvenementCivil implements AnnulationPermis {
 	
-	private EnumTypePermis typePermis;
+	private TypePermis typePermis;
 	
 	/**
-	 * @param typePermis the typePermis to set
 	 */
-	public EnumTypePermis getTypePermis() {
+	public TypePermis getTypePermis() {
 		return typePermis;
 	}
 
 	/**
 	 * @param typePermis the typePermis to set
 	 */
-	public void setTypePermis(EnumTypePermis typePermis) {
+	public void setTypePermis(TypePermis typePermis) {
 		this.typePermis = typePermis;
 	}
 

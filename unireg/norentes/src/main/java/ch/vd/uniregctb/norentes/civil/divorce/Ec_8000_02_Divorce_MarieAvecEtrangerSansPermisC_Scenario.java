@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scenario d'un événement divorce.
@@ -78,7 +78,7 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 
 				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(indMomo, EnumTypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(indMomo, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, 0, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 
 				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));

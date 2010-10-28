@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.evenement.annulationpermis;
 
-import static junit.framework.Assert.assertEquals;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
@@ -22,6 +19,9 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
+
+import static junit.framework.Assert.assertEquals;
 
 public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 
@@ -70,15 +70,15 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 			addDefaultAdressesTo(roberto);
 			addOrigine(roberto, MockPays.Espagne, null, RegDate.get(1976, 1, 16));
 			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null, 0);
-			addPermis(roberto, EnumTypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), 0, false);
-			permisRoberto = (MockPermis) addPermis(roberto, EnumTypePermis.ETABLLISSEMENT, DATE_OBTENTION_PERMIS, null, 1, false);
+			addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), 0, false);
+			permisRoberto = (MockPermis) addPermis(roberto, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, 1, false);
 
 			RegDate dateNaissanceRosa = RegDate.get(1980, 5, 30);
 			MockIndividu rosa = addIndividu(NUMERO_INDIVIDU_2, dateNaissanceRosa, "Rosa", "Martinez", false);
 			addDefaultAdressesTo(rosa);
 			addOrigine(rosa, MockPays.Espagne, null, dateNaissanceRosa);
 			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null, 0);
-			permisRosa = (MockPermis) addPermis(rosa, EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, 1, false);
+			permisRosa = (MockPermis) addPermis(rosa, TypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, 1, false);
 		}
 	};
 
@@ -95,7 +95,7 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 		// Teste l'adapter
 		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter();
 		adapter.init(evenement, serviceCivil, infrastructureService, null);
-		assertEquals(EnumTypePermis.ETABLLISSEMENT, adapter.getTypePermis());
+		assertEquals(TypePermis.ETABLISSEMENT, adapter.getTypePermis());
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 		// Teste l'adapter
 		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter();
 		adapter.init(evenement, serviceCivil, infrastructureService, null);
-		assertEquals(EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
+		assertEquals(TypePermis.FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
 	}
 
 }

@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario de mariage d'un couple déjà marié.
@@ -82,8 +82,8 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 
 				addOrigine(indJeanBruno, MockPays.France, null, dateNaissanceJeanBruno);
 				addNationalite(indJeanBruno, MockPays.France, dateNaissanceJeanBruno, null, 0);
-				addPermis(indJeanBruno, EnumTypePermis.ANNUEL, RegDate.get(2004, 11, 10), null, 0, false);
-				addPermis(indJeanBruno, EnumTypePermis.ETABLLISSEMENT, dateEtablissement, null, 0, false);
+				addPermis(indJeanBruno, TypePermis.ANNUEL, RegDate.get(2004, 11, 10), null, 0, false);
+				addPermis(indJeanBruno, TypePermis.ETABLISSEMENT, dateEtablissement, null, 0, false);
 				addAdresse(indJeanBruno, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
 				addAdresse(indJeanBruno, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
 

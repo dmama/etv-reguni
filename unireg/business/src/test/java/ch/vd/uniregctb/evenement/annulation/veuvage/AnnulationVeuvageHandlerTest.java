@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.annulation.veuvage;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -21,10 +16,15 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -66,7 +66,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 				marieIndividu(andre, dateMariageAndre);
 				addOrigine(andre, MockPays.France, null, andre.getDateNaissance());
 				addNationalite(andre, MockPays.France, andre.getDateNaissance(), null, 0);
-				addPermis(andre, EnumTypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, 0, false);
+				addPermis(andre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, 0, false);
 			}
 		});
 

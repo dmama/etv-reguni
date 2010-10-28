@@ -6,7 +6,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
@@ -25,6 +24,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement obtention de nationalité suisse d'un individu non-habitant dont l'adresse de domicile est hors-canton
@@ -80,7 +80,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 				addOrigine(indJulie, MockPays.France, null, dateNaissance);
 				addNationalite(indJulie, MockPays.France, dateNaissance, null, 0);
 				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null, 1);
-				addPermis(indJulie, EnumTypePermis.ANNUEL, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), 0, false);
+				addPermis(indJulie, TypePermis.ANNUEL, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), 0, false);
 				addEtatCivil(indJulie, dateNaissance, TypeEtatCivil.CELIBATAIRE);
 				addAdresse(indJulie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateObtentionPermis, null);
 				addAdresse(indJulie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, "Case Postale 2133431", dateObtentionPermis, null);

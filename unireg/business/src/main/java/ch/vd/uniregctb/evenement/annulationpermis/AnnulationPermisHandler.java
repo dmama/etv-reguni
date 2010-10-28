@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Règles métiers permettant de traiter les événements d'annulation de permis C.
@@ -44,7 +44,7 @@ public class AnnulationPermisHandler extends AnnulationPermisCOuNationaliteSuiss
 	}
 
 	private boolean isAnnulationPermisC(AnnulationPermis annulationPermis) {
-		return annulationPermis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT);
+		return annulationPermis.getTypePermis().equals(TypePermis.ETABLISSEMENT);
 	}
 	
 	@Override

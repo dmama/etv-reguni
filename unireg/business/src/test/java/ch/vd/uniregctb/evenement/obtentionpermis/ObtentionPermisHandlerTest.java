@@ -11,7 +11,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -29,6 +28,7 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -120,7 +120,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-		ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(celibataire, DATE_OBTENTION_PERMIS, 4848, EnumTypePermis.COURTE_DUREE);
+		ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(celibataire, DATE_OBTENTION_PERMIS, 4848, TypePermis.COURTE_DUREE);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -309,7 +309,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		obtentionPermis.setNumeroOfsCommuneAnnonce(5586);
 		obtentionPermis.setNumeroOfsEtenduCommunePrincipale(noOfsCommunePrincipale);
 		obtentionPermis.setDate( dateObtentionPermis );
-		obtentionPermis.setTypePermis( EnumTypePermis.ETABLLISSEMENT );
+		obtentionPermis.setTypePermis( TypePermis.ETABLISSEMENT);
 
 		return obtentionPermis;
 	}
@@ -322,7 +322,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 	 * @param typePermis
 	 * @return
 	 */
-	private ObtentionPermis createValidObtentionPermisNonC(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale, EnumTypePermis typePermis) {
+	private ObtentionPermis createValidObtentionPermisNonC(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale, TypePermis typePermis) {
 
 		final MockObtentionPermis obtentionPermis = new MockObtentionPermis();
 		obtentionPermis.setIndividu(individu);
@@ -348,8 +348,8 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null, 1);
-				addPermis(julie, EnumTypePermis.ANNUEL, dateNaissance, dateObtentionPermis.getOneDayBefore(), 1, false);
-				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermis, null, 2, false);
+				addPermis(julie, TypePermis.ANNUEL, dateNaissance, dateObtentionPermis.getOneDayBefore(), 1, false);
+				addPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, 2, false);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
 		});
@@ -410,8 +410,8 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null, 1);
-				addPermis(julie, EnumTypePermis.COURTE_DUREE, dateNaissance, dateObtentionPermis.getOneDayBefore(), 1, false);
-				addPermis(julie, EnumTypePermis.ANNUEL, dateObtentionPermis, null, 2, false);
+				addPermis(julie, TypePermis.COURTE_DUREE, dateNaissance, dateObtentionPermis.getOneDayBefore(), 1, false);
+				addPermis(julie, TypePermis.ANNUEL, dateObtentionPermis, null, 2, false);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
 		});
@@ -428,7 +428,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), EnumTypePermis.ANNUEL);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.ANNUEL);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();

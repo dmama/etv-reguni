@@ -40,7 +40,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -94,6 +93,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -659,7 +659,7 @@ public class TiersServiceImpl implements TiersService {
 				if (RegDateHelper.isBeforeOrEqual(permis.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
 						(permis.getDateFinValidite() == null || permis.getDateFinValidite().isAfter(date))) {
 					auMoinsUnpermisEnCours = true;
-					if (permis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT))
+					if (permis.getTypePermis().equals(TypePermis.ETABLISSEMENT))
 						return false;
 				}
 			}
@@ -699,7 +699,7 @@ public class TiersServiceImpl implements TiersService {
 			 * la date de fin de permis n'était pas reconnue si même jour,
 			 * donc permis.getDateFin().isAfter(date) devient permis.getDateFin().isAfterOrEqual(date)
 			 */
-			if (permis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT) && RegDateHelper.isBetween(date, permis.getDateDebutValidite(), permis.getDateFinValidite(), NullDateBehavior.LATEST)) {
+			if (permis.getTypePermis().equals(TypePermis.ETABLISSEMENT) && RegDateHelper.isBetween(date, permis.getDateDebutValidite(), permis.getDateFinValidite(), NullDateBehavior.LATEST)) {
 				return true;
 			}
 		}
@@ -876,9 +876,9 @@ public class TiersServiceImpl implements TiersService {
 
 			// maintenant, on vérifie la succession des permis
 			isRefugie = nbPermis > 2 &&
-					EnumTypePermis.ANNUEL.equals(permisNonAnnules.get(nbPermis - 1).getTypePermis()) &&								// B
-					EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION.equals(permisNonAnnules.get(nbPermis - 2).getTypePermis()) &&		// N
-					EnumTypePermis.REQUERANT_ASILE_REFUSE.equals(permisNonAnnules.get(nbPermis - 3).getTypePermis());				// F
+					TypePermis.ANNUEL.equals(permisNonAnnules.get(nbPermis - 1).getTypePermis()) &&								// B
+					TypePermis.REQUERANT_ASILE_AVANT_DECISION.equals(permisNonAnnules.get(nbPermis - 2).getTypePermis()) &&		// N
+					TypePermis.REQUERANT_ASILE_REFUSE.equals(permisNonAnnules.get(nbPermis - 3).getTypePermis());				// F
 		}
 
 		return isRefugie;

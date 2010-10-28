@@ -2,8 +2,8 @@ package ch.vd.uniregctb.norentes.civil.obtention.nationalite;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -17,6 +17,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement obtention de nationalité suisse d'un individu avec permis C.
@@ -66,7 +67,7 @@ public class Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario extends Evenemen
 				addOrigine(indJulie, MockPays.France, null, dateNaissance);
 				addNationalite(indJulie, MockPays.France, dateNaissance, null, 0);
 				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null, 1);
-				addPermis(indJulie, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermis, dateObtentionNationalite, 0, false);
+				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, dateObtentionNationalite, 0, false);
 			}
 		});
 	}

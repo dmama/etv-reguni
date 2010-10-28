@@ -1,17 +1,17 @@
 package ch.vd.uniregctb.evenement.fin.permis;
 
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class MockFinPermis extends MockEvenementCivil implements FinPermis {
 
-	EnumTypePermis typePermis;
+	TypePermis typePermis;
 	
-	public EnumTypePermis getTypePermis() {
+	public TypePermis getTypePermis() {
 		return typePermis;
 	}
 
-	public void setTypePermis(EnumTypePermis typePermis) {
+	public void setTypePermis(TypePermis typePermis) {
 		this.typePermis = typePermis;
 	}
 	

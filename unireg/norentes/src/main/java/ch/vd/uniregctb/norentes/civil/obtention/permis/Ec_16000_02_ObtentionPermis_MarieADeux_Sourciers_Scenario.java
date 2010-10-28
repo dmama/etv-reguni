@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends EvenementCivilScenario {
 
@@ -68,12 +68,12 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 				marieIndividus(indMomo, indBea, dateMariage);
 
 				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
-				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermis, null, 0, false);
+				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, 0, false);
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
 
 				addOrigine(indBea, MockPays.France, null, RegDate.get(1961, 3, 12));
-				addPermis(indMomo, EnumTypePermis.ANNUEL, dateMariage, null, 0, false);
+				addPermis(indMomo, TypePermis.ANNUEL, dateMariage, null, 0, false);
 				addNationalite(indBea, MockPays.France, RegDate.get(1961, 3, 12), null, 0);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
 			}

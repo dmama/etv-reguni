@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
+import ch.vd.uniregctb.type.TypePermis;
 
 public interface Permis {
 
@@ -38,5 +38,5 @@ public interface Permis {
      *
      * @return le type du permis.
      */
-    EnumTypePermis getTypePermis();
+    TypePermis getTypePermis();
 }

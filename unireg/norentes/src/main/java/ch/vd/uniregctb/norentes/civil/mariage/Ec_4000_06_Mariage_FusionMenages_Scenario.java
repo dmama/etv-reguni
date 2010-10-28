@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario de reconstitution d'un ménage commun à partir de deux ménages communs incomplets.
@@ -89,13 +89,13 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 
 				addOrigine(indAlfredo, MockPays.Albanie, null, dateNaissanceAlfredo);
 				addNationalite(indAlfredo, MockPays.Albanie, dateNaissanceAlfredo, null, 0);
-				addPermis(indAlfredo, EnumTypePermis.ETABLLISSEMENT, null, null, 0, false);
+				addPermis(indAlfredo, TypePermis.ETABLISSEMENT, null, null, 0, false);
 				addAdresse(indAlfredo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDebutAlfredo, null);
 				addAdresse(indAlfredo, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDebutAlfredo, null);
 
 				addOrigine(indArmando, MockPays.Danemark, null, dateNaissanceArmando);
 				addNationalite(indArmando, MockPays.Danemark, dateNaissanceArmando, null, 0);
-				addPermis(indArmando, EnumTypePermis.ETABLLISSEMENT, null, null, 0, false);
+				addPermis(indArmando, TypePermis.ETABLISSEMENT, null, null, 0, false);
 				addAdresse(indArmando, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDemenagementArmando, null);
 				addAdresse(indArmando, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDemenagementArmando, null);
 			}

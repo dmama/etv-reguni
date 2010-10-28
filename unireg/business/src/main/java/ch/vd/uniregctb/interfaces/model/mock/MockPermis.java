@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class MockPermis implements Permis {
 
@@ -10,7 +10,7 @@ public class MockPermis implements Permis {
 	private RegDate dateFinValidite;
 	private RegDate dateAnnulation;
 	private int noSequence;
-	private EnumTypePermis typePermis;
+	private TypePermis typePermis;
 
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
@@ -44,11 +44,11 @@ public class MockPermis implements Permis {
 		this.noSequence = noSequence;
 	}
 
-	public EnumTypePermis getTypePermis() {
+	public TypePermis getTypePermis() {
 		return typePermis;
 	}
 
-	public void setTypePermis(EnumTypePermis typePermis) {
+	public void setTypePermis(TypePermis typePermis) {
 		this.typePermis = typePermis;
 	}
 

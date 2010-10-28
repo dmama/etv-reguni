@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Gère la fin d'obtention d'un permis.
@@ -32,7 +32,7 @@ public class FinPermisHandler extends EvenementCivilHandlerBase {
 	protected void validateSpecific(EvenementCivil evenement, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		FinPermis finPermis = (FinPermis) evenement;
 		/* Seulement le permis C est traité */
-		if (finPermis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT)) {
+		if (finPermis.getTypePermis().equals(TypePermis.ETABLISSEMENT)) {
 			
 			PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(finPermis.getNoIndividu(), erreurs);
 			if (habitant == null) {

@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement séparation de deux étrangers: l'un avec permis C, l'autre avec permis autre B.
@@ -80,12 +80,12 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 
 				addOrigine(indEsad, MockPays.Albanie, null, dateNaissanceEsad);
 				addNationalite(indEsad, MockPays.Albanie, dateNaissanceEsad, null, 0);
-				addPermis(indEsad, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2005, 1, 19), null, 0, false);
+				addPermis(indEsad, TypePermis.ETABLISSEMENT, RegDate.get(2005, 1, 19), null, 0, false);
 				addAdresse(indEsad, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, RegDate.get(2005, 1, 19), null);
 
 				addOrigine(indAida, MockPays.Albanie, null, dateNaissanceAida);
 				addNationalite(indAida, MockPays.Albanie, dateNaissanceAida, null, 0);
-				addPermis(indAida, EnumTypePermis.ANNUEL, RegDate.get(2007, 7, 7), null, 0, false);
+				addPermis(indAida, TypePermis.ANNUEL, RegDate.get(2007, 7, 7), null, 0, false);
 				addAdresse(indAida, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, RegDate.get(2007, 7, 7), null);
 			}
 

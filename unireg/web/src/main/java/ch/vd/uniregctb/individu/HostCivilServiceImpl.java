@@ -127,7 +127,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 		for (Permis permis : colPermis) {
 			PermisView permisView = new PermisView();
 			if (permis.getTypePermis() != null) {
-				permisView.setTypePermis(permis.getTypePermis().getName());
+				permisView.setTypePermis(permis.getTypePermis().name());
 			}
 			permisView.setDateDebutValidite(permis.getDateDebutValidite());
 			permisView.setDateFinValidite(permis.getDateFinValidite());

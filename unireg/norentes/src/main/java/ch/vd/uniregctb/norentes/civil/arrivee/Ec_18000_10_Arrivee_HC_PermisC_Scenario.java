@@ -6,7 +6,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScenario {
 
@@ -123,7 +123,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 		doModificationIndividu(noIndAntoine, new IndividuModification() {
 			public void modifyIndividu(MockIndividu individu) {
 				final MockPermis permis = new MockPermis();
-				permis.setTypePermis(EnumTypePermis.ETABLLISSEMENT);
+				permis.setTypePermis(TypePermis.ETABLISSEMENT);
 				permis.setDateDebutValidite(dateArriveeBex);
 				permis.setDateFinValidite(null);
 				permis.setNoSequence(1);
@@ -136,7 +136,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 	public void check3() throws Exception {
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(EnumTypePermis.ETABLLISSEMENT , serviceCivilService.getPermisActif(noIndAntoine, dateArriveeBex).getTypePermis(),
+		assertEquals(TypePermis.ETABLISSEMENT, serviceCivilService.getPermisActif(noIndAntoine, dateArriveeBex).getTypePermis(),
 			"pas de permis C");
 	}
 

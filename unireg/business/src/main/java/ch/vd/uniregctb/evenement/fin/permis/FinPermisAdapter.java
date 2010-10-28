@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -13,6 +12,7 @@ import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Adapter pour la fin obtention d'un permis.
@@ -56,7 +56,7 @@ public class FinPermisAdapter extends GenericEvenementAdapter implements FinPerm
 		}
 	}
 
-	public EnumTypePermis getTypePermis() {
+	public TypePermis getTypePermis() {
 		return permis.getTypePermis();
 	}
 

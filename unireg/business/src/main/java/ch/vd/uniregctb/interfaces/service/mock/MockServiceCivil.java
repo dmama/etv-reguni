@@ -14,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -42,6 +41,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Mock du Service Civil.
@@ -369,7 +369,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
 
-	protected Permis addPermis(MockIndividu individu, EnumTypePermis type, RegDate debut, RegDate fin, int noSequence, boolean permisAnnule) {
+	protected Permis addPermis(MockIndividu individu, TypePermis type, RegDate debut, RegDate fin, int noSequence, boolean permisAnnule) {
 		final MockPermis permis = new MockPermis();
 		permis.setTypePermis(type);
 		permis.setDateDebutValidite(debut);

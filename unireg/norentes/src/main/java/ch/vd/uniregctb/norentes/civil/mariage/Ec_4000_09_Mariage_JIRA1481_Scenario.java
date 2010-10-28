@@ -6,7 +6,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -25,6 +24,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario de mariage d'un couple, dont seul le conjoint est 
@@ -79,14 +79,14 @@ public class Ec_4000_09_Mariage_JIRA1481_Scenario extends EvenementCivilScenario
 
 				addOrigine(indAdrian, MockPays.Albanie, null, dateNaissanceAdrian);
 				addNationalite(indAdrian, MockPays.Albanie, dateNaissanceAdrian, null, 1);
-				addPermis(indAdrian, EnumTypePermis.ETABLLISSEMENT, date(2000, 6, 1), null, 1, false);
+				addPermis(indAdrian, TypePermis.ETABLISSEMENT, date(2000, 6, 1), null, 1, false);
 				addAdresse(indAdrian, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
 				
 				indAngela = addIndividu(noIndAngela, dateNaissanceAngela, "Fratila", "Angela", false);
 
 				addOrigine(indAngela, MockPays.Albanie, null, dateNaissanceAngela);
 				addNationalite(indAngela, MockPays.Albanie, dateNaissanceAngela, null, 1);
-				addPermis(indAngela, EnumTypePermis.ETABLLISSEMENT, date(2000, 9, 15), null, 1, false);
+				addPermis(indAngela, TypePermis.ETABLISSEMENT, date(2000, 9, 15), null, 1, false);
 				addAdresse(indAngela, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
 				
 				marieIndividus(indAdrian, indAngela, dateMariage);

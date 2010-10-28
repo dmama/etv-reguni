@@ -3,8 +3,8 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class PermisImpl implements Permis, Serializable {
 
@@ -14,7 +14,7 @@ public class PermisImpl implements Permis, Serializable {
 	private final RegDate dateFin;
 	private final RegDate dateAnnulation;
 	private final int noSequence;
-	private final EnumTypePermis typePermis;
+	private final TypePermis typePermis;
 
 	public static PermisImpl get(ch.vd.registre.civil.model.Permis target) {
 		if (target == null) {
@@ -28,7 +28,7 @@ public class PermisImpl implements Permis, Serializable {
 		this.dateFin = RegDate.get(target.getDateFinValidite());
 		this.dateAnnulation = RegDate.get(target.getDateAnnulation());
 		this.noSequence = target.getNoSequence();
-		this.typePermis = target.getTypePermis();
+		this.typePermis = TypePermis.get(target.getTypePermis());
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -47,7 +47,7 @@ public class PermisImpl implements Permis, Serializable {
 		return noSequence;
 	}
 
-	public EnumTypePermis getTypePermis() {
+	public TypePermis getTypePermis() {
 		return typePermis;
 	}
 

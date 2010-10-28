@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.annulationpermis;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -22,11 +17,16 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Test du handler d'annulation de permis:
@@ -78,7 +78,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = getIndividu(NO_INDIVIDU_CELIBATAIRE);
 				addOrigine(julie, MockPays.France, null, RegDate.get(1976, 4, 19));
 				addNationalite(julie, MockPays.France, RegDate.get(1976, 4, 19), null, 0);
-				addPermis(julie, EnumTypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, 0, false);
+				addPermis(julie, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, 0, false);
 
 				// Nouveau individu pour les tests
 				MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, RegDate.get(1956, 2, 25), "Girard", "André", true);
@@ -86,7 +86,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 				marieIndividu(andre, RegDate.get(1982, 12, 4));
 				addOrigine(andre, MockPays.France, null, andre.getDateNaissance());
 				addNationalite(andre, MockPays.France, andre.getDateNaissance(), null, 0);
-				addPermis(andre, EnumTypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, 0, false);
+				addPermis(andre, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, 0, false);
 
 				// Nouveau couple pour les tests
 				MockIndividu roger = addIndividu(NO_INDIVIDU_MARIE, RegDate.get(1943, 7, 3), "Dupont", "Roger", true);
@@ -102,7 +102,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 				addOrigine(roger, MockPays.France, null, roger.getDateNaissance());
 				addNationalite(roger, MockPays.France, roger.getDateNaissance(), null, 0);
-				addPermis(roger, EnumTypePermis.ETABLLISSEMENT, DATE_OBTENTION_PERMIS, null, 0, false);
+				addPermis(roger, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, 0, false);
 			}
 		});
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -289,7 +289,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		annulationPermis.setIndividu(individu);
 		annulationPermis.setNumeroOfsCommuneAnnonce(5586);
 		annulationPermis.setDate(dateObtentionPermis);
-		annulationPermis.setTypePermis(EnumTypePermis.ETABLLISSEMENT);
+		annulationPermis.setTypePermis(TypePermis.ETABLISSEMENT);
 		return annulationPermis;
 	}
 
@@ -298,7 +298,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		annulationPermis.setIndividu(individu);
 		annulationPermis.setNumeroOfsCommuneAnnonce(5586);
 		annulationPermis.setDate(dateObtentionPermis);
-		annulationPermis.setTypePermis(EnumTypePermis.COURTE_DUREE);
+		annulationPermis.setTypePermis(TypePermis.COURTE_DUREE);
 		return annulationPermis;
 	}
 }

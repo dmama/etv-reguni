@@ -4,7 +4,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Un homme arrive HS célibataire ; il se marie avec une étrangère non-établie en Suisse qui le rejoint
@@ -68,12 +68,12 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 
 			addOrigine(indRafa, MockPays.Espagne, null, dateNaissanceRafa);
 			addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null, 0);
-			addPermis(indRafa, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2005, 10, 1), null, 0, false);
+			addPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2005, 10, 1), null, 0, false);
 			addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeRafa, null);
 
 			addOrigine(indMaria, MockPays.Espagne, null, dateNaissanceMaria);
 			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null, 0);
-			addPermis(indMaria, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2005, 12, 1), null, 0, false);
+			addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2005, 12, 1), null, 0, false);
 			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeMaria, null);
 		}
 

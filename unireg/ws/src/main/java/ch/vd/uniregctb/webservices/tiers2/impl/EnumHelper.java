@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.tiers2.data.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers2.data.EtatCivil;
 import ch.vd.uniregctb.webservices.tiers2.data.EtatDeclaration;
@@ -27,7 +27,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.TypeRecherche;
 
 public abstract class EnumHelper {
 
-	final static Map<ch.vd.registre.civil.model.EnumTypePermis, PersonnePhysique.Categorie> typePermis2Categorie = new HashMap<ch.vd.registre.civil.model.EnumTypePermis, PersonnePhysique.Categorie>();
+	final static Map<TypePermis, PersonnePhysique.Categorie> typePermis2Categorie = new HashMap<TypePermis, PersonnePhysique.Categorie>();
 
 	public static EtatCivil coreToWeb(ch.vd.uniregctb.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
@@ -152,7 +152,7 @@ public abstract class EnumHelper {
 		return value;
 	}
 
-	public static PersonnePhysique.Categorie coreToWeb(ch.vd.registre.civil.model.EnumTypePermis permis) {
+	public static PersonnePhysique.Categorie coreToWeb(TypePermis permis) {
 		if (permis == null) {
 			return null;
 		}
@@ -168,17 +168,17 @@ public abstract class EnumHelper {
 
 	private static synchronized void initTypePermis2Categorie() {
 		if (typePermis2Categorie.size() == 0) {
-			typePermis2Categorie.put(EnumTypePermis.ANNUEL, PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B);
-			typePermis2Categorie.put(EnumTypePermis.COURTE_DUREE, PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L);
-			typePermis2Categorie.put(EnumTypePermis.DIPLOMATE, PersonnePhysique.Categorie._11_DIPLOMATE);
-			typePermis2Categorie.put(EnumTypePermis.ETABLLISSEMENT, PersonnePhysique.Categorie._03_ETABLI_C);
-			typePermis2Categorie.put(EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL, PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL);
-			typePermis2Categorie.put(EnumTypePermis.FRONTALIER, PersonnePhysique.Categorie._06_FRONTALIER_G);
-			typePermis2Categorie.put(EnumTypePermis.PERSONNE_A_PROTEGER, PersonnePhysique.Categorie._09_A_PROTEGER_S);
-			typePermis2Categorie.put(EnumTypePermis.PROVISOIRE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
-			typePermis2Categorie.put(EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION, PersonnePhysique.Categorie._08_REQUERANT_ASILE_N);
-			typePermis2Categorie.put(EnumTypePermis.REQUERANT_ASILE_REFUSE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
-			typePermis2Categorie.put(EnumTypePermis.SUISSE_SOURCIER, PersonnePhysique.Categorie.SUISSE);
+			typePermis2Categorie.put(TypePermis.ANNUEL, PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B);
+			typePermis2Categorie.put(TypePermis.COURTE_DUREE, PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L);
+			typePermis2Categorie.put(TypePermis.DIPLOMATE, PersonnePhysique.Categorie._11_DIPLOMATE);
+			typePermis2Categorie.put(TypePermis.ETABLISSEMENT, PersonnePhysique.Categorie._03_ETABLI_C);
+			typePermis2Categorie.put(TypePermis.FONCTIONNAIRE_INTERNATIONAL, PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL);
+			typePermis2Categorie.put(TypePermis.FRONTALIER, PersonnePhysique.Categorie._06_FRONTALIER_G);
+			typePermis2Categorie.put(TypePermis.PERSONNE_A_PROTEGER, PersonnePhysique.Categorie._09_A_PROTEGER_S);
+			typePermis2Categorie.put(TypePermis.PROVISOIRE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
+			typePermis2Categorie.put(TypePermis.REQUERANT_ASILE_AVANT_DECISION, PersonnePhysique.Categorie._08_REQUERANT_ASILE_N);
+			typePermis2Categorie.put(TypePermis.REQUERANT_ASILE_REFUSE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
+			typePermis2Categorie.put(TypePermis.SUISSE_SOURCIER, PersonnePhysique.Categorie.SUISSE);
 		}
 	}
 

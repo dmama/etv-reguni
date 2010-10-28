@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -15,6 +14,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Règles métiers permettant de traiter les événements d'obtention de permis.
@@ -44,11 +44,11 @@ public class ObtentionPermisHandler extends ObtentionPermisCOuNationaliteSuisseH
 		if (pp != null && !pp.isHabitantVD()) {
 			pp.setCategorieEtranger(CategorieEtranger.enumToCategorie(obtentionPermis.getTypePermis()));
 			Audit.info(evenement.getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant le permis '%s'",
-																	evenement.getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), obtentionPermis.getTypePermis().getName()));
+																	evenement.getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), obtentionPermis.getTypePermis().name()));
 		}
 
 		/* Seul le permis C a une influence */
-		if (obtentionPermis.getTypePermis() != EnumTypePermis.ETABLLISSEMENT) {
+		if (obtentionPermis.getTypePermis() != TypePermis.ETABLISSEMENT) {
 			Audit.info(obtentionPermis.getNumeroEvenement(), "Permis non C : ignoré fiscalement");
 			return null;
 		}

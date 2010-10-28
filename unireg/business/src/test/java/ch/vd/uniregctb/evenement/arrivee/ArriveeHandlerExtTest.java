@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
@@ -46,6 +45,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
@@ -1059,7 +1059,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 			}
 		});
@@ -1166,7 +1166,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
 			}
 		});
 
@@ -1256,9 +1256,9 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, 2, false);
-				addPermis(pierre, EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), 1, false);
-				addPermis(pierre, EnumTypePermis.REQUERANT_ASILE_REFUSE, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), 0, false);
+				addPermis(pierre, TypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, 2, false);
+				addPermis(pierre, TypePermis.REQUERANT_ASILE_AVANT_DECISION, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), 1, false);
+				addPermis(pierre, TypePermis.REQUERANT_ASILE_REFUSE, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), 0, false);
 			}
 		});
 
@@ -1348,7 +1348,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
 
 			}
 		});
@@ -1470,10 +1470,10 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -1616,10 +1616,10 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -1771,10 +1771,10 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				// nationalité
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
 				addOrigine(julie, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(julie, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, EnumTypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(julie, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -1907,7 +1907,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 			}
 		});
@@ -2021,10 +2021,10 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -2344,10 +2344,10 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -2517,7 +2517,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
 			}
 		});
 
@@ -2585,7 +2585,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
 			}
 		});
 
@@ -2647,7 +2647,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
 			}
 		});
 
@@ -2853,7 +2853,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
 			}
 		});
 

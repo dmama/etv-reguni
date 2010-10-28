@@ -2,8 +2,8 @@ package ch.vd.uniregctb.norentes.civil.annulation.deces;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scénario d'un événement d'annulation de décès d'un marié seul.
@@ -62,7 +63,7 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 				marieIndividu(indAndre, dateMariage);
 				addOrigine(indAndre, MockPays.France, null, indAndre.getDateNaissance());
 				addNationalite(indAndre, MockPays.France, indAndre.getDateNaissance(), null, 0);
-				addPermis(indAndre, EnumTypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, 0, false);
+				addPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, 0, false);
 			}
 		});
 	}

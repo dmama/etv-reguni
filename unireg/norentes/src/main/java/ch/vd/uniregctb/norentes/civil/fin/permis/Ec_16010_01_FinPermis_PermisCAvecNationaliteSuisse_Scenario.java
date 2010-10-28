@@ -4,8 +4,8 @@ import java.util.List;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -20,6 +20,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Scenario d'un événement fin de permis C.
@@ -65,8 +66,8 @@ public class Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario extends
 			addOrigine(roberto, MockPays.Espagne, null, dateNaissanceRoberto);
 			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null, 0);
 
-			addPermis(roberto, EnumTypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), 0, false);
-			addPermis(roberto, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermisC, null, 1, false);
+			addPermis(roberto, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), 0, false);
+			addPermis(roberto, TypePermis.ETABLISSEMENT, dateObtentionPermisC, null, 1, false);
 		}
 
 		public void setupForTest() {

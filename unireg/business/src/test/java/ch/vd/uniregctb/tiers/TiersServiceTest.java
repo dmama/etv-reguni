@@ -19,7 +19,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -50,6 +49,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypePermis;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -184,7 +184,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addNationalite(pierre, MockPays.France, RegDate.get(1953, 11, 2), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
 			}
 		});
 
@@ -200,7 +200,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addNationalite(pierre, MockPays.France, RegDate.get(1953, 11, 2), null, 0);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1953, 11, 2), null, 0, true);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, 0, true);
 			}
 		});
 
@@ -216,7 +216,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addNationalite(pierre, MockPays.France, RegDate.get(1953, 11, 2), null, 0);
-				addPermis(pierre, EnumTypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
 			}
 		});
 
@@ -231,7 +231,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addPermis(pierre, EnumTypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Cossonay, RegDate.get(1953, 11, 2));
 			}
 		});
@@ -247,7 +247,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addPermis(pierre, EnumTypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
 				addOrigine(pierre, MockPays.France, null, RegDate.get(1953, 11, 2));
 			}
 		});
@@ -263,7 +263,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
 				addOrigine(pierre, MockPays.France, null, RegDate.get(1953, 11, 2));
 			}
 		});
@@ -280,7 +280,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
 				addOrigine(pierre, null, null, RegDate.get(1953, 11, 2));
 			}
 		});
@@ -297,7 +297,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, 0, false);
 				addOrigine(pierre, null, null, RegDate.get(1953, 11, 2));
 			}
 		});
@@ -332,8 +332,8 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addPermis(pierre, EnumTypePermis.FRONTALIER, RegDate.get(1953, 11, 2), RegDate.get(1979, 12, 31), 0, false);
-				addPermis(pierre, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1980, 1, 1), null, 0, false);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1953, 11, 2), RegDate.get(1979, 12, 31), 0, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1980, 1, 1), null, 0, false);
 				addOrigine(pierre, null, null, RegDate.get(1953, 11, 2));
 			}
 		});
@@ -348,7 +348,7 @@ public class TiersServiceTest extends BusinessTest {
 			});
 			assertNotNull(ind);
 
-			assertEquals(EnumTypePermis.FRONTALIER, ind.getPermis().iterator().next().getTypePermis());
+			assertEquals(TypePermis.FRONTALIER, ind.getPermis().iterator().next().getTypePermis());
 		}
 
 		{
@@ -362,8 +362,8 @@ public class TiersServiceTest extends BusinessTest {
 			assertEquals(2, permis.size());
 
 			final Iterator<Permis> iter = permis.iterator();
-			assertEquals(EnumTypePermis.FRONTALIER, iter.next().getTypePermis());
-			assertEquals(EnumTypePermis.ETABLLISSEMENT, iter.next().getTypePermis());
+			assertEquals(TypePermis.FRONTALIER, iter.next().getTypePermis());
+			assertEquals(TypePermis.ETABLISSEMENT, iter.next().getTypePermis());
 		}
 
 		{
@@ -377,8 +377,8 @@ public class TiersServiceTest extends BusinessTest {
 			assertEquals(2, permis.size());
 
 			final Iterator<Permis> iter = permis.iterator();
-			assertEquals(EnumTypePermis.FRONTALIER, iter.next().getTypePermis());
-			assertEquals(EnumTypePermis.ETABLLISSEMENT, iter.next().getTypePermis());
+			assertEquals(TypePermis.FRONTALIER, iter.next().getTypePermis());
+			assertEquals(TypePermis.ETABLISSEMENT, iter.next().getTypePermis());
 		}
 
 		{
@@ -395,7 +395,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addPermis(pierre, EnumTypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, 0, false);
 				addOrigine(pierre, null, null, RegDate.get(1953, 11, 2));
 			}
 		});

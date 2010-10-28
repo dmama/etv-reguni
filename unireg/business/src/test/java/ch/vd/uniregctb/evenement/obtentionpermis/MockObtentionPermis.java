@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.obtentionpermis;
 
-import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Bouchon pour un événement de typeNaissance
@@ -11,17 +11,17 @@ import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
 public class MockObtentionPermis extends MockEvenementCivil implements ObtentionPermis {
 
 	private Integer numeroOfsEtenduCommunePrincipale;
-	private EnumTypePermis typePermis;
+	private TypePermis typePermis;
 
 	public boolean isContribuablePresentBefore() {
 		return false;
 	}
 
-	public void setTypePermis(EnumTypePermis typePermis) {
+	public void setTypePermis(TypePermis typePermis) {
 		this.typePermis = typePermis;
 	}
 
-	public EnumTypePermis getTypePermis() {
+	public TypePermis getTypePermis() {
 		return this.typePermis;
 	}
 
