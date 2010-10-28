@@ -25,9 +25,15 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 	 * <ul>
 	 * <li>commit et rollback sont loggués en {@link org.apache.log4j.Level#INFO}</li>
 	 * <li>begin, suspend et resume sont loggués en {@link org.apache.log4j.Level#DEBUG}</li>
+	 * <li>tous sont loggués en {@link org.apache.log4j.Level#WARN} si le temps est plus grand que {@link #WARNING_THRESHOLD}
 	 * </ul> 
 	 */
 	public static final Logger LOGGER = Logger.getLogger(TransactionManager.class);
+
+	/**
+	 * Temps de réponse (en ns) au delà duquel on passe de toute façon en niveau {@link org.apache.log4j.Level#WARN}
+	 */
+	private static final long WARNING_THRESHOLD = 50000000L;
 
 	public TransactionManager(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
 		super(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
@@ -37,10 +43,12 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 		return System.nanoTime();
 	}
 
-	private static void end(long start, String name, Level loggingLevel) {
+	private static void end(long start, String name, Level loggingLevel, long threshold, Level aboveThresholdLevel) {
 		final long end = System.nanoTime();
-		if (LOGGER.isEnabledFor(loggingLevel)) {
-			LOGGER.log(loggingLevel, String.format("(%d ms) %s", (end - start) / 1000000L, name));
+		final long duration = end - start;
+		final Level effectiveLevel = (duration >= threshold ? aboveThresholdLevel : loggingLevel);
+		if (LOGGER.isEnabledFor(effectiveLevel)) {
+			LOGGER.log(effectiveLevel, String.format("(%d ms) %s", duration / 1000000L, name));
 		}
 	}
 
@@ -51,7 +59,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			super.commit();
 		}
 		finally {
-			end(start, "commit", Level.INFO);
+			end(start, "commit", Level.INFO, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 
@@ -62,7 +70,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			super.rollback();
 		}
 		finally {
-			end(start, "rollback", Level.INFO);
+			end(start, "rollback", Level.INFO, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 
@@ -73,7 +81,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			super.begin();
 		}
 		finally {
-			end(start, "begin", Level.DEBUG);
+			end(start, "begin", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 
@@ -84,7 +92,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			return super.suspend();
 		}
 		finally {
-			end(start, "suspend", Level.DEBUG);
+			end(start, "suspend", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 
@@ -95,7 +103,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			super.resume(tx);
 		}
 		finally {
-			end(start, "resume", Level.DEBUG);
+			end(start, "resume", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 }

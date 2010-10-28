@@ -81,7 +81,7 @@
 	</category>
 	
 	<category name="ch.vd.uniregctb.transaction.TransactionManager" additivity="false">
-		<priority value="INFO"/>
+		<priority value="WARN"/>
 		<appender-ref ref="SERVICE_TRACING"/>
 	</category>
 
