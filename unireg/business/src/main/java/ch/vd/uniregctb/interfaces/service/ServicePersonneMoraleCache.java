@@ -1,30 +1,29 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdressesPM;
-import ch.vd.uniregctb.adresse.AdressesPMHisto;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.interfaces.model.Etablissement;
-import ch.vd.uniregctb.interfaces.model.EvenementPM;
-import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.stats.StatsService;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
+import ch.vd.uniregctb.interfaces.model.EvenementPM;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServicePersonneMoraleCache implements ServicePersonneMoraleService, UniregCacheInterface, InitializingBean, DisposableBean {
+public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implements UniregCacheInterface, InitializingBean, DisposableBean {
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -195,34 +194,6 @@ public class ServicePersonneMoraleCache implements ServicePersonneMoraleService,
 		return target.getPersonnesMorales(ids, parts);
 	}
 
-	private static class GetAdresseKey {
-		private long id;
-		private RegDate date;
-
-		private GetAdresseKey(long id, RegDate date) {
-			this.id = id;
-			this.date = date;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final GetAdresseKey that = (GetAdresseKey) o;
-
-			return id == that.id && !(date != null ? !date.equals(that.date) : that.date != null);
-
-		}
-
-		@Override
-		public int hashCode() {
-			int result = (int) (id ^ (id >>> 32));
-			result = 31 * result + (date != null ? date.hashCode() : 0);
-			return result;
-		}
-	}
-
 	private static class GetEtablissementByIdKey {
 		private long id;
 
@@ -274,72 +245,6 @@ public class ServicePersonneMoraleCache implements ServicePersonneMoraleService,
 	public List<Etablissement> getEtablissements(List<Long> ids) {
 		// pas caché : cela en vaut-il vraiment la peine ?
 		return target.getEtablissements(ids);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
-
-		final AdressesPM adresses;
-
-		final GetAdresseKey key = new GetAdresseKey(noEntreprise, date);
-		final Element element = cache.get(key);
-		if (element == null) {
-			// l'élément n'est pas en cache, on le récupère et on l'insère
-			adresses = target.getAdresses(noEntreprise, date);
-			cache.put(new Element(key, adresses));
-		}
-		else {
-			adresses = (AdressesPM) element.getObjectValue();
-		}
-
-		return adresses;
-	}
-
-	private static class GetAdresseHistoKey {
-		private long id;
-
-		private GetAdresseHistoKey(long id) {
-			this.id = id;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final GetAdresseHistoKey that = (GetAdresseHistoKey) o;
-
-			return id == that.id;
-
-		}
-
-		@Override
-		public int hashCode() {
-			return (int) (id ^ (id >>> 32));
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AdressesPMHisto getAdressesHisto(long noEntreprise) {
-
-		final AdressesPMHisto adresses;
-
-		final GetAdresseHistoKey key = new GetAdresseHistoKey(noEntreprise);
-		final Element element = cache.get(key);
-		if (element == null) {
-			// l'élément n'est pas en cache, on le récupère et on l'insère
-			adresses = target.getAdressesHisto(noEntreprise);
-			cache.put(new Element(key, adresses));
-		}
-		else {
-			adresses = (AdressesPMHisto) element.getObjectValue();
-		}
-
-		return adresses;
 	}
 
 	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {

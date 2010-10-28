@@ -11,8 +11,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdressesPM;
-import ch.vd.uniregctb.adresse.AdressesPMHisto;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
@@ -23,10 +21,10 @@ import ch.vd.uniregctb.interfaces.model.mock.MockAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.mock.MockFormeJuridique;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.PartPM;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleBase;
 import ch.vd.uniregctb.type.TypeAdressePM;
 
-public abstract class MockServicePM implements ServicePersonneMoraleService {
+public abstract class MockServicePM extends ServicePersonneMoraleBase {
 
 	private final Map<Long, PersonneMorale> map = new HashMap<Long, PersonneMorale>();
 
@@ -88,42 +86,6 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 		adresses.add(adresse);
 
 		return adresse;
-	}
-
-	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
-
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
-		if (entreprise == null) {
-			return null;
-		}
-
-		AdressesPM adresses = new AdressesPM();
-
-		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
-		if (adressesPM != null) {
-			for (AdresseEntreprise a : adressesPM) {
-				if (isActive(a, date)) {
-					adresses.set(a);
-				}
-			}
-		}
-
-		return adresses;
-	}
-
-	public AdressesPMHisto getAdressesHisto(long noEntreprise) {
-
-		AdressesPMHisto adresses = new AdressesPMHisto();
-
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
-		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
-
-		for (AdresseEntreprise a : adressesPM) {
-			adresses.add(a);
-		}
-
-		adresses.sort();
-		return adresses;
 	}
 
 	public List<Long> getAllIds() {

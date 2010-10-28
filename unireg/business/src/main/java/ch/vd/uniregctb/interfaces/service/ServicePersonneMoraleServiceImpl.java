@@ -1,19 +1,13 @@
 package ch.vd.uniregctb.interfaces.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.pm.service.AttributePM;
 import ch.vd.registre.pm.service.ServicePersonneMorale;
-import ch.vd.uniregctb.adresse.AdressesPM;
-import ch.vd.uniregctb.adresse.AdressesPMHisto;
 import ch.vd.uniregctb.common.JvmVersionHelper;
-import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
@@ -21,7 +15,7 @@ import ch.vd.uniregctb.interfaces.model.impl.EtablissementImpl;
 import ch.vd.uniregctb.interfaces.model.impl.EvenementPMImpl;
 import ch.vd.uniregctb.interfaces.model.impl.PersonneMoraleImpl;
 
-public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleService {
+public class ServicePersonneMoraleServiceImpl extends ServicePersonneMoraleBase {
 
 	private ServicePersonneMorale servicePersonneMorale;
 
@@ -100,37 +94,6 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 			throw new PersonneMoraleException(e);
 		}
 	}
-	
-	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
-
-		AdressesPM adresses = new AdressesPM();
-
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
-		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
-
-		for (AdresseEntreprise a : adressesPM) {
-			if (isActive(a, date)) {
-				adresses.set(a);
-			}
-		}
-
-		return adresses;
-	}
-
-	public AdressesPMHisto getAdressesHisto(long noEntreprise) {
-
-		AdressesPMHisto adresses = new AdressesPMHisto();
-
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
-		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
-
-		for (AdresseEntreprise a : adressesPM) {
-			adresses.add(a);
-		}
-
-		adresses.sort();
-		return adresses;
-	}
 
 	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		try {
@@ -149,10 +112,6 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 		catch (Exception e) {
 			throw new PersonneMoraleException(e);
 		}
-	}
-
-	public static boolean isActive(AdresseEntreprise adresse, RegDate date) {
-		return RegDateHelper.isBetween(date, adresse.getDateDebutValidite(), adresse.getDateFinValidite(), NullDateBehavior.LATEST);
 	}
 
 	private static AttributePM[] part2attribute(PartPM[] parts) {
