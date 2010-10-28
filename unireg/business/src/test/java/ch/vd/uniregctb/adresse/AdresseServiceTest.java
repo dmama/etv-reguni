@@ -7,7 +7,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
@@ -40,6 +39,7 @@ import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
@@ -3115,17 +3115,17 @@ public class AdresseServiceTest extends BusinessTest {
 				MockPersonneMorale ent = addPM(noEntreprise, "Ma Petite Entreprise", "S.A.R.L.", date(1970, 7, 1), null);
 
 				// adresses courriers
-				addAdresse(ent, EnumTypeAdresseEntreprise.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(
+				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(
 						1980, 1, 1), date(1987, 12, 11));
-				addAdresse(ent, EnumTypeAdresseEntreprise.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
+				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						MockLocalite.CossonayVille, date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(ent, EnumTypeAdresseEntreprise.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, date(
+				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, date(
 						2001, 6, 4), null);
 
 				// adresses principales/poursuite
-				addAdresse(ent, EnumTypeAdresseEntreprise.SIEGE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
+				addAdresse(ent, TypeAdressePM.SIEGE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
 						1, 1), date(1987, 12, 11));
-				addAdresse(ent, EnumTypeAdresseEntreprise.SIEGE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
+				addAdresse(ent, TypeAdressePM.SIEGE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						MockLocalite.CossonayVille, date(1987, 12, 12), null);
 			}
 		});

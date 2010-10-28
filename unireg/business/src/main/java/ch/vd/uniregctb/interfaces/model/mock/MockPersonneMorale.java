@@ -1,12 +1,23 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
-import ch.vd.uniregctb.interfaces.model.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
+import ch.vd.uniregctb.interfaces.model.Capital;
+import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.interfaces.model.EtatPM;
+import ch.vd.uniregctb.interfaces.model.ForPM;
+import ch.vd.uniregctb.interfaces.model.FormeJuridique;
+import ch.vd.uniregctb.interfaces.model.Mandat;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
+import ch.vd.uniregctb.interfaces.model.Siege;
+import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
+import ch.vd.uniregctb.type.TypeAdressePM;
 
 public class MockPersonneMorale implements PersonneMorale {
 
@@ -55,7 +66,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setLocalite("1800 Vevey");
 			siege.setRue("Entre-Deux-Villes");
 			siege.setNumeroMaison(null);
-			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(RegDate.get(1996, 12, 5));
 			siege.setDateFinValidite(null);
 			NestleSuisse.addAdresse(siege);
@@ -65,7 +76,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setLocalite("1800 Vevey");
 			courrier.setRue("pa Myriam Steiner / CP 352");
 			courrier.setNumeroMaison(null);
-			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setType(TypeAdressePM.COURRIER);
 			courrier.setDateDebutValidite(RegDate.get(2003, 6, 13));
 			courrier.setDateFinValidite(null);
 			NestleSuisse.addAdresse(courrier);
@@ -75,7 +86,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			facturation.setLocalite("1800 Vevey");
 			facturation.setRue("pa Myriam Steiner / CP 352");
 			facturation.setNumeroMaison(null);
-			facturation.setType(EnumTypeAdresseEntreprise.FACTURATION);
+			facturation.setType(TypeAdressePM.FACTURATION);
 			facturation.setDateDebutValidite(RegDate.get(2003, 6, 13));
 			facturation.setDateFinValidite(null);
 			NestleSuisse.addAdresse(facturation);
@@ -97,7 +108,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setLocalite("1003 Lausanne Secteur de dist.");
 			siege.setRue("Saint-François, place");
 			siege.setNumeroMaison("14");
-			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(null);
 			siege.setDateFinValidite(null);
 			siege.setNumeroTechniqueRue(30370);
@@ -109,7 +120,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setLocalite("1003 Lausanne Secteur de dist.");
 			courrier.setRue("Saint-François, place");
 			courrier.setNumeroMaison("14");
-			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setType(TypeAdressePM.COURRIER);
 			courrier.setDateDebutValidite(RegDate.get(2008, 1, 1));
 			courrier.setDateFinValidite(null);
 			courrier.setNumeroTechniqueRue(30370);
@@ -121,7 +132,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			facturation.setLocalite("1003 Lausanne Secteur de dist.");
 			facturation.setRue("Pl. St-François 14 / C.P. 300");
 			facturation.setNumeroMaison(null);
-			facturation.setType(EnumTypeAdresseEntreprise.FACTURATION);
+			facturation.setType(TypeAdressePM.FACTURATION);
 			facturation.setDateDebutValidite(RegDate.get(2006, 12, 15));
 			facturation.setDateFinValidite(null);
 			courrier.setNumeroOrdrePostal(150);
@@ -133,7 +144,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setNumeroMaison("14");
 			siege.setNumeroPostal("8004");
 			siege.setLocalite("Zürich");
-			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(null);
 			siege.setDateFinValidite(null);
 			siege.setNumeroTechniqueRue(64718);
@@ -145,7 +156,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setNumeroMaison("37");
 			courrier.setNumeroPostal("1005");
 			courrier.setLocalite("Lausanne");
-			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setType(TypeAdressePM.COURRIER);
 			courrier.setDateDebutValidite(null);
 			courrier.setDateFinValidite(null);
 			courrier.setNumeroTechniqueRue(30525);
@@ -159,7 +170,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setNumeroMaison("15");
 			siege.setNumeroPostal("7000");
 			siege.setLocalite("Chur");
-			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(null);
 			siege.setDateFinValidite(null);
 			siege.setNumeroTechniqueRue(39838);
@@ -175,7 +186,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setNumeroTechniqueRue(30317);
 			courrier.setNumeroPostal("1003");
 			courrier.setLocalite("Lausanne");
-			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setType(TypeAdressePM.COURRIER);
 			courrier.setDateDebutValidite(RegDate.get(2007, 6, 11));
 			courrier.setDateFinValidite(null);
 			JalHolding.addAdresse(courrier);
@@ -187,7 +198,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			facturation.setNumeroTechniqueRue(30317);
 			facturation.setNumeroPostal("1003");
 			facturation.setLocalite("Lausanne");
-			facturation.setType(EnumTypeAdresseEntreprise.FACTURATION);
+			facturation.setType(TypeAdressePM.FACTURATION);
 			facturation.setDateDebutValidite(RegDate.get(2007, 6, 11));
 			facturation.setDateFinValidite(null);
 			JalHolding.addAdresse(facturation);
@@ -199,7 +210,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setNumeroTechniqueRue(30593);
 			siege.setNumeroPostal("1006");
 			siege.setLocalite("Lausanne");
-			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(RegDate.get(1997, 5, 14));
 			siege.setDateFinValidite(null);
 			JalHolding.addAdresse(siege);
@@ -212,7 +223,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setNumeroPostal("141580");
 			courrier.setLocalite("Moscow region");
 			courrier.setPays(MockPays.Russie);
-			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setType(TypeAdressePM.COURRIER);
 			courrier.setDateDebutValidite(RegDate.get(1966, 11, 10));
 			courrier.setDateFinValidite(null);
 			EvianRussie.addAdresse(courrier);

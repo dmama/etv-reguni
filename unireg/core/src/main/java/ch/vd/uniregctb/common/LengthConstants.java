@@ -60,7 +60,7 @@ public class LengthConstants {
 
 	public final static int ADRESSE_TYPETIERS = 14;
 	public final static int ADRESSE_TYPECIVIL = 10;
-	public final static int ADRESSE_TYPEPM = 8;
+	public final static int ADRESSE_TYPEPM = 11;
 	public final static int ADRESSE_TYPESUPPLEM = 15;
 	public final static int ADRESSE_NUM = 35;
 	public final static int ADRESSE_NOM = 100;

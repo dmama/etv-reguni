@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
+import ch.vd.uniregctb.type.TypeAdressePM;
 
 public interface AdresseEntreprise {
 
@@ -21,7 +21,7 @@ public interface AdresseEntreprise {
 	 * Retourne le type de l'adresse (Courrier, Siège ou facturation).
 	 * @return le type de l'adresse (Courrier, Siège ou facturation)
 	 */
-	EnumTypeAdresseEntreprise getType();
+	TypeAdressePM getType();
 
 	/**
 	 * Retourne le complément d'adresse.

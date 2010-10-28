@@ -1,20 +1,30 @@
 package ch.vd.uniregctb.interfaces.service.mock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdressesPM;
 import ch.vd.uniregctb.adresse.AdressesPMHisto;
-import ch.vd.uniregctb.interfaces.model.*;
+import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
+import ch.vd.uniregctb.interfaces.model.EvenementPM;
+import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.mock.MockFormeJuridique;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.type.TypeAdressePM;
 
 public abstract class MockServicePM implements ServicePersonneMoraleService {
 
@@ -59,7 +69,7 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 	 * @param casePostale
 	 */
 	@SuppressWarnings("unchecked")
-	protected AdresseEntreprise addAdresse(MockPersonneMorale pm, EnumTypeAdresseEntreprise type, Rue rue, String complement,
+	protected AdresseEntreprise addAdresse(MockPersonneMorale pm, TypeAdressePM type, Rue rue, String complement,
 			Localite localite, RegDate debutValidite, RegDate finValidite) {
 
 		MockAdresseEntreprise adresse = new MockAdresseEntreprise();

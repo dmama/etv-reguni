@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.type.TypeAdressePM;
 
 public class MockAdresseEntreprise implements AdresseEntreprise {
 
@@ -13,7 +13,7 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 	private String localite;
 	private String numeroMaison;
 	private String rue;
-	private EnumTypeAdresseEntreprise type;
+	private TypeAdressePM type;
 	private Integer numeroTechniqueRue;
 	private Pays pays;
 	private int numeroOrdrePostal;
@@ -112,11 +112,11 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.rue = rue;
 	}
 
-	public EnumTypeAdresseEntreprise getType() {
+	public TypeAdressePM getType() {
 		return type;
 	}
 
-	public void setType(EnumTypeAdresseEntreprise type) {
+	public void setType(TypeAdressePM type) {
 		this.type = type;
 	}
 }

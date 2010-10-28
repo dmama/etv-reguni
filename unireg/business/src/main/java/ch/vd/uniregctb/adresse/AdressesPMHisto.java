@@ -1,16 +1,16 @@
 package ch.vd.uniregctb.adresse;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
-import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.type.TypeAdressePM;
 
 /**
  * Contient l'historique des adresses PM d'une entreprise.
@@ -22,13 +22,13 @@ public class AdressesPMHisto {
 	public List<AdresseEntreprise> facturation = new ArrayList<AdresseEntreprise>();
 
 	public void add(AdresseEntreprise adresse) {
-		if (EnumTypeAdresseEntreprise.SIEGE.equals(adresse.getType())) {
+		if (TypeAdressePM.SIEGE.equals(adresse.getType())) {
 			sieges.add(adresse);
 		}
-		else if (EnumTypeAdresseEntreprise.COURRIER.equals(adresse.getType())) {
+		else if (TypeAdressePM.COURRIER.equals(adresse.getType())) {
 			courriers.add(adresse);
 		}
-		else if (EnumTypeAdresseEntreprise.FACTURATION.equals(adresse.getType())) {
+		else if (TypeAdressePM.FACTURATION.equals(adresse.getType())) {
 			facturation.add(adresse);
 		}
 		else {
@@ -36,15 +36,15 @@ public class AdressesPMHisto {
 		}
 	}
 
-	public List<AdresseEntreprise> ofType(EnumTypeAdresseEntreprise type) {
-		if (EnumTypeAdresseEntreprise.SIEGE.equals(type)) {
+	public List<AdresseEntreprise> ofType(TypeAdressePM type) {
+		if (TypeAdressePM.SIEGE.equals(type)) {
 			return sieges;
 		}
-		else if (EnumTypeAdresseEntreprise.COURRIER.equals(type)) {
+		else if (TypeAdressePM.COURRIER.equals(type)) {
 			return courriers;
 		}
 		else {
-			Assert.isTrue(EnumTypeAdresseEntreprise.FACTURATION.equals(type));
+			Assert.isTrue(TypeAdressePM.FACTURATION.equals(type));
 			return facturation;
 		}
 	}

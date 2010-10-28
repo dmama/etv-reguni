@@ -3,9 +3,9 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.type.TypeAdressePM;
 
 public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 
@@ -23,7 +23,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 	private final String numeroPostal;
 	private final String numeroPostalComplementaire;
 	private final String rue;
-	private final EnumTypeAdresseEntreprise type;
+	private final TypeAdressePM type;
 
 	public static AdresseEntrepriseImpl get(ch.vd.registre.pm.model.AdresseEntreprise target) {
 		if (target == null) {
@@ -45,7 +45,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
 		this.rue = target.getRue();
-		this.type = target.getType();
+		this.type = TypeAdressePM.get(target.getType());
 	}
 
 	public String getComplement() {
@@ -96,7 +96,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		return rue;
 	}
 
-	public EnumTypeAdresseEntreprise getType() {
+	public TypeAdressePM getType() {
 		return type;
 	}
 

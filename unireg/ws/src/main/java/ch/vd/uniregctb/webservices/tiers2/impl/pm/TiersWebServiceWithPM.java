@@ -1,45 +1,78 @@
 package ch.vd.uniregctb.webservices.tiers2.impl.pm;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.interfaces.model.*;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
+import ch.vd.uniregctb.interfaces.model.Mandat;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers2.data.*;
 import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
+import ch.vd.uniregctb.webservices.tiers2.data.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers2.data.Assujettissement;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.Capital;
 import ch.vd.uniregctb.webservices.tiers2.data.CompteBancaire;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers2.data.EtatPM;
 import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.FormeJuridique;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
+import ch.vd.uniregctb.webservices.tiers2.data.PersonneMoraleHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.Range;
 import ch.vd.uniregctb.webservices.tiers2.data.RegimeFiscal;
+import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Siege;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.RangeHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.RangeImpl;
-import ch.vd.uniregctb.webservices.tiers2.params.*;
-
-import java.util.*;
-
-import org.springframework.transaction.annotation.Transactional;
+import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersType;
+import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchEvenementsPM;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
 /**
  * Classe qui retourne des données bouchonnées concernant les personnes morales. Les appels concernant les personnes physiques sont simplement délégués plus loin.
@@ -344,14 +377,14 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = pmHost.getAdresses();
 			if (adresses != null) {
 				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
-					if (a.getType().equals(EnumTypeAdresseEntreprise.COURRIER)) {
+					if (a.getType().equals(TypeAdressePM.COURRIER)) {
 						if (pmHisto.adressesCourrier == null) {
 							pmHisto.adressesCourrier = new ArrayList<Adresse>();
 							pmHisto.adressesRepresentation = pmHisto.adressesCourrier;
 						}
 						pmHisto.adressesCourrier.add(host2web(a));
 					}
-					else if (a.getType().equals(EnumTypeAdresseEntreprise.SIEGE)) {
+					else if (a.getType().equals(TypeAdressePM.SIEGE)) {
 						if (pmHisto.adressesDomicile == null) {
 							pmHisto.adressesDomicile = new ArrayList<Adresse>();
 							// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
@@ -359,11 +392,11 @@ public class TiersWebServiceWithPM implements TiersWebService {
 						}
 						pmHisto.adressesDomicile.add(host2web(a));
 					}
-					else if (a.getType().equals(EnumTypeAdresseEntreprise.FACTURATION)) {
+					else if (a.getType().equals(TypeAdressePM.FACTURATION)) {
 						// ces adresses sont ignorées
 					}
 					else {
-						throw new IllegalArgumentException("Type d'adresse entreprise inconnue = [" + a.getType().getName() + "]");
+						throw new IllegalArgumentException("Type d'adresse entreprise inconnue = [" + a.getType() + "]");
 					}
 				}
 			}

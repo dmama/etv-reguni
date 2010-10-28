@@ -1,24 +1,33 @@
 /**
- * 
+ *
  */
 package ch.vd.uniregctb.type;
 
-/** 
- * <!-- begin-user-doc -->
- * Longueur de colonne : 8
- * <!-- end-user-doc -->
- * @author jec
- * 
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Wds1wOxBEdyck8Nd0o6HOA"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Wds1wOxBEdyck8Nd0o6HOA"
+import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
+
+/**
+ * Longueur de colonne : 11
  */
 public enum TypeAdressePM {
-	/** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_89UwoO6iEdyck8Nd0o6HOA"
-	 */
-	COURRIER
+	COURRIER,
+	SIEGE,
+	FACTURATION;
+
+	public static TypeAdressePM get(EnumTypeAdresseEntreprise right) {
+		if (right == null) {
+			return null;
+		}
+		if (right == EnumTypeAdresseEntreprise.COURRIER) {
+			return COURRIER;
+		}
+		else if (right == EnumTypeAdresseEntreprise.SIEGE) {
+			return SIEGE;
+		}
+		else if (right == EnumTypeAdresseEntreprise.FACTURATION) {
+			return FACTURATION;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'adresse PM inconnu = [" + right.getName() + "]");
+		}
+	}
 }
