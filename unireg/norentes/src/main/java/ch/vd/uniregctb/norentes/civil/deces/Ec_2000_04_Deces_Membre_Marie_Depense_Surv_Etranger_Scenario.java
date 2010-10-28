@@ -5,7 +5,6 @@ import java.util.List;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extends EvenementCivilScenario {
@@ -82,7 +82,7 @@ public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extend
 				indHamlet = addIndividu(noIndHamlet, dateNaissanceHamlet, "du Danemark", "Hamlet", true);
 				addOrigine(indHamlet, MockPays.Danemark, null, dateNaissanceHamlet);
 				addNationalite(indHamlet, MockPays.Danemark, dateNaissanceHamlet, null, 0);
-				addAdresse(indHamlet, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateArriveeVD, null);
+				addAdresse(indHamlet, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateArriveeVD, null);
 
 				indHeidi = addIndividu(noIndHeidi, dateNaissanceHeidi, "Von der Heide", "Heidi", false);
 				addOrigine(indHeidi, MockPays.Suisse, MockCommune.Bern, dateNaissanceHeidi);

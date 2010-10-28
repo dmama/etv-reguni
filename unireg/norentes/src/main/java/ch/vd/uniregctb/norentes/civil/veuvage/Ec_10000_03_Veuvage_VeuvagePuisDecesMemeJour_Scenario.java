@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.veuvage;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -82,7 +82,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 				addOrigine(indPierre, MockPays.Suisse, null, dateNaissance);
 				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null, 0);
 				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
-				addAdresse(indPierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
+				addAdresse(indPierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 			}
 		});
 	}

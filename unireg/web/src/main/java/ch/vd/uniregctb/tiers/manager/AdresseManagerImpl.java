@@ -6,15 +6,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.adresse.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseAutreTiers;
+import ch.vd.uniregctb.adresse.AdresseCivile;
+import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.adresse.TypeAdresseRepresentant;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -29,6 +38,7 @@ import ch.vd.uniregctb.tiers.view.AdresseDisponibleView;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -524,13 +534,13 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			if (adressesIndividu.courrier != null) {
 
 				AdresseDisponibleView addDispoView = createAdresseDisponibleViewFromAdresseCivil(adressesIndividu.courrier);
-				addDispoView.setTypeAdresse(EnumTypeAdresse.COURRIER);
+				addDispoView.setTypeAdresse(TypeAdresseCivil.COURRIER);
 				adressesDisponibleView.add(addDispoView);
 			}
 			if (adressesIndividu.principale != null) {
 
 				AdresseDisponibleView addDispoView = createAdresseDisponibleViewFromAdresseCivil(adressesIndividu.principale);
-				addDispoView.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				addDispoView.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adressesDisponibleView.add(addDispoView);
 			}
 		}

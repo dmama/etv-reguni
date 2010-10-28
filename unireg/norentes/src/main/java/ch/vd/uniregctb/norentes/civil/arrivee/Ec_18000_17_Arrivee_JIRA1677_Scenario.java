@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -72,8 +72,8 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 				indOlivier = addIndividu(noIndOlivier, naissanceOlivier, "Bouchet", "Olivier", true);
 				indAlexandra = addIndividu(noIndAlexandra, naissanceAlex, "Bouchet", "Alexandra", false);
 
-				addAdresse(indOlivier, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
-				addAdresse(indAlexandra, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
+				addAdresse(indOlivier, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
+				addAdresse(indAlexandra, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
 
 				addNationalite(indOlivier, MockPays.Suisse, naissanceOlivier, null, 1);
 				addNationalite(indAlexandra, MockPays.Suisse, naissanceAlex, null, 1);

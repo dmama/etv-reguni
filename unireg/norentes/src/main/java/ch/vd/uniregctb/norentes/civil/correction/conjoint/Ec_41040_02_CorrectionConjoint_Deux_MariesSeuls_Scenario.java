@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.correction.conjoint;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -19,6 +19,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -76,7 +77,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 			addOrigine(indRafa, MockPays.Espagne, null, dateNaissanceRafa);
 			addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null, 0);
 			addPermis(indRafa, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 10, 1), null, 0, false);
-			addAdresse(indRafa, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
+			addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 
 			RegDate dateNaissanceMaria = RegDate.get(1975, 7, 31);
 			indMaria = addIndividu(noIndMaria, dateNaissanceMaria, "Nadalino", "Maria", false);
@@ -86,7 +87,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 			addOrigine(indMaria, MockPays.Espagne, null, dateNaissanceMaria);
 			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null, 0);
 			addPermis(indMaria, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 10, 1), null, 0, false);
-			addAdresse(indMaria, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
+			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 
 		}
 

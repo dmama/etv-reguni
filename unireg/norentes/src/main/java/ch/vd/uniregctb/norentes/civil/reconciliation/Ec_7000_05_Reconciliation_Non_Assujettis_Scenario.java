@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.reconciliation;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -17,6 +17,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -71,13 +72,13 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 				indMomo = addIndividu(noIndMomo, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 				addOrigine(indMomo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1961, 3, 12), dateDepartHC.getOneDayBefore());
 
 				indBea = addIndividu(noIndBea, RegDate.get(1963, 8, 20), "Duval", "Béatrice", false);
 				addOrigine(indBea, MockPays.Suisse, lausanne, RegDate.get(1963, 8, 20));
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, RegDate.get(
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, RegDate.get(
 						1963, 8, 20), dateDepartHC.getOneDayBefore());
 
 				// mariage : dans le canton
@@ -85,13 +86,13 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 
 				// séparation : les deux partent hors-canton
 				separeIndividus(indMomo, indBea, dateSeparation);
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateDepartHC, null);
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null,
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateDepartHC, null);
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null,
 						dateDepartHC, dateReconciliation.getOneDayBefore());
 
 				// réconciliation : toujours hors-canton
 				marieIndividus(indMomo, indBea, dateReconciliation);
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateReconciliation,
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateReconciliation,
 						null);
 			}
 		});

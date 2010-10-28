@@ -1,16 +1,11 @@
 package ch.vd.uniregctb.indexer.jobs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
@@ -23,6 +18,11 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class DatabaseIndexerJobTest extends BusinessTest {
 
@@ -71,8 +71,8 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			}
 
 			private void addDefaultAdressesTo(MockIndividu individu) {
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
-				addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1980, 11, 2), null);
 			}
 		});
 

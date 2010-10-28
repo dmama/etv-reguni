@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.hibernate;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.sql.Connection;
 import java.util.List;
 
@@ -12,16 +9,19 @@ import org.dbunit.dataset.ITable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
-public class EnumTypeAdresseUserTypeTest extends CoreDAOTest {
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
+public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 
 	TiersDAO dao;
 
@@ -37,7 +37,7 @@ public class EnumTypeAdresseUserTypeTest extends CoreDAOTest {
 	@Test
 	public void testLoad() throws Exception {
 
-		loadDatabase("EnumTypeAdresseUserTypeTest.xml");
+		loadDatabase("TypeAdresseCivilLegacyUserTypeTest.xml");
 
 		// vérification de cohérence des données de base
 		final PersonnePhysique habitant = dao.getHabitantByNumeroIndividu(100L);
@@ -52,10 +52,10 @@ public class EnumTypeAdresseUserTypeTest extends CoreDAOTest {
 		final AdresseCivile adressePrincipal = (AdresseCivile) adresses.get(1);
 		final AdresseCivile adresseSecondaire = (AdresseCivile) adresses.get(2);
 		final AdresseCivile adresseTutelle = (AdresseCivile) adresses.get(3);
-		assertEquals(EnumTypeAdresse.COURRIER, adresseCourrier.getType());
-		assertEquals(EnumTypeAdresse.PRINCIPALE, adressePrincipal.getType());
-		assertEquals(EnumTypeAdresse.SECONDAIRE, adresseSecondaire.getType());
-		assertEquals(EnumTypeAdresse.TUTELLE, adresseTutelle.getType());
+		assertEquals(TypeAdresseCivil.COURRIER, adresseCourrier.getType());
+		assertEquals(TypeAdresseCivil.PRINCIPALE, adressePrincipal.getType());
+		assertEquals(TypeAdresseCivil.SECONDAIRE, adresseSecondaire.getType());
+		assertEquals(TypeAdresseCivil.TUTEUR, adresseTutelle.getType());
 	}
 
 	/*
@@ -65,10 +65,10 @@ public class EnumTypeAdresseUserTypeTest extends CoreDAOTest {
 	public void testSave() throws Exception {
 
 		// date de création des adresses, utilisées pour distinguer les types d'adresse
-		final RegDate dateCourrier = RegDate.get(2000, 01, 01);
-		final RegDate datePrincipale = RegDate.get(2000, 02, 01);
-		final RegDate dateSecondaire = RegDate.get(2000, 03, 01);
-		final RegDate dateTutelle = RegDate.get(2000, 04, 01);
+		final RegDate dateCourrier = RegDate.get(2000, 1, 1);
+		final RegDate datePrincipale = RegDate.get(2000, 2, 1);
+		final RegDate dateSecondaire = RegDate.get(2000, 3, 1);
+		final RegDate dateTutelle = RegDate.get(2000, 4, 1);
 
 		doInNewTransaction(new TxCallback() {
 
@@ -82,25 +82,25 @@ public class EnumTypeAdresseUserTypeTest extends CoreDAOTest {
 				final AdresseCivile adresseCourrier = new AdresseCivile();
 				adresseCourrier.setDateDebut(dateCourrier);
 				adresseCourrier.setUsage(TypeAdresseTiers.COURRIER);
-				adresseCourrier.setType(EnumTypeAdresse.COURRIER);
+				adresseCourrier.setType(TypeAdresseCivil.COURRIER);
 				habitant.addAdresseTiers(adresseCourrier);
 
 				final AdresseCivile adressePrincipal = new AdresseCivile();
 				adressePrincipal.setDateDebut(datePrincipale);
 				adressePrincipal.setUsage(TypeAdresseTiers.POURSUITE);
-				adressePrincipal.setType(EnumTypeAdresse.PRINCIPALE);
+				adressePrincipal.setType(TypeAdresseCivil.PRINCIPALE);
 				habitant.addAdresseTiers(adressePrincipal);
 
 				final AdresseCivile adresseSecondaire = new AdresseCivile();
 				adresseSecondaire.setDateDebut(dateSecondaire);
 				adresseSecondaire.setUsage(TypeAdresseTiers.DOMICILE);
-				adresseSecondaire.setType(EnumTypeAdresse.SECONDAIRE);
+				adresseSecondaire.setType(TypeAdresseCivil.SECONDAIRE);
 				habitant.addAdresseTiers(adresseSecondaire);
 
 				final AdresseCivile adresseTutelle = new AdresseCivile();
 				adresseTutelle.setDateDebut(dateTutelle);
 				adresseTutelle.setUsage(TypeAdresseTiers.REPRESENTATION);
-				adresseTutelle.setType(EnumTypeAdresse.TUTELLE);
+				adresseTutelle.setType(TypeAdresseCivil.TUTEUR);
 				habitant.addAdresseTiers(adresseTutelle);
 
 				// sauvegarde dans la base (+ commit de la transaction)

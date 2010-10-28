@@ -1,18 +1,16 @@
 package ch.vd.uniregctb.evenement.depart;
 
-import junit.framework.Assert;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
@@ -41,6 +39,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -129,7 +128,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			protected void setUpIndividuAdresseHC(MockIndividu individu, RegDate dateDebut, RegDate dateEvenement) {
 
 				MockAdresse adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
@@ -143,7 +142,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 				// adresse courrier
 				adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
+				adresse.setTypeAdresse(TypeAdresseCivil.COURRIER);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
@@ -157,7 +156,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 
 				adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
 				adresse.setLocalite(MockLocalite.Zurich.getNomCompletMajuscule());
 				adresse.setLieu(MockCommune.Zurich.getNomMajuscule());
@@ -173,7 +172,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			protected void setUpIndividuNouvelleAdresseInconnue(MockIndividu individu, RegDate dateDebut, RegDate dateEvenement) {
 
 				MockAdresse adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
@@ -187,7 +186,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 				// adresse courrier
 				adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
+				adresse.setTypeAdresse(TypeAdresseCivil.COURRIER);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
@@ -206,7 +205,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				final MockCommune cossonay = MockCommune.Cossonay;
 				MockAdresse adresse = new MockAdresse();
 				adresse.setCommuneAdresse(cossonay);
-				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
@@ -221,7 +220,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 				// adresse secondaire
 				adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.SECONDAIRE);
+				adresse.setTypeAdresse(TypeAdresseCivil.SECONDAIRE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.Lausanne.getNomCompletMajuscule());
@@ -235,7 +234,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 
 				adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
 				if (residencePrincipaleHorsCanton) {
 					adresse.setLocalite(MockLocalite.Zurich.getNomCompletMajuscule());
@@ -262,7 +261,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			protected void setUpIndividuAdresseHS(MockIndividu individu, RegDate dateDebut, RegDate dateEvenement) {
 
 				MockAdresse adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
@@ -276,7 +275,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 
 				adresse = new MockAdresse();
-				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
 				// adresse.setLocalite(MockLocalite.P);
 				// adresse.setLieu(MockCommune.Zurich.getNomMajuscule());
@@ -297,17 +296,17 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
 				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
 				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
-				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateAmenagement, dateDepart);
-				addAdresse(indCharles, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, dateDepart);
-				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);
+				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateAmenagement, dateDepart);
+				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, dateDepart);
+				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);
 
 				final RegDate dateNaissanceGeorgette = RegDate.get(1946, 5, 14);
 				indGorgette = addIndividu(noIndGeorgette, dateNaissanceGeorgette, "CHABOUDEZ", "Georgette", false);
 				addOrigine(indGorgette, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGeorgette);
 				addNationalite(indGorgette, MockPays.Suisse, dateNaissanceGeorgette, null, 1);
-				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
-				addAdresse(indGorgette, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
-				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);
+				addAdresse(indGorgette, TypeAdresseCivil.PRINCIPALE,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indGorgette, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indGorgette, TypeAdresseCivil.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);
 				marieIndividus(indCharles, indGorgette, dateMariage);
 			}
 
@@ -315,9 +314,9 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 				// le but sera de lancer un événement de départ secondaire en 2007, alors qu'aucune adresse secondaire n'est active
 				final MockIndividu adrien = addIndividu(NO_IND_ADRIEN, RegDate.get(1956, 6, 1), "Nadire", "Adrien", true);
-				addAdresse(adrien, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, RegDate.get(2004, 1, 1), null);
-				addAdresse(adrien, EnumTypeAdresse.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, RegDate.get(2004, 1, 1), null);
-				addAdresse(adrien, EnumTypeAdresse.SECONDAIRE, MockRue.Bex.RouteDuBoet, null, RegDate.get(2006, 1, 20), RegDate.get(2006, 7, 23));
+				addAdresse(adrien, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, RegDate.get(2004, 1, 1), null);
+				addAdresse(adrien, TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, RegDate.get(2004, 1, 1), null);
+				addAdresse(adrien, TypeAdresseCivil.SECONDAIRE, MockRue.Bex.RouteDuBoet, null, RegDate.get(2006, 1, 20), RegDate.get(2006, 7, 23));
 			}
 
 		});
@@ -806,9 +805,9 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(2000, 1, 1), dateDepart.getOneDayBefore());
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateDepart, null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(2000, 1, 1), dateDepart.getOneDayBefore());
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateDepart, null);
 			}
 		});
 
@@ -857,8 +856,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 			}
 		});
 
@@ -896,8 +895,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 			}
 		});
 
@@ -942,8 +941,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 			}
 		});
 
@@ -998,8 +997,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 			}
 		});
 
@@ -1054,8 +1053,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 				marieIndividu(ind, date(1971, 5, 1));
 			}
 		});
@@ -1121,8 +1120,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 				marieIndividu(ind, date(1971, 5, 1));
 			}
 		});
@@ -1183,9 +1182,9 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, EnumTypeAdresse.COURRIER, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
-				addAdresse(ind, EnumTypeAdresse.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
-				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.COURRIER, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
 			}
 		});
 

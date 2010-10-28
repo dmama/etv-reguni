@@ -2,8 +2,8 @@ package ch.vd.uniregctb.adresse;
 
 import org.junit.Test;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static junit.framework.Assert.assertFalse;
 
@@ -23,7 +23,7 @@ public class AdresseCivileTest extends WithoutSpringTest {
 
 		// Adresse valide et annulée => pas d'erreur
 		{
-			adresse.setType(EnumTypeAdresse.COURRIER);
+			adresse.setType(TypeAdresseCivil.COURRIER);
 			adresse.setAnnule(true);
 			assertFalse(adresse.validate().hasErrors());
 		}

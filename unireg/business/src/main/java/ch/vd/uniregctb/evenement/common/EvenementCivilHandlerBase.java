@@ -3,21 +3,19 @@ package ch.vd.uniregctb.evenement.common;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -30,9 +28,17 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -335,7 +341,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	 */
 	protected AdresseCivile createAdresseCivile() {
 		AdresseCivile adresse = new AdresseCivile();
-		adresse.setType(EnumTypeAdresse.COURRIER);
+		adresse.setType(TypeAdresseCivil.COURRIER);
 		return adresse;
 	}
 

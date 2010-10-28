@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -12,20 +12,21 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -86,8 +87,8 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 				
 				marieIndividus(indAntonio, indAnneLaure, dateMariage);
 
-				addAdresse(indAntonio, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
-				addAdresse(indAnneLaure, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAntonio, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAnneLaure, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 			}
 		});
 	}
@@ -157,7 +158,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
 
-		final Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+		final Adresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 				dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}

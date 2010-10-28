@@ -26,6 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 

@@ -3,7 +3,6 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.Date;
 import java.util.List;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.Annulable;

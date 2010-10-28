@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.obtention.permis;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -13,9 +13,10 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_16000_01_ObtentionPermis_MarieADeuxSansForPrincipal_Scenario extends EvenementCivilScenario {
@@ -66,13 +67,13 @@ public class Ec_16000_01_ObtentionPermis_MarieADeuxSansForPrincipal_Scenario ext
 				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
 				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermis, null, 0, false);
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateMariage, null);
-				addAdresse(indMomo, EnumTypeAdresse.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateMariage, null);
+				addAdresse(indMomo, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
 
 				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateMariage, null);
-				addAdresse(indBea, EnumTypeAdresse.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateMariage, null);
+				addAdresse(indBea, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
 			}
 		});
 	}

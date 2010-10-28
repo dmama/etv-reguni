@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.separation;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -17,6 +16,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -74,7 +74,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 
 				addOrigine(indJulie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
 				addNationalite(indJulie, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
-				addAdresse(indJulie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.CheminPrazBerthoud, null, RegDate.get(1961, 3, 12), null);
+				addAdresse(indJulie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminPrazBerthoud, null, RegDate.get(1961, 3, 12), null);
 			}
 
 		});

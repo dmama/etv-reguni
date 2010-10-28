@@ -5,7 +5,6 @@ import java.util.Collection;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -27,6 +26,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -88,8 +88,8 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 				marieIndividus(indAntonio, indAnneLaure, dateMariage);
 
-				addAdresse(indAntonio, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
-				addAdresse(indAnneLaure, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAntonio, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAnneLaure, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 			}
 		});
 	}
@@ -160,7 +160,7 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArrivee.getOneDayBefore());
 
-		final Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, nouvelleRue, null, dateArrivee, null);
+		final Adresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, nouvelleRue, null, dateArrivee, null);
 		adrs.add(adresse);
 	}
 

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -8,6 +7,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class MockAdresse implements Adresse {
 
@@ -26,7 +26,7 @@ public class MockAdresse implements Adresse {
 	public Integer noOfsPays;
 	public String rue;
 	public String titre;
-	public EnumTypeAdresse typeAdresse;
+	public TypeAdresseCivil typeAdresse;
 	public CommuneSimple communeAdresse;
 
 	public MockAdresse() {
@@ -177,11 +177,11 @@ public class MockAdresse implements Adresse {
 		this.titre = titre;
 	}
 
-	public EnumTypeAdresse getTypeAdresse() {
+	public TypeAdresseCivil getTypeAdresse() {
 		return typeAdresse;
 	}
 
-	public void setTypeAdresse(EnumTypeAdresse typeAdresse) {
+	public void setTypeAdresse(TypeAdresseCivil typeAdresse) {
 		this.typeAdresse = typeAdresse;
 	}
 

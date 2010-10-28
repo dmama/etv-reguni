@@ -4,12 +4,11 @@ import java.util.List;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -17,11 +16,13 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -79,14 +80,14 @@ public class Ec_4000_09_Mariage_JIRA1481_Scenario extends EvenementCivilScenario
 				addOrigine(indAdrian, MockPays.Albanie, null, dateNaissanceAdrian);
 				addNationalite(indAdrian, MockPays.Albanie, dateNaissanceAdrian, null, 1);
 				addPermis(indAdrian, EnumTypePermis.ETABLLISSEMENT, date(2000, 6, 1), null, 1, false);
-				addAdresse(indAdrian, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
+				addAdresse(indAdrian, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
 				
 				indAngela = addIndividu(noIndAngela, dateNaissanceAngela, "Fratila", "Angela", false);
 
 				addOrigine(indAngela, MockPays.Albanie, null, dateNaissanceAngela);
 				addNationalite(indAngela, MockPays.Albanie, dateNaissanceAngela, null, 1);
 				addPermis(indAngela, EnumTypePermis.ETABLLISSEMENT, date(2000, 9, 15), null, 1, false);
-				addAdresse(indAngela, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
+				addAdresse(indAngela, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
 				
 				marieIndividus(indAdrian, indAngela, dateMariage);
 			}

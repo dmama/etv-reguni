@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.veuvage;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -74,8 +74,8 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 				addOrigine(indMikkel, MockPays.Danemark, null, RegDate.get(1961, 3, 12));
 				addNationalite(indMikkel, MockPays.Danemark, RegDate.get(1961, 3, 12), null, 0);
 				addEtatCivil(indMikkel, dateVeuvage, TypeEtatCivil.VEUF);
-				addAdresse(indMikkel, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RuelleDuCarroz, null, RegDate.get(1974, 3, 3), avantDateMariage);
-				addAdresse(indMikkel, EnumTypeAdresse.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, dateMariage, null);
+				addAdresse(indMikkel, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RuelleDuCarroz, null, RegDate.get(1974, 3, 3), avantDateMariage);
+				addAdresse(indMikkel, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, dateMariage, null);
 			}
 		});
 	}

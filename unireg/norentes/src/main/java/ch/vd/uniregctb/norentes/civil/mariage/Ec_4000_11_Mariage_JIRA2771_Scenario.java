@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.norentes.civil.mariage;
 
-import java.util.Set;
-
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumTypePermis;
@@ -25,6 +22,7 @@ import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -94,14 +92,14 @@ public class Ec_4000_11_Mariage_JIRA2771_Scenario extends EvenementCivilScenario
 				addOrigine(indAlfredo, MockPays.Albanie, null, dateNaissanceAlfredo);
 				addNationalite(indAlfredo, MockPays.Albanie, dateNaissanceAlfredo, null, 0);
 				addPermis(indAlfredo, EnumTypePermis.ETABLLISSEMENT, null, null, 0, false);
-				addAdresse(indAlfredo, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDebutAlfredo, null);
-				addAdresse(indAlfredo, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDebutAlfredo, null);
+				addAdresse(indAlfredo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDebutAlfredo, null);
+				addAdresse(indAlfredo, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDebutAlfredo, null);
 
 				addOrigine(indArmando, MockPays.Danemark, null, dateNaissanceArmando);
 				addNationalite(indArmando, MockPays.Danemark, dateNaissanceArmando, null, 0);
 				addPermis(indArmando, EnumTypePermis.ETABLLISSEMENT, null, null, 0, false);
-				addAdresse(indArmando, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDemenagementArmando, null);
-				addAdresse(indArmando, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDemenagementArmando, null);
+				addAdresse(indArmando, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDemenagementArmando, null);
+				addAdresse(indArmando, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDemenagementArmando, null);
 			}
 
 		});

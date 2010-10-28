@@ -5,7 +5,6 @@ import java.util.Set;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -23,6 +22,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -75,7 +75,7 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 			protected void init() {
 				MockIndividu jean = addIndividu(noIndJean, date(1941, 6, 6), "Nzikou", "Jean", true);
 				addPermis(jean, EnumTypePermis.ETABLLISSEMENT, date(2001, 7, 11), null, 0, false);
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2004, 1,
+				addAdresse(jean, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2004, 1,
 						15), null);
 				addEtatCivil(jean, date(2004, 1, 15), TypeEtatCivil.CELIBATAIRE);
 				addEtatCivil(jean, DATE_MARIAGE, TypeEtatCivil.MARIE);
@@ -86,7 +86,7 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 				addPermis(georgette, EnumTypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), 0, false);
 				addPermis(georgette, EnumTypePermis.ANNUEL, date(2009, 6, 13), null, 1, false);
 				addNationalite(georgette, MockPays.France, date(1951, 11, 3), null, 0);
-				addAdresse(georgette, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
 						2008, 8, 11), null);
 				addEtatCivil(georgette, date(1951, 11, 3), TypeEtatCivil.CELIBATAIRE);
 				addEtatCivil(georgette, DATE_MARIAGE, TypeEtatCivil.MARIE);

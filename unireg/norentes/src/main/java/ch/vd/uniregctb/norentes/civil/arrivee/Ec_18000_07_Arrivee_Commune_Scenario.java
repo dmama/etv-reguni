@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -22,6 +22,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario {
@@ -63,7 +64,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 
 				indAdrienne = addIndividu(noIndAdrienne, dateNaissance , "Pittet", "Adrienne", false);
 				setNationalite(indAdrienne, dateNaissance, null, MockPays.Suisse);
-				addAdresse(indAdrienne, EnumTypeAdresse.PRINCIPALE, MockRue.Orbe.RueDuMoulinet, null,
+				addAdresse(indAdrienne, TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.RueDuMoulinet, null,
 						null, null);
 			}
 		});
@@ -97,7 +98,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 		}
 		lastAdr.setDateFinValidite(dateDemenagement);
 
-		Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+		Adresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 				dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}

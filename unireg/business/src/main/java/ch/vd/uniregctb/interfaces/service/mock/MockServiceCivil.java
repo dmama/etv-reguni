@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumTypePermis;
@@ -42,6 +41,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockTutelle;
 import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * Mock du Service Civil.
@@ -55,8 +55,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
  *  ServiceCivil serviceCivil = new MockServiceCivil() {
  *  protected void init() {
  *  MockIndividu pierre = addIndividu(...);
- *  addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, ...);
- *  addAdresse(pierre, EnumTypeAdresse.COURRIER, ...);
+ *  addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, ...);
+ *  addAdresse(pierre, TypeAdresseCivil.COURRIER, ...);
  *  ...
  *  }
  *  };
@@ -178,7 +178,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié.
 	 */
-	protected Adresse addAdresse(MockIndividu individu, EnumTypeAdresse type, String rue, String numeroMaison, Integer numeroPostal, Localite localite, String casePostale,
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, String rue, String numeroMaison, Integer numeroPostal, Localite localite, String casePostale,
 			RegDate debutValidite, RegDate finValidite) {
 
 		final MockAdresse adresse = new MockAdresse();
@@ -205,7 +205,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse étrangère pour l'individu spécifié
 	 */
-	protected Adresse addAdresse(MockIndividu individu, EnumTypeAdresse type, String rue, String numeroMaison, Integer numeroPostal, String casePostale, String localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, String rue, String numeroMaison, Integer numeroPostal, String casePostale, String localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
 
 		Assert.isFalse(pays.isSuisse());
 
@@ -229,7 +229,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une rue).
 	 */
-	protected Adresse addAdresse(MockIndividu individu, EnumTypeAdresse type, MockRue rue, String casePostale, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, String casePostale, RegDate debutValidite, RegDate finValidite) {
 
 		final Adresse adresse = newAdresse(type, rue, casePostale, debutValidite, finValidite);
 		add(individu, adresse);
@@ -239,7 +239,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une localité).
 	 */
-	protected Adresse addAdresse(MockIndividu individu, EnumTypeAdresse type, String casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, String casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
 
 		final Adresse adresse = newAdresse(type, casePostale, localite, debutValidite, finValidite);
 		add(individu, adresse);
@@ -249,7 +249,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à partie d'une rue.
 	 */
-	public static Adresse newAdresse(EnumTypeAdresse type, MockRue rue, String casePostale, RegDate debutValidite, RegDate finValidite) {
+	public static Adresse newAdresse(TypeAdresseCivil type, MockRue rue, String casePostale, RegDate debutValidite, RegDate finValidite) {
 		Assert.notNull(rue);
 
 		final MockLocalite localite = rue.getLocalite();
@@ -264,7 +264,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à partie d'une localité.
 	 */
-	public static Adresse newAdresse(EnumTypeAdresse type, String casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
+	public static Adresse newAdresse(TypeAdresseCivil type, String casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
 		Assert.notNull(localite);
 
 		final MockAdresse adresse = new MockAdresse();
@@ -289,7 +289,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à l'étranger
 	 */
-	public static Adresse newAdresse(EnumTypeAdresse type, String rue, String casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, RegDate finValidite) {
+	public static Adresse newAdresse(TypeAdresseCivil type, String rue, String casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, RegDate finValidite) {
 		Assert.notNull(pays);
 		Assert.isFalse(pays.getNoOFS() == ServiceInfrastructureService.noOfsSuisse, "Pour la Suisse, il faut utiliser une autre méthode newAdresse");
 

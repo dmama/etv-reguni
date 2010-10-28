@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.ignore;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -12,6 +12,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
@@ -50,7 +51,7 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 			@Override
 			protected void init() {
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Baschung", "Alain", true);
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, RegDate.get(1990,1,1), null);
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, RegDate.get(1990,1,1), null);
 			}
 		});
 	}

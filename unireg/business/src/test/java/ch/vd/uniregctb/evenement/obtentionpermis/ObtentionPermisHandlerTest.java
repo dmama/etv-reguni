@@ -10,7 +10,6 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
@@ -23,12 +22,13 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -350,7 +350,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 				addNationalite(julie, MockPays.France, dateNaissance, null, 1);
 				addPermis(julie, EnumTypePermis.ANNUEL, dateNaissance, dateObtentionPermis.getOneDayBefore(), 1, false);
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermis, null, 2, false);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
+				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
 		});
 
@@ -412,7 +412,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 				addNationalite(julie, MockPays.France, dateNaissance, null, 1);
 				addPermis(julie, EnumTypePermis.COURTE_DUREE, dateNaissance, dateObtentionPermis.getOneDayBefore(), 1, false);
 				addPermis(julie, EnumTypePermis.ANNUEL, dateObtentionPermis, null, 2, false);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
+				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
 		});
 

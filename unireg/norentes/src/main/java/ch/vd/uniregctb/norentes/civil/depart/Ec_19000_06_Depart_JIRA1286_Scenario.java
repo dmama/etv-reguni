@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.depart;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
@@ -61,8 +62,8 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 				addPermis(indIan, EnumTypePermis.ANNUEL, RegDate.get(2006, 7, 9), null, 1, false);
 				
 				RegDate dateAmenagement = RegDate.get(2006, 7, 9);
-				addAdresse(indIan, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateAmenagement, null);
-				addAdresse(indIan, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, dateAmenagement, null);
+				addAdresse(indIan, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateAmenagement, null);
+				addAdresse(indIan, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, dateAmenagement, null);
 				
 			}
 		});

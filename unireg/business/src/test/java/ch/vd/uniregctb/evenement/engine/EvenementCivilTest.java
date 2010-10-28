@@ -8,12 +8,11 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.jms.EvenementCivilListener;
 import ch.vd.uniregctb.evenement.jms.EvenementCivilListenerTest;
 import ch.vd.uniregctb.evenement.jms.MockEsbMessage;
@@ -31,6 +30,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static junit.framework.Assert.assertEquals;
@@ -87,7 +87,7 @@ public class EvenementCivilTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(1975, 3, 2), null);
 			}
 		});
@@ -122,7 +122,7 @@ public class EvenementCivilTest extends BusinessTest {
 				MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
 				HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jean");
 				jean.addHistoriqueIndividu(h);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(1975, 3, 2), null);
 			}
 		});

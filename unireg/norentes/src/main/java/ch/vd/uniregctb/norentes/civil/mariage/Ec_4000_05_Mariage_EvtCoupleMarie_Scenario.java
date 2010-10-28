@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.mariage;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -19,6 +19,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -83,13 +84,13 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 				addNationalite(indJeanBruno, MockPays.France, dateNaissanceJeanBruno, null, 0);
 				addPermis(indJeanBruno, EnumTypePermis.ANNUEL, RegDate.get(2004, 11, 10), null, 0, false);
 				addPermis(indJeanBruno, EnumTypePermis.ETABLLISSEMENT, dateEtablissement, null, 0, false);
-				addAdresse(indJeanBruno, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
-				addAdresse(indJeanBruno, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
+				addAdresse(indJeanBruno, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
+				addAdresse(indJeanBruno, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
 
 				addOrigine(indChristelle, MockPays.Suisse, null, dateNaissanceChristelle);
 				addNationalite(indChristelle, MockPays.Suisse, dateNaissanceChristelle, null, 0);
-				addAdresse(indChristelle, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
-				addAdresse(indChristelle, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
+				addAdresse(indChristelle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
+				addAdresse(indChristelle, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
 			}
 
 		});

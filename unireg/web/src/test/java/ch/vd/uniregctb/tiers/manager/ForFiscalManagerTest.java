@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -30,6 +29,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -68,11 +68,11 @@ public class ForFiscalManagerTest extends WebTest {
 			protected void init() {
 				final MockIndividu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
 				final MockIndividu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
-				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
+				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
 						1985, 2, 14));
-				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
+				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
 						date(1985, 2, 14), null);
-				addAdresse(christine, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
+				addAdresse(christine, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
 						date(1979, 2, 9), null);
 			}
 		});
@@ -190,11 +190,11 @@ public class ForFiscalManagerTest extends WebTest {
 			protected void init() {
 				final MockIndividu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
 				final MockIndividu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
-				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
+				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
 						1985, 2, 14));
-				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
+				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
 						date(1985, 2, 14), null);
-				addAdresse(christine, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
+				addAdresse(christine, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
 						date(1979, 2, 9), null);
 			}
 		});

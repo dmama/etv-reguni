@@ -4,7 +4,7 @@ import java.util.List;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_18000_06_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
@@ -53,8 +54,8 @@ public class Ec_18000_06_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
 			protected void init() {
 				indAntoine = addIndividu(noIndAntoine,dateNaissance , "Lenormand", "Antoine", true);
 				setNationalite(indAntoine, dateNaissance, null, MockPays.Suisse);
-				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateArriveeZurich, dateArriveeLeSentier.getOneDayBefore());
-				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, dateArriveeLeSentier, null);
+				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateArriveeZurich, dateArriveeLeSentier.getOneDayBefore());
+				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, dateArriveeLeSentier, null);
 			}
 		});
 	}

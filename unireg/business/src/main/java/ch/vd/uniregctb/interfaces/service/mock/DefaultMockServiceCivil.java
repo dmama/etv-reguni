@@ -2,9 +2,7 @@ package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
@@ -15,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class DefaultMockServiceCivil extends MockServiceCivil {
 
@@ -101,8 +100,8 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 	}
 
 	protected void addDefaultAdressesTo(MockIndividu individu) {
-		addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
-		addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, RegDate.get(1980, 11, 2), null);
+		addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
+		addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, RegDate.get(1980, 11, 2), null);
 	}
 
 	/*
@@ -120,7 +119,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 
 		Collection<Adresse> adresses = new ArrayList<Adresse>();
 		MockAdresse adresse = new MockAdresse();
-		adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+		adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 		adresse.setLocalite("Mock Localite " + DateHelper.getCurrentDate());
 		adresse.setCasePostale("1234");
 		adresse.setNumeroPostal("4848");
@@ -130,7 +129,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		adresses.add(adresse);
 
 		adresse = new MockAdresse();
-		adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
+		adresse.setTypeAdresse(TypeAdresseCivil.COURRIER);
 		adresse.setLocalite("Mock Localite " + DateHelper.getCurrentDate());
 		adresse.setCasePostale("4567");
 		adresse.setNumeroPostal("5252");

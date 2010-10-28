@@ -13,7 +13,6 @@ import org.hibernate.FlushMode;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -69,6 +68,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -101,8 +101,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 				addFieldsIndividu(charlesPoncet, "01234567", "123.43.765.543", "");
 
 				final MockIndividu marcelMeignier = addIndividu(1234L, RegDate.get(1972, 1, 27), "MEIGNIER", "Marcel", true);
-				addAdresse(marcelMeignier, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
-				addAdresse(marcelMeignier, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
+				addAdresse(marcelMeignier, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
+				addAdresse(marcelMeignier, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
 
 				final MockIndividu philippeMaillard = addIndividu(noIndPhilippeMaillard, RegDate.get(1956, 1, 21), "Maillard", "Philippe", true);
 				{
@@ -731,7 +731,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Ancienne adresse courrier
 		{
 			AdresseCivile adresse = new AdresseCivile();
-			adresse.setType(EnumTypeAdresse.COURRIER);
+			adresse.setType(TypeAdresseCivil.COURRIER);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setDateDebut(RegDate.get(2001, 6, 21));
 			//util.setDateFin(RegDate.get(2005, 11, 30));

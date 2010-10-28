@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.demenagement;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -64,14 +65,14 @@ public class Ec_20000_01_Demenagement_Celibataire_Scenario extends EvenementCivi
 
 				addPermis(indConceicao, EnumTypePermis.PROVISOIRE, RegDate.get(2008, 5, 21), null, 1, false);
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						RegDate.get(2008, 4, 1), RegDate.get(2008, 6, 30));
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						RegDate.get(2008, 4, 1), RegDate.get(2008, 6, 30));
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
 						dateDemenagement, null);
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
 						dateDemenagement, null);
 			}
 		});

@@ -1,13 +1,8 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -16,26 +11,24 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.common.model.EnumTypeAdresse;
-import ch.vd.fiscalite.registre.identificationContribuable.ModeIdentificationType;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
+import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.DemandeHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
+import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.EsbHeader;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -51,7 +44,12 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests du service (qu'attendiez-vous d'autre ?).
@@ -364,7 +362,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1900, 1, 1), "Rosat", "Claude", true);
-				addAdresse(indClaude, EnumTypeAdresse.COURRIER, "Rue du moulin", "12", 1148, MockLocalite.LIsle, null, RegDate.get(2000, 12, 1), null);
+				addAdresse(indClaude, TypeAdresseCivil.COURRIER, "Rue du moulin", "12", 1148, MockLocalite.LIsle, null, RegDate.get(2000, 12, 1), null);
 			}
 		});
 

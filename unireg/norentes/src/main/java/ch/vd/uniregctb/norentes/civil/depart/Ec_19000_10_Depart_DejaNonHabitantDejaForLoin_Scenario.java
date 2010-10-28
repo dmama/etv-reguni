@@ -5,7 +5,6 @@ import java.util.Set;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends DepartScenario {
@@ -72,8 +72,8 @@ public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends Depa
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
 				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
 				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
-				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
-				addAdresse(indCharles, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
 			}
 
 		});

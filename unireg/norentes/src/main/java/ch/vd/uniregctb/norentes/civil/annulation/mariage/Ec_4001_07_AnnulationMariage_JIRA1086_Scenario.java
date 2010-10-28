@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.annulation.mariage;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
@@ -17,6 +17,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -58,15 +59,15 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 			addOrigine(deborah, MockPays.Suisse, null, dateNaissanceDeborah);
 			addNationalite(deborah, MockPays.Suisse, dateNaissanceDeborah, null, 0);
 
-			addAdresse(deborah, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeDeborah, null);
-			addAdresse(deborah, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeDeborah, null);
+			addAdresse(deborah, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeDeborah, null);
+			addAdresse(deborah, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeDeborah, null);
 
 			MockIndividu jaime = addIndividu(noIndJaime, dateNaissanceJaime, "Lopez", "Jaime", true);
 			addOrigine(jaime, MockPays.Suisse, null, dateNaissanceJaime);
 			addNationalite(jaime, MockPays.Suisse, dateNaissanceJaime, null, 0);
 
-			addAdresse(jaime, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeJaime, null);
-			addAdresse(jaime, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeJaime, null);
+			addAdresse(jaime, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeJaime, null);
+			addAdresse(jaime, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeJaime, null);
 
 			marieIndividus(jaime, deborah, dateMariage);
 		}

@@ -3,7 +3,6 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 import java.util.Date;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -11,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
 
@@ -29,7 +29,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final int noOfsPays;
 	private final String rue;
 	private final String titre;
-	private final EnumTypeAdresse typeAdresse;
+	private final TypeAdresseCivil typeAdresse;
 	private final CommuneSimple communeAdresse;
 
 	public static AdresseImpl get(ch.vd.common.model.Adresse target) {
@@ -56,10 +56,11 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.numeroOrdrePostal = target.getNumeroOrdrePostal();
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
-		this.noOfsPays = (target.getPays() == null ? ServiceInfrastructureService.noOfsSuisse:  target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
+		this.noOfsPays =
+				(target.getPays() == null ? ServiceInfrastructureService.noOfsSuisse : target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
 		this.rue = target.getRue();
 		this.titre = target.getTitre();
-		this.typeAdresse = target.getTypeAdresse();
+		this.typeAdresse = TypeAdresseCivil.get(target.getTypeAdresse());
 		this.communeAdresse = CommuneSimpleImpl.get(target.getCommuneAdresse());
 	}
 
@@ -115,7 +116,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		return titre;
 	}
 
-	public EnumTypeAdresse getTypeAdresse() {
+	public TypeAdresseCivil getTypeAdresse() {
 		return typeAdresse;
 	}
 

@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.divorce;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -17,6 +16,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -82,13 +82,13 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
 				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateArriveeVillars, avantDateMariage);
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateMariage, dateDivorce.getOneDayBefore());
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateDivorce, null);
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateArriveeVillars, avantDateMariage);
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateMariage, dateDivorce.getOneDayBefore());
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateDivorce, null);
 
 				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateNaissanceBea, null);
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateNaissanceBea, null);
 			}
 
 		});

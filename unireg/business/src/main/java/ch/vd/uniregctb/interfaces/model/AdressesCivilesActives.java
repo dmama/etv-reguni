@@ -3,11 +3,10 @@ package ch.vd.uniregctb.interfaces.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * Contient les adresses civiles à un instant donné d'individu regroupées par type
@@ -19,7 +18,7 @@ public class AdressesCivilesActives {
 	public Adresse tutelle;
 
 	public void set(Adresse adresse, boolean strict) throws DonneesCivilesException {
-		if (adresse.getTypeAdresse().equals(EnumTypeAdresse.PRINCIPALE)) {
+		if (adresse.getTypeAdresse().equals(TypeAdresseCivil.PRINCIPALE)) {
 			if (principale == null) {
 				principale = adresse;
 			}
@@ -37,7 +36,7 @@ public class AdressesCivilesActives {
 				}
 			}
 		}
-		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.COURRIER)) {
+		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.COURRIER)) {
 			if (courrier == null) {
 				courrier = adresse;
 			}
@@ -55,14 +54,14 @@ public class AdressesCivilesActives {
 				}
 			}
 		}
-		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.SECONDAIRE)) {
+		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.SECONDAIRE)) {
 			if (secondaires == null) {
 				secondaires = new ArrayList<Adresse>();
 			}
 			secondaires.add(adresse);
 
 		}
-		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.TUTELLE)) {
+		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.TUTEUR)) {
 			if (tutelle == null) {
 				tutelle = adresse;
 			}
@@ -85,18 +84,18 @@ public class AdressesCivilesActives {
 		}
 	}
 
-	public Adresse ofType(EnumTypeAdresse type) {
-		if (EnumTypeAdresse.PRINCIPALE.equals(type)) {
+	public Adresse ofType(TypeAdresseCivil type) {
+		if (TypeAdresseCivil.PRINCIPALE.equals(type)) {
 			return principale;
 		}
-		else if (EnumTypeAdresse.COURRIER.equals(type)) {
+		else if (TypeAdresseCivil.COURRIER.equals(type)) {
 			return courrier;
 		}
-		else if (EnumTypeAdresse.SECONDAIRE.equals(type)) {
+		else if (TypeAdresseCivil.SECONDAIRE.equals(type)) {
 			return null;
 		}
 		else {
-			Assert.isTrue(EnumTypeAdresse.TUTELLE.equals(type));
+			Assert.isTrue(TypeAdresseCivil.TUTEUR.equals(type));
 			return tutelle;
 		}
 	}

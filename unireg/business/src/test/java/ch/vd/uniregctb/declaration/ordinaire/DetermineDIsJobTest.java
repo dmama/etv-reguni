@@ -1,16 +1,11 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import ch.vd.uniregctb.utils.UniregModeHelper;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeterminerDIsJob;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -19,6 +14,11 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.utils.UniregModeHelper;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 public class DetermineDIsJobTest extends BusinessTest {
 
@@ -43,19 +43,19 @@ public class DetermineDIsJobTest extends BusinessTest {
 			protected void init() {
 
 				MockIndividu lyah = addIndividu(327706, date(1953, 11, 2), "Emery", "Lyah", true);
-				addAdresse(lyah, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(lyah, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(1980, 1, 1), null);
 
 				MockIndividu pascaline = addIndividu(674417, date(1953, 11, 2), "Decloux", "Pascaline", true);
-				addAdresse(pascaline, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
+				addAdresse(pascaline, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						date(1987, 12, 12), null);
 
 				MockIndividu christine = addIndividu(333905, date(1953, 11, 2), "Schmidt", "Christine", true);
-				addAdresse(christine, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6,
+				addAdresse(christine, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6,
 						4), null);
 
 				MockIndividu laurent = addIndividu(333908, date(1953, 11, 2), "Schmidt", "Laurent", true);
-				addAdresse(laurent, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
+				addAdresse(laurent, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
 						date(2001, 6, 4), null);
 			}
 		});

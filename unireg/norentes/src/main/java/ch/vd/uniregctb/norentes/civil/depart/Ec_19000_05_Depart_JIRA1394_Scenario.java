@@ -4,7 +4,7 @@ import java.util.List;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -18,6 +18,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -71,15 +72,15 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 				indSven = addIndividu(noIndSven, dateNaissanceSven, "Brise", "Sven", true);
 				addOrigine(indSven, MockPays.Danemark, null, dateNaissanceSven);
 				addNationalite(indSven, MockPays.Danemark, dateNaissanceSven, null, 1);
-				addAdresse(indSven, EnumTypeAdresse.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
-				addAdresse(indSven, EnumTypeAdresse.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
+				addAdresse(indSven, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
+				addAdresse(indSven, TypeAdresseCivil.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				
 				final RegDate dateNaissanceElly = RegDate.get(1973, 3, 7);
 				indElly = addIndividu(noIndElly, dateNaissanceElly, "Brise", "Elly", false);
 				addOrigine(indElly, MockPays.Danemark, null, dateNaissanceElly);
 				addNationalite(indElly, MockPays.Danemark, dateNaissanceElly, null, 1);
-				addAdresse(indElly, EnumTypeAdresse.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
-				addAdresse(indElly, EnumTypeAdresse.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
+				addAdresse(indElly, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
+				addAdresse(indElly, TypeAdresseCivil.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				
 				marieIndividus(indSven, indElly, dateMariage);
 			}

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static junit.framework.Assert.assertEquals;
@@ -47,9 +47,9 @@ public class EvenementCivilListenerTest extends BusinessTest {
 				MockIndividu julienne = addIndividu(124, RegDate.get(1973, 11, 13), "Malorme", "Julienne", false);
 				MockIndividu bebe = addIndividu(125, RegDate.get(2008, 2, 2), "Malorme", "Alain", true);
 
-				addAdresse(bastien, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
-				addAdresse(julienne, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
-				addAdresse(bebe, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addAdresse(bastien, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addAdresse(julienne, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addAdresse(bebe, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
 
 				marieIndividus(bastien, julienne, RegDate.get(2007, 2, 3));
 			}

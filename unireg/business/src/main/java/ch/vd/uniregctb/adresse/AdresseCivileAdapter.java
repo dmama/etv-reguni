@@ -3,7 +3,6 @@ package ch.vd.uniregctb.adresse;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /*
  * Cette classe permet d'adapter une adresse civile à l'interface d'adresse générique, optionnellement en surchargeant ses dates de début/fin de validité.
@@ -127,13 +127,13 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	private static String buildContext(Adresse adresse) {
 		final String type;
-		if (EnumTypeAdresse.COURRIER.equals(adresse.getTypeAdresse())) {
+		if (TypeAdresseCivil.COURRIER.equals(adresse.getTypeAdresse())) {
 			type = "courrier";
 		}
-		else if (EnumTypeAdresse.PRINCIPALE.equals(adresse.getTypeAdresse())) {
+		else if (TypeAdresseCivil.PRINCIPALE.equals(adresse.getTypeAdresse())) {
 			type = "principal";
 		}
-		else if (EnumTypeAdresse.SECONDAIRE.equals(adresse.getTypeAdresse())) {
+		else if (TypeAdresseCivil.SECONDAIRE.equals(adresse.getTypeAdresse())) {
 			type = "secondaire";
 		}
 		else {

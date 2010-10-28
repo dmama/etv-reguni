@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends EvenementCivilScenario {
@@ -63,8 +63,8 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 				addPermis(indAntonio, EnumTypePermis.ETABLLISSEMENT, date(2005, 1, 11), null, 1, false);
 
 				marieIndividus(indAntonio, indAnneLaure, dateMariage);
-				addAdresse(indAntonio, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
-				addAdresse(indAnneLaure, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
+				addAdresse(indAntonio, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
+				addAdresse(indAnneLaure, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
 			}
 		});
 	}

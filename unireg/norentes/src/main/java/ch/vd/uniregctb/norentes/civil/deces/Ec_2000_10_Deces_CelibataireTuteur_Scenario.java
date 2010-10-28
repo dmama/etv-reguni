@@ -5,7 +5,7 @@ import java.util.Set;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -19,6 +19,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilScenario {
@@ -63,10 +64,10 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 
 				final RegDate dateNaissanceCharles = RegDate.get(1947, 7, 26);
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "Coutaz", "Charles", true);
-				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeVD, null);
+				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeVD, null);
 
 				indNora = addIndividu(noIndNora, RegDate.get(1968, 10, 15), "Von Ballmoos", "Nora", false);
-				addAdresse(indNora, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeVD, null);
+				addAdresse(indNora, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeVD, null);
 			}
 		});
 	}

@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.interfaces.model;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * Adapter qui permet de spécifier de nouvelles dates de début et de fin sur une adresse civile.
@@ -76,7 +76,7 @@ public class AdresseAdapter implements Adresse {
 		return target.getTitre();
 	}
 
-	public EnumTypeAdresse getTypeAdresse() {
+	public TypeAdresseCivil getTypeAdresse() {
 		return target.getTypeAdresse();
 	}
 

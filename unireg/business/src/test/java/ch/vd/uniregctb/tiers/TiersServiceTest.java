@@ -16,7 +16,6 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -47,6 +46,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -2540,11 +2540,11 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu mr = addIndividu(noIndMonsieur, date(1950, 3, 24), "Achille", "Talon", true);
-				addAdresse(mr, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", 1000, null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), null);
+				addAdresse(mr, TypeAdresseCivil.PRINCIPALE, "Parca Guell", "12", 1000, null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), null);
 
 				final MockIndividu mme = addIndividu(noIndMadame, date(1950, 5, 12), "Huguette", "Marcot", false);
-				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", 1000, null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), date(2010, 2, 23));
-				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2010, 2, 24), null);
+				addAdresse(mme, TypeAdresseCivil.PRINCIPALE, "Parca Guell", "12", 1000, null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), date(2010, 2, 23));
+				addAdresse(mme, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2010, 2, 24), null);
 			}
 		});
 

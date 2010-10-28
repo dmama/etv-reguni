@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.mariage;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -17,6 +17,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -89,16 +90,16 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 				indJoseph = addIndividu(noIndJoseph, dateNaissanceJoseph, "Lucas", "Joseph", true);
 
 				addNationalite(indJeanMarc, MockPays.Suisse, dateNaissanceJeanMarc, null, 0);
-				addAdresse(indJeanMarc, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceJeanMarc, null);
+				addAdresse(indJeanMarc, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceJeanMarc, null);
 
 				addNationalite(indAmelie, MockPays.Suisse, dateNaissanceAmelie, null, 0);
-				addAdresse(indAmelie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceAmelie, null);
+				addAdresse(indAmelie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceAmelie, null);
 
 				addNationalite(indJoseph, MockPays.France, dateNaissanceJoseph, null, 0);
-				addAdresse(indJoseph, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceJoseph, null);
+				addAdresse(indJoseph, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceJoseph, null);
 
 				addNationalite(indStephanie, MockPays.Suisse, dateNaissanceStephanie, null, 0);
-				addAdresse(indStephanie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceStephanie, null);
+				addAdresse(indStephanie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceStephanie, null);
 
 
 				marieIndividus(indJeanMarc, indAmelie, dateMariageAvecAmelie);

@@ -4,7 +4,7 @@ import java.util.List;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -70,8 +71,8 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 			protected void init() {
 				indAlain = addIndividu(noIndAlain, dateNaissanceAlain, "Martin", "Alain", true);
 				addNationalite(indAlain, MockPays.Suisse, dateNaissanceAlain, null, 0);
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceAlain, dateDepartHS.getOneDayBefore());
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateRetourHC, null);
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceAlain, dateDepartHS.getOneDayBefore());
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateRetourHC, null);
 			}
 
 		});

@@ -3,15 +3,15 @@
  */
 package ch.vd.uniregctb.tiers.view;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * @author xsikce
  */
 public class AdresseDisponibleView {
 
-	private EnumTypeAdresse typeAdresse;
+	private TypeAdresseCivil typeAdresse;
 	private String representantLegal;
 	private Integer numeroCasePostale;
 	private String rue;
@@ -28,11 +28,11 @@ public class AdresseDisponibleView {
 		this.source = source;
 	}
 
-	public EnumTypeAdresse getTypeAdresse() {
+	public TypeAdresseCivil getTypeAdresse() {
 		return typeAdresse;
 	}
 
-	public void setTypeAdresse(EnumTypeAdresse typeAdresse) {
+	public void setTypeAdresse(TypeAdresseCivil typeAdresse) {
 		this.typeAdresse = typeAdresse;
 	}
 
@@ -89,7 +89,7 @@ public class AdresseDisponibleView {
 			return null;
 		}
 		else {
-			return typeAdresse.getName();
+			return typeAdresse.name();
 		}
 	}
 }

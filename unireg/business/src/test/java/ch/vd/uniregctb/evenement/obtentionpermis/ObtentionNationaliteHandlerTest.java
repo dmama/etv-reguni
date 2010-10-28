@@ -10,7 +10,6 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
@@ -29,6 +28,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -352,7 +352,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore(), 1);
 				addNationalite(julie, MockPays.Suisse, dateObtentionNationalite, null, 2);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
 			}
 		});
 
@@ -412,7 +412,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore(), 1);
 				addNationalite(julie, MockPays.Allemagne, dateObtentionNationalite, null, 2);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
 			}
 		});
 

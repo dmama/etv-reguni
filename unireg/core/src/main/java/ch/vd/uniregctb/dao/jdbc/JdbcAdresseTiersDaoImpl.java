@@ -26,6 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -242,7 +243,7 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				final String logCuser = rs.getString(11);
 				final Timestamp logMdate = rs.getTimestamp(12);
 				final String logMuser = rs.getString(13);
-				final EnumTypeAdresse stype = EnumTypeAdresse.getEnum(rs.getString(23));
+				final TypeAdresseCivil stype = TypeAdresseCivil.get(EnumTypeAdresse.getEnum(rs.getString(23)));
 				final String temp27 = rs.getString(27);
 				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp27));
 			

@@ -10,16 +10,18 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
 import ch.vd.common.model.EnumTypeAdresse;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
- * Effectue la traduction d'un attribut de type EnumTypeAdresse en une colonne VARCHAR, et inversément.
+ * Effectue la traduction d'un attribut de type TypeAdresseCivil (en une colonne VARCHAR, et inversément) en gardant la compatibilité de persistence du type EnumTypeAdresse ('C' = COURRIER, 'P' =
+ * PRINCIPALE, 'S' = SECONDAIRE et 'T' = TUTEUR).
  *
  * @see http://www.hibernate.org/265.html
  */
-public class EnumTypeAdresseUserType implements UserType {
+public class TypeAdresseCivilLegacyUserType implements UserType {
 
 	private static final int[] SQL_TYPES = {
-		Types.VARCHAR
+			Types.VARCHAR
 	};
 
 	public Object assemble(Serializable cached, Object owner) throws HibernateException {
@@ -56,7 +58,7 @@ public class EnumTypeAdresseUserType implements UserType {
 		if (!rs.wasNull()) {
 			result = EnumTypeAdresse.getEnum(name);
 		}
-		return result;
+		return TypeAdresseCivil.get(result);
 	}
 
 	public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
@@ -64,7 +66,7 @@ public class EnumTypeAdresseUserType implements UserType {
 			st.setNull(index, Types.VARCHAR);
 		}
 		else {
-			final EnumTypeAdresse e = (EnumTypeAdresse) value;
+			final EnumTypeAdresse e = ((TypeAdresseCivil) value).asHost();
 			st.setString(index, e.getName());
 		}
 	}

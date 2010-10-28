@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
@@ -15,6 +14,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,7 +31,7 @@ public class AdresseCivileAdapterTest {
 		 * Adresse sur Suisse
 		 */
 
-		Adresse lausanne = MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+		Adresse lausanne = MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 		{
 			final AdresseCivileAdapter adapter = new AdresseCivileAdapter(lausanne, false,serviceInfra);
@@ -47,7 +47,7 @@ public class AdresseCivileAdapterTest {
 		 */
 
 		MockAdresse evian = new MockAdresse();
-		evian.setTypeAdresse(EnumTypeAdresse.COURRIER);
+		evian.setTypeAdresse(TypeAdresseCivil.COURRIER);
 		evian.setTitre("");
 		evian.setRue("Rue de l'eau plate");
 		evian.setLocalite("Evian");
@@ -72,7 +72,7 @@ public class AdresseCivileAdapterTest {
 	@Test
 	public void testConstructors() throws Exception {
 
-		final Adresse lausanne = MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+		final Adresse lausanne = MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 
 		// Constructor n°1
@@ -112,7 +112,7 @@ public class AdresseCivileAdapterTest {
 	@Test
 	public void testEquals() throws Exception {
 
-		final Adresse lausanne = MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+		final Adresse lausanne = MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 
 		// Cas standards

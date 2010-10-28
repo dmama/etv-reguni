@@ -6,7 +6,6 @@ import java.util.Set;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -32,6 +31,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeTache;
@@ -86,7 +86,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 				indSebastien = addIndividu(noIndSebastien, dateNaissanceSebastien, "Fournier", "Sebastien", true);
 				addOrigine(indSebastien, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceSebastien);
 				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null, 1);
-				addAdresse(indSebastien, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
+				addAdresse(indSebastien, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
 
 				separeIndividu(indSebastien, null, dateSeparation);
 			}

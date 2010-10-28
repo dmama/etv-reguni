@@ -5,7 +5,6 @@ import java.util.List;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -73,7 +73,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 			protected void init() {
 				final MockIndividu individu = addIndividu(numeroIndividu, dateNaissance, "Bouchet", "Olivier", true, dateArrivee);
 				individu.setDateNaissance(dateNaissance);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Orbe.RueDavall, null, dateArrivee, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.RueDavall, null, dateArrivee, null);
 				addNationalite(individu, MockPays.France, dateArrivee, null, 1);
 			}
 		});

@@ -5,7 +5,6 @@ import java.util.Set;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -24,6 +23,7 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -82,8 +82,8 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null, 1);
 				addPermis(indJulie, EnumTypePermis.ANNUEL, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), 0, false);
 				addEtatCivil(indJulie, dateNaissance, TypeEtatCivil.CELIBATAIRE);
-				addAdresse(indJulie, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateObtentionPermis, null);
-				addAdresse(indJulie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, "Case Postale 2133431", dateObtentionPermis, null);
+				addAdresse(indJulie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateObtentionPermis, null);
+				addAdresse(indJulie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, "Case Postale 2133431", dateObtentionPermis, null);
 			}
 		});
 	}

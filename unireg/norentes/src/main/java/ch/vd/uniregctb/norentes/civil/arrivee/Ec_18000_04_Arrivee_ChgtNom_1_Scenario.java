@@ -4,7 +4,7 @@ import java.util.List;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_18000_04_Arrivee_ChgtNom_1_Scenario extends EvenementCivilScenario {
@@ -53,9 +54,9 @@ public class Ec_18000_04_Arrivee_ChgtNom_1_Scenario extends EvenementCivilScenar
 
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Gregoire", "Alain", true);
 				setNationalite(indAlain, dateNaissance, null, MockPays.Suisse);
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
 						dateArriveeZurich, dateArriveeBex.getOneDayBefore());
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null,
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null,
 						dateArriveeBex, null);
 
 			}

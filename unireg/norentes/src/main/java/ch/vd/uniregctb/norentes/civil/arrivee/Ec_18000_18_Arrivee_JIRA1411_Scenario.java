@@ -6,7 +6,6 @@ import java.util.List;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -27,6 +26,7 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -74,8 +74,8 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 			@Override
 			protected void init() {
 				indAntoine = addIndividu(noIndAntoine, date(1952, 2, 21) , "Lenormand", "Antoine", true);
-				addAdresse(indAntoine, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, null, null);
-				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
+				addAdresse(indAntoine, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, null, null);
+				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
 			}
 		});
 	}
@@ -132,7 +132,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
 
-		final Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
+		final Adresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}
 

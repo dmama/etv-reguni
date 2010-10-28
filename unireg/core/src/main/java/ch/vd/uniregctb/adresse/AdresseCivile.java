@@ -9,9 +9,9 @@ import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * <!-- begin-user-doc -->
@@ -33,7 +33,7 @@ public class AdresseCivile extends AdresseTiers {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tQ7pwJNcEdygKK6Oe0tVlw"
 	 */
-	private EnumTypeAdresse type;
+	private TypeAdresseCivil type;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -42,8 +42,8 @@ public class AdresseCivile extends AdresseTiers {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tQ7pwJNcEdygKK6Oe0tVlw?GETTER"
 	 */
 	@Column(name = "STYPE", length = LengthConstants.ADRESSE_TYPECIVIL)
-	@Type(type="ch.vd.uniregctb.hibernate.EnumTypeAdresseUserType")
-	public EnumTypeAdresse getType() {
+	@Type(type="ch.vd.uniregctb.hibernate.TypeAdresseCivilLegacyUserType")
+	public TypeAdresseCivil getType() {
 		// begin-user-code
 		return type;
 		// end-user-code
@@ -55,7 +55,7 @@ public class AdresseCivile extends AdresseTiers {
 	 * @param theType the type to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tQ7pwJNcEdygKK6Oe0tVlw?SETTER"
 	 */
-	public void setType(EnumTypeAdresse theType) {
+	public void setType(TypeAdresseCivil theType) {
 		// begin-user-code
 		type = theType;
 		// end-user-code

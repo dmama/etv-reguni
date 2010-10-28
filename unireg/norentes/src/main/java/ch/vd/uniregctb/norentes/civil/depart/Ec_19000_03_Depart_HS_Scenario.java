@@ -4,7 +4,7 @@ import java.util.List;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -28,6 +28,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
@@ -77,18 +78,18 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			indCedric = addIndividu(noIndCedric, dateNaissanceCedric, "Donzé", "Cédric", true);
 			addOrigine(indCedric, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCedric);
 			addNationalite(indCedric, MockPays.Suisse, dateNaissanceCedric, null, 1);
-			addAdresse(indCedric, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+			addAdresse(indCedric, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 
 			final RegDate dateNaissanceSandra = RegDate.get(1975, 2, 26);
 			indSandra = addIndividu(noIndSandra, dateNaissanceSandra, "Donzé", "Sandra", false);
 			addOrigine(indSandra, MockPays.Suisse, MockCommune.Peseux, dateNaissanceSandra);
 			addNationalite(indSandra, MockPays.Suisse, dateNaissanceSandra, null, 1);
-			addAdresse(indSandra, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+			addAdresse(indSandra, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 
 			marieIndividus(indCedric, indSandra, RegDate.get(2003, 7, 11));
 		}
 
-		private Adresse createAdresse(Individu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite,
+		private Adresse createAdresse(Individu individu, TypeAdresseCivil type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite,
 		                              RegDate finValidite) {
 			MockAdresse adresse = new MockAdresse();
 			adresse.setTypeAdresse(type);
@@ -116,7 +117,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			return adresse;
 		}
 
-		public Adresse addAdresse(MockIndividu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
+		public Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
 
 			final Adresse adresse = createAdresse(individu, type, rue, casePostale, localite, commune, pays, debutValidite, finValidite);
 			add(individu, adresse);
@@ -268,7 +269,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 	}
 
 	private void ouvrirAdresses(MockIndividu individu) {
-		internalServiceCivil.addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, null, null, paysDepart, dateDepartBex.getOneDayAfter(), null);
+		internalServiceCivil.addAdresse(individu, TypeAdresseCivil.PRINCIPALE, null, null, null, null, paysDepart, dateDepartBex.getOneDayAfter(), null);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduCedric, boolean blocageAttenduSandra, boolean blocageAttenduMenage) {

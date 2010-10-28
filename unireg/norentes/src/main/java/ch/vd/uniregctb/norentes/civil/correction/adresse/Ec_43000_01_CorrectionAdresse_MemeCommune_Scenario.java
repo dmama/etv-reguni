@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.correction.adresse;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -57,14 +57,14 @@ public class Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario extends Evenemen
 
 				addPermis(indConceicao, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 5, 21), null, 1, false);
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, "Avenue de Marcelin", "39", 1000,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, "Avenue de Marcelin", "39", 1000,
 						MockLocalite.Lausanne, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, "Avenue de Marcelin", "39", 1000,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, "Avenue de Marcelin", "39", 1000,
 						MockLocalite.Lausanne, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
 						dateCorrection, null);
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
 						dateCorrection, null);
 			}
 		});

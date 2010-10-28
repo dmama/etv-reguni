@@ -5,7 +5,6 @@ import java.util.List;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_2000_06_Deces_Membre_Pacse_Scenario extends EvenementCivilScenario {
@@ -86,7 +86,7 @@ public class Ec_2000_06_Deces_Membre_Pacse_Scenario extends EvenementCivilScenar
 				indHeidi = addIndividu(noIndHeidi, dateNaissanceHeidi, "Von der Heide", "Heidi", false);
 				addOrigine(indHeidi, MockPays.Suisse, MockCommune.Bern, dateNaissanceHeidi);
 				addNationalite(indHeidi, MockPays.Suisse, dateNaissanceHeidi, null, 0);
-				addAdresse(indHeidi, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeVD, null);
+				addAdresse(indHeidi, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeVD, null);
 
 				marieIndividus(indJuliette, indHeidi, datePacs);
 			}

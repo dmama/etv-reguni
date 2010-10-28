@@ -6,7 +6,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -27,6 +26,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -63,7 +63,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
 			}
@@ -103,7 +103,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
 			}
@@ -167,7 +167,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
 			}
@@ -212,7 +212,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Tetram", "Ducik", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
 				addNationalite(individu, MockPays.Albanie, dateNaissance, null, 1);
 			}
@@ -273,7 +273,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
 			}
@@ -315,7 +315,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				// adresse courrier seulement -> l'adresse de domicile sera une adresse par défaut
-				addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
 			}
@@ -355,12 +355,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			protected void init() {
 				// un individu sans nationalité
 				MockIndividu individu1 = addIndividu(noIndividu1, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu1, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissance, null);
+				addAdresse(individu1, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissance, null);
 				individu1.setNationalites(null);
 
 				// un autre individu sans nationalité (variante)
 				MockIndividu individu2 = addIndividu(noIndividu2, dateNaissance, "Schmoledu", "Jean", true);
-				addAdresse(individu2, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissance, null);
+				addAdresse(individu2, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissance, null);
 				individu2.setNationalites(Collections.<Nationalite>emptyList());
 			}
 		});
@@ -405,7 +405,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissance, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissance, null);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
 			}
 		});

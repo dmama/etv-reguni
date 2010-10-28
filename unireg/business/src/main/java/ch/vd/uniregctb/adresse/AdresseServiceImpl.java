@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -50,6 +49,7 @@ import ch.vd.uniregctb.tiers.TiersHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -1885,10 +1885,8 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (adresseSurchargee instanceof AdresseCivile) {
 
 			final AdresseCivile a = (AdresseCivile) adresseSurchargee;
-			final RegDate debut = a.getDateDebut();
-			final RegDate fin = a.getDateFin();
-			final EnumTypeAdresse type = a.getType();
-
+			final TypeAdresseCivil type = a.getType();
+			
 			final PersonnePhysique habitant = (PersonnePhysique) tiers; /* par définition, seul un habitant peut posséder une adresse civile */
 			final AdressesCiviles adressesCiviles = getAdressesCiviles(habitant, adresseSurchargee.getDateDebut(), strict);
 			Assert.notNull(adressesCiviles);

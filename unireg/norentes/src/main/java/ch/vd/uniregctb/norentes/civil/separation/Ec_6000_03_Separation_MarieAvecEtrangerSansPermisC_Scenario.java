@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.separation;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -84,12 +84,12 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 				addOrigine(indMomo, MockPays.France, null, dateNaissanceMomo);
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null, 0);
 				addPermis(indMomo, EnumTypePermis.COURTE_DUREE, dateNaissanceMomo, null, 0, false);
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateSeparation, null);
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());
+				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateSeparation, null);
 
 				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, dateNaissanceBea);
 				addNationalite(indBea, MockPays.Suisse, dateNaissanceBea, null, 0);
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateNaissanceBea, null);
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateNaissanceBea, null);
 			}
 
 		});

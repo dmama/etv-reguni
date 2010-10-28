@@ -4,7 +4,7 @@ import java.util.Set;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -62,11 +63,11 @@ public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScena
 				indBea = addIndividu(noIndBea, RegDate.get(1963, 8, 20), "Duval", "Béatrice", false);
 				indJulie = addIndividu(noIndJulie, RegDate.get(1977, 4, 19), "Goux", "Julie", false);
 
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, "rue de Béa", "1Bis", MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
-				addAdresse(indBea, EnumTypeAdresse.COURRIER, "rue de Béa", "1Bis", MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, "rue de Béa", "1Bis", MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
+				addAdresse(indBea, TypeAdresseCivil.COURRIER, "rue de Béa", "1Bis", MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
 
-				addAdresse(indJulie, EnumTypeAdresse.PRINCIPALE, "rue de Julie", "28", MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
-				addAdresse(indJulie, EnumTypeAdresse.COURRIER, "rue de Julie", "28", MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
+				addAdresse(indJulie, TypeAdresseCivil.PRINCIPALE, "rue de Julie", "28", MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
+				addAdresse(indJulie, TypeAdresseCivil.COURRIER, "rue de Julie", "28", MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
 
 				//addDefaultAdressesTo(indBea);
 				//addDefaultAdressesTo(indJulie);

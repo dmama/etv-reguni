@@ -3,7 +3,6 @@ package ch.vd.uniregctb.norentes.civil.correction.adresse;
 import annotation.Check;
 import annotation.Etape;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.EnumTypePermis;
@@ -20,6 +19,7 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Scenario extends EvenementCivilScenario {
@@ -61,14 +61,14 @@ public class Ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Scenario extend
 
 				addPermis(indConceicao, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 5, 21), null, 1, false);
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, "Rue de la poste", "39", 1020,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, "Rue de la poste", "39", 1020,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
 						dateCorrection, null);
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
 						dateCorrection, null);
 			}
 		});

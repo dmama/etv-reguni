@@ -2,22 +2,28 @@ package ch.vd.uniregctb.norentes.civil.annulation.mariage;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.common.model.EnumTypeAdresse;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -53,8 +59,8 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 			addOrigine(sylvie, MockPays.Suisse, null, dateNaissanceSylvie);
 			addNationalite(sylvie, MockPays.Suisse, dateNaissanceSylvie, null, 0);
 
-			addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeSylvie, null);
-			addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeSylvie, null);
+			addAdresse(sylvie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeSylvie, null);
+			addAdresse(sylvie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeSylvie, null);
 		}
 
 		public void arriveeMonsieur() {
@@ -62,8 +68,8 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 			addOrigine(alexandre, MockPays.Suisse, null, dateNaissanceAlexandre);
 			addNationalite(alexandre, MockPays.Suisse, dateNaissanceAlexandre, null, 0);
 
-			addAdresse(alexandre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeAlexandre, null);
-			addAdresse(alexandre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAlexandre, null);
+			addAdresse(alexandre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeAlexandre, null);
+			addAdresse(alexandre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAlexandre, null);
 		}
 
 		public void marionsLes() {

@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * Contient toutes les adresses civiles d'un individu regroupées par type
@@ -22,33 +22,33 @@ public class AdressesCivilesHistoriques {
 	public List<Adresse> secondaires = new ArrayList<Adresse>();
 	public List<Adresse> tutelles = new ArrayList<Adresse>();
 
-	public List<Adresse> ofType(EnumTypeAdresse type) {
-		if (EnumTypeAdresse.PRINCIPALE.equals(type)) {
+	public List<Adresse> ofType(TypeAdresseCivil type) {
+		if (TypeAdresseCivil.PRINCIPALE.equals(type)) {
 			return principales;
 		}
-		else if (EnumTypeAdresse.COURRIER.equals(type)) {
+		else if (TypeAdresseCivil.COURRIER.equals(type)) {
 			return courriers;
 		}
-		else if (EnumTypeAdresse.SECONDAIRE.equals(type)) {
+		else if (TypeAdresseCivil.SECONDAIRE.equals(type)) {
 			return secondaires;
 		}
 		else {
-			Assert.isTrue(EnumTypeAdresse.TUTELLE.equals(type));
+			Assert.isTrue(TypeAdresseCivil.TUTEUR.equals(type));
 			return tutelles;
 		}
 	}
 
 	public void add(Adresse adresse) {
-		if (adresse.getTypeAdresse().equals(EnumTypeAdresse.PRINCIPALE)) {
+		if (adresse.getTypeAdresse().equals(TypeAdresseCivil.PRINCIPALE)) {
 			principales.add(adresse);
 		}
-		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.COURRIER)) {
+		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.COURRIER)) {
 			courriers.add(adresse);
 		}
-		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.SECONDAIRE)) {
+		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.SECONDAIRE)) {
 			secondaires.add(adresse);
 		}
-		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.TUTELLE)) {
+		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.TUTEUR)) {
 			tutelles.add(adresse);
 		}
 		else {

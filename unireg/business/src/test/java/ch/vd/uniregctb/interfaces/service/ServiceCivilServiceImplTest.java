@@ -1,6 +1,10 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import ch.vd.common.model.EnumTypeAdresse;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
@@ -9,15 +13,21 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.model.mock.*;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import static org.junit.Assert.*;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 public class ServiceCivilServiceImplTest extends BusinessTest {
 
@@ -351,8 +361,8 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(2000, 1, 1), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(2000, 1, 1), null);
 			}
 		});
 
@@ -378,8 +388,8 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(2000, 1, 1), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(2000, 1, 1), null);
 			}
 		});
 
@@ -414,11 +424,11 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, arriveeLeSentier.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, arriveeLeSentier.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, null);
 			}
 		});
 
@@ -480,11 +490,11 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, arriveeLeSentier.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, arriveeLeSentier.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, null);
 			}
 		});
 
@@ -541,11 +551,11 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, departCossonay);
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, departLeSentier);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, departCossonay);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, departLeSentier);
 			}
 		});
 

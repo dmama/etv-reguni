@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.interfaces.model;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public interface Adresse extends DateRange, AdresseAvecCommune {
 
@@ -101,5 +101,5 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
      *
      * @return le type de l'adresse.
      */
-    EnumTypeAdresse getTypeAdresse();
+    TypeAdresseCivil getTypeAdresse();
 }

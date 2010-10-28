@@ -1,41 +1,45 @@
 /**
- * 
+ *
  */
 package ch.vd.uniregctb.type;
 
-/** 
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- * 
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_19SFEJQ8EdyqCO_31WzPOw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_19SFEJQ8EdyqCO_31WzPOw"
- */
+import ch.vd.common.model.EnumTypeAdresse;
+
 public enum TypeAdresseCivil {
-	/** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_v4bFAKfXEdy6qP7Nc3dO8g"
-	 */
-	SECONDAIRE, /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_zX7RwKfXEdy6qP7Nc3dO8g"
-	 */
-	PRINCIPALE, /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_30Es8KfXEdy6qP7Nc3dO8g"
-	 */
-	COURRIER, /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_fjnr8OuSEdyoJZZczGWapw"
-	 */
-	TUTEUR
+	SECONDAIRE(EnumTypeAdresse.SECONDAIRE),
+	PRINCIPALE(EnumTypeAdresse.PRINCIPALE),
+	COURRIER(EnumTypeAdresse.COURRIER),
+	TUTEUR(EnumTypeAdresse.TUTELLE);
+
+	private EnumTypeAdresse host;
+
+	TypeAdresseCivil(EnumTypeAdresse host) {
+		this.host = host;
+	}
+
+	public static TypeAdresseCivil get(EnumTypeAdresse right) {
+		if (right == null) {
+			return null;
+		}
+
+		if (right == EnumTypeAdresse.SECONDAIRE) {
+			return SECONDAIRE;
+		}
+		else if (right == EnumTypeAdresse.PRINCIPALE) {
+			return PRINCIPALE;
+		}
+		else if (right == EnumTypeAdresse.COURRIER) {
+			return COURRIER;
+		}
+		else if (right == EnumTypeAdresse.TUTELLE) {
+			return TUTEUR;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + right.getName() + "]");
+		}
+	}
+
+	public EnumTypeAdresse asHost() {
+		return host;
+	}
 }
