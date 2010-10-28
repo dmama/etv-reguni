@@ -24,6 +24,7 @@ import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Handler gérant la mise sous tutelle d'individu.
@@ -188,7 +189,7 @@ public class TutelleHandler extends EvenementCivilHandlerBase {
 			rapport = new Curatelle(dateEvenement, null, pupille, representant, autoriteTutelaire);
 			break;
 
-		case CONSEIL_LEGAL_CODE :
+		case CONSEIL_LEGAL:
 			rapport = new ConseilLegal(dateEvenement, null, pupille, representant, autoriteTutelaire);
 			break;
 

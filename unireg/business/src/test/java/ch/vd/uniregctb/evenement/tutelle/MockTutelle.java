@@ -4,6 +4,7 @@ import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Bouchon pour un événement de type Mise sous tutelle

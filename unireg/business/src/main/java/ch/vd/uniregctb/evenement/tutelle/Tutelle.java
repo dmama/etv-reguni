@@ -4,6 +4,7 @@ import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Modélise un événement de mise sous tutelle, curatelle ou conseil

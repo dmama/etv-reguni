@@ -4,8 +4,8 @@ import java.util.Set;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 public class Ec_25001_01_AnnulationTutelle_Scenario extends EvenementCivilScenario {
 
@@ -62,7 +63,7 @@ public class Ec_25001_01_AnnulationTutelle_Scenario extends EvenementCivilScenar
 				addDefaultAdressesTo(indPierre);
 				addDefaultAdressesTo(indMomo);
 
-				setTutelle(indMomo, indPierre, null, EnumTypeTutelle.TUTELLE);
+				setTutelle(indMomo, indPierre, null, TypeTutelle.TUTELLE);
 
 			}
 		});

@@ -3,10 +3,10 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 public class TutelleImpl implements Tutelle, Serializable {
 
@@ -20,7 +20,7 @@ public class TutelleImpl implements Tutelle, Serializable {
 	private int noSequence;
 	private final String nomAutoriteTutelaire;
 	private final Long numeroCollectiviteAutoriteTutelaire;
-	private final EnumTypeTutelle typeTutelle;
+	private final TypeTutelle typeTutelle;
 
 	public static TutelleImpl get(ch.vd.registre.civil.model.Tutelle target) {
 		if (target == null) {
@@ -38,7 +38,7 @@ public class TutelleImpl implements Tutelle, Serializable {
 		this.numeroCollectiviteAutoriteTutelaire = target.getNumeroCollectiviteAutoriteTutellaire();
 		this.tuteur = IndividuImpl.get(target.getTuteur());
 		this.tuteurGeneral = TuteurGeneralImpl.get(target.getTuteurGeneral());
-		this.typeTutelle = target.getTypeTutelle();
+		this.typeTutelle = TypeTutelle.get(target.getTypeTutelle());
 	}
 
 	public RegDate getDateDebut() {
@@ -73,7 +73,7 @@ public class TutelleImpl implements Tutelle, Serializable {
 		return tuteurGeneral;
 	}
 
-	public EnumTypeTutelle getTypeTutelle() {
+	public TypeTutelle getTypeTutelle() {
 		return typeTutelle;
 	}
 

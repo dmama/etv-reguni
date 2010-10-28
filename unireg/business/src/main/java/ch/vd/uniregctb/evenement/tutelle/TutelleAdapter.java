@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.tutelle;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -13,6 +12,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Modélise un événement de mise ou levee de tutelle, curatelle ou conseil
@@ -98,19 +98,7 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 		/*
 		 * Initialisation du type de tutelle.
 		 */
-		final EnumTypeTutelle typeTutelleHost = tutelle.getTypeTutelle();
-		if ( EnumTypeTutelle.TUTELLE.equals(typeTutelleHost) ) {
-			this.typeTutelle = TypeTutelle.TUTELLE;
-		}
-		else if ( EnumTypeTutelle.CURATELLE.equals(typeTutelleHost) ) {
-			this.typeTutelle = TypeTutelle.CURATELLE;
-		}
-		else if ( EnumTypeTutelle.CONSEIL_LEGAL.equals(typeTutelleHost) ) {
-			this.typeTutelle = TypeTutelle.CONSEIL_LEGAL_CODE;
-		}
-		else {
-			throw new EvenementAdapterException("Ce type de tutelle n'est pas pris en charge : " + typeTutelleHost);
-		}
+		this.typeTutelle = tutelle.getTypeTutelle();
 
 		/*
 		 * Récupération du tuteur ou/et autorité tutellaire

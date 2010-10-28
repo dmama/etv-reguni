@@ -6,7 +6,6 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScenario {
 
@@ -72,7 +72,7 @@ public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScena
 				//addDefaultAdressesTo(indBea);
 				//addDefaultAdressesTo(indJulie);
 
-				setTutelle(indJulie, indBea, null, EnumTypeTutelle.TUTELLE);
+				setTutelle(indJulie, indBea, null, TypeTutelle.TUTELLE);
 
 			}
 		});

@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 public class MockTutelle implements Tutelle {
 
@@ -16,7 +16,7 @@ public class MockTutelle implements Tutelle {
 	private Long numeroCollectiviteAutoriteTutelaire;
 	private Individu tuteur;
 	private TuteurGeneral tuteurGeneral;
-	private EnumTypeTutelle typeTutelle;
+	private TypeTutelle typeTutelle;
 
 	public RegDate getDateDebut() {
 		return dateDebut;
@@ -74,11 +74,11 @@ public class MockTutelle implements Tutelle {
 		this.tuteurGeneral = tuteurGeneral;
 	}
 
-	public EnumTypeTutelle getTypeTutelle() {
+	public TypeTutelle getTypeTutelle() {
 		return typeTutelle;
 	}
 
-	public void setTypeTutelle(EnumTypeTutelle typeTutelle) {
+	public void setTypeTutelle(TypeTutelle typeTutelle) {
 		this.typeTutelle = typeTutelle;
 	}
 

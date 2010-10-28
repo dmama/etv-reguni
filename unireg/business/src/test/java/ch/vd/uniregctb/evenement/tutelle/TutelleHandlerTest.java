@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -20,8 +19,12 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Test unitaire du handler d'une mise sous tutelle.
@@ -65,8 +68,8 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 				addDefaultAdressesTo(julien);
 
 				/* tutelles */
-				setTutelle(momo, pierre, null, EnumTypeTutelle.CONSEIL_LEGAL);
-				setTutelle(david, null, EnumTypeTutelle.TUTELLE);
+				setTutelle(momo, pierre, null, TypeTutelle.CONSEIL_LEGAL);
+				setTutelle(david, null, TypeTutelle.TUTELLE);
 			}
 		});
 	}

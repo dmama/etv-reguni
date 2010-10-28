@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Test du handler de levée de tutelle:
@@ -57,7 +57,7 @@ public class LeveeTutelleHandlerTest extends AbstractEvenementHandlerTest {
 				addDefaultAdressesTo(pierre);
 
 				/* tutelles */
-				setTutelle(momo, pierre, null, EnumTypeTutelle.CONSEIL_LEGAL);
+				setTutelle(momo, pierre, null, TypeTutelle.CONSEIL_LEGAL);
 			}
 		});
 

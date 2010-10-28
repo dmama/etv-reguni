@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 public interface Tutelle {
 
@@ -48,5 +48,5 @@ public interface Tutelle {
     /**
      * @return le type de la tutelle.
      */
-    EnumTypeTutelle getTypeTutelle();
+    TypeTutelle getTypeTutelle();
 }

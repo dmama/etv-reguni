@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.annulationtutelle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +10,6 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
@@ -23,6 +19,10 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTutelle;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -62,8 +62,8 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 				addDefaultAdressesTo(leon);
 
 				/* tutelles */
-				setTutelle(momo, pierre, null, EnumTypeTutelle.CONSEIL_LEGAL);
-				setTutelle(leon, helene, null, EnumTypeTutelle.TUTELLE);
+				setTutelle(momo, pierre, null, TypeTutelle.CONSEIL_LEGAL);
+				setTutelle(leon, helene, null, TypeTutelle.TUTELLE);
 			}
 		});
 

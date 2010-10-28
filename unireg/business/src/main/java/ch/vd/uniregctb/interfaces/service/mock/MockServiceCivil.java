@@ -14,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -42,6 +41,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Mock du Service Civil.
@@ -417,7 +417,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return b.toString();
 	}
 
-	protected void setTutelle(MockIndividu pupille, MockIndividu tuteur, MockCollectiviteAdministrative autoriteTutelaire, EnumTypeTutelle type) {
+	protected void setTutelle(MockIndividu pupille, MockIndividu tuteur, MockCollectiviteAdministrative autoriteTutelaire, TypeTutelle type) {
 		final MockTutelle tutelle = new MockTutelle();
 		tutelle.setLibelleMotif("BlaBla");
 		tutelle.setTuteur(tuteur);
@@ -435,7 +435,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		pupille.setTutelle(tutelle);
 	}
 
-	protected void setTutelle(MockIndividu pupille, MockCollectiviteAdministrative autoriteTutelaire, EnumTypeTutelle type) {
+	protected void setTutelle(MockIndividu pupille, MockCollectiviteAdministrative autoriteTutelaire, TypeTutelle type) {
 		final MockTuteurGeneral tuteurGeneral = new MockTuteurGeneral();
 		tuteurGeneral.setNomContact("Ouilles");
 		tuteurGeneral.setNomOffice("Office du Tuteur General de Vaud");
