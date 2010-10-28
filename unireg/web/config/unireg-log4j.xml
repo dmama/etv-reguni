@@ -3,12 +3,12 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 	<!-- Log4j config for WEB -->
 
-	<!--appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="Threshold" value="INFO" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[web-unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
 		</layout>
-	</appender-->
+	</appender>
 
 	<appender name="IN_MEMORY" class="ch.vd.uniregctb.log.RollingInMemoryAppender">
 		<param name="MaxLines" value="100" />
@@ -28,7 +28,7 @@
 
 	<appender name="SERVICE_TRACING" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="Threshold" value="DEBUG" />
-		<param name="File" value="srv-access.log"/>
+		<param name="File" value="srv-access-web.log"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%-18.18c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
 		</layout>
@@ -90,7 +90,7 @@
 		<level value="WARN" />
 		<appender-ref ref="LOGFILE" />
 		<appender-ref ref="IN_MEMORY" />
-		<!--appender-ref ref="CONSOLE" /-->
+		<appender-ref ref="CONSOLE" />
 	</root>
 
 </log4j:configuration>

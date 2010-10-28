@@ -27,7 +27,7 @@
 
 	<appender name="SERVICE_TRACING" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="Threshold" value="DEBUG" />
-		<param name="File" value="srv-access.log"/>
+		<param name="File" value="srv-access-ws.log"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%-18.18c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
 		</layout>
