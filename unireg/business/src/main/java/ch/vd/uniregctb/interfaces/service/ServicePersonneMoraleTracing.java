@@ -54,91 +54,126 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getAllIds();
 		}
 		finally {
-			tracing.end(time, "getAllIds");
+			tracing.end(time, "getAllIds", null);
 		}
 		return result;
 	}
 
-	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
+	public PersonneMorale getPersonneMorale(final Long id, final PartPM... parts) {
 		PersonneMorale result;
 		long time = tracing.start();
 		try {
 			result = target.getPersonneMorale(id, parts);
 		}
 		finally {
-			tracing.end(time, "getPersonneMorale");
+			tracing.end(time, "getPersonneMorale", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d, parts=%s", id, ServiceTracing.toString(parts));
+				}
+			});
 		}
 		return result;
 	}
 
-	public List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts) {
+	public List<PersonneMorale> getPersonnesMorales(final List<Long> ids, final PartPM... parts) {
 		List<PersonneMorale> result;
 		long time = tracing.start();
 		try {
 			result = target.getPersonnesMorales(ids, parts);
 		}
 		finally {
-			tracing.end(time, "getPersonnesMorales");
+			tracing.end(time, "getPersonnesMorales", new Object() {
+				@Override
+				public String toString() {
+					return String.format("ids=%s, parts=%s", ServiceTracing.toString(ids), ServiceTracing.toString(parts));
+				}
+			});
 		}
 		return result;
 	}
 
-	public Etablissement getEtablissement(long id) {
+	public Etablissement getEtablissement(final long id) {
 		Etablissement result;
 		long time = tracing.start();
 		try {
 			result = target.getEtablissement(id);
 		}
 		finally {
-			tracing.end(time, "getEtablissement");
+			tracing.end(time, "getEtablissement", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d", id);
+				}
+			});
 		}
 		return result;
 	}
 
-	public List<Etablissement> getEtablissements(List<Long> ids) {
+	public List<Etablissement> getEtablissements(final List<Long> ids) {
 		List<Etablissement> result;
 		long time = tracing.start();
 		try {
 			result = target.getEtablissements(ids);
 		}
 		finally {
-			tracing.end(time, "getEtablissements");
+			tracing.end(time, "getEtablissements", new Object() {
+				@Override
+				public String toString() {
+					return String.format("ids=%s", ServiceTracing.toString(ids));
+				}
+			});
 		}
 		return result;
 	}
 
-	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
+	public AdressesPM getAdresses(final long noEntreprise, final RegDate date) {
 		AdressesPM result;
 		long time = tracing.start();
 		try {
 			result = target.getAdresses(noEntreprise, date);
 		}
 		finally {
-			tracing.end(time, "getAdresses");
+			tracing.end(time, "getAdresses", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noEntreprise=%d, date=%s", noEntreprise, ServiceTracing.toString(date));
+				}
+			});
 		}
 		return result;
 	}
 
-	public AdressesPMHisto getAdressesHisto(long noEntreprise) {
+	public AdressesPMHisto getAdressesHisto(final long noEntreprise) {
 		AdressesPMHisto result;
 		long time = tracing.start();
 		try {
 			result = target.getAdressesHisto(noEntreprise);
 		}
 		finally {
-			tracing.end(time, "getAdressesHisto");
+			tracing.end(time, "getAdressesHisto", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noEntreprise=%d", noEntreprise);
+				}
+			});
 		}
 		return result;
 	}
 
-	public List<EvenementPM> findEvenements(Long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
+	public List<EvenementPM> findEvenements(final long numeroEntreprise, final String code, final RegDate minDate, final RegDate maxDate) {
 		List<EvenementPM> result;
 		long time = tracing.start();
 		try {
 			result = target.findEvenements(numeroEntreprise, code, minDate, maxDate);
 		}
 		finally {
-			tracing.end(time, "findEvenements");
+			tracing.end(time, "findEvenements", new Object() {
+				@Override
+				public String toString() {
+					return String.format("numeroEntreprise=%d, code=%s, minDate=%s, maxDate=%s", numeroEntreprise, code, ServiceTracing.toString(minDate), ServiceTracing.toString(maxDate));
+				}
+			});
 		}
 		return result;
 	}

@@ -60,7 +60,7 @@ public class ProxyServicePM implements ServicePersonneMoraleService {
 		return target.getAdressesHisto(noEntreprise);
 	}
 
-	public List<EvenementPM> findEvenements(Long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
+	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		assertTargetNotNull();
 		return target.findEvenements(numeroEntreprise, code, minDate, maxDate);
 	}

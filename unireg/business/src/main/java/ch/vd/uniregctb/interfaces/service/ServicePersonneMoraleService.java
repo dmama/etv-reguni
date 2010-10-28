@@ -78,5 +78,5 @@ public interface ServicePersonneMoraleService {
 	 * @param maxDate          critère de valeur maximale de la date d'événement (optionel)
 	 * @return une liste d'événements
 	 */
-	List<EvenementPM> findEvenements(Long numeroEntreprise, String code, RegDate minDate, RegDate maxDate);
+	List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate);
 }

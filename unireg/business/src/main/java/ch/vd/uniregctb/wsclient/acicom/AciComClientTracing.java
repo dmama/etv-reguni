@@ -28,13 +28,18 @@ public class AciComClientTracing implements AciComClient, InitializingBean, Disp
 		this.statsService = statsService;
 	}
 
-	public ContenuMessage recupererMessage(RecupererContenuMessage infosMessage) throws AciComClientException {
+	public ContenuMessage recupererMessage(final RecupererContenuMessage infosMessage) throws AciComClientException {
 		final long start = tracing.start();
 		try {
 			return target.recupererMessage(infosMessage);
 		}
 		finally {
-			tracing.end(start, "recupererMessage");
+			tracing.end(start, "recupererMessage", new Object() {
+				@Override
+				public String toString() {
+					return String.format("infosMessage=%s", infosMessage != null ? infosMessage.getMessageId() : null);
+				}
+			});
 		}
 	}
 

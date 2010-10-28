@@ -44,246 +44,341 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		this.statsService = statsService;
 	}
 
-	public AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+	public AdressesCivilesActives getAdresses(final long noIndividu, final RegDate date, final boolean strict) throws DonneesCivilesException {
 		AdressesCivilesActives result;
 		long time = tracing.start();
 		try {
 			result = target.getAdresses(noIndividu, date, strict);
 		}
 		finally {
-			tracing.end(time, "getAdresses");
+			tracing.end(time, "getAdresses", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, date=%s, strict=%s", noIndividu, ServiceTracing.toString(date), strict);
+				}
+			});
 		}
 		return result;
 	}
 
-	public Collection<Adresse> getAdresses(long noIndividu, int annee) {
+	public Collection<Adresse> getAdresses(final long noIndividu, final int annee) {
 		Collection<Adresse> result;
 		long time = tracing.start();
 		try {
 			result = target.getAdresses(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time, "getAdresses");
+			tracing.end(time, "getAdresses", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
+	public AdressesCivilesHistoriques getAdressesHisto(final long noIndividu, final boolean strict) throws DonneesCivilesException {
 		AdressesCivilesHistoriques result;
 		long time = tracing.start();
 		try {
 			result = target.getAdressesHisto(noIndividu, strict);
 		}
 		finally {
-			tracing.end(time, "getAdressesHisto");
+			tracing.end(time, "getAdressesHisto", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, strict=%s", noIndividu, strict);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
+	public EtatCivil getEtatCivilActif(final long noIndividu, final RegDate date) {
 		EtatCivil result;
 		long time = tracing.start();
 		try {
 			result = target.getEtatCivilActif(noIndividu, date);
 		}
 		finally {
-			tracing.end(time, "getEtatCivilActif");
+			tracing.end(time, "getEtatCivilActif", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Individu getIndividu(long noIndividu, int annee) {
+	public Individu getIndividu(final long noIndividu, final int annee) {
 		Individu result;
 		long time = tracing.start();
 		try {
 			result = target.getIndividu(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time, "getIndividu");
+			tracing.end(time, "getIndividu", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, final int annee, final AttributeIndividu... parties) {
 		Individu result;
 		long time = tracing.start();
 		try {
 			result = target.getIndividu(noIndividu, annee, parties);
 		}
 		finally {
-			tracing.end(time, "getIndividu");
+			tracing.end(time, "getIndividu", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, annee=%d, parties=%s", noIndividu, annee, ServiceTracing.toString(parties));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, final RegDate date, final AttributeIndividu... parties) {
 		Individu result;
 		long time = tracing.start();
 		try {
 			result = target.getIndividu(noIndividu, date, parties);
 		}
 		finally {
-			tracing.end(time, "getIndividu");
+			tracing.end(time, "getIndividu", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, date=%s, parties=%s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
+	public Individu getConjoint(final Long noIndividuPrincipal, final RegDate date) {
 		Individu result;
 		long time = tracing.start();
 		try {
 			result = target.getConjoint(noIndividuPrincipal,date);
 		}
 		finally {
-			tracing.end(time, "getConjoint");
+			tracing.end(time, "getConjoint", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividuPrincipal=%d, date=%s", noIndividuPrincipal, ServiceTracing.toString(date));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+	public Long getNumeroIndividuConjoint(final Long noIndividuPrincipal, final RegDate date) {
 		Long result;
 		long time = tracing.start();
 		try {
 			result = target.getNumeroIndividuConjoint(noIndividuPrincipal,date);
 		}
 		finally {
-			tracing.end(time, "getNumeroIndividuConjoint");
+			tracing.end(time, "getNumeroIndividuConjoint", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividuPrincipal=%d, date=%s", noIndividuPrincipal, ServiceTracing.toString(date));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final RegDate date, final AttributeIndividu... parties) {
 		List<Individu> result;
 		long time = tracing.start();
 		try {
 			result = target.getIndividus(nosIndividus, date, parties);
 		}
 		finally {
-			tracing.end(time, "getIndividus");
+			tracing.end(time, "getIndividus", new Object() {
+				@Override
+				public String toString() {
+					return String.format("nosIndividus=%s, date=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date), ServiceTracing.toString(parties));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final int annee, final AttributeIndividu... parties) {
 		List<Individu> result;
 		long time = tracing.start();
 		try {
 			result = target.getIndividus(nosIndividus, annee, parties);
 		}
 		finally {
-			tracing.end(time, "getIndividus");
+			tracing.end(time, "getIndividus", new Object() {
+				@Override
+				public String toString() {
+					return String.format("nosIndividus=%s, annee=%d, parties=%s", ServiceTracing.toString(nosIndividus), annee, ServiceTracing.toString(parties));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Collection<Nationalite> getNationalites(long noIndividu, int annee) {
+	public Collection<Nationalite> getNationalites(final long noIndividu, final int annee) {
 		Collection<Nationalite> result;
 		long time = tracing.start();
 		try {
 			result = target.getNationalites(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time, "getNationalites");
+			tracing.end(time, "getNationalites", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Origine getOrigine(long noIndividu, int annee) {
+	public Origine getOrigine(final long noIndividu, final int annee) {
 		Origine result;
 		long time = tracing.start();
 		try {
 			result = target.getOrigine(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time, "getOrigine");
+			tracing.end(time, "getOrigine", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Collection<Permis> getPermis(long noIndividu, int annee) {
+	public Collection<Permis> getPermis(final long noIndividu, final int annee) {
 		Collection<Permis> result;
 		long time = tracing.start();
 		try {
 			result = target.getPermis(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time, "getPermis");
+			tracing.end(time, "getPermis", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Permis getPermisActif(long noIndividu, RegDate date) {
+	public Permis getPermisActif(final long noIndividu, final RegDate date) {
 		Permis result;
 		long time = tracing.start();
 		try {
 			result = target.getPermisActif(noIndividu, date);
 		}
 		finally {
-			tracing.end(time, "getPermisActif");
+			tracing.end(time, "getPermisActif", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Tutelle getTutelle(long noIndividu, int annee) {
+	public Tutelle getTutelle(final long noIndividu, final int annee) {
 		Tutelle result;
 		long time = tracing.start();
 		try {
 			result = target.getTutelle(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time, "getTutelle");
+			tracing.end(time, "getTutelle", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public String getNomPrenom(Individu individu) {
+	public String getNomPrenom(final Individu individu) {
 		String result;
 		long time = tracing.start();
 		try {
 			result = target.getNomPrenom(individu);
 		}
 		finally {
-			tracing.end(time, "getNomPrenom");
+			tracing.end(time, "getNomPrenom", new Object() {
+				@Override
+				public String toString() {
+					return String.format("individu=%s", individu != null ? individu.getNoTechnique() : null);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public NomPrenom getDecompositionNomPrenom(Individu individu) {
+	public NomPrenom getDecompositionNomPrenom(final Individu individu) {
 		NomPrenom result;
 		long time = tracing.start();
 		try {
 			result = target.getDecompositionNomPrenom(individu);
 		}
 		finally {
-			tracing.end(time, "getDecompositionNomPrenom");
+			tracing.end(time, "getDecompositionNomPrenom", new Object() {
+				@Override
+				public String toString() {
+					return String.format("individu=%s", individu != null ? individu.getNoTechnique() : null);
+				}
+			});
 		}
 		return result;
 	}
 
-	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
+	public List<HistoriqueCommune> getCommunesDomicileHisto(final RegDate depuis, final long noIndividu, final boolean strict, final boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
 		final List<HistoriqueCommune> result;
 		final long time = tracing.start();
 		try {
 			result = target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 		}
 		finally {
-			tracing.end(time, "getCommunesDomicileHisto");
+			tracing.end(time, "getCommunesDomicileHisto", new Object() {
+				@Override
+				public String toString() {
+					return String.format("depuis=%s, noIndividu=%d, strict=%s, seulementVaud=%s", ServiceTracing.toString(depuis), noIndividu, strict, seulementVaud);
+				}
+			});
 		}
 		return result;
 	}
@@ -294,7 +389,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			return target.isWarmable();
 		}
 		finally {
-			tracing.end(time, "isWarmable");
+			tracing.end(time, "isWarmable", null);
 		}
 	}
 

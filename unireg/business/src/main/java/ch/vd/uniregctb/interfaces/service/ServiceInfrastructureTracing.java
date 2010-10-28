@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -44,39 +45,54 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		this.statsService = statsService;
 	}
 
-	public boolean estDansLeCanton(Rue rue) throws InfrastructureException {
+	public boolean estDansLeCanton(final Rue rue) throws InfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
 			result = target.estDansLeCanton(rue);
 		}
 		finally {
-			tracing.end(time, "estDansLeCanton(rue)");
+			tracing.end(time, "estDansLeCanton", new Object() {
+				@Override
+				public String toString() {
+					return String.format("rue=%s", rue != null ? rue.getNoRue() : null);
+				}
+			});
 		}
 		return result;
 	}
 
-	public boolean estDansLeCanton(CommuneSimple commune) throws InfrastructureException {
+	public boolean estDansLeCanton(final CommuneSimple commune) throws InfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
 			result = target.estDansLeCanton(commune);
 		}
 		finally {
-			tracing.end(time, "estDansLeCanton(communeSimple)");
+			tracing.end(time, "estDansLeCanton", new Object() {
+				@Override
+				public String toString() {
+					return String.format("communeSimple=%s", commune != null ? commune.getNoOFSEtendu() : null);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public boolean estDansLeCanton(Commune commune) throws InfrastructureException {
+	public boolean estDansLeCanton(final Commune commune) throws InfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
 			result = target.estDansLeCanton(commune);
 		}
 		finally {
-			tracing.end(time, "estDansLeCanton(commune)");
+			tracing.end(time, "estDansLeCanton", new Object() {
+				@Override
+				public String toString() {
+					return String.format("commune=%s", commune != null ? commune.getNoOFSEtendu() : null);
+				}
+			});
 		}
 
 		return result;
@@ -89,7 +105,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estDansLeCanton(adresse);
 		}
 		finally {
-			tracing.end(time, "estDansLeCanton(adresseGenerique)");
+			tracing.end(time, "estDansLeCanton", "adresseGenerique");
 		}
 
 		return result;
@@ -102,7 +118,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estDansLeCanton(adresse);
 		}
 		finally {
-			tracing.end(time, "estDansLeCanton(adresse)");
+			tracing.end(time, "estDansLeCanton", "adresse");
 		}
 
 		return result;
@@ -115,7 +131,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estEnSuisse(adresse);
 		}
 		finally {
-			tracing.end(time, "estEnSuisse(adresseGenerique)");
+			tracing.end(time, "estEnSuisse", "adresseGenerique");
 		}
 
 		return result;
@@ -128,7 +144,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estEnSuisse(adresse);
 		}
 		finally {
-			tracing.end(time, "estEnSuisse(adresse)");
+			tracing.end(time, "estEnSuisse", "adresse");
 		}
 
 		return result;
@@ -141,7 +157,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getACI();
 		}
 		finally {
-			tracing.end(time, "getACI");
+			tracing.end(time, "getACI", null);
 		}
 
 		return result;
@@ -154,7 +170,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getACISuccessions();
 		}
 		finally {
-			tracing.end(time, "getACISuccessions");
+			tracing.end(time, "getACISuccessions", null);
 		}
 
 		return result;
@@ -167,7 +183,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCEDI();
 		}
 		finally {
-			tracing.end(time, "getCEDI");
+			tracing.end(time, "getCEDI", null);
 		}
 
 		return result;
@@ -180,7 +196,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCAT();
 		}
 		finally {
-			tracing.end(time, "getCAT");
+			tracing.end(time, "getCAT", null);
 		}
 
 		return result;
@@ -193,59 +209,79 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getAllCantons();
 		}
 		finally {
-			tracing.end(time, "getAllCantons");
+			tracing.end(time, "getAllCantons", null);
 		}
 
 		return result;
 	}
 
-	public Canton getCanton(int cantonOFS) throws InfrastructureException {
+	public Canton getCanton(final int cantonOFS) throws InfrastructureException {
 		Canton result;
 		long time = tracing.start();
 		try {
 			result = target.getCanton(cantonOFS);
 		}
 		finally {
-			tracing.end(time, "getCanton");
+			tracing.end(time, "getCanton", new Object() {
+				@Override
+				public String toString() {
+					return String.format("cantonOFS=%d", cantonOFS);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException {
+	public Canton getCantonByCommune(final int noOfsCommune) throws InfrastructureException {
 		Canton result;
 		long time = tracing.start();
 		try {
 			result = target.getCantonByCommune(noOfsCommune);
 		}
 		finally {
-			tracing.end(time, "getCantonByCommune");
+			tracing.end(time, "getCantonByCommune", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noOfsCommune=%d", noOfsCommune);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Canton getCantonBySigle(String sigle) throws InfrastructureException {
+	public Canton getCantonBySigle(final String sigle) throws InfrastructureException {
 		Canton result;
 		long time = tracing.start();
 		try {
 			result = target.getCantonBySigle(sigle);
 		}
 		finally {
-			tracing.end(time, "getCantonBySigle");
+			tracing.end(time, "getCantonBySigle", new Object() {
+				@Override
+				public String toString() {
+					return String.format("sigle=%s", sigle);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
+	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws InfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {
 			result = target.getCollectivite(noColAdm);
 		}
 		finally {
-			tracing.end(time, "getCollectivite");
+			tracing.end(time, "getCollectivite", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noColAdm=%d", noColAdm);
+				}
+			});
 		}
 
 		return result;
@@ -258,13 +294,13 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCollectivitesAdministratives();
 		}
 		finally {
-			tracing.end(time, "getCollectivitesAdministratives");
+			tracing.end(time, "getCollectivitesAdministratives", null);
 		}
 
 		return result;
 	}
 
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<EnumTypeCollectivite> typesCollectivite)
 			throws InfrastructureException {
 		List<CollectiviteAdministrative> result;
 		long time = tracing.start();
@@ -272,7 +308,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCollectivitesAdministratives(typesCollectivite);
 		}
 		finally {
-			tracing.end(time, "getCollectivitesAdministratives(types)");
+			tracing.end(time, "getCollectivitesAdministratives", new Object() {
+				@Override
+				public String toString() {
+					return String.format("typesCollectivite=%s", ServiceTracing.toString(typesCollectivite));
+				}
+			});
 		}
 
 		return result;
@@ -285,7 +326,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneByAdresse(adresse);
 		}
 		finally {
-			tracing.end(time, "getCommuneByAdresse(adresse)");
+			tracing.end(time, "getCommuneByAdresse", "adresse");
 		}
 
 		return result;
@@ -298,46 +339,61 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneByAdresse(adresse);
 		}
 		finally {
-			tracing.end(time, "getCommuneByAdresse(adresseGenerique)");
+			tracing.end(time, "getCommuneByAdresse", "adresseGenerique");
 		}
 
 		return result;
 	}
 
-	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
+	public Commune getCommuneByLocalite(final Localite localite) throws InfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneByLocalite(localite);
 		}
 		finally {
-			tracing.end(time, "getCommuneByLocalite");
+			tracing.end(time, "getCommuneByLocalite", new Object() {
+				@Override
+				public String toString() {
+					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(final int noCommune, final RegDate date) throws InfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneByNumeroOfsEtendu(noCommune, date);
 		}
 		finally {
-			tracing.end(time, "getCommuneByNumeroOfsEtendu");
+			tracing.end(time, "getCommuneByNumeroOfsEtendu", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noCommune=%d, date=%s", noCommune, ServiceTracing.toString(date));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException {
+	public Commune getCommuneVaudByNumACI(final Integer numeroACI) throws InfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneVaudByNumACI(numeroACI);
 		}
 		finally {
-			tracing.end(time, "getCommuneVaudByNumACI");
+			tracing.end(time, "getCommuneVaudByNumACI", new Object() {
+				@Override
+				public String toString() {
+					return String.format("numeroACI=%s", numeroACI);
+				}
+			});
 		}
 
 		return result;
@@ -350,7 +406,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommunesDeVaud();
 		}
 		finally {
-			tracing.end(time, "getCommunesDeVaud");
+			tracing.end(time, "getCommunesDeVaud", null);
 		}
 
 		return result;
@@ -363,7 +419,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommunesHorsCanton();
 		}
 		finally {
-			tracing.end(time, "getCommunesHorsCanton");
+			tracing.end(time, "getCommunesHorsCanton", null);
 		}
 
 		return result;
@@ -376,20 +432,25 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommunes();
 		}
 		finally {
-			tracing.end(time, "getCommunes");
+			tracing.end(time, "getCommunes", null);
 		}
 
 		return result;
 	}
 
-	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
+	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
 			result = target.getListeCommunes(canton);
 		}
 		finally {
-			tracing.end(time, "getListeCommunes(canton)");
+			tracing.end(time, "getListeCommunes", new Object() {
+				@Override
+				public String toString() {
+					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
+				}
+			});
 		}
 
 		return result;
@@ -402,72 +463,97 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getListeFractionsCommunes();
 		}
 		finally {
-			tracing.end(time, "getListeFractionsCommunes");
+			tracing.end(time, "getListeFractionsCommunes", null);
 		}
 
 		return result;
 	}
 
-	public List<Commune> getListeCommunes(int cantonOFS) throws InfrastructureException {
+	public List<Commune> getListeCommunes(final int cantonOFS) throws InfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
 			result = target.getListeCommunes(cantonOFS);
 		}
 		finally {
-			tracing.end(time, "getListeCommunes(int)");
+			tracing.end(time, "getListeCommunes", new Object() {
+				@Override
+				public String toString() {
+					return String.format("cantonOFS=%d", cantonOFS);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<Commune> getListeCommunesByOID(int oid) throws InfrastructureException {
+	public List<Commune> getListeCommunesByOID(final int oid) throws InfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
 			result = target.getListeCommunesByOID(oid);
 		}
 		finally {
-			tracing.end(time, "getListeCommunesByOID");
+			tracing.end(time, "getListeCommunesByOID", new Object() {
+				@Override
+				public String toString() {
+					return String.format("oid=%d", oid);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {
+	public CommuneSimple getCommuneFaitiere(final CommuneSimple commune, final RegDate dateReference) throws InfrastructureException {
 		CommuneSimple result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneFaitiere(commune, dateReference);
 		}
 		finally {
-			tracing.end(time, "getCommuneFaitiere");
+			tracing.end(time, "getCommuneFaitiere", new Object() {
+				@Override
+				public String toString() {
+					return String.format("commune=%s, dateReference=%s", commune != null ? commune.getNoOFSEtendu() : null, ServiceTracing.toString(dateReference));
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException {
+	public List<Localite> getLocaliteByCommune(final int commune) throws InfrastructureException {
 		List<Localite> result;
 		long time = tracing.start();
 		try {
 			result = target.getLocaliteByCommune(commune);
 		}
 		finally {
-			tracing.end(time, "getLocaliteByCommune");
+			tracing.end(time, "getLocaliteByCommune", new Object() {
+				@Override
+				public String toString() {
+					return String.format("commune=%d", commune);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public Localite getLocaliteByONRP(int onrp) throws InfrastructureException {
+	public Localite getLocaliteByONRP(final int onrp) throws InfrastructureException {
 		Localite result;
 		long time = tracing.start();
 		try {
 			result = target.getLocaliteByONRP(onrp);
 		}
 		finally {
-			tracing.end(time, "getLocaliteByONRP");
+			tracing.end(time, "getLocaliteByONRP", new Object() {
+				@Override
+				public String toString() {
+					return String.format("onrp=%d", onrp);
+				}
+			});
 		}
 
 		return result;
@@ -480,33 +566,43 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getLocalites();
 		}
 		finally {
-			tracing.end(time, "getLocalites");
+			tracing.end(time, "getLocalites", null);
 		}
 
 		return result;
 	}
 
-	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
+	public OfficeImpot getOfficeImpot(final int noColAdm) throws InfrastructureException {
 		OfficeImpot result;
 		long time = tracing.start();
 		try {
 			result = target.getOfficeImpot(noColAdm);
 		}
 		finally {
-			tracing.end(time, "getOfficeImpot");
+			tracing.end(time, "getOfficeImpot", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noColAdm=%d", noColAdm);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
+	public OfficeImpot getOfficeImpotDeCommune(final int noCommune) throws InfrastructureException {
 		OfficeImpot result;
 		long time = tracing.start();
 		try {
 			result = target.getOfficeImpotDeCommune(noCommune);
 		}
 		finally {
-			tracing.end(time, "getOfficeImpotDeCommune");
+			tracing.end(time, "getOfficeImpotDeCommune", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noCommune=%d", noCommune);
+				}
+			});
 		}
 
 		return result;
@@ -519,7 +615,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getOfficesImpot();
 		}
 		finally {
-			tracing.end(time, "getOfficesImpot");
+			tracing.end(time, "getOfficesImpot", null);
 		}
 
 		return result;
@@ -532,34 +628,44 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getPays();
 		}
 		finally {
-			tracing.end(time, "getPays");
+			tracing.end(time, "getPays", null);
 		}
 
 		return result;
 	}
 
-	public Pays getPays(int numeroOFS) throws InfrastructureException {
+	public Pays getPays(final int numeroOFS) throws InfrastructureException {
 		Pays result;
 		long time = tracing.start();
 		try {
 			result = target.getPays(numeroOFS);
 		}
 		finally {
-			tracing.end(time, "getPays(int)");
+			tracing.end(time, "getPays", new Object() {
+				@Override
+				public String toString() {
+					return String.format("numeroOFS=%d", numeroOFS);
+				}
+			});
 		}
 
 		return result;
 	}
 
 
-	public Pays getPays(String codePays) throws InfrastructureException {
+	public Pays getPays(final String codePays) throws InfrastructureException {
 		Pays result;
 		long time = tracing.start();
 		try {
 			result = target.getPays(codePays);
 		}
 		finally {
-			tracing.end(time, "getPays(String)");
+			tracing.end(time, "getPays", new Object() {
+				@Override
+				public String toString() {
+					return String.format("codePays=%s", codePays);
+				}
+			});
 		}
 
 		return result;
@@ -572,59 +678,90 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getPaysInconnu();
 		}
 		finally {
-			tracing.end(time, "getPaysInconnu");
+			tracing.end(time, "getPaysInconnu", null);
 		}
 
 		return result;
 	}
 
-	public Rue getRueByNumero(int numero) throws InfrastructureException {
+	public Rue getRueByNumero(final int numero) throws InfrastructureException {
 		Rue result;
 		long time = tracing.start();
 		try {
 			result = target.getRueByNumero(numero);
 		}
 		finally {
-			tracing.end(time, "getRueByNumero");
+			tracing.end(time, "getRueByNumero", new Object() {
+				@Override
+				public String toString() {
+					return String.format("numero=%d", numero);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<Rue> getRues(Localite localite) throws InfrastructureException {
+	public List<Rue> getRues(final Localite localite) throws InfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
 		try {
 			result = target.getRues(localite);
 		}
 		finally {
-			tracing.end(time, "getRues(localite)");
+			tracing.end(time, "getRues", new Object() {
+				@Override
+				public String toString() {
+					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<Rue> getRues(Collection<Localite> localites) throws InfrastructureException {
+	public List<Rue> getRues(final Collection<Localite> localites) throws InfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
 		try {
 			result = target.getRues(localites);
 		}
 		finally {
-			tracing.end(time, "getRues(localites)");
+			tracing.end(time, "getRues", new Object() {
+				@Override
+				public String toString() {
+					final String parms;
+					if (localites != null) {
+						final List<Integer> norp = new ArrayList<Integer>(localites.size());
+						for (Localite localite : localites) {
+							norp.add(localite.getNoOrdre());
+						}
+						parms = ServiceTracing.toString(norp);
+					}
+					else {
+						parms = null;
+					}
+					return String.format("localites=%s", parms);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<Rue> getRues(Canton canton) throws InfrastructureException {
+	public List<Rue> getRues(final Canton canton) throws InfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
 		try {
 			result = target.getRues(canton);
 		}
 		finally {
-			tracing.end(time, "getRues(canton)");
+			tracing.end(time, "getRues", new Object() {
+				@Override
+				public String toString() {
+					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
+				}
+			});
 		}
 
 		return result;
@@ -637,7 +774,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getSuisse();
 		}
 		finally {
-			tracing.end(time, "getSuisse");
+			tracing.end(time, "getSuisse", null);
 		}
 
 		return result;
@@ -650,7 +787,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getVaud();
 		}
 		finally {
-			tracing.end(time, "getVaud");
+			tracing.end(time, "getVaud", null);
 		}
 
 		return result;
@@ -663,33 +800,43 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getZone(adresse);
 		}
 		finally {
-			tracing.end(time, "getZone");
+			tracing.end(time, "getZone", "adresseGenerique");
 		}
 
 		return result;
 	}
 
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException {
+	public InstitutionFinanciere getInstitutionFinanciere(final int id) throws InfrastructureException {
 		InstitutionFinanciere result;
 		long time = tracing.start();
 		try {
 			result = target.getInstitutionFinanciere(id);
 		}
 		finally {
-			tracing.end(time, "getInstitutionFinanciere");
+			tracing.end(time, "getInstitutionFinanciere", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d", id);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException {
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(final String noClearing) throws InfrastructureException {
 		List<InstitutionFinanciere> result;
 		long time = tracing.start();
 		try {
 			result = target.getInstitutionsFinancieres(noClearing);
 		}
 		finally {
-			tracing.end(time, "getInstitutionsFinancieres");
+			tracing.end(time, "getInstitutionsFinancieres", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noClearing=%s", noClearing);
+				}
+			});
 		}
 
 		return result;
@@ -711,27 +858,37 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return null;
 	}
 
-	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+	public Localite getLocaliteByNPA(final int npa) throws InfrastructureException {
 		Localite result;
 		long time = tracing.start();
 		try {
 			result = target.getLocaliteByNPA(npa);
 		}
 		finally {
-			tracing.end(time, "getLocaliteByNPA");
+			tracing.end(time, "getLocaliteByNPA", new Object() {
+				@Override
+				public String toString() {
+					return String.format("npa=%d", npa);
+				}
+			});
 		}
 
 		return result;
 	}
 
-	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
+	public TypeAffranchissement getTypeAffranchissement(final int noOfsPays) {
 		TypeAffranchissement result;
 		long time = tracing.start();
 		try {
 			result = target.getTypeAffranchissement(noOfsPays);
 		}
 		finally {
-			tracing.end(time, "getTypeAffranchissement");
+			tracing.end(time, "getTypeAffranchissement", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noOfsPays=%d", noOfsPays);
+				}
+			});
 		}
 
 		return result;

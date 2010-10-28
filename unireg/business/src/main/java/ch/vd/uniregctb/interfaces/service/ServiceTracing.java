@@ -1,9 +1,15 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 
 /**
  * Classe utilitaire qui permet de comptabiliser le ping moyen (depuis le début de l'application et sur les 5 dernières minutes) ainsi que le temps passé entre deux appels.
@@ -255,18 +261,40 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	/**
-	 * Signale la fin d'un appel d'une méthode nommée
+	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau {@link org.apache.log4j.Level#INFO INFO})
 	 *
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 * @param name  le nom de la méthode
+	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
 	 */
-	public void end(long start, String name) {
+	public void end(long start, String name, Object params) {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, name);
 		if (detailLogger.isInfoEnabled()) {
-			detailLogger.info(String.format("(%d ms) %s", (nanoTime - start) / 1000000, name));
+			final String paramString;
+			if (params != null) {
+				paramString = params.toString();
+			}
+			else {
+				paramString = null;
+			}
+			if (StringUtils.isBlank(paramString)) {
+				detailLogger.info(String.format("(%d ms) %s", (nanoTime - start) / 1000000, name));
+			}
+			else {
+				detailLogger.info(String.format("(%d ms) %s{%s}", (nanoTime - start) / 1000000, name, paramString));
+			}
 		}
+	}
+
+	/**
+	 * Les temps de réponses (voir méthode {@link #end(long, String, Object) end()}) sont loggués en niveau {@link org.apache.log4j.Level#INFO INFO} ;
+	 * cette méthode permet d'inclure un peu plus de détails seulement en mode debug
+	 * @return <code>true</code> si le logguer est actif au niveau {@link org.apache.log4j.Level#DEBUG DEBUG}, <code>false</code> sinon
+	 */
+	public boolean isDebugEnabled() {
+		return detailLogger.isDebugEnabled();
 	}
 
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
@@ -279,5 +307,29 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			}
 		}
 		return copy;
+	}
+
+	public static String toString(RegDate date) {
+		if (date != null) {
+			return RegDateHelper.dateToDisplayString(date);
+		}
+		else {
+			return "null";
+		}
+	}
+
+	public static <T> String toString(T[] array) {
+		return Arrays.toString(array);
+	}
+
+	public static <T> String toString(Collection<T> col) {
+		final Object[] array;
+		if (col != null) {
+			array = col.toArray(new Object[col.size()]);
+		}
+		else {
+			array = null;
+		}
+		return toString(array);
 	}
 }

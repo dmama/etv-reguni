@@ -32,74 +32,104 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		this.statsService = statsService;
 	}
 
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) {
 		List<CollectiviteAdministrative> result;
 		long time = tracing.start();
 		try {
 			result = target.getCollectivitesUtilisateur(visaOperateur);
 		}
 		finally {
-			tracing.end(time, "getCollectivitesUtilisateur");
+			tracing.end(time, "getCollectivitesUtilisateur", new Object() {
+				@Override
+				public String toString() {
+					return String.format("visaOperateur=%s", visaOperateur);
+				}
+			});
 		}
 		return result;
 	}
 
-	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite) {
+	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(final String codeFonction, final int noCollectivite) {
 		List<ProfilOperateur> result;
 		long time = tracing.start();
 		try {
 			result = target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
 		}
 		finally {
-			tracing.end(time, "getListeOperateursPourFonctionCollectivite");
+			tracing.end(time, "getListeOperateursPourFonctionCollectivite", new Object() {
+				@Override
+				public String toString() {
+					return String.format("codeFonction=%s, noCollectivite=%d", codeFonction, noCollectivite);
+				}
+			});
 		}
 		return result;
 	}
 
-	public Operateur getOperateur(long individuNoTechnique) {
+	public Operateur getOperateur(final long individuNoTechnique) {
 		Operateur result;
 		long time = tracing.start();
 		try {
 			result = target.getOperateur(individuNoTechnique);
 		}
 		finally {
-			tracing.end(time, "getOperateur(long)");
+			tracing.end(time, "getOperateur", new Object() {
+				@Override
+				public String toString() {
+					return String.format("individuNoTechnique=%d", individuNoTechnique);
+				}
+			});
 		}
 		return result;
 	}
 
-	public Operateur getOperateur(String visa) {
+	public Operateur getOperateur(final String visa) {
 		Operateur result;
 		long time = tracing.start();
 		try {
 			result = target.getOperateur(visa);
 		}
 		finally {
-			tracing.end(time, "getOperateur(visa)");
+			tracing.end(time, "getOperateur", new Object() {
+				@Override
+				public String toString() {
+					return String.format("visa=%s", visa);
+				}
+			});
 		}
 		return result;
 	}
 
-	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public ProfilOperateur getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) {
 		ProfilOperateur result;
 		long time = tracing.start();
 		try {
 			result = target.getProfileUtilisateur(visaOperateur, codeCollectivite);
 		}
 		finally {
-			tracing.end(time, "getProfileUtilisateur");
+			tracing.end(time, "getProfileUtilisateur", new Object() {
+				@Override
+				public String toString() {
+					return String.format("visaOperateur=%s, codeCollectivite=%d", visaOperateur, codeCollectivite);
+				}
+			});
 		}
 		return result;
 	}
 
-	public List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(final List<EnumTypeCollectivite> typesCollectivite) {
 		List<Operateur> result;
 		long time = tracing.start();
 		try {
 			result = target.getUtilisateurs(typesCollectivite);
 		}
 		finally {
-			tracing.end(time, "getUtilisateurs");
+			tracing.end(time, "getUtilisateurs", new Object() {
+				@Override
+				public String toString() {
+					return String.format("typesCollectivites=%s", ServiceTracing.toString(typesCollectivite));
+				}
+			});
 		}
 		return result;
 	}

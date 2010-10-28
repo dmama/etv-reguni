@@ -28,13 +28,23 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 		this.statsService = statsService;
 	}
 
-	public BvrReponse getBVRDemande(BvrDemande bvrDemande) throws BVRPlusClientException {
+	public BvrReponse getBVRDemande(final BvrDemande bvrDemande) throws BVRPlusClientException {
 		final long start = tracing.start();
 		try {
 			return target.getBVRDemande(bvrDemande);
 		}
 		finally {
-			tracing.end(start, "getBVRDemande");
+			tracing.end(start, "getBVRDemande", new Object() {
+				@Override
+				public String toString() {
+					if (bvrDemande != null) {
+						return String.format("bvrDemande={ndc=%s, anneeTaxation=%d, typeDebiteurIS=%s}", bvrDemande.getNdc(), bvrDemande.getAnneeTaxation(), bvrDemande.getTypeDebiteurIS());
+					}
+					else {
+						return "null";
+					}
+				}
+			});
 		}
 	}
 
