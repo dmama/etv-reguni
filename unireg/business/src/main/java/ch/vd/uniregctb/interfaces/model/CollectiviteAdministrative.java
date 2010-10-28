@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.interfaces.model;
 
-import java.util.List;
-
-import ch.vd.infrastructure.model.EnumSigleUsageEmail;
-import ch.vd.infrastructure.model.EnumTypeSupportEchangeInformation;
-import ch.vd.infrastructure.model.TypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 
 public interface CollectiviteAdministrative {
@@ -100,13 +95,6 @@ public interface CollectiviteAdministrative {
      * @return le sigle du canton de la collectivité administrative.
      */
     String getSigleCanton();
-
-    /**
-     * Retourne le type de la collectivité administrative.
-     *
-     * @return retourne le type de la collectivité administrative.
-     */
-    TypeCollectivite getType();
 
     /**
      * Indique si la collectivité administrative est l'Administration Cantonale des Impôts (ACI).

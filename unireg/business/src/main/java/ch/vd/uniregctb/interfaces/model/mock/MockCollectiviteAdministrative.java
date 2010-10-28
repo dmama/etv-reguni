@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.infrastructure.model.EnumSigleUsageEmail;
 import ch.vd.infrastructure.model.EnumTypeSupportEchangeInformation;
-import ch.vd.infrastructure.model.TypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 
@@ -45,7 +42,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	private String sigle = null;
 	private String sigleCanton = null;
 	private EnumTypeSupportEchangeInformation supportEchanAO = null;
-	private TypeCollectivite type = null;
 	private boolean isACI;
 	private boolean isOID;
 	private boolean isTiersTAO;
@@ -275,21 +271,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	 */
 	public void setSupportEchanAO(EnumTypeSupportEchangeInformation supportEchanAO) {
 		this.supportEchanAO = supportEchanAO;
-	}
-
-	/**
-	 * @return the type
-	 */
-	public TypeCollectivite getType() {
-		return type;
-	}
-
-	/**
-	 * @param type
-	 *            the type to set
-	 */
-	public void setType(TypeCollectivite type) {
-		this.type = type;
 	}
 
 	/**

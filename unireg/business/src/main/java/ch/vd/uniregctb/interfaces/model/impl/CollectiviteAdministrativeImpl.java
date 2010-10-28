@@ -3,14 +3,13 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.model.TypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 
 public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
 
-	private static final long serialVersionUID = 2060844289310860920L;
+	private static final long serialVersionUID = -8466081857429254813L;
 	
 	private final Adresse adresse;
 	private final RegDate dateFin;
@@ -25,7 +24,6 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	private final String nomCourt;
 	private final String sigle;
 	private final String sigleCanton;
-	private final TypeCollectivite type;
 	private final boolean aci;
 	private final boolean oid;
 	private final boolean valide;
@@ -56,7 +54,6 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.nomCourt = target.getNomCourt();
 		this.sigle = target.getSigle();
 		this.sigleCanton = target.getSigleCanton();
-		this.type = target.getType();
 		this.aci = target.isACI();
 		this.oid = target.isOID();
 		this.valide = target.isValide();
@@ -112,10 +109,6 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 
 	public String getSigleCanton() {
 		return sigleCanton;
-	}
-
-	public TypeCollectivite getType() {
-		return type;
 	}
 
 	public boolean isACI() {
