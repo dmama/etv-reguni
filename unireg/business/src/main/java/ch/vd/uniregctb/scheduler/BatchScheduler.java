@@ -19,7 +19,6 @@ import org.quartz.Trigger;
 import org.quartz.UnableToInterruptJobException;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 /**
@@ -67,7 +66,7 @@ public class BatchScheduler {
 	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
 	 */
 	public void registerCron(JobDefinition job, String cronExpression) throws SchedulerException, ParseException {
-		registerCron(job, job.getDefaultParams(), cronExpression);
+		registerCron(job, job.getDefaultParamWebValues(), cronExpression);
 	}
 
 	/**
@@ -104,7 +103,7 @@ public class BatchScheduler {
 		LOGGER.info("Lancement du job <" + jobName + ">");
 		JobDefinition job = jobs.get(jobName);
 		Assert.notNull(job);
-		Map<String, Object> params = job.getDefaultParams();
+		Map<String, Object> params = job.getDefaultParamWebValues();
 		return startJob(jobName, params);
 	}
 

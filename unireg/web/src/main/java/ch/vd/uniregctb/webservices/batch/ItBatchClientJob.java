@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.webservices.batch;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -35,86 +32,74 @@ public class ItBatchClientJob extends JobDefinition {
 		BONJOUR
 	}
 
-	private static final List<JobParam> params ;
+	public ItBatchClientJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
 		// Date debut
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Date de début");
 			param.setName(PARAM_DATE_DEBUT);
 			param.setMandatory(true);
 			param.setType(new JobParamRegDate());
-			params.add(param);
+			addParameterDefinition(param, RegDate.get());
 		}
 		// Count
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Nombre d'occurences");
 			param.setName(PARAM_COUNT);
 			param.setMandatory(false);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, 42);
 		}
 		// Duration
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Durée minimale (s)");
 			param.setName(PARAM_DURATION);
 			param.setMandatory(false);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 		// Shutdown Duration
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Durée minimale d'arrêt après interruption (s)");
 			param.setName(PARAM_SHUTDOWN_DURATION);
 			param.setMandatory(false);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 		// Salutations
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Salutations");
 			param.setName(PARAM_SALUTATIONS);
 			param.setMandatory(false);
 			param.setType(new JobParamEnum(Salutations.class));
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 		// Fichier joint
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Fichier joint");
 			param.setName(PARAM_ATTACHEMENT);
 			param.setMandatory(false);
 			param.setType(new JobParamFile());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			defaultParams.put(PARAM_DATE_DEBUT, RegDate.get());
-		}
-	}
-
-	public ItBatchClientJob(int sortOrder, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, "IT - BatchClient testing job", params, defaultParams);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// DATE_DEBUT
 		final RegDate dateDebut = getRegDateValue(params, PARAM_DATE_DEBUT);
         // COUNT
 
-		Integer count = (Integer)params.get(PARAM_COUNT);
-		byte[] attachement = (byte[]) params.get(PARAM_ATTACHEMENT);
+		final Integer count = getOptionalIntegerValue(params, PARAM_COUNT);
+		final byte[] attachement = getFileContent(params, PARAM_ATTACHEMENT);
 		if (attachement != null) {
 			LOGGER.info("Contenu du fichier joint: \n" + new String(attachement) + "\n");
 		}
@@ -141,13 +126,7 @@ public class ItBatchClientJob extends JobDefinition {
 	}
 
 	@Override
-	public Map<String,Object> getDefaultParams() {
-		return defaultParams;
-	}
-
-	@Override
 	public boolean isVisible() {
 		return isTesting();
 	}
-
 }

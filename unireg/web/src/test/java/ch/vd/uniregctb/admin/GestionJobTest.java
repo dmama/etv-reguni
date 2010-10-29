@@ -4,7 +4,7 @@ import static junit.framework.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -18,11 +18,11 @@ public class GestionJobTest extends WithoutSpringTest {
 	public class MyJobDefinition extends JobDefinition {
 
 		public MyJobDefinition() {
-			super("bla", "cat", 1,"descr", null);
+			super("bla", "cat", 1,"descr");
 		}
 
 		@Override
-		protected void doExecute(HashMap<String, Object> params) throws Exception {
+		protected void doExecute(Map<String, Object> params) throws Exception {
 		}
 
 		@Override

@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -31,57 +29,36 @@ public class DeterminerDIsJob extends JobDefinition {
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String NB_THREADS = "NB_THREADS";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param0 = new JobParam();
-			param0.setDescription("Période fiscale");
-			param0.setName(PERIODE_FISCALE);
-			param0.setMandatory(true);
-			param0.setType(new JobParamInteger());
-			params.add(param0);
-
-			JobParam param1 = new JobParam();
-			param1.setDescription("Nombre de threads");
-			param1.setName(NB_THREADS);
-			param1.setMandatory(true);
-			param1.setType(new JobParamInteger());
-			params.add(param1);
-
-			JobParam param2 = new JobParam();
-			param2.setDescription("Date de traitement");
-			param2.setName(DATE_TRAITEMENT);
-			param2.setMandatory(false);
-			param2.setType(new JobParamRegDate());
-			params.add(param2);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-			defaultParams.put(NB_THREADS, 4);
-			//defaultParams.put(DATE_TRAITEMENT, RegDateHelper.dateToDashString(RegDate.get(today.year(), 1, 15)));
-		}
-	}
-
-
 	public DeterminerDIsJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public DeterminerDIsJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		final RegDate today = RegDate.get();
+		final JobParam param0 = new JobParam();
+		param0.setDescription("Période fiscale");
+		param0.setName(PERIODE_FISCALE);
+		param0.setMandatory(true);
+		param0.setType(new JobParamInteger());
+		addParameterDefinition(param0, today.year() - 1);
+
+		final JobParam param1 = new JobParam();
+		param1.setDescription("Nombre de threads");
+		param1.setName(NB_THREADS);
+		param1.setMandatory(true);
+		param1.setType(new JobParamInteger());
+		addParameterDefinition(param1, 4);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Date de traitement");
+		param2.setName(DATE_TRAITEMENT);
+		param2.setMandatory(false);
+		param2.setType(new JobParamRegDate());
+		addParameterDefinition(param2, null);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		params.get(1).setEnabled(isTesting());
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	public void setService(DeclarationImpotService service) {
@@ -93,18 +70,11 @@ public class DeterminerDIsJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Récupération des paramètres
-		final Integer annee = (Integer) params.get(PERIODE_FISCALE);
-		if (annee == null) {
-			throw new RuntimeException("La période fiscale doit être spécifiée.");
-		}
-
-		final int nbThreads = getIntegerValue(params, NB_THREADS);
-		if (nbThreads <= 0) {
-			throw new RuntimeException("Le nombre de threads doit être un entier positif.");
-		}
+		final int annee = getIntegerValue(params, PERIODE_FISCALE);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
 		final RegDate dateTraitement = getDateTraitement(params);
 
@@ -116,10 +86,5 @@ public class DeterminerDIsJob extends JobDefinition {
 		setLastRunReport(rapport);
 		Audit.success("La détermination des DIs à envoyer pour l'année " + annee + " à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 }

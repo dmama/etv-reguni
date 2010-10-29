@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.document;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -36,10 +36,10 @@ public class RamasseDocumentJob extends JobDefinition {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Exécution du job dans une transaction.
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		Collection<Document> docs = (Collection<Document>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				return docService.ramasseDocs();

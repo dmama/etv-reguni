@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.scheduler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,19 +44,19 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	private JobStatusManager statusManager = null;
 
 	// Params static
-	private String name;
-	private String categorie;
-	private Map<String, Object> defaultParams = null;
+	final private String name;
+	final private String categorie;
 	private JobSynchronousMode synchronousMode;
-	private int sortOrder;
-	private String description;
-	private List<JobParam> paramDefinition = Collections.emptyList();
+	final private int sortOrder;
+	final private String description;
+	final private Map<String, JobParam> paramDefinition = new LinkedHashMap<String, JobParam>();        // java.util.LinkedHashMap pour conserver l'ordre d'insertion des paramètres
+	final private Map<String, Object> defaultParamWebValues = new HashMap<String, Object>();
 
 	private boolean logDisabled = false;
 
 	protected BatchScheduler batchScheduler;
 
-	private HashMap<String, Object> currentParameters = null;
+	private Map<String, Object> currentParameters = null;
 
 	public enum JobSynchronousMode {
 		SYNCHRONOUS, ASYNCHRONOUS
@@ -85,9 +85,6 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		JOB_INTERRUPTED
 	}
 
-	public JobDefinition() {
-	}
-
 	public JobDefinition(String name, String categorie, int sortOrder, String description) {
 		this.name = name;
 		this.categorie = categorie;
@@ -95,31 +92,28 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		this.description = description;
 	}
 
-	public JobDefinition(String name, String categorie, int sortOrder, String description, List<JobParam> paramsDef) {
-		this(name, categorie, sortOrder, description);
-		if (paramsDef == null) {
-			this.paramDefinition = Collections.emptyList();
-		}
-		else {
-			this.paramDefinition = paramsDef;
-		}
-	}
-
-	public JobDefinition(String name, String categorie, int sortOrder, String description, List<JobParam> paramsDef,
-			Map<String, Object> defaultParams) {
-		this(name, categorie, sortOrder, description, paramsDef);
-		this.defaultParams = defaultParams;
-	}
-
 	public void afterPropertiesSet() throws Exception {
 		if (isVisible()) {
 			batchScheduler.register(this);
 		}
-		/*
-		 * Surcharge les paramètres par défaut créés par cette instance
-		 * avec ceux spécifiés dans le constructeur.
-		 */
-		defaultParams = combineDefaultParams(createDefaultParams(), defaultParams);
+	}
+
+	protected final void refreshParameterDefinitions(List<JobParam> paramsDef) {
+		paramDefinition.clear();
+		defaultParamWebValues.clear();
+		if (paramsDef != null) {
+			for (JobParam paramDef : paramsDef) {
+				addParameterDefinition(paramDef, null);
+			}
+		}
+	}
+
+	protected final void addParameterDefinition(JobParam param, Object defaultWebValue) {
+		final JobParam oldParam = paramDefinition.put(param.getName(), param);
+		if (oldParam != null) {
+			throw new IllegalArgumentException(String.format("Paramètre '%s' défini deux fois", param.getName()));
+		}
+		defaultParamWebValues.put(param.getName(), defaultWebValue);
 	}
 
 	protected void doInitialize() {
@@ -144,7 +138,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		lastEnd = DateHelper.getCurrentDate();
 	}
 
-	protected void execute(HashMap<String, Object> params) throws Exception {
+	protected void execute(Map<String, Object> params) throws Exception {
 
 		lastStart = DateHelper.getCurrentDate();
 		lastEnd = null;
@@ -170,23 +164,13 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	/**
-	 * Remplis une HashMap avec les paramètres par défaut définis par programmation.
-	 * Les valeurs renseignées dans cette Map sont surchargées avec les default params passées au constructeur.
-	 *
-	 * @return
-	 */
-	protected HashMap<String, Object> createDefaultParams() {
-		return null;
-	}
-
-	/**
 	 * A réimplémenter par les sous-classes
 	 *
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected abstract void doExecute(HashMap<String, Object> params) throws Exception;
+	protected abstract void doExecute(Map<String, Object> params) throws Exception;
 
 	public void interrupt() {
 		setStatut(JobStatut.JOB_INTERRUPTING);
@@ -219,26 +203,6 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	/**
-	 * Surcharge les paramètres par défaut avec des paramètres additionnels.
-	 *
-	 * @param defaultParams
-	 *            paramètres par défaut
-	 * @param additionalParams
-	 *            paramètres additionnels
-	 * @return la nouvelle HashMap contenant la combinaison de paramètres
-	 */
-	protected static HashMap<String, Object> combineDefaultParams(Map<String, Object> defaultParams, Map<String, Object> additionalParams) {
-		HashMap<String, Object> result = new HashMap<String, Object>();
-		if (defaultParams != null) {
-			result.putAll(defaultParams);
-		}
-		if (additionalParams != null && additionalParams != defaultParams) {
-			result.putAll(additionalParams);
-		}
-		return result;
-	}
-
-	/**
 	 * @return the statut
 	 */
 	public JobStatut getStatut() {
@@ -257,7 +221,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	/**
-	 * @return the nom
+	 * @return le nom technique du batch
 	 */
 	public String getName() {
 		return name;
@@ -305,13 +269,13 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		this.lastRunReport = runReport;
 	}
 
-	public Map<String, Object> getDefaultParams() {
-		return defaultParams;
+	public Map<String, Object> getDefaultParamWebValues() {
+		return defaultParamWebValues;
 	}
 
 	public Object getDefaultValue(String key) {
-		if (getDefaultParams() != null) {
-			return getDefaultParams().get(key);
+		if (getDefaultParamWebValues() != null) {
+			return getDefaultParamWebValues().get(key);
 		}
 		return null;
 	}
@@ -347,10 +311,6 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 
 	public int getSortOrder() {
 		return sortOrder;
-	}
-
-	public void setSortOrder(int sortOrder) {
-		this.sortOrder = sortOrder;
 	}
 
 	public int compareTo(Object arg) {
@@ -410,29 +370,35 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	public List<JobParam> getParamDefinition() {
-		return paramDefinition;
+		return new ArrayList<JobParam>(paramDefinition.values());
 	}
 
-	public void setParamDefinition(List<JobParam> paramDef) {
-		this.paramDefinition = paramDef;
+	/**
+	 * @param key nom du paramètre
+	 * @return la définition du paramètre nommé, ou <code>null</code> si aucune définition n'est connue
+	 */
+	public JobParam getParameterDefinition(String key) {
+		return getParameterDefinition(key, false);
 	}
 
-	public JobParam getParameterDefintion(String key) {
-
-		if (key == null || this.paramDefinition == null || this.paramDefinition.isEmpty()) {
-			return null;
+	/**
+	 * @param key nom du paramètre
+	 * @param mustBeThere <code>true</code> si la méthode doit lancer une exception lorsque le paramètre est inconnu
+	 * @return la définition du paramètre nommé, ou <code>null</code> si aucune définition n'est connue mais que ce n'est pas grave
+	 * @throws IllegalArgumentException si aucun paramètre de ce nom n'est connu et qu'il doit pourtant être là
+	 */
+	protected JobParam getParameterDefinition(String key, boolean mustBeThere) {
+		final JobParam param = paramDefinition.get(key);
+		if (param == null && mustBeThere) {
+			throw new IllegalArgumentException(String.format("Paramètre inconnu : %s", key));
 		}
-		for (JobParam param : this.paramDefinition) {
-			if (key.equals(param.getName()))
-				return param;
-		}
-		return null;
+		return param;
 	}
 
 	/**
 	 * @return the currentParameters
 	 */
-	public HashMap<String, Object> getCurrentParameters() {
+	public Map<String, Object> getCurrentParameters() {
 		return currentParameters;
 	}
 
@@ -446,12 +412,12 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 			return null;
 		}
 
-		Map<String, Object> result = new HashMap<String, Object>();
+		final Map<String, Object> result = new HashMap<String, Object>();
 
 		for (String parameterName : this.currentParameters.keySet()) {
-			Object value = this.currentParameters.get(parameterName);
+			final Object value = this.currentParameters.get(parameterName);
 			if (value != null) {
-				JobParam param = this.getParameterDefintion(parameterName);
+				final JobParam param = getParameterDefinition(parameterName);
 				result.put(param.getDescription(), value);
 			}
 		}
@@ -460,38 +426,79 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	/**
-	 * Extrait la valeur d'un paramètre de type boolean, et retourne-là.
+	 * Extrait la valeur d'un paramètre de type boolean, et retourne la.
 	 *
-	 * @param params
-	 *            les paramètres
-	 * @param key
-	 *            la clé du paramètre
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
 	 * @return la valeur booléenne du paramètre; ou <b>false</b> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, ou si aucun paramètre de ce nom n'a été défini
 	 */
-	protected static boolean getBooleanValue(HashMap<String, Object> params, String key) {
-		boolean value = false;
+	protected final boolean getBooleanValue(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		Boolean value = null;
 		if (params != null) {
-			Boolean b = (Boolean) params.get(key);
-			if (b != null) {
-				value = b;
-			}
+			value = (Boolean) params.get(key);
+		}
+		if (value == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		return value != null ? value : false;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type integer, et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur entière du paramètre; ou <b>0</b> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, ou si aucun paramètre de ce nom n'a été défini
+	 */
+	protected final int getIntegerValue(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		final Integer value = getOptionalIntegerValue(params, parameterDefinition);
+		if (value == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		return value != null ? value : 0;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type integer, et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur entière du paramètre; ou <b>0</b> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, ou si aucun paramètre de ce nom n'a été défini, ou si la valeur est négative ou nulle
+	 */
+	protected final int getStrictlyPositiveIntegerValue(Map<String, Object> params, String key) {
+		final int value = getIntegerValue(params, key);
+		if (value <= 0) {
+			throw new IllegalArgumentException(String.format("La valeur du paramètre %s doit être strictement positive", key));
 		}
 		return value;
 	}
 
 	/**
-	 * Extrait la valeur d'un paramètre de type integer, et retourne-là.
+	 * Extrait la valeur d'un paramètre de type integer, et retourne la.
 	 *
-	 * @param params
-	 *            les paramètres
-	 * @param key
-	 *            la clé du paramètre
-	 * @return la valeur entière du paramètre; ou <b>0</b> si le paramètre n'est pas renseigné.
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur entière du paramètre; ou <code>null</code> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire, ou si aucun paramètre de ce nom n'a été défini
 	 */
-	protected static int getIntegerValue(HashMap<String, Object> params, String key) {
-		int value = 0;
+	protected final Integer getOptionalIntegerValue(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		if (parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Le paramètre %s n'est pas optionnel", key));
+		}
+		return getOptionalIntegerValue(params, parameterDefinition);
+	}
+
+	private static Integer getOptionalIntegerValue(Map<String, Object> params, JobParam paramDefinition) {
+		Assert.notNull(paramDefinition);
+		Integer value = null;
 		if (params != null) {
-			Number i = (Number) params.get(key);
+			final Number i = (Number) params.get(paramDefinition.getName());
 			if (i != null) {
 				value = i.intValue();
 			}
@@ -500,18 +507,63 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	/**
-	 * Extrait la valeur d'un paramètre de type integer, et retourne-là.
+	 * Extrait la valeur d'un paramètre de type String, et retourne la.
 	 *
-	 * @param params
-	 *            les paramètres
-	 * @param key
-	 *            la clé du paramètre
-	 * @return la valeur entière du paramètre; ou <b>0</b> si le paramètre n'est pas renseigné.
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur du paramètre (<code>null</code> si le paramètre n'était pas renseigné)
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, ou si aucun paramètre de ce nom n'a été défini
 	 */
-	protected static long getLongValue(HashMap<String, Object> params, String key) {
-		long value = 0;
+	protected final String getStringValue(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		String value = null;
 		if (params != null) {
-			Number i = (Number) params.get(key);
+			value = (String) params.get(key);
+		}
+		if (value == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		return value;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type long, et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur entière du paramètre; ou <b>0</b> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, ou si aucun paramètre de ce nom n'a été défini
+	 */
+	protected final long getLongValue(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		final Long value = getOptionalLongValue(params, parameterDefinition);
+		if (value == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		return value != null ? value : 0L;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type long, et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur entière du paramètre; ou <code>null</code> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire, ou si aucun paramètre de ce nom n'a été défini
+	 */
+	protected final Long getOptionalLongValue(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		if (parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Le paramètre %s n'est pas optionnel", key));
+		}
+		return getOptionalLongValue(params, parameterDefinition);
+	}
+
+	private static Long getOptionalLongValue(Map<String, Object> params, JobParam paramDefinition) {
+		Assert.notNull(paramDefinition);
+		Long value = null;
+		if (params != null) {
+			final Number i = (Number) params.get(paramDefinition.getName());
 			if (i != null) {
 				value = i.longValue();
 			}
@@ -520,15 +572,15 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	/**
-	 * Extrait la valeur d'un paramètre de type boolean, et retourne-là.
+	 * Extrait la valeur d'un paramètre de type RegDate, et retourne la.
 	 *
-	 * @param params
-	 *            les paramètres
-	 * @param key
-	 *            la clé du paramètre
-	 * @return la valeur booléenne du paramètre; ou <b>false</b> si le paramètre n'est pas renseigné.
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur du paramètre; ou <b>null</b> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, si aucun paramètre de ce nom n'a été défini, ou la date est invalide
 	 */
-	protected static RegDate getRegDateValue(HashMap<String, Object> params, String key) {
+	protected final RegDate getRegDateValue(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
 		RegDate value = null;
 		if (params != null) {
 			final Object v = params.get(key);
@@ -540,8 +592,60 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 				}
 			}
 			else {
-				value = (RegDate)v;
+				value = (RegDate) v;
 			}
+		}
+		if (value == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		return value;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type File, et retourne le contenu du fichier
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur du paramètre; ou <b>null</b> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, si aucun paramètre de ce nom n'a été défini
+	 */
+	protected final byte[] getFileContent(Map<String, Object> params, String key) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		byte[] content = null;
+		if (params != null) {
+			content = (byte[]) params.get(key);
+		}
+		if (content == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		return content;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type énuméré, et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @param clazz class du type énuméré
+	 * @return la valeur du paramètre; ou <b>null</b> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, si aucun paramètre de ce nom n'a été défini, ou la valeur est invalide
+	 */
+	protected final <T extends Enum<T>> T getEnumValue(Map<String, Object> params, String key, Class<T> clazz) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		T value = null;
+		if (params != null) {
+			final Object v = params.get(key);
+			if (v instanceof String) {
+				final String s = (String) v;
+				value = Enum.valueOf(clazz, s);
+			}
+			else {
+				//noinspection unchecked
+				value = (T) v;
+			}
+		}
+		if (value == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
 		}
 		return value;
 	}
@@ -553,7 +657,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	 *            les paramètres de déclenchement du job
 	 * @return une date
 	 */
-	protected RegDate getDateTraitement(HashMap<String, Object> params) {
+	protected RegDate getDateTraitement(Map<String, Object> params) {
 
 		RegDate dateTraitement = RegDate.get();
 		if (isTesting()) {

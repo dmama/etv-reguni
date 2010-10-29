@@ -3,7 +3,6 @@ package ch.vd.uniregctb.testing;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class InContainerTestingJob extends JobDefinition {
 	}
 
 	@Override
-	synchronized public void doExecute(HashMap<String, Object> params) throws Exception {
+	synchronized public void doExecute(Map<String, Object> params) throws Exception {
 		transactionListener = new TransactionListener();
 		boolean error = false;
 		String methodsInError = "";

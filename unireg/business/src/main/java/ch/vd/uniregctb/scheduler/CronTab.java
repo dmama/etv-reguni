@@ -74,7 +74,7 @@ public class CronTab implements InitializingBean {
 			}
 			else {
 				LOGGER.info("Enregistrement du cron [" + expression + "] sur le job " + job.getName());
-				final Map<String, Object> params = def.getParams() == null ? job.getDefaultParams() : def.getParams();
+				final Map<String, Object> params = def.getParams() == null ? job.getDefaultParamWebValues() : def.getParams();
 				scheduler.registerCron(job, params, expression);
 			}
 		}

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.scheduler;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -16,7 +16,7 @@ public class ExceptionThrowingJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		Thread.sleep(200);
 		LOGGER.info("Throwing exception!");
 		setRunningMessage("Exception de test lancée...");

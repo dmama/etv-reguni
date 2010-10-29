@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.editique.batch;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -29,39 +27,33 @@ public class EditiqueSommationLRJob extends JobDefinition {
 
 	private RapportService rapportService;
 
-	private static List<JobParam> params ;
+	public EditiqueSommationLRJob(int sortOrder) {
+		super(NAME, CATEGORIE, sortOrder, "Imprimer les sommations des listes recapitulatives");
 
-	static {
-		params = new ArrayList<JobParam>() ;
-
-		JobParam param0 = new JobParam();
+		final JobParam param0 = new JobParam();
 		param0.setDescription("Catégorie de débiteurs");
 		param0.setName(CATEGORIE_DEB);
 		param0.setMandatory(false);
 		param0.setType(new JobParamEnum(CategorieImpotSource.class));
-		params.add(param0);
+		addParameterDefinition(param0, null);
 
-		JobParam param1 = new JobParam();
+		final JobParam param1 = new JobParam();
 		param1.setDescription("Fin de période");
 		param1.setName(FIN_PERIODE);
 		param1.setMandatory(false);
 		param1.setType(new JobParamRegDate());
-		params.add(param1);
+		addParameterDefinition(param1, null);
 
-		JobParam param2 = new JobParam();
+		final JobParam param2 = new JobParam();
 		param2.setDescription("Date de traitement");
 		param2.setName(DATE_TRAITEMENT);
 		param2.setMandatory(false);
 		param2.setType(new JobParamRegDate());
-		params.add(param2);
-	}
-
-	public EditiqueSommationLRJob(int sortOrder) {
-		super(NAME, CATEGORIE, sortOrder, "Imprimer les sommations des listes recapitulatives", params);
+		addParameterDefinition(param2, null);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Récupération de la date de traitement
 		final RegDate date = getRegDateValue(params, FIN_PERIODE); // [UNIREG-2109]
@@ -69,8 +61,7 @@ public class EditiqueSommationLRJob extends JobDefinition {
 		final RegDate date2 = getRegDateValue(params, DATE_TRAITEMENT); // [UNIREG-2003] la date de traitement est toujours affichée
 		final RegDate dateTraitement = (date2 != null ? date2 : RegDate.get());
 		final StatusManager status = getStatusManager();
-
-		final CategorieImpotSource categorie = (CategorieImpotSource) params.get(CATEGORIE_DEB);
+		final CategorieImpotSource categorie = getEnumValue(params, CATEGORIE_DEB, CategorieImpotSource.class);
 
 		// Sommation des LRs
 		final EnvoiSommationLRsResults results = listeRecapService.sommerAllLR(categorie, dateFinPeriode, dateTraitement, status);

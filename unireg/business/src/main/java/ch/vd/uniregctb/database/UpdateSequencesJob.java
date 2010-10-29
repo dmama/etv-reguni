@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.database;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -19,54 +17,39 @@ public class UpdateSequencesJob extends JobDefinition {
 	public static final String UPDATE_PM_SEQUENCE = "PM";
 	public static final String UPDATE_DPI_SEQUENCE = "DPI";
 
-	private static final List<JobParam> params;
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("MàJ de la séquence Hibernate");
-			param.setName(UPDATE_HIBERNATE_SEQUENCE);
-			param.setMandatory(true);
-			param.setType(new JobParamBoolean());
-			params.add(param);
-
-			JobParam param2 = new JobParam();
-			param2.setDescription("MàJ de la séquence PM");
-			param2.setName(UPDATE_PM_SEQUENCE);
-			param2.setMandatory(true);
-			param2.setType(new JobParamBoolean());
-			params.add(param2);
-
-			JobParam param3 = new JobParam();
-			param3.setDescription("MàJ de la séquence DPI");
-			param3.setName(UPDATE_DPI_SEQUENCE);
-			param3.setMandatory(true);
-			param3.setType(new JobParamBoolean());
-			params.add(param3);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			defaultParams.put(UPDATE_HIBERNATE_SEQUENCE, Boolean.TRUE);
-			defaultParams.put(UPDATE_PM_SEQUENCE, Boolean.TRUE);
-			defaultParams.put(UPDATE_DPI_SEQUENCE, Boolean.TRUE);
-		}
-	}
-
 	private DatabaseService service;
 
 	public UpdateSequencesJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param = new JobParam();
+		param.setDescription("MàJ de la séquence Hibernate");
+		param.setName(UPDATE_HIBERNATE_SEQUENCE);
+		param.setMandatory(true);
+		param.setType(new JobParamBoolean());
+		addParameterDefinition(param, Boolean.TRUE);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("MàJ de la séquence PM");
+		param2.setName(UPDATE_PM_SEQUENCE);
+		param2.setMandatory(true);
+		param2.setType(new JobParamBoolean());
+		addParameterDefinition(param2, Boolean.TRUE);
+
+		final JobParam param3 = new JobParam();
+		param3.setDescription("MàJ de la séquence DPI");
+		param3.setName(UPDATE_DPI_SEQUENCE);
+		param3.setMandatory(true);
+		param3.setType(new JobParamBoolean());
+		addParameterDefinition(param3, Boolean.TRUE);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		final Boolean hibernate = (Boolean) params.get(UPDATE_HIBERNATE_SEQUENCE);
-		final Boolean pm = (Boolean) params.get(UPDATE_PM_SEQUENCE);
-		final Boolean dpi = (Boolean) params.get(UPDATE_DPI_SEQUENCE);
+		final boolean hibernate = getBooleanValue(params, UPDATE_HIBERNATE_SEQUENCE);
+		final boolean pm = getBooleanValue(params, UPDATE_PM_SEQUENCE);
+		final boolean dpi = getBooleanValue(params, UPDATE_DPI_SEQUENCE);
 
 		service.ensureSequencesUpToDate(hibernate, pm, dpi);
 	}

@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.indexer.jobs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.uniregctb.indexer.tiers.OfficeImpotIndexer;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -23,36 +21,25 @@ public class OfficeImpotIndexerJob extends JobDefinition {
 
 	private OfficeImpotIndexer indexer;
 
-	private static final List<JobParam> params;
-	static {
-		params = new ArrayList<JobParam>();
-		JobParam param = new JobParam();
-		param.setDescription("Force la mise-à-jour de tous les tiers");
-		param.setName(FORCE_ALL);
-		param.setMandatory(false);
-		param.setType(new JobParamBoolean());
-		params.add(param);
-	}
-
 	public void setIndexer(OfficeImpotIndexer indexer) {
 		this.indexer = indexer;
 	}
 
-	public OfficeImpotIndexerJob(int sortOrder, HashMap<String, Object> defParams) {
-		super(NAME, CATEGORIE, sortOrder, "Mettre-à-jour l'office d'impôt au niveau de chaque tiers", params, defParams);
+	public OfficeImpotIndexerJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Force la mise-à-jour de tous les tiers");
+		param.setName(FORCE_ALL);
+		param.setMandatory(false);
+		param.setType(new JobParamBoolean());
+		addParameterDefinition(param, Boolean.FALSE);
 	}
 
 	@Override
-	public void doExecute(HashMap<String, Object> params) throws Exception {
+	public void doExecute(Map<String, Object> params) throws Exception {
 
-		boolean forceAll = false;
-		if (params != null) {
-			Boolean b = (Boolean) params.get(FORCE_ALL);
-			if (b != null) {
-				forceAll = b.booleanValue();
-			}
-		}
-
+		final boolean forceAll = getBooleanValue(params, FORCE_ALL);
 		if (forceAll) {
 			indexer.indexTousLesTiers(getStatusManager());
 		}

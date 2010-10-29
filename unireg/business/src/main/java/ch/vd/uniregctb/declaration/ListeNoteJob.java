@@ -1,19 +1,14 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-
 import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -28,48 +23,29 @@ public class ListeNoteJob extends JobDefinition {
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String PERIODE_FISCALE = "PERIODE";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-
 	private DeclarationImpotService service;
 
 	private RapportService rapportService;
 
 	private PlatformTransactionManager transactionManager;
 
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			final JobParam param0 = new JobParam();
-			param0.setDescription("Période fiscale");
-			param0.setName(PERIODE_FISCALE);
-			param0.setMandatory(false);
-			param0.setType(new JobParamInteger());
-			params.add(param0);
-			final JobParam param1 = new JobParam();
-			param1.setDescription("Nombre de threads");
-			param1.setName(I_NB_THREADS);
-			param1.setMandatory(false);
-			param1.setType(new JobParamInteger());
-			params.add(param1);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-			defaultParams.put(I_NB_THREADS, 4);
-		}
-	}
-
 	public ListeNoteJob(int order, String description) {
-		this(order, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, order, description);
 
-	public ListeNoteJob(int order, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, order, description, params, defaultParams);
+		final RegDate today = RegDate.get();
+		final JobParam param0 = new JobParam();
+		param0.setDescription("Période fiscale");
+		param0.setName(PERIODE_FISCALE);
+		param0.setMandatory(true);
+		param0.setType(new JobParamInteger());
+		addParameterDefinition(param0, today.year() - 1);
+
+		final JobParam param1 = new JobParam();
+		param1.setDescription("Nombre de threads");
+		param1.setName(I_NB_THREADS);
+		param1.setMandatory(true);
+		param1.setType(new JobParamInteger());
+		addParameterDefinition(param1, 4);
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -85,21 +61,14 @@ public class ListeNoteJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final RegDate dateTraitement = RegDate.get();
 		final StatusManager statusManager = getStatusManager();
 
 		// récupère le nombre de threads paramétrés
-		final int nbThreads;
-		if (params.get(I_NB_THREADS) != null) {
-			nbThreads = (Integer) params.get(I_NB_THREADS);
-		}
-		else {
-			nbThreads = (Integer) defaultParams.get(I_NB_THREADS);
-		}
-
-		Integer annee = (Integer) params.get(PERIODE_FISCALE);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
+		final int annee = getIntegerValue(params, PERIODE_FISCALE);
 
 		// Extrait les résultats dans une transaction read-only (en fait, plusieurs, pour ne pas avoir de timeout de transaction)
 		final ListeNoteResults results = service.produireListeNote(dateTraitement, nbThreads, annee, statusManager);

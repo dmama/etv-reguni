@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.role;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -25,42 +23,23 @@ public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 
 	public static final String NO_COL_OFFICE_IMPOT = "NO_COL_OFFICE_IMPOT";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			params.add(createParamPeriodeFiscale());
-			params.add(createParamNbThreads());
-
-			final JobParam param = new JobParam();
-			param.setDescription("Nom d'un office d'impôt (optionnel)");
-			param.setName(NO_COL_OFFICE_IMPOT);
-			param.setMandatory(false);
-			param.setType(new JobParamOfficeImpot());
-			params.add(param);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			final RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-			defaultParams.put(NB_THREADS, 4);
-		}
-	}
-
 	public ProduireRolesOIDsJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public ProduireRolesOIDsJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		final RegDate today = RegDate.get();
+		addParameterDefinition(createParamPeriodeFiscale(), today.year() - 1);
+		addParameterDefinition(createParamNbThreads(), 4);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Nom d'un office d'impôt (optionnel)");
+		param.setName(NO_COL_OFFICE_IMPOT);
+		param.setMandatory(false);
+		param.setType(new JobParamOfficeImpot());
+		addParameterDefinition(param, null);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final StatusManager statusManager = getStatusManager();
 
@@ -68,8 +47,7 @@ public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 		final int annee = getPeriodeFiscale(params);
 		final int nbThreads = getNbThreads(params);
 		final RegDate dateTraitement = getDateTraitement(params);
-
-		final Integer noColOID = (Integer) params.get(NO_COL_OFFICE_IMPOT);
+		final Integer noColOID = getOptionalIntegerValue(params, NO_COL_OFFICE_IMPOT);
 
 		final ProduireRolesOIDsResults[] results;
 		if (noColOID != null) {
@@ -91,10 +69,5 @@ public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 
 		setLastRunReport(rapport);
 		Audit.success("La production des rôles (OID) pour l'année " + annee + " est terminée.", rapport);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 }

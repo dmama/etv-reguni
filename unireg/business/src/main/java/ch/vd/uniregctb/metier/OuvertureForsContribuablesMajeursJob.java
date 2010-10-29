@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.metier;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -23,44 +21,25 @@ public class OuvertureForsContribuablesMajeursJob extends JobDefinition {
 	public static final String NAME = "OuvertureForsContribuableMajeurJob";
 	private static final String CATEGORIE = "Fors";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
 	private PlatformTransactionManager transactionManager;
 	private MetierService metierService;
 	private RapportService rapportService;
 
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param2 = new JobParam();
-			param2.setDescription("Date de traitement");
-			param2.setName(DATE_TRAITEMENT);
-			param2.setMandatory(false);
-			param2.setType(new JobParamRegDate());
-			params.add(param2);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			//RegDate today = RegDate.get();
-			//defaultParams.put(DATE_TRAITEMENT, RegDateHelper.dateToDashString(today));
-		}
-	}
-
 	public OuvertureForsContribuablesMajeursJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public OuvertureForsContribuablesMajeursJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		final JobParam param = new JobParam();
+		param.setDescription("Date de traitement");
+		param.setName(DATE_TRAITEMENT);
+		param.setMandatory(false);
+		param.setType(new JobParamRegDate());
+		addParameterDefinition(param, null);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		params.get(0).setEnabled(isTesting());
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -76,7 +55,7 @@ public class OuvertureForsContribuablesMajeursJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final RegDate dateTraitement = getDateTraitement(params);
 
@@ -100,10 +79,4 @@ public class OuvertureForsContribuablesMajeursJob extends JobDefinition {
 		Audit.success("L'ouverture des fors des habitants majeurs à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
-	}
-
 }

@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.editique.batch;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -28,63 +26,43 @@ public class EditiqueSommationDIJob extends JobDefinition {
 	private DeclarationImpotService declarationImpotService;
 	private RapportService rapportService;
 
-	private static List<JobParam> params ;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>() ;
-
-		JobParam param = new JobParam();
-		param.setDescription("Mise sous pli automatique impossible");
-		param.setName(PARAM_MISE_SS_PLI);
-		param.setMandatory(false);
-		param.setType(new JobParamBoolean());
-		params.add(param);
-
-		param = new JobParam();
-		param.setDescription("Nombre maximal de sommations émises (0 = pas de limite)");
-		param.setName(PARAM_NB_MAX_SOMMATIONS);
-		param.setMandatory(false);
-		param.setType(new JobParamInteger());
-		params.add(param);
-
-		param = new JobParam();
-		param.setDescription("Date de traitement");
-		param.setName(DATE_TRAITEMENT);
-		param.setMandatory(false);
-		param.setType(new JobParamRegDate());
-		params.add(param);
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			//RegDate today = RegDate.get();
-			//defaultParams.put(DATE_TRAITEMENT, RegDateHelper.dateToDashString(today));
-			defaultParams.put(PARAM_MISE_SS_PLI, Boolean.FALSE);
-			defaultParams.put(PARAM_NB_MAX_SOMMATIONS, 20000);
-		}
-	}
-
 	public EditiqueSommationDIJob(int sortOrder) {
-		this(sortOrder, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, "Imprimer les sommations des déclarations d'impôt");
 
-	public EditiqueSommationDIJob(int sortOrder, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, "Imprimer les sommations des déclarations d'impôt", params, defaultParams);
+		final JobParam param0 = new JobParam();
+		param0.setDescription("Mise sous pli automatique impossible");
+		param0.setName(PARAM_MISE_SS_PLI);
+		param0.setMandatory(true);
+		param0.setType(new JobParamBoolean());
+		addParameterDefinition(param0, Boolean.FALSE);
+
+		final JobParam param1 = new JobParam();
+		param1.setDescription("Nombre maximal de sommations émises (0 = pas de limite)");
+		param1.setName(PARAM_NB_MAX_SOMMATIONS);
+		param1.setMandatory(false);
+		param1.setType(new JobParamInteger());
+		addParameterDefinition(param1, 20000);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Date de traitement");
+		param2.setName(DATE_TRAITEMENT);
+		param2.setMandatory(false);
+		param2.setType(new JobParamRegDate());
+		addParameterDefinition(param2, null);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		params.get(2).setEnabled(isTesting());
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		final RegDate dateTraitment = getDateTraitement(params);
-		Boolean miseSousPliAutomatiqueImpossible = ((Boolean)params.get(PARAM_MISE_SS_PLI));
-		Integer nombreMax = ((Integer)params.get(PARAM_NB_MAX_SOMMATIONS));
-		EnvoiSommationsDIsResults results = declarationImpotService.envoyerSommations(dateTraitment, miseSousPliAutomatiqueImpossible, nombreMax, getStatusManager());
+		final boolean miseSousPliAutomatiqueImpossible = getBooleanValue(params, PARAM_MISE_SS_PLI);
+		final Integer nombreMax = getOptionalIntegerValue(params, PARAM_NB_MAX_SOMMATIONS);
+		final EnvoiSommationsDIsResults results = declarationImpotService.envoyerSommations(dateTraitment, miseSousPliAutomatiqueImpossible, nombreMax, getStatusManager());
 		if (results == null) {
 			Audit.error( String.format(
 					"L'envoi en masse des sommations DIs  pour le %s a échoué"
@@ -92,17 +70,13 @@ public class EditiqueSommationDIJob extends JobDefinition {
 			));
 			return;
 		}
-		EnvoiSommationsDIsRapport rapport = rapportService.generateRapport(results, getStatusManager());
+
+		final EnvoiSommationsDIsRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 		Audit.success(
 				"L'envoi en masse des sommations DIs  pour le "
 				+ RegDateHelper.dateToDisplayString(dateTraitment) +
 				" est terminée.", rapport);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 
 	public void setDeclarationImpotService(DeclarationImpotService declarationImpotService) {

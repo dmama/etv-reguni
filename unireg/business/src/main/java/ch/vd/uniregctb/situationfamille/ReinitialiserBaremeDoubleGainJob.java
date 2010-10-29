@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.situationfamille;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -26,32 +24,25 @@ public class ReinitialiserBaremeDoubleGainJob extends JobDefinition {
 	private SituationFamilleService service;
 	private RapportService rapportService;
 
-	private static final List<JobParam> params;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("Date de traitement");
-			param.setName(DATE_TRAITEMENT);
-			param.setMandatory(false);
-			param.setType(new JobParamRegDate());
-			params.add(param);
-		}
-	}
-
 	public ReinitialiserBaremeDoubleGainJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params);
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Date de traitement");
+		param.setName(DATE_TRAITEMENT);
+		param.setMandatory(false);
+		param.setType(new JobParamRegDate());
+		addParameterDefinition(param, null);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		params.get(0).setEnabled(isTesting());
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager statusManager = getStatusManager();

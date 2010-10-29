@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -43,12 +41,9 @@ public class ProduireStatsJob extends JobDefinition {
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String STATS_TYPE = "TYPE";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	public enum Type {
-		DECLARATIONS("déclarations"), CONTRIBUABLES("contribuables");
+	public static enum Type {
+		DECLARATIONS("déclarations"),
+		CONTRIBUABLES("contribuables");
 
 		private final String description;
 
@@ -61,34 +56,26 @@ public class ProduireStatsJob extends JobDefinition {
 		}
 	}
 
-	static {
-		params = new ArrayList<JobParam>();
+	public ProduireStatsJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
+
 		{
-			JobParam param = new JobParam();
+			final RegDate today = RegDate.get();
+			final JobParam param = new JobParam();
 			param.setDescription("Période fiscale");
 			param.setName(PERIODE_FISCALE);
 			param.setMandatory(true);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, today.year() - 1);
 		}
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Type de statistiques");
 			param.setName(STATS_TYPE);
 			param.setMandatory(true);
 			param.setType(new JobParamEnum(Type.class));
-			params.add(param);
+			addParameterDefinition(param, Type.DECLARATIONS);
 		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-		}
-	}
-
-	public ProduireStatsJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
 	}
 
 	public void setService(DeclarationImpotService service) {
@@ -104,26 +91,18 @@ public class ProduireStatsJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Récupération des paramètres
-		final Integer annee = (Integer) params.get(PERIODE_FISCALE);
-		if (annee == null) {
-			throw new RuntimeException("La période fiscale doit être spécifiée.");
-		}
-
-		final Type type = (Type) params.get(STATS_TYPE);
-		if (type == null) {
-			throw new RuntimeException("Le type de statistiques doit être spécifié.");
-		}
-
+		final int annee = getIntegerValue(params, PERIODE_FISCALE);
+		final Type type = getEnumValue(params, STATS_TYPE, Type.class);
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
 
 		if (annee >= dateTraitement.year()) {
-			throw new RuntimeException("La période fiscale ne peut être >= à l'année en cours.");
+			throw new RuntimeException("La période fiscale ne peut être postérieure ou égale à l'année en cours.");
 		}
 		if (annee < paramsApp.getPremierePeriodeFiscale()) {
-			throw new RuntimeException("La période fiscale ne peut être < à l'année " + paramsApp.getPremierePeriodeFiscale());
+			throw new RuntimeException("La période fiscale ne peut être antérieure à l'année " + paramsApp.getPremierePeriodeFiscale());
 		}
 
 		final Document rapport;
@@ -163,11 +142,6 @@ public class ProduireStatsJob extends JobDefinition {
 		setLastRunReport(rapport);
 		Audit.success("La production des statistiques pour l'année " + annee + " et sur les " + type.description() + " à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 
 	public void setParamsApp(ParametreAppService paramsApp) {

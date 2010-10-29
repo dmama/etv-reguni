@@ -3,7 +3,7 @@ package ch.vd.uniregctb.database;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -59,7 +59,7 @@ public class DumpDatabaseJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		StatusManager status = getStatusManager();
 		status.setMessage("Export de la base en cours...");
 
@@ -80,9 +80,9 @@ public class DumpDatabaseJob extends JobDefinition {
 								public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
 
 									// Dump la base de donnée dans un fichier zip sur le disque
-									ZipOutputStream zipstream = new ZipOutputStream(os);
+									final ZipOutputStream zipstream = new ZipOutputStream(os);
 									try {
-										ZipEntry e = new ZipEntry(name + ".xml");
+										final ZipEntry e = new ZipEntry(name + ".xml");
 										zipstream.putNextEntry(e);
 										dbService.dumpToDbunitFile(zipstream);
 									}

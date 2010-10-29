@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -30,45 +29,35 @@ public class DemandeDelaiCollectiveJob extends JobDefinition {
 	public static final String FICHIER = "FICHIER";
 	public static final String DELAI = "DELAI";
 
-	private static final List<JobParam> params;
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("Fichier de demande");
-			param.setName(FICHIER);
-			param.setMandatory(true);
-			param.setType(new JobParamFile());
-			params.add(param);
-
-			JobParam param2 = new JobParam();
-			param2.setDescription("Délai");
-			param2.setName(DELAI);
-			param2.setMandatory(true);
-			param2.setType(new JobParamRegDate());
-			params.add(param2);
-
-			JobParam param3 = new JobParam();
-			param3.setDescription("Date de traitement");
-			param3.setName(DATE_TRAITEMENT);
-			param3.setMandatory(false);
-			param3.setType(new JobParamRegDate());
-			params.add(param3);
-		}
-	}
-
 	public DemandeDelaiCollectiveJob(int sortOrder, String description) {
-		this(sortOrder, description, null);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public DemandeDelaiCollectiveJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		final JobParam param = new JobParam();
+		param.setDescription("Fichier de demande");
+		param.setName(FICHIER);
+		param.setMandatory(true);
+		param.setType(new JobParamFile());
+		addParameterDefinition(param, null);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Délai");
+		param2.setName(DELAI);
+		param2.setMandatory(true);
+		param2.setType(new JobParamRegDate());
+		addParameterDefinition(param2, null);
+
+		final JobParam param3 = new JobParam();
+		param3.setDescription("Date de traitement");
+		param3.setName(DATE_TRAITEMENT);
+		param3.setMandatory(false);
+		param3.setType(new JobParamRegDate());
+		addParameterDefinition(param3, null);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		params.get(2).setEnabled(isTesting());
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	public void setService(DeclarationImpotService service) {
@@ -80,17 +69,10 @@ public class DemandeDelaiCollectiveJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		final byte[] idsFile = (byte[]) params.get(FICHIER);
-		if (idsFile == null) {
-			throw new RuntimeException("Le fichier de demande doit être spécifié.");
-		}
-
+		final byte[] idsFile = getFileContent(params, FICHIER);
 		final RegDate delai = getRegDateValue(params, DELAI);
-		if (delai == null) {
-			throw new RuntimeException("Le délai doit être spécifié.");
-		}
 		if (delai.isBeforeOrEqual(RegDate.get())) {
 			throw new RuntimeException("Le délai doit être après la date du jour.");
 		}

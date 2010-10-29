@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -35,63 +33,42 @@ public class ListesNominativesJob extends JobDefinition {
 	public static final String B_CONTRIBUABLES = "avecContribuables";
 	public static final String B_DEBITEURS = "avecDebiteurs";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
 	private ListesTiersService service;
 
 	private RapportService rapportService;
 
 	private PlatformTransactionManager transactionManager;
 
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			final JobParam param0 = new JobParam();
-			param0.setDescription("Nombre de threads");
-			param0.setName(I_NB_THREADS);
-			param0.setMandatory(false);
-			param0.setType(new JobParamInteger());
-			params.add(param0);
-
-			final JobParam param1 = new JobParam();
-			param1.setDescription("Type d'adresses incluses");
-			param1.setName(E_ADRESSES_INCLUSES);
-			param1.setMandatory(false);
-			param1.setType(new JobParamEnum(TypeAdresse.class));
-			params.add(param1);
-
-			final JobParam param2 = new JobParam();
-			param2.setDescription("Inclure les personnes physiques / ménages");
-			param2.setName(B_CONTRIBUABLES);
-			param2.setMandatory(false);
-			param2.setType(new JobParamBoolean());
-			params.add(param2);
-
-			final JobParam param3 = new JobParam();
-			param3.setDescription("Inclure les débiteurs de prestations imposables");
-			param3.setName(B_DEBITEURS);
-			param3.setMandatory(false);
-			param3.setType(new JobParamBoolean());
-			params.add(param3);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			defaultParams.put(I_NB_THREADS, 2);
-			defaultParams.put(E_ADRESSES_INCLUSES, TypeAdresse.AUCUNE);
-			defaultParams.put(B_CONTRIBUABLES, Boolean.TRUE);
-			defaultParams.put(B_DEBITEURS, Boolean.TRUE);
-		}
-	}
-
 	public ListesNominativesJob(int order, String description) {
-		this(order, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, order, description);
 
-	public ListesNominativesJob(int order, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, order, description, params, defaultParams);
+		final JobParam param0 = new JobParam();
+		param0.setDescription("Nombre de threads");
+		param0.setName(I_NB_THREADS);
+		param0.setMandatory(true);
+		param0.setType(new JobParamInteger());
+		addParameterDefinition(param0, 2);
+
+		final JobParam param1 = new JobParam();
+		param1.setDescription("Type d'adresses incluses");
+		param1.setName(E_ADRESSES_INCLUSES);
+		param1.setMandatory(true);
+		param1.setType(new JobParamEnum(TypeAdresse.class));
+		addParameterDefinition(param1, TypeAdresse.AUCUNE);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Inclure les personnes physiques / ménages");
+		param2.setName(B_CONTRIBUABLES);
+		param2.setMandatory(true);
+		param2.setType(new JobParamBoolean());
+		addParameterDefinition(param2, Boolean.TRUE);
+
+		final JobParam param3 = new JobParam();
+		param3.setDescription("Inclure les débiteurs de prestations imposables");
+		param3.setName(B_DEBITEURS);
+		param3.setMandatory(true);
+		param3.setType(new JobParamBoolean());
+		addParameterDefinition(param3, Boolean.TRUE);
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -106,30 +83,21 @@ public class ListesNominativesJob extends JobDefinition {
 		this.service = service;
 	}
 
-	@SuppressWarnings({"unchecked"})
-	private static <T> T getParametre(Class<T> clazz, String nom, HashMap<String, Object> params) {
-		T valeur = (T) params.get(nom);
-		if (valeur == null) {
-			valeur = (T) defaultParams.get(nom);
-		}
-		return valeur;
-	}
-
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final RegDate dateTraitement = RegDate.get();
 		final StatusManager statusManager = getStatusManager();
 
 		// récupère le nombre de threads paramétrés
-		final int nbThreads = getParametre(Integer.class, I_NB_THREADS, params);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 
 		// doit-on également mettre les adresses ?
-		final TypeAdresse adressesIncluses = getParametre(TypeAdresse.class, E_ADRESSES_INCLUSES, params);
+		final TypeAdresse adressesIncluses = getEnumValue(params, E_ADRESSES_INCLUSES, TypeAdresse.class);
 
 		// population à lister ?
-		final boolean avecContribuables = getParametre(Boolean.class, B_CONTRIBUABLES, params);
-		final boolean avecDebiteurs = getParametre(Boolean.class, B_DEBITEURS, params);
+		final boolean avecContribuables = getBooleanValue(params, B_CONTRIBUABLES);
+		final boolean avecDebiteurs = getBooleanValue(params, B_DEBITEURS);
 
 		// Extrait les résultats dans une transaction read-only (en fait, plusieurs, pour ne pas avoir de timeout de transaction)
 		final ListesNominativesResults results = service.produireListesNominatives(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, statusManager);

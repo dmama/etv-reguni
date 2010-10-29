@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration.source;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -14,7 +12,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
-import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -32,22 +29,21 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 
 	private static final String PERIODE_FISCALE = "PERIODE_FISCALE";
 
-	private static final List<JobParam> params;
-	private static final HashMap<String, Object> defaultParams;
-
 	private RapportService rapportService;
 	private ListeRecapService lrService;
 	private PlatformTransactionManager transactionManager;
 
-	static {
-		params = new ArrayList<JobParam>();
+	public DeterminerLRsEchuesJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
+
 		{
+			final RegDate today = RegDate.get();
 			final JobParam param = new JobParam();
 			param.setDescription("Période fiscale");
 			param.setName(PERIODE_FISCALE);
 			param.setMandatory(true);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, today.year() - 1);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -55,22 +51,8 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 			param.setName(DATE_TRAITEMENT);
 			param.setMandatory(false);
 			param.setType(new JobParamRegDate());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			final RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-		}
-	}
-
-	public DeterminerLRsEchuesJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
-
-	public DeterminerLRsEchuesJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -88,18 +70,14 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		params.get(1).setEnabled(isTesting());
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Récupération des paramètres
-		final Integer periodeFiscale = (Integer) params.get(PERIODE_FISCALE);
-		if (periodeFiscale == null) {
-			throw new RuntimeException("La période fiscale doit être spécifiée.");
-		}
-
+		final int periodeFiscale = getIntegerValue(params, PERIODE_FISCALE);
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager statusManager = getStatusManager();
 		final DeterminerLRsEchuesResults results = lrService.determineLRsEchues(periodeFiscale, dateTraitement, statusManager);
@@ -115,10 +93,5 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 
 		setLastRunReport(rapport);
 		Audit.success(String.format("La détermination des LR échues pour la période fiscale %d à la date du %s est terminée.", periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 }

@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.tiers.jobs;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -70,7 +70,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		
 		final StatusManager statusManager;
 		if (getStatusManager() == null) {

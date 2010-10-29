@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -38,74 +36,58 @@ public class EnvoiDIsJob extends JobDefinition {
 	public static final String CTB_NO_MIN = "CTB_NO_MIN";
 	public static final String CTB_NO_MAX = "CTB_NO_MAX";
 
-	private static final List<JobParam> params;
+	public EnvoiDIsJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
 		{
-			JobParam param = new JobParam();
+			final RegDate today = RegDate.get();
+			final JobParam param = new JobParam();
 			param.setDescription("Période fiscale");
 			param.setName(PERIODE_FISCALE);
 			param.setMandatory(true);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, today.year() - 1);
 		}
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Catégorie de contribuables");
 			param.setName(CATEGORIE_CTB);
 			param.setMandatory(true);
 			param.setType(new JobParamEnum(CategorieEnvoiDI.class));
-			params.add(param);
+			addParameterDefinition(param, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 		}
-
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Numéro de contribuable minimum");
 			param.setName(CTB_NO_MIN);
 			param.setMandatory(false);
 			param.setType(new JobParamLong());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Numéro de contribuable maximum");
 			param.setName(CTB_NO_MAX);
 			param.setMandatory(false);
 			param.setType(new JobParamLong());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
-
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Nombre maximum d'envois");
 			param.setName(NB_MAX);
 			param.setMandatory(false);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, 100);
 		}
-
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Exclure les décédés de fin d'année");
 			param.setName(EXCLURE_DCD);
-			param.setMandatory(false);
+			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
-
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-		}
-	}
-
-	public EnvoiDIsJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
 	}
 
 	public void setService(DeclarationImpotService service) {
@@ -117,21 +99,14 @@ public class EnvoiDIsJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Récupération des paramètres
-		final Integer annee = (Integer) params.get(PERIODE_FISCALE);
-		if (annee == null) {
-			throw new RuntimeException("La période fiscale doit être spécifiée.");
-		}
+		final int annee = getIntegerValue(params, PERIODE_FISCALE);
+		final CategorieEnvoiDI categorie = getEnumValue(params, CATEGORIE_CTB, CategorieEnvoiDI.class);
 
-		final CategorieEnvoiDI categorie = (CategorieEnvoiDI) params.get(CATEGORIE_CTB);
-		if (categorie == null) {
-			throw new RuntimeException("La catégorie de contribuables doit être spécifiée.");
-		}
-
-		final Long noCtbMin = (Long) params.get(CTB_NO_MIN);
-		final Long noCtbMax = (Long) params.get(CTB_NO_MAX);
+		final Long noCtbMin = getOptionalLongValue(params, CTB_NO_MIN);
+		final Long noCtbMax = getOptionalLongValue(params, CTB_NO_MAX);
 		if (noCtbMin != null || noCtbMax != null) {
 			if (noCtbMin != null && noCtbMin < 0) {
 				throw new RuntimeException("Le numéro de contribuable minimum doit être positif.");
@@ -144,12 +119,12 @@ public class EnvoiDIsJob extends JobDefinition {
 			}
 		}
 
-		final int nbMax = (params.get(NB_MAX) == null ? 0 : (Integer) params.get(NB_MAX));
+		final int nbMax = getIntegerValue(params, NB_MAX);
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
-		final Boolean exclureDecede = (Boolean) params.get(EXCLURE_DCD);
+		final boolean exclureDecedes = getBooleanValue(params, EXCLURE_DCD);
 
 		final StatusManager status = getStatusManager();
-		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecede, status);
+		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, status);
 		final EnvoiDIsRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
@@ -164,15 +139,10 @@ public class EnvoiDIsJob extends JobDefinition {
 		builder.append(categorie.name());
 		builder.append(" à la date du ");
 		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
-		if(exclureDecede){
-			builder.append(" avec exclusion des décédés ");	
+		if (exclureDecedes) {
+			builder.append(" avec exclusion des décédés de fin d'année");
 		}
 		builder.append(" est terminée.");
 		Audit.success(builder.toString(), rapport);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 }

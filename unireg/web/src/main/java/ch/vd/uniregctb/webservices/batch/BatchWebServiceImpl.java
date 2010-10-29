@@ -60,7 +60,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 
 					final String key = entry.key;
 
-					final JobParam param = job.getParameterDefintion(key);
+					final JobParam param = job.getParameterDefinition(key);
 					if (param == null) {
 						throw new BatchWSException("Le paramètre [" + key + "] est inconnu.");
 					}

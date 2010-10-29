@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.database;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import ch.vd.uniregctb.audit.Audit;
@@ -13,6 +11,7 @@ import ch.vd.uniregctb.document.DocumentService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamLong;
 import ch.vd.uniregctb.scheduler.JobParamString;
 
 /**
@@ -25,26 +24,19 @@ public class LoadDatabaseJob extends JobDefinition {
 
 	public static final String DOC_ID = "DocId";
 
-	private static final List<JobParam> params;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("Numéro du document");
-			param.setName(DOC_ID);
-			param.setMandatory(true);
-			param.setType(new JobParamString());
-			params.add(param);
-		}
-	}
-
 	private DatabaseService dbService;
 	private DocumentService docService;
 	private GlobalTiersIndexer globalIndexer;
 
-	public LoadDatabaseJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+	public LoadDatabaseJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Numéro du document");
+		param.setName(DOC_ID);
+		param.setMandatory(true);
+		param.setType(new JobParamLong());
+		addParameterDefinition(param, null);
 	}
 
 	public void setDbService(DatabaseService dbService) {
@@ -60,14 +52,10 @@ public class LoadDatabaseJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		final StatusManager status = getStatusManager();
 
-		final Long docId = (Long) params.get(DOC_ID);
-		if (docId == null) {
-			throw new RuntimeException("Le numéro du document doit être spécifié.");
-		}
-
+		final long docId = getLongValue(params, DOC_ID);
 		final Document doc = docService.get(docId);
 		if (doc == null) {
 			throw new RuntimeException("Le document n°" + docId + " n'existe pas.");

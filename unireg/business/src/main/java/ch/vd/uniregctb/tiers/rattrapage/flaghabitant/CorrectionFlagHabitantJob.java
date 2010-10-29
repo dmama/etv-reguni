@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
+import java.util.Map;
+
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
@@ -8,10 +10,6 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.tiers.TiersService;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Job qui remet d'aplomb les flags "habitant" des personnes physiques en
@@ -25,35 +23,19 @@ public class CorrectionFlagHabitantJob extends JobDefinition {
 
 	public static final String I_NB_THREADS = "nbThreads";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			final JobParam param0 = new JobParam();
-			param0.setDescription("Nombre de threads");
-			param0.setName(I_NB_THREADS);
-			param0.setMandatory(false);
-			param0.setType(new JobParamInteger());
-			params.add(param0);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		defaultParams.put(I_NB_THREADS, Integer.valueOf(10));
-	}
-
 	private TiersService tiersService;
 
 	private RapportService rapportService;
 
 	public CorrectionFlagHabitantJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public CorrectionFlagHabitantJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		final JobParam param = new JobParam();
+		param.setDescription("Nombre de threads");
+		param.setName(I_NB_THREADS);
+		param.setMandatory(true);
+		param.setType(new JobParamInteger());
+		addParameterDefinition(param, 10);
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -65,23 +47,10 @@ public class CorrectionFlagHabitantJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// récupération du nombre de threads
-		final int nbThreads;
-		if (params.get(I_NB_THREADS) != null) {
-			final int param = (Integer) params.get(I_NB_THREADS);
-			if (param <= 0) {
-				nbThreads = (Integer) defaultParams.get(I_NB_THREADS);
-			}
-			else {
-				nbThreads = param;
-			}
-		}
-		else {
-			nbThreads = (Integer) defaultParams.get(I_NB_THREADS);
-		}
-
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 
 		final StatusManager statusManager = getStatusManager();
 

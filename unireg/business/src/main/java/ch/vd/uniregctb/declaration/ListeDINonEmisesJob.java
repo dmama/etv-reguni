@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -33,34 +31,16 @@ public class ListeDINonEmisesJob extends JobDefinition {
 
 	public static final String PERIODE_FISCALE = "PERIODE";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("Période fiscale");
-			param.setName(PERIODE_FISCALE);
-			param.setMandatory(true);
-			param.setType(new JobParamInteger());
-			params.add(param);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-		}
-	}
-
 	public ListeDINonEmisesJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public ListeDINonEmisesJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		RegDate today = RegDate.get();
+		final JobParam param = new JobParam();
+		param.setDescription("Période fiscale");
+		param.setName(PERIODE_FISCALE);
+		param.setMandatory(true);
+		param.setType(new JobParamInteger());
+		addParameterDefinition(param, today.year() - 1);
 	}
 
 	public void setService(DeclarationImpotService service) {
@@ -76,17 +56,14 @@ public class ListeDINonEmisesJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		// Récupération des paramètres
-		final Integer annee = (Integer) params.get(PERIODE_FISCALE);
-		if (annee == null) {
-			throw new RuntimeException("La période fiscale doit être spécifiée.");
-		}
+		final int annee = getIntegerValue(params, PERIODE_FISCALE);
 		if (annee >= RegDate.get().year()) {
-			throw new RuntimeException("La période fiscale ne peut être >= à l'année en cours.");
+			throw new RuntimeException("La période fiscale ne peut être postérieure ou égale à l'année en cours.");
 		}
 		if (annee < paramsApp.getPremierePeriodeFiscale()) {
-			throw new RuntimeException("La période fiscale ne peut être < à l'année " + paramsApp.getPremierePeriodeFiscale());
+			throw new RuntimeException("La période fiscale ne peut être antérieure à l'année " + paramsApp.getPremierePeriodeFiscale());
 		}
 
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
@@ -107,11 +84,6 @@ public class ListeDINonEmisesJob extends JobDefinition {
 		});
 		setLastRunReport(report);
 		Audit.success("Liste DIs non émises générée correctement", report);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 
 	public void setParamsApp(ParametreAppService paramsApp) {

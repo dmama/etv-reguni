@@ -278,7 +278,7 @@ public class GestionBatchController extends AbstractEnhancedSimpleFormController
 		final HashMap<String, Object> params = new HashMap<String, Object>();
 		final Map<String, Object> startParams = batchList.getStartParams();
 		for (Entry<String, Object> param : startParams.entrySet()) {
-			final JobParam jobparam = job.getParameterDefintion(param.getKey());
+			final JobParam jobparam = job.getParameterDefinition(param.getKey());
 			if (jobparam != null) { // il arrive que IE6 foire un peu et reposte les paramètres d'un formulaire posté précédemment...
 				final Object value = param.getValue();
 				final Object typedValue;

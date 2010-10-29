@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -26,22 +24,15 @@ public class EchoirDIsJob extends JobDefinition {
 	public static final String NAME = "EchoirDIsJob";
 	private static final String CATEGORIE = "DI";
 
-	private static final List<JobParam> params;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("Date de traitement");
-			param.setName(DATE_TRAITEMENT);
-			param.setMandatory(false);
-			param.setType(new JobParamRegDate());
-			params.add(param);
-		}
-	}
-
 	public EchoirDIsJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params);
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Date de traitement");
+		param.setName(DATE_TRAITEMENT);
+		param.setMandatory(false);
+		param.setType(new JobParamRegDate());
+		addParameterDefinition(param, null);
 	}
 
 	public void setDeclarationImpotService(DeclarationImpotService service) {
@@ -53,7 +44,7 @@ public class EchoirDIsJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager status = getStatusManager();

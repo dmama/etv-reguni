@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.mouvement;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -25,37 +23,21 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 
 	private static final String CATEGORIE = "Tiers";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
 	private MouvementService mouvementService;
 
 	private RapportService rapportService;
 
 	private PlatformTransactionManager transactionManager;
 
-	static {
-
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("Date de traitement");
-			param.setName(DATE_TRAITEMENT);
-			param.setMandatory(false);
-			param.setType(new JobParamRegDate());
-			params.add(param);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-	}
-
 	public DeterminerMouvementsDossiersEnMasseJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public DeterminerMouvementsDossiersEnMasseJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		final JobParam param = new JobParam();
+		param.setDescription("Date de traitement");
+		param.setName(DATE_TRAITEMENT);
+		param.setMandatory(false);
+		param.setType(new JobParamRegDate());
+		addParameterDefinition(param, null);
 	}
 
 	public void setMouvementService(MouvementService mouvementService) {
@@ -73,11 +55,11 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		params.get(0).setEnabled(isTesting());
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final RegDate dateTraitement = getDateTraitement(params);
 

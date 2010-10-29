@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
@@ -32,7 +32,7 @@ public class CacheResetJob extends JobDefinition {
 	}
 
 	public CacheResetJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, null, null);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	@Override
@@ -45,17 +45,17 @@ public class CacheResetJob extends JobDefinition {
 
 		// On construit la liste des paramètres dynamiquement en fonction des caches enregistrés dans le manager
 
-		List<UniregCacheInterface> caches = new ArrayList<UniregCacheInterface>(manager.getCaches());
+		final List<UniregCacheInterface> caches = new ArrayList<UniregCacheInterface>(manager.getCaches());
 		Collections.sort(caches, new Comparator<UniregCacheInterface>() {
 			public int compare(UniregCacheInterface o1, UniregCacheInterface o2) {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
 
-		List<JobParam> params = new ArrayList<JobParam>();
+		final List<JobParam> params = new ArrayList<JobParam>();
 
 		for (UniregCacheInterface c : caches) {
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Reset du cache " + c.getDescription());
 			param.setName(c.getName());
 			param.setMandatory(true);
@@ -63,11 +63,11 @@ public class CacheResetJob extends JobDefinition {
 			params.add(param);
 		}
 
-		setParamDefinition(params);
+		refreshParameterDefinitions(params);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final StatusManager statusManager = getStatusManager();
 

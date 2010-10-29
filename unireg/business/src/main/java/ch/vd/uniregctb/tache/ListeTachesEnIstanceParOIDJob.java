@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.tache;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -27,24 +26,8 @@ public class ListeTachesEnIstanceParOIDJob extends JobDefinition {
 	public static final String NAME = "ListeTachesEnIstanceParOIDJob";
 	private static final String CATEGORIE = "Stats";
 
-
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = null;
-
-		defaultParams = null;
-
-	}
-
 	public ListeTachesEnIstanceParOIDJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
-
-	public ListeTachesEnIstanceParOIDJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	public void setService(TacheService service) {
@@ -60,7 +43,7 @@ public class ListeTachesEnIstanceParOIDJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
@@ -92,11 +75,6 @@ public class ListeTachesEnIstanceParOIDJob extends JobDefinition {
 		});
 		setLastRunReport(report);
 		Audit.success("Liste des tâches en instance par OID générée correctement", report);
-	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
 	}
 
 	public void setParamsApp(ParametreAppService paramsApp) {

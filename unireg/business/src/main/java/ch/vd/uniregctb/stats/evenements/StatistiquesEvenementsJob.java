@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.stats.evenements;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
@@ -11,9 +10,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Job qui génère des statistiques pour les événements reçus et traités par
@@ -33,58 +30,44 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	private static final String EVTS_IDENT_CTB = "EVTS_IDENT_CTB";
 	private static final String DUREE_REFERENCE = "DUREE";
 
-	private static final List<JobParam> params;
-	private static final HashMap<String, Object> defaultParams;
+	public StatistiquesEvenementsJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	static {
-		params = new ArrayList<JobParam>();
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Evénements civils");
 			param.setName(EVTS_CIVILS);
 			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			addParameterDefinition(param, Boolean.TRUE);
 		}
 
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Evénements externes");
 			param.setName(EVTS_EXTERNES);
 			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			addParameterDefinition(param, Boolean.TRUE);
 		}
 
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Evénements d'identification");
 			param.setName(EVTS_IDENT_CTB);
-			param.setMandatory(false);
+			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			addParameterDefinition(param, Boolean.TRUE);
 		}
 
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Durée de référence (jours)");
 			param.setName(DUREE_REFERENCE);
-			param.setMandatory(false);
+			param.setMandatory(true);
 			param.setType(new JobParamInteger());
-			params.add(param);
+			addParameterDefinition(param, 7);
 		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			defaultParams.put(EVTS_CIVILS, Boolean.TRUE);
-			defaultParams.put(EVTS_EXTERNES, Boolean.TRUE);
-			defaultParams.put(EVTS_IDENT_CTB, Boolean.TRUE);
-			defaultParams.put(DUREE_REFERENCE, 7);
-		}
-	}
-
-	public StatistiquesEvenementsJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -100,17 +83,13 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// allons chercher les paramètres
 		final boolean civils = getBooleanValue(params, EVTS_CIVILS);
 		final boolean externes = getBooleanValue(params, EVTS_EXTERNES);
 		final boolean identCtb = getBooleanValue(params, EVTS_IDENT_CTB);
-		Integer dureeReference = (Integer) params.get(DUREE_REFERENCE);
-		if (dureeReference == null) {
-			dureeReference = (Integer) defaultParams.get(DUREE_REFERENCE);
-			Assert.notNull(dureeReference);
-		}
+		final int dureeReference = getStrictlyPositiveIntegerValue(params, DUREE_REFERENCE);
 		final RegDate debutActivite = RegDate.get().addDays(- dureeReference);
 
 		// lancement des extractions

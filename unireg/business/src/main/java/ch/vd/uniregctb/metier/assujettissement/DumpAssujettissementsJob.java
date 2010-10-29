@@ -1,5 +1,13 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchResults;
@@ -9,15 +17,6 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamString;
 import ch.vd.uniregctb.tiers.Contribuable;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -30,23 +29,18 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 	public static final String FILENAME = "FILENAME";
 
-	private static final List<JobParam> params;
-
-	static {
-		params = new ArrayList<JobParam>();
-		JobParam param0 = new JobParam();
-		param0.setDescription("Fichier de sortie (local au serveur)");
-		param0.setName(FILENAME);
-		param0.setMandatory(true);
-		param0.setType(new JobParamString());
-		params.add(param0);
-	}
-
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
 
 	public DumpAssujettissementsJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params);
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Fichier de sortie (local au serveur)");
+		param.setName(FILENAME);
+		param.setMandatory(true);
+		param.setType(new JobParamString());
+		addParameterDefinition(param, null);
 	}
 
 	@Override
@@ -55,18 +49,17 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final StatusManager statusManager = getStatusManager();
 
-		final String filename = (String) params.get(FILENAME);
-		Assert.notNull(filename);
+		final String filename = getStringValue(params, FILENAME);
 
 		// Chargement des ids des contribuables à processer
 		statusManager.setMessage("Chargement des ids de tous les contribuables...");
 		final List<Long> ids = getCtbIds(statusManager);
 
-		FileWriter file = new FileWriter(filename);
+		final FileWriter file = new FileWriter(filename);
 		try {
 			processAll(ids, file, statusManager);
 		}

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.engine;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -10,14 +10,14 @@ public class EvenementCivilHandlerJob extends JobDefinition {
 	public static String NAME = "EvenementCivilHandlerJob";
 	private static final String CATEGORIE = "Events";
 
-	EvenementCivilProcessor processor = null;
+	private EvenementCivilProcessor processor = null;
 
-	public EvenementCivilHandlerJob(int sortOrder) {
-		super(NAME, CATEGORIE, sortOrder, "Traitement (ou retraitement) des événements civils");
+	public EvenementCivilHandlerJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final StatusManager status = getStatusManager();
 

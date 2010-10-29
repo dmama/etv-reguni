@@ -28,48 +28,43 @@ public class FusionDeCommunesJob extends JobDefinition {
 	private static final String NOUVELLE_COMMUNE = "NOUVELLE_COMMUNE";
 	private static final String DATE_FUSION = "DATE_FUSION";
 
-	private static final List<JobParam> params;
-
 	private PlatformTransactionManager transactionManager;
 	private MetierService metierService;
 	private RapportService rapportService;
 
-	static {
-		params = new ArrayList<JobParam>();
+	public FusionDeCommunesJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
+
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Numéros OFS des anciennes communes");
 			param.setName(ANCIENNES_COMMUNES);
 			param.setMandatory(true);
 			param.setType(new JobParamString());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Nouvelle commune");
 			param.setName(NOUVELLE_COMMUNE);
 			param.setMandatory(true);
 			param.setType(new JobParamCommune());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Date de fusion");
 			param.setName(DATE_FUSION);
-			param.setMandatory(false);
+			param.setMandatory(true);
 			param.setType(new JobParamRegDate());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 	}
 
-	public FusionDeCommunesJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params);
-	}
-
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		final Set<Integer> anciensNosOfs = getNosOfs(params, ANCIENNES_COMMUNES);
 		final int nouveauNoOfs = getIntegerValue(params, NOUVELLE_COMMUNE);
 		final RegDate dateFusion = getRegDateValue(params, DATE_FUSION);
@@ -94,8 +89,8 @@ public class FusionDeCommunesJob extends JobDefinition {
 		Audit.success("Le traitement de la fusion des communes est terminé.", rapport);
 	}
 
-	private Set<Integer> getNosOfs(HashMap<String, Object> params, String key) {
-		final String string = (String) params.get(key);
+	private Set<Integer> getNosOfs(Map<String, Object> params, String key) {
+		final String string = getStringValue(params, key);
 		final String[] split = string.split("[ ,;]");
 		final Set<Integer> numeros = new HashSet<Integer>();
 		for (String n : split) {

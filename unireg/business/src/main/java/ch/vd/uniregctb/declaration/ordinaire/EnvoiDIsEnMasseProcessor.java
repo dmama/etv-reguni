@@ -126,12 +126,12 @@ public class EnvoiDIsEnMasseProcessor {
 	}
 
 	public EnvoiDIsResults run(final int anneePeriode, final CategorieEnvoiDI categorie, final Long noCtbMin, final Long noCtbMax, final int nbMax,
-	                           final RegDate dateTraitement, final boolean exclureDecede, StatusManager s) throws DeclarationException {
+	                           final RegDate dateTraitement, final boolean exclureDecedes, StatusManager s) throws DeclarationException {
 
 		Assert.isTrue(rapport == null); // Un rapport non null signifirait que l'appel a été fait par le batch des DI non émises
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		if(exclureDecede) {
+		if (exclureDecedes) {
 			dateExclusionDecedes = getDateDebutExclusion(anneePeriode);
 		}
 		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax,dateExclusionDecedes);

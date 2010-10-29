@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.editique.batch;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -29,50 +27,29 @@ public class ImpressionChemisesTOJob extends JobDefinition {
 	private DeclarationImpotService declarationImpotService;
 	private RapportService rapportService;
 
-	private static List<JobParam> params;
+	public ImpressionChemisesTOJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-
-		JobParam param = new JobParam();
-		param = new JobParam();
+		final JobParam param = new JobParam();
 		param.setDescription("Nombre maximal de chemises TO imprimées (0 = pas de limite)");
 		param.setName(PARAM_NB_MAX);
-		param.setMandatory(false);
+		param.setMandatory(true);
 		param.setType(new JobParamInteger());
-		params.add(param);
+		addParameterDefinition(param, 10000);
 
-		JobParam param2 = new JobParam();
+		final JobParam param2 = new JobParam();
 		param2.setDescription("Office d'impôt (optionnel)");
 		param2.setName(NO_COL_OFFICE_IMPOT);
 		param2.setMandatory(false);
 		param2.setType(new JobParamOfficeImpot());
-		params.add(param2);
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			defaultParams.put(PARAM_NB_MAX, Integer.valueOf(10000));
-		}
-	}
-
-	public ImpressionChemisesTOJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
-
-	public ImpressionChemisesTOJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		addParameterDefinition(param2, null);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		Integer nombreMax = ((Integer)params.get(PARAM_NB_MAX));
-		if (nombreMax == null) {
-			nombreMax = (Integer) defaultParams.get(PARAM_NB_MAX);
-		}
-		final Integer noColOid = (Integer) params.get(NO_COL_OFFICE_IMPOT);
+		final int nombreMax = getIntegerValue(params, PARAM_NB_MAX);
+		final Integer noColOid = getOptionalIntegerValue(params, NO_COL_OFFICE_IMPOT);
 		final ImpressionChemisesTOResults results = declarationImpotService.envoiChemisesTaxationOffice(nombreMax, noColOid, getStatusManager());
 		if (results == null) {
 			Audit.error("L'envoi en masse des impressions des chemises TO a échoué.");

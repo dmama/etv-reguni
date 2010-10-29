@@ -2,8 +2,8 @@ package ch.vd.uniregctb.registrefoncier;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,40 +30,27 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 
 	public static final String LISTE_PROPRIO = "LISTE_PROPRIO";
 
-	private static final List<JobParam> params;
-
 	private RegistreFoncierService registreFoncierService;
 	private RapportService rapportService;
 
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			JobParam param = new JobParam();
-			param.setDescription("Fichier CSV des propriétaires fonciers");
-			param.setName(LISTE_PROPRIO);
-			param.setMandatory(true);
-			param.setType(new JobParamFile());
-			params.add(param);
-		}
-
-	}
-
 	public RapprocherCtbRegistreFoncierJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params);
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Fichier CSV des propriétaires fonciers");
+		param.setName(LISTE_PROPRIO);
+		param.setMandatory(true);
+		param.setType(new JobParamFile());
+		addParameterDefinition(param, null);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		final byte[] listeProprio = (byte[]) params.get(LISTE_PROPRIO);
-		if (listeProprio == null) {
-			throw new RuntimeException("La liste des propriétaires doit être spécifiée.");
-		}
+		final byte[] listeProprio = getFileContent(params, LISTE_PROPRIO);
 
 		final StatusManager status = getStatusManager();
 		final List<ProprietaireFoncier> listeProprietaireFoncier = extractProprioFromCSV(listeProprio, status);
-
-
 
 		final RapprocherCtbResults results = registreFoncierService.rapprocherCtbRegistreFoncier(listeProprietaireFoncier, status, RegDate.get());
 		final RapprocherCtbRapport rapport = rapportService.generateRapport(results, status);

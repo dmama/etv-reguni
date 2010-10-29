@@ -26,16 +26,7 @@
 	<!-- Job pour le testing du BatchClient -->
 	<bean id="itBatchClientJob" parent="schedulerJob" class="ch.vd.uniregctb.webservices.batch.ItBatchClientJob" >
 		<constructor-arg value="1" />
-		<constructor-arg>
-			<map>
-				<entry>
-					<key>
-						<util:constant static-field="ch.vd.uniregctb.webservices.batch.ItBatchClientJob.PARAM_COUNT" />
-					</key>
-					<value type="java.lang.Integer">42</value>
-				</entry>
-			</map>
-		</constructor-arg>
+		<constructor-arg value="IT - BatchClient testing job" />
 	</bean>
 
 </beans>

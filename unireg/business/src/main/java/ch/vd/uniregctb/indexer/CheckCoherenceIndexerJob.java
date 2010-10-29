@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.indexer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -17,7 +15,6 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher.CheckCallback;
 import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
@@ -32,25 +29,17 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 	public static final String NAME = "CheckCoherenceIndexerJob";
 	private static final String CATEGORIE = "Indexeur";
 
-	private static final List<JobParam> params;
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-		defaultParams = new HashMap<String, Object>();
-	}
-
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
 	private PlatformTransactionManager transactionManager;
 
 	public CheckCoherenceIndexerJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	@SuppressWarnings({"unchecked"})
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final StatusManager statusManager = getStatusManager();
 		statusManager.setMessage("Chargement des tiers de la base de données...", 25);

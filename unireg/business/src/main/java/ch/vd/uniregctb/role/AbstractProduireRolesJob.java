@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.role;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,8 +36,8 @@ public abstract class AbstractProduireRolesJob extends JobDefinition {
 		return param;
 	}
 
-	protected AbstractProduireRolesJob(String name, String categorie, int sortOrder, String description, List<JobParam> paramsDef, HashMap<String, Object> defaultParams) {
-		super(name, categorie, sortOrder, description, paramsDef, defaultParams);
+	protected AbstractProduireRolesJob(String name, String categorie, int sortOrder, String description) {
+		super(name, categorie, sortOrder, description);
 	}
 
 	public void setService(RoleService service) {
@@ -66,19 +64,11 @@ public abstract class AbstractProduireRolesJob extends JobDefinition {
 		return transactionManager;
 	}
 
-	protected static int getPeriodeFiscale(Map<String, Object> params) {
-		final Integer pf = (Integer) params.get(PERIODE_FISCALE);
-		if (pf == null) {
-			throw new RuntimeException("La période fiscale doit être spécifiée.");
-		}
-		return pf;
+	protected final int getPeriodeFiscale(Map<String, Object> params) {
+		return getIntegerValue(params, PERIODE_FISCALE);
 	}
 
-	protected static int getNbThreads(Map<String, Object> params) {
-		final Integer nbThreads = (Integer) params.get(NB_THREADS);
-		if (nbThreads == null) {
-			throw new RuntimeException("Le nombre de threads doit être spécifié.");
-		}
-		return nbThreads;
+	protected final int getNbThreads(Map<String, Object> params) {
+		return getStrictlyPositiveIntegerValue(params, NB_THREADS);
 	}
 }

@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.tache;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -20,17 +17,14 @@ public class UpdateTacheStatsJob extends JobDefinition {
 	public static final String NAME = "UpdateTacheStatsJob";
 	private static final String CATEGORIE = "Tache";
 
-	private static final List<JobParam> params = Collections.emptyList();
-	private static final Map<String, Object> defaultParams = Collections.emptyMap();
-
 	private TacheService tacheService;
 
 	public UpdateTacheStatsJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		try {
 			tacheService.updateStats();
 		}

@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.validation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -42,55 +42,7 @@ public class ValidationJob extends JobDefinition {
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String AUTORITE_FORS = "AUTORITE_FORS";
 
-	private static final List<JobParam> params;
-	private static final HashMap<String, Object> defaultParams;
-
 	private static final int QUEUE_BY_THREAD_SIZE = 50;
-
-	static {
-		params = new ArrayList<JobParam>();
-		JobParam param0 = new JobParam();
-		param0.setDescription("Calcul les assujettissements");
-		param0.setName(ASSUJET);
-		param0.setMandatory(false);
-		param0.setType(new JobParamBoolean());
-		params.add(param0);
-
-		JobParam param1 = new JobParam();
-		param1.setDescription("Cohérence date DI / assujettissement");
-		param1.setName(DI);
-		param1.setMandatory(false);
-		param1.setType(new JobParamBoolean());
-		params.add(param1);
-
-		JobParam param2 = new JobParam();
-		param2.setDescription("Calcul les adresses");
-		param2.setName(ADRESSES);
-		param2.setMandatory(false);
-		param2.setType(new JobParamBoolean());
-		params.add(param2);
-
-		JobParam param3 = new JobParam();
-		param3.setDescription("Cohérences autorités des fors fiscaux");
-		param3.setName(AUTORITE_FORS);
-		param3.setMandatory(false);
-		param3.setType(new JobParamBoolean());
-		params.add(param3);
-
-		JobParam param4 = new JobParam();
-		param4.setDescription("Nombre de threads");
-		param4.setName(NB_THREADS);
-		param4.setMandatory(true);
-		param4.setType(new JobParamInteger());
-		params.add(param4);
-
-		defaultParams = new HashMap<String, Object>();
-		defaultParams.put(ASSUJET, Boolean.FALSE);
-		defaultParams.put(DI, Boolean.FALSE);
-		defaultParams.put(ADRESSES, Boolean.FALSE);
-		defaultParams.put(AUTORITE_FORS, Boolean.FALSE);
-		defaultParams.put(NB_THREADS, Integer.valueOf(4));
-	}
 
 	private TiersDAO tiersDAO;
 	private PlatformTransactionManager transactionManager;
@@ -100,7 +52,42 @@ public class ValidationJob extends JobDefinition {
 	private ParametreAppService paramService;
 
 	public ValidationJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		super(NAME, CATEGORIE, sortOrder, description);
+
+		final JobParam param0 = new JobParam();
+		param0.setDescription("Calcul les assujettissements");
+		param0.setName(ASSUJET);
+		param0.setMandatory(false);
+		param0.setType(new JobParamBoolean());
+		addParameterDefinition(param0, Boolean.FALSE);
+
+		final JobParam param1 = new JobParam();
+		param1.setDescription("Cohérence date DI / assujettissement");
+		param1.setName(DI);
+		param1.setMandatory(false);
+		param1.setType(new JobParamBoolean());
+		addParameterDefinition(param1, Boolean.FALSE);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Calcul les adresses");
+		param2.setName(ADRESSES);
+		param2.setMandatory(false);
+		param2.setType(new JobParamBoolean());
+		addParameterDefinition(param2, Boolean.FALSE);
+
+		final JobParam param3 = new JobParam();
+		param3.setDescription("Cohérences autorités des fors fiscaux");
+		param3.setName(AUTORITE_FORS);
+		param3.setMandatory(false);
+		param3.setType(new JobParamBoolean());
+		addParameterDefinition(param3, Boolean.FALSE);
+
+		final JobParam param4 = new JobParam();
+		param4.setDescription("Nombre de threads");
+		param4.setName(NB_THREADS);
+		param4.setMandatory(true);
+		param4.setType(new JobParamInteger());
+		addParameterDefinition(param4, 4);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -128,7 +115,7 @@ public class ValidationJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final StatusManager statusManager = getStatusManager();
 
@@ -136,8 +123,7 @@ public class ValidationJob extends JobDefinition {
 		final boolean coherenceAssujetDi = getBooleanValue(params, DI);
 		final boolean calculateAdresses = getBooleanValue(params, ADRESSES);
 		final boolean coherenceAutoritesForsFiscaux = getBooleanValue(params, AUTORITE_FORS);
-		final int nbThreads = getIntegerValue(params, NB_THREADS);
-		Assert.isTrue(nbThreads > 0);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
 		// Chargement des ids des contribuables à processer
 		statusManager.setMessage("Chargement des ids de tous les contribuables...");

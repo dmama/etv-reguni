@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.role;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -25,50 +23,30 @@ public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
 
 	public static final String NO_OFS_COMMUNE = "NO_OFS_COMMUNE";
 
-	private static final List<JobParam> params;
-
-	private static final HashMap<String, Object> defaultParams;
-
-	static {
-		params = new ArrayList<JobParam>();
-		{
-			params.add(createParamPeriodeFiscale());
-			params.add(createParamNbThreads());
-
-			final JobParam param = new JobParam();
-			param.setDescription("Nom d'une commune (optionnel)");
-			param.setName(NO_OFS_COMMUNE);
-			param.setMandatory(false);
-			param.setType(new JobParamCommune());
-			params.add(param);
-		}
-
-		defaultParams = new HashMap<String, Object>();
-		{
-			RegDate today = RegDate.get();
-			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-			defaultParams.put(NB_THREADS, 4);
-		}
-	}
-
 	public ProduireRolesCommunesJob(int sortOrder, String description) {
-		this(sortOrder, description, defaultParams);
-	}
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	public ProduireRolesCommunesJob(int sortOrder, String description, HashMap<String, Object> defaultParams) {
-		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
+		final RegDate today = RegDate.get();
+		addParameterDefinition(createParamPeriodeFiscale(), today.year() - 1);
+		addParameterDefinition(createParamNbThreads(), 4);
+
+		final JobParam param = new JobParam();
+		param.setDescription("Nom d'une commune (optionnel)");
+		param.setName(NO_OFS_COMMUNE);
+		param.setMandatory(false);
+		param.setType(new JobParamCommune());
+		addParameterDefinition(param, null);
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final StatusManager statusManager = getStatusManager();
 
 		// Récupération des paramètres
 		final int annee = getPeriodeFiscale(params);
 		final int nbThreads = getNbThreads(params);
-
-		final Integer noOfsCommune = (Integer) params.get(NO_OFS_COMMUNE);
+		final Integer noOfsCommune = getOptionalIntegerValue(params, NO_OFS_COMMUNE);
 
 		final ProduireRolesCommunesResults results;
 		if (noOfsCommune != null) {
@@ -90,10 +68,4 @@ public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
 		setLastRunReport(rapport);
 		Audit.success("La production des rôles (communes) pour l'année " + annee + " est terminée.", rapport);
 	}
-
-	@Override
-	protected HashMap<String, Object> createDefaultParams() {
-		return defaultParams;
-	}
-
 }

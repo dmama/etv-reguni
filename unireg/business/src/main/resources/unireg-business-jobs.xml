@@ -15,23 +15,7 @@
     <!-- Job qui réindexe toute ou partie de la base de donnée -->
     <bean id="databaseIndexingJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob">
         <constructor-arg value="100"/>
-        <constructor-arg>
-            <map>
-                <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.I_NB_THREADS"/>
-                    </key>
-                    <value type="java.lang.Integer">4</value>
-                </entry>
-                <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.MODE"/>
-                    </key>
-                    <value type="ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer$Mode">INCREMENTAL</value>
-                </entry>
-            </map>
-        </constructor-arg>
-
+        <constructor-arg value="Réindexer tout ou partie des tiers de la base de données"/>
         <property name="globalTiersIndexer" ref="globalTiersIndexer"/>
     </bean>
 
@@ -59,17 +43,7 @@
     <!-- Job qui recalcul l'OID de chaque tiers -->
     <bean id="officeImpotIndexerJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.jobs.OfficeImpotIndexerJob">
         <constructor-arg value="103"/>
-        <constructor-arg>
-            <map>
-                <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.indexer.jobs.OfficeImpotIndexerJob.FORCE_ALL"/>
-                    </key>
-                    <value type="java.lang.Boolean">0</value>
-                </entry>
-            </map>
-        </constructor-arg>
-
+        <constructor-arg value="Mettre-à-jour l'office d'impôt au niveau de chaque tiers"/>
         <property name="indexer" ref="officeImpotIndexer"/>
     </bean>
 
@@ -106,7 +80,6 @@
         <property name="situationFamilleService" ref="situationFamilleService"/>
     </bean>
 
-
 	<!-- Job qui met-à-jour les statistiques des tâches -->
 	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.UpdateTacheStatsJob">
 		<constructor-arg value="108"/>
@@ -115,12 +88,13 @@
 		<property name="logDisabled" value="true"/>
 	</bean>
 
-
     <!-- Job qui traite les evenements civils -->
     <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.engine.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>
+        <constructor-arg value="Traitement (ou retraitement) des événements civils"/>
         <property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
     </bean>
+
 	 <!-- Job qui relance le traitement sur les messages d'identification -->
     <bean id="identifierContribuableJob" parent="schedulerJob" class="ch.vd.uniregctb.identification.contribuable.IdentifierContribuableJob">
         <constructor-arg value="201"/>
@@ -128,8 +102,9 @@
 		<property name="rapportService" ref="rapportService"/>
         <property name="identificationService" ref="identCtbService"/>
     </bean>
+
 	<bean id="evenementExterneHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.externe.EvenementExterneHandlerJob">
-		 <constructor-arg value="202"/>
+		<constructor-arg value="202"/>
 		<constructor-arg value="Relancer le traitement automatique des événements externes"/>
 		<property name="evenementExterneProcessor" ref="evenementExterneProcessor"/>
 		<property name="rapportService" ref="rapportService"/>
@@ -141,18 +116,15 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="editiqueSommationLRJob" parent="schedulerJob"
-          class="ch.vd.uniregctb.editique.batch.EditiqueSommationLRJob">
+    <bean id="editiqueSommationLRJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueSommationLRJob">
         <constructor-arg value="301"/>
         <property name="listeRecapService" ref="lrService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="reinitDoubleGainJob" parent="schedulerJob"
-          class="ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainJob">
+    <bean id="reinitDoubleGainJob" parent="schedulerJob" class="ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainJob">
         <constructor-arg value="302"/>
-        <constructor-arg
-                value="Réinitialiser les barèmes double-gain sur les situations de famille des ménages-communs sourciers"/>
+        <constructor-arg value="Réinitialiser les barèmes double-gain sur les situations de famille des ménages-communs sourciers"/>
         <property name="situationFamilleService" ref="situationFamilleService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
@@ -175,34 +147,11 @@
     <bean id="envoiDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.EnvoiDIsJob">
         <constructor-arg value="401"/>
         <constructor-arg value="Envoyer à l'impression les déclarations d'impôt (à partir des tâches en instance)"/>
-        <constructor-arg>
-            <map>
-                <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.declaration.EnvoiDIsJob.CATEGORIE_CTB"/>
-                    </key>
-                    <value type="ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI">VAUDOIS_COMPLETE</value>
-                </entry>
-                <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.declaration.EnvoiDIsJob.NB_MAX"/>
-                    </key>
-                    <value type="java.lang.Integer">100</value>
-                </entry>
-				 <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.declaration.EnvoiDIsJob.EXCLURE_DCD"/>
-                    </key>
-                    <value type="java.lang.Boolean">0</value>
-                </entry>
-            </map>
-        </constructor-arg>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="editiqueSommationDIJob" parent="schedulerJob"
-          class="ch.vd.uniregctb.editique.batch.EditiqueSommationDIJob">
+    <bean id="editiqueSommationDIJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueSommationDIJob">
         <constructor-arg value="402"/>
         <property name="declarationImpotService" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -210,14 +159,12 @@
 
     <bean id="echoirDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.EchoirDIsJob">
         <constructor-arg value="403"/>
-        <constructor-arg
-                value="Faire passer à l'état 'échue' les déclarations sommées dont le délai de retour est dépassé"/>
+        <constructor-arg value="Faire passer à l'état 'échue' les déclarations sommées dont le délai de retour est dépassé"/>
         <property name="declarationImpotService" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="impressionChemisesTOJob" parent="schedulerJob"
-          class="ch.vd.uniregctb.editique.batch.ImpressionChemisesTOJob">
+    <bean id="impressionChemisesTOJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.ImpressionChemisesTOJob">
         <constructor-arg value="404"/>
         <constructor-arg value="Imprimer les chemises TO des déclarations d'impôt échues"/>
         <property name="declarationImpotService" ref="diService"/>
@@ -231,8 +178,7 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="demandeDelaiCollectiveJob" parent="schedulerJob"
-          class="ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveJob">
+    <bean id="demandeDelaiCollectiveJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveJob">
         <constructor-arg value="406"/>
         <constructor-arg value="Traiter une demande de délai collective de DIs"/>
         <property name="service" ref="diService"/>
@@ -245,8 +191,7 @@
 			<property name="service" ref="diService"/>
 			<property name="rapportService" ref="rapportService"/>
 	</bean>
-    <bean id="ouvertureForsContribuablesMajeursJob" parent="schedulerJob"
-          class="ch.vd.uniregctb.metier.OuvertureForsContribuablesMajeursJob">
+    <bean id="ouvertureForsContribuablesMajeursJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.OuvertureForsContribuablesMajeursJob">
         <constructor-arg value="500"/>
         <constructor-arg value="Ouvrir les fors des habitants majeurs domiciliés dans le canton"/>
         <property name="transactionManager" ref="transactionManager"/>
@@ -280,16 +225,6 @@
     <bean id="produireStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ProduireStatsJob">
         <constructor-arg value="602"/>
         <constructor-arg value="Produire les statistiques sur les DIs ou les contribuables"/>
-        <constructor-arg>
-            <map>
-                <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.declaration.ProduireStatsJob.STATS_TYPE"/>
-                    </key>
-                    <value type="ch.vd.uniregctb.declaration.ProduireStatsJob$Type">DECLARATIONS</value>
-                </entry>
-            </map>
-        </constructor-arg>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="transactionManager" ref="transactionManager"/>
@@ -308,8 +243,7 @@
     <bean id="listesNominativesJob" parent="schedulerJob"
           class="ch.vd.uniregctb.listes.listesnominatives.ListesNominativesJob">
         <constructor-arg value="604"/>
-        <constructor-arg
-                value="Produire la liste nominative des personnes physiques et débiteurs de prestation imposable"/>
+        <constructor-arg value="Produire la liste nominative des personnes physiques et débiteurs de prestation imposable"/>
         <property name="service" ref="listesTiersService"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="transactionManager" ref="transactionManager"/>
@@ -333,8 +267,7 @@
 
     <bean id="validationJob" parent="schedulerJob" class="ch.vd.uniregctb.validation.ValidationJob">
         <constructor-arg value="607"/>
-        <constructor-arg
-                value="Valider tous les contribuables et générer un rapport d'erreurs pour ceux qui ne conviennent pas"/>
+        <constructor-arg value="Valider tous les contribuables et générer un rapport d'erreurs pour ceux qui ne conviennent pas"/>
         <property name="tiersDAO" ref="tiersDAO"/>
         <property name="transactionManager" ref="transactionManager"/>
         <property name="rapportService" ref="rapportService"/>
@@ -353,8 +286,7 @@
 	<bean id="listeSuissesOuPermisCResidentSansForVaudoisJob" parent="schedulerJob"
 		  class="ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisJob">
 		<constructor-arg value="609"/>
-		<constructor-arg
-				value="Produire la liste des contribuables suisses ou titulaires d'un permis C, résidents mais sans for vaudois"/>
+		<constructor-arg value="Produire la liste des contribuables suisses ou titulaires d'un permis C, résidents mais sans for vaudois"/>
 		<property name="service" ref="listesTiersService"/>
 		<property name="rapportService" ref="rapportService"/>
 		<property name="transactionManager" ref="transactionManager"/>
@@ -379,16 +311,6 @@
     <bean id="loadDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.LoadDatabaseJob">
         <constructor-arg value="701"/>
         <constructor-arg value="Recharger toutes les données de la base à partir d'un fichier sur le serveur"/>
-        <constructor-arg>
-            <map>
-                <entry>
-                    <key>
-                        <util:constant static-field="ch.vd.uniregctb.database.LoadDatabaseJob.DOC_ID"/>
-                    </key>
-                    <value type="java.lang.Long"/>
-                </entry>
-            </map>
-        </constructor-arg>
         <property name="dbService" ref="databaseService"/>
         <property name="docService" ref="docService"/>
         <property name="globalIndexer" ref="globalTiersIndexer"/>
@@ -396,8 +318,7 @@
 
     <bean id="ramasseDocJob" parent="schedulerJob" class="ch.vd.uniregctb.document.RamasseDocumentJob">
         <constructor-arg value="702"/>
-        <constructor-arg
-                value="Scanner le référentiel des documents à la recherche de fichiers non-référencés et les référencer dans la base de données"/>
+        <constructor-arg value="Scanner le référentiel des documents à la recherche de fichiers non-référencés et les référencer dans la base de données"/>
         <property name="docService" ref="docService"/>
         <property name="transactionManager" ref="transactionManager"/>
     </bean>

@@ -12,8 +12,8 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -33,17 +33,19 @@ public class DumpTiersListJob extends JobDefinition {
 	
 	private static final SimpleDateFormat FILE_DATE_FORMAT = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
 	
-	private static final List<JobParam> params;
+	private DatabaseService dbService;
+	private DocumentService docService;
 	
-	static {
-		params = new ArrayList<JobParam>();
+	public DumpTiersListJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
+
 		{
 			final JobParam param = new JobParam();
 			param.setDescription("Ids des tiers (séparés par virgule)");
 			param.setName(PARAM_TIERS_LIST);
 			param.setMandatory(false);
 			param.setType(new JobParamString());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -51,7 +53,7 @@ public class DumpTiersListJob extends JobDefinition {
 			param.setName(FILE_TIERS_LIST);
 			param.setMandatory(false);
 			param.setType(new JobParamFile());
-			params.add(param);
+			addParameterDefinition(param, null);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -59,7 +61,7 @@ public class DumpTiersListJob extends JobDefinition {
 			param.setName(INCLUDE_RET);
 			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -67,7 +69,7 @@ public class DumpTiersListJob extends JobDefinition {
 			param.setName(INCLUDE_DECLARATION);
 			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -75,15 +77,8 @@ public class DumpTiersListJob extends JobDefinition {
 			param.setName(INCLUDE_SIT_FAM);
 			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
-	}
-
-	private DatabaseService dbService;
-	private DocumentService docService;
-	
-	public DumpTiersListJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description, params);
 	}
 	
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -97,12 +92,12 @@ public class DumpTiersListJob extends JobDefinition {
 	}
 
 	@Override
-	protected void doExecute(HashMap<String, Object> params) throws Exception {
+	protected void doExecute(Map<String, Object> params) throws Exception {
 		final StatusManager status = getStatusManager();
 		status.setMessage("Export de liste de tiers en cours...");
 		
-		final String idsParam = (String) params.get(PARAM_TIERS_LIST);
-		final byte[] idsFile = (byte[]) params.get(FILE_TIERS_LIST);
+		final String idsParam = getStringValue(params, PARAM_TIERS_LIST);
+		final byte[] idsFile = getFileContent(params, FILE_TIERS_LIST);
 
 		final boolean inclusSitFamille = getBooleanValue(params, INCLUDE_SIT_FAM);
 		final boolean inclusDeclarations = getBooleanValue(params, INCLUDE_DECLARATION);

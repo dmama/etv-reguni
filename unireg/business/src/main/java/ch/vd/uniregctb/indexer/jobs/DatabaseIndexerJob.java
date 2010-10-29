@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.indexer.jobs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
@@ -26,59 +24,37 @@ public class DatabaseIndexerJob extends JobDefinition {
 
 	private GlobalTiersIndexer globalTiersIndexer;
 
-	private static final List<JobParam> params;
+	public DatabaseIndexerJob(int sortOrder, String description) {
+		super(NAME, CATEGORIE, sortOrder, description);
 
-	static {
-		params = new ArrayList<JobParam>();
-
-		JobParam param0 = new JobParam();
+		final JobParam param0 = new JobParam();
 		param0.setDescription("Nombre de threads");
 		param0.setName(I_NB_THREADS);
-		param0.setMandatory(false);
+		param0.setMandatory(true);
 		param0.setType(new JobParamInteger());
-		params.add(param0);
+		addParameterDefinition(param0, 4);
 
-		JobParam param1 = new JobParam();
+		final JobParam param1 = new JobParam();
 		param1.setDescription("Mode d'indexation");
 		param1.setName(MODE);
-		param1.setMandatory(false);
+		param1.setMandatory(true);
 		param1.setType(new JobParamEnum(Mode.class));
-		params.add(param1);
+		addParameterDefinition(param1, Mode.INCREMENTAL);
 
-		JobParam param2 = new JobParam();
+		final JobParam param2 = new JobParam();
 		param2.setDescription("Précharge les individus");
 		param2.setName(PREFETCH);
-		param2.setMandatory(false);
+		param2.setMandatory(true);
 		param2.setType(new JobParamBoolean());
-		params.add(param2);
-	}
-
-	public DatabaseIndexerJob(int sortOrder, HashMap<String, Object> defParams) {
-		super(NAME, CATEGORIE, sortOrder, "Réindexer tout ou partie des tiers de la base de données", params, defParams);
+		addParameterDefinition(param2, true);
 	}
 
 	@Override
-	public void doExecute(HashMap<String, Object> params) throws Exception {
+	public void doExecute(Map<String, Object> params) throws Exception {
 
-		Integer nbThreads = 1;
-		Mode mode = Mode.INCREMENTAL;
-		boolean prefetch = false;
-
-		if (params != null) {
-			Integer nb = (Integer) params.get(I_NB_THREADS);
-			if (nb != null) {
-				nbThreads = nb;
-			}
-			Mode m = (Mode) params.get(MODE);
-			if (m != null) {
-				mode = m;
-			}
-
-			Boolean p = (Boolean) params.get(PREFETCH);
-			if (p != null) {
-				prefetch = p;
-			}
-		}
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
+		final Mode mode = getEnumValue(params, MODE, Mode.class);
+		final boolean prefetch = getBooleanValue(params, PREFETCH);
 
 		globalTiersIndexer.indexAllDatabaseAsync(getStatusManager(), nbThreads, mode, prefetch);
 	}
