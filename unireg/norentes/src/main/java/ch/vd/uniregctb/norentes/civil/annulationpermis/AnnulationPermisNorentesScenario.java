@@ -17,7 +17,7 @@ public abstract class AnnulationPermisNorentesScenario extends EvenementCivilSce
 	protected MockPermis searchPermis(long numeroIndividu, TypePermis typePermis, int annee) {
 		final Collection<Permis> listePermis = serviceCivilService.getIndividu(numeroIndividu, annee, AttributeIndividu.PERMIS).getPermis();
 		for (Permis permis : listePermis) {
-			if (permis.getTypePermis().equals(typePermis)) {
+			if (permis.getTypePermis() == typePermis) {
 				return (MockPermis) permis;
 			}
 		}

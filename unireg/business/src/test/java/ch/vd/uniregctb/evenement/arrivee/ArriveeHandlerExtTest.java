@@ -2140,7 +2140,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			assertNotNull(adresse2);
 			AdresseTiers adresseCourrier;
 			AdresseTiers adresseDomicile;
-			if (adresse1.getUsage().equals(TypeAdresseTiers.COURRIER)) {
+			if (adresse1.getUsage() == TypeAdresseTiers.COURRIER) {
 				adresseCourrier = adresse1;
 				adresseDomicile = adresse2;
 			}

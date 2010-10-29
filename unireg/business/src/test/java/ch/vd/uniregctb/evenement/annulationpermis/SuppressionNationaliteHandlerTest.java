@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.annulationpermis;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,11 +16,15 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Test du handler de suppression de nationalité suisse:
@@ -186,7 +186,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
-			if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
@@ -254,7 +254,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
-			if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}

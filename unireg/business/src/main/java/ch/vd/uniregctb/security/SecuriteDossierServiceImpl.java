@@ -188,7 +188,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		// extraction des composants du ménage historique
 		Set<Tiers> composants = new HashSet<Tiers>();
 		for (RapportEntreTiers r : mc.getRapportsObjet()) {
-			if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
+			if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
 				final Tiers sujet = tiersDAO.get(r.getSujetId());
 				composants.add(sujet);
 			}
@@ -210,7 +210,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 				accessMinimal = null;
 				break;
 			}
-			else if (accessMinimal != null && a.equals(Niveau.LECTURE)) {
+			else if (accessMinimal != null && a == Niveau.LECTURE) {
 				accessMinimal = Niveau.LECTURE;
 			}
 		}
@@ -228,7 +228,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 			List<Long> idsComposants = new ArrayList<Long>();
 			idsPPparMC.put(mc.getNumero(), idsComposants);
 			for (RapportEntreTiers r : mc.getRapportsObjet()) {
-				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
+				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
 					final Long id = r.getSujetId();
 					idsPP.add(id);
 					idsComposants.add(id);
@@ -253,7 +253,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 					accessMinimal = null;
 					break;
 				}
-				else if (accessMinimal != null && a.equals(Niveau.LECTURE)) {
+				else if (accessMinimal != null && a == Niveau.LECTURE) {
 					accessMinimal = Niveau.LECTURE;
 				}
 			}
@@ -366,7 +366,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 				}
 			}
 			else {
-				if (d.getType().equals(TypeDroitAcces.AUTORISATION)) {
+				if (d.getType() == TypeDroitAcces.AUTORISATION) {
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.trace("Trouvé une autorisation d'un autre opérateur que [" + operateur.getCode() + "] sur le dossier n° "
 								+ ppId + ".");
@@ -378,7 +378,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
 		// bypass des sécurités pour les membres de la direction de l'ACI (qui sont les seuls à posséder ces rôles)
 		if (SecurityProvider.isGranted(Role.ECRITURE_DOSSIER_PROTEGE, operateur.getCode(), ServiceInfrastructureService.noACI)) {
-			if (granted == null || granted.equals(Niveau.LECTURE)) {
+			if (granted == null || granted == Niveau.LECTURE) {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Promotion du niveau d'accès de [" + granted + "] à [ECRITURE] pour l'opérateur [" + operateur.getCode()
 							+ "] sur le dossier n° " + ppId + " parce qu'il possède le rôle spécial [ECRITURE_DOSSIER_PROTEGE].");
@@ -413,7 +413,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		}
 
 		if (restricted != null) {
-			if (restricted.equals(Niveau.ECRITURE)) {
+			if (restricted == Niveau.ECRITURE) {
 				// restriction de l'accès en écriture -> droit d'accès en lecture seulement
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("L'opérateur [" + operateur.getCode() + "] possède le droit LECTURE au dossier n° " + ppId

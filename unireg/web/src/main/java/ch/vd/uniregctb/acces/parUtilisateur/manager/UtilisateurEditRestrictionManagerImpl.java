@@ -3,9 +3,6 @@ package ch.vd.uniregctb.acces.parUtilisateur.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -14,8 +11,10 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -105,10 +104,10 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 			droitAccesView.setNiveau(droitAcces.getNiveau());
 			droitAccesView.setDateDebut(droitAcces.getDateDebut());
 			droitAccesView.setDateFin(droitAcces.getDateFin());
-			if (droitAcces.getNiveau().equals(Niveau.LECTURE)) {
+			if (droitAcces.getNiveau() == Niveau.LECTURE) {
 				droitAccesView.setLectureSeule(true);
 			}
-			else if (droitAcces.getNiveau().equals(Niveau.ECRITURE)) {
+			else if (droitAcces.getNiveau() == Niveau.ECRITURE) {
 				droitAccesView.setLectureSeule(false);
 			}
 			droitsAccesView.add(droitAccesView);

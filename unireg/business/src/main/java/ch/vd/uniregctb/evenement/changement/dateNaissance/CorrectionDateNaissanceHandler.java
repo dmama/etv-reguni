@@ -93,7 +93,7 @@ public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 
 		Set<ForFiscal> fors = habitant.getForsFiscaux();
 		for (ForFiscal forFiscal : fors) {
-			if (forFiscal.isPrincipal() && ((ForFiscalPrincipal) forFiscal).getMotifOuverture().equals(MotifFor.MAJORITE)) {
+			if (forFiscal.isPrincipal() && ((ForFiscalPrincipal) forFiscal).getMotifOuverture() == MotifFor.MAJORITE) {
 				return (ForFiscalPrincipal) forFiscal;
 			}
 		}

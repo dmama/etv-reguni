@@ -15,9 +15,9 @@ public abstract class AbstractTutelleHandler extends EvenementCivilHandlerBase {
 		RapportEntreTiers tutelle = null;
 		int nombreRapportTutelleOuverts = 0;
 		for (RapportEntreTiers rapportEntreTiers : pupille.getRapportsSujet()) {
-			if ((TypeRapportEntreTiers.TUTELLE.equals(rapportEntreTiers.getType()) ||
-					TypeRapportEntreTiers.CURATELLE.equals(rapportEntreTiers.getType()) ||
-					TypeRapportEntreTiers.CONSEIL_LEGAL.equals(rapportEntreTiers.getType())) &&
+			if ((TypeRapportEntreTiers.TUTELLE == rapportEntreTiers.getType() ||
+					TypeRapportEntreTiers.CURATELLE == rapportEntreTiers.getType() ||
+					TypeRapportEntreTiers.CONSEIL_LEGAL == rapportEntreTiers.getType()) &&
 					RegDateHelper.isBetween(date, rapportEntreTiers.getDateDebut(), rapportEntreTiers.getDateFin(), null)) {
 				tutelle = rapportEntreTiers;
 				nombreRapportTutelleOuverts++;

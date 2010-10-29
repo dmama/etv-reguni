@@ -455,23 +455,23 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		final RegDate nouvelleDateDebut = periodiciteLR.getDebutPeriodeSuivante(dateDebut);
 		final int month = nouvelleDateDebut.month();
 
-		if (!periodiciteDPI.equals(periodiciteLR)) {
-			if (		periodiciteDPI.equals(PeriodiciteDecompte.TRIMESTRIEL)
-					&& 	periodiciteLR.equals(PeriodiciteDecompte.MENSUEL)
+		if (periodiciteDPI != periodiciteLR) {
+			if (periodiciteDPI == PeriodiciteDecompte.TRIMESTRIEL
+					&& periodiciteLR == PeriodiciteDecompte.MENSUEL
 					&&		(month != 1) && (month != 4)
 						&& 	(month != 7) && (month != 10) ) {
 				return periodiciteLR;
 			}
-			if (		periodiciteDPI.equals(PeriodiciteDecompte.SEMESTRIEL)
-					&& 	(		periodiciteLR.equals(PeriodiciteDecompte.MENSUEL)
-							|| 	periodiciteLR.equals(PeriodiciteDecompte.TRIMESTRIEL))
+			if (periodiciteDPI == PeriodiciteDecompte.SEMESTRIEL
+					&& 	(periodiciteLR == PeriodiciteDecompte.MENSUEL
+							|| periodiciteLR == PeriodiciteDecompte.TRIMESTRIEL)
 					&&		(month != 1) && (month != 7)  ) {
 				return periodiciteLR;
 			}
-			if (		periodiciteDPI.equals(PeriodiciteDecompte.ANNUEL)
-					&& 	(		periodiciteLR.equals(PeriodiciteDecompte.MENSUEL)
-							|| 	periodiciteLR.equals(PeriodiciteDecompte.TRIMESTRIEL)
-							|| 	periodiciteLR.equals(PeriodiciteDecompte.SEMESTRIEL))
+			if (periodiciteDPI == PeriodiciteDecompte.ANNUEL
+					&& 	(periodiciteLR == PeriodiciteDecompte.MENSUEL
+							|| periodiciteLR == PeriodiciteDecompte.TRIMESTRIEL
+							|| periodiciteLR == PeriodiciteDecompte.SEMESTRIEL)
 					&&	month != 1) {
 				return periodiciteLR;
 			}

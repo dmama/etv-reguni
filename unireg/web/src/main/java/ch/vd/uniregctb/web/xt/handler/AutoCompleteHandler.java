@@ -161,10 +161,10 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 		List<WrapperCommune> communes = null;
 		if (filter.length() >= MIN_SIZE_FILTER) {
 			Collection<Commune> colCommunes = null;
-			if (typeAutoriteFiscale.equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				colCommunes = serviceInfrastructureService.getListeFractionsCommunes();
 			}
-			else if (typeAutoriteFiscale.equals(TypeAutoriteFiscale.COMMUNE_HC)) {
+			else if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
 				colCommunes = serviceInfrastructureService.getCommunesHorsCanton();
 			}
 			CommunePredicate communePredicate = new CommunePredicate();

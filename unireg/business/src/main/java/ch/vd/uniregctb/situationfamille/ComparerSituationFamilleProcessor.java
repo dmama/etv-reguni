@@ -114,7 +114,7 @@ public class ComparerSituationFamilleProcessor {
 			final Long numeroIndividu = personne.getNumeroIndividu();
 			if(numeroIndividu!=null){
 				EtatCivil etatCivil =  serviceCivil.getEtatCivilActif(numeroIndividu,null);
-				if(!situation.getEtatCivil().equals(etatCivil.getTypeEtatCivil().asCore())){
+				if(situation.getEtatCivil() != etatCivil.getTypeEtatCivil().asCore()){
 					rapport.get().addSituationsDifferentes(situation,etatCivil);
 				}
 			}

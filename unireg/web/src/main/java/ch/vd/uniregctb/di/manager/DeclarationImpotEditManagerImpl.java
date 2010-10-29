@@ -222,7 +222,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			EtatDeclaration etatDiPrecedente = diDAO.findDerniereDiEnvoyee(numeroCtb);
 			if (etatDiPrecedente != null) {
 				DeclarationImpotOrdinaire diPrecedente = (DeclarationImpotOrdinaire) etatDiPrecedente.getDeclaration();
-				if (diPrecedente.getTypeDeclaration().equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH)) {
+				if (diPrecedente.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
 					diEditView.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
 				}
 				else {
@@ -494,7 +494,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		final List<ModeleDocumentView> modeles = diImpressionView.getModelesDocumentView();
 		for (ModeleDocumentView modeleView : modeles) {
-			if (modeleView.getTypeDocument().equals(diImpressionView.getSelectedTypeDocument())) {
+			if (modeleView.getTypeDocument() == diImpressionView.getSelectedTypeDocument()) {
 				annexes = modeleView.getModelesFeuilles();
 				break;
 			}
@@ -630,7 +630,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private void setDroitDI(DeclarationImpotDetailView diEditView, Tiers tiers) {
 
 		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			diEditView.setAllowedSommation(false);
 			diEditView.setAllowedDelai(false);
 			diEditView.setAllowedDuplic(false);
@@ -768,10 +768,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			assigneModeleDocument(diEditView, di);
 
 			final ch.vd.uniregctb.tiers.CollectiviteAdministrative collectiviteAdministrative;
-			if (diEditView.getTypeAdresseRetour().equals(TypeAdresseRetour.ACI)) {
+			if (diEditView.getTypeAdresseRetour() == TypeAdresseRetour.ACI) {
 				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
 			}
-			else if (diEditView.getTypeAdresseRetour().equals(TypeAdresseRetour.CEDI)) {
+			else if (diEditView.getTypeAdresseRetour() == TypeAdresseRetour.CEDI) {
 				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 			}
 			else {

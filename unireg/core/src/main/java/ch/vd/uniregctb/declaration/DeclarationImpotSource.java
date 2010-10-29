@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.hibernate.annotations.Type;
 
@@ -138,7 +137,7 @@ public class DeclarationImpotSource extends Declaration {
 		if (etatsDocument.size() == 1) {
 			Iterator<EtatDeclaration> itEtat = etatsDocument.iterator();
 			EtatDeclaration etat = itEtat.next();
-			if (etat.getEtat().equals(TypeEtatDeclaration.EMISE)) {
+			if (etat.getEtat() == TypeEtatDeclaration.EMISE) {
 				RegDate dateObtention = etat.getDateObtention();
 				calSommation.setTime(dateObtention.asJavaDate());
 				calSommation.add(Calendar.MONTH, 1);

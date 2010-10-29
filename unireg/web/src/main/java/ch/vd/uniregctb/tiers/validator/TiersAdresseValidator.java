@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers.validator;
 
-import ch.vd.uniregctb.adresse.*;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +7,12 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -104,7 +107,7 @@ public class TiersAdresseValidator implements Validator {
 		final Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
 
 		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			errors.reject("error.tiers.interdit");
 		}
 

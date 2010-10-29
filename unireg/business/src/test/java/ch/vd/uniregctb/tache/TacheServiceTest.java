@@ -2032,7 +2032,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Annulation du for fiscal -> Une tache d'annulation pour la DI 2008 doit etre generée
 		boolean trouve = false;
 		for (Tache t : tacheDAO.getAll()) {
-			if (TypeTache.TacheEnvoiDeclarationImpot.equals(t.getTypeTache())) {
+			if (TypeTache.TacheEnvoiDeclarationImpot == t.getTypeTache()) {
 				trouve=true;
 				break;
 			}

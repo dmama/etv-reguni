@@ -73,7 +73,7 @@ public class MockDepart extends MockEvenementCivil implements Depart, Cloneable 
 		EvenementFiscal evenement = null;
 		while (iteEvFiscal.hasNext()) {
 			evenement = iteEvFiscal.next();
-			if (evenement.getType().equals(TypeEvenementFiscal.FERMETURE_FOR)&& evenement.getDateEvenement()==depart.getDate()) {
+			if (evenement.getType() == TypeEvenementFiscal.FERMETURE_FOR && evenement.getDateEvenement()==depart.getDate()) {
 				isPresent = true;
 				break;
 			}

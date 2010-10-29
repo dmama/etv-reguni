@@ -380,7 +380,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 		if (genreImpot == null) {
 			if (other.genreImpot != null)
 				return false;
-		} else if (!genreImpot.equals(other.genreImpot))
+		} else if (genreImpot != other.genreImpot)
 			return false;
 		if (numeroOfsAutoriteFiscale == null) {
 			if (other.numeroOfsAutoriteFiscale != null)
@@ -391,7 +391,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 		if (typeAutoriteFiscale == null) {
 			if (other.typeAutoriteFiscale != null)
 				return false;
-		} else if (!typeAutoriteFiscale.equals(other.typeAutoriteFiscale))
+		} else if (typeAutoriteFiscale != other.typeAutoriteFiscale)
 			return false;
 		return isAnnule() == other.isAnnule();
 	}

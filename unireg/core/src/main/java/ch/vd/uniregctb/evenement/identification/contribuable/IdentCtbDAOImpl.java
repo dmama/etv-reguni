@@ -419,7 +419,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		}
 
 		if (etat != null) {
-			if (Etat.SUSPENDU.equals(etat)) {
+			if (Etat.SUSPENDU == etat) {
 				Etat aTraiterManuellementSuspendu = Etat.A_TRAITER_MAN_SUSPENDU;
 				Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
 				queryWhere += " and identificationContribuable.etat in(?,?,?) ";

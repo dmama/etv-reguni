@@ -694,7 +694,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * Retourne vrai si la déclaration d'impôt et la tâches spécifiées correspondent parfaitement
 	 */
 	protected boolean correspondent(DeclarationImpotOrdinaire di, TacheEnvoiDeclarationImpot tache) {
-		return (di.getTypeContribuable().equals(tache.getTypeContribuable()) && di.getTypeDeclaration().equals(tache.getTypeDocument()) && DateRangeHelper
+		return (di.getTypeContribuable() == tache.getTypeContribuable() && di.getTypeDeclaration() == tache.getTypeDocument() && DateRangeHelper
 				.equals(di, tache));
 	}
 
@@ -720,7 +720,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 	protected static boolean estAssujettiDansLeCanton(Contribuable contribuable, RegDate date) {
 		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(date);
-		return (forPrincipal != null && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forPrincipal.getTypeAutoriteFiscale()));
+		return (forPrincipal != null && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forPrincipal.getTypeAutoriteFiscale());
 	}
 
 	/**

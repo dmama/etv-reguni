@@ -63,7 +63,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 		Map<IdentificationContribuable.Etat, Integer> resultatsStats = identCtbService.calculerStats(bean, TypeDemande.MELDEWESEN);
 
 		for (IdentificationContribuable.Etat etat :IdentificationContribuable.Etat.values()) {
-			if (!IdentificationContribuable.Etat.RECU.equals(etat) && !IdentificationContribuable.Etat.SUSPENDU.equals(etat)  ) {
+			if (IdentificationContribuable.Etat.RECU != etat && IdentificationContribuable.Etat.SUSPENDU != etat) {
 
 				IdentificationMessagesStatsResultView statViewCourante = new IdentificationMessagesStatsResultView();
 

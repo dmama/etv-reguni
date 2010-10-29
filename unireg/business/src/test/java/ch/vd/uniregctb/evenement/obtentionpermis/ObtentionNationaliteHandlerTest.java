@@ -206,7 +206,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
-			if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
@@ -283,7 +283,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
-			if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}

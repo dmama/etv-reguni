@@ -354,7 +354,7 @@ public class TiersManager implements MessageSourceAware {
 
 		// Rapport entre tiers Objet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsObjet()) {
-			if (!rapportEntreTiers.getType().equals(TypeRapportEntreTiers.PRESTATION_IMPOSABLE)) {
+			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.PRESTATION_IMPOSABLE) {
 				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());
@@ -378,7 +378,7 @@ public class TiersManager implements MessageSourceAware {
 
 		// Rapport entre tiers Sujet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsSujet()) {
-			if (!rapportEntreTiers.getType().equals(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE)) {
+			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE) {
 				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());
@@ -429,7 +429,7 @@ public class TiersManager implements MessageSourceAware {
 		// Rapport entre tiers Objet
 		final Set<RapportEntreTiers> rapports = debiteur.getRapportsObjet();
 		for (RapportEntreTiers rapportEntreTiers : rapports) {
-			if (rapportEntreTiers.getType().equals(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE)) {
+			if (rapportEntreTiers.getType() == TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE) {
 				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());
@@ -965,7 +965,7 @@ public class TiersManager implements MessageSourceAware {
 		boolean isEditable = false;
 
 		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
 			allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.FALSE);
 			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.FALSE);
@@ -1502,7 +1502,7 @@ public class TiersManager implements MessageSourceAware {
 	protected boolean checkDroitEdit(Tiers tiers) {
 
 		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			return false;
 		}
 
@@ -1787,8 +1787,8 @@ public class TiersManager implements MessageSourceAware {
 		List<AdresseView> resultat = new ArrayList<AdresseView>();
 		for (AdresseView view : adresses) {
 			//UNIREG-1813 L'adresse domicile est retiré du bloc fiscal
-			if (!TypeAdresseTiers.DOMICILE.equals(view.getUsage())) {
-				if (view.getDateFin() == null || !AdresseGenerique.Source.CIVILE.equals(view.getSource())) {
+			if (TypeAdresseTiers.DOMICILE != view.getUsage()) {
+				if (view.getDateFin() == null || Source.CIVILE != view.getSource()) {
 					resultat.add(view);
 				}
 

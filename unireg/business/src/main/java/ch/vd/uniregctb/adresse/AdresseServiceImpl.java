@@ -684,7 +684,7 @@ public class AdresseServiceImpl implements AdresseService {
 				return FormulePolitesse.MADAME_MONSIEUR;
 			}
 			else {
-				if (Sexe.MASCULIN.equals(sexePrincipal)) {
+				if (Sexe.MASCULIN == sexePrincipal) {
 					return FormulePolitesse.MONSIEUR;
 				}
 				else {
@@ -697,8 +697,8 @@ public class AdresseServiceImpl implements AdresseService {
 				return FormulePolitesse.MADAME_MONSIEUR;
 			}
 			else {
-				boolean principalMasculin = Sexe.MASCULIN.equals(sexePrincipal);
-				boolean conjointMasculin = Sexe.MASCULIN.equals(sexeConjoint);
+				boolean principalMasculin = Sexe.MASCULIN == sexePrincipal;
+				boolean conjointMasculin = Sexe.MASCULIN == sexeConjoint;
 
 				if (principalMasculin && conjointMasculin) {
 					return FormulePolitesse.MESSIEURS;

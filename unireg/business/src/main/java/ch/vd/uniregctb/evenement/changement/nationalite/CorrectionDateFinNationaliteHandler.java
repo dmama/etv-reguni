@@ -31,7 +31,7 @@ public class CorrectionDateFinNationaliteHandler extends EvenementCivilHandlerBa
 
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
-		if (evenement.getType().equals(TypeEvenementCivil.CORREC_DATE_FIN_NATIONALITE_SUISSE)) {
+		if (evenement.getType() == TypeEvenementCivil.CORREC_DATE_FIN_NATIONALITE_SUISSE) {
 			// TODO (PBO) CorrectionDateFinNationaliteHandler.handle
 			throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");
 		}

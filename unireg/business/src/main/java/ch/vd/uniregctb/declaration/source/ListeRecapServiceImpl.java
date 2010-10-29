@@ -467,7 +467,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				//Pour la periodicite de type UNIQUE, on doit egalement creer la periode decompte associé,
 				//Cette dernière est une propriété du tiers et non de la LR
 
-				if (PeriodiciteDecompte.UNIQUE.equals(lr.getPeriodicite())) {
+				if (PeriodiciteDecompte.UNIQUE == lr.getPeriodicite()) {
 					periodeDecompte = debiteur.getPeriodeDecompte();
 				}
 

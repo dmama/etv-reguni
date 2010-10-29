@@ -32,7 +32,7 @@ public class FinPermisHandler extends EvenementCivilHandlerBase {
 	protected void validateSpecific(EvenementCivil evenement, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		FinPermis finPermis = (FinPermis) evenement;
 		/* Seulement le permis C est traité */
-		if (finPermis.getTypePermis().equals(TypePermis.ETABLISSEMENT)) {
+		if (finPermis.getTypePermis() == TypePermis.ETABLISSEMENT) {
 			
 			PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(finPermis.getNoIndividu(), erreurs);
 			if (habitant == null) {

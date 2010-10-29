@@ -294,7 +294,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			Set<RapportEntreTiers> rapports = habitant.getRapportsSujet();
 			if (rapports != null) {
 				for (RapportEntreTiers rapport : rapports) {
-					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && !rapport.isAnnule()) {
+					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && !rapport.isAnnule()) {
 						if (dateDebutEtatCivil == null || dateDebutEtatCivil.isAfter(rapport.getDateDebut())) {
 							dateDebutEtatCivil = rapport.getDateDebut();
 						}
@@ -317,7 +317,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 				Set<RapportEntreTiers> rapports = habitant.getRapportsSujet();
 				if (rapports != null) {
 					for (RapportEntreTiers rapport : rapports) {
-						if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && !rapport.isAnnule()) {
+						if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && !rapport.isAnnule()) {
 							if (dateDebutEtatCivil == null
 									|| (rapport.getDateFin() != null && dateDebutEtatCivil.isAfter(rapport.getDateFin()))) {
 								dateDebutEtatCivil = rapport.getDateFin();
@@ -365,7 +365,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			if (rapportsSujet != null) {
 				Set<MenageCommun> menages = new HashSet<MenageCommun>();
 				for (RapportEntreTiers rapportSujet : rapportsSujet) {
-					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapportSujet.getType()) && !rapportSujet.isAnnule()) {
+					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportSujet.getType() && !rapportSujet.isAnnule()) {
 						final MenageCommun menage =(MenageCommun) hibernateTemplate.get(MenageCommun.class, rapportSujet.getObjetId());
 						menages.add(menage);
 					}

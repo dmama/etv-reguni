@@ -111,7 +111,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 				if (other.typeCtb != null)
 					return false;
 			}
-			else if (!typeCtb.equals(other.typeCtb))
+			else if (typeCtb != other.typeCtb)
 				return false;
 			return true;
 		}

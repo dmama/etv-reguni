@@ -52,7 +52,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 
 			verifierMouvementIndividu(depart, false, erreurs, warnings);
 			// Si le pays de destination est inconnue, on leve un warning
-			if (findMotifFermeture(depart).equals(MotifFor.DEPART_HS)) {
+			if (findMotifFermeture(depart) == MotifFor.DEPART_HS) {
 				if (isPaysInconnu(depart)) {
 					warnings.add(new EvenementCivilErreur(
 							"Le nouveau pays n'a pas été trouvé : veuillez vérifier le motif de fermeture du for principal",

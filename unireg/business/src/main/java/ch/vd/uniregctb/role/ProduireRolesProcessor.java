@@ -509,7 +509,7 @@ public class ProduireRolesProcessor {
 		 * et pas seulement les fors déterminants, car toute les communes ayant un for ouvert doivent recevoir l'information
 		 */
 		for (ForFiscalRevenuFortune f : fors.principauxDansLaPeriode) {
-			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(f.getTypeAutoriteFiscale())) {
+			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == f.getTypeAutoriteFiscale()) {
 				processForFiscal(assujet, f, typeCtb, assujettissementContainer, groupement);
 			}
 		}

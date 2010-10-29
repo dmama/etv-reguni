@@ -217,7 +217,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	}
 
 	public boolean isCollatable(DateRange next) {
-		return DateRangeHelper.isCollatable(this, next) && periodiciteDecompte.equals(((Periodicite) next).getPeriodiciteDecompte());
+		return DateRangeHelper.isCollatable(this, next) && periodiciteDecompte == ((Periodicite) next).getPeriodiciteDecompte();
 	}
 
 	public DateRange collate(DateRange next) {

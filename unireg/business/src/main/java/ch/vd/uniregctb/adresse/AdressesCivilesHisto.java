@@ -25,32 +25,32 @@ public class AdressesCivilesHisto {
 	public List<Adresse> tutelles = new ArrayList<Adresse>();
 
 	public List<Adresse> ofType(TypeAdresseCivil type) {
-		if (TypeAdresseCivil.PRINCIPALE.equals(type)) {
+		if (TypeAdresseCivil.PRINCIPALE == type) {
 			return principales;
 		}
-		else if (TypeAdresseCivil.COURRIER.equals(type)) {
+		else if (TypeAdresseCivil.COURRIER == type) {
 			return courriers;
 		}
-		else if (TypeAdresseCivil.SECONDAIRE.equals(type)) {
+		else if (TypeAdresseCivil.SECONDAIRE == type) {
 			return secondaires;
 		}
 		else {
-			Assert.isTrue(TypeAdresseCivil.TUTEUR.equals(type));
+			Assert.isTrue(TypeAdresseCivil.TUTEUR == type);
 			return tutelles;
 		}
 	}
 
 	public void add(Adresse adresse) {
-		if (adresse.getTypeAdresse().equals(TypeAdresseCivil.PRINCIPALE)) {
+		if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
 			principales.add(adresse);
 		}
-		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.COURRIER)) {
+		else if (adresse.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
 			courriers.add(adresse);
 		}
-		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.SECONDAIRE)) {
+		else if (adresse.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
 			secondaires.add(adresse);
 		}
-		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.TUTEUR)) {
+		else if (adresse.getTypeAdresse() == TypeAdresseCivil.TUTEUR) {
 			tutelles.add(adresse);
 		}
 		else {

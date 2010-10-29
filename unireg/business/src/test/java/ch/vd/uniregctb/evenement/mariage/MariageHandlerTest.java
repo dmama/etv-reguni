@@ -195,7 +195,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for ( RapportEntreTiers rapport : pierre.getRapportsSujet() ) {
-			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
@@ -294,7 +294,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for ( RapportEntreTiers rapport : bea.getRapportsSujet() ) {
-			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
@@ -397,7 +397,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for ( RapportEntreTiers rapport : julien.getRapportsSujet() ) {
-			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}

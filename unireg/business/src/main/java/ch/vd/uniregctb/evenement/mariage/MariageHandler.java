@@ -126,7 +126,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 			boolean remariage = false;
 			MenageCommun ancienMenage = null;
 			for (RapportEntreTiers rapport : contribuable.getRapportsSujet()) {
-				if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())) {
+				if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
 					final MenageCommun menage = (MenageCommun) getTiersDAO().get(rapport.getObjetId());
 					final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(menage, rapport.getDateDebut());
 					if (couple != null && couple.estComposeDe(contribuable, conjointContribuable)) {

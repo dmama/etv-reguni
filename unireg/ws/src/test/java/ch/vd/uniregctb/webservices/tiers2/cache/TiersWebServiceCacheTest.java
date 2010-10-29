@@ -762,24 +762,24 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 */
 	private static void assertOnlyPart(TiersPart p, Tiers tiers) {
 
-		boolean checkAdresses = TiersPart.ADRESSES.equals(p);
-		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI.equals(p);
-		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS.equals(p);
-		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE.equals(p);
-		boolean checkComptesBancaires = TiersPart.COMPTES_BANCAIRES.equals(p);
-		boolean checkDeclarations = TiersPart.DECLARATIONS.equals(p);
-		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX.equals(p);
-		boolean checkForsFiscauxVirtuels = TiersPart.FORS_FISCAUX_VIRTUELS.equals(p);
-		boolean checkForsGestion = TiersPart.FORS_GESTION.equals(p);
-		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION.equals(p);
-		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS.equals(p);
-		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE.equals(p);
-		boolean checkCapital = TiersPart.CAPITAUX.equals(p);
-		boolean checkEtatPM = TiersPart.ETATS_PM.equals(p);
-		boolean checkFormeJuridique = TiersPart.FORMES_JURIDIQUES.equals(p);
-		boolean checkRegimesFiscaux = TiersPart.REGIMES_FISCAUX.equals(p);
-		boolean checkSiege = TiersPart.SIEGES.equals(p);
-		boolean checkPeriodicite = TiersPart.PERIODICITES.equals(p);
+		boolean checkAdresses = TiersPart.ADRESSES == p;
+		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI == p;
+		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS == p;
+		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE == p;
+		boolean checkComptesBancaires = TiersPart.COMPTES_BANCAIRES == p;
+		boolean checkDeclarations = TiersPart.DECLARATIONS == p;
+		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX == p;
+		boolean checkForsFiscauxVirtuels = TiersPart.FORS_FISCAUX_VIRTUELS == p;
+		boolean checkForsGestion = TiersPart.FORS_GESTION == p;
+		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION == p;
+		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS == p;
+		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE == p;
+		boolean checkCapital = TiersPart.CAPITAUX == p;
+		boolean checkEtatPM = TiersPart.ETATS_PM == p;
+		boolean checkFormeJuridique = TiersPart.FORMES_JURIDIQUES == p;
+		boolean checkRegimesFiscaux = TiersPart.REGIMES_FISCAUX == p;
+		boolean checkSiege = TiersPart.SIEGES == p;
+		boolean checkPeriodicite = TiersPart.PERIODICITES == p;
 
 		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkComptesBancaires
 				|| checkDeclarations || checkForsFiscaux || checkForsFiscauxVirtuels || checkForsGestion || checkPeriodeImposition
@@ -831,24 +831,24 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 */
 	private static void assertOnlyPart(TiersPart p, TiersHisto tiers) {
 
-		boolean checkAdresses = TiersPart.ADRESSES.equals(p);
-		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI.equals(p);
-		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS.equals(p);
-		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE.equals(p);
-		boolean checkComptesBancaires = TiersPart.COMPTES_BANCAIRES.equals(p);
-		boolean checkDeclarations = TiersPart.DECLARATIONS.equals(p);
-		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX.equals(p);
-		boolean checkForsFiscauxVirtuels = TiersPart.FORS_FISCAUX_VIRTUELS.equals(p);
-		boolean checkForsGestion = TiersPart.FORS_GESTION.equals(p);
-		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION.equals(p);
-		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS.equals(p);
-		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE.equals(p);
-		boolean checkCapitaux = TiersPart.CAPITAUX.equals(p);
-		boolean checkEtatsPM = TiersPart.ETATS_PM.equals(p);
-		boolean checkFormesJuridiques = TiersPart.FORMES_JURIDIQUES.equals(p);
-		boolean checkRegimesFiscaux = TiersPart.REGIMES_FISCAUX.equals(p);
-		boolean checkSieges = TiersPart.SIEGES.equals(p);
-		boolean checkPeriodicite = TiersPart.PERIODICITES.equals(p);
+		boolean checkAdresses = TiersPart.ADRESSES == p;
+		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI == p;
+		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS == p;
+		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE == p;
+		boolean checkComptesBancaires = TiersPart.COMPTES_BANCAIRES == p;
+		boolean checkDeclarations = TiersPart.DECLARATIONS == p;
+		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX == p;
+		boolean checkForsFiscauxVirtuels = TiersPart.FORS_FISCAUX_VIRTUELS == p;
+		boolean checkForsGestion = TiersPart.FORS_GESTION == p;
+		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION == p;
+		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS == p;
+		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE == p;
+		boolean checkCapitaux = TiersPart.CAPITAUX == p;
+		boolean checkEtatsPM = TiersPart.ETATS_PM == p;
+		boolean checkFormesJuridiques = TiersPart.FORMES_JURIDIQUES == p;
+		boolean checkRegimesFiscaux = TiersPart.REGIMES_FISCAUX == p;
+		boolean checkSieges = TiersPart.SIEGES == p;
+		boolean checkPeriodicite = TiersPart.PERIODICITES == p;
 		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkComptesBancaires
 				|| checkDeclarations || checkForsFiscaux || checkForsFiscauxVirtuels || checkForsGestion || checkPeriodeImposition
 				|| checkRapportEntreTiers || checkSituationFamille || checkCapitaux || checkEtatsPM || checkFormesJuridiques

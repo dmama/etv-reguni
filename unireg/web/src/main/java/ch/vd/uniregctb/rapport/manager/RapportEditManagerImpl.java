@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -138,7 +138,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			rapportView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
 			rapportView.setNatureRapportEntreTiers(rapportPrestationImposable.getClass().getSimpleName());
 		}
-		else if (rapportEntreTiers.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+		else if (rapportEntreTiers.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 			rapportView.setAllowed(false);
 		}
 		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
@@ -168,7 +168,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 			// récupère les données
 			final SensRapportEntreTiers sens = rapportView.getSensRapportEntreTiers();
-			if (sens.equals(SensRapportEntreTiers.OBJET)) {
+			if (sens == SensRapportEntreTiers.OBJET) {
 				sujet = tiersService.getTiers(rapportView.getTiers().getNumero());
 				objet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
 			}

@@ -10,9 +10,9 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.separation.view.SeparationRecapView;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -38,7 +38,7 @@ public class SeparationRecapValidator implements Validator {
 
 		final RegDate dateSeparation = separationRecapView.getDateSeparation();
 		if (dateSeparation == null) {
-			if (EtatCivil.DIVORCE.equals(separationRecapView.getEtatCivil())) {
+			if (EtatCivil.DIVORCE == separationRecapView.getEtatCivil()) {
 				ValidationUtils.rejectIfEmpty(errors, "dateSeparation", "error.date.divorce.vide");
 			}
 			else {
@@ -47,7 +47,7 @@ public class SeparationRecapValidator implements Validator {
 		}
 		else {
 			if (RegDate.get().isBefore(dateSeparation)) {
-				if (EtatCivil.DIVORCE.equals(separationRecapView.getEtatCivil())) {
+				if (EtatCivil.DIVORCE == separationRecapView.getEtatCivil()) {
 					errors.rejectValue("dateSeparation", "error.date.divorce.future");
 				}
 				else {

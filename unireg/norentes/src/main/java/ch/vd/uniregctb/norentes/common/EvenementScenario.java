@@ -3,6 +3,10 @@ package ch.vd.uniregctb.norentes.common;
 import java.util.HashSet;
 import java.util.Set;
 
+import annotation.AfterCheck;
+import annotation.AfterEtape;
+import annotation.BeforeCheck;
+import annotation.BeforeEtape;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,10 +15,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 
-import annotation.AfterCheck;
-import annotation.AfterEtape;
-import annotation.BeforeCheck;
-import annotation.BeforeEtape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
@@ -27,8 +27,8 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -236,7 +236,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 	protected void addSituationFamille(final MenageCommun menage, RegDate debut, RegDate fin, EtatCivil etatCivil,
 			int nbEnfants, TarifImpotSource tarifApplicable, Contribuable contribuablePrincipal) {
-		Assert.isTrue(EtatCivil.MARIE.equals(etatCivil) || EtatCivil.LIE_PARTENARIAT_ENREGISTRE.equals(etatCivil));
+		Assert.isTrue(EtatCivil.MARIE == etatCivil || EtatCivil.LIE_PARTENARIAT_ENREGISTRE == etatCivil);
 		SituationFamilleMenageCommun sit = new SituationFamilleMenageCommun();
 		sit.setDateDebut(debut);
 		sit.setDateFin(fin);

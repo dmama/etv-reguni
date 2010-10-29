@@ -1,16 +1,19 @@
 package ch.vd.uniregctb.annulation.separation.manager;
 
-import ch.vd.uniregctb.tiers.*;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.annulation.separation.view.AnnulationSeparationRecapView;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -67,7 +70,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 		ForFiscalPrincipal forFiscalPrincipal = menageCommun.getDernierForFiscalPrincipal();
 
 		if (forFiscalPrincipal != null &&
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.equals(forFiscalPrincipal.getMotifFermeture())) {
+				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT == forFiscalPrincipal.getMotifFermeture()) {
 
 			EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menageCommun, forFiscalPrincipal.getDateFin().getOneDayBefore());
 			if (ensembleTiersCouple != null) {

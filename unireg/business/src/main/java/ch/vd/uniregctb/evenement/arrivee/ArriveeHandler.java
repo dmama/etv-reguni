@@ -1028,7 +1028,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				final Set<RapportEntreTiers> rapportsObjet = menageCommun.getRapportsObjet();
 				if (rapportsObjet != null) {
 					for (RapportEntreTiers rapport : rapportsObjet) {
-						if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && rapport.isValidAt(dateEvenement)) {
+						if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && rapport.isValidAt(dateEvenement)) {
 							final Long tiersId = rapport.getSujetId();
 							if (habitantPrincipal.getNumero().equals(tiersId)) {
 								rapportPrincipalTrouve = true;
@@ -1186,7 +1186,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 		final Set<RapportEntreTiers> rapportsObjet = menageCommun.getRapportsObjet();
 		for (RapportEntreTiers rapportObjet : rapportsObjet) {
-			if (!rapportObjet.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapportObjet.getType())
+			if (!rapportObjet.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportObjet.getType()
 					&& rapportObjet.getDateFin() == null) {
 
 				if (!rapportObjet.getSujetId().equals(personne.getId())) {
@@ -1221,7 +1221,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		final Set<RapportEntreTiers> rapportsSujet = personne.getRapportsSujet();
 		if (rapportsSujet != null) {
 			for (RapportEntreTiers rapportSujet : rapportsSujet) {
-				if (!rapportSujet.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapportSujet.getType())
+				if (!rapportSujet.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportSujet.getType()
 						&& rapportSujet.getDateFin() == null) {
 					/*
 					 * le rapport de l'apartenance a été trouvé, on en déduit donc le tiers ménage
@@ -1254,7 +1254,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		final Set<RapportEntreTiers> rapportsSujet = principal.getRapportsSujet();
 		if (rapportsSujet != null) {
 			for (RapportEntreTiers rapport : rapportsSujet) {
-				if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())
+				if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()
 						&& rapport.getDateFin() != null) {
 
 					final MenageCommun menage = (MenageCommun) getTiersDAO().get(rapport.getObjetId());

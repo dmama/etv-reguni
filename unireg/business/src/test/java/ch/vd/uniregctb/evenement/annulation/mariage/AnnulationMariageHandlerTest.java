@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.annulation.mariage;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +19,10 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 	
@@ -109,14 +109,14 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		assertNotNull("Pierre doit avoir un for principal actif après l'annulation de mariage", pierre.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : pierre.getForsFiscaux()) {
 			if (forFiscal.getDateFin() != null && dateMariage.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(((ForFiscalRevenuFortune) forFiscal).getMotifFermeture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
 				assertEquals("Les fors fiscaux fermés lors du mariage doivent êtres annulés", true, forFiscal.isAnnule());
 			}
 		}
 		
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && dateMariage.equals(rapport.getDateDebut())) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateMariage.equals(rapport.getDateDebut())) {
 				nbMenagesCommuns++;
 				assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
 			}
@@ -156,7 +156,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		assertNotNull("Maurice doit avoir un for principal actif après l'annulation de mariage", momo.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : momo.getForsFiscaux()) {
 			if (forFiscal.getDateFin() != null && dateMariage.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(((ForFiscalRevenuFortune) forFiscal).getMotifFermeture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
 				assertEquals("Les fors fiscaux fermés lors du mariage doivent êtres annulés", true, forFiscal.isAnnule());
 			}
 		}
@@ -167,14 +167,14 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		assertNotNull("Béatrice doit avoir un for principal actif après l'annulation de mariage", bea.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : bea.getForsFiscaux()) {
 			if (forFiscal.getDateFin() != null && dateMariage.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(((ForFiscalRevenuFortune) forFiscal).getMotifFermeture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
 				assertEquals("Les fors fiscaux fermés lors du mariage doivent êtres annulés", true, forFiscal.isAnnule());
 			}
 		}
 
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && dateMariage.equals(rapport.getDateDebut())) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateMariage.equals(rapport.getDateDebut())) {
 				nbMenagesCommuns++;
 				assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
 			}

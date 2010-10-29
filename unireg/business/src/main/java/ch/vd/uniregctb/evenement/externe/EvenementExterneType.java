@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.externe;
 
 import java.util.ArrayList;
 
-
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 
@@ -32,7 +31,7 @@ public enum EvenementExterneType {
 		EvenementExterneType[] e =EvenementExterneType.values();
 		ArrayList<EvenementExterneType> list = new ArrayList<EvenementExterneType>();
 		for (EvenementExterneType ev : e) {
-			if ( ev.getEmmetteur().equals(type)){
+			if (ev.getEmmetteur() == type){
 				list.add(ev);
 			}
 		}

@@ -55,7 +55,7 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 		if (noSequence != that.noSequence) return false;
 		if (dateDebut != null ? !dateDebut.equals(that.dateDebut) : that.dateDebut != null) return false;
 		if (numeroConjoint != null ? !numeroConjoint.equals(that.numeroConjoint) : that.numeroConjoint != null) return false;
-		if (typeEtatCivil != null ? !typeEtatCivil.equals(that.typeEtatCivil) : that.typeEtatCivil != null) return false;
+		if (typeEtatCivil != null ? typeEtatCivil != that.typeEtatCivil : that.typeEtatCivil != null) return false;
 
 		return true;
 	}

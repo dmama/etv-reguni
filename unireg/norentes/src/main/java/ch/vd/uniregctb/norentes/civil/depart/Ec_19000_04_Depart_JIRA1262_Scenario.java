@@ -215,7 +215,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			int nombreTachesDevantEtreGenerees = 0;
 			for (DeclarationImpotOrdinaire di : dis) {
 				EtatDeclaration etat = di.getDernierEtat();
-				if (TypeEtatDeclaration.EMISE.equals(etat.getEtat())) {
+				if (TypeEtatDeclaration.EMISE == etat.getEtat()) {
 					assertTrue(di.isAnnule(), "La DI est pas annulée");
 				}
 				else {

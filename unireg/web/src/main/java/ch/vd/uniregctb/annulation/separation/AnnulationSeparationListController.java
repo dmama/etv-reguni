@@ -80,7 +80,7 @@ public class AnnulationSeparationListController extends AbstractTiersListControl
 							Tiers tiers = getTiersSloooow(tiersIndexedData.getNumero());
 							if ((tiers.getDernierForFiscalPrincipal() != null)
 									&& (tiers.getDernierForFiscalPrincipal().getDateFin() != null)
-									&& (tiers.getDernierForFiscalPrincipal().getMotifFermeture().equals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT))) {
+									&& (tiers.getDernierForFiscalPrincipal().getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT)) {
 								filtredResults.add(tiersIndexedData);
 							}
 						}

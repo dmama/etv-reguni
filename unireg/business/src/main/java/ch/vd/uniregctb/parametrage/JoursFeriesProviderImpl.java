@@ -74,7 +74,7 @@ public class JoursFeriesProviderImpl implements JoursFeriesProvider {
   public RegDate getJeuneFederal(int annee) {
 	  // Le jeune fédéral correspond au lundi suivant le 3ème dimanche du mois de septembre
 	  RegDate dateJeune = RegDate.get(annee, RegDate.SEPTEMBRE, 1);
-	  while (!WeekDay.SUNDAY.equals(dateJeune.getWeekDay())) {
+	  while (WeekDay.SUNDAY != dateJeune.getWeekDay()) {
 		  dateJeune = dateJeune.getOneDayAfter();
 	  }
 	  return dateJeune.addDays(15);

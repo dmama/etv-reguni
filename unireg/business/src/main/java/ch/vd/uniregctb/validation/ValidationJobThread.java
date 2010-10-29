@@ -343,7 +343,7 @@ public class ValidationJobThread extends Thread {
 
 			// Vérification de la cohérence du type d'autorité fiscale par rapport au numéro Ofs
 			try {
-				if (TypeAutoriteFiscale.PAYS_HS.equals(type)) {
+				if (TypeAutoriteFiscale.PAYS_HS == type) {
 					final Pays pays = serviceInfra.getPays(noOfs);
 					if (pays == null) {
 						results.addErrorAutoriteForFiscal(contribuable, f, "le pays avec le numéro Ofs " + noOfs + " n'existe pas.");
@@ -361,14 +361,14 @@ public class ValidationJobThread extends Thread {
 						results.addErrorAutoriteForFiscal(contribuable, f, "la commune avec le numéro Ofs " + noOfs + " n'existe pas.");
 						continue;
 					}
-					if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(type) && !serviceInfra.estDansLeCanton(commune)) {
+					if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == type && !serviceInfra.estDansLeCanton(commune)) {
 						final String message = "la commune " + commune.getNomMinuscule() + " (numéro Ofs " + commune.getNoOFSEtendu()
 								+ ") est hors canton (" + commune.getSigleCanton()
 								+ "), mais le type d'autorité fiscale est COMMUNE_OU_FRACTION_VD.";
 						results.addErrorAutoriteForFiscal(contribuable, f, message);
 						continue;
 					}
-					if (TypeAutoriteFiscale.COMMUNE_HC.equals(type) && serviceInfra.estDansLeCanton(commune)) {
+					if (TypeAutoriteFiscale.COMMUNE_HC == type && serviceInfra.estDansLeCanton(commune)) {
 						final String message = "la commune " + commune.getNomMinuscule() + " (numéro Ofs " + commune.getNoOFSEtendu()
 								+ ") est dans le canton de Vaud, mais le type d'autorité fiscale est COMMUNE_HC.";
 						results.addErrorAutoriteForFiscal(contribuable, f, message);

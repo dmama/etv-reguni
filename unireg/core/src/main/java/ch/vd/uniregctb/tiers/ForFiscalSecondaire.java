@@ -37,8 +37,8 @@ public class ForFiscalSecondaire extends ForFiscalRevenuFortune {
 
 	@Override
 	public boolean isRattachementCoherent(MotifRattachement motif) {
-		return MotifRattachement.ACTIVITE_INDEPENDANTE.equals(motif) || MotifRattachement.IMMEUBLE_PRIVE.equals(motif)
-			|| MotifRattachement.SEJOUR_SAISONNIER.equals(motif) || MotifRattachement.DIRIGEANT_SOCIETE.equals(motif);
+		return MotifRattachement.ACTIVITE_INDEPENDANTE == motif || MotifRattachement.IMMEUBLE_PRIVE == motif
+			|| MotifRattachement.SEJOUR_SAISONNIER == motif || MotifRattachement.DIRIGEANT_SOCIETE == motif;
 	}
 
 	@Override

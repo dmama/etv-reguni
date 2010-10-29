@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.norentes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,11 +20,11 @@ import org.springmodules.xt.ajax.action.ReplaceContentAction;
 import org.springmodules.xt.ajax.component.Component;
 import org.springmodules.xt.ajax.component.Option;
 
+import ch.vd.uniregctb.norentes.common.NorentesContext.EtapeContext;
 import ch.vd.uniregctb.norentes.common.NorentesFactory;
 import ch.vd.uniregctb.norentes.common.NorentesManager;
 import ch.vd.uniregctb.norentes.common.NorentesScenario;
 import ch.vd.uniregctb.norentes.common.ScenarioEtat;
-import ch.vd.uniregctb.norentes.common.NorentesContext.EtapeContext;
 import ch.vd.uniregctb.norentes.webcontrols.ControlScenario;
 import ch.vd.uniregctb.norentes.webcontrols.Toolbar;
 import ch.vd.uniregctb.norentes.webcontrols.ToolbarButton;
@@ -144,7 +143,7 @@ public class NorentesController extends AbstractEnhancedSimpleFormController {
 			options.add(first);
 			for (TypeEvenementCivil evt : evts) {
 				Option option = new Option(evt, "name", "fullDescription");
-				if (evt.equals(currentEvenementCivil)) {
+				if (evt == currentEvenementCivil) {
 					option.addAttribute("selected", "selected");
 				}
 				options.add(option);

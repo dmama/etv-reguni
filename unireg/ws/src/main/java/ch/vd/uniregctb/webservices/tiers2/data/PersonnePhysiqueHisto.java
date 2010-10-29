@@ -100,7 +100,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			this.sexe = EnumHelper.coreToWeb(personne.getSexe());
 			this.dateDeces = DataHelper.coreToWeb(personne.getDateDeces());
 			for (ch.vd.uniregctb.tiers.IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
-				if (ident.getCategorieIdentifiant().equals(ch.vd.uniregctb.type.CategorieIdentifiant.CH_AHV_AVS)) {
+				if (ident.getCategorieIdentifiant() == ch.vd.uniregctb.type.CategorieIdentifiant.CH_AHV_AVS) {
 					this.ancienNumeroAssureSocial = ident.getIdentifiant();
 				}
 			}

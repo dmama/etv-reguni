@@ -95,37 +95,37 @@ public enum CategorieEtranger {
 		if (permis == null)
 			return null;
 		
-		if (TypePermis.ANNUEL.equals(permis)) {
+		if (TypePermis.ANNUEL == permis) {
 			return _02_PERMIS_SEJOUR_B;
 		}
-		else if (TypePermis.ETABLISSEMENT.equals(permis)) {
+		else if (TypePermis.ETABLISSEMENT == permis) {
 			return _03_ETABLI_C;
 		}
-		else if (TypePermis.FRONTALIER.equals(permis)) {
+		else if (TypePermis.FRONTALIER == permis) {
 			return _06_FRONTALIER_G;
 		}
-		else if (TypePermis.SUISSE_SOURCIER.equals(permis)) {
+		else if (TypePermis.SUISSE_SOURCIER == permis) {
 			return null;
 		}
-		else if (TypePermis.PROVISOIRE.equals(permis)) {
+		else if (TypePermis.PROVISOIRE == permis) {
 			return _05_ETRANGER_ADMIS_PROVISOIREMENT_F;
 		}
-		else if (TypePermis.REQUERANT_ASILE_AVANT_DECISION.equals(permis)) {
+		else if (TypePermis.REQUERANT_ASILE_AVANT_DECISION == permis) {
 			return _08_REQUERANT_ASILE_N;
 		}
-		else if (TypePermis.REQUERANT_ASILE_REFUSE.equals(permis)) {
+		else if (TypePermis.REQUERANT_ASILE_REFUSE == permis) {
 			return _05_ETRANGER_ADMIS_PROVISOIREMENT_F;
 		}
-		else if (TypePermis.COURTE_DUREE.equals(permis)) {
+		else if (TypePermis.COURTE_DUREE == permis) {
 			return _07_PERMIS_SEJOUR_COURTE_DUREE_L;
 		}
-		else if (TypePermis.DIPLOMATE.equals(permis)) {
+		else if (TypePermis.DIPLOMATE == permis) {
 			return _11_DIPLOMATE;
 		}
-		else if (TypePermis.FONCTIONNAIRE_INTERNATIONAL.equals(permis)) {
+		else if (TypePermis.FONCTIONNAIRE_INTERNATIONAL == permis) {
 			return _12_FONCTIONNAIRE_INTERNATIONAL;
 		}
-		else if (TypePermis.PERSONNE_A_PROTEGER.equals(permis)) {
+		else if (TypePermis.PERSONNE_A_PROTEGER == permis) {
 			return _09_A_PROTEGER_S;
 		}
 		else {

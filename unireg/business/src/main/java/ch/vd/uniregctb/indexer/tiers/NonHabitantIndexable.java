@@ -33,7 +33,7 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 		final Set<IdentificationPersonne> ident = pp.getIdentificationsPersonnes();
 		if (ident != null) {
 			for (IdentificationPersonne idPersonne : ident) {
-				if (idPersonne.getCategorieIdentifiant().equals(CategorieIdentifiant.CH_AHV_AVS)) {
+				if (idPersonne.getCategorieIdentifiant() == CategorieIdentifiant.CH_AHV_AVS) {
 					ancienNumAVS = idPersonne.getIdentifiant();
 				}
 			}

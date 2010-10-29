@@ -22,13 +22,13 @@ public class AdressesPMHisto {
 	public List<AdresseEntreprise> facturation = new ArrayList<AdresseEntreprise>();
 
 	public void add(AdresseEntreprise adresse) {
-		if (TypeAdressePM.SIEGE.equals(adresse.getType())) {
+		if (TypeAdressePM.SIEGE == adresse.getType()) {
 			sieges.add(adresse);
 		}
-		else if (TypeAdressePM.COURRIER.equals(adresse.getType())) {
+		else if (TypeAdressePM.COURRIER == adresse.getType()) {
 			courriers.add(adresse);
 		}
-		else if (TypeAdressePM.FACTURATION.equals(adresse.getType())) {
+		else if (TypeAdressePM.FACTURATION == adresse.getType()) {
 			facturation.add(adresse);
 		}
 		else {
@@ -37,14 +37,14 @@ public class AdressesPMHisto {
 	}
 
 	public List<AdresseEntreprise> ofType(TypeAdressePM type) {
-		if (TypeAdressePM.SIEGE.equals(type)) {
+		if (TypeAdressePM.SIEGE == type) {
 			return sieges;
 		}
-		else if (TypeAdressePM.COURRIER.equals(type)) {
+		else if (TypeAdressePM.COURRIER == type) {
 			return courriers;
 		}
 		else {
-			Assert.isTrue(TypeAdressePM.FACTURATION.equals(type));
+			Assert.isTrue(TypeAdressePM.FACTURATION == type);
 			return facturation;
 		}
 	}

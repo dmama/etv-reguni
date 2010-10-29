@@ -30,11 +30,11 @@ public class ForFiscalAutreElementImposable extends ForFiscalRevenuFortune {
 
 	@Override
 	public boolean isRattachementCoherent(MotifRattachement motif) {
-		boolean valid = MotifRattachement.ACTIVITE_LUCRATIVE_CAS.equals(motif)
-		|| MotifRattachement.ADMINISTRATEUR.equals(motif)
-		|| MotifRattachement.CREANCIER_HYPOTHECAIRE.equals(motif)
-		|| MotifRattachement.PRESTATION_PREVOYANCE.equals(motif)
-		|| MotifRattachement.LOI_TRAVAIL_AU_NOIR.equals(motif);
+		boolean valid = MotifRattachement.ACTIVITE_LUCRATIVE_CAS == motif
+		|| MotifRattachement.ADMINISTRATEUR == motif
+		|| MotifRattachement.CREANCIER_HYPOTHECAIRE == motif
+		|| MotifRattachement.PRESTATION_PREVOYANCE == motif
+		|| MotifRattachement.LOI_TRAVAIL_AU_NOIR == motif;
 		return valid;
 	}
 

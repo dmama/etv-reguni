@@ -137,7 +137,7 @@ final class MockAdresseGeneric implements AdresseGenerique {
 			if (other.source != null)
 				return false;
 		}
-		else if (!source.equals(other.source))
+		else if (source != other.source)
 			return false;
 		return true;
 	}

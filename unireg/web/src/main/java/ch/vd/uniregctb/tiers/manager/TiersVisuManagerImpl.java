@@ -357,7 +357,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCivilesActives adressesCiviles, TypeAdresseCivil type,
 	                                       Tiers tiers) throws AdresseDataException, InfrastructureException {
 
-		if (TypeAdresseCivil.SECONDAIRE.equals(type)) {
+		if (TypeAdresseCivil.SECONDAIRE == type) {
 			List<Adresse> addressesSecondaires = adressesCiviles.secondaires;
 			if (addressesSecondaires == null) {
 				// rien à faire

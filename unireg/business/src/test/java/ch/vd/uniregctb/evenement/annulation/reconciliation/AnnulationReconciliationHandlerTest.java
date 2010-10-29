@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.evenement.annulation.reconciliation;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,11 +15,16 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -71,7 +71,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		assertNotNull("Pierre doit avoir un for principal actif après l'annulation de réconciliation", pierre.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : pierre.getForsFiscaux()) {
 			if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(((ForFiscalRevenuFortune) forFiscal).getMotifFermeture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
 				assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
 			}
 		}
@@ -80,7 +80,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && dateReconciliation.equals(rapport.getDateDebut())) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateReconciliation.equals(rapport.getDateDebut())) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
@@ -135,7 +135,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		assertNotNull("Maurice doit avoir un for principal actif après l'annulation de réconciliation", momo.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : momo.getForsFiscaux()) {
 			if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(((ForFiscalRevenuFortune) forFiscal).getMotifFermeture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
 				assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
 			}
 		}
@@ -146,7 +146,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		assertNotNull("Béatrice doit avoir un for principal actif après l'annulation de réconciliation", bea.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : bea.getForsFiscaux()) {
 			if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(((ForFiscalRevenuFortune) forFiscal).getMotifFermeture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
 				assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
 			}
 		}
@@ -155,7 +155,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && dateReconciliation.equals(rapport.getDateDebut())) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateReconciliation.equals(rapport.getDateDebut())) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());

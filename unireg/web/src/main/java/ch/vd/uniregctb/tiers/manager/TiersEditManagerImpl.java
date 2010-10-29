@@ -4,24 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -483,7 +483,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				PeriodeDecompte periodeDecompte = null;
 
 				final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
-				if(PeriodiciteDecompte.UNIQUE.equals(periodiciteDecompte)){
+				if(PeriodiciteDecompte.UNIQUE == periodiciteDecompte){
 					periodeDecompte = periodicite.getPeriodeDecompte();
 				}
 				//L'appel de addperiodicite permet de sauver le tiers et la periodicite

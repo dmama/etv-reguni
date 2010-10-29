@@ -242,7 +242,7 @@ public enum ParametreEnum {
 	 * @return
 	 */
 	public Object convertirStringVersValeurTypee (String valeur) {
-		if (Type.jourDansAnnee.equals(type)) {
+		if (Type.jourDansAnnee == type) {
 			return new Integer[] {
 					Integer.parseInt(valeur.split("\\.")[0]),
 					Integer.parseInt(valeur.split("\\.")[1])
@@ -260,7 +260,7 @@ public enum ParametreEnum {
 	 * @return
 	 */
 	public String convertirValeurTypeeVersString (Object valeur) {
-		if (Type.jourDansAnnee.equals(type)) {
+		if (Type.jourDansAnnee == type) {
 			Integer[] val = (Integer[]) valeur;
 			return String.format("%02d.%02d", val[0], val[1]);
 		} else {

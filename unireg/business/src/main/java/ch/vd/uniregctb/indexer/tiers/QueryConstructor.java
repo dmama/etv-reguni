@@ -45,7 +45,7 @@ public class QueryConstructor {
 	private void addTypeTiers(BooleanQuery fullQuery) throws IndexerException {
 
 		// Type de tiers
-		if ((criteria.getTypeTiers() != null) && (!criteria.getTypeTiers().equals(TypeTiers.TIERS))) {
+		if ((criteria.getTypeTiers() != null) && (criteria.getTypeTiers() != TypeTiers.TIERS)) {
 			BooleanQuery query = new BooleanQuery();
 			TiersCriteria.TypeTiers typeTiers = criteria.getTypeTiers();
 			switch (typeTiers) {
@@ -219,7 +219,7 @@ public class QueryConstructor {
 	}
 
 	private void addLimitation(BooleanQuery fullQuery) {
-		if (criteria.getTypeVisualisation().equals(TypeVisualisation.LIMITEE)) {
+		if (criteria.getTypeVisualisation() == TypeVisualisation.LIMITEE) {
 			BooleanQuery query = new BooleanQuery();
 			// restriction des DPI
 			query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);

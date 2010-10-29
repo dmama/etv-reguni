@@ -1,19 +1,18 @@
 package ch.vd.uniregctb.rapport.validator;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 
 /**
  * Validateur de RapportEditController
@@ -43,7 +42,7 @@ public class RapportEditValidator implements Validator {
 		else {
 			//vérifier que le tuteur, le curateur ou le conseil légal a une adresse de représentation
 			Tiers tiers = null;
-			if(rapportView.getSensRapportEntreTiers().equals(SensRapportEntreTiers.OBJET)){
+			if(rapportView.getSensRapportEntreTiers() == SensRapportEntreTiers.OBJET){
 				tiers = tiersDAO.get(rapportView.getTiersLie().getNumero());
 			}
 			else {

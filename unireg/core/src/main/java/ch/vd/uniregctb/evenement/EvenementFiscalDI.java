@@ -4,12 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeEvenementFiscal;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 @Entity
 @DiscriminatorValue("EvenementFiscalDI")
@@ -45,8 +45,8 @@ public class EvenementFiscalDI extends EvenementFiscal {
 
 	public EvenementFiscalDI(Tiers tiers, RegDate dateEvenement, TypeEvenementFiscal type, RegDate dateDebutPeriode, RegDate dateFinPeriode, Long numeroTechnique) {
 		super(tiers, dateEvenement, type, numeroTechnique);
-		Assert.isTrue(type.equals(TypeEvenementFiscal.ANNULATION_DI) || type.equals(TypeEvenementFiscal.ECHEANCE_DI) || type.equals(TypeEvenementFiscal.ENVOI_DI) ||
-				type.equals(TypeEvenementFiscal.RETOUR_DI) || type.equals(TypeEvenementFiscal.SOMMATION_DI) || type.equals(TypeEvenementFiscal.TAXATION_OFFICE));
+		Assert.isTrue(type == TypeEvenementFiscal.ANNULATION_DI || type == TypeEvenementFiscal.ECHEANCE_DI || type == TypeEvenementFiscal.ENVOI_DI ||
+				type == TypeEvenementFiscal.RETOUR_DI || type == TypeEvenementFiscal.SOMMATION_DI || type == TypeEvenementFiscal.TAXATION_OFFICE);
 		this.dateDebutPeriode = dateDebutPeriode;
 		this.dateFinPeriode = dateFinPeriode;
 	}

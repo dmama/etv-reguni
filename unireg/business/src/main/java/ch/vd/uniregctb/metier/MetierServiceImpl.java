@@ -654,7 +654,7 @@ public class MetierServiceImpl implements MetierService {
 			auMoinsUnSansEtatCivil = true;
 		}
 		else {
-			etatsCivilsDifferents = (etatCivilPrincipal != etatCivilFamille) || (!estMarieSeul && !etatCivilConjoint.equals(etatCivilFamille));
+			etatsCivilsDifferents = (etatCivilPrincipal != etatCivilFamille) || (!estMarieSeul && etatCivilConjoint != etatCivilFamille);
 		}
 		if (auMoinsUnNonHabitant || auMoinsUnSansEtatCivil || etatsCivilsDifferents) {
 			/*

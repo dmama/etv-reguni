@@ -223,7 +223,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
         Audit.info("Réindexation de la base de données (mode = " + mode + ")");
 
-        if (mode.equals(Mode.FULL)) {
+        if (mode == Mode.FULL) {
             // Ecrase l'indexe lucene sur le disque local
             statusManager.setMessage("Efface le repertoire d'indexation");
             overwriteIndex();

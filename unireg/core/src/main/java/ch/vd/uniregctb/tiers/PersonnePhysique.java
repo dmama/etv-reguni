@@ -269,7 +269,7 @@ public class PersonnePhysique extends Contribuable {
 		Set<RapportEntreTiers> rapports = getRapportsSujet();
 		if (rapports != null) {
 			for (RapportEntreTiers r : rapports) {
-				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
+				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
 					rapportsMenages.add(r);
 				}
 			}
@@ -721,7 +721,7 @@ public class PersonnePhysique extends Contribuable {
 			if (other.categorieEtranger != null)
 				return false;
 		}
-		else if (!categorieEtranger.equals(other.categorieEtranger))
+		else if (categorieEtranger != other.categorieEtranger)
 			return false;
 		if (dateDebutValiditeAutorisation == null) {
 			if (other.dateDebutValiditeAutorisation != null)
@@ -793,7 +793,7 @@ public class PersonnePhysique extends Contribuable {
 			if (other.sexe != null)
 				return false;
 		}
-		else if (!sexe.equals(other.sexe))
+		else if (sexe != other.sexe)
 			return false;
 		return true;
 	}

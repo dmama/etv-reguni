@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.webservices.tiers.impl;
 
-import java.util.List;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -17,10 +16,10 @@ import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers.Tiers;
+import ch.vd.uniregctb.webservices.tiers.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers.TiersHisto;
 import ch.vd.uniregctb.webservices.tiers.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers.params.GetTiersHisto;
@@ -318,7 +317,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 	 */
 	private static void checkTiersWriteAccess(long tiersId) throws WebServiceException {
 		final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			throw new WebServiceException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en écriture sur le tiers n° " + tiersId);
 		}

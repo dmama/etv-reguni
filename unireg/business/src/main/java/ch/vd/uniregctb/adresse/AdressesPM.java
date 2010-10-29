@@ -14,15 +14,15 @@ public class AdressesPM {
 	public AdresseEntreprise facturation;
 
 	public void set(AdresseEntreprise adresse) {
-		if (TypeAdressePM.SIEGE.equals(adresse.getType())) {
+		if (TypeAdressePM.SIEGE == adresse.getType()) {
 			Assert.isNull(siege, "Plus d'une adresse 'siège' détectée.");
 			siege = adresse;
 		}
-		else if (TypeAdressePM.COURRIER.equals(adresse.getType())) {
+		else if (TypeAdressePM.COURRIER == adresse.getType()) {
 			Assert.isNull(courrier, "Plus d'une adresse 'courrier' détectée.");
 			courrier = adresse;
 		}
-		else if (TypeAdressePM.FACTURATION.equals(adresse.getType())) {
+		else if (TypeAdressePM.FACTURATION == adresse.getType()) {
 			Assert.isNull(facturation, "Plus d'une adresse 'secondaire' détectée.");
 			facturation = adresse;
 		}
@@ -32,14 +32,14 @@ public class AdressesPM {
 	}
 
 	public AdresseEntreprise ofType(TypeAdressePM type) {
-		if (TypeAdressePM.SIEGE.equals(type)) {
+		if (TypeAdressePM.SIEGE == type) {
 			return siege;
 		}
-		else if (TypeAdressePM.COURRIER.equals(type)) {
+		else if (TypeAdressePM.COURRIER == type) {
 			return courrier;
 		}
 		else {
-			Assert.isTrue(TypeAdressePM.FACTURATION.equals(type));
+			Assert.isTrue(TypeAdressePM.FACTURATION == type);
 			return facturation;
 		}
 	}

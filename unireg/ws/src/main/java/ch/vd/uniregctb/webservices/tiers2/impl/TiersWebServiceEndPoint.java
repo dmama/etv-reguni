@@ -750,7 +750,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	 */
 	private static void checkTiersWriteAccess(long tiersId) throws AccessDeniedException {
 		final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			throw new AccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en écriture sur le tiers n° " + tiersId);
 		}

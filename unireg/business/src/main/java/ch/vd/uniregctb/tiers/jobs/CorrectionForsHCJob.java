@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.common.*;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -19,11 +18,16 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -134,7 +138,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 		if (ffp == null) {
 			return false;
 		}
-		if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(ffp.getTypeAutoriteFiscale())) {
+		if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == ffp.getTypeAutoriteFiscale()) {
 			return true;
 		}
 		return false;

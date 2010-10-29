@@ -1,15 +1,8 @@
 package ch.vd.uniregctb.webservice.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.uniregctb.webservices.tiers1.Adresse;
@@ -46,6 +39,12 @@ import ch.vd.uniregctb.webservices.tiers1.TypeRapportEntreTiers;
 import ch.vd.uniregctb.webservices.tiers1.TypeRecherche;
 import ch.vd.uniregctb.webservices.tiers1.TypeTiers;
 import ch.vd.uniregctb.webservices.tiers1.UserLogin;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
@@ -156,7 +155,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		RapportEntreTiers rapportMenage = null;
 		for (RapportEntreTiers r : rapports) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType()) && r.getDateFin() == null) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType() && r.getDateFin() == null) {
 				rapportMenage = r;
 				break;
 			}
@@ -279,7 +278,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final List<RapportEntreTiers> rapports = tiers.getRapportsEntreTiers();
 		RapportEntreTiers rapport = null;
 		for (RapportEntreTiers r : rapports) {
-			if (TypeRapportEntreTiers.PRESTATION_IMPOSABLE.equals(r.getType())) {
+			if (TypeRapportEntreTiers.PRESTATION_IMPOSABLE == r.getType()) {
 				rapport = r;
 				break;
 			}
@@ -307,7 +306,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		// Récupération de l'historique des rapport de travail entre le sourcier et son (ses) employeur(s)
 		final List<RapportEntreTiers> rapports = new ArrayList<RapportEntreTiers>();
 		for (RapportEntreTiers r : tiers.getRapportsEntreTiers()) {
-			if (TypeRapportEntreTiers.PRESTATION_IMPOSABLE.equals(r.getType())) {
+			if (TypeRapportEntreTiers.PRESTATION_IMPOSABLE == r.getType()) {
 				rapports.add(r);
 			}
 		}
@@ -498,7 +497,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		RapportEntreTiers rapportMenage = null;
 		for (RapportEntreTiers r : rapports) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType()) && r.getDateFin() == null) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType() && r.getDateFin() == null) {
 				rapportMenage = r;
 				break;
 			}
@@ -851,7 +850,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		RapportEntreTiers rapportMenage = null;
 		for (RapportEntreTiers r : rapports) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType()) && r.getDateFin() == null) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType() && r.getDateFin() == null) {
 				rapportMenage = r;
 				break;
 			}

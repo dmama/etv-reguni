@@ -658,7 +658,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 	private static boolean roleOrdinaireNonMixte(ForFiscalPrincipal forCourant) {
 		final ModeImposition mode = forCourant.getModeImposition();
-		return !ModeImposition.SOURCE.equals(mode) && !ModeImposition.MIXTE_137_1.equals(mode) && !ModeImposition.MIXTE_137_2.equals(mode);
+		return ModeImposition.SOURCE != mode && ModeImposition.MIXTE_137_1 != mode && ModeImposition.MIXTE_137_2 != mode;
 	}
 
 	/**

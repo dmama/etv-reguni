@@ -2,11 +2,11 @@ package ch.vd.uniregctb.rt.manager;
 
 import java.util.List;
 
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -126,10 +126,10 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		rapportView.setSensRapportEntreTiers(sensRapportEntreTiers);
 		rapportView.setTypeRapportEntreTiers(rapportEntreTiers.getType());
 		Long numero = null;
-		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.OBJET)) {
+		if (sensRapportEntreTiers == SensRapportEntreTiers.OBJET) {
 			numero = rapportEntreTiers.getSujetId();
 		}
-		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.SUJET)) {
+		if (sensRapportEntreTiers == SensRapportEntreTiers.SUJET) {
 			numero = rapportEntreTiers.getObjetId();
 		}
 		setNomCourrier(rapportView, numero);

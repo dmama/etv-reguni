@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * Cette classe contient les détails de l'assujettissement <b>au rôle ordinaire</b> d'un contribuable.
@@ -83,7 +87,7 @@ public class Assujettissement implements Range {
 		}
 		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierMixte) {
 			ch.vd.uniregctb.metier.assujettissement.SourcierMixte mixte = (ch.vd.uniregctb.metier.assujettissement.SourcierMixte) a;
-			if (mixte.getTypeAutoriteFiscale().equals(ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+			if (mixte.getTypeAutoriteFiscale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				result = new Assujettissement(a, Assujettissement.TypeAssujettissement.ILLIMITE);
 			}
 			else {
@@ -128,7 +132,7 @@ public class Assujettissement implements Range {
 		}
 		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierMixte) {
 			ch.vd.uniregctb.metier.assujettissement.SourcierMixte mixte = (ch.vd.uniregctb.metier.assujettissement.SourcierMixte) a;
-			if (mixte.getTypeAutoriteFiscale().equals(ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+			if (mixte.getTypeAutoriteFiscale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				result = new Assujettissement(a, Assujettissement.TypeAssujettissement.ILLIMITE);
 			}
 			else {

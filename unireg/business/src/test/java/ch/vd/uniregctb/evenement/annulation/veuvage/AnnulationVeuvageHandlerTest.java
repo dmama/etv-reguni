@@ -107,7 +107,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for ( RapportEntreTiers rapport : andre.getRapportsSujet() ) {
-			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}

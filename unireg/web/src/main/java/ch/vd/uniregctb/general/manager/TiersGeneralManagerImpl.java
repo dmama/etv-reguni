@@ -155,7 +155,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 			if (sexe == null) {
 				type = TypeTiers.SEXE_INCONNU;
 			}
-			else if (sexe.equals(Sexe.MASCULIN)) {
+			else if (sexe == Sexe.MASCULIN) {
 				type = TypeTiers.HOMME;
 			}
 			else {
@@ -185,7 +185,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 				type = TypeTiers.MC_SEXE_INCONNU;
 			}
 			else if (sexeConjoint == null) {
-				if (sexePrincipal.equals(Sexe.MASCULIN)) {
+				if (sexePrincipal == Sexe.MASCULIN) {
 					type = TypeTiers.MC_HOMME_SEUL;
 				}
 				else {
@@ -193,8 +193,8 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 				}
 			}
 			else {
-				if (sexePrincipal.equals(sexeConjoint)) {
-					if (sexePrincipal.equals(Sexe.MASCULIN)) {
+				if (sexePrincipal == sexeConjoint) {
+					if (sexePrincipal == Sexe.MASCULIN) {
 						type = TypeTiers.MC_HOMME_HOMME;
 					}
 					else {

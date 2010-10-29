@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.rt;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
@@ -64,7 +63,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		}
 
 		final Niveau acces = SecurityProvider.getDroitAcces(ctb);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de créer un rapport de travail sur ce contribuable");
 		}
 

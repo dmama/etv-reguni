@@ -46,7 +46,7 @@ public abstract class ControllerUtils {
 	public static void checkAccesDossierEnEcriture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
 		if (tiersId != null) {
 			Niveau acces = SecurityProvider.getDroitAcces(tiersId);
-			if (acces == null || acces.equals(Niveau.LECTURE)) {
+			if (acces == null || acces == Niveau.LECTURE) {
 				final String message = String.format(
 						"L'opérateur [%s] s'est vu refusé l'accès en écriture sur le tiers n°%d (acces autorisé=%s)", AuthenticationHelper
 								.getCurrentPrincipal(), tiersId, (acces == null ? "null" : acces.toString()));

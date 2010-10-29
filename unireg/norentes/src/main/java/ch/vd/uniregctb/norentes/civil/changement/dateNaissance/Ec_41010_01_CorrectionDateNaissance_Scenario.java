@@ -131,7 +131,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 			PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);
 			ForFiscalPrincipal ffp = null;
 			for (ForFiscal forFiscal : momo.getForsFiscauxSorted()) {
-				if (forFiscal.isPrincipal() && MotifFor.MAJORITE.equals(((ForFiscalPrincipal) forFiscal).getMotifOuverture())) {
+				if (forFiscal.isPrincipal() && MotifFor.MAJORITE == ((ForFiscalPrincipal) forFiscal).getMotifOuverture()) {
 					ffp = (ForFiscalPrincipal) forFiscal;
 				}
 			}

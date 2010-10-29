@@ -287,7 +287,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 				if (other.role != null)
 					return false;
 			}
-			else if (!role.equals(other.role))
+			else if (role != other.role)
 				return false;
 			if (visaOperateur == null) {
 				if (other.visaOperateur != null)

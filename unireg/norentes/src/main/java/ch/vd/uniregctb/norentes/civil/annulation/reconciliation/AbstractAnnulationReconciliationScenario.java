@@ -26,7 +26,7 @@ public abstract class AbstractAnnulationReconciliationScenario extends Evenement
 		// Vérification des fors fiscaux
 		for (ForFiscal forFiscal : habitant.getForsFiscaux()) {
 			if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(((ForFiscalRevenuFortune) forFiscal).getMotifFermeture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
 				assertEquals(true, forFiscal.isAnnule(), "Les fors fiscaux fermés lors de la réconciliation doivent être annulés");
 			}
 		}

@@ -77,7 +77,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 				if (other.etat != null)
 					return false;
 			}
-			else if (!etat.equals(other.etat))
+			else if (etat != other.etat)
 				return false;
 			if (oid != other.oid)
 				return false;
@@ -85,7 +85,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 				if (other.typeCtb != null)
 					return false;
 			}
-			else if (!typeCtb.equals(other.typeCtb))
+			else if (typeCtb != other.typeCtb)
 				return false;
 			return true;
 		}

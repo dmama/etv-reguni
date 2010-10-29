@@ -110,7 +110,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
 		final TypFichierImpression.Document[] documents;
-		if (isDuplicata || declaration.getTypeDeclaration().equals(TypeDocument.DECLARATION_IMPOT_VAUDTAX)) {
+		if (isDuplicata || declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			documents = new TypFichierImpression.Document[1];
 			documents[0] = document;
 		}
@@ -132,7 +132,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, null);
 		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
-		if (declaration.getTypeDeclaration().equals(TypeDocument.DECLARATION_IMPOT_VAUDTAX)) {
+		if (declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			documents = new TypFichierImpression.Document[1];
 			documents[0] = document;
 		}

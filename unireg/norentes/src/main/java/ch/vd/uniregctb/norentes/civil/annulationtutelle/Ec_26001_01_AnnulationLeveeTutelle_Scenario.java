@@ -92,7 +92,7 @@ public class Ec_26001_01_AnnulationLeveeTutelle_Scenario extends EvenementCivilS
 			int nombreRapportsTutelle = 0;
 			RapportEntreTiers rapportTutelle = null;
 			for (RapportEntreTiers rapportEntreTiers : rapportsEntreTiers) {
-				if (TypeRapportEntreTiers.TUTELLE.equals(rapportEntreTiers.getType())) {
+				if (TypeRapportEntreTiers.TUTELLE == rapportEntreTiers.getType()) {
 					nombreRapportsTutelle++;
 					rapportTutelle = rapportEntreTiers;
 				}
@@ -107,7 +107,7 @@ public class Ec_26001_01_AnnulationLeveeTutelle_Scenario extends EvenementCivilS
 			int nombreRapportsTutelle = 0;
 			RapportEntreTiers rapportTutelle = null;
 			for (RapportEntreTiers rapportEntreTiers : rapportsEntreTiers) {
-				if (TypeRapportEntreTiers.TUTELLE.equals(rapportEntreTiers.getType())) {
+				if (TypeRapportEntreTiers.TUTELLE == rapportEntreTiers.getType()) {
 					nombreRapportsTutelle++;
 					rapportTutelle = rapportEntreTiers;
 				}
@@ -133,7 +133,7 @@ public class Ec_26001_01_AnnulationLeveeTutelle_Scenario extends EvenementCivilS
 			int nombreRapportsTutelle = 0;
 			RapportEntreTiers rapportTutelle = null;
 			for (RapportEntreTiers rapportEntreTiers : rapportsEntreTiers) {
-				if (TypeRapportEntreTiers.TUTELLE.equals(rapportEntreTiers.getType())) {
+				if (TypeRapportEntreTiers.TUTELLE == rapportEntreTiers.getType()) {
 					nombreRapportsTutelle++;
 					rapportTutelle = rapportEntreTiers;
 				}
@@ -148,7 +148,7 @@ public class Ec_26001_01_AnnulationLeveeTutelle_Scenario extends EvenementCivilS
 			int nombreRapportsTutelle = 0;
 			RapportEntreTiers rapportTutelle = null;
 			for (RapportEntreTiers rapportEntreTiers : rapportsEntreTiers) {
-				if (TypeRapportEntreTiers.TUTELLE.equals(rapportEntreTiers.getType())) {
+				if (TypeRapportEntreTiers.TUTELLE == rapportEntreTiers.getType()) {
 					nombreRapportsTutelle++;
 					rapportTutelle = rapportEntreTiers;
 				}

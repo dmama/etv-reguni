@@ -69,7 +69,7 @@ public class TiersHelper {
 		final Set<AdresseTiers> adresses = tiers.getAdressesTiers();
 		if (adresses != null) {
 			for (AdresseTiers adresse : adresses) {
-				if (adresse.getUsage().equals(type) && adresse.isValidAt(date)) {
+				if (adresse.getUsage() == type && adresse.isValidAt(date)) {
 					return adresse;
 				}
 			}
@@ -117,7 +117,7 @@ public class TiersHelper {
 		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
 		if (rapports != null) {
 			for (RapportEntreTiers rapport : rapports) {
-				if (type.equals(rapport.getType()) && rapport.isValidAt(date)) {
+				if (type == rapport.getType() && rapport.isValidAt(date)) {
 					return rapport;
 				}
 			}
@@ -189,7 +189,7 @@ public class TiersHelper {
 		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
 		if (rapports != null) {
 			for (RapportEntreTiers rapport : rapports) {
-				if (type.equals(rapport.getType())) {
+				if (type == rapport.getType()) {
 					if (results == null) {
 						results = new ArrayList<RapportEntreTiers>(); // création à la demande
 					}
@@ -245,7 +245,7 @@ public class TiersHelper {
 		final Set<RapportEntreTiers> rapports = tiers.getRapportsObjet();
 		if (rapports != null) {
 			for (RapportEntreTiers rapport : rapports) {
-				if (type.equals(rapport.getType())) {
+				if (type == rapport.getType()) {
 					if (results == null) {
 						results = new ArrayList<RapportEntreTiers>(); // création à la demande
 					}

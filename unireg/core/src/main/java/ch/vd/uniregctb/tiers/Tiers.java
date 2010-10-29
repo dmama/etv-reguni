@@ -533,7 +533,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		// Construit une collection triée des adresses du type spécifié
 		List<AdresseTiers> list = new ArrayList<AdresseTiers>();
 		for (AdresseTiers a : adressesTiers) {
-			if (!a.isAnnule() && type.equals(a.getUsage())) {
+			if (!a.isAnnule() && type == a.getUsage()) {
 				list.add(a);
 			}
 		}
@@ -573,7 +573,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 
 		AdresseTiers result = null;
 		for (AdresseTiers adresse : adressesTiers) {
-			if (adresse.isValidAt(date) && type.equals(adresse.getUsage())) {
+			if (adresse.isValidAt(date) && type == adresse.getUsage()) {
 				result = adresse;
 				break;
 			}
@@ -746,7 +746,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	@Transient
 	public RapportEntreTiers getRapportSujetValidAt(RegDate date, TypeRapportEntreTiers type) {
 		for (RapportEntreTiers rapportSujet : rapportsSujet) {
-			if (rapportSujet.isValidAt(date) && rapportSujet.getType().equals(type)) {
+			if (rapportSujet.isValidAt(date) && rapportSujet.getType() == type) {
 				return rapportSujet;
 			}
 		}
@@ -760,7 +760,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	public RapportEntreTiers getDernierRapportSujet(TypeRapportEntreTiers type) {
 		RapportEntreTiers dernierRapport = null;
 		for (RapportEntreTiers rapportSujet : rapportsSujet) {
-			if (!rapportSujet.isAnnule() && type.equals(rapportSujet.getType())) {
+			if (!rapportSujet.isAnnule() && type == rapportSujet.getType()) {
 				if (dernierRapport == null
 						|| RegDateHelper.isAfterOrEqual(rapportSujet.getDateDebut(), dernierRapport.getDateDebut(),
 						NullDateBehavior.EARLIEST)) {
@@ -793,7 +793,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	@Transient
 	public RapportEntreTiers getRapportObjetValidAt(RegDate date, TypeRapportEntreTiers type) {
 		for (RapportEntreTiers rapportObjet : rapportsObjet) {
-			if (rapportObjet.isValidAt(date) && rapportObjet.getType().equals(type)) {
+			if (rapportObjet.isValidAt(date) && rapportObjet.getType() == type) {
 				return rapportObjet;
 			}
 		}
@@ -807,7 +807,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	public RapportEntreTiers getDernierRapportObjet(TypeRapportEntreTiers type) {
 		RapportEntreTiers dernierRapport = null;
 		for (RapportEntreTiers rapportObjet : rapportsObjet) {
-			if (!rapportObjet.isAnnule() && type.equals(rapportObjet.getType())) {
+			if (!rapportObjet.isAnnule() && type == rapportObjet.getType()) {
 				if (dernierRapport == null
 						|| RegDateHelper.isAfterOrEqual(rapportObjet.getDateDebut(), dernierRapport.getDateDebut(),
 						NullDateBehavior.EARLIEST)) {
@@ -1194,7 +1194,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 			for (int i = list.size() - 1; i >= 0; i--) {
 				ForFiscal forFiscal = list.get(i);
 				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()
-						&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forFiscal.getTypeAutoriteFiscale())) {
+						&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale()) {
 					return (ForFiscalPrincipal) forFiscal;
 				}
 			}

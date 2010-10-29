@@ -199,7 +199,7 @@ public class DebiteurPrestationImposable extends Tiers {
 						+ " chevauche le for précédent");
 			}
 			lastFor = fdpis;
-			if (fdpis.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.PAYS_HS)) {
+			if (fdpis.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 				results.addError("Les for DPI hors suisse ne sont pas autorisés.");
 			}
 		}
@@ -435,13 +435,13 @@ public class DebiteurPrestationImposable extends Tiers {
 			if (other.categorieImpotSource != null)
 				return false;
 		}
-		else if (!categorieImpotSource.equals(other.categorieImpotSource))
+		else if (categorieImpotSource != other.categorieImpotSource)
 			return false;
 		if (modeCommunication == null) {
 			if (other.modeCommunication != null)
 				return false;
 		}
-		else if (!modeCommunication.equals(other.modeCommunication))
+		else if (modeCommunication != other.modeCommunication)
 			return false;
 		if (nom1 == null) {
 			if (other.nom1 != null)
@@ -459,13 +459,13 @@ public class DebiteurPrestationImposable extends Tiers {
 			if (other.periodeDecompte != null)
 				return false;
 		}
-		else if (!periodeDecompte.equals(other.periodeDecompte))
+		else if (periodeDecompte != other.periodeDecompte)
 			return false;
 		if (periodiciteDecompte == null) {
 			if (other.periodiciteDecompte != null)
 				return false;
 		}
-		else if (!periodiciteDecompte.equals(other.periodiciteDecompte))
+		else if (periodiciteDecompte != other.periodiciteDecompte)
 			return false;
 		if (sansListeRecapitulative == null) {
 			if (other.sansListeRecapitulative != null)

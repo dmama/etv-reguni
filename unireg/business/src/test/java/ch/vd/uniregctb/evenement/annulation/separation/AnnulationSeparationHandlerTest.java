@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.evenement.annulation.separation;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +16,16 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -161,7 +161,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		assertNull("Le contribuable ne doit avoir aucun for principal actif après l'annulation de séparation", contribuable.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : contribuable.getForsFiscaux()) {
 			if (dateSeparation.equals(forFiscal.getDateDebut()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.equals(((ForFiscalRevenuFortune) forFiscal).getMotifOuverture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT == ((ForFiscalRevenuFortune) forFiscal).getMotifOuverture())) {
 				assertEquals("Les fors fiscaux fermés lors de la séparation doivent êtres annulés", true, forFiscal.isAnnule());
 				nbForAnnules++;
 			}
@@ -174,7 +174,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for (RapportEntreTiers rapport : contribuable.getRapportsSujet()) {
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) &&
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() &&
 					(rapport.getDateFin() != null && dateSeparation.getOneDayBefore().equals(rapport.getDateFin()))) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());

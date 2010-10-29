@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import annotation.Check;
+import annotation.Etape;
+import annotation.EtapeAttribute;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.aop.support.AopUtils;
@@ -19,9 +22,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import annotation.Check;
-import annotation.Etape;
-import annotation.EtapeAttribute;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.norentes.common.NorentesContext.EtapeContext;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -202,7 +202,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		if (evenementCivil != null) {
 			for (String scenarioName : scenariosBeanNames) {
 				NorentesScenario scenario = (NorentesScenario) this.applicationContext.getBean(scenarioName);
-				if (evenementCivil.equals(scenario.geTypeEvenementCivil())) {
+				if (evenementCivil == scenario.geTypeEvenementCivil()) {
 					list.add(scenario);
 				}
 			}

@@ -14,7 +14,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.couple.CoupleHelper;
 import ch.vd.uniregctb.couple.CoupleHelper.Couple;
-import ch.vd.uniregctb.couple.manager.CoupleRecapManager;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
 import ch.vd.uniregctb.metier.MetierService;
@@ -174,7 +173,7 @@ public class CoupleRecapValidator implements Validator {
 		if (etatCivil == null) {
 			return true;
 		}
-		return !ch.vd.uniregctb.type.EtatCivil.SEPARE.equals(etatCivil);
+		return ch.vd.uniregctb.type.EtatCivil.SEPARE != etatCivil;
 	}
 
 	private void checkFors(PersonnePhysique pp, String field, RegDate date, Errors errors) {

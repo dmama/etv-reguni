@@ -78,19 +78,19 @@ public enum TypeForFiscal {
 	public static TypeForFiscal getType(GenreImpot genre, MotifRattachement motif) {
 
 		final TypeForFiscal type;
-		if (GenreImpot.REVENU_FORTUNE.equals(genre)) {
-			if (MotifRattachement.DOMICILE.equals(motif) || MotifRattachement.DIPLOMATE_SUISSE.equals(motif) || MotifRattachement.DIPLOMATE_ETRANGER.equals(motif)) {
+		if (GenreImpot.REVENU_FORTUNE == genre) {
+			if (MotifRattachement.DOMICILE == motif || MotifRattachement.DIPLOMATE_SUISSE == motif || MotifRattachement.DIPLOMATE_ETRANGER == motif) {
 				type = PRINCIPAL;
 			}
-			else if (MotifRattachement.ACTIVITE_INDEPENDANTE.equals(motif) || MotifRattachement.IMMEUBLE_PRIVE.equals(motif) || 
-					MotifRattachement.SEJOUR_SAISONNIER.equals(motif) || MotifRattachement.DIRIGEANT_SOCIETE.equals(motif)) {
+			else if (MotifRattachement.ACTIVITE_INDEPENDANTE == motif || MotifRattachement.IMMEUBLE_PRIVE == motif ||
+					MotifRattachement.SEJOUR_SAISONNIER == motif || MotifRattachement.DIRIGEANT_SOCIETE == motif) {
 				type = SECONDAIRE;
 			}
 			else {
 				type = AUTRE_ELEMENT;
 			}
 		}
-		else if (GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE.equals(genre)) {
+		else if (GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE == genre) {
 			type = DEBITEUR_PRESTATION_IMPOSABLE;
 		} else {
 			type = AUTRE_IMPOT;

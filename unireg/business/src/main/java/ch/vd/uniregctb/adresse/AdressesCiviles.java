@@ -36,7 +36,7 @@ public class AdressesCiviles {
 	}
 
 	public void set(Adresse adresse, boolean strict) throws DonneesCivilesException {
-		if (adresse.getTypeAdresse().equals(TypeAdresseCivil.PRINCIPALE)) {
+		if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
 			if (principale == null) {
 				principale = adresse;
 			}
@@ -54,7 +54,7 @@ public class AdressesCiviles {
 				}
 			}
 		}
-		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.COURRIER)) {
+		else if (adresse.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
 			if (courrier == null) {
 				courrier = adresse;
 			}
@@ -72,7 +72,7 @@ public class AdressesCiviles {
 				}
 			}
 		}
-		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.SECONDAIRE)) {
+		else if (adresse.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
 			if (secondaire == null) {
 				secondaire = adresse;
 			}
@@ -94,7 +94,7 @@ public class AdressesCiviles {
 				}
 			}
 		}
-		else if (adresse.getTypeAdresse().equals(TypeAdresseCivil.TUTEUR)) {
+		else if (adresse.getTypeAdresse() == TypeAdresseCivil.TUTEUR) {
 			if (tutelle == null) {
 				tutelle = adresse;
 			}
@@ -118,17 +118,17 @@ public class AdressesCiviles {
 	}
 
 	public Adresse ofType(TypeAdresseCivil type) {
-		if (TypeAdresseCivil.PRINCIPALE.equals(type)) {
+		if (TypeAdresseCivil.PRINCIPALE == type) {
 			return principale;
 		}
-		else if (TypeAdresseCivil.COURRIER.equals(type)) {
+		else if (TypeAdresseCivil.COURRIER == type) {
 			return courrier;
 		}
-		else if (TypeAdresseCivil.SECONDAIRE.equals(type)) {
+		else if (TypeAdresseCivil.SECONDAIRE == type) {
 			return secondaire;
 		}
 		else {
-			Assert.isTrue(TypeAdresseCivil.TUTEUR.equals(type));
+			Assert.isTrue(TypeAdresseCivil.TUTEUR == type);
 			return tutelle;
 		}
 	}

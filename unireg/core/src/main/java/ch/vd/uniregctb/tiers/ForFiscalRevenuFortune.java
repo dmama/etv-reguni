@@ -215,17 +215,17 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 		if (motifFermeture == null) {
 			if (other.motifFermeture != null)
 				return false;
-		} else if (!motifFermeture.equals(other.motifFermeture))
+		} else if (motifFermeture != other.motifFermeture)
 			return false;
 		if (motifOuverture == null) {
 			if (other.motifOuverture != null)
 				return false;
-		} else if (!motifOuverture.equals(other.motifOuverture))
+		} else if (motifOuverture != other.motifOuverture)
 			return false;
 		if (motifRattachement == null) {
 			if (other.motifRattachement != null)
 				return false;
-		} else if (!motifRattachement.equals(other.motifRattachement))
+		} else if (motifRattachement != other.motifRattachement)
 			return false;
 		return true;
 	}

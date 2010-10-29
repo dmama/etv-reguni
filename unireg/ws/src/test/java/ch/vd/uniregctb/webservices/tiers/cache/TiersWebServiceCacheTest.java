@@ -449,16 +449,16 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 */
 	private static void assertOnlyPart(TiersPart p, Tiers tiers) {
 
-		boolean checkAdresses = TiersPart.ADRESSES.equals(p);
-		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI.equals(p);
-		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS.equals(p);
-		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE.equals(p);
-		boolean checkDeclarations = TiersPart.DECLARATIONS.equals(p);
-		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX.equals(p);
-		boolean checkForsGestion = TiersPart.FORS_GESTION.equals(p);
-		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION.equals(p);
-		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS.equals(p);
-		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE.equals(p);
+		boolean checkAdresses = TiersPart.ADRESSES == p;
+		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI == p;
+		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS == p;
+		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE == p;
+		boolean checkDeclarations = TiersPart.DECLARATIONS == p;
+		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX == p;
+		boolean checkForsGestion = TiersPart.FORS_GESTION == p;
+		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION == p;
+		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS == p;
+		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE == p;
 
 		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkDeclarations
 				|| checkForsFiscaux || checkForsGestion || checkPeriodeImposition || checkRapportEntreTiers || checkSituationFamille,
@@ -494,16 +494,16 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 */
 	private static void assertOnlyPart(TiersPart p, TiersHisto tiers) {
 
-		boolean checkAdresses = TiersPart.ADRESSES.equals(p);
-		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI.equals(p);
-		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS.equals(p);
-		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE.equals(p);
-		boolean checkDeclarations = TiersPart.DECLARATIONS.equals(p);
-		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX.equals(p);
-		boolean checkForsGestion = TiersPart.FORS_GESTION.equals(p);
-		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION.equals(p);
-		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS.equals(p);
-		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE.equals(p);
+		boolean checkAdresses = TiersPart.ADRESSES == p;
+		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI == p;
+		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS == p;
+		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE == p;
+		boolean checkDeclarations = TiersPart.DECLARATIONS == p;
+		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX == p;
+		boolean checkForsGestion = TiersPart.FORS_GESTION == p;
+		boolean checkPeriodeImposition = TiersPart.PERIODE_IMPOSITION == p;
+		boolean checkRapportEntreTiers = TiersPart.RAPPORTS_ENTRE_TIERS == p;
+		boolean checkSituationFamille = TiersPart.SITUATIONS_FAMILLE == p;
 
 		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkDeclarations
 				|| checkForsFiscaux || checkForsGestion || checkPeriodeImposition || checkRapportEntreTiers || checkSituationFamille,

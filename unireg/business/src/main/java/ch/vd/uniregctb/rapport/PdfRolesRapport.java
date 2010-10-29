@@ -303,7 +303,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	}
 
 	protected final String asCvsField(ProduireRolesResults.InfoContribuable.TypeContribuable typeCtb) {
-	    if (ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE.equals(typeCtb)) {
+	    if (ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE == typeCtb) {
 	        // selon la spécification
 	        return ProduireRolesResults.InfoContribuable.TypeContribuable.ORDINAIRE.description();
 	    } else {

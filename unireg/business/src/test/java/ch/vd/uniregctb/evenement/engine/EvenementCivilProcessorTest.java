@@ -578,7 +578,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	private void assertEvtState(EtatEvenementCivil expected, EvenementCivilData e) {
 
-		final boolean ok = e.getEtat().equals(expected);
+		final boolean ok = e.getEtat() == expected;
 		if (!ok) {
 			// Dump les erreurs
 			for (EvenementCivilErreur erreur : e.getErreurs()) {

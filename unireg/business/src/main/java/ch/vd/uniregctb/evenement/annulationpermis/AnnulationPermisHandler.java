@@ -44,7 +44,7 @@ public class AnnulationPermisHandler extends AnnulationPermisCOuNationaliteSuiss
 	}
 
 	private boolean isAnnulationPermisC(AnnulationPermis annulationPermis) {
-		return annulationPermis.getTypePermis().equals(TypePermis.ETABLISSEMENT);
+		return annulationPermis.getTypePermis() == TypePermis.ETABLISSEMENT;
 	}
 	
 	@Override

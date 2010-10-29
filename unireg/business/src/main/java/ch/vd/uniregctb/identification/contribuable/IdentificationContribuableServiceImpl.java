@@ -30,13 +30,13 @@ import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.DemandeHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
+import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -48,11 +48,11 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -165,7 +165,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		list = filterSexe(list, criteres);
 		list = filterDateNaissance(list, criteres);
-		if (Phase.COMPLET.equals(phaseSucces)) {
+		if (Phase.COMPLET == phaseSucces) {
 			list = filterAdresse(list, criteres);
 		}
 
@@ -495,14 +495,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			else {
 				//UNIREG 2412 Ajout de possibilités au service d'identification UniReg asynchrone
 
-				if (Demande.ModeIdentificationType.SANS_MANUEL.equals(demande.getModeIdentification())) {
+				if (Demande.ModeIdentificationType.SANS_MANUEL == demande.getModeIdentification()) {
 					String contenuMessage = "Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée";
 					Erreur erreur = new Erreur(TypeErreur.METIER, "01", contenuMessage);
 					nonIdentifie(message, erreur);
 
 				}
 				else {
-					if (Demande.ModeIdentificationType.MANUEL_AVEC_ACK.equals(demande.getModeIdentification())) {
+					if (Demande.ModeIdentificationType.MANUEL_AVEC_ACK == demande.getModeIdentification()) {
 						notifieAttenteIdentifManuel(message);
 					}
 
@@ -563,7 +563,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final String navs13 = criteres.getNAVS13();
 
-		if (Phase.AVEC_NO_AVS_13.equals(phase)) {
+		if (Phase.AVEC_NO_AVS_13 == phase) {
 			if (navs13 != null) {
 				criteria.setNumeroAVS(navs13);
 			}

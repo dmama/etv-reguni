@@ -170,7 +170,7 @@ public class AutreCommunaute extends Contribuable {
 			if (other.formeJuridique != null)
 				return false;
 		}
-		else if (!formeJuridique.equals(other.formeJuridique))
+		else if (formeJuridique != other.formeJuridique)
 			return false;
 		if (nom == null) {
 			if (other.nom != null)

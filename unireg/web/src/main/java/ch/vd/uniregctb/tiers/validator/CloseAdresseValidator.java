@@ -55,7 +55,7 @@ public class CloseAdresseValidator implements Validator {
 		final Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
 
 		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces.equals(Niveau.LECTURE)) {
+		if (acces == null || acces == Niveau.LECTURE) {
 			errors.reject("error.tiers.interdit");
 		}
 

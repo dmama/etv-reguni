@@ -454,15 +454,15 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	public ForFiscal addFor(ForFiscalView forFiscalView) {
 		if (forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
-			if (forFiscalView.getMotifRattachement().equals(MotifRattachement.DOMICILE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.DIPLOMATE_SUISSE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.DIPLOMATE_ETRANGER)) {
+			if (forFiscalView.getMotifRattachement() == MotifRattachement.DOMICILE ||
+					forFiscalView.getMotifRattachement() == MotifRattachement.DIPLOMATE_SUISSE ||
+					forFiscalView.getMotifRattachement() == MotifRattachement.DIPLOMATE_ETRANGER) {
 				return addForPrincipal(forFiscalView);
 			}
-			else if (forFiscalView.getMotifRattachement().equals(MotifRattachement.ACTIVITE_INDEPENDANTE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.IMMEUBLE_PRIVE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.SEJOUR_SAISONNIER) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.DIRIGEANT_SOCIETE)) {
+			else if (forFiscalView.getMotifRattachement() == MotifRattachement.ACTIVITE_INDEPENDANTE ||
+					forFiscalView.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE ||
+					forFiscalView.getMotifRattachement() == MotifRattachement.SEJOUR_SAISONNIER ||
+					forFiscalView.getMotifRattachement() == MotifRattachement.DIRIGEANT_SOCIETE) {
 				return addForSecondaire(forFiscalView);
 			}
 			else {

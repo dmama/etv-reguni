@@ -94,7 +94,7 @@ public class AnnulationTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		Set<RapportEntreTiers> rapports = tiersPupille.getRapportsSujet();
 		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le pupille et le tuteur n'existe pas");
 		for (RapportEntreTiers rapport : rapports) {
-			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport n'est pas de type tutelle");
+			Assert.isTrue(rapport.getType() == TypeRapportEntreTiers.TUTELLE, "Le rapport n'est pas de type tutelle");
 			Assert.isTrue(rapport.getObjetId().equals(tiersTuteur.getId()), "Le rapport n'est pas avec le tuteur");
 			Assert.isTrue(rapport.isAnnule(), "La tutelle n'a pas pu être annulée");
 		}

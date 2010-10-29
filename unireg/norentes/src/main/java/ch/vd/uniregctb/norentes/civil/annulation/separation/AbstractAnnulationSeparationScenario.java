@@ -24,7 +24,7 @@ public abstract class AbstractAnnulationSeparationScenario extends EvenementCivi
 			// recherche des fors ouverts avec date de début égal à celle de la séparation
 			// ces fors doivent être annulés
 			if (forFiscal.getDateFin() == null && dateSeparation.equals(forFiscal.getDateDebut()) &&
-					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.equals(((ForFiscalRevenuFortune) forFiscal).getMotifOuverture()))) {
+					(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT == ((ForFiscalRevenuFortune) forFiscal).getMotifOuverture())) {
 				assertEquals(true, forFiscal.isAnnule(), "Les fors fiscaux ouverts lors de la séparation doivent être annulés");
 			}
 		}

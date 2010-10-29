@@ -14,8 +14,8 @@ import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
@@ -153,10 +153,10 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
 				IdentificationContribuable identificationContribuable = identCtbDAO.get(new Long(identificationMessagesListView.getTabIdsMessages()[i]));
-				if (IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT.equals(identificationContribuable.getEtat())) {
+				if (Etat.A_TRAITER_MANUELLEMENT == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MAN_SUSPENDU);
 				}
-				else if (IdentificationContribuable.Etat.A_EXPERTISER.equals(identificationContribuable.getEtat())) {
+				else if (Etat.A_EXPERTISER == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_EXPERTISER_SUSPENDU);
 				}
 			}
@@ -177,10 +177,10 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
 				IdentificationContribuable identificationContribuable = identCtbDAO.get(new Long(identificationMessagesListView.getTabIdsMessages()[i]));
-				if (IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU.equals(identificationContribuable.getEtat())) {
+				if (Etat.A_TRAITER_MAN_SUSPENDU == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 				}
-				else if (IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU.equals(identificationContribuable.getEtat())) {
+				else if (Etat.A_EXPERTISER_SUSPENDU == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_EXPERTISER);
 				}
 			}

@@ -388,7 +388,7 @@ public class EvenementCivilData extends HibernateEntity {
 	public Set<EvenementCivilErreur> getErrors() {
 		Set<EvenementCivilErreur> list = new LinkedHashSet<EvenementCivilErreur>();
 		for (EvenementCivilErreur e : getErreurs()) {
-			if (e.getType().equals(TypeEvenementErreur.ERROR)) {
+			if (e.getType() == TypeEvenementErreur.ERROR) {
 				list.add(e);
 			}
 		}
@@ -404,7 +404,7 @@ public class EvenementCivilData extends HibernateEntity {
 	public Set<EvenementCivilErreur> getWarnings() {
 		Set<EvenementCivilErreur> list = new LinkedHashSet<EvenementCivilErreur>();
 		for (EvenementCivilErreur e : getErreurs()) {
-			if (e.getType().equals(TypeEvenementErreur.WARNING)) {
+			if (e.getType() == TypeEvenementErreur.WARNING) {
 				list.add(e);
 			}
 		}

@@ -283,16 +283,16 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		tit.setPrefixe(prefixeTitim);
 
 		String libTit = IMPOT_A_LA_SOURCE_MAJ;
-		if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS)) {
+		if (dpi.getCategorieImpotSource() == CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS) {
 			libTit = libTit + " " + CAS_MAJ ;
 		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.ADMINISTRATEURS)) {
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.ADMINISTRATEURS) {
 			libTit = libTit + " " + ADM_MAJ ;
 		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.PRESTATIONS_PREVOYANCE)) {
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.PRESTATIONS_PREVOYANCE) {
 			libTit = libTit + " " + PRE_MAJ ;
 		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES)) {
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.CREANCIERS_HYPOTHECAIRES) {
 			libTit = libTit + " " + HYP_MAJ ;
 		}
 		libTit = libTit + " " + lr.getPeriode().getAnnee().toString();
@@ -320,16 +320,16 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		final SLRLC slrlc = slrlcbvr.addNewSLRLC();
 		final TitreDoc titreDoc = slrlc.addNewTitreDoc();
 		titreDoc.setLibelle1(LISTE_RECAPITULATIVE_MAJ);
-		if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS)) {
+		if (dpi.getCategorieImpotSource() == CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS) {
 			titreDoc.setLibelle2(CAS_MIN);
 		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.ADMINISTRATEURS)) {
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.ADMINISTRATEURS) {
 			titreDoc.setLibelle2(ADM_MIN);
 		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.PRESTATIONS_PREVOYANCE)) {
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.PRESTATIONS_PREVOYANCE) {
 			titreDoc.setLibelle2(PRE_MIN);
 		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES)) {
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.CREANCIERS_HYPOTHECAIRES) {
 			titreDoc.setLibelle2(HYP_MIN);
 		}
 

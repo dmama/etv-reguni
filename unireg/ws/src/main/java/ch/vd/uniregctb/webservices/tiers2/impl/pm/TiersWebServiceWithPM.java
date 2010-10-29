@@ -377,14 +377,14 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = pmHost.getAdresses();
 			if (adresses != null) {
 				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
-					if (a.getType().equals(TypeAdressePM.COURRIER)) {
+					if (a.getType() == TypeAdressePM.COURRIER) {
 						if (pmHisto.adressesCourrier == null) {
 							pmHisto.adressesCourrier = new ArrayList<Adresse>();
 							pmHisto.adressesRepresentation = pmHisto.adressesCourrier;
 						}
 						pmHisto.adressesCourrier.add(host2web(a));
 					}
-					else if (a.getType().equals(TypeAdressePM.SIEGE)) {
+					else if (a.getType() == TypeAdressePM.SIEGE) {
 						if (pmHisto.adressesDomicile == null) {
 							pmHisto.adressesDomicile = new ArrayList<Adresse>();
 							// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
@@ -392,7 +392,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 						}
 						pmHisto.adressesDomicile.add(host2web(a));
 					}
-					else if (a.getType().equals(TypeAdressePM.FACTURATION)) {
+					else if (a.getType() == TypeAdressePM.FACTURATION) {
 						// ces adresses sont ignorées
 					}
 					else {

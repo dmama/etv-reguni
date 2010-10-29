@@ -33,6 +33,6 @@ public abstract class Sourcier extends Assujettissement {
 
 	@Override
 	public boolean isCollatable(DateRange next) {
-		return super.isCollatable(next) && typeAutoriteFiscale.equals(((Sourcier) next).typeAutoriteFiscale);
+		return super.isCollatable(next) && typeAutoriteFiscale == ((Sourcier) next).typeAutoriteFiscale;
 	}
 }

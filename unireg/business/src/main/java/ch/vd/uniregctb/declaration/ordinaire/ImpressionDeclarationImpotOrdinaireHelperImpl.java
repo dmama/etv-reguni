@@ -1,5 +1,35 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import noNamespace.CleRgpDocument.CleRgp;
+import noNamespace.DIBase;
+import noNamespace.DIDPDocument;
+import noNamespace.DIDPDocument.DIDP;
+import noNamespace.DIDocument;
+import noNamespace.DIDocument.DI;
+import noNamespace.DIDocument.DI.AdresseSuite;
+import noNamespace.DIHCDocument;
+import noNamespace.DIHCDocument.DIHC;
+import noNamespace.DIRetour;
+import noNamespace.DIVDTAXDocument;
+import noNamespace.DIVDTAXDocument.DIVDTAX;
+import noNamespace.InfoDocumentDocument1;
+import noNamespace.InfoDocumentDocument1.InfoDocument;
+import noNamespace.InfoEnteteDocumentDocument1;
+import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
+import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
+import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.TypAdresse;
+import noNamespace.TypFichierImpression;
+import noNamespace.TypFichierImpression.Document;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -14,36 +44,19 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
-import ch.vd.uniregctb.interfaces.model.*;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
-import noNamespace.CleRgpDocument.CleRgp;
-import noNamespace.*;
-import noNamespace.DIDPDocument.DIDP;
-import noNamespace.DIDocument.DI;
-import noNamespace.DIDocument.DI.AdresseSuite;
-import noNamespace.DIHCDocument.DIHC;
-import noNamespace.DIVDTAXDocument.DIVDTAX;
-import noNamespace.InfoDocumentDocument1.InfoDocument;
-import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
-import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
-import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
-import noNamespace.TypFichierImpression.Document;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 public class ImpressionDeclarationImpotOrdinaireHelperImpl implements ImpressionDeclarationImpotOrdinaireHelper  {
 
@@ -95,16 +108,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	public String calculPrefixe(Declaration declaration) {
 		String prefixe = RG + P + NO_PROJET;
 		TypeDocument typeDoc = declaration.getModeleDocument().getTypeDocument();
-		if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) || typeDoc.equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL)) {
+		if (typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
 			prefixe += NO_DOCUMENT_CPLT;
 		}
-		else if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_VAUDTAX)) {
+		else if (typeDoc == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			prefixe += NO_DOCUMENT_VT;
 		}
-		else if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE)) {
+		else if (typeDoc == TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE) {
 			prefixe += NO_DOCUMENT_HC;
 		}
-		else if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_DEPENSE)) {
+		else if (typeDoc == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
 			prefixe += NO_DOCUMENT_DEP;
 		}
 
@@ -122,16 +135,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		infoDocument.setTypDoc(DI);
 		String codDoc = "";
 		TypeDocument typeDoc = declaration.getModeleDocument().getTypeDocument();
-		if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) || typeDoc.equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL)) {
+		if (typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
 			codDoc += CODE_DOCUMENT_CPLT;
 		}
-		else if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_VAUDTAX)) {
+		else if (typeDoc == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			codDoc += CODE_DOCUMENT_VT;
 		}
-		else if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE)) {
+		else if (typeDoc == TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE) {
 			codDoc += CODE_DOCUMENT_HC;
 		}
-		else if (typeDoc.equals(TypeDocument.DECLARATION_IMPOT_DEPENSE)) {
+		else if (typeDoc == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
 			codDoc += CODE_DOCUMENT_DEP;
 		}
 		infoDocument.setCodDoc(codDoc);
@@ -277,19 +290,19 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		if (typeDocument == null) {
 			typeDocument = declaration.getModeleDocument().getTypeDocument();
 		}
-		if (typeDocument.equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) || typeDocument.equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL)) {
+		if (typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
 			DI di = remplitSpecifiqueDI(declaration, annexes);
 			document.setDI(di);
 		}
-		else if (typeDocument.equals(TypeDocument.DECLARATION_IMPOT_DEPENSE)) {
+		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
 			DIDP didp = remplitSpecifiqueDIDP(declaration, annexes);
 			document.setDIDP(didp);
 		}
-		else if (typeDocument.equals(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE)) {
+		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE) {
 			DIHC dihc = remplitSpecifiqueDIHC(declaration, annexes);
 			document.setDIHC(dihc);
 		}
-		else if (typeDocument.equals(TypeDocument.DECLARATION_IMPOT_VAUDTAX)) {
+		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			DIVDTAX divdtax = remplitSpecifiqueDIVDTAX(declaration, annexes);
 			document.setDIVDTAX(divdtax);
 		}

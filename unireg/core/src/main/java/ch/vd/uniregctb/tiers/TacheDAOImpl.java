@@ -199,13 +199,13 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 			final RegDate dateDebutPeriode = RegDate.get(annee, 1, 1);
 			final RegDate dateFinPeriode = RegDate.get(annee, 12, 31);
 
-			if (TypeTache.TacheEnvoiDeclarationImpot.equals(typeTache)) {
+			if (TypeTache.TacheEnvoiDeclarationImpot == typeTache) {
 				clause += " and tache.dateDebut >= ? ";
 				clause += " and tache.dateFin <= ? ";
 				params.add(dateDebutPeriode.index());
 				params.add(dateFinPeriode.index());
 			}
-			else if (TypeTache.TacheAnnulationDeclarationImpot.equals(typeTache)) {
+			else if (TypeTache.TacheAnnulationDeclarationImpot == typeTache) {
 				clause += " and tache.declarationImpotOrdinaire.dateDebut >= ? ";
 				clause += " and tache.declarationImpotOrdinaire.dateFin <= ? ";
 				params.add(dateDebutPeriode.index());
@@ -279,7 +279,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 				for (Object entity : entities.values()) {
 					if (entity instanceof Tache) {
 						final Tache t = (Tache) entity;
-						if (t.getContribuable().getNumero().equals(noCtb) && type.equals(t.getTypeTache()) && (isTacheOuverte(t))) {
+						if (t.getContribuable().getNumero().equals(noCtb) && type == t.getTypeTache() && (isTacheOuverte(t))) {
 							return true;
 						}
 					}
@@ -369,7 +369,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	}
 
 	private static boolean isTacheOuverte(final Tache t) {
-		return TypeEtatTache.EN_INSTANCE.equals(t.getEtat()) || TypeEtatTache.EN_COURS.equals(t.getEtat());
+		return TypeEtatTache.EN_INSTANCE == t.getEtat() || TypeEtatTache.EN_COURS == t.getEtat();
 	}
 
 	@SuppressWarnings("unchecked")

@@ -31,7 +31,7 @@ public class MotifsForHelper {
 
 	public static List<MotifFor> getMotifsOuverture(TypeFor type) {
 
-		if (!GenreImpot.REVENU_FORTUNE.equals(type.genreImpot)) {
+		if (GenreImpot.REVENU_FORTUNE != type.genreImpot) {
 			// par définition
 			return Collections.emptyList();
 		}
@@ -97,7 +97,7 @@ public class MotifsForHelper {
 
 	public static List<MotifFor> getMotifsFermeture(TypeFor type) {
 
-		if (!GenreImpot.REVENU_FORTUNE.equals(type.genreImpot)) {
+		if (GenreImpot.REVENU_FORTUNE != type.genreImpot) {
 			// par définition
 			return Collections.emptyList();
 		}

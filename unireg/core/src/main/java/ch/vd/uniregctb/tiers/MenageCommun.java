@@ -1,5 +1,16 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.ArrayUtils;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -8,12 +19,6 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import org.apache.commons.lang.ArrayUtils;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
-import java.util.*;
 
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -47,7 +52,7 @@ public class MenageCommun extends Contribuable {
         if (rapports != null) {
             final Set<Long> idComposants = new HashSet<Long>(4);
             for (RapportEntreTiers r : rapports) {
-                if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
+                if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
                     final Long id = r.getSujetId();
                     if (id != null) {
                         idComposants.add(id);
@@ -79,7 +84,7 @@ public class MenageCommun extends Contribuable {
         Set<RapportEntreTiers> rapports = getRapportsObjet();
         if (rapports != null) {
             for (RapportEntreTiers r : rapports) {
-                if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
+                if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
                     rapportsMenages.add(r);
                 }
             }

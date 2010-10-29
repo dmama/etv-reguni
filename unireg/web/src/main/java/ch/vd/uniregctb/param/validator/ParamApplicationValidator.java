@@ -20,7 +20,7 @@ public class ParamApplicationValidator implements Validator {
 
 	public void validate(Object objForm, Errors errors) {
 		ParamApplicationView form =  (ParamApplicationView) objForm;
-		if (ParamApplicationView.Action.reset.equals(form.getAction())) {
+		if (ParamApplicationView.Action.reset == form.getAction()) {
 			// On ne valide pas les champs du formulaire lors de la demande d'un reset
 			return;
 		}

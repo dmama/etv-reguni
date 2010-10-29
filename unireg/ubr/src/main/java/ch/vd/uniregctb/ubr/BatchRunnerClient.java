@@ -84,7 +84,7 @@ public class BatchRunnerClient {
 		pp.setName(name);
 
 		JobStatut status = JobStatut.JOB_READY;
-		while (isRunning(status) || JobStatut.JOB_READY.equals(status)) {
+		while (isRunning(status) || JobStatut.JOB_READY == status) {
 			try {
 				Thread.sleep(2000);
 			}
@@ -107,7 +107,7 @@ public class BatchRunnerClient {
 			}
 		}
 
-		if (JobStatut.JOB_EXCEPTION.equals(status)) {
+		if (JobStatut.JOB_EXCEPTION == status) {
 			throw new BatchWSException("Le job a lancé une exception - consulter le log du serveur");
 		}
 	}

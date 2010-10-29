@@ -65,14 +65,14 @@ public class ForFiscalValidator implements Validator {
 						break;
 				}
 			}
-			if (	(forFiscalView.getGenreImpot().equals(GenreImpot.REVENU_FORTUNE)
-					||(forFiscalView.getGenreImpot().equals(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE) )
+			if (	(forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE
+					||(forFiscalView.getGenreImpot() == GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE)
 					&& (forFiscalView.getDateOuverture() == null))) {
 				ValidationUtils.rejectIfEmpty(errors, "dateOuverture", "error.date.ouverture.vide");
 			}
 
-			if ((!forFiscalView.getGenreImpot().equals(GenreImpot.REVENU_FORTUNE))
-					&& (!forFiscalView.getGenreImpot().equals(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE))
+			if ((forFiscalView.getGenreImpot() != GenreImpot.REVENU_FORTUNE)
+					&& (forFiscalView.getGenreImpot() != GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE)
 					&& (forFiscalView.getDateEvenement() == null)) {
 				ValidationUtils.rejectIfEmpty(errors, "dateEvenement", "error.date.evenement.vide");
 			}
@@ -99,7 +99,7 @@ public class ForFiscalValidator implements Validator {
 				}
 			}
 
-			if (forFiscalView.getGenreImpot().equals(GenreImpot.REVENU_FORTUNE)) {
+			if (forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
 				if(forFiscalView.getDateOuverture() != null && forFiscalView.getMotifOuverture() == null){
 					if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 							(typeFor == TypeForFiscal.PRINCIPAL || typeFor == TypeForFiscal.SECONDAIRE)) {
@@ -108,26 +108,26 @@ public class ForFiscalValidator implements Validator {
 				}
 				else if(forFiscalView.getMotifOuverture() != null){
 					if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_AUTRECOMMUNAUTE)){
-						if(forFiscalView.getMotifOuverture().equals(MotifFor.MAJORITE) ||
-								forFiscalView.getMotifOuverture().equals(MotifFor.PERMIS_C_SUISSE) ){
+						if(forFiscalView.getMotifOuverture() == MotifFor.MAJORITE ||
+								forFiscalView.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE){
 							errors.rejectValue("motifOuverture", "error.motif.ouverture.invalide");
 						}
 					}
-					if ((forFiscalView.getMotifRattachement().equals(MotifRattachement.ACTIVITE_INDEPENDANTE) ||
-							forFiscalView.getMotifRattachement().equals(MotifRattachement.DIRIGEANT_SOCIETE))
-							&& !forFiscalView.getMotifOuverture().equals(MotifFor.DEBUT_EXPLOITATION)
-							&& !forFiscalView.getMotifOuverture().equals(MotifFor.FUSION_COMMUNES)) {
+					if ((forFiscalView.getMotifRattachement() == MotifRattachement.ACTIVITE_INDEPENDANTE ||
+							forFiscalView.getMotifRattachement() == MotifRattachement.DIRIGEANT_SOCIETE)
+							&& forFiscalView.getMotifOuverture() != MotifFor.DEBUT_EXPLOITATION
+							&& forFiscalView.getMotifOuverture() != MotifFor.FUSION_COMMUNES) {
 						errors.rejectValue("motifOuverture", "error.motif.ouverture.invalide");
 
 					}
-					else if (forFiscalView.getMotifRattachement().equals(MotifRattachement.IMMEUBLE_PRIVE)
-							&& !forFiscalView.getMotifOuverture().equals(MotifFor.ACHAT_IMMOBILIER)
-							&& !forFiscalView.getMotifOuverture().equals(MotifFor.FUSION_COMMUNES)) {
+					else if (forFiscalView.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE
+							&& forFiscalView.getMotifOuverture() != MotifFor.ACHAT_IMMOBILIER
+							&& forFiscalView.getMotifOuverture() != MotifFor.FUSION_COMMUNES) {
 						errors.rejectValue("motifOuverture", "error.motif.ouverture.invalide");
 					}
-					else if (forFiscalView.getMotifRattachement().equals(MotifRattachement.SEJOUR_SAISONNIER)
-							&& !forFiscalView.getMotifOuverture().equals(MotifFor.SEJOUR_SAISONNIER)
-							&& !forFiscalView.getMotifOuverture().equals(MotifFor.FUSION_COMMUNES)) {
+					else if (forFiscalView.getMotifRattachement() == MotifRattachement.SEJOUR_SAISONNIER
+							&& forFiscalView.getMotifOuverture() != MotifFor.SEJOUR_SAISONNIER
+							&& forFiscalView.getMotifOuverture() != MotifFor.FUSION_COMMUNES) {
 						errors.rejectValue("motifOuverture", "error.motif.ouverture.invalide");
 					}
 				}
@@ -141,25 +141,25 @@ public class ForFiscalValidator implements Validator {
 					}
 					else {
 						if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_AUTRECOMMUNAUTE)){
-							if(forFiscalView.getMotifFermeture().equals(MotifFor.VEUVAGE_DECES) ||
-									forFiscalView.getMotifFermeture().equals(MotifFor.PERMIS_C_SUISSE)){
+							if(forFiscalView.getMotifFermeture() == MotifFor.VEUVAGE_DECES ||
+									forFiscalView.getMotifFermeture() == MotifFor.PERMIS_C_SUISSE){
 								errors.rejectValue("motifFermeture", "error.motif.fermeture.invalide");
 							}
 						}
-						if ((forFiscalView.getMotifRattachement().equals(MotifRattachement.ACTIVITE_INDEPENDANTE)||
-								forFiscalView.getMotifRattachement().equals(MotifRattachement.DIRIGEANT_SOCIETE))
-								&& !forFiscalView.getMotifFermeture().equals(MotifFor.FIN_EXPLOITATION)
-								&& !forFiscalView.getMotifFermeture().equals(MotifFor.FUSION_COMMUNES)) {
+						if ((forFiscalView.getMotifRattachement() == MotifRattachement.ACTIVITE_INDEPENDANTE ||
+								forFiscalView.getMotifRattachement() == MotifRattachement.DIRIGEANT_SOCIETE)
+								&& forFiscalView.getMotifFermeture() != MotifFor.FIN_EXPLOITATION
+								&& forFiscalView.getMotifFermeture() != MotifFor.FUSION_COMMUNES) {
 							errors.rejectValue("motifFermeture", "error.motif.fermeture.invalide");
 						}
-						else if (forFiscalView.getMotifRattachement().equals(MotifRattachement.IMMEUBLE_PRIVE)
-								&& !forFiscalView.getMotifFermeture().equals(MotifFor.VENTE_IMMOBILIER)
-								&& !forFiscalView.getMotifFermeture().equals(MotifFor.FUSION_COMMUNES)) {
+						else if (forFiscalView.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE
+								&& forFiscalView.getMotifFermeture() != MotifFor.VENTE_IMMOBILIER
+								&& forFiscalView.getMotifFermeture() != MotifFor.FUSION_COMMUNES) {
 							errors.rejectValue("motifFermeture", "error.motif.fermeture.invalide");
 						}
-						else if (forFiscalView.getMotifRattachement().equals(MotifRattachement.SEJOUR_SAISONNIER)
-								&& !forFiscalView.getMotifFermeture().equals(MotifFor.SEJOUR_SAISONNIER)
-								&& !forFiscalView.getMotifFermeture().equals(MotifFor.FUSION_COMMUNES)) {
+						else if (forFiscalView.getMotifRattachement() == MotifRattachement.SEJOUR_SAISONNIER
+								&& forFiscalView.getMotifFermeture() != MotifFor.SEJOUR_SAISONNIER
+								&& forFiscalView.getMotifFermeture() != MotifFor.FUSION_COMMUNES) {
 							errors.rejectValue("motifFermeture", "error.motif.fermeture.invalide");
 						}
 					}
@@ -235,7 +235,7 @@ public class ForFiscalValidator implements Validator {
 			String msgErrorForSec = (forFiscalView.getId() == null) ? "error.motif.rattachement.interdit" : "error.tiers.interdit";
 
 			final Niveau acces = SecurityProvider.getDroitAcces(forFiscalView.getNumeroCtb());
-			if (acces == null || acces.equals(Niveau.LECTURE)) {
+			if (acces == null || acces == Niveau.LECTURE) {
 				errors.reject("error.tiers.interdit");
 			}
 
@@ -285,12 +285,12 @@ public class ForFiscalValidator implements Validator {
 					errors.reject((forFiscalView.getId() == null) ? "error.genre.impot.interdit" : "error.tiers.interdit");
 				}
 			}
-			if (TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE.equals(typeFor)) {
-				if (TypeAutoriteFiscale.PAYS_HS.equals(forFiscalView.getTypeAutoriteFiscale())) {
+			if (TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE == typeFor) {
+				if (TypeAutoriteFiscale.PAYS_HS == forFiscalView.getTypeAutoriteFiscale()) {
 					errors.reject("error.type.autorite.incorrect");
 				}
-			} else if (!TypeForFiscal.PRINCIPAL.equals(typeFor)
-					&& !TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forFiscalView.getTypeAutoriteFiscale())) {
+			} else if (TypeForFiscal.PRINCIPAL != typeFor
+					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != forFiscalView.getTypeAutoriteFiscale()) {
 				errors.reject("error.type.autorite.incorrect");
 			}
 
@@ -300,9 +300,9 @@ public class ForFiscalValidator implements Validator {
 		}
 
 		if (tiers instanceof PersonnePhysique) {
-			if (MotifRattachement.DOMICILE.equals(forFiscalView.getMotifRattachement())
-					&& TypeForFiscal.PRINCIPAL.equals(typeFor)
-					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forFiscalView.getTypeAutoriteFiscale())) {
+			if (MotifRattachement.DOMICILE == forFiscalView.getMotifRattachement()
+					&& TypeForFiscal.PRINCIPAL == typeFor
+					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscalView.getTypeAutoriteFiscale()) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiers;
 				final RegDate date;

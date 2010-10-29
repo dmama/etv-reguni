@@ -198,7 +198,7 @@ public class TacheServiceImpl implements TacheService {
 
 		switch (motifFermeture) {
 		case DEPART_HS:
-			if (TypeAutoriteFiscale.PAYS_HS.equals(forPrincipal.getTypeAutoriteFiscale())) {
+			if (TypeAutoriteFiscale.PAYS_HS == forPrincipal.getTypeAutoriteFiscale()) {
 				/*
 				 * le for principal est déjà hors-Suisse ! Cela arrive sur certain contribuables (voir par exemple le ctb n°52108102) où le
 				 * départ HS a été enregistré comme déménagement VD. A ce moment-là, si le for principal HS est fermé avec le motif départ
@@ -266,7 +266,7 @@ public class TacheServiceImpl implements TacheService {
 		final RegDate dateFermeture = forSecondaire.getDateFin();
 		final ForsParTypeAt forsAt = contribuable.getForsParTypeAt(dateFermeture, false);
 
-		if (forsAt.principal == null || TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forsAt.principal.getTypeAutoriteFiscale())) {
+		if (forsAt.principal == null || TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forsAt.principal.getTypeAutoriteFiscale()) {
 			return;
 		}
 
@@ -890,7 +890,7 @@ public class TacheServiceImpl implements TacheService {
 
 		final List<Tache> taches = tacheDAO.find(criteria);
 		for (Tache t : taches) {
-			if (TypeEtatTache.TRAITE.equals(t.getEtat())) {
+			if (TypeEtatTache.TRAITE == t.getEtat()) {
 				// inutile d'annuler les tâches traitées
 				continue;
 			}

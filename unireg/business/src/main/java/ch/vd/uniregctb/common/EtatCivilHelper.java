@@ -28,7 +28,7 @@ public class EtatCivilHelper {
 	 * @return
 	 */
 	public static boolean estMarieOuPacse(ch.vd.uniregctb.type.EtatCivil etatCivil) {
-		return ch.vd.uniregctb.type.EtatCivil.MARIE.equals(etatCivil) || ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE.equals(etatCivil);
+		return ch.vd.uniregctb.type.EtatCivil.MARIE == etatCivil || ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE == etatCivil;
 	}
 	/**
 	 * Retourne true si l'état civil représente la valeur SEPARE ou PACS_INTERROMPU.

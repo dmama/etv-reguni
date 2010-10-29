@@ -444,7 +444,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		List<RapportEntreTiers> rapportsMenage = new ArrayList<RapportEntreTiers>();
 		for (RapportEntreTiers rapport : rapports) {
 			assertNotNull(rapport);
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
 				assertTrue("Trouvé plus de 2 rapports de type appartenance ménage", rapportsMenage.size() < 2);
 				rapportsMenage.add(rapport);
 			}

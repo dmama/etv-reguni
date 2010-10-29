@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.evenement.demenagement;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +27,11 @@ import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests unitaires du handler du déménagement.
@@ -182,7 +182,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for ( RapportEntreTiers rapport : pierre.getRapportsSujet() ) {
-			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
@@ -223,7 +223,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
 		for ( RapportEntreTiers rapport : momo.getRapportsSujet() ) {
-			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
+			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}

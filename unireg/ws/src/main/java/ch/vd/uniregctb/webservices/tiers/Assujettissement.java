@@ -77,7 +77,7 @@ public class Assujettissement {
 		}
 		else if (assujettissement instanceof ch.vd.uniregctb.metier.assujettissement.SourcierMixte) {
 			ch.vd.uniregctb.metier.assujettissement.SourcierMixte mixte = (ch.vd.uniregctb.metier.assujettissement.SourcierMixte) assujettissement;
-			if (mixte.getTypeAutoriteFiscale().equals(ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+			if (mixte.getTypeAutoriteFiscale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				this.LIC = TypeAssujettissement.ILLIMITE;
 				this.LIFD = TypeAssujettissement.ILLIMITE;
 			}

@@ -15,6 +15,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
+
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.OrigineType;
@@ -167,8 +168,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		final RegDate dateValidite = event.getDateFin().getOneDayBefore();
 		Declaration lr = tiers.getDeclarationActive(dateValidite);
 		if (lr != null) {
-			if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat().getEtat()) && TypeQuittance.QUITTANCEMENT.equals(event.getType()) ||
-					isNonQuittancee(lr) && TypeQuittance.ANNULATION.equals(event.getType())) {
+			if (TypeEtatDeclaration.RETOURNEE == lr.getDernierEtat().getEtat() && TypeQuittance.QUITTANCEMENT == event.getType() ||
+					isNonQuittancee(lr) && TypeQuittance.ANNULATION == event.getType()) {
 				dejaTraite = true;
 			}
 		}
@@ -180,7 +181,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	}
 
 	private boolean isNonQuittancee(Declaration lr) {
-		if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat().getEtat())) {
+		if (TypeEtatDeclaration.RETOURNEE == lr.getDernierEtat().getEtat()) {
 			return false;
 		}
 		return true;

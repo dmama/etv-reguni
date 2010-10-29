@@ -127,13 +127,13 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	private static String buildContext(Adresse adresse) {
 		final String type;
-		if (TypeAdresseCivil.COURRIER.equals(adresse.getTypeAdresse())) {
+		if (TypeAdresseCivil.COURRIER == adresse.getTypeAdresse()) {
 			type = "courrier";
 		}
-		else if (TypeAdresseCivil.PRINCIPALE.equals(adresse.getTypeAdresse())) {
+		else if (TypeAdresseCivil.PRINCIPALE == adresse.getTypeAdresse()) {
 			type = "principal";
 		}
-		else if (TypeAdresseCivil.SECONDAIRE.equals(adresse.getTypeAdresse())) {
+		else if (TypeAdresseCivil.SECONDAIRE == adresse.getTypeAdresse()) {
 			type = "secondaire";
 		}
 		else {

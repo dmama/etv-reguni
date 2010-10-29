@@ -102,7 +102,7 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 
 	@Override
 	public boolean isRattachementCoherent(MotifRattachement motif) {
-		boolean valid = MotifRattachement.DOMICILE.equals(motif) || MotifRattachement.DIPLOMATE_SUISSE.equals(motif) || MotifRattachement.DIPLOMATE_ETRANGER.equals(motif);
+		boolean valid = MotifRattachement.DOMICILE == motif || MotifRattachement.DIPLOMATE_SUISSE == motif || MotifRattachement.DIPLOMATE_ETRANGER == motif;
 		return valid;
 	}
 
@@ -156,7 +156,7 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 		if (modeImposition == null) {
 			if (other.modeImposition != null)
 				return false;
-		} else if (!modeImposition.equals(other.modeImposition))
+		} else if (modeImposition != other.modeImposition)
 			return false;
 		return true;
 	}
