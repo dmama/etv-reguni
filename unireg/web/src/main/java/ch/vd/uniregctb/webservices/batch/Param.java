@@ -51,7 +51,7 @@ public class Param {
 			type = clazz.getSimpleName().toLowerCase();
 		}
 
-		final Object dv = (job.getDefaultParams() == null ? null : job.getDefaultParams().get(name));
+		final Object dv = (job.getDefaultParamWebValues() == null ? null : job.getDefaultParamWebValues().get(name));
 		if (dv != null) {
 			defaultValue = param.getType().valueToString(dv);
 		}
