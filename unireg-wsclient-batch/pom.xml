@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-wsclient-batch</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1</version>
+	<version>1.2</version>
 
 	<name>Unireg - Client WS Batch</name>
 	<description>Unireg - Client Java pour le web-service Batch de Unireg</description>

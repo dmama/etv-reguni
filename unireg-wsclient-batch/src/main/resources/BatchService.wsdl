@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 1.1 -->
+<!-- version 1.2 -->
 <wsdl:definitions name="BatchService" targetNamespace="http://www.vd.ch/uniregctb/webservices/batch" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/batch" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -54,7 +54,6 @@
 					<xs:element minOccurs="0" name="type" type="xs:string" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="enumValues" type="xs:string" />
 					<xs:element name="isMandatory" type="xs:boolean" />
-					<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="StartBatch">
