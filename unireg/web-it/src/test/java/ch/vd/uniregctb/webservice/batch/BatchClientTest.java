@@ -136,9 +136,9 @@ public class BatchClientTest extends WebitTest {
 	@Test
 	public void testStartJobWithBatchNameWithArguments() throws Exception {
 
-		Map<String, Object> args = new HashMap<String, Object>(2);
+		final Map<String, Object> args = new HashMap<String, Object>(2);
 		args.put("dateDebut", "2008-03-20");
-		args.put("count", "12");
+		args.put("count", 12);
 		client.startBatch(BATCH_NAME, args);
 
 		// on attend maintenant la fin du job avant de continuer
@@ -150,7 +150,7 @@ public class BatchClientTest extends WebitTest {
 
 		// démarre le job avec le paramètre duration = 10 secondes, de telle manière qui'il dure assez longtemps pour qu'on puisse l'arrêter
 		Map<String, Object> args = new HashMap<String, Object>(1);
-		args.put("duration", "10");
+		args.put("duration", 10);
 		client.startBatch(BATCH_NAME, args);
 
 		// on attend maintenant la fin du job avant de continuer
@@ -173,18 +173,18 @@ public class BatchClientTest extends WebitTest {
 		final List<Param> params = definition.getParams();
 		assertNotNull(params);
 		assertEquals(6, params.size());
-		assertParam(params.get(0), "dateDebut", "regdate", aujourdhui);
-		assertParam(params.get(1), "count", "integer", null);
-		assertParam(params.get(2), "duration", "integer", null);
-		assertParam(params.get(3), "shutdown_duration", "integer", null);
-		assertParam(params.get(4), "salutations", "enum", null);
-		assertParam(params.get(5), "attachement", "byte[]", null);
+		assertParam(params.get(0), "dateDebut", "regdate");
+		assertParam(params.get(1), "count", "integer");
+		assertParam(params.get(2), "duration", "integer");
+		assertParam(params.get(3), "shutdown_duration", "integer");
+		assertParam(params.get(4), "salutations", "enum");
+		assertParam(params.get(5), "attachement", "byte[]");
 
 		List<String> values = new ArrayList<String>(3);
 		values.add("HELLO");
 		values.add("COUCOU");
 		values.add("BONJOUR");
-		assertEnumParam(params.get(4), "salutations", values, null);
+		assertEnumParam(params.get(4), "salutations", values);
 	}
 
 	/**
@@ -227,17 +227,15 @@ public class BatchClientTest extends WebitTest {
 		assertEquals(JobStatut.JOB_INTERRUPTED, definition.getStatut());
 	}
 
-	private static void assertParam(Param param, final String paramName, final String paramType, final Object paramDefaultValue) {
+	private static void assertParam(Param param, final String paramName, final String paramType) {
 		assertNotNull(param);
 		assertEquals(paramName, param.getName());
 		assertEquals(paramType, param.getType());
-		assertEquals(paramDefaultValue, param.getDefaultValue());
 	}
 
-	private static void assertEnumParam(Param param, final String paramName, final List<String> paramEnumValues, final String paramDefaultValue) {
+	private static void assertEnumParam(Param param, final String paramName, final List<String> paramEnumValues) {
 		assertNotNull(param);
 		assertEquals(paramName, param.getName());
 		assertEquals(paramEnumValues, param.getEnumValues());
-		assertEquals(paramDefaultValue, param.getDefaultValue());
 	}
 }

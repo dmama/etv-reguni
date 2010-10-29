@@ -40,7 +40,7 @@ public class ItBatchClientJob extends JobDefinition {
 			final JobParam param = new JobParam();
 			param.setDescription("Date de début");
 			param.setName(PARAM_DATE_DEBUT);
-			param.setMandatory(true);
+			param.setMandatory(false);
 			param.setType(new JobParamRegDate());
 			addParameterDefinition(param, RegDate.get());
 		}
@@ -104,8 +104,8 @@ public class ItBatchClientJob extends JobDefinition {
 			LOGGER.info("Contenu du fichier joint: \n" + new String(attachement) + "\n");
 		}
 
-		final Integer duration = (Integer) params.get(PARAM_DURATION);
-		final Integer shutdown = (Integer) params.get(PARAM_SHUTDOWN_DURATION);
+		final Integer duration = getOptionalIntegerValue(params, PARAM_DURATION);
+		final Integer shutdown = getOptionalIntegerValue(params, PARAM_SHUTDOWN_DURATION);
 
 		if (duration != null) {
 			final long inc = duration * 100;
