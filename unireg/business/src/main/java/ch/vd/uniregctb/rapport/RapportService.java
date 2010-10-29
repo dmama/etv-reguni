@@ -5,6 +5,7 @@ import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
@@ -327,4 +328,13 @@ public interface RapportService {
 	 * @return
 	 */
 	ComparerSituationFamilleRapport generateRapport(ComparerSituationFamilleResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport suite à l'execution du job de production de la liste des contribuables avec note
+	 * @param results  resultat du batch
+	 * @param status  le status manager des jobs
+	 * @return   le rapport généré
+	 */
+
+	ListeNoteRapport generateRapport(ListeNoteResults results, StatusManager statusManager);
 }

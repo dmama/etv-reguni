@@ -14,6 +14,8 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ListeNoteProcessor;
+import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
@@ -437,8 +439,16 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(List<Long> ids, int annee, RegDate dateDelai,
-			RegDate dateTraitement, StatusManager s) {
+		RegDate dateTraitement, StatusManager s) {
 		DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager);
 		return processor.run(ids, annee, dateDelai, dateTraitement, s);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
+		ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager);
+		return processor.run(dateTraitement, annee, nbThreads, statusManager);
 	}
 }

@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
@@ -247,4 +248,15 @@ public interface DeclarationImpotService {
 	 */
 	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(final List<Long> ids, int annee, final RegDate dateDelai,
 			final RegDate dateTraitement, final StatusManager s);
+
+	/**Permet de produire la liste des contribuables ayant une Di transformée en note
+	 *
+	 * @param dateTraitement la date de traitement
+	 * @param nbThreads   nombre de thread
+	 * @param annee    l apériode fiscale
+	 * @param statusManager  status manager
+	 * @return la liste des contribuables trouvés
+	 */
+
+	ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager);
 }

@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
@@ -47,6 +48,7 @@ import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
@@ -801,6 +803,26 @@ public class RapportServiceImpl implements RapportService {
 			return docService.newDoc(ComparerSituationFamilleRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ComparerSituationFamilleRapport>() {
 				public void writeDoc(ComparerSituationFamilleRapport doc, OutputStream os) throws Exception {
 					final PdfComparerSituationFamilleRapport document = new PdfComparerSituationFamilleRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public ListeNoteRapport generateRapport(final ListeNoteResults results, StatusManager s) {
+	final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportListeNote";
+		final String description = "Rapport d'exécution du job qui produit la liste des contribuable ayant reçu une note. Date de traitement = " + results.getDateTraitement();
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(ListeNoteRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeNoteRapport>() {
+				public void writeDoc(ListeNoteRapport doc, OutputStream os) throws Exception {
+					final PdfListeNoteRapport document = new PdfListeNoteRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

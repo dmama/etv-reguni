@@ -238,7 +238,13 @@
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
-
+	<bean id="listeNoteJob" parent="schedulerJob"
+			  class="ch.vd.uniregctb.declaration.ListeNoteJob">
+			<constructor-arg value="407"/>
+			<constructor-arg value="Produire la liste des contribuables ayant une DI transformée en note pour une période"/>
+			<property name="service" ref="diService"/>
+			<property name="rapportService" ref="rapportService"/>
+	</bean>
     <bean id="ouvertureForsContribuablesMajeursJob" parent="schedulerJob"
           class="ch.vd.uniregctb.metier.OuvertureForsContribuablesMajeursJob">
         <constructor-arg value="500"/>
