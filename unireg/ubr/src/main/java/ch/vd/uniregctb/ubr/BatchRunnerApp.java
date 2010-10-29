@@ -279,13 +279,11 @@ public class BatchRunnerApp {
 		public final String name;
 		public final String type;
 		public final String enumValues;
-		public final String defaultValue;
 
-		public ParamLine(String name, String type, String enumValues, String defaultValue) {
+		public ParamLine(String name, String type, String enumValues) {
 			this.name = name;
 			this.type = type;
 			this.enumValues = enumValues;
-			this.defaultValue = defaultValue;
 		}
 
 		public ParamLine(Param p) {
@@ -294,13 +292,10 @@ public class BatchRunnerApp {
 
 			final List<String> v = p.getEnumValues();
 			this.enumValues = (v == null || v.isEmpty()) ? N_A : ArrayUtils.toString(v.toArray());
-
-			final String d = p.getDefaultValue();
-			this.defaultValue = d == null ? N_A : d;
 		}
 
 		public void println(String format) {
-			final String line = String.format(format, name, type, enumValues, defaultValue);
+			final String line = String.format(format, name, type, enumValues);
 			System.out.println(line);
 		}
 	}
@@ -312,13 +307,12 @@ public class BatchRunnerApp {
 		else {
 			System.out.println("");
 
-			List<ParamLine> lines = new ArrayList<ParamLine>(pl.size() + 1);
-			lines.add(new ParamLine("name", "type", "enum values", "default"));
+			final List<ParamLine> lines = new ArrayList<ParamLine>(pl.size() + 1);
+			lines.add(new ParamLine("name", "type", "enum values"));
 
-			int maxName = 0;
-			int maxType = 0;
-			int maxEnum = 0;
-			int maxDefault = 0;
+			int maxName = "name".length();
+			int maxType = "type".length();
+			int maxEnum = "enum values".length();
 
 			for (Param p : pl) {
 				final ParamLine line = new ParamLine(p);
@@ -327,16 +321,15 @@ public class BatchRunnerApp {
 				maxName = Math.max(maxName, line.name.length());
 				maxType = Math.max(maxType, line.type.length());
 				maxEnum = Math.max(maxEnum, line.enumValues.length());
-				maxDefault = Math.max(maxDefault, line.defaultValue.length());
 			}
 
-			final String format = "%#" + (maxName + 8) + "s | %#" + (maxType + 2) + "s | %#" + maxEnum + "s | %#" + (maxDefault + 2) + "s";
+			final String format = "%#" + (maxName + 8) + "s | %#" + (maxType + 2) + "s | %#" + maxEnum + "s";
 
 			for (int i = 0; i < lines.size(); ++i) {
 				final ParamLine line = lines.get(i);
 				line.println(format);
 				if (i == 0) {
-					System.out.println("      " + fillString('-', maxName + maxType + maxEnum + maxDefault + 19));
+					System.out.println("      " + fillString('-', maxName + maxType + maxEnum + 12));
 				}
 			}
 		}

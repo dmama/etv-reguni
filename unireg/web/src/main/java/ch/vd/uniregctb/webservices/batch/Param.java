@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "param", propOrder = {
-		"name", "type", "enumValues", "isMandatory", "defaultValue"
-
+		"name", "type", "enumValues", "isMandatory"
 })
 public class Param {
 	@XmlElement(required = false)
@@ -28,9 +27,6 @@ public class Param {
 
 	@XmlElement(required = false)
 	boolean isMandatory;
-
-	@XmlElement(required = false)
-	public String defaultValue;
 
 	public Param(ch.vd.uniregctb.scheduler.JobDefinition job, ch.vd.uniregctb.scheduler.JobParam param) {
 		name = param.getName();
@@ -50,15 +46,8 @@ public class Param {
 		else {
 			type = clazz.getSimpleName().toLowerCase();
 		}
-
-		final Object dv = (job.getDefaultParamWebValues() == null ? null : job.getDefaultParamWebValues().get(name));
-		if (dv != null) {
-			defaultValue = param.getType().valueToString(dv);
-		}
 	}
 
 	public Param() {
-
 	}
-
 }
