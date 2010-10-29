@@ -176,9 +176,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	        log += "Temps 'exec' threads indexation : " + indexerExecTime + " ms\n";
 	        log += "Temps 'cpu' threads indexation  : " + indexerCpuTime + " ms" + " (" + percentCpu + "%)\n";
 	        log += "Temps 'wait' threads indexation : " + timeWait + " ms" + " (" + percentWait + "%)\n";
-	        log += " - service infrastructure       : " + (timeWaitInfra == 0 ? "<indisponible>" : timeWaitInfra + " ms" + " (" + percentWaitInfra + "%)\n");
-	        log += " - service civil                : " + (timeWaitCivil == 0 ? "<indisponible>" : timeWaitCivil + " ms" + " (" + percentWaitCivil + "%)\n");
-	        log += " - indexer                      : " + (timeWaitIndex == 0 ? "<indisponible>" : timeWaitIndex + " ms" + " (" + percentWaitIndex + "%)\n");
+	        log += " - service infrastructure       : " + (timeWaitInfra == 0 ? "<indisponible>\n" : timeWaitInfra + " ms" + " (" + percentWaitInfra + "%)\n");
+	        log += " - service civil                : " + (timeWaitCivil == 0 ? "<indisponible>\n" : timeWaitCivil + " ms" + " (" + percentWaitCivil + "%)\n");
+	        log += " - indexer                      : " + (timeWaitIndex == 0 ? "<indisponible>\n" : timeWaitIndex + " ms" + " (" + percentWaitIndex + "%)\n");
 	        log += " - autre (scheduler, jdbc, ...) : " + timeWaitAutres + " ms" + " (" + percentWaitAutres + "%)";
 	        LOGGER.info(log);
         }
