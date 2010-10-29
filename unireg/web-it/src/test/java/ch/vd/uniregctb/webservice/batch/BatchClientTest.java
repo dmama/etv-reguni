@@ -138,7 +138,7 @@ public class BatchClientTest extends WebitTest {
 
 		final Map<String, Object> args = new HashMap<String, Object>(2);
 		args.put("dateDebut", "2008-03-20");
-		args.put("count", 12);
+		args.put("count", "12");
 		client.startBatch(BATCH_NAME, args);
 
 		// on attend maintenant la fin du job avant de continuer
@@ -150,7 +150,7 @@ public class BatchClientTest extends WebitTest {
 
 		// démarre le job avec le paramètre duration = 10 secondes, de telle manière qui'il dure assez longtemps pour qu'on puisse l'arrêter
 		Map<String, Object> args = new HashMap<String, Object>(1);
-		args.put("duration", 10);
+		args.put("duration", "10");
 		client.startBatch(BATCH_NAME, args);
 
 		// on attend maintenant la fin du job avant de continuer
