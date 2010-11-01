@@ -518,7 +518,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		int c = globalTiersSearcher.getExactDocCount();
 		assertEquals(8, c);
 		
-		Long numero = 63427L;
+		Long numero = 27769L;
 
 		// Par numero
 		{

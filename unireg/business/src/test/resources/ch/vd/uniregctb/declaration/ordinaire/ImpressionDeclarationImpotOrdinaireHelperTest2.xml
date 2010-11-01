@@ -7,7 +7,6 @@
     <column>DEBITEUR_INACTIF</column>
     <column>OID</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
     <column>CATEGORIE_IMPOT_SOURCE</column>
     <column>PERIODICITE_DECOMPTE</column>
     <column>MODE_COM</column>
@@ -64,7 +63,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
     </row>
     <row>
@@ -73,7 +71,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -111,7 +108,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>Dupont</value>
       <value>Alain</value>
       <null/>
@@ -140,7 +136,6 @@
       <value>1012</value>
       <value>CollectiviteAdministrative</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>

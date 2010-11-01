@@ -3209,7 +3209,6 @@
     <column>PERIODICITE_DECOMPTE</column>
     <column>SANS_LISTE_RECAP</column>
     <column>SANS_RAPPEL</column>
-    <column>NUMERO_PM</column>
     <column>NUMERO_ETABLISSEMENT</column>
     <column>ANCIEN_NUMERO_SOURCIER</column>
     <column>NH_CAT_ETRANGER</column>
@@ -3276,7 +3275,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -3299,7 +3297,6 @@
       <null/>
       <null/>
       <value>11</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3370,7 +3367,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <null/>
@@ -3403,7 +3399,6 @@
       <value>0244453720</value>
       <null/>
       <value>19</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3474,7 +3469,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <null/>
@@ -3501,7 +3495,6 @@
       <value><![CDATA[                                        ]]></value>
       <value>1</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>

@@ -342,7 +342,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		final Entreprise entreprise = new Entreprise();
 		entreprise.setNumero(MockPersonneMorale.BCV.getNumeroEntreprise());
-		entreprise.setNumeroEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
 		tiersDAO.addTiers(entreprise);
 
 		final DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();

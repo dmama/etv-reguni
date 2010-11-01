@@ -160,7 +160,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			assertTrue(ids.contains(Long.valueOf(7632)));
 			assertTrue(ids.contains(Long.valueOf(7823)));
 			assertTrue(ids.contains(Long.valueOf(8901)));
-			assertTrue(ids.contains(Long.valueOf(63427)));
+			assertTrue(ids.contains(Long.valueOf(27769)));
 			assertTrue(ids.contains(Long.valueOf(76327)));
 
 			int nb = globalTiersSearcher.getExactDocCount();

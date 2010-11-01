@@ -8,7 +8,6 @@
     <column>DEBITEUR_INACTIF</column>
     <column>OID</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
     <column>CATEGORIE_IMPOT_SOURCE</column>
     <column>PERIODICITE_DECOMPTE</column>
     <column>MODE_COM</column>
@@ -71,7 +70,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -80,7 +78,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -121,7 +118,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>Tardy</value>
       <value><![CDATA[Alain (HS)]]></value>
       <null/>
@@ -154,7 +150,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -216,7 +211,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
       <null/>
       <value>1</value>
@@ -229,7 +223,6 @@
       <value>0</value>
       <value>10</value>
       <value>325740</value>
-      <none/>
       <none/>
       <none/>
       <none/>
@@ -290,7 +283,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
       <null/>
       <value>1</value>
@@ -301,7 +293,6 @@
       <value>1678432</value>
       <value>DebiteurPrestationImposable</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <value>REGULIERS</value>
@@ -340,7 +331,6 @@
       <value>0</value>
       <null/>
       <null/>
-      <null/>
       <value>REGULIERS</value>
       <value>TRIMESTRIEL</value>
       <value>PAPIER</value>
@@ -376,7 +366,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -438,7 +427,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
       <null/>
       <value>1</value>
@@ -451,7 +439,6 @@
       <value>0</value>
       <value>10</value>
       <value>674417</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -512,7 +499,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
       <null/>
       <value>1</value>
@@ -525,7 +511,6 @@
       <value>0</value>
       <value>10</value>
       <value>333908</value>
-      <none/>
       <none/>
       <none/>
       <none/>
@@ -586,7 +571,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
       <null/>
       <value>1</value>
@@ -598,7 +582,6 @@
       <value>MenageCommun</value>
       <value>0</value>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -631,12 +614,11 @@
     <row>
       <value>2008-01-01</value>
       <value>2008-01-01</value>
-      <value>12700001</value>
+      <value>27769</value>
       <value>Entreprise</value>
       <value>0</value>
       <value>10</value>
       <null/>
-      <value>27769</value>
       <none/>
       <none/>
       <none/>
@@ -676,7 +658,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[The full i107]]></value>
       <value><![CDATA[De la mort]]></value>
       <value>7561234567897</value>
@@ -709,7 +690,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -757,7 +737,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[Communaute XYZ]]></value>
       <value>ASS</value>
       <null/>
@@ -782,7 +761,6 @@
       <value>32100001</value>
       <value>CollectiviteAdministrative</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -846,83 +824,80 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>10</value>
       <none/>
     </row>
     <row>
-		<value>2008-01-01</value>
-		<value>2008-01-01</value>
-		<value>32100003</value>
-		<value>CollectiviteAdministrative</value>
-		<value>0</value>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<value>7</value>
-		<none/>
+      <value>2008-01-01</value>
+      <value>2008-01-01</value>
+      <value>32100003</value>
+      <value>CollectiviteAdministrative</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>7</value>
+      <none/>
     </row>
-	<row>
-		  <value>2008-01-01</value>
-		  <value>2008-01-01</value>
-		  <value>32100004</value>
-		  <value>CollectiviteAdministrative</value>
-		  <value>0</value>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <null/>
-		  <value>1344</value>
-		  <none/>
+    <row>
+      <value>2008-01-01</value>
+      <value>2008-01-01</value>
+      <value>32100004</value>
+      <value>CollectiviteAdministrative</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1344</value>
+      <none/>
     </row>
   </table>
   <table name="IDENTIFICATION_PERSONNE">

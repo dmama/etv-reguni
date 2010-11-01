@@ -1136,7 +1136,6 @@ public class TestData {
 		e0.setDebiteurInactif(false);
 		e0.setLogCreationDate(new Timestamp(1199142000000L));
 		e0.setLogModifDate(new Timestamp(1199142000000L));
-		e0.setNumeroEntreprise(27769L);
 		e0.setOfficeImpotId(10);
 		e0.setAdressesTiers(new HashSet());
 		e0.setDeclarations(new HashSet());

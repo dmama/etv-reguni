@@ -3209,7 +3209,6 @@
     <column>PERIODICITE_DECOMPTE</column>
     <column>SANS_LISTE_RECAP</column>
     <column>SANS_RAPPEL</column>
-    <column>NUMERO_PM</column>
     <column>NUMERO_ETABLISSEMENT</column>
     <column>ANCIEN_NUMERO_SOURCIER</column>
     <column>NH_CAT_ETRANGER</column>
@@ -3252,7 +3251,6 @@
       <null/>
       <null/>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3328,7 +3326,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3356,7 +3353,6 @@
       <null/>
       <null/>
       <value>4</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3432,7 +3428,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3460,7 +3455,6 @@
       <null/>
       <null/>
       <value>6</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3536,7 +3530,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3564,7 +3557,6 @@
       <null/>
       <null/>
       <value>8</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3640,7 +3632,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3668,7 +3659,6 @@
       <null/>
       <null/>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3744,7 +3734,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3772,7 +3761,6 @@
       <null/>
       <null/>
       <value>12</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3848,7 +3836,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3876,7 +3863,6 @@
       <null/>
       <null/>
       <value>14</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3952,7 +3938,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3980,7 +3965,6 @@
       <null/>
       <null/>
       <value>16</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4056,7 +4040,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4084,7 +4067,6 @@
       <null/>
       <null/>
       <value>18</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4160,7 +4142,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4188,7 +4169,6 @@
       <null/>
       <null/>
       <value>22</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4264,7 +4244,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -4287,7 +4266,6 @@
       <null/>
       <null/>
       <value>7</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4358,7 +4336,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <null/>
@@ -4391,7 +4368,6 @@
       <null/>
       <null/>
       <value>18</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4718,7 +4694,7 @@
       <value>142</value>
       <null/>
       <null/>
-	  <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>

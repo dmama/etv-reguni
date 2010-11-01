@@ -6,7 +6,6 @@
     <column>TIERS_TYPE</column>
     <column>DEBITEUR_INACTIF</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
     <column>NH_NOM</column>
     <column>NH_PRENOM</column>
     <column>DATE_DECES</column>
@@ -20,7 +19,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
     </row>
     <row>
@@ -28,7 +26,6 @@
       <value>12600001</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <value>Pirez</value>
       <value>Isidor</value>
@@ -44,7 +41,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <value>1</value>
     </row>
     <row>
@@ -52,7 +48,6 @@
       <value>12900001</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <value>Lederet</value>
       <value>Michel</value>

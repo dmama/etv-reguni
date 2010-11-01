@@ -47,7 +47,7 @@ public class DbUnitFileEditor {
 		// supprime la colonne CTB_DPI_ID sur le table TIERS
 		//IDataSet outputDataSet = new DropColumnDataSet(inputDataSet, "CTB_DPI_ID");
 		//IDataSet outputDataSet = new ModifPPDataSet(inputDataSet);
-		IDataSet outputDataSet = new DropColumnDataSet(inputDataSet, "REMARQUE");
+		IDataSet outputDataSet = new DropColumnDataSet(inputDataSet, "NUMERO_PM");
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -62,23 +62,7 @@ public class DbUnitFileEditor {
 	
 	public static void main(String[] args) throws Exception {
 
-		traiteFichier("core/src/test/resources/ch/vd/uniregctb/declaration/DeclarationImpotOrdinaireDAOTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/jobs/DatabaseIndexerJobTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/async/MassTiersIndexerTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/tiers/GlobalTiersSearcherTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/depart/deparHC26012004.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/TestDetermineDIsAEmettreContribuableNonValideTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsJobTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/TestDetermineDetailsEnvoiProblemeIncoherenceDonnees.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/EnvoiDIsJobTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/acomptes/AcomptesProcessorTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/adresse/TiersAvecDeuxAdressesFiscalesAvecDatesFinNulles.xml");
-		traiteFichier("business-it/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsAEmettreTestAppSmall.xml");
-		traiteFichier("web/src/test/resources/ch/vd/uniregctb/tiers/TiersRapportControllerTest.xml");
-		traiteFichier("web/src/test/resources/ch/vd/uniregctb/tiers/TiersForControllerTest.xml");
-		traiteFichier("web/src/main/resources/DBUnit4Import/tiers-basic.xml");
+		traiteFichier("core/src/test/resources/ch/vd/uniregctb/common/HibernateEntityIteratorTest.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/couple/manager/UNIREG-1521.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebCEDITest.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebPoursuiteTest.xml");
@@ -87,7 +71,22 @@ public class DbUnitFileEditor {
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers/TiersServiceWebTest.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers/TiersServiceWebTAOISTest.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/pages/EachWebPageTest.xml");
-
+		traiteFichier("web/src/test/resources/ch/vd/uniregctb/tiers/TiersRapportControllerTest.xml");
+		traiteFichier("web/src/main/resources/DBUnit4Import/tiers-basic.xml");
+		traiteFichier("business-it/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsAEmettreTestAppSmall.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/jobs/DatabaseIndexerJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/tiers/GlobalTiersSearcherTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/depart/deparHC26012004.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/TestDetermineDIsAEmettreContribuableNonValideTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/TestDetermineDetailsEnvoiProblemeIncoherenceDonnees.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/EnvoiDIsJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/tiers/TiersServiceTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/acomptes/AcomptesProcessorTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/adresse/TiersAvecDeuxAdressesFiscalesAvecDatesFinNulles.xml");
+		
 //		String repBase = "C:/projets/registre/branches/UniregCTB/2.7/04-Implementation/unireg/";
 //		String endPath = "/src/test/resources/ch/vd/uniregctb/";
 //		String repbus = repBase + "business" + endPath;

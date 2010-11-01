@@ -741,8 +741,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				long noDebiteur = debiteur.getNumero();
 
 				Entreprise nestleSuisse = new Entreprise();
-				nestleSuisse.setNumero(270123L);
-				nestleSuisse.setNumeroEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				nestleSuisse.setNumero(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
 				nestleSuisse = (Entreprise) tiersDAO.save(nestleSuisse);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
@@ -829,8 +828,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				long noDebiteur = debiteur.getNumero();
 
 				Entreprise nestleSuisse = new Entreprise();
-				nestleSuisse.setNumero(270123L);
-				nestleSuisse.setNumeroEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				nestleSuisse.setNumero(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
 				nestleSuisse = (Entreprise) tiersDAO.save(nestleSuisse);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
@@ -1673,7 +1671,6 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final Entreprise jal = new Entreprise();
 		jal.setNumero(MockPersonneMorale.JalHolding.getNumeroEntreprise());
-		jal.setNumeroEntreprise(MockPersonneMorale.JalHolding.getNumeroEntreprise());
 
 		final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(jal, null, TypeAdresseFiscale.COURRIER, true);
 		assertNotNull(adresseCourrier);
@@ -1710,7 +1707,6 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final Entreprise evian = new Entreprise();
 		evian.setNumero(MockPersonneMorale.EvianRussie.getNumeroEntreprise());
-		evian.setNumeroEntreprise(MockPersonneMorale.EvianRussie.getNumeroEntreprise());
 
 		final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(evian, null, TypeAdresseFiscale.COURRIER, true);
 		assertNotNull(adresseCourrier);

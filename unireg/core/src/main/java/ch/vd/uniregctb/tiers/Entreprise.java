@@ -1,11 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Set;
-
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Set;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -30,17 +28,6 @@ public class Entreprise extends Contribuable {
 	public static final int PM_GEN_FIRST_ID = 2000000;
 
 	public static final int PM_GEN_LAST_ID = 2999999;
-
-	private Long numeroEntreprise;
-
-	@Column(name = "NUMERO_PM")
-	public Long getNumeroEntreprise() {
-		return numeroEntreprise;
-	}
-
-	public void setNumeroEntreprise(Long theNumeroEntreprise) {
-		this.numeroEntreprise = theNumeroEntreprise;
-	}
 
 	@Transient
 	@Override
@@ -80,19 +67,6 @@ public class Entreprise extends Contribuable {
 	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
-		if (this == obj)
-			return true;
-		if (!super.equalsTo(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Entreprise other = (Entreprise) obj;
-		if (numeroEntreprise == null) {
-			if (other.numeroEntreprise != null)
-				return false;
-		}
-		else if (!numeroEntreprise.equals(other.numeroEntreprise))
-			return false;
-		return true;
+		return this == obj || super.equalsTo(obj) && getClass() == obj.getClass();
 	}
 }

@@ -176,7 +176,7 @@ public class TiersManager implements MessageSourceAware {
 	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
 
 		EntrepriseView entrepriseView = null;
-		Long noEntreprise = entreprise.getNumeroEntreprise();
+		Long noEntreprise = entreprise.getNumero();
 		if (noEntreprise != null) {
 			entrepriseView = getHostPersonneMoraleService().get(noEntreprise);
 		}

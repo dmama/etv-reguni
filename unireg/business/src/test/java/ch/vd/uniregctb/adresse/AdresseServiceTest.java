@@ -3130,17 +3130,15 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long noCtbEntreprise = 12345;
 		{
 			// Crée une entreprise sans adresse fiscale surchargée
 			Entreprise entreprise = new Entreprise();
-			entreprise.setNumero(noCtbEntreprise);
-			entreprise.setNumeroEntreprise(noEntreprise);
+			entreprise.setNumero(noEntreprise);
 			tiersDAO.save(entreprise);
 		}
 
 		{
-			final Entreprise entreprise = (Entreprise) tiersDAO.get(noCtbEntreprise);
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
 			// Vérification des adresses
 			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(entreprise, false);

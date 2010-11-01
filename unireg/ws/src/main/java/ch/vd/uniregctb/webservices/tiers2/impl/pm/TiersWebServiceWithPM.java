@@ -296,7 +296,6 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			// [UNIREG-2040] on crée l'entreprise à la volée
 			Entreprise e = new Entreprise();
 			e.setNumero(params.tiersNumber);
-			e.setNumeroEntreprise(params.tiersNumber);
 			tiersDAO.save(e);
 		}
 

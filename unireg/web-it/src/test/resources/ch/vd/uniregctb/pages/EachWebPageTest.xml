@@ -6,7 +6,6 @@
     <column>TIERS_TYPE</column>
     <column>DEBITEUR_INACTIF</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
     <column>CATEGORIE_IMPOT_SOURCE</column>
     <column>PERIODICITE_DECOMPTE</column>
     <column>MODE_COM</column>
@@ -60,7 +59,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
     </row>
     <row>
@@ -68,7 +66,6 @@
       <value>12600003</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -100,7 +97,6 @@
       <value>12600001</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -156,7 +152,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <value>1</value>
     </row>
     <row>
@@ -164,7 +159,6 @@
       <value>1678432</value>
       <value>DebiteurPrestationImposable</value>
       <value>0</value>
-      <null/>
       <null/>
       <value>REGULIERS</value>
       <value>TRIMESTRIEL</value>
@@ -196,7 +190,6 @@
       <value>12900001</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -252,7 +245,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
     </row>
     <row>
@@ -261,7 +253,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>674417</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -316,7 +307,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
     </row>
     <row>
@@ -325,7 +315,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>333908</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -368,7 +357,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[MAURICE DUPONT]]></value>
       <value>0219663623</value>
       <value>0219663625</value>
@@ -389,7 +377,6 @@
       <value>Entreprise</value>
       <value>0</value>
       <null/>
-      <value>27769</value>
       <null/>
       <null/>
       <null/>
@@ -424,7 +411,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>Martinez</value>
       <value>Conchita</value>
       <value>7565789312435</value>
@@ -452,7 +438,6 @@
       <value>12800001</value>
       <value>AutreCommunaute</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>

@@ -5,7 +5,6 @@
     <column>NUMERO</column>
     <column>TIERS_TYPE</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
     <column>DEBITEUR_INACTIF</column>
     <column>NH_NOM</column>
     <column>NH_PRENOM</column>
@@ -17,7 +16,6 @@
       <value>2008-01-01</value>
       <value>8901</value>
       <value>MenageCommun</value>
-      <null/>
       <null/>
       <value>0</value>
       <null/>
@@ -32,7 +30,6 @@
       <value>7823</value>
       <value>PersonnePhysique</value>
       <null/>
-      <null/>
       <value>0</value>
       <value>Bolomido</value>
       <value>Marcel</value>
@@ -45,7 +42,6 @@
       <value>2008-01-01</value>
       <value>76327</value>
       <value>PersonnePhysique</value>
-      <null/>
       <null/>
       <value>0</value>
       <value>Parnen</value>
@@ -60,7 +56,6 @@
       <value>5434</value>
       <value>PersonnePhysique</value>
       <value>9876</value>
-      <null/>
       <value>0</value>
       <null/>
       <null/>
@@ -74,7 +69,6 @@
       <value>7632</value>
       <value>PersonnePhysique</value>
       <value>444</value>
-      <null/>
       <value>0</value>
       <null/>
       <null/>
@@ -88,7 +82,6 @@
       <value>7239</value>
       <value>PersonnePhysique</value>
       <value>9734</value>
-      <null/>
       <value>0</value>
       <null/>
       <null/>
@@ -102,7 +95,6 @@
       <value>1234</value>
       <value>DebiteurPrestationImposable</value>
       <null/>
-      <null/>
       <value>0</value>
       <null/>
       <null/>
@@ -113,10 +105,9 @@
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>63427</value>
+      <value>27769</value>
       <value>Entreprise</value>
       <null/>
-      <value>27769</value>
       <value>0</value>
       <null/>
       <null/>

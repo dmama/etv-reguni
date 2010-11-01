@@ -840,7 +840,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale de l'enteprise sur une seule ligne
 	 */
 	private String getRaisonSociale(Entreprise entreprise) {
-		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
+		final Long numeroEntreprise = entreprise.getNumero();
 		Assert.notNull(numeroEntreprise);
 		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
 		return pm.getRaisonSociale();
@@ -854,7 +854,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private List<String> getRaisonSocialeLongue(Entreprise entreprise) {
 
-		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
+		final Long numeroEntreprise = entreprise.getNumero();
 		Assert.notNull(numeroEntreprise);
 		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
 
@@ -1857,7 +1857,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	public AdressesPMHisto getAdressesPMHisto(Entreprise entreprise) {
-		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
+		final Long numeroEntreprise = entreprise.getNumero();
 		Assert.notNull(numeroEntreprise);
 		return servicePM.getAdressesHisto(numeroEntreprise);
 	}

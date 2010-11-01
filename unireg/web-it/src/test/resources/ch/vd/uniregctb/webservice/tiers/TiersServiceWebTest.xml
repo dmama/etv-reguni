@@ -6,7 +6,6 @@
     <column>TIERS_TYPE</column>
     <column>DEBITEUR_INACTIF</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
     <column>CATEGORIE_IMPOT_SOURCE</column>
     <column>PERIODICITE_DECOMPTE</column>
     <column>MODE_COM</column>
@@ -40,7 +39,6 @@
       <value>87654321</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -83,7 +81,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>Annule</value>
       <value>Jean</value>
       <null/>
@@ -113,7 +110,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>327706</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -176,7 +172,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
     </row>
     <row>
@@ -212,7 +207,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
     </row>
     <row>
@@ -221,7 +215,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>333908</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -285,14 +278,12 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>12500001</value>
       <value>DebiteurPrestationImposable</value>
       <value>0</value>
-      <null/>
       <null/>
       <value>ADMINISTRATEURS</value>
       <value>MENSUEL</value>
@@ -329,7 +320,6 @@
       <value>Entreprise</value>
       <value>0</value>
       <null/>
-      <value>27769</value>
       <null/>
       <null/>
       <null/>
@@ -364,7 +354,6 @@
       <value>12600101</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -413,7 +402,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[Communaute XYZ]]></value>
       <value>ASS</value>
       <null/>
@@ -436,7 +424,6 @@
       <value>10035633</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -473,7 +460,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>212620</value>
-      <null/>
       <null/>
       <null/>
       <null/>

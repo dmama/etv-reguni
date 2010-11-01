@@ -925,7 +925,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Entreprise addEntreprise(Long numeroEntreprise) {
 		Entreprise ent = new Entreprise();
 		ent.setNumero(numeroEntreprise);
-		ent.setNumeroEntreprise(numeroEntreprise);
 		ent = (Entreprise) hibernateTemplate.merge(ent);
 		return ent;
 	}

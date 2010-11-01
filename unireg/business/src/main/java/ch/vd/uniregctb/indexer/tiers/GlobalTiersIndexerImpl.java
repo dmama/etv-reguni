@@ -609,7 +609,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, cmc);
         } else if (tiers instanceof Entreprise) {
             final Entreprise entreprise = (Entreprise) tiers;
-	        final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumeroEntreprise(), PartPM.ADRESSES);
+	        final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumero(), PartPM.ADRESSES);
 	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise, pm);
         } else if (tiers instanceof AutreCommunaute) {
             final AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;

@@ -3611,7 +3611,7 @@ public class TiersServiceImpl implements TiersService {
 				raisonSociale = Arrays.asList(((AutreCommunaute) referent).getNom());
 			}
 			else if (referent instanceof Entreprise) {
-				final PersonneMorale pm = servicePM.getPersonneMorale(((Entreprise) referent).getNumeroEntreprise());
+				final PersonneMorale pm = servicePM.getPersonneMorale(referent.getNumero());
 				raisonSociale = new ArrayList<String>(3);
 				if (pm != null) {
 					final String ligne1 = pm.getRaisonSociale1();

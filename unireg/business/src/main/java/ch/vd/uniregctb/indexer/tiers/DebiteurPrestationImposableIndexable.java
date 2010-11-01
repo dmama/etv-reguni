@@ -54,7 +54,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			}
 			else if (ctb instanceof Entreprise) {
 				final Entreprise entreprise = (Entreprise) ctb;
-				final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumeroEntreprise(), PartPM.ADRESSES);
+				final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumero(), PartPM.ADRESSES);
 				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise, pm);
 			}
 			else if (ctb instanceof AutreCommunaute) {

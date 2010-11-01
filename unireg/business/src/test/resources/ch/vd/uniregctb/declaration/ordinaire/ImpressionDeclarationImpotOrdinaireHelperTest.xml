@@ -6,7 +6,6 @@
     <column>TIERS_TYPE</column>
     <column>DEBITEUR_INACTIF</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
     <column>CATEGORIE_IMPOT_SOURCE</column>
     <column>PERIODICITE_DECOMPTE</column>
     <column>MODE_COM</column>
@@ -37,7 +36,6 @@
       <value>2000010</value>
       <value>CollectiviteAdministrative</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -95,7 +93,6 @@
       <none/>
       <none/>
       <none/>
-      <none/>
       <null/>
     </row>
     <row>
@@ -103,7 +100,6 @@
       <value>12600003</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -136,7 +132,6 @@
       <value>12600009</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>

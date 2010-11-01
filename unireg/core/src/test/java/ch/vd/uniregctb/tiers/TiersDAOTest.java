@@ -1542,7 +1542,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				e0.setSituationsFamille(new HashSet());
 				e0.setDebiteurInactif(false);
 				e0.setLogModifDate(new Timestamp(1199142000000L));
-				e0.setNumeroEntreprise(27769L);
 				e0.setAdressesTiers(new HashSet());
 				e0.setDeclarations(new HashSet());
 				e0.setForsFiscaux(new HashSet());
