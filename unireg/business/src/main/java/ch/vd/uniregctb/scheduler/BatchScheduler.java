@@ -66,7 +66,7 @@ public class BatchScheduler {
 	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
 	 */
 	public void registerCron(JobDefinition job, String cronExpression) throws SchedulerException, ParseException {
-		registerCron(job, job.getDefaultParamWebValues(), cronExpression);
+		registerCron(job, null, cronExpression);
 	}
 
 	/**
@@ -88,23 +88,6 @@ public class BatchScheduler {
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
-	}
-
-	/**
-	 * Démarre l'exécution d'un job avec les paramètres par défaut.
-	 *
-	 * @param jobName le nom du job à démarrer
-	 * @return la définition du job
-	 * @throws SchedulerException         en cas d'erreur de scheduling Quartz
-	 * @throws JobAlreadyStartedException si le job est déjà démarré
-	 */
-	public JobDefinition startJobWithDefaultParams(String jobName) throws JobAlreadyStartedException, SchedulerException {
-
-		LOGGER.info("Lancement du job <" + jobName + ">");
-		JobDefinition job = jobs.get(jobName);
-		Assert.notNull(job);
-		Map<String, Object> params = job.getDefaultParamWebValues();
-		return startJob(jobName, params);
 	}
 
 	/**

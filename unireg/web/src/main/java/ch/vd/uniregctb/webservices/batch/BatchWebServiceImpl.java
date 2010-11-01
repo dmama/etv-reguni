@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.jws.WebMethod;
@@ -53,9 +54,10 @@ public class BatchWebServiceImpl implements BatchWebService {
 				throw new BatchWSException("Batch Name incorrect");
 			}
 
+			final Map<String, Object> h;
 			if (params.params != null && !params.params.isEmpty()) {
 
-				HashMap<String, Object> h = new HashMap<String, Object>();
+				h = new HashMap<String, Object>();
 				for (ParamMapEntry entry : params.params.entries) {
 
 					final String key = entry.key;
@@ -80,13 +82,11 @@ public class BatchWebServiceImpl implements BatchWebService {
 
 					h.put(key, value);
 				}
-
-				batchScheduler.startJob(params.name, h);
 			}
 			else {
-				batchScheduler.startJobWithDefaultParams(params.name);
+				h = null;
 			}
-
+			batchScheduler.startJob(params.name, h);
 		}
 		catch (JobAlreadyStartedException e) {
 			throw new BatchWSException("The job  is already started");

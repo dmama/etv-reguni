@@ -273,7 +273,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		return defaultParamWebValues;
 	}
 
-	public Object getDefaultValue(String key) {
+	public Object getDefaultWebValue(String key) {
 		if (getDefaultParamWebValues() != null) {
 			return getDefaultParamWebValues().get(key);
 		}

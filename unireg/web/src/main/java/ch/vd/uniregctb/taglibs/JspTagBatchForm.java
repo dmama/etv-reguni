@@ -152,7 +152,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	private static String renderTextParam(GestionJob job, JobParam param) {
 
-		final Object defaultBalue = job.getJobDefinition().getDefaultValue(param.getName());
+		final Object defaultBalue = job.getJobDefinition().getDefaultWebValue(param.getName());
 
 		final StringBuilder b = new StringBuilder();
 		b.append("<input name=\"").append(getBatchParamNameInForm(param)).append("\" type=\"text\" size=\"12\"");
@@ -165,7 +165,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	private static String renderBooleanParam(GestionJob job, JobParam param) {
 
-		final Boolean defaultValue = (Boolean) job.getJobDefinition().getDefaultValue(param.getName());
+		final Boolean defaultValue = (Boolean) job.getJobDefinition().getDefaultWebValue(param.getName());
 
 		final StringBuilder b = new StringBuilder();
 		b.append("<select name=\"").append(getBatchParamNameInForm(param)).append("\">\n");
@@ -185,7 +185,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	private static String renderEnumParam(GestionJob job, JobParam param) {
 
-		final Enum<?> defaultValue = (Enum<?>) job.getJobDefinition().getDefaultValue(param.getName());
+		final Enum<?> defaultValue = (Enum<?>) job.getJobDefinition().getDefaultWebValue(param.getName());
 
 		final StringBuilder b = new StringBuilder();
 		b.append("<select name=\"").append(getBatchParamNameInForm(param)).append("\">\n");
@@ -208,7 +208,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	private static String renderRegDateParam(GestionJob job, JobParam param) {
 
-		final RegDate defaultValue = (RegDate) job.getJobDefinition().getDefaultValue(param.getName());
+		final RegDate defaultValue = (RegDate) job.getJobDefinition().getDefaultWebValue(param.getName());
 
 		final StringBuilder b = new StringBuilder();
 		final String name = getBatchParamNameInForm(param);
@@ -232,7 +232,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	private static String renderFile(GestionJob job, JobParam param) {
 
-		final Object defaultBalue = job.getJobDefinition().getDefaultValue(param.getName());
+		final Object defaultBalue = job.getJobDefinition().getDefaultWebValue(param.getName());
 
 		final StringBuilder b = new StringBuilder();
 		b.append("<input name=\"").append(getBatchParamNameInForm(param)).append("\" type=\"file\" size=\"20\"");
@@ -246,7 +246,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 	private static String renderCommuneParam(GestionJob job, JobParam param) {
 
 		final String jobName = job.getName();
-		final Commune defaultCommune = (Commune) job.getJobDefinition().getDefaultValue(param.getName());
+		final Commune defaultCommune = (Commune) job.getJobDefinition().getDefaultWebValue(param.getName());
 		final String defaultNomCommune = (defaultCommune == null ? "" : defaultCommune.getNomMinuscule());
 		final String defaultNoOfsCommune = (defaultCommune == null ? "" : String.valueOf(defaultCommune.getNoOFSEtendu()));
 
@@ -290,7 +290,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	private static String renderOIDParam(GestionJob job, JobParam param) {
 		final String jobName = job.getName();
-		final OfficeImpot defaultOID = (OfficeImpot) job.getJobDefinition().getDefaultValue(param.getName());
+		final OfficeImpot defaultOID = (OfficeImpot) job.getJobDefinition().getDefaultWebValue(param.getName());
 		final String defaultNomOID = (defaultOID == null ? "" : defaultOID.getNomCourt());
 		final String defaultNoColAdm = (defaultOID == null ? "" : String.valueOf(defaultOID.getNoColAdm()));
 

@@ -28,7 +28,7 @@ public class InContainerTestingJobTest extends BusinessItTest {
 	@NotTransactional
 	public void testJob() throws Exception {
 
-		JobDefinition job = batchScheduler.startJobWithDefaultParams(InContainerTestingJob.NAME);
+		JobDefinition job = batchScheduler.startJob(InContainerTestingJob.NAME, null);
 
 		while (job.isRunning()) {
 			Thread.sleep(1000);

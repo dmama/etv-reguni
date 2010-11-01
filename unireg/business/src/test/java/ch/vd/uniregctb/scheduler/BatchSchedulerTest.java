@@ -183,7 +183,7 @@ public class BatchSchedulerTest extends BusinessTest {
 
 		// Job1: Exception
 		final Date startTime = new Date();
-		JobDefinition job1 = batchScheduler.startJobWithDefaultParams(ExceptionThrowingJob.NAME);
+		JobDefinition job1 = batchScheduler.startJob(ExceptionThrowingJob.NAME, null);
 
 		// Job2 : Logging
 		HashMap<String, Object> loggingParams = new HashMap<String, Object>();

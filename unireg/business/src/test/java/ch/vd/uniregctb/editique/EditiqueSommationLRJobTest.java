@@ -41,7 +41,7 @@ public class EditiqueSommationLRJobTest extends BusinessTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final Date statTime = DateHelper.getCurrentDate();
-		final JobDefinition job = batchScheduler.startJobWithDefaultParams(EditiqueSommationLRJob.NAME);
+		final JobDefinition job = batchScheduler.startJob(EditiqueSommationLRJob.NAME, null);
 		
 		// Attente du démarrage de l'exécution
 		waitUntilRunning(job, statTime);

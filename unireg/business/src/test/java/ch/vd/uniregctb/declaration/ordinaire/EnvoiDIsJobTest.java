@@ -1,15 +1,20 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.EnvoiDIsJob;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 public class EnvoiDIsJobTest extends BusinessTest {
 
@@ -33,7 +38,11 @@ public class EnvoiDIsJobTest extends BusinessTest {
 	@Test
 	public void testEnvoiDIsEnMasse() throws Exception {
 
-		JobDefinition job = batchScheduler.startJobWithDefaultParams(EnvoiDIsJob.NAME);
+		final Map<String, Object> params = new HashMap<String, Object>();
+		params.put(EnvoiDIsJob.PERIODE_FISCALE, RegDate.get().year() -1);
+		params.put(EnvoiDIsJob.CATEGORIE_CTB, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		params.put(EnvoiDIsJob.EXCLURE_DCD, Boolean.FALSE);
+		final JobDefinition job = batchScheduler.startJob(EnvoiDIsJob.NAME, params);
 
 		int count = 0;
 		while (job.isRunning()) {

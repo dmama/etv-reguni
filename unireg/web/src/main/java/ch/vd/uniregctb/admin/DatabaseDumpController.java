@@ -130,7 +130,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	 * Démarre un job qui va dumper la base de manière asynchrone
 	 */
 	private void dumpToFilesystem() throws Exception {
-		batchScheduler.startJobWithDefaultParams(DumpDatabaseJob.NAME);
+		batchScheduler.startJob(DumpDatabaseJob.NAME, null);
 	}
 
 	/**
