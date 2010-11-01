@@ -132,7 +132,7 @@
 					<display:table 	name="${status.value}" id="row" pagesize="10">
 						<display:column titleKey="label.type" >
 							<c:if test="${row.annule}"><strike></c:if>
-								${row.typePermis}
+								<fmt:message key="option.type.permis.${row.typePermis}"/>
 							<c:if test="${row.annule}"></strike></c:if>
 						</display:column>
 						<display:column titleKey="label.date.debut.validite.permis" >
