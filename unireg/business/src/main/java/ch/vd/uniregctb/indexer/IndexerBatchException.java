@@ -87,7 +87,13 @@ public class IndexerBatchException extends RuntimeException {
 				message.append("Impossible d'indexer un tiers inconnu: ");
 			}
 
-			message.append(e.getMessage());
+			final String m = e.getMessage();
+			if (m == null) {
+				message.append(e.getClass().getName());
+			}
+			else {
+				message.append(m);
+			}
 		}
 		else {
 			// Entête
@@ -106,7 +112,15 @@ public class IndexerBatchException extends RuntimeException {
 				else {
 					message.append("<unknown>");
 				}
-				message.append(": ").append(e.getMessage());
+				message.append(": ");
+
+				final String m = e.getMessage();
+				if (m == null) {
+					message.append(e.getClass().getName());
+				}
+				else {
+					message.append(m);
+				}
 			}
 		}
 
