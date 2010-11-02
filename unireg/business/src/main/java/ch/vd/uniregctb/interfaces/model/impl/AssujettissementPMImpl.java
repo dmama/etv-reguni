@@ -2,7 +2,9 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
 
 /**
@@ -29,6 +31,10 @@ public class AssujettissementPMImpl implements AssujettissementPM, Serializable 
 		this.dateFin = RegDate.get(target.getDateFin());
 		this.noSequence = target.getNoSequence();
 		this.type = Type.valueOf(target.getTypeAssujettissement().getName());
+	}
+
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public RegDate getDateDebut() {

@@ -10,8 +10,6 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -54,8 +52,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			}
 			else if (ctb instanceof Entreprise) {
 				final Entreprise entreprise = (Entreprise) ctb;
-				final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumero(), PartPM.ADRESSES);
-				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise, pm);
+				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, servicePM, entreprise);
 			}
 			else if (ctb instanceof AutreCommunaute) {
 				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, (AutreCommunaute) ctb);

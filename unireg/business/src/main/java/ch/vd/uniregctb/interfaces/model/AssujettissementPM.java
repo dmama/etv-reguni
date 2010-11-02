@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public interface AssujettissementPM {
+public interface AssujettissementPM extends DateRange {
 
 	public enum Type {
 		LIFD,

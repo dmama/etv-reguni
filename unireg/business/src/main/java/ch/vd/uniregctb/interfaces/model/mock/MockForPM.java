@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 
@@ -16,6 +18,10 @@ public class MockForPM implements ForPM {
 
 	public RegDate getDateDebut() {
 		return dateDebut;
+	}
+
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public void setDateDebut(RegDate dateDebut) {

@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 
@@ -26,6 +28,10 @@ public class ForPMImpl implements ForPM {
 		this.dateFin = RegDate.get(target.getDateFin());
 		this.noOfsAutoriteFiscale = target.getNoOfsAutoriteFiscale();
 		this.typeAutoriteFiscale = TypeNoOfs.valueOf(target.getTypeAutoriteFiscale().name());
+	}
+
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public RegDate getDateDebut() {

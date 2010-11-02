@@ -42,8 +42,6 @@ import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
 import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -609,8 +607,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, cmc);
         } else if (tiers instanceof Entreprise) {
             final Entreprise entreprise = (Entreprise) tiers;
-	        final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumero(), PartPM.ADRESSES);
-	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise, pm);
+	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, servicePM, entreprise);
         } else if (tiers instanceof AutreCommunaute) {
             final AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
             indexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, autreCommunaute);
