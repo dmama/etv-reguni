@@ -18,8 +18,40 @@ import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
+import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
+import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
+import ch.vd.uniregctb.document.DeterminationDIsRapport;
+import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
+import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
+import ch.vd.uniregctb.document.EchoirDIsRapport;
+import ch.vd.uniregctb.document.EnvoiDIsRapport;
+import ch.vd.uniregctb.document.EnvoiLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
+import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
+import ch.vd.uniregctb.document.ExtractionAfcRapport;
+import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.document.IdentifierContribuableRapport;
+import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
+import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeNoteRapport;
+import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
+import ch.vd.uniregctb.document.ListesNominativesRapport;
+import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
+import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
+import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolesCommunesRapport;
+import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
+import ch.vd.uniregctb.document.StatistiquesDIsRapport;
+import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
+import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
@@ -40,6 +72,7 @@ import ch.vd.uniregctb.tache.ListeTachesEnIsntanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
+import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -332,9 +365,17 @@ public interface RapportService {
 	/**
 	 * Génère le rapport suite à l'execution du job de production de la liste des contribuables avec note
 	 * @param results  resultat du batch
-	 * @param status  le status manager des jobs
+	 * @param statusManager  le status manager des jobs
 	 * @return   le rapport généré
 	 */
-
 	ListeNoteRapport generateRapport(ListeNoteResults results, StatusManager statusManager);
+
+	/**
+	 * [UNIREG-2612] Génère le rapport d'exécution de la migration des coquilles des personnes morales.
+	 *
+	 * @param results les résultats brutes de la migration
+	 * @param status  un status manager
+	 * @return le rapport généré
+	 */
+	MigrationCoquillesPMRapport generateRapport(MigrationCoquillesPM.MigrationResults results, StatusManager status);
 }

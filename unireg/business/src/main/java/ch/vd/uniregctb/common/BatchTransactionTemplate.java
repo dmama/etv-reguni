@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -73,7 +74,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 * @param statusManager      un status manager (peut être nul)
 	 * @param hibernateTemplate  le bean hibernateTemplate
 	 */
-	public BatchTransactionTemplate(List<E> list, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager,
+	public BatchTransactionTemplate(Collection<E> list, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager,
 	                                StatusManager statusManager, HibernateTemplate hibernateTemplate) {
 		this.iterator = new StandardBatchIterator<E>(list, batchSize);
 		this.behavior = behavior;

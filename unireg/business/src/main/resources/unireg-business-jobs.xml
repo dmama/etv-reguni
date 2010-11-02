@@ -351,6 +351,15 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
+	<bean id="migregCoquillesPMJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM">
+		<constructor-arg value="707" />
+		<constructor-arg value="Migrer les coquilles vides des PMs"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="rapportService" ref="rapportService"/>
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+	</bean>
+
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
         <constructor-arg value="801"/>
         <constructor-arg value="Réinitialiser les différents caches d'Unireg"/>

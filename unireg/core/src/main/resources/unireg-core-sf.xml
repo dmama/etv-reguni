@@ -121,6 +121,7 @@
 		<value>ch.vd.uniregctb.document.ResolutionAdresseRapport</value>
 		<value>ch.vd.uniregctb.document.ComparerSituationFamilleRapport</value>
 		<value>ch.vd.uniregctb.document.ListeNoteRapport</value>
+		<value>ch.vd.uniregctb.document.MigrationCoquillesPMRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 	</util:list>
 

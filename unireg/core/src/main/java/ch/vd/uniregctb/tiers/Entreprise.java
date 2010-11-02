@@ -29,6 +29,13 @@ public class Entreprise extends Contribuable {
 
 	public static final int PM_GEN_LAST_ID = 2999999;
 
+	public Entreprise() {
+	}
+
+	public Entreprise(long numero) {
+		super(numero);
+	}
+
 	@Transient
 	@Override
 	public String getRoleLigne1() {

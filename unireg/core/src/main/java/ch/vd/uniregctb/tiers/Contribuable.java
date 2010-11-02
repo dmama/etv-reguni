@@ -61,6 +61,13 @@ public abstract class Contribuable extends Tiers {
 
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
 
+	public Contribuable() {
+	}
+
+	public Contribuable(long numero) {
+		super(numero);
+	}
+
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *

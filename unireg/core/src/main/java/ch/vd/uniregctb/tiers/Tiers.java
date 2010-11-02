@@ -223,6 +223,13 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 */
 	private Set<ForFiscal> forsFiscaux;
 
+	public Tiers() {
+	}
+
+	public Tiers(long numero) {
+		this.numero = numero;
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {
