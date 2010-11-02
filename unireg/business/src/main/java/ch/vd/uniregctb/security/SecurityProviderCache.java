@@ -319,9 +319,12 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	}
 
 	public void onTiersChange(long id) {
-		synchronized (tiersExistenceDeltaCache) {
-			//nouveau tiers sauvé -> on met-à-jour le cache
-			tiersExistenceDeltaCache.put(id, Boolean.TRUE);
+		final Boolean exists = tiersExistenceCache.get(id);
+		if (exists == null) {
+			synchronized (tiersExistenceDeltaCache) {
+				//nouveau tiers sauvé -> on met-à-jour le cache
+				tiersExistenceDeltaCache.put(id, Boolean.TRUE);
+			}
 		}
 	}
 
