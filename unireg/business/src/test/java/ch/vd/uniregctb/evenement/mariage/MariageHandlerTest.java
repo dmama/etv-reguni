@@ -215,8 +215,8 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
 		Assert.assertEquals(2, eventSender.count);
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	/**
@@ -317,9 +317,9 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
 		Assert.assertEquals(3, eventSender.count);
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(momo).size());
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(bea).size());
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	/**
@@ -418,9 +418,9 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
 		Assert.assertEquals(3, eventSender.count);
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(david).size());
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(julien).size());
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(david).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(julien).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	private MockMariage createValidMariage(Individu individu, Individu conjoint, RegDate dateMariage) {

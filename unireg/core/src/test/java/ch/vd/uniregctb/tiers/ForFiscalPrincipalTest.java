@@ -36,6 +36,7 @@ public class ForFiscalPrincipalTest extends WithoutSpringTest {
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(5586);
 			forFiscal.setDateDebut(RegDate.get(2000, 1, 1));
 			forFiscal.setAnnule(true);
 			assertFalse(forFiscal.validate().hasErrors());
@@ -48,6 +49,7 @@ public class ForFiscalPrincipalTest extends WithoutSpringTest {
 		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 		forFiscal.setMotifRattachement(MotifRattachement.DIPLOMATE_SUISSE);
 		forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		forFiscal.setNumeroOfsAutoriteFiscale(5586);
 		forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 		forFiscal.setDateDebut(RegDate.get(2000, 1, 1));
 

@@ -154,8 +154,8 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le tiers
 		 */
 		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(habitantDivorce).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantDivorce).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 	
 	@Test
@@ -220,9 +220,9 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur chacun des conjoints
 		 */
 		assertEquals(3, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(habitantDivorce).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(conjointDivorce).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantDivorce).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(conjointDivorce).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	@Test
@@ -279,8 +279,8 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		 * Aucun événement doit être généré car les individus sont déja séparés au moment du divorce
 		 */
 		assertEquals(0, eventSender.count);
-		assertEquals(0, getEvenementFiscalService().getEvenementFiscals(habitantDivorce).size());
-		assertEquals(0, getEvenementFiscalService().getEvenementFiscals(conjointDivorce).size());
+		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(habitantDivorce).size());
+		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(conjointDivorce).size());
 	}
 	
 	private Divorce createValidDivorce(Individu individu, Individu conjoint) {

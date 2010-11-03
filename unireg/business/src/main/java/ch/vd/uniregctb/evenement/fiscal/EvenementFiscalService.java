@@ -30,7 +30,7 @@ public interface EvenementFiscalService {
 	 * @param tiers Tiers.
 	 * @return  Retourne la liste des événements fiscaux pour un tiers.
 	 */
-	Collection<EvenementFiscal> getEvenementFiscals( Tiers tiers) ;
+	Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers) ;
 
 	/**
 	 * Publie un événement fiscal

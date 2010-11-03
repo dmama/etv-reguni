@@ -62,6 +62,7 @@ public class TiersValidationTest extends WithoutSpringTest {
 		ff.setDateDebut(RegDate.get(2001, 5, 4));
 		ff.setDateFin(RegDate.get(2001, 5, 14));
 		ff.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ff.setNumeroOfsAutoriteFiscale(5586);
 		ff.setMotifOuverture(MotifFor.ARRIVEE_HS);
 		ff.setMotifFermeture(MotifFor.DEPART_HC);
 		ff.setModeImposition(ModeImposition.ORDINAIRE);

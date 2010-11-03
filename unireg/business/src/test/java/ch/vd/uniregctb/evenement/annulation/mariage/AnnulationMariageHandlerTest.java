@@ -128,7 +128,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - réouverture for fiscal principal de Pierre
 		 */
 		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
 	}
 	
 	@Test
@@ -187,8 +187,8 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - réouverture for fiscal principal de Béatrice
 		 */
 		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(momo).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(bea).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
 	}
 
 	private MockAnnulationMariage createAnnulationMariage(long noIndividu, RegDate date) {

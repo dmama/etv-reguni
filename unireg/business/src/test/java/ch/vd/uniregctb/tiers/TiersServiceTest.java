@@ -574,7 +574,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testOpenForFiscalPrincipal() {
+	public void testOpenForFiscalPrincipal() throws Exception {
 
 		final RegDate dateOuverture = RegDate.get(1990, 7, 1);
 
@@ -601,7 +601,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAnnuleForFiscalPrincipalUNIREG1370() {
+	public void testAnnuleForFiscalPrincipalUNIREG1370() throws Exception {
 		final RegDate dateOuverture = RegDate.get(1990, 7, 1);
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -3441,8 +3441,8 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 		// ouverture d'un for hors-canton
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
@@ -3468,8 +3468,8 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 		// ouverture d'un for hors-canton
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
@@ -3495,8 +3495,8 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 		// ouverture d'un for hors-canton
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
@@ -3755,8 +3755,8 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 		// fermeture du for vaudois pour déménagement vaudois (avec ré-ouverture d'un autre for vaudois) -> déblocage
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 
@@ -3859,5 +3859,29 @@ public class TiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testAddAndSaveForSurCommuneFaitiereFractions() throws Exception {
+		final PersonnePhysique pp = addNonHabitant("Emilie", "Jolie", date(1980, 10, 4), Sexe.FEMININ);
+
+		final ForFiscalPrincipal f = new ForFiscalPrincipal();
+		f.setDateDebut(date(1998, 10, 4));
+		f.setMotifOuverture(MotifFor.ARRIVEE_HS);
+		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		f.setNumeroOfsAutoriteFiscale(MockCommune.LeLieu.getNoOFSEtendu());
+		f.setMotifRattachement(MotifRattachement.DOMICILE);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
+
+		try {
+			tiersService.addAndSave(pp, f);
+			Assert.fail("L'appel aurait dû sauter car la commune est une commune faîtière de fractions de communes");
+		}
+		catch (ValidationException e) {
+			final String message = String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici OFS %d), une fraction est attendue dans ce cas\n",
+												f, MockCommune.LeLieu.getNoOFSEtendu());
+			Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(message));
+		}
 	}
 }

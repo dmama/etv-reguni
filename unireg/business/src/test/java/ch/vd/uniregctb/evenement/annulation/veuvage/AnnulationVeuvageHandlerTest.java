@@ -128,7 +128,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - réouverture for fiscal principal du ménage André
 		 */
 		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	@Test

@@ -288,7 +288,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				PersonnePhysique janine = addHabitant(noIndJanine);
 				ids.janine = janine.getNumero();
 				PersonnePhysique menage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(menage, date(1988,1,1), MotifFor.MAJORITE, MockCommune.LAbbaye);
+				addForPrincipal(menage, date(1988,1,1), MotifFor.MAJORITE, MockCommune.Fraction.LAbbaye);
 				ids.menage = menage.getNumero();
 				return null;
 			}

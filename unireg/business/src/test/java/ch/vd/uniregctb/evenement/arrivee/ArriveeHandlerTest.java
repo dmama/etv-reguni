@@ -204,7 +204,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		assertNotNull("Aucun for princpal trouvé", forFiscalPrincipal);
 
 		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(tiers).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tiers).size());
 	}
 
 	private MockArrivee createValidArrivee(Individu individu) {

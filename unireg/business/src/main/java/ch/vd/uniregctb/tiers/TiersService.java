@@ -974,10 +974,8 @@ public interface TiersService {
 	/**
 	 * Ajoute un nouveau for fiscal à un tiers.
 	 *
-	 * @param tiers
-	 *            le tiers sur lequel on veut ajouter un for fiscal
-	 * @param forFiscal
-	 *            le nouveau for fiscal
+	 * @param tiers le tiers sur lequel on veut ajouter un for fiscal
+	 * @param forFiscal le nouveau for fiscal
 	 * @return une nouvelle instance du for fiscal avec son id renseigné.
 	 */
 	<T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal);

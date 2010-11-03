@@ -1025,7 +1025,7 @@ public class TacheServiceTest extends BusinessTest {
 				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
 				final ForFiscalSecondaire forFiscalSecondaire =
-						addForSecondaire(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, date(2006, 6, 11), MotifFor.FIN_EXPLOITATION, MockCommune.LeLieu.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+						addForSecondaire(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, date(2006, 6, 11), MotifFor.FIN_EXPLOITATION, MockCommune.Fraction.LeLieu.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				tacheService.genereTacheDepuisFermetureForSecondaire(pp, forFiscalSecondaire);
 				return pp.getNumero();

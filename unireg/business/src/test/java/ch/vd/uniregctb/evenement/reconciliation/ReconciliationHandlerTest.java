@@ -120,8 +120,8 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le tiers
 		 */
 		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(habitantReconcilie).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menage).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantReconcilie).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menage).size());
 	}
 
 	@Test
@@ -180,9 +180,9 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture fors fiscaux sur les tiers
 		 */
 		assertEquals(3, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(habitantReconcilie).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(conjointReconcilie).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menage).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantReconcilie).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(conjointReconcilie).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menage).size());
 	}
 
 	@Test

@@ -127,8 +127,8 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le tiers
 		 */
 		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(habitantSepare).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantSepare).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 
 	}
 	
@@ -196,9 +196,9 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur chacun des conjoints
 		 */
 		assertEquals(3, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(habitantSepare).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(conjointSepare).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantSepare).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(conjointSepare).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 	
 	@Test

@@ -154,8 +154,8 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le veuf
 		 */
 		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	@Test
@@ -209,8 +209,8 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - ouverture for fiscal principal sur le veuf
 		 */
 		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 	
 	@Test

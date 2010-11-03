@@ -75,7 +75,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		 *  - réouverture for fiscal principal du ménage Pierre
 		 */
 		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menage).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menage).size());
 	}
 
 	@Test
@@ -115,7 +115,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		 *  - réouverture for fiscal principal du ménage Pierre
 		 */
 		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menage).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menage).size());
 	}
 
 	@Test

@@ -108,7 +108,7 @@
 			<value>19800301</value>
 			<value>19821203</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>SOURCE</value>
 			<value>ARRIVEE_HC</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
@@ -123,7 +123,7 @@
 			<value>20080102</value>
 			<null />
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>SOURCE</value>
 			<value>VEUVAGE_DECES</value>
 			<null />
@@ -138,7 +138,7 @@
 			<value>19821204</value>
 			<value>20080101</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>SOURCE</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
 			<value>VEUVAGE_DECES</value>

@@ -49,7 +49,7 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Collection<EvenementFiscal> getEvenementFiscals(Tiers tiers) {
+	public Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers) {
 		return evenementFiscalDAO.getEvenementFiscals(tiers);
 	}
 

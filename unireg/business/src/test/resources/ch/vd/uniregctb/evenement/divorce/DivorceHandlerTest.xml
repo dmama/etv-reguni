@@ -166,7 +166,7 @@
 			<value>19770104</value>
 			<null />
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>SOURCE</value>
 			<value>DEMENAGEMENT_VD</value>
 			<null />
@@ -181,7 +181,7 @@
 			<value>19770104</value>
 			<value>19860407</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>ORDINAIRE</value>
 			<value>DEMENAGEMENT_VD</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
@@ -196,7 +196,7 @@
 			<value>19700211</value>
 			<value>19860407</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>ORDINAIRE</value>
 			<value>MAJORITE</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
@@ -211,7 +211,7 @@
 			<value>19860408</value>
 			<null />
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>ORDINAIRE</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
 			<null />
@@ -226,7 +226,7 @@
 			<value>19770104</value>
 			<value>19860407</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>ORDINAIRE</value>
 			<value>DEMENAGEMENT_VD</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
@@ -241,7 +241,7 @@
 			<value>19700211</value>
 			<value>19860407</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>SOURCE</value>
 			<value>DEMENAGEMENT_VD</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
@@ -256,7 +256,7 @@
 			<value>19860408</value>
 			<null />
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>SOURCE</value>
 			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
 			<null />
@@ -271,7 +271,7 @@
 			<value>19860408</value>
 			<null />
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>5873</value>
+			<value>5586</value>
 			<value>ORDINAIRE</value>
 			<value>MAJORITE</value>
 			<null />

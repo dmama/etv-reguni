@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.naissance;
 import static junit.framework.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import ch.vd.uniregctb.evenement.EvenementFiscal;
@@ -69,7 +68,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		 * une événement doit être créé et un événement doit être publié
 		 */
 		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(tierss.get(0)).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tierss.get(0)).size());
 	}
 
 	@Test
@@ -99,10 +98,10 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		 * une événement doit être créé et un événement doit être publié
 		 */
 		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(tierss.get(0)).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tierss.get(0)).size());
 
 		// l'événement fiscal ne doit pas avoir eu sa date décalé à l'année suivante!
-		final EvenementFiscal evtFiscal = getEvenementFiscalService().getEvenementFiscals(tierss.get(0)).iterator().next();
+		final EvenementFiscal evtFiscal = getEvenementFiscalService().getEvenementsFiscaux(tierss.get(0)).iterator().next();
 		assertEquals(bebe.getDateNaissance(), evtFiscal.getDateEvenement());
 	}
 

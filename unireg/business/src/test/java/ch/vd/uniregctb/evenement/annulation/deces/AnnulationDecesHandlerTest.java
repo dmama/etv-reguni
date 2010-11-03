@@ -3,23 +3,26 @@ package ch.vd.uniregctb.evenement.annulation.deces;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
@@ -27,8 +30,6 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
-
-	private static final Log LOGGER = LogFactory.getLog(AnnulationDecesHandlerTest.class);
 
 	/**
 	 * Le numéro d'individu du marié seul.
@@ -53,200 +54,308 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 	 */
 	private static final RegDate DATE_DECES = RegDate.get(2008, 1, 1);
 
-	/**
-	 * Le fichier de données de test.
-	 */
-	private static final String DB_UNIT_DATA_FILE = "AnnulationDecesHandlerTest.xml";
+	@Test
+	@NotTransactional
+	public void testAnnulationDecesCelibataire() throws Exception {
 
-	@Override
-	public void onSetUp() throws Exception {
-
-		final RegDate dateMariageAndre = RegDate.get(1982, 12, 4);
-
-		super.onSetUp();
+		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
 			@Override
 			protected void init() {
-				super.init();
-
-				MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, RegDate.get(1956, 2, 25), "Girard", "André", true);
-				addDefaultAdressesTo(andre);
-				marieIndividu(andre, dateMariageAndre);
-				addOrigine(andre, MockPays.France, null, andre.getDateNaissance());
-				addNationalite(andre, MockPays.France, andre.getDateNaissance(), null, 0);
-				addPermis(andre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, 0, false);
+				final RegDate dateNaissance = date(1956, 2, 25);
+				final MockIndividu andre = addIndividu(NO_INDIVIDU_CELIBATAIRE, dateNaissance, "Girard", "André", true);
+				addNationalite(andre, MockPays.Suisse, dateNaissance, null, 1);
 			}
 		});
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		// mise en place fiscale
+		final Long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(NO_INDIVIDU_CELIBATAIRE);
+				addForPrincipal(pp, date(1995, 4, 19), MotifFor.ARRIVEE_HC, DATE_DECES, MotifFor.VEUVAGE_DECES, MockCommune.Fraction.LeLieu);
+				return pp.getNumero();
+			}
+		});
+
+		// envoi de l'événement civil
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
+				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
+
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+				evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
+
+				evenementCivilHandler.validate(annulation, erreurs, warnings);
+				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
+
+				evenementCivilHandler.handle(annulation, warnings);
+				return null;
+			}
+		});
+
+		// test du résultat
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
+				assertNotNull("Le tiers n'a pas été trouvé", pp);
+				assertEquals(ppId, pp.getNumero());
+
+				// Vérification des fors fiscaux
+				assertNotNull("André doit avoir un for principal actif après l'annulation de décès", pp.getForFiscalPrincipalAt(null));
+				for (ForFiscal forFiscal : pp.getForsFiscaux()) {
+					if (forFiscal.getDateFin() != null && DATE_DECES.equals(forFiscal.getDateFin())) {
+						assertEquals("Les fors fiscaux fermés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
+					}
+				}
+
+				/*
+				 * Evénements fiscaux devant être générés :
+				 *  - réouverture for fiscal principal sur l'ex-défunte
+				 */
+				assertEquals(1, eventSender.count);
+				assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pp).size());
+				return null;
+			}
+		});
 	}
 
 	@Test
-	public void testAnnulationDecesCelibataire() {
+	@NotTransactional
+	public void testAnnulationDecesMarieSeul() throws Exception {
 
-		LOGGER.debug("Test de traitement d'un événement d'annulation de décès d'une personne non mariée.");
-
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-		AnnulationDeces annulation = createValidAnnulationDeces(individu);
-
-		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
-
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
-
-		evenementCivilHandler.handle(annulation, warnings);
-
-		PersonnePhysique julie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
-		assertNotNull("Le tiers n'a pas été trouvé", julie);
-
-		// Vérification des fors fiscaux
-		assertNotNull("Julie doit avoir un for principal actif après l'annulation de décès", julie.getForFiscalPrincipalAt(null));
-		for (ForFiscal forFiscal : julie.getForsFiscaux()) {
-			if (forFiscal.getDateFin() != null && DATE_DECES.equals(forFiscal.getDateFin())) {
-				assertEquals("Les fors fiscaux fermés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, date(1956, 2, 25), "Girard", "André", true);
+				marieIndividu(andre, DATE_MARIAGE);
 			}
+		});
+
+		class Ids {
+			long ppId;
+			long mcId;
 		}
 
-		/*
-		 * Evénements fiscaux devant être générés :
-		 *  - réouverture for fiscal principal sur l'ex-défunte
-		 */
-		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(julie).size());
+		// mise en place fiscale
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(NO_INDIVIDU_MARIE_SEUL);
+				addForPrincipal(pp, date(1980, 3, 1), MotifFor.ARRIVEE_HC, DATE_MARIAGE.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, DATE_MARIAGE, DATE_DECES);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, DATE_MARIAGE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, DATE_DECES, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.mcId = mc.getNumero();
+				return ids;
+			}
+		});
+
+		// envoi de l'événement civil
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
+				final AnnulationDeces annulation = createValidAnnulationDeces(individu);
+
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+				evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
+
+				evenementCivilHandler.validate(annulation, erreurs, warnings);
+				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
+
+				evenementCivilHandler.handle(annulation, warnings);
+				return null;
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique andre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
+				assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", andre);
+				assertEquals(ids.ppId, (long) andre.getNumero());
+
+				// Vérification des fors fiscaux
+				assertNull("André ne doit pas avoir de for principal actif après l'annulation de décès", andre.getForFiscalPrincipalAt(null));
+				for (ForFiscal forFiscal : andre.getForsFiscaux()) {
+					if (forFiscal.getDateFin() == null && DATE_DECES.getOneDayAfter().equals(forFiscal.getDateDebut())) {
+						assertEquals("Les fors fiscaux créés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
+					}
+				}
+
+				// Vérification de la présence d'un tiers MenageCommun
+				MenageCommun menageCommun = null;
+				int nbMenagesCommuns = 0;
+				for (RapportEntreTiers rapport : andre.getRapportsSujet()) {
+					if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+						++ nbMenagesCommuns;
+						menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+						assertEquals(ids.mcId, (long) menageCommun.getNumero());
+					}
+				}
+				assertEquals("Il aurait dû y avoir 2 rapports entre tiers: 1 annulé et 1 rouvert", 2, nbMenagesCommuns);
+				assertNotNull(menageCommun);
+
+				// Vérification du for principal du tiers MenageCommun
+				final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+				assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+				assertNull("Le for fiscal principal précédent devrait être rouvert (date null)", forCommun.getDateFin());
+				assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)", forCommun.getMotifFermeture());
+
+				/*
+				 * Evénements fiscaux devant être générés :
+				 *  - réouverture for fiscal principal sur le ménage de l'ex-défunt
+				 */
+				assertEquals(1, eventSender.count);
+				assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
+				return null;
+			}
+		});
 	}
 
 	@Test
-	public void testAnnulationDecesMarieSeul() {
+	@NotTransactional
+	public void testAnnulationDecesMarie() throws Exception {
 
-		LOGGER.debug("Test de traitement d'un événement d'annulation de décès d'un marié seul.");
-
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
-		AnnulationDeces annulation = createValidAnnulationDeces(individu);
-
-		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
-
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
-
-		evenementCivilHandler.handle(annulation, warnings);
-
-		PersonnePhysique andre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
-		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", andre);
-
-		// Vérification des fors fiscaux
-		assertNull("André ne doit pas avoir de for principal actif après l'annulation de décès", andre.getForFiscalPrincipalAt(null));
-		for (ForFiscal forFiscal : andre.getForsFiscaux()) {
-			if (forFiscal.getDateFin() == null && DATE_DECES.getOneDayAfter().equals(forFiscal.getDateDebut())) {
-				assertEquals("Les fors fiscaux créés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ppal = addIndividu(NO_INDIVIDU_MARIE, date(1950, 3, 12), "Tartempion", "Momo", true);
+				final MockIndividu conjoint = addIndividu(NO_INDIVIDU_MARIE_CONJOINT, date(1952, 7, 14), "Tartempion", "Béa", false);
+				marieIndividus(ppal, conjoint, DATE_MARIAGE);
 			}
+		});
+
+		class Ids {
+			long idM;
+			long idMme;
+			long idMc;
 		}
 
-		// Vérification de la présence d'un tiers MenageCommun
-		MenageCommun menageCommun = null;
-		int nbMenagesCommuns = 0;
-		for (RapportEntreTiers rapport : andre.getRapportsSujet()) {
-			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
-				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+		// mise en place fiscale
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addHabitant(NO_INDIVIDU_MARIE);
+				final PersonnePhysique mme = addHabitant(NO_INDIVIDU_MARIE_CONJOINT);
+
+				addForPrincipal(m, date(1980, 6, 30), MotifFor.ARRIVEE_HC, DATE_MARIAGE.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				addForPrincipal(mme, date(1984, 1, 1), MotifFor.ARRIVEE_HC, DATE_MARIAGE.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, DATE_MARIAGE, DATE_DECES);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, DATE_MARIAGE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, DATE_DECES, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+
+				addForPrincipal(mme, DATE_DECES.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+
+				final Ids ids = new Ids();
+				ids.idM = m.getNumero();
+				ids.idMme = mme.getNumero();
+				ids.idMc = mc.getNumero();
+				return ids;
 			}
-		}
-		assertEquals("Il aurait dû y avoir 2 rapports entre tiers: 1 annulé et 1 rouvert", 2, nbMenagesCommuns);
+		});
 
-		// Vérification du for principal du tiers MenageCommun
-		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
-		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)", forCommun.getDateFin());
-		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)", forCommun.getMotifFermeture());
+		// envoi de l'événement civil
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		/*
-		 * Evénements fiscaux devant être générés :
-		 *  - réouverture for fiscal principal sur le ménage de l'ex-défunt
-		 */
-		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
+				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, 2008);
+				final AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
+
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+				evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
+
+				evenementCivilHandler.validate(annulation, erreurs, warnings);
+				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
+
+				evenementCivilHandler.handle(annulation, warnings);
+				return null;
+			}
+		});
+
+		// test des résultats
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				/*
+				 * Test de récupération du tiers defunt
+				 */
+				final PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE);
+				assertNotNull("Le tiers n'a pas été trouvé", momo);
+				assertEquals(ids.idM, (long) momo.getNumero());
+
+				// Vérification des fors fiscaux
+				assertNull("Maurice ne doit pas avoir de for principal actif après l'annulation de décès", momo.getForFiscalPrincipalAt(null));
+				for (ForFiscal forFiscal : momo.getForsFiscaux()) {
+					if (forFiscal.getDateFin() == null && DATE_DECES.getOneDayAfter().equals(forFiscal.getDateDebut())) {
+						assertEquals("Les fors fiscaux créés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
+					}
+				}
+
+				final PersonnePhysique bea = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_CONJOINT);
+				assertNotNull("Le tiers n'a pas été trouvé", bea);
+				assertEquals(ids.idMme, (long) bea.getNumero());
+
+				// Vérification des fors fiscaux
+				assertNull("Béatrice ne doit pas avoir de for principal actif après l'annulation de décès", bea.getForFiscalPrincipalAt(null));
+				for (ForFiscal forFiscal : bea.getForsFiscaux()) {
+					if (forFiscal.getDateFin() == null && DATE_DECES.getOneDayAfter().equals(forFiscal.getDateDebut())) {
+						assertEquals("Les fors fiscaux créés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
+					}
+				}
+
+				// Vérification de la présence d'un tiers MenageCommun
+				MenageCommun menageCommun = null;
+				int nbMenagesCommuns = 0;
+				for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
+					if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+						nbMenagesCommuns++;
+						menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+						assertEquals(ids.idMc, (long) menageCommun.getNumero());
+					}
+				}
+				assertEquals("Il aurait dû y avoir 2 rapports entre tiers: 1 annulé et 1 rouvert", 2, nbMenagesCommuns);
+				assertNotNull(menageCommun);
+
+				// Vérification du for principal du tiers MenageCommun
+				ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+				assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+				assertEquals("Le for fiscal principal du ménage n'a pas la bonne date de début", DATE_MARIAGE, forCommun.getDateDebut());
+				assertNull("Le for fiscal principal précédent devrait être rouvert (date null)", forCommun.getDateFin());
+				assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)", forCommun.getMotifFermeture());
+
+				/*
+				 * Evénements fiscaux devant être générés :
+				 *  - réouverture for fiscal principal sur le ménage de l'ex-défunt
+				 */
+				assertEquals(1, eventSender.count);
+				assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
+				return null;
+			}
+		});
 	}
 
-	@Test
-	public void testAnnulationDecesMarieAvecSuisseOuPermisC() throws Exception {
-
-		LOGGER.debug("Test de traitement d'un événement d'annulation de décès d'une personne mariée avec un suisse ou étranger avec permis C.");
-
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
-		Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, 2008);
-		AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
-
-		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
-
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
-
-		evenementCivilHandler.handle(annulation, warnings);
-
-		/*
-		 * Test de récupération du tiers defunt
-		 */
-		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE);
-		assertNotNull("Le tiers n'a pas été trouvé", momo);
-
-		// Vérification des fors fiscaux
-		assertNull("Maurice ne doit pas avoir de for principal actif après l'annulation de décès", momo.getForFiscalPrincipalAt(null));
-		for (ForFiscal forFiscal : momo.getForsFiscaux()) {
-			if (forFiscal.getDateFin() == null && DATE_DECES.getOneDayAfter().equals(forFiscal.getDateDebut())) {
-				assertEquals("Les fors fiscaux créés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
-			}
-		}
-
-		PersonnePhysique bea = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_CONJOINT);
-		assertNotNull("Le tiers n'a pas été trouvé", bea);
-
-		// Vérification des fors fiscaux
-		assertNull("Béatrice ne doit pas avoir de for principal actif après l'annulation de décès", bea.getForFiscalPrincipalAt(null));
-		for (ForFiscal forFiscal : bea.getForsFiscaux()) {
-			if (forFiscal.getDateFin() == null && DATE_DECES.getOneDayAfter().equals(forFiscal.getDateDebut())) {
-				assertEquals("Les fors fiscaux créés lors du décès doivent êtres annulés", true, forFiscal.isAnnule());
-			}
-		}
-
-		// Vérification de la présence d'un tiers MenageCommun
-		MenageCommun menageCommun = null;
-		int nbMenagesCommuns = 0;
-		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
-			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
-				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-			}
-		}
-		assertEquals("Il aurait dû y avoir 2 rapports entre tiers: 1 annulé et 1 rouvert", 2, nbMenagesCommuns);
-
-		// Vérification du for principal du tiers MenageCommun
-		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
-		assertEquals("Le for fiscal principal du ménage n'a pas la bonne date de début", DATE_MARIAGE, forCommun.getDateDebut());
-		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)", forCommun.getDateFin());
-		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)", forCommun.getMotifFermeture());
-
-		/*
-		 * Evénements fiscaux devant être générés :
-		 *  - réouverture for fiscal principal sur le ménage de l'ex-défunt
-		 */
-		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
-	}
-
-	private AnnulationDeces createValidAnnulationDeces(Individu individu) {
-		MockAnnulationDeces annulation = new MockAnnulationDeces();
+	private MockAnnulationDeces createValidAnnulationDeces(Individu individu) {
+		final MockAnnulationDeces annulation = new MockAnnulationDeces();
 		annulation.setIndividu(individu);
 		annulation.setNumeroOfsCommuneAnnonce(5652);
 		annulation.setDate(DATE_DECES);
@@ -254,8 +363,8 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 		return annulation;
 	}
 
-	private AnnulationDeces createValidAnnulationDeces(Individu individu, Individu conjoint) {
-		MockAnnulationDeces annulation = (MockAnnulationDeces) createValidAnnulationDeces(individu);
+	private MockAnnulationDeces createValidAnnulationDeces(Individu individu, Individu conjoint) {
+		final MockAnnulationDeces annulation = createValidAnnulationDeces(individu);
 		annulation.setConjointSurvivant(conjoint);
 		return annulation;
 	}

@@ -556,7 +556,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis mi-2007
 				Contribuable bruno = addNonHabitant("Bruno", "Plisenski", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.brunoId = bruno.getNumero();
-				addForPrincipal(bruno, date(1968, 11, 3), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.LeChenit);
+				addForPrincipal(bruno, date(1968, 11, 3), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Fraction.LeBrassus);
 				addForPrincipal(bruno, date(2007, 7, 1), null, MockPays.France);
 				addForSecondaire(bruno, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addAdresseEtrangere(bruno, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
@@ -1209,13 +1209,13 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				TiersService tiersService = getBean(TiersService.class, "tiersService");
 				EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
-				Collection<EvenementFiscal> lesEvenementsdeJean = evenementFiscalService.getEvenementFiscals(tiersService
+				Collection<EvenementFiscal> lesEvenementsdeJean = evenementFiscalService.getEvenementsFiscaux(tiersService
 						.getTiers(ids.jeanId));
 				assertFalse(lesEvenementsdeJean.isEmpty());
-				Collection<EvenementFiscal> lesEvenementsdeJacques = evenementFiscalService.getEvenementFiscals(tiersService
+				Collection<EvenementFiscal> lesEvenementsdeJacques = evenementFiscalService.getEvenementsFiscaux(tiersService
 						.getTiers(ids.jacquesId));
 				assertEmpty("Evénements fiscaux engendrés", lesEvenementsdeJacques);
-				Collection<EvenementFiscal> lesEvenementsdePierre = evenementFiscalService.getEvenementFiscals(tiersService
+				Collection<EvenementFiscal> lesEvenementsdePierre = evenementFiscalService.getEvenementsFiscaux(tiersService
 						.getTiers(ids.pierreId));
 				assertFalse(lesEvenementsdePierre.isEmpty());
 				return null;

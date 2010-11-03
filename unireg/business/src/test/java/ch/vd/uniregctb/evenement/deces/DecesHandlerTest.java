@@ -128,7 +128,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 			 *  - fermeture for fiscal principal sur le défunt
 			 */
 			assertEquals(1, eventSender.count);
-			assertEquals(1, getEvenementFiscalService().getEvenementFiscals(defunt).size());
+			assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(defunt).size());
 		}
 
 	}
@@ -223,9 +223,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - création d'une nouvelle situation de famille sur le veuf
 		 */
 		assertEquals(3, eventSender.count);
-		assertEquals(2, getEvenementFiscalService().getEvenementFiscals(veuf).size());
-		assertEquals(0, getEvenementFiscalService().getEvenementFiscals(defunt).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(veuf).size());
+		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(defunt).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	@Test
@@ -314,9 +314,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - création d'une nouvelle situation de famille sur le veuf
 		 */
 		assertEquals(3, eventSender.count);
-		assertEquals(2, getEvenementFiscalService().getEvenementFiscals(veuf).size());
-		assertEquals(0, getEvenementFiscalService().getEvenementFiscals(defunt).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(veuf).size());
+		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(defunt).size());
+		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	private Deces createValidDeces(Individu ppal, Individu conjoint) {
