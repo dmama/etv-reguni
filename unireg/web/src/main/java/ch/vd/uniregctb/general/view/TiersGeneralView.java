@@ -1,10 +1,6 @@
 package ch.vd.uniregctb.general.view;
 
-import java.util.Date;
-import java.util.Set;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -19,29 +15,6 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
  */
 public class TiersGeneralView {
 
-	public enum TypeTiers {
-		HOMME,
-		FEMME,
-		SEXE_INCONNU,
-		/** Ménage commun mixte */
-		MC_MIXTE,
-		/** Ménage commun avec homme seul (marié seul ou sexe conjoint inconnu) */
-		MC_HOMME_SEUL,
-		/** Ménage commun avec femme seule (mariée seule ou sexe conjoint inconnu) */
-		MC_FEMME_SEULE,
-		/** Ménage commun avec deux hommes (pacs) */
-		MC_HOMME_HOMME,
-		/** Ménage commun avec deux femmes (pacs) */
-		MC_FEMME_FEMME,
-		/** Ménage commun sans information de sexe */
-		MC_SEXE_INCONNU,
-		ENTREPRISE,
-		ETABLISSEMENT,
-		AUTRE_COMM,
-		COLLECT_ADMIN,
-		DEBITEUR
-	}
-
 	public TiersGeneralView() {
 	}
 
@@ -52,8 +25,6 @@ public class TiersGeneralView {
 	private RoleView role;
 
 	private Long numero;
-
-	private TypeTiers type;
 
 	private AdresseEnvoiDetaillee adresseEnvoi;
 
@@ -83,14 +54,6 @@ public class TiersGeneralView {
 
 	private boolean annule;
 
-	private Set<Long> nosIndividusAvecEvenenementCivilNonTraite;
-
-	private boolean desactive;
-
-	private RegDate dateDesactivation;
-
-	private ValidationResults validationResults;
-
 	public RoleView getRole() {
 		return role;
 	}
@@ -105,14 +68,6 @@ public class TiersGeneralView {
 
 	public void setNumero(Long numero) {
 		this.numero = numero;
-	}
-
-	public TypeTiers getType() {
-		return type;
-	}
-
-	public void setType(TypeTiers type) {
-		this.type = type;
 	}
 
 	public AdresseEnvoiDetaillee getAdresseEnvoi() {
@@ -211,14 +166,6 @@ public class TiersGeneralView {
 		this.annule = annule;
 	}
 
-	public Set<Long> getNosIndividusAvecEvenenementCivilNonTraite() {
-		return nosIndividusAvecEvenenementCivilNonTraite;
-	}
-
-	public void setNosIndividusAvecEvenenementCivilNonTraite(Set<Long> nosIndividusAvecEvenenementCivilNonTraite) {
-		this.nosIndividusAvecEvenenementCivilNonTraite = nosIndividusAvecEvenenementCivilNonTraite;
-	}
-
 	public Exception getAdresseEnvoiException() {
 		return adresseEnvoiException;
 	}
@@ -227,44 +174,11 @@ public class TiersGeneralView {
 		this.adresseEnvoiException = adresseEnvoiException;
 	}
 
-	public ValidationResults getValidationResults() {
-		return validationResults;
-	}
-
-	public void setValidationResults(ValidationResults validationResults) {
-		this.validationResults = validationResults;
-	}
-
 	public String getNomCommuneGestion() {
 		return nomCommuneGestion;
 	}
 
 	public void setNomCommuneGestion(String nomCommuneGestion) {
 		this.nomCommuneGestion = nomCommuneGestion;
-	}
-
-	/**
-	 * Méthode nécessaire pour éviter l'utilisation de séparateurs des miliers lors
-	 * d'un "bind" spring (voir vers.jsp)
-	 * @return la représentation en base 10 du numéro de contribuable, sans aucun séparateur
-	 */
-	public String getNumeroAsString() {
-		return numero == null ? null : numero.toString();
-	}
-
-	public boolean isDesactive() {
-		return desactive;
-	}
-
-	public void setDesactive(boolean desactive) {
-		this.desactive = desactive;
-	}
-
-	public RegDate getDateDesactivation() {
-		return dateDesactivation;
-	}
-
-	public void setDateDesactivation(RegDate dateDesactivation) {
-		this.dateDesactivation = dateDesactivation;
 	}
 }

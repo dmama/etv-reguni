@@ -102,7 +102,7 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		this.id = id;
 	}
 
-	private String buildHtml() {
+	public String buildHtml() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("<a href=\"");
 		builder.append(getHRef());

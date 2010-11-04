@@ -729,4 +729,48 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>bandeauTiers</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagBandeauTiers</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche le bandeau d'un contribuable</description>
+		<attribute>
+			<name>numero</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le numéro de contribuable</description>
+		</attribute>
+		<attribute>
+			<name>titre</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le titre affiché dans le bandeau (optionnel)</description>
+		</attribute>
+		<attribute>
+			<name>showValidation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>affiche ou non les erreurs de validation (optionnel)</description>
+		</attribute>
+		<attribute>
+			<name>showEvenementsCivils</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>affiche ou non les événements civils en erreur associé au contribuable (optionnel)</description>
+		</attribute>
+		<attribute>
+			<name>showLinks</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>affiche ou non les liens vers des pages externes (optionnel)</description>
+		</attribute>
+		<attribute>
+			<name>urlRetour</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>l'url de retour à l'application appelante (optionnel)</description>
+		</attribute>
+	</tag>
+
+
 </taglib>
