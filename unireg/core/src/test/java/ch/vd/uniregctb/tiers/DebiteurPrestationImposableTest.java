@@ -274,12 +274,12 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 		dpi.addForFiscal(f1);
 		assertNull(dpi.getDateDesactivation());
 
-		// for fermé -> désactivé
+		// for fermé -> toujours pas désactivé
 		final RegDate dateFin1 = date(2002, 8, 15);
 		f1.setDateFin(dateFin1);
-		assertEquals(dateFin1, dpi.getDateDesactivation());
+		assertNull(dpi.getDateDesactivation());
 
-		// nouvelle ouverture de for -> ré-activé
+		// nouvelle ouverture de for -> pas de changement
 		final ForDebiteurPrestationImposable f2 = new ForDebiteurPrestationImposable();
 		f2.setDateDebut(date(2003, 4, 12));
 		f2.setNumeroOfsAutoriteFiscale(1234);
@@ -287,14 +287,14 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 		dpi.addForFiscal(f2);
 		assertNull(dpi.getDateDesactivation());
 
-		// for fermé -> désactivé
+		// for fermé -> toujours pas désactivé
 		final RegDate dateFin2 = date(2004, 12, 1);
 		f2.setDateFin(dateFin2);
-		assertEquals(dateFin2, dpi.getDateDesactivation());
+		assertNull(dpi.getDateDesactivation());
 
-		// annulation du dernier for -> désactivation re-devient sur la fin du premier
+		// annulation du dernier for -> rien ne change
 		f2.setAnnule(true);
-		assertEquals(dateFin1, dpi.getDateDesactivation());
+		assertNull(dpi.getDateDesactivation());
 	}
 
 	@Test

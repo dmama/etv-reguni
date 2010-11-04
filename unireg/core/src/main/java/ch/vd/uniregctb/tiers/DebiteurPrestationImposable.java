@@ -481,24 +481,4 @@ public class DebiteurPrestationImposable extends Tiers {
 			return false;
 		return true;
 	}
-
-	@Override
-	@Transient
-	protected boolean isDesactiveSelonFors(RegDate date) {
-
-		// la désactivation d'un débiteur se fait par simple fermeture du for
-		// -> s'il y a des fors mais qu'il n'y en a pas d'actif à la date demandée, on dira qu'il est désactivé
-
-		final List<ForFiscal> fors = getForsFiscauxNonAnnules(false);
-		return fors != null && fors.size() > 0 && getForDebiteurPrestationImposableAt(date) == null;
-	}
-
-	@Override
-	@Transient
-	public RegDate getDateDesactivation() {
-		// c'est la date de fermeture du dernier for fiscal
-		final List<ForFiscal> fors = getForsFiscauxNonAnnules(true);
-		final ForFiscal dernierFor = fors != null && fors.size() > 0 ? fors.get(fors.size() - 1) : null;
-		return dernierFor != null ? dernierFor.getDateFin() : null;
-	}
 }

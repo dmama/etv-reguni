@@ -1606,8 +1606,9 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 
 	/**
 	 * Un tiers "annulé" (au sens technique de la date d'annulation) est dit "désactivé" pour toute date ;
-	 * sinon, cela dépend de ses fors
+	 * sinon, cela peut dépendre de ses fors
 	 * @param date date de référencce
+	 * @return si le tiers est désactivé ou non
 	 */
 	@Transient
 	public final boolean isDesactive(RegDate date) {
