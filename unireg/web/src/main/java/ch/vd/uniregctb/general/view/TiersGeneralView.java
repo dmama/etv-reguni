@@ -1,11 +1,6 @@
 package ch.vd.uniregctb.general.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 /**
  * TiersGeneralView
@@ -26,22 +21,6 @@ public class TiersGeneralView {
 
 	private Long numero;
 
-	private AdresseEnvoiDetaillee adresseEnvoi;
-
-	private Exception adresseEnvoiException;
-
-	private CategorieImpotSource categorie;
-
-	private ModeCommunication modeCommunication;
-
-	private PeriodiciteDecompte periodicite;
-
-	private PeriodeDecompte periode;
-
-	private String personneContact;
-
-	private String numeroTelephone;
-
 	private RegDate dateNaissance;
 
 	private String numeroAssureSocial;
@@ -49,8 +28,6 @@ public class TiersGeneralView {
 	private String ancienNumeroAVS;
 
 	private String natureTiers;
-
-	private String nomCommuneGestion;
 
 	private boolean annule;
 
@@ -68,62 +45,6 @@ public class TiersGeneralView {
 
 	public void setNumero(Long numero) {
 		this.numero = numero;
-	}
-
-	public AdresseEnvoiDetaillee getAdresseEnvoi() {
-		return adresseEnvoi;
-	}
-
-	public void setAdresseEnvoi(AdresseEnvoiDetaillee adresseEnvoi) {
-		this.adresseEnvoi = adresseEnvoi;
-	}
-
-	public CategorieImpotSource getCategorie() {
-		return categorie;
-	}
-
-	public void setCategorie(CategorieImpotSource categorie) {
-		this.categorie = categorie;
-	}
-
-	public ModeCommunication getModeCommunication() {
-		return modeCommunication;
-	}
-
-	public void setModeCommunication(ModeCommunication modeCommunication) {
-		this.modeCommunication = modeCommunication;
-	}
-
-	public PeriodiciteDecompte getPeriodicite() {
-		return periodicite;
-	}
-
-	public void setPeriodicite(PeriodiciteDecompte periodicite) {
-		this.periodicite = periodicite;
-	}
-
-	public PeriodeDecompte getPeriode() {
-		return periode;
-	}
-
-	public void setPeriode(PeriodeDecompte periode) {
-		this.periode = periode;
-	}
-
-	public String getPersonneContact() {
-		return personneContact;
-	}
-
-	public void setPersonneContact(String personneContact) {
-		this.personneContact = personneContact;
-	}
-
-	public String getNumeroTelephone() {
-		return numeroTelephone;
-	}
-
-	public void setNumeroTelephone(String numeroTelephone) {
-		this.numeroTelephone = numeroTelephone;
 	}
 
 	public RegDate getDateNaissance() {
@@ -164,21 +85,5 @@ public class TiersGeneralView {
 
 	public void setAnnule(boolean annule) {
 		this.annule = annule;
-	}
-
-	public Exception getAdresseEnvoiException() {
-		return adresseEnvoiException;
-	}
-
-	public void setAdresseEnvoiException(Exception adresseEnvoiException) {
-		this.adresseEnvoiException = adresseEnvoiException;
-	}
-
-	public String getNomCommuneGestion() {
-		return nomCommuneGestion;
-	}
-
-	public void setNomCommuneGestion(String nomCommuneGestion) {
-		this.nomCommuneGestion = nomCommuneGestion;
 	}
 }

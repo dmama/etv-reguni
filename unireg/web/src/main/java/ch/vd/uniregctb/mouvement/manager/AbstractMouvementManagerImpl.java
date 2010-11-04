@@ -20,12 +20,15 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
@@ -36,8 +39,11 @@ import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
 import ch.vd.uniregctb.mouvement.ReceptionDossier;
 import ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel;
+import ch.vd.uniregctb.mouvement.view.ContribuableView;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeMouvement;
@@ -54,6 +60,8 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	private TiersService tiersService;
 
 	private TiersDAO tiersDAO;
+
+	private AdresseService adresseService;
 
 	private ServiceInfrastructureService serviceInfra;
 
@@ -95,6 +103,10 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	protected TiersService getTiersService() {
@@ -202,12 +214,39 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setEtatMouvement(mvt.getEtat());
 		view.setDateExecution(mvt.getLogModifDate());
 		view.setExecutant(mvt.getLogModifUser());
-
-		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(mvt.getContribuable(), false);
-		view.setContribuable(tiersGeneralView);
-
+		view.setContribuable(creerCtbView(mvt.getContribuable()));
 		view.setAnnule(mvt.isAnnule());
 		view.setAnnulable(isAnnulable(mvt));
+		return view;
+	}
+
+	/**
+	 * Alimente la vue contribuable pour le mouvement
+	 *
+	 * @param numero
+	 * @return
+	 */
+	protected ContribuableView creerCtbView(Long numero) {
+		final Tiers tiers = getTiersService().getTiers(numero);
+		if (tiers == null) {
+			throw new ObjectNotFoundException(getMessageSource().getMessage("error.tiers.inexistant" , null, WebContextUtils.getDefaultLocale()));
+		}
+
+		return creerCtbView(tiers);
+	}
+
+	private ContribuableView creerCtbView(Tiers tiers) {
+
+		ContribuableView view = new ContribuableView();
+		view.setNumero(tiers.getNumero());
+		view.setNomCommuneGestion(getCommuneGestion(tiers));
+		try {
+			view.setNomPrenom(adresseService.getNomCourrier(tiers, null, false));
+		}
+		catch (AdresseException e) {
+			LOGGER.error("Erreur lors du calcul du nom/prénom", e);
+		}
+
 		return view;
 	}
 
@@ -378,4 +417,21 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			}
 		}
 	}
+
+	protected String getCommuneGestion(Tiers tiers) {
+		final ForGestion forGestion = tiersService.getDernierForGestionConnu(tiers, null);
+		if (forGestion != null) {
+			final int ofsCommune = forGestion.getNoOfsCommune();
+			try {
+				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(ofsCommune, forGestion.getDateFin());
+				return commune.getNomMinuscule();
+			}
+			catch (InfrastructureException e) {
+				LOGGER.error("Erreur lors de la récupération de la commune de gestion", e);
+				return null;
+			}
+		}
+		return null;
+	}
+
 }

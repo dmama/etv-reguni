@@ -2,28 +2,14 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="page" value="${param.page}" />
 <c:set var="path" value="${param.path}" />
+
+<c:set var="bind" value="command.${path}" scope="request"/>
+<spring:bind path="${bind}" >
+	<c:set var="tiersGeneral" value="${status.value}"  scope="request"/>
+</spring:bind>
+
+<c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>
+
 <!-- Debut Caracteristiques generales -->
-<fieldset>
-	<legend><span><fmt:message key="caracteristiques.debiteur.is" /></span></legend>
-	<table>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.numero.debiteur" />&nbsp;:</td>
-			<jsp:include page="numero.jsp">
-				<jsp:param name="page" value="${page}" />
-				<jsp:param name="path" value="${path}" />	
-			</jsp:include>
-			<td width="25%">&nbsp;</td>
-		</tr>
-			
-		<jsp:include page="adresse-envoi.jsp">
-			<jsp:param name="path" value="${path}" />
-		</jsp:include>
-		
-		<jsp:include page="complement-debiteur.jsp">
-			<jsp:param name="path" value="${path}" />
-		</jsp:include>
-		
-	</table>
-	
-</fieldset>
+<unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 <!-- Fin Caracteristiques generales -->

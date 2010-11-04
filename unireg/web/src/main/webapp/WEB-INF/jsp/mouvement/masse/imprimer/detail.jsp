@@ -103,7 +103,7 @@
                 </display:column>
 				<display:column titleKey="label.nom.raison" >
 					<c:if test="${mvt.annule}"><strike></c:if>
-						<c:forEach var="ligne" items="${mvt.contribuable.adresseEnvoi.nomPrenom}" varStatus="rowCounter">
+						<c:forEach var="ligne" items="${mvt.contribuable.nomPrenom}" varStatus="rowCounter">
                             <c:if test="${rowCounter.count > 1}"><br/></c:if><c:out value="${ligne}"/>
 						</c:forEach>
 					<c:if test="${mvt.annule}"></strike></c:if>

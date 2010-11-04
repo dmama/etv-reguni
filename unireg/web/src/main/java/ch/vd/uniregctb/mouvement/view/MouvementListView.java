@@ -2,8 +2,6 @@ package ch.vd.uniregctb.mouvement.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-
 /**
  * Vue pour la listes des mouvements d'un contribuable
  *
@@ -12,15 +10,15 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
  */
 public class MouvementListView {
 
-	private TiersGeneralView contribuable;
+	private ContribuableView contribuable;
 
 	private List<MouvementDetailView> mouvements;
 
-	public TiersGeneralView getContribuable() {
+	public ContribuableView getContribuable() {
 		return contribuable;
 	}
 
-	public void setContribuable(TiersGeneralView contribuable) {
+	public void setContribuable(ContribuableView contribuable) {
 		this.contribuable = contribuable;
 	}
 

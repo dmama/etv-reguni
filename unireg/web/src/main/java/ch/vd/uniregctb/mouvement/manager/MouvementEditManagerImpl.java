@@ -10,8 +10,6 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
@@ -26,10 +24,8 @@ import ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementListView;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.Localisation;
 import ch.vd.uniregctb.type.TypeMouvement;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl implements MouvementEditManager {
 
@@ -47,7 +43,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	@Transactional(readOnly = true)
 	public MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws InfrastructureException {
 		final MouvementListView mvtListView = new MouvementListView();
-		mvtListView.setContribuable(creerCtb(numero));
+		mvtListView.setContribuable(creerCtbView(numero));
 		final List<MouvementDetailView> mvtsView = new ArrayList<MouvementDetailView>();
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().findByNumeroDossier(numero, seulementTraites, true);
 		for (MouvementDossier mvt : mvts) {
@@ -69,7 +65,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvt(Long numero) {
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
-		mvtDetailView.setContribuable(creerCtb(numero));
+		mvtDetailView.setContribuable(creerCtbView(numero));
 		mvtDetailView.setTypeMouvement(TypeMouvement.EnvoiDossier);
 		mvtDetailView.setDestinationEnvoi(UTILISATEUR_ENVOI);
 		mvtDetailView.setLocalisation(Localisation.PERSONNE);
@@ -95,7 +91,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws InfrastructureException {
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
-		mvtDetailView.setContribuable(creerCtb(numero));
+		mvtDetailView.setContribuable(creerCtbView(numero));
 		mvtDetailView.setIdTache(idTache);
 		mvtDetailView.setTypeMouvement(TypeMouvement.EnvoiDossier);
 		mvtDetailView.setDestinationEnvoi(COLLECTIVITE);
@@ -204,19 +200,5 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	public void annulerMvt(long idMvt) {
 		final MouvementDossier mvt = getMouvementDossierDAO().get(idMvt);
 		mvt.setAnnule(true);
-	}
-
-	/**
-	 * Alimente la vue contribuable pour le mouvement
-	 *
-	 * @param numero
-	 * @return
-	 */
-	private TiersGeneralView creerCtb(Long numero) {
-		final Tiers tiers = getTiersService().getTiers(numero);
-		if (tiers == null) {
-			throw new ObjectNotFoundException(getMessageSource().getMessage("error.tiers.inexistant" , null, WebContextUtils.getDefaultLocale()));
-		}
-		return getTiersGeneralManager().getTiers(tiers, true);
 	}
 }

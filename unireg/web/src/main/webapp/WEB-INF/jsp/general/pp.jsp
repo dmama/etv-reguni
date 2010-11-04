@@ -6,28 +6,32 @@
 <c:if test="${not empty param.className}">
 	<c:set var="className" value="${param.className}" />
 </c:if>
-<!-- Debut Caracteristiques generales -->
-<fieldset class="${className}">
-	<legend><span><fmt:message key="label.caracteristiques.${param.path}" /></span></legend>
-	<table cellspacing="0" cellpadding="5">
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.numero.contribuable" />&nbsp;:</td>
-			<jsp:include page="numero.jsp">
-				<jsp:param name="page" value="${page}" />	
-				<jsp:param name="path" value="${path}" />
-			</jsp:include>
-			<td width="25%">&nbsp;</td>
-		</tr>
-		
-		<jsp:include page="adresse-envoi.jsp">
-			<jsp:param name="path" value="${path}" />
-		</jsp:include>
-		
-		<jsp:include page="complement-pp.jsp">
-			<jsp:param name="path" value="${path}" />
-		</jsp:include>
 
-	</table>
-	
-</fieldset>
+<c:set var="bind" value="command.${path}" scope="request"/>
+<spring:bind path="${bind}" >
+	<c:set var="tiersGeneral" value="${status.value}"  scope="request"/>
+</spring:bind>
+
+<c:set var="titre"><fmt:message key="label.caracteristiques.${param.path}"/></c:set>
+
+<!-- Debut Caracteristiques generales -->
+<unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" cssClass="${className}"
+	showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+
+<table cellspacing="0" cellpadding="5">
+	<c:if test="${path == 'premierePersonne'}">
+		<tr class="<unireg:nextRowClass/>" >
+			<td colspan="3">
+				<form:errors path="premierePersonne" cssClass="error"/>
+			</td>
+		</tr>
+	</c:if>
+	<c:if test="${path == 'secondePersonne'}">
+		<tr class="<unireg:nextRowClass/>" >
+			<td colspan="3">
+				<form:errors path="secondePersonne" cssClass="error"/>
+			</td>
+		</tr>
+	</c:if>
+</table>
 <!-- Fin Caracteristiques generales -->

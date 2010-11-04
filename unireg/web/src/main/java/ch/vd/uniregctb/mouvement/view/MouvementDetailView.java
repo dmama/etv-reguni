@@ -3,7 +3,6 @@ package ch.vd.uniregctb.mouvement.view;
 import java.util.Date;
 
 import ch.vd.uniregctb.common.BaseComparator;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
 import ch.vd.uniregctb.type.Localisation;
 import ch.vd.uniregctb.type.TypeMouvement;
@@ -17,7 +16,7 @@ public class MouvementDetailView implements Comparable<MouvementDetailView> {
 			new String[]{"annule", "dateMouvement", "dateExecution"},
 			new Boolean[]{true, false, false});
 
-	private TiersGeneralView contribuable;
+	private ContribuableView contribuable;
 
 	/**
 	 * ID du mouvement
@@ -151,11 +150,11 @@ public class MouvementDetailView implements Comparable<MouvementDetailView> {
 		return comparator.compare(this, o);
 	}
 
-	public TiersGeneralView getContribuable() {
+	public ContribuableView getContribuable() {
 		return contribuable;
 	}
 
-	public void setContribuable(TiersGeneralView contribuable) {
+	public void setContribuable(ContribuableView contribuable) {
 		this.contribuable = contribuable;
 	}
 

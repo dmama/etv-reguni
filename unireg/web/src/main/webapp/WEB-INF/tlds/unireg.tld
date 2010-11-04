@@ -744,31 +744,49 @@
 			<name>titre</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>le titre affiché dans le bandeau (optionnel)</description>
+			<description>le titre affiché dans le bandeau (défaut='Caractéristiques du tiers')</description>
+		</attribute>
+		<attribute>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la classe Html utilisée par le fieldset principal du bandeau (défaut='information')</description>
 		</attribute>
 		<attribute>
 			<name>showValidation</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>affiche ou non les erreurs de validation (optionnel)</description>
+			<description>affiche ou non les erreurs de validation (défaut=true)</description>
 		</attribute>
 		<attribute>
 			<name>showEvenementsCivils</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>affiche ou non les événements civils en erreur associé au contribuable (optionnel)</description>
+			<description>affiche ou non les événements civils en erreur associé au contribuable (défaut=true)</description>
 		</attribute>
 		<attribute>
 			<name>showLinks</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>affiche ou non les liens vers des pages externes (optionnel)</description>
+			<description>affiche ou non les liens vers des pages externes (défaut=true)</description>
+		</attribute>
+		<attribute>
+			<name>showAvatar</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>affiche ou non l'avatar qui correspond au tiers (défaut=true)</description>
+		</attribute>
+		<attribute>
+			<name>showComplements</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>affiche ou non les informations civiles complémentaires telles que la date de naissance ou les numéros AVS (défaut=false)</description>
 		</attribute>
 		<attribute>
 			<name>urlRetour</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>l'url de retour à l'application appelante (optionnel)</description>
+			<description>l'url de retour à l'application appelante (défaut=null)</description>
 		</attribute>
 	</tag>
 

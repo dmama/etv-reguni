@@ -42,6 +42,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.utils.WebContextUtils;
 import ch.vd.uniregctb.wsclient.fidor.FidorService;
@@ -66,9 +67,12 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	private Long numero;
 	private String titre;
+	private String cssClass;
 	private boolean showValidation = true;
 	private boolean showEvenementsCivils = true;
 	private boolean showLinks = true;
+	private boolean showAvatar = true;
+	private boolean showComplements = false;
 	private int rowcount;
 	private String urlRetour;
 
@@ -76,7 +80,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	public int doStartTag() throws JspTagException {
 		try {
 			JspWriter out = pageContext.getOut();
-			out.print(buidHtlm());
+			final String html = buidHtlm();
+			out.print(html);
 			return SKIP_BODY;
 		}
 		catch (Exception ex) {
@@ -94,6 +99,11 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
+	public void setCssClass(String cssClass) {
+		this.cssClass = cssClass;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setShowValidation(boolean showValidation) {
 		this.showValidation = showValidation;
 	}
@@ -106,6 +116,16 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setShowLinks(boolean showLinks) {
 		this.showLinks = showLinks;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setShowAvatar(boolean showAvatar) {
+		this.showAvatar = showAvatar;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setShowComplements(boolean showComplements) {
+		this.showComplements = showComplements;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -162,16 +182,25 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					titre = message("caracteristiques.tiers");
 				}
 
+				if (cssClass == null) {
+					cssClass = "information";
+				}
+
 				StringBuilder s = new StringBuilder();
-				s.append("<fieldset class=\"information\">\n");
+				s.append("<fieldset class=\"").append(cssClass).append("\">\n");
 				s.append("<legend><span>").append(HtmlUtils.htmlEscape(titre)).append("</span></legend>\n");
 				s.append("<input name=\"debugNatureTiers\" type=\"hidden\" value=\"").append(HtmlUtils.htmlEscape(tiers.getNatureTiers())).append("\"/>\n");
 
-				s.append("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td>\n");
-				s.append(buildDescriptifTiers(tiers));
-				s.append("</td><td width=\"130 px\">\n");
-				s.append(buildImageTiers(tiers));
-				s.append("</td></tr></table>\n");
+				if (showAvatar) {
+					s.append("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td>\n");
+					s.append(buildDescriptifTiers(tiers));
+					s.append("</td><td width=\"130 px\">\n");
+					s.append(buildImageTiers(tiers));
+					s.append("</td></tr></table>\n");
+				}
+				else {
+					s.append(buildDescriptifTiers(tiers));
+				}
 
 				s.append("</fieldset>");
 
@@ -186,12 +215,12 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		if (tiers.isAnnule()) {
 			s.append("<tr class=\"inactif\">\n");
-			s.append("<td colspan=\"3\" width=\"100%\"><center>").append(message("label.tiers.annule")).append("</center></td>\n");
+			s.append("\t<td colspan=\"3\" width=\"100%\"><center>").append(message("label.tiers.annule")).append("</center></td>\n");
 			s.append("</tr>\n");
 		}
 		else if (tiers.isDesactive(null)) {
 			s.append("<tr class=\"inactif\">\n");
-			s.append("<td colspan=\"3\" width=\"100%\"><center>").append(message("label.tiers.desactive.au")).append("&nbsp;").append(RegDateHelper.dateToDisplayString(tiers.getDateDesactivation()))
+			s.append("\t<td colspan=\"3\" width=\"100%\"><center>").append(message("label.tiers.desactive.au")).append("&nbsp;").append(RegDateHelper.dateToDisplayString(tiers.getDateDesactivation()))
 					.append("</center></td>\n");
 			s.append("</tr>\n");
 		}
@@ -235,9 +264,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		// Numéro de contribuable
 		s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-		s.append("<td width=\"25%\">").append(message("label.numero.tiers")).append("&nbsp;:</td>\n");
-		s.append("<td width=\"50%\">").append(FormatNumeroHelper.numeroCTBToDisplay(numero));
-		if (!showLinks) {
+		s.append("\t<td width=\"25%\">").append(message("label.numero.tiers")).append("&nbsp;:</td>\n");
+		s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.numeroCTBToDisplay(numero));
+		if (showLinks) {
 			final JspTagRaccourci consulter = new JspTagRaccourci.Consulter();
 			consulter.setLink("../common/consult-log.do?height=200&width=800&nature=Tiers&id=" + numero + "&TB_iframe=true&modal=true");
 			consulter.setThickbox(true);
@@ -245,17 +274,20 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			s.append(consulter.buildHtml());
 		}
 		s.append("</td>\n");
-		s.append("<td width=\"25%\">\n");
-		if (!tiers.isAnnule() && !showLinks) {
+		if (!tiers.isAnnule() && showLinks) {
+			s.append("\t<td width=\"25%\">\n");
 			s.append(buildVers(tiers));
+			s.append("\t</td>\n");
 		}
-		s.append("</td>\n");
+		else {
+			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+		}
 		s.append("</tr>\n");
 
 		// Rôle
-		s.append("<tr class=\"").append(nextRowClass()).append("\" >\n");
-		s.append("<td width=\"25%\">").append(message("label.role")).append("&nbsp;:</td>\n");
-		s.append("<td width=\"50%\">\n");
+		s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+		s.append("\t<td width=\"25%\">").append(message("label.role")).append("&nbsp;:</td>\n");
+		s.append("\t<td width=\"50%\">");
 		s.append(HtmlUtils.htmlEscape(tiers.getRoleLigne1()));
 		final String roleLigne2 = tiersService.getRoleAssujettissement(tiers, RegDate.get());
 		if (StringUtils.isNotBlank(roleLigne2)) {
@@ -264,25 +296,29 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		s.append("</td>\n");
 
 		// Réindexation
-		s.append("<td width=\"25%\">\n");
-		if (!showLinks && (SecurityProvider.isGranted(Role.TESTER) || SecurityProvider.isGranted(Role.ADMIN))) {
-			s.append("<form method=\"post\" style=\"text-align: right; padding-right: 1em\"\n");
+		if (showLinks && (SecurityProvider.isGranted(Role.TESTER) || SecurityProvider.isGranted(Role.ADMIN))) {
+			s.append("\t<td width=\"25%\">\n");
+			s.append("\t\t<form method=\"post\" style=\"text-align: right; padding-right: 1em\"");
 			s.append("action=\"").append(url("/admin/indexation.do")).append("?action=reindexTiers&id=").append(tiers.getNumero()).append("\">\n");
-			s.append("<input type=\"submit\" value=\"").append(message("label.bouton.forcer.reindexation")).append("\"/>");
-			s.append("</form>\n");
+			s.append("\t\t\t<input type=\"submit\" value=\"").append(message("label.bouton.forcer.reindexation")).append("\"/>");
+			s.append("\t\t</form>\n");
+			s.append("\t</td>\n");
 		}
-		s.append("</td>\n");
+		else {
+			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+		}
+		s.append("</tr>\n");
 
 		// Adresse envoi
 		try {
 			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 
 			// 1ère ligne
-			s.append("<tr class=\"").append(nextRowClass()).append("\"\n>");
-			s.append("<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
+			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+			s.append("\t<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
 			final String ligne1 = adresse.getLigne1();
 			if (StringUtils.isNotBlank(ligne1)) {
-				s.append("<td width=\"75%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne1)).append("</td>\n");
+				s.append("\t<td width=\"75%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne1)).append("</td>\n");
 			}
 			s.append("</tr>\n");
 
@@ -290,26 +326,100 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			for (int i = 2; i <= 6; ++i) {
 				final String ligne = adresse.getLigne(i);
 				if (StringUtils.isNotBlank(ligne)) {
-					s.append("<tr class=\"").append(nextRowClass()).append("\"\n>");
-					s.append("<td width=\"25%\">&nbsp;</td>\n");
-					s.append("<td width=\"75%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne)).append("</td>\n");
+					s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+					s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+					s.append("\t<td width=\"75%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne)).append("</td>\n");
 					s.append("</tr>\n");
 				}
 			}
 		}
 		catch (AdresseException e) {
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-			s.append("<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
-			s.append("<td width=\"75%\" colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.entete")).append("</td>\n");
+			s.append("\t<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
+			s.append("\t<td width=\"75%\" colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.entete")).append("</td>\n");
 			s.append("</tr>\n");
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-			s.append("<td width=\"25%\">&nbsp;</td>\n");
-			s.append("<td width=\"75%\"  colspan=\"2\" class=\"error\">=&gt;&nbsp;").append(HtmlUtils.htmlEscape(e.getMessage())).append("</td>\n");
+			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+			s.append("\t<td width=\"75%\"  colspan=\"2\" class=\"error\">=&gt;&nbsp;").append(HtmlUtils.htmlEscape(e.getMessage())).append("</td>\n");
 			s.append("</tr>\n");
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-			s.append("<td width=\"25%\">&nbsp;</td>\n");
-			s.append("<td  width=\"75%\"  colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.remarque")).append("</td>\n");
+			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+			s.append("\t<td  width=\"75%\"  colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.remarque")).append("</td>\n");
 			s.append("</tr>\n");
+		}
+
+		if (showComplements) {
+			if (tiers instanceof PersonnePhysique) {
+				// Date de naissance
+				final PersonnePhysique pp = (PersonnePhysique) tiers;
+				final RegDate dateNaissance = tiersService.getDateNaissance(pp);
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.date.naissance")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(RegDateHelper.dateToDisplayString(dateNaissance)).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+
+				// Numéro AVS
+				final String numeroAssureSocial = tiersService.getNumeroAssureSocial(pp);
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.nouveau.numero.avs")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumAVS(numeroAssureSocial)).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+
+				// Ancien numéro AVS
+				final String ancienNumeroAssureSocial = tiersService.getAncienNumeroAssureSocial(pp);
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.ancien.numero.avs")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumAVS(ancienNumeroAssureSocial)).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+			}
+			else if (tiers instanceof DebiteurPrestationImposable) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+
+				// Catégorie Impôt-source
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.debiteur.is")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(message("option.categorie.impot.source." + dpi.getCategorieImpotSource().name())).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+
+				// Périodicité
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.periodicite")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">");
+				s.append(message("option.periodicite.decompte." + dpi.getPeriodiciteDecompte()));
+				if (dpi.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
+					s.append("&nbsp;(").append(message("option.periode.decompte." + dpi.getPeriodeDecompte())).append(")");
+				}
+				s.append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+
+				// Mode de communication
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.mode.communication")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(message("option.mode.communication." + dpi.getModeCommunication())).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+
+				// Personne de contact
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.personne.contact")).append("&nbsp;:</td>\n");
+				final String personneContact = dpi.getPersonneContact();
+				s.append("\t<td width=\"50%\">").append(personneContact == null ? "" : personneContact).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+
+				// Numéro de téléphone fixe
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.numero.telephone.fixe")).append("&nbsp;:</td>\n");
+				final String numeroTelephonePrive = dpi.getNumeroTelephonePrive();
+				s.append("\t<td width=\"50%\">").append(numeroTelephonePrive == null ? "" : numeroTelephonePrive).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+			}
 		}
 
 		s.append("</table>");
