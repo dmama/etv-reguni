@@ -204,7 +204,7 @@
 
 					 function refreshAutoriteTutelaire() {
 						var type = E$('typeRapport');
-						if (type.value == 'TUTELLE') {
+						if (type.value == 'TUTELLE' || type.value == 'CURATELLE' || type.value == 'CONSEIL_LEGAL') {
 							E$('autoriteTutelaireLabel').style.display = '';
 							E$('nomAutoriteTutelaire').style.display = '';
 

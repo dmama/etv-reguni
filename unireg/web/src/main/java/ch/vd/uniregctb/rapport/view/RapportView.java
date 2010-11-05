@@ -67,7 +67,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	private String toolTipMessage;
 
-	// -- uniquement pour la tutelle
+	// -- uniquement pour la Representation légale
 
 	private Long autoriteTutelaireId;
 

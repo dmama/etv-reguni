@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -1194,5 +1195,12 @@ public interface TiersService {
 	 *
 	 */
 	void adaptPremierePeriodicite(DebiteurPrestationImposable debiteurPrestationImposable, RegDate dateDebut);
+
+	/**Retourne le nom de la collectivité administrative en paramètre
+	 *
+	 * @param collectiviteAdministrative
+	 * @return le nom de la collectivité adminsitrative
+	 */
+	public String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative);
 }
 

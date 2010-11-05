@@ -26,6 +26,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
@@ -190,12 +191,12 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
 			}
 
-			if (rapport instanceof Tutelle) {
-				final Tutelle tutelle = (Tutelle) rapport;
+			if (rapport instanceof RepresentationLegale) {
+				final RepresentationLegale representation = (RepresentationLegale) rapport;
 				final Long autoriteId = rapportView.getAutoriteTutelaireId();
 				if (autoriteId != null) {
 					CollectiviteAdministrative autorite = findAutorite(autoriteId);
-					tutelle.setAutoriteTutelaire(autorite);
+					representation.setAutoriteTutelaire(autorite);
 				}
 
 			}

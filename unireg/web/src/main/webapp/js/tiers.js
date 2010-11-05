@@ -19,7 +19,7 @@ function toggleRowsIsHisto(tableName,elementId, numCol){
 		for (i=1 ; i< len; i++){
 			if (!E$(elementId).checked ){		
 				var x = tbl.rows[i].cells;
-				if ((trim(x[numCol].innerHTML) == '') && (x[numCol].innerHTML.indexOf('strike')== -1)){
+				if ((trim(x[numCol].innerHTML) == '') && (x[numCol].innerHTML.indexOf('strike')== -1) && !hasClassName(tbl.rows[i], 'strike')){
 					tbl.rows[i].style.display = '';
 				}else {
 					tbl.rows[i].style.display = 'none';

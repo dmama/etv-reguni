@@ -16,11 +16,13 @@
 	<c:if test="${rapport.extensionExecutionForcee != null}">
 		<c:set var="hasExtensionExecutionForcee" value="${true}" />
 	</c:if>
+	<c:if test="${rapport.nomAutoriteTutelaire != null}">
+		<c:set var="hasAutoriteTutelaire" value="${true}" />
+	</c:if>
 </c:forEach>
 
-<display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="${url}" class="display">
+<display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 	<display:column sortable ="true" titleKey="label.rapport.tiers">
-		<c:if test="${dossierApparente.annule}"><strike></c:if>
 			<fmt:message key="option.rapport.entre.tiers.${dossierApparente.sensRapportEntreTiers}.${dossierApparente.typeRapportEntreTiers}" />
 			<c:if test="${dossierApparente.toolTipMessage != null}">
 				<a href="#tooltip" class="staticTip" id="ret-${dossierApparente_rowNum}">?</a>
@@ -28,26 +30,19 @@
 					<c:out value="${dossierApparente.toolTipMessage}"/>
 				</div>
 			</c:if>
-		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-		<c:if test="${dossierApparente.annule}"><strike></c:if>
 		<fmt:formatDate value="${dossierApparente.dateDebut}" pattern="dd.MM.yyyy" />
-		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-		<c:if test="${dossierApparente.annule}"><strike></c:if>
 		<fmt:formatDate value="${dossierApparente.dateFin}" pattern="dd.MM.yyyy" />
-		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
 		<c:if test="${dossierApparente.numero != null}">
-			<c:if test="${dossierApparente.annule}"><strike></c:if>
 			<a href="../tiers/visu.do?id=${dossierApparente.numero}&rid=${tiersGeneral.numero}"><unireg:numCTB numero="${dossierApparente.numero}"></unireg:numCTB></a>
-			<c:if test="${dossierApparente.annule}"></strike></c:if>
 		</c:if>
 		<c:if test="${dossierApparente.numero == null && dossierApparente.messageNumeroAbsent != null}">
 			<div class="flash-warning"><c:out value="${dossierApparente.messageNumeroAbsent}"/></div>
@@ -55,23 +50,25 @@
 	</display:column>
 	
 	<display:column sortable ="true" titleKey="label.nom.raison">
-		<c:if test="${dossierApparente.annule}"><strike></c:if>
 		<c:if test="${dossierApparente.nomCourrier1 != null }">
 			<c:out value="${dossierApparente.nomCourrier1}"/>
 		</c:if>
 		<c:if test="${dossierApparente.nomCourrier2 != null }">
 			<br/><c:out value="${dossierApparente.nomCourrier2}"/>
 		</c:if>
-		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
-
+	<c:if test="${hasAutoriteTutelaire}">
+		<display:column sortable ="true" titleKey="label.autorite.tutelaire">
+			<c:if test="${dossierApparente.nomAutoriteTutelaire!=null}">
+				<c:out value="${dossierApparente.nomAutoriteTutelaire}"/>
+			</c:if>
+		</display:column>
+	</c:if>
 	<c:if test="${hasExtensionExecutionForcee}">
 		<display:column sortable ="true" titleKey="label.extension.execution.forcee">
-			<c:if test="${dossierApparente.annule}"><strike></c:if>
 				<c:if test="${dossierApparente.extensionExecutionForcee != null}">
 					<input type="checkbox" <c:if test="${dossierApparente.extensionExecutionForcee}">checked="true"</c:if> disabled="true"/>
 				</c:if>
-			<c:if test="${dossierApparente.annule}"></strike></c:if>
 		</display:column>
 	</c:if>
 

@@ -3806,6 +3806,34 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
+	public String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative) {
+
+		String nom = null;
+		try {
+			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfra.getCollectivite(collectiviteAdministrative.getNumeroCollectiviteAdministrative());
+
+			if (ca != null) {
+				final String ligne1 = ca.getNomComplet1();
+				if (StringUtils.isNotBlank(ligne1)) {
+					nom = ligne1.trim();
+				}
+				final String ligne2 = ca.getNomComplet2();
+				if (StringUtils.isNotBlank(ligne2)) {
+					nom += " " + ligne2.trim();
+				}
+				final String ligne3 = ca.getNomComplet3();
+				if (StringUtils.isNotBlank(ligne3)) {
+					nom += " " + ligne3.trim();
+				}
+			}
+		}
+		catch (InfrastructureException e) {
+			throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + collectiviteAdministrative.getNumeroCollectiviteAdministrative());
+		}
+
+		return nom;
+	}
+
 	/**
 	 * Extrait Le numéro d'individu à partir d'un tiers si c'est possible
 	 *

@@ -84,6 +84,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -371,7 +372,10 @@ public class TiersManager implements MessageSourceAware {
 
 				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
 				rapportView.setToolTipMessage(toolTipMessage);
+				 if (rapportEntreTiers instanceof RepresentationLegale) {
+					setNomAutoriteTutelaire(rapportEntreTiers, rapportView);
 
+				}
 				rapportsView.add(rapportView);
 			}
 		}
@@ -408,11 +412,29 @@ public class TiersManager implements MessageSourceAware {
 					final Boolean b = repres.getExtensionExecutionForcee();
 					rapportView.setExtensionExecutionForcee(b != null && b);
 				}
+				else if (rapportEntreTiers instanceof RepresentationLegale) {
+					setNomAutoriteTutelaire(rapportEntreTiers, rapportView);
+
+				}
 				rapportsView.add(rapportView);
 			}
 		}
 		Collections.sort(rapportsView);
 		return rapportsView;
+	}
+
+	protected void setNomAutoriteTutelaire(RapportEntreTiers rapportEntreTiers, RapportView rapportView) {
+		final RepresentationLegale representationLegale = (RepresentationLegale) rapportEntreTiers;
+		Long numeroTiersAutoriteTutelaire = representationLegale.getAutoriteTutelaireId();
+		if (numeroTiersAutoriteTutelaire != null) {
+			CollectiviteAdministrative autoriteTutelaire = (CollectiviteAdministrative) tiersDAO.get(numeroTiersAutoriteTutelaire);
+			if (autoriteTutelaire != null) {
+				String nom = tiersService.getNomCollectiviteAdministrative(autoriteTutelaire);
+				rapportView.setNomAutoriteTutelaire(nom);
+			}
+
+
+		}
 	}
 
 
