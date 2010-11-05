@@ -412,13 +412,13 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 			return null;
 		}
 
-		final Map<String, Object> result = new HashMap<String, Object>();
-
-		for (String parameterName : this.currentParameters.keySet()) {
-			final Object value = this.currentParameters.get(parameterName);
+		// linked hash map pour conserver le même ordre des paramètres un peu partout
+		final Map<String, Object> result = new LinkedHashMap<String, Object>();
+		for (Map.Entry<String, JobParam> entry : this.paramDefinition.entrySet()) {
+			final Object value = this.currentParameters.get(entry.getKey());
 			if (value != null) {
-				final JobParam param = getParameterDefinition(parameterName);
-				result.put(param.getDescription(), value);
+				final JobParam paramDef = entry.getValue();
+				result.put(paramDef.getDescription(), value);
 			}
 		}
 
