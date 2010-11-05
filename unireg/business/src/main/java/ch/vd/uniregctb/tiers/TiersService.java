@@ -800,6 +800,13 @@ public interface TiersService {
 	 */
 	public RegDate getDateNaissance(PersonnePhysique pp);
 
+	/**
+	 * @param pp personne physique dont on veut connaître si oui ou non elle est mineure
+	 * @param date la date à laquelle doit être fait le test
+	 * @return <code>true</code> si la personne physique est effectivement mineure à la date donnée, ou <code>false</code> si elle ne l'est pas ou que sa date de naissance est inconnue
+	 */
+	public boolean isMineur(PersonnePhysique pp, RegDate date);
+
 
 	/**Retourne la date de debut de veuvage d'une personne,
 	 *

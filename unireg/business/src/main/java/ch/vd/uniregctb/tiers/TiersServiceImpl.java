@@ -2608,6 +2608,11 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
+	public boolean isMineur(PersonnePhysique pp, RegDate date) {
+		final RegDate dateNaissance = getDateNaissance(pp);
+		return dateNaissance != null && dateNaissance.addYears(18).compareTo(date) > 0;
+	}
+
 	public RegDate getDateDebutVeuvage(PersonnePhysique pp, RegDate date) {
 		VueSituationFamille situation = situationFamilleService.getVue(pp, date,true);
 		if(situation!=null && EtatCivil.VEUF == situation.getEtatCivil()){

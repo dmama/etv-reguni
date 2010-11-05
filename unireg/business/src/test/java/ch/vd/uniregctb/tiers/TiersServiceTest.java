@@ -3884,4 +3884,46 @@ public class TiersServiceTest extends BusinessTest {
 			Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(message));
 		}
 	}
+
+	@Test
+	public void testIsMineur() throws Exception {
+
+		final long noIndividu = 12345L;
+		final long noIndividuInconnu = 6789L;
+		final RegDate dateNaissance = date(1996, 1, 7);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Pittet", "Martine", false);
+				addIndividu(noIndividuInconnu, null, "Incognito", "Benito", true);
+			}
+		});
+
+		{
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			Assert.assertTrue(tiersService.isMineur(pp, dateNaissance));
+			Assert.assertTrue(tiersService.isMineur(pp, dateNaissance.addYears(18).addDays(-1)));
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance.addYears(18)));
+		}
+		{
+			final PersonnePhysique pp = addHabitant(noIndividuInconnu);
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance));
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance.addYears(18).addDays(-1)));
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance.addYears(18)));
+		}
+		{
+			final PersonnePhysique pp = addNonHabitant("Martine", "Pittet", dateNaissance, Sexe.FEMININ);
+			Assert.assertTrue(tiersService.isMineur(pp, dateNaissance));
+			Assert.assertTrue(tiersService.isMineur(pp, dateNaissance.addYears(18).addDays(-1)));
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance.addYears(18)));
+		}
+		{
+			final PersonnePhysique pp = addNonHabitant("Benito", "Incognito", null, Sexe.MASCULIN);
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance));
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance.addYears(18).addDays(-1)));
+			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance.addYears(18)));
+		}
+	}
 }
