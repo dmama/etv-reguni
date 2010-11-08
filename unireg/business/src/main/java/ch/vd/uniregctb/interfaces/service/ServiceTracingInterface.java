@@ -40,6 +40,12 @@ public interface ServiceTracingInterface {
 	long getRecentCount();
 
 	/**
+	 * Appelé toutes les minutes pour tenir compte de l'avancement du temps dans les données relatives aux appels "récents"
+	 * (c'est le bon moment pour "faire glisser" les données)
+	 */
+	void onTick();
+
+	/**
 	 * @return les données détaillée par sous-systèmes, ou <i>null</i> si ces informations ne sont pas disponibles.
 	 */
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData();

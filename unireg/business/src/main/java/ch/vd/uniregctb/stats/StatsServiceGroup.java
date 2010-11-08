@@ -1,13 +1,14 @@
 package ch.vd.uniregctb.stats;
 
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sf.ehcache.Ehcache;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.HashMap;
-import java.util.Map;
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 
 /**
  * Version spéciale du service des statistiques qui permet de regrouper plusieurs sous-interfaces dans un groupe.
@@ -134,6 +135,14 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 			}
 		}
 		return count;
+	}
+
+	public void onTick() {
+		synchronized (subServices) {
+			for (ServiceTracingInterface s : subServices.values()) {
+				s.onTick();
+			}
+		}
 	}
 
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {

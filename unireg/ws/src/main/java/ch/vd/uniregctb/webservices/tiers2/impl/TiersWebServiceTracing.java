@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
+import javax.management.ObjectName;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.management.ObjectName;
-
-import ch.vd.uniregctb.stats.StatsService;
 import org.apache.cxf.management.counters.Counter;
 import org.apache.cxf.management.counters.CounterRepository;
 import org.apache.cxf.management.counters.ResponseTimeCounter;
@@ -15,6 +13,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
+import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.webservices.common.ResponseTimeTracingCounter;
 
 /**
  * Bean qui expose les informations de performances du web-service tiers2 (relevées par les intercepteur CXF) de manière compréhensible par
@@ -28,8 +28,8 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 
 	private CounterRepository counterRepository;
 	private int lastRefreshCountersSize = 0;
-	private TracingCounter globalCounter;
-	private final Map<String, TracingCounter> counterByOperation = new HashMap<String, TracingCounter>();
+	private ResponseTimeTracingCounter globalCounter;
+	private final Map<String, ResponseTimeTracingCounter> counterByOperation = new HashMap<String, ResponseTimeTracingCounter>();
 	private StatsService statsService;
 
 	public void setCounterRepository(CounterRepository counterRepository) {
@@ -61,12 +61,12 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 				if (canonicalName.contains("service=\"{http://www.vd.ch/uniregctb/webservices/tiers2}TiersService\"")) {
 					if (!canonicalName.contains("operation=")) {
 						// temps de réponse général du service
-						globalCounter = new TracingCounter(counter);
+						globalCounter = new ResponseTimeTracingCounter(counter);
 					}
 					else {
 						// temps de réponse des méthodes particulières
 						final String operationName = extractOperationName(canonicalName);
-						counterByOperation.put(operationName, new TracingCounter(counter));
+						counterByOperation.put(operationName, new ResponseTimeTracingCounter(counter));
 					}
 				}
 			}
@@ -116,6 +116,15 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getRecentCount();
 	}
 
+	public void onTick() {
+		if (globalCounter != null) {
+			globalCounter.onTick();
+		}
+		for (ResponseTimeTracingCounter compteurParOperation : counterByOperation.values()) {
+			compteurParOperation.onTick();
+		}
+	}
+
 	public long getTotalPing() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -143,64 +152,5 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		refreshCounters();
 		return counterByOperation;
-	}
-
-	/**
-	 * Permet d'adapter un ResponseTimeCounter à l'interface ServiceTracingInterface.
-	 */
-	private static class TracingCounter implements ServiceTracingInterface {
-
-		private final ResponseTimeCounter counter;
-
-		public TracingCounter(ResponseTimeCounter counter) {
-			this.counter = counter;
-		}
-
-		public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
-			return null;
-		}
-
-		public long getLastCallTime() {
-			return 0;
-		}
-
-		public long getRecentPing() {
-			return getTotalPing();
-		}
-
-		public long getRecentTime() {
-			return getTotalTime();
-		}
-
-		public long getRecentCount() {
-			return getTotalCount();
-		}
-
-		public long getTotalPing() {
-			if (counter == null) {
-				return 0;
-			}
-
-			long value = counter.getAvgResponseTime().longValue();
-			return value / 1000;
-		}
-
-		public long getTotalCount() {
-			if (counter == null) {
-				return 0;
-			}
-
-			return counter.getNumInvocations().longValue();
-		}
-
-		public long getTotalTime() {
-			if (counter == null) {
-				return 0;
-			}
-
-			final long numInvocations = counter.getNumInvocations().longValue();
-			long totalPing = getTotalPing();
-			return numInvocations * totalPing;
-		}
 	}
 }

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.NotImplementedException;
 
 /**
  * Classe utilitaire qui permet de comptabiliser le ping moyen (depuis le début de l'application et sur les 5 dernières minutes) ainsi que le temps passé entre deux appels.
@@ -19,7 +20,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 public final class ServiceTracing implements ServiceTracingInterface {
 
 	private static final long NANO_TO_MILLI = 1000000;
-	private static final long UNE_MINUTE = 60000 * NANO_TO_MILLI;
 	private static final int RECENTS_SIZE = 5; // 5 minutes d'activité récente
 
 	private class Data implements ServiceTracingInterface {
@@ -124,6 +124,10 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 			return null;
 		}
+
+		public void onTick() {
+			throw new NotImplementedException();
+		}
 	}
 
 	/**
@@ -147,11 +151,9 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	private final Logger detailLogger;
 
 	private int index;
-	private long indexTime;
 
 	public ServiceTracing(String serviceName) {
 		this.index = 0;
-		this.indexTime = System.nanoTime();
 		this.detailLogger = Logger.getLogger(String.format("%s.%s", ServiceTracing.class.getSimpleName(), serviceName));
 	}
 
@@ -183,12 +185,16 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		return total.getRecentCount();
 	}
 
+	public void onTick() {
+		synchronized (total) {
+			shiftRecent();
+		}
+	}
+
 	protected void addTime(long time) {
 		synchronized (total) {
 			total.time += time;
 			total.calls++;
-
-			shiftRecent();
 
 			total.recents[index].time += time;
 			total.recents[index].calls++;
@@ -209,8 +215,6 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			d.time += time;
 			d.calls++;
 
-			shiftRecent();
-
 			total.recents[index].time += time;
 			total.recents[index].calls++;
 
@@ -220,23 +224,18 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	private void shiftRecent() {
-		long now = System.nanoTime();
-		if (now > indexTime + UNE_MINUTE) {
-			// si le dernier index est plus vieux qu'une minute, on décale d'un cran la liste des données récentes (comportement rotatif)
-			if (++index >= total.recents.length) {
-				index = 0;
-			}
 
-			// on remet à zéro les compteurs
-			total.recents[index].time = 0;
-			total.recents[index].calls = 0;
+		if (++index >= total.recents.length) {
+			index = 0;
+		}
 
-			for (Data d : details.values()) {
-				d.recents[index].time = 0;
-				d.recents[index].calls = 0;
-			}
+		// on remet à zéro les compteurs
+		total.recents[index].time = 0;
+		total.recents[index].calls = 0;
 
-			indexTime = now;
+		for (Data d : details.values()) {
+			d.recents[index].time = 0;
+			d.recents[index].calls = 0;
 		}
 	}
 

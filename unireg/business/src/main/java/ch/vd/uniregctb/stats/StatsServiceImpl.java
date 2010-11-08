@@ -22,20 +22,44 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	private static final Logger LOGGER = Logger.getLogger(StatsServiceImpl.class);
 
-	private static long LOG_PERIODE = 300000L; // 5 minutes
+	private static final long UNE_MINUTE = 60000L;
+	private static final int LOG_PERIODE = 5; // 5 * UNE_MINUTE
 
-	private final Timer timer = new Timer();
+	private final Timer timer = new Timer("StatsServiceTicking");
 	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<String, ServiceTracingInterface>();
 	private final Map<String, Ehcache> cachedServices = new HashMap<String, Ehcache>();
 	private final Map<String, LoadMonitor> loadMonitors = new HashMap<String, LoadMonitor>();
 	private long lastLoggedCallTime = 0;
 
-	private final TimerTask task = new TimerTask() {
+	private final class TickingTask extends TimerTask {
+
+		/**
+		 * Compteur d'appels à la méthode {@link #run} : on loggue en plus les statistiques tous les {@link #LOG_PERIODE} appels
+		 */
+		private int compteur = 0;
+
 		@Override
 		public void run() {
-			logStats();
+
+			// on loggue d'abord les stats avant de faire glisser
+			compteur = (compteur + 1) % LOG_PERIODE;
+			if (compteur == 0 && LOGGER.isInfoEnabled()) {
+				logStats();
+			}
+
+			// la minute est finie -> "top"!
+			synchronized (rawServices) {
+				for (Map.Entry<String, ServiceTracingInterface> entry : rawServices.entrySet()) {
+					try {
+						entry.getValue().onTick();
+					}
+					catch (Exception e) {
+						LOGGER.warn(String.format("Le service %s a renvoyé une exception lors du 'top' de la minute", entry.getKey()), e);
+					}
+				}
+			}
 		}
-	};
+	}
 
 	public void registerService(String serviceName, ServiceTracingInterface tracing) {
 		synchronized (rawServices) {
@@ -166,7 +190,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	public String buildStats() {
 
-		StringBuilder b = new StringBuilder("Statistiques des caches et services:\n\n");
+		final StringBuilder b = new StringBuilder("Statistiques des caches et services:\n\n");
 		b.append(buildCacheStats());
 		b.append('\n');
 		b.append(buildServiceStats());
@@ -184,21 +208,20 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			keys.addAll(cachedServices.keySet());
 		}
 
-
 		// on trie les clés avant de les afficher
-		List<String> sortedKeys = new ArrayList<String>(keys);
+		final List<String> sortedKeys = new ArrayList<String>(keys);
 		Collections.sort(sortedKeys);
 
 		// extrait et analyse les stats des services
 		int maxLen = 0; // longueur maximale des clés
 		final List<CacheStats> stats = new ArrayList<CacheStats>(sortedKeys.size());
 		for (String k : sortedKeys) {
-			CacheStats data = getCacheStats(k);
+			final CacheStats data = getCacheStats(k);
 			stats.add(data);
 			maxLen = Math.max(maxLen, k.length());
 		}
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		b.append(" Caches").append(StringUtils.repeat(" ", maxLen - 6));
 		b.append(" | hits percent | hits count | total count | time-to-idle | time-to-live | max elements\n");
 		b.append(StringUtils.repeat("-", maxLen + 1));
@@ -395,9 +418,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		if (LOGGER.isInfoEnabled()) {
-			timer.schedule(task, LOG_PERIODE, LOG_PERIODE);
-		}
+		timer.schedule(new TickingTask(), UNE_MINUTE, UNE_MINUTE);
 	}
 
 	public void destroy() throws Exception {
