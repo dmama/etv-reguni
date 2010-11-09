@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -164,6 +165,12 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		// on renomme le fichier temporaire dans son appellation définitive (de manière aussi atomique que possible)
 		final String filename = directory + calculateFilename(key);
 		moveFileTo(tempfile, filename);
+	}
+
+	public void putAll(Map<? extends ObjectKey, T> objectKeyTMap) {
+		for (Map.Entry<? extends ObjectKey, T> entry : objectKeyTMap.entrySet()) {
+			put(entry.getKey(), entry.getValue());
+		}
 	}
 
 	/**

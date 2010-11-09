@@ -22,7 +22,6 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.persistentcache.ObjectKey;
 import ch.vd.uniregctb.persistentcache.PersistentCache;
-import ch.vd.uniregctb.persistentcache.SimpleDiskCache;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -32,7 +31,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilPersistentCache.class);
 
-	private PersistentCache<IndividuCacheValueWithParts> cache = new SimpleDiskCache<IndividuCacheValueWithParts>();
+	private PersistentCache<IndividuCacheValueWithParts> cache;
 	private ServiceCivilService target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
@@ -106,6 +105,8 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	}
 
 	private static class GetIndividuKey implements ObjectKey {
+
+		private static final long serialVersionUID = -8068187058991985334L;
 
 		private long noIndividu;
 		private int annee;
