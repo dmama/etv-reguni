@@ -17,7 +17,7 @@ public class SimpleDiskCacheTest extends WithoutSpringTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		store.setStoreDir("/tmp/SimpleDiskCacheTest/");
+		store.setStoreDir("target/SimpleDiskCacheTest/");
 		store.afterPropertiesSet();
 	}
 
@@ -116,11 +116,11 @@ public class SimpleDiskCacheTest extends WithoutSpringTest {
 
 	@Test
 	public void testCalculateDir() {
-		assertEquals("/tmp/SimpleDiskCacheTest/0/00/00/", store.calculateDir(1));
-		assertEquals("/tmp/SimpleDiskCacheTest/0/00/01/", store.calculateDir(123));
-		assertEquals("/tmp/SimpleDiskCacheTest/0/12/34/", store.calculateDir(123456));
-		assertEquals("/tmp/SimpleDiskCacheTest/1/23/45/", store.calculateDir(1234567));
-		assertEquals("/tmp/SimpleDiskCacheTest/123/45/67/", store.calculateDir(123456789));
+		assertEquals("target/SimpleDiskCacheTest/0/00/00/", store.calculateDir(1));
+		assertEquals("target/SimpleDiskCacheTest/0/00/01/", store.calculateDir(123));
+		assertEquals("target/SimpleDiskCacheTest/0/12/34/", store.calculateDir(123456));
+		assertEquals("target/SimpleDiskCacheTest/1/23/45/", store.calculateDir(1234567));
+		assertEquals("target/SimpleDiskCacheTest/123/45/67/", store.calculateDir(123456789));
 	}
 
 	private static class Key implements ObjectKey {

@@ -17,7 +17,7 @@ public class BerkeleyPersistentCacheTest extends WithoutSpringTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		store.setHomeDirectory("/tmp/BerkeleyPersistentCacheTest/");
+		store.setHomeDirectory("target/BerkeleyPersistentCacheTest/");
 		store.setClazz(Data.class);
 		store.afterPropertiesSet();
 		store.clear();
