@@ -1198,12 +1198,9 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * Etabli et sauve en base un rapport entre deux tiers.
 	 *
-	 * @param rapport
-	 *            le rapport à sauver
-	 * @param sujet
-	 *            le tiers sujet considéré
-	 * @param objet
-	 *            le tiers objet considéré
+	 * @param rapport le rapport à sauver
+	 * @param sujet   le tiers sujet considéré
+	 * @param objet   le tiers objet considéré
 	 * @return le rapport sauvé en base
 	 */
 	public RapportEntreTiers addRapport(RapportEntreTiers rapport, Tiers sujet, Tiers objet) {
@@ -1215,11 +1212,28 @@ public class TiersServiceImpl implements TiersService {
 		/* modifie le nouveau rapport */
 		rapport.setObjet(objet);
 		rapport.setSujet(sujet);
-		rapport = tiersDAO.save(rapport);
+
+		final boolean annule = rapport.isAnnule();
+
+		if (annule) {
+			rapport = tiersDAO.save(rapport);
+		}
+		else {
+			// [UNIREG-3011] si le rapport n'est pas annulé, on l'annule temporairement pour que le validator n'en tienne pas
+			// compte ici, *mais* uniquement lorsque le rapport aura été ajouté aux collections rapportSujets/rapportsObjects.
+			rapport.setAnnulationDate(DateHelper.getCurrentDate());
+			rapport = tiersDAO.save(rapport); // va déclencher le validator
+		}
 
 		/* ajoute le rapport dans les collections qui vont bien comme le ferait Hibernate au load */
 		objet.addRapportObjet(rapport);
 		sujet.addRapportSujet(rapport);
+
+		if (!annule) {
+			// [UNIREG-3011] si le rapport n'était pas annulé initialement, on restaure son état initial maintenant
+			// qu'il est correctement renseigné dans les collections rapportSujets/rapportsObjets.
+			rapport.setAnnulationDate(null);
+		}
 
 		return rapport;
 	}
@@ -3888,7 +3902,12 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	private void extractLinkedTiers(LinkedEntity entity, Set<Tiers> tiers, Set<Object> visited) {
+
 		final List<?> list = entity.getLinkedEntities();
+		if (list == null) {
+			return;
+		}
+
 		for (Object o : list) {
 
 			if (visited.contains(o)) { // test sur la clé ou l'entité elle-même

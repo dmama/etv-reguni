@@ -27,7 +27,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.security.DroitAccesDAO;
-import ch.vd.uniregctb.security.SecuriteDossierService;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -114,6 +113,92 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 				view.setDateCoupleExistant(RegDate.get());
 				view.setDateDebut(DateHelper.getCurrentDate());
+				view.setNouveauCtb(false);
+				view.setPremierePersonne(viewTiers1);
+				view.setSecondePersonne(viewTiers2);
+				view.setTroisiemeTiers(viewMC);
+				view.setTypeUnion(TypeUnion.COUPLE);
+
+				tiersService.getTiers(viewMC.getNumero());
+				mngr.save(view);
+				return null;
+			}
+		});
+
+		// On s'assure que le ménage commun est bien de la bonne classe et qu'il est bien composé
+		final Tiers mc = (Tiers) hibernateTemplate.get(Tiers.class, ids.menage);
+		assertNotNull(mc);
+		assertEquals(MenageCommun.class, mc.getClass());
+		assertEquals(2, mc.getRapportsObjet().size()); // possède bien deux parties
+
+		final Tiers arnold = (Tiers) hibernateTemplate.get(Tiers.class, ids.arnold);
+		assertNotNull(arnold);
+		assertEquals(PersonnePhysique.class, arnold.getClass());
+		assertEquals(1, arnold.getRapportsSujet().size()); // fait partie du ménage commun
+
+		final Tiers janine = (Tiers) hibernateTemplate.get(Tiers.class, ids.janine);
+		assertNotNull(janine);
+		assertEquals(PersonnePhysique.class, janine.getClass());
+		assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
+	}
+
+	// [UNIREG-3011]
+	@Test
+	public void testTranformationNHEnMenageCommunAvecForsFiscauxPreexistants() throws Exception {
+
+		// Création de trois personnes physiques dont une représente en fait un ménage commun
+		final int noIndOleg = 815993;
+		final int noIndAgnes = 405927;
+		final RegDate dateArrivee = date(1995, 10, 19);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu arnold = addIndividu(noIndOleg, date(1970, 1, 1), "Kulinich", "Oleg", true);
+				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				MockIndividu janine = addIndividu(noIndAgnes, date(1970, 1, 1), "Baubault", "Agnès", false);
+				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null, 1);
+			}
+		});
+
+		class Ids {
+			long arnold;
+			long janine;
+			long menage;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique arnold = addHabitant(noIndOleg);
+				ids.arnold = arnold.getNumero();
+				PersonnePhysique janine = addHabitant(noIndAgnes);
+				ids.janine = janine.getNumero();
+				// [UNIREG-3011] Crée un non-habitant avec un for fiscal principal ouvert
+				PersonnePhysique menage = addNonHabitant("Kulinich", "Oleg", date(1970, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(menage, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ids.menage = menage.getNumero();
+				return null;
+			}
+		});
+
+		// Regroupement des trois personnes physiques en un ménage, avec transformation en ménage commun d'une des personnes physiques
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				TiersGeneralView viewTiers1 = new TiersGeneralView();
+				viewTiers1.setNumero(ids.arnold);
+				TiersGeneralView viewTiers2 = new TiersGeneralView();
+				viewTiers2.setNumero(ids.janine);
+				TiersGeneralView viewMC = new TiersGeneralView();
+				viewMC.setNumero(ids.menage);
+
+				CoupleRecapView view = new CoupleRecapView();
+
+				view.setDateCoupleExistant(dateArrivee);
+				view.setDateDebut(dateArrivee.asJavaDate());
 				view.setNouveauCtb(false);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);
@@ -378,7 +463,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		final class Ids {
 			long noHabMr;
 			long noHabMme;
-		};
+		}
 		final Ids ids = new Ids();
 
 		// fiscal de départ

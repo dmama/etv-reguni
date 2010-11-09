@@ -50,6 +50,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -68,6 +69,7 @@ public class TiersServiceTest extends BusinessTest {
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
+	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -76,6 +78,7 @@ public class TiersServiceTest extends BusinessTest {
 		tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		rapportEntreTiersDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 	}
 
 	@Test
@@ -3066,6 +3069,72 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * [UNIREG-3011] Vérifie que la méthode addRapport ne provoque pas des erreurs de validation lorsque:
+	 * <ul>
+	 * <li>on ajoute un rapport entre deux tiers qui ne valident pas, et</li>
+	 * <li>le rapport ajouté fait que les deux tiers sont ensuite valides</li>
+	 * </ul>
+	 */
+	@Test
+	public void testAddRapportEntreTiersInvalidesQuiSontValidesEnsuite() throws Exception {
+
+		final RegDate dateMariage = date(1995, 1, 1);
+
+		class Ids {
+			long paul;
+			long mc;
+		}
+		final Ids ids = new Ids();
+
+		try {
+			// on désactive temporairement la validation pour permettre de sauver un ménage-commun qui ne valide pas (manque les rapports d'appartenance ménage)
+			validationInterceptor.setEnabled(false);
+			doInNewTransactionAndSession(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+
+					// Crée un non-habitant tout nu
+					PersonnePhysique paul = addNonHabitant("Paul", "Ruccola", date(1968, 1, 1), Sexe.MASCULIN);
+					ids.paul = paul.getId();
+
+					// Crée un ménage commun avec un for principal ouvert
+					MenageCommun mc = new MenageCommun();
+					mc = (MenageCommun) hibernateTemplate.merge(mc);
+					addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+					ids.mc = mc.getId();
+
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+
+		// On vérifie l'état initial : paul doit valider mais pas le ménage commun
+		final PersonnePhysique paul = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.paul);
+		assertNotNull(paul);
+		assertFalse(paul.validate().hasErrors()); // ok
+		final MenageCommun mc = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.mc);
+		assertNotNull(mc);
+		assertTrue(mc.validate().hasErrors()); // manque l'appartenance ménage
+
+		// Maintenant, on ajoute un rapport d'appartenance ménage entre le non-habitant et le ménage-commun
+		AppartenanceMenage rapport = new AppartenanceMenage();
+		rapport.setDateDebut(dateMariage);
+
+		// On ajoute le rapport : cet ajout ne doit pas déclencher la validation du ménage-commun entre le moment où :
+		//  - le rapport est sauvé
+		//  - le rapport est ajouté aux collections rapportSujets/rapportsObjets de la personne physique et du ménage-commun
+		rapport = (AppartenanceMenage) tiersService.addRapport(rapport, paul, mc);
+
+		// Si on arrive ici, c'est que tout c'est bien passé. On assert 2-3 trucs pour la forme.
+		assertNotNull(rapport);
+		assertEquals(paul.getNumero(), rapport.getSujetId());
+		assertEquals(mc.getNumero(), rapport.getObjetId());
+		assertFalse(mc.validate().hasErrors()); // plus d'erreur sur le ménage
+	}
+
 	@Test
 	public void testGetDateDebutValiditeNouvellePeriodicite() throws Exception {
 		loadDatabase("TiersServiceTest.xml");
@@ -3073,11 +3142,10 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
-				assertEquals(RegDate.get(2009,01,01),tiersService.getDateDebutNouvellePeriodicite(dpi));
+				assertEquals(RegDate.get(2009, 1, 1), tiersService.getDateDebutNouvellePeriodicite(dpi));
 				return null;
 			}
 		});
-
 	}
 
 	@Test
@@ -3106,7 +3174,7 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-//Ajout d'une première periodicite' et d'un for, le for ayant une date de début anterieur à celle de la périodicité
+		//Ajout d'une première periodicite' et d'un for, le for ayant une date de début anterieur à celle de la périodicité
 		final long dpiId2 = (Long)doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {

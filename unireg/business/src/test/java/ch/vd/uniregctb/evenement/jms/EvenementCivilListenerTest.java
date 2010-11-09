@@ -131,7 +131,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 	public void testOnMessageBad() throws Exception {
 
 		final int id = 54;
-		final String xmlContent = createMessage(id, 1000, 9876543, RegDate.get(2007, 9, 18), 111); // no individu inconnu
+		final String xmlContent = createMessage(id, 1000, 9876543, RegDate.get(2007, 9, 18), MockCommune.Lausanne.getNoOFSEtendu()); // no individu inconnu
 
 		sendMessageSync(xmlContent);
 
@@ -144,7 +144,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		assertEquals("Le numéro technique n'a pas été récupéré correctement", new Long(id), evenement.getId());
 		assertEquals("Le type d'événement n'a pas été récupéré correctement", TypeEvenementCivil.NAISSANCE, evenement.getType());
 		assertEquals("Le numéro d'individu n'a pas été récupéré correctement", new Long(9876543L), evenement.getNumeroIndividuPrincipal());
-		assertEquals("Le numéro OFS n'a pas été récupéré correctement", new Integer(111), evenement.getNumeroOfsCommuneAnnonce());
+		assertEquals("Le numéro OFS n'a pas été récupéré correctement", new Integer(MockCommune.Lausanne.getNoOFSEtendu()), evenement.getNumeroOfsCommuneAnnonce());
 	}
 
 	@Test(timeout = 10000)

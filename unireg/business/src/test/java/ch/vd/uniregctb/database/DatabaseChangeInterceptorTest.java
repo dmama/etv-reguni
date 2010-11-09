@@ -261,7 +261,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tutelle tutelle = (Tutelle) hibernateTemplate.get(Tutelle.class, ids.tutelle);
-				tutelle.setAnnule(true);
+				tutelle.setDateDebut(date(2005, 7, 1));
 				return null;
 			}
 		});

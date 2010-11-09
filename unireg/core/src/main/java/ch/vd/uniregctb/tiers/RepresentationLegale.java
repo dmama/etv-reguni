@@ -6,6 +6,7 @@ package ch.vd.uniregctb.tiers;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
@@ -85,10 +86,19 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 	@Override
 	@Transient
 	public List<?> getLinkedEntities() {
-		final List list = super.getLinkedEntities();
+
+		if (isAnnule()) {
+			return null;
+		}
+
+		List list = super.getLinkedEntities();
 		if (autoriteTutelaireId != null) {
+			if (list == null) {
+				list = new ArrayList<Object>();
+			}
 			list.add(new EntityKey(Tiers.class, autoriteTutelaireId));
 		}
+		
 		return list;
 	}
 }

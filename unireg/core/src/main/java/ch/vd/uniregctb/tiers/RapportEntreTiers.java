@@ -242,6 +242,10 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	@Transient
 	public List<?> getLinkedEntities() {
 
+		if (isAnnule()) {
+			return null;
+		}
+
 		if (sujetId == null && objetId == null) {
 			return null;
 		}

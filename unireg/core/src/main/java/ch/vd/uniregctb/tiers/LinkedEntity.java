@@ -8,8 +8,8 @@ import java.util.List;
 public interface LinkedEntity {
 
 	/**
-	 * @return la liste des entités liées. Cette liste pour contenir les entités elles-mêmes (de type {@link ch.vd.uniregctb.common.HibernateEntity}) ou leurs clés ({@link
-	 *         ch.vd.uniregctb.common.EntityKey}).
+	 * @return la liste des entités liées; ou <b>null</b> s'il n'y en a pas. Cette liste pour contenir les entités elles-mêmes (de type {@link ch.vd.uniregctb.common.HibernateEntity}) ou leurs clés
+	 *         ({@link ch.vd.uniregctb.common.EntityKey}).
 	 */
 	List<?> getLinkedEntities();
 }
