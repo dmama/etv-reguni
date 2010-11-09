@@ -105,12 +105,15 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 
 	public final RegDate dateTraitement;
 
+	public final boolean archivesSeulement;
+
 	private int nbContribuablesInspectes = 0;
 
 	private boolean interrompu;
 
-	public DeterminerMouvementsDossiersEnMasseResults(RegDate dateTraitement) {
+	public DeterminerMouvementsDossiersEnMasseResults(RegDate dateTraitement, boolean archivesSeulement) {
 		this.dateTraitement = dateTraitement;
+		this.archivesSeulement = archivesSeulement;
 	}
 
 	public boolean isInterrompu() {

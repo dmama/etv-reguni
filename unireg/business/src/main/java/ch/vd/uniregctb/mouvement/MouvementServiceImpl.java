@@ -52,9 +52,9 @@ public class MouvementServiceImpl implements MouvementService {
 	/**
 	 * Détermine les mouvements de dossiers pour une année
 	 */
-	public DeterminerMouvementsDossiersEnMasseResults traiteDeterminationMouvements(RegDate dateTraitement, StatusManager statusManager)  {
+	public DeterminerMouvementsDossiersEnMasseResults traiteDeterminationMouvements(RegDate dateTraitement, boolean archivesSeulement, StatusManager statusManager)  {
 		final DeterminerMouvementsDossiersEnMasseProcessor processor = new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager);
-		return processor.run(dateTraitement, statusManager);
+		return processor.run(dateTraitement, archivesSeulement, statusManager);
 	}
 
 	private BordereauMouvementDossier creerBordereau() {

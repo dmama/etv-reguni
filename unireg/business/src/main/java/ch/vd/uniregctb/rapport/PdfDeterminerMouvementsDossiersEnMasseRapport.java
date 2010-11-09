@@ -37,6 +37,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		    addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 		        public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
+			        table.addLigne("Archives seulements :", String.valueOf(results.archivesSeulement));
 		        }
 		    });
 		}

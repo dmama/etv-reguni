@@ -85,7 +85,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
 				// des trucs d'infrastructure
 				addCollAdm(ServiceInfrastructureService.noCEDI);
-				addCollAdm(MockOfficeImpot.OID_ROLLE);
+				addCollAdm(MockOfficeImpot.OID_ROLLE_AUBONNE);
 				addCollAdm(MockOfficeImpot.ACISUCCESSIONS);
 
 				// les périodes fiscales qui vont bien

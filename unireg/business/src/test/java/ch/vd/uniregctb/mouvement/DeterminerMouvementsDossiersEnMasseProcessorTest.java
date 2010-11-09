@@ -3,16 +3,15 @@ package ch.vd.uniregctb.mouvement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -35,13 +34,15 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	private static final RegDate dateNaissance = RegDate.get(1970, 3, 12);
 	private static final RegDate dateMajorite = dateNaissance.addYears(18);
 
-	private static final int noCaOidRolleAubonne = 2;
-	private static final int noCaOidLausanne = 7;
-	private static final int noCaOidVevey = 18;
+	private static final int noCaOidRolleAubonne = MockOfficeImpot.OID_ROLLE_AUBONNE.getNoColAdm();
+	private static final int noCaOidLausanne = MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm();
+	private static final int noCaOidVevey = MockOfficeImpot.OID_VEVEY.getNoColAdm();
+	private static final int noCaOidOrbe = MockOfficeImpot.OID_ORBE.getNoColAdm();
 
 	private long noOidRolleAubonne;
 	private long noOidLausanne;
 	private long noOidVevey;
+	private long noOidOrbe;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -63,6 +64,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 				noOidRolleAubonne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidRolleAubonne).getNumero();    // OID Rolle-Aubonne
 				noOidLausanne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidLausanne).getNumero();            // OID Lausanne
 				noOidVevey = tiersService.getOrCreateCollectiviteAdministrative(noCaOidVevey).getNumero();                  // OID Vevey
+				noOidOrbe = tiersService.getOrCreateCollectiviteAdministrative(noCaOidOrbe).getNumero();                    // OID Orbe
 				return null;
 			}
 		});
@@ -77,15 +79,16 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas de for -> pas de mouvement
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertEquals(0, caCache.size());
 	}
 
@@ -94,16 +97,17 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas de changement de for -> pas de mouvement
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertEquals(0, caCache.size());
 	}
 
@@ -112,19 +116,64 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vaulion);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas de changement d'OID -> pas de mouvement
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertEquals(0, caCache.size());
+	}
+
+	@Test
+	public void testVieuxDepartTousMouvements() throws Exception {
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+
+		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
+		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Croy);
+		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
+
+		// vieux départ -> mouvement vers les archives de l'OID d'Orbe
+		assertMouvementReceptionArchives(results, ctb, noOidOrbe);
+		Assert.assertEquals(1, caCache.size());
+		Assert.assertTrue(caCache.containsKey(noCaOidOrbe));
+	}
+
+	@Test
+	public void testVieuxDepartArchivesSeulement() throws Exception {
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+
+		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = true;
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
+		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Croy);
+		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
+
+		// vieux départ -> mouvement vers les archives de l'OID d'Orbe
+		assertMouvementReceptionArchives(results, ctb, noOidOrbe);
+		Assert.assertEquals(1, caCache.size());
+		Assert.assertTrue(caCache.containsKey(noCaOidOrbe));
 	}
 
 	@Test
@@ -132,17 +181,18 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas d'assujettissement n-2 -> pas de mouvement
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertEquals(0, caCache.size());
 	}
 
@@ -151,101 +201,88 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Aubonne);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// année juste après le départ -> pas encore de mouvement
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertEquals(0, caCache.size());
 	}
 
 	@Test
-	@NotTransactional
-	public void testPartiIlYADeuxAns() throws Exception {
-
-		// mise en place + traitement
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
-
-				final RegDate dateTraitement = RegDate.get();
-				final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-				final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
-
-				final Contribuable ctb = addHabitant(noIndMarieParlotte);
-				final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
-				addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Aubonne);
-				final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-				proc.traiterContribuable(ctb, ranges, caCache, results);
-
-				// mouvement vers les archives attendu
-				Assert.assertEquals(1, results.getNbContribuablesInspectes());
-				Assert.assertEquals(1, results.mouvements.size());
-				Assert.assertEquals(1, caCache.size());
-
-				final DeterminerMouvementsDossiersEnMasseResults.Mouvement mvtResult = results.mouvements.get(0);
-				Assert.assertNotNull(mvtResult);
-				Assert.assertEquals((long) ctb.getNumero(), mvtResult.noCtb);
-				Assert.assertTrue(mvtResult.getClass().getName(), mvtResult instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementArchives);
-				Assert.assertEquals(noCaOidRolleAubonne, (int) caCache.keySet().iterator().next());
-
-				return ctb.getNumero();
-			}
-		});
-
-		// vérification dans la base
-		doInNewTransactionAndSession(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable ctb = (Contribuable) tiersService.getTiers(ppId);
-				Assert.assertNotNull(ctb);
-
-				final Set<MouvementDossier> mvts = ctb.getMouvementsDossier();
-				Assert.assertNotNull(mvts);
-				Assert.assertEquals(1, mvts.size());
-
-				final MouvementDossier mvt = mvts.iterator().next();
-				Assert.assertNotNull(mvt);
-				Assert.assertTrue(mvt instanceof ReceptionDossierArchives);
-				Assert.assertEquals(EtatMouvementDossier.A_TRAITER, mvt.getEtat());
-				Assert.assertNull(mvt.getDateMouvement());
-
-				final ReceptionDossierArchives reception = (ReceptionDossierArchives) mvt;
-				Assert.assertNotNull(reception.getCollectiviteAdministrativeReceptrice());
-				Assert.assertEquals(noOidRolleAubonne, (long) reception.getCollectiviteAdministrativeReceptrice().getNumero());
-
-				return null;
-			}
-		});
-	}
-
-	@Test
-	public void testDemenagementAnneeDerniere() throws Exception {
+	public void testDemenagementAnneeDerniereTousMouvements() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Aubonne à Lausanne
 		assertMouvementEnvoiEntreOid(results, ctb, noOidRolleAubonne, noOidLausanne);
 		Assert.assertEquals(2, caCache.size());
 		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
 		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
+	}
+
+	@Test
+	public void testDemenagementAnneeDerniereSeulementArchives() throws Exception {
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+
+		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = true;
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
+		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
+
+		// normalement, mouvement d'envoi de Aubonne à Lausanne, mais comme on ne veut que les mouvements vers les archives,
+		// aucun mouvement ne doit avoir été généré
+		assertPasDeMouvement(results, ctb);
+	}
+
+	private void assertMouvementReceptionArchives(DeterminerMouvementsDossiersEnMasseResults results, Contribuable ctb, long oid) {
+		Assert.assertEquals(1, results.getNbContribuablesInspectes());
+		Assert.assertEquals(1, results.mouvements.size());
+
+		final DeterminerMouvementsDossiersEnMasseResults.Mouvement mvtResult = results.mouvements.get(0);
+		Assert.assertNotNull(mvtResult);
+		Assert.assertEquals((long) ctb.getNumero(), mvtResult.noCtb);
+		Assert.assertTrue(mvtResult.getClass().getName(), mvtResult instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementArchives);
+
+		// dans la base ?
+		final List<MouvementDossier> mvts = mouvementDossierDAO.findByNumeroDossier(ctb.getNumero(), false, true);
+		Assert.assertNotNull(mvts);
+		Assert.assertEquals(1, mvts.size());
+
+		final MouvementDossier mvt = mvts.get(0);
+		Assert.assertNotNull(mvt);
+		Assert.assertTrue(mvt instanceof ReceptionDossierArchives);
+		Assert.assertEquals(EtatMouvementDossier.A_TRAITER, mvt.getEtat());
+		Assert.assertNull(mvt.getDateMouvement());
+
+		final ReceptionDossierArchives receptionDossierArchives = (ReceptionDossierArchives) mvt;
+		Assert.assertNotNull(receptionDossierArchives.getCollectiviteAdministrativeReceptrice());
+		Assert.assertEquals(oid, (long) receptionDossierArchives.getCollectiviteAdministrativeReceptrice().getNumero());
 	}
 
 	private void assertMouvementEnvoiEntreOid(DeterminerMouvementsDossiersEnMasseResults results, Contribuable ctb, long oidSource, long oidDestinataire) {
@@ -280,8 +317,9 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateArrivee = RegDate.get(dateTraitement.year() - 1, 2, 12);
@@ -289,7 +327,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Aubonne à Lausanne
 		assertMouvementEnvoiEntreOid(results, ctb, noOidRolleAubonne, noOidLausanne);
@@ -306,8 +344,9 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate datePremierDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
@@ -317,7 +356,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		addForPrincipal(ctb, dateDeuxiemeDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
 
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Lausanne à Vevey
 		assertMouvementEnvoiEntreOid(results, ctb, noOidLausanne, noOidVevey);
@@ -333,8 +372,9 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	public void testSeparationPuisDemenagementAnneeDerniere() throws Exception {
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateSeparation = RegDate.get(dateTraitement.year() - 1, 6, 25);
@@ -345,7 +385,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Rollo-Aubonne à Lausanne
 		assertMouvementEnvoiEntreOid(results, ctb, noOidRolleAubonne, noOidLausanne);
@@ -361,8 +401,9 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	public void testHorsCantonAchatImmeubleAnneeDerniere() throws Exception {
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDepartHC = date(dateTraitement.year() - 7, 8, 30);
@@ -374,13 +415,13 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertEquals(0, caCache.size());
 	}
 
-	private void assertPasDeMouvement(Contribuable ctb, DeterminerMouvementsDossiersEnMasseResults results) {
+	private void assertPasDeMouvement(DeterminerMouvementsDossiersEnMasseResults results, Contribuable ctb) {
 
 		// dans le rapport
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
@@ -399,18 +440,19 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final ForFiscalPrincipal ffp = addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// sourcier pur -> devrait être indiqué comme ignoré (et donc pas de mouvement)
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertNotNull(results.ignores);
 		Assert.assertEquals(1, results.ignores.size());
 
@@ -425,14 +467,14 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
-
+		final boolean archivesSeulement = false;
 		final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1950, 5, 21), Sexe.MASCULIN);
 		pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
 
 		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(dateTraitement.year() - 1, 4, 12), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Albanie);
 		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
 
-		final DeterminerMouvementsDossiersEnMasseResults results = proc.run(dateTraitement, null);
+		final DeterminerMouvementsDossiersEnMasseResults results = proc.run(dateTraitement, archivesSeulement, null);
 
 		Assert.assertNotNull(results.erreurs);
 		Assert.assertEquals(1, results.erreurs.size());
@@ -449,8 +491,9 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
 		final RegDate dateTraitement = RegDate.get();
+		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate datePermisC = date(dateTraitement.year() - 1, 6, 12);
@@ -459,9 +502,9 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		addForPrincipal(ctb, datePermisC, MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne);
 
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
-		assertPasDeMouvement(ctb, results);
+		assertPasDeMouvement(results, ctb);
 		Assert.assertEquals(0, caCache.size());
 	}
 }

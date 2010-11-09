@@ -15,6 +15,7 @@ import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 
 public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
@@ -22,6 +23,8 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 	public static final String NAME = "DeterminerMouvementsDossiersEnMasseJob";
 
 	private static final String CATEGORIE = "Tiers";
+
+	private static final String ARCHIVES_SEULEMENT = "ARCHIVES_SEULEMENT";
 
 	private MouvementService mouvementService;
 
@@ -32,22 +35,35 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 	public DeterminerMouvementsDossiersEnMasseJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
 
-		final JobParam param = new JobParam();
-		param.setDescription("Date de traitement");
-		param.setName(DATE_TRAITEMENT);
-		param.setMandatory(false);
-		param.setType(new JobParamRegDate());
-		addParameterDefinition(param, null);
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Archives seulement");
+			param.setName(ARCHIVES_SEULEMENT);
+			param.setMandatory(true);
+			param.setType(new JobParamBoolean());
+			addParameterDefinition(param, Boolean.FALSE);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Date de traitement");
+			param.setName(DATE_TRAITEMENT);
+			param.setMandatory(false);
+			param.setType(new JobParamRegDate());
+			addParameterDefinition(param, null);
+		}
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementService(MouvementService mouvementService) {
 		this.mouvementService = mouvementService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
@@ -62,9 +78,10 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final RegDate dateTraitement = getDateTraitement(params);
+		final boolean archivesSeulement = getBooleanValue(params, ARCHIVES_SEULEMENT);
 
 		final StatusManager statusManager = getStatusManager();
-		final DeterminerMouvementsDossiersEnMasseResults results = mouvementService.traiteDeterminationMouvements(dateTraitement, statusManager);
+		final DeterminerMouvementsDossiersEnMasseResults results = mouvementService.traiteDeterminationMouvements(dateTraitement, archivesSeulement, statusManager);
 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

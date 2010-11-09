@@ -18,7 +18,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 
 	// Quelques communes vaudoises
 	//                                                        OFS   NOM    CANTON
-	public static final MockCommune Aubonne = new MockCommune(5422, "Aubonne", VAUD, MockOfficeImpot.OID_ROLLE);
+	public static final MockCommune Aubonne = new MockCommune(5422, "Aubonne", VAUD, MockOfficeImpot.OID_ROLLE_AUBONNE);
 	public static final MockCommune Bex = new MockCommune(5402, "Bex", VAUD, MockOfficeImpot.OID_AIGLE);
 	public static final MockCommune Lausanne = new MockCommune(5586, "Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
 	public static final MockCommune Cossonay = new MockCommune(5477, "Cossonay", VAUD, MockOfficeImpot.OID_COSSONAY);
