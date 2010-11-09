@@ -29,6 +29,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
@@ -69,6 +70,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
+import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
@@ -845,6 +847,26 @@ public class RapportServiceImpl implements RapportService {
 			return docService.newDoc(MigrationCoquillesPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MigrationCoquillesPMRapport>() {
 				public void writeDoc(MigrationCoquillesPMRapport doc, OutputStream os) throws Exception {
 					final PdfMigrationCoquillesPMRapport document = new PdfMigrationCoquillesPMRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public ComparerForFiscalEtCommuneRapport generateRapport(final ComparerForFiscalEtCommuneResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportComparerForFiscalEtCommune";
+		final String description = "Rapport d'exécution du job de comparaison du dernier For fiscal et de la commune de résidence. Date de traitement = " + results.getDateTraitement();
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(ComparerForFiscalEtCommuneRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ComparerForFiscalEtCommuneRapport>() {
+				public void writeDoc(ComparerForFiscalEtCommuneRapport doc, OutputStream os) throws Exception {
+					final PdfComparerForFiscalEtCommuneRapport document = new PdfComparerForFiscalEtCommuneRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

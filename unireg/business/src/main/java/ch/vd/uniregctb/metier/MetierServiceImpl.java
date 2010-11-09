@@ -2297,4 +2297,9 @@ public class MetierServiceImpl implements MetierService {
 		reopenSituationFamille(date, menageCommun);
 	}
 
+	public ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status) {
+		ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, serviceInfra);
+		return processor.run(dateTraitement,nbThreads,status);
+	}
+
 }

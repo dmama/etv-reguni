@@ -296,4 +296,13 @@ public interface MetierService {
 	 *            (optionnel) le numéro d'événement civil déclenchant l'annulation
 	 */
 	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement);
+
+	/**Permet de sortir la liste des contribuables ayant un for sur une commune differente de celle de leur adresse.
+	 *
+	 * @param dateTraitement date de lancement du batch
+	 * @param nbThreads  nombre de thread d'éxecution
+	 * @param status le statut manager
+	 * @return le résultat du batch
+	 */
+	ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status);
 }

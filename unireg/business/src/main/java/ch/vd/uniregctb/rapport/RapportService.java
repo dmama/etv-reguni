@@ -19,6 +19,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
@@ -57,6 +58,7 @@ import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults
 import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
+import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
@@ -378,4 +380,13 @@ public interface RapportService {
 	 * @return le rapport généré
 	 */
 	MigrationCoquillesPMRapport generateRapport(MigrationCoquillesPM.MigrationResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution de la comparaison de la commune du for et de la commune de la résidence
+	 * d'un contribuable
+	 * @param results  résultat du batch
+	 * @param status   status manager
+	 * @return  le rapport
+	 */
+	ComparerForFiscalEtCommuneRapport generateRapport(ComparerForFiscalEtCommuneResults results, StatusManager status);
 }

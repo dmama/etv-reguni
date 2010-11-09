@@ -2,19 +2,16 @@ package ch.vd.uniregctb.metier;
 
 import java.util.Map;
 
-import org.springframework.transaction.PlatformTransactionManager;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 
 public class ComparerForFiscalEtCommuneJob extends JobDefinition{
 
@@ -69,10 +66,10 @@ public class ComparerForFiscalEtCommuneJob extends JobDefinition{
 
 		// Exécution du job dans une transaction.
 		final StatusManager status = getStatusManager();
-		  //TODO(XSIBNM) implementer la methode de comparaison dans le métierServic
-
-		setLastRunReport(null);
-		Audit.success("La comparaison des situations de famille à la date du "
-				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", null);
+		final ComparerForFiscalEtCommuneResults results = metierService.comparerForFiscalEtCommune(dateTraitement, nbThreads, status);
+		final ComparerForFiscalEtCommuneRapport rapport = rapportService.generateRapport(results, status);
+		setLastRunReport(rapport);
+		Audit.success("La comparaison de la commune du for et de la commune de l'adresse pour un contribuable à la date du "
+				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

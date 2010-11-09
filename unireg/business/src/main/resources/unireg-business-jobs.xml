@@ -208,6 +208,14 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	 <bean id="comparerForFiscalEtCommuneJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneJob">
+        <constructor-arg value="502"/>
+        <constructor-arg value="Comparer la commune du for et la commune de l'adresse de résidence d'un contribuable"/>
+		 
+        <property name="metierService" ref="metierService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
 	<bean id="abstractProduireRolesJob" parent="schedulerJob" abstract="true" class="ch.vd.uniregctb.role.AbstractProduireRolesJob">
 		<property name="service" ref="roleService"/>
 		<property name="rapportService" ref="rapportService"/>
