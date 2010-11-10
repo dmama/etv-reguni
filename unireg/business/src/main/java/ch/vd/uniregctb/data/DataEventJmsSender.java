@@ -71,6 +71,9 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Transactional(rollbackFor = Throwable.class)
 	public void onDroitAccessChange(long tiersId) {
 		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement db de changement sur les droits d'accès du tiers n°" + tiersId);
+			}
 			sendChangeEvent(tiersId, DataType.DROIT_ACCES);
 		}
 		catch (Exception e) {
@@ -81,6 +84,9 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Transactional(rollbackFor = Throwable.class)
 	public void onTiersChange(long id) {
 		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement db de changement sur le tiers n°" + id);
+			}
 			sendChangeEvent(id, DataType.TIERS);
 		}
 		catch (Exception e) {
@@ -91,6 +97,9 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Transactional(rollbackFor = Throwable.class)
 	public void onIndividuChange(long id) {
 		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement db de changement sur l'individu n°" + id);
+			}
 			sendChangeEvent(id, DataType.INDIVIDU);
 		}
 		catch (Exception e) {
@@ -101,6 +110,9 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Transactional(rollbackFor = Throwable.class)
 	public void onLoadDatabase() {
 		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement de chargement de la database");
+			}
 			sendLoadEvent();
 		}
 		catch (Exception e) {
@@ -111,6 +123,9 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Transactional(rollbackFor = Throwable.class)
 	public void onTruncateDatabase() {
 		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement de truncate de la database");
+			}
 			sendTruncateEvent();
 		}
 		catch (Exception e) {

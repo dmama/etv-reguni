@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.database;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.CallbackException;
@@ -29,6 +30,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	private ModificationInterceptor parent;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
+	private ThreadLocal<Data> data = new ThreadLocal<Data>();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParent(ModificationInterceptor parent) {
@@ -43,22 +45,50 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		this.tiersService = tiersService;
 	}
 
-	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
-			Type[] types) throws CallbackException {
+	/**
+	 * Ids des tiers changés qui ont déjà été notifiés.
+	 */
+	private static class Data {
+		private final Set<Long> tiersChange = new HashSet<Long>();
+		private final Set<Long> droitsAccesChange = new HashSet<Long>();
+
+		public void addTiersChange(Long id) {
+			tiersChange.add(id);
+		}
+
+		public void addDroitAccesChange(Long id) {
+			droitsAccesChange.add(id);
+		}
+
+		public boolean containsTiersChange(Long id) {
+			return tiersChange.contains(id);
+		}
+
+		public boolean containsDroitAcessChange(Long id) {
+			return droitsAccesChange.contains(id);
+		}
+
+		public void clear() {
+			tiersChange.clear();
+			droitsAccesChange.clear();
+		}
+	}
+
+	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
 
 		if (entity instanceof Tiers) {
 			// Un tiers a été modifié en base => on envoie un événement correspondant
 			final Tiers tiers = (Tiers) entity;
 			final Long numero = tiers.getNumero();
 			if (numero != null) {
-				dataEventService.onTiersChange(numero);
+				onTiersChange(numero);
 			}
 		}
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
 			final LinkedEntity child = (LinkedEntity) entity;
 			final Set<Tiers> tiers = tiersService.getLinkedTiers(child);
 			for (Tiers t : tiers) {
-				dataEventService.onTiersChange(t.getNumero());
+				onTiersChange(t.getNumero());
 			}
 		}
 		else if (entity instanceof DroitAcces) {
@@ -69,7 +99,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			// le tiers lui-même
 			final Long numero = pp.getNumero();
 			if (numero != null) {
-				dataEventService.onDroitAccessChange(numero);
+				onDroitAccesChange(numero);
 			}
 
 			// tous les ménages communs auxquel il a pu appartenir
@@ -80,11 +110,46 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 						continue;
 					}
 					final Long mcId = r.getObjetId();
-					dataEventService.onDroitAccessChange(mcId);
+					onDroitAccesChange(mcId);
 				}
 			}
 		}
 		return false;
+	}
+
+	private void onTiersChange(Long id) {
+		final Data d = getThreadData();
+		if (!d.containsTiersChange(id)) { // on n'envoie un événement qu'une seule fois par transaction
+			dataEventService.onTiersChange(id);
+			d.addTiersChange(id);
+		}
+	}
+
+	private void onDroitAccesChange(Long id) {
+		final Data d = getThreadData();
+		if (!d.containsDroitAcessChange(id)) { // on n'envoie un événement qu'une seule fois par transaction
+			dataEventService.onDroitAccessChange(id);
+			d.addDroitAccesChange(id);
+		}
+	}
+
+	/**
+	 * @return les données locales au thread courant. Ces données sont créées à la demande si nécessaire.
+	 */
+	private Data getThreadData() {
+		Data d = data.get();
+		if (d == null) {
+			d = new Data();
+			data.set(d);
+		}
+		return d;
+	}
+
+	private void clearThreadData() {
+		final Data d = data.get();
+		if (d != null) {
+			d.clear();
+		}
 	}
 
 	public void postFlush() throws CallbackException {
@@ -96,11 +161,11 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	}
 
 	public void postTransactionCommit() {
-		// rien à faire ici
+		clearThreadData();
 	}
 
 	public void postTransactionRollback() {
-		// rien à faire ici
+		clearThreadData();
 	}
 
 	public void afterPropertiesSet() throws Exception {

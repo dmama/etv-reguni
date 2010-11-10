@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.database;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
@@ -39,11 +39,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * [UNIREG-2581] Test qui s'assure que toutes les modifications faites sur les tiers provoquent bien l'envoi de notifications de changement.
  */
+@SuppressWarnings({"JavaDoc"})
 public class DatabaseChangeInterceptorTest extends BusinessTest {
 
 	private static class EventService implements DataEventService {
 
-		public final Set<Long> changedTiers = new HashSet<Long>();
+		public final List<Long> changedTiers = new ArrayList<Long>();
 
 		public void register(DataEventListener listener) {
 			throw new NotImplementedException();
@@ -342,5 +343,37 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		// on vérifie que le changement effectué sur la situation de famille a bien provoqué l'envoi d'une notification
 		assertEquals(1, eventService.changedTiers.size());
 		assertEquals(ids.tiers, eventService.changedTiers.iterator().next());
+	}
+
+	/**
+	 * Vérifie que des changements multiples apportés au même tiers ne provoque l'envoi que d'un seul événement
+	 */
+	@NotTransactional
+	@Test
+	public void testIgnoreDuplicatedChange() throws Exception {
+
+		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
+
+		eventService.clear();
+
+		// on change le nom
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				pp.setNom("Blanco");
+				hibernateTemplate.flush(); // <-- déclenche l'interceptor de modification
+				pp.setNom("Weiss");
+				return null;
+			}
+		});
+
+		// on vérifie que les changements effectués sur le tiers ont provoqué l'envoi d'une seule notification
+		assertEquals(1, eventService.changedTiers.size());
+		assertEquals(id, eventService.changedTiers.iterator().next());
 	}
 }
