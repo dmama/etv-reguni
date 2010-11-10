@@ -25,6 +25,7 @@
 	<!-- Liste des beans exportés en JMX au travers de leurs annotations -->
 	<bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
 		<property name="autodetect" value="false" />
+		<property name="assembler" ref="jmxAssembler" />
 		<property name="namingStrategy" ref="jmxNamingStrategy" />
 		<property name="beans">
 			<map>
