@@ -22,10 +22,9 @@
 		<property name="attributeSource" ref="jmxAttributeSource" />
 	</bean>
 
+	<!-- Liste des beans exportés en JMX au travers de leurs annotations -->
 	<bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
 		<property name="autodetect" value="false" />
-		<!-- We specify the beans ourselves -->
-		<property name="assembler" ref="jmxAssembler" />
 		<property name="namingStrategy" ref="jmxNamingStrategy" />
 		<property name="beans">
 			<map>
@@ -39,17 +38,25 @@
 		</property>
 	</bean>
 
-	<!--
-		Je n'ai pas réussi à exporter ces beans avec JMX sans avoir des tas d'erreurs sur l'erreur standard
-		au sujet d'attributs qui ne sont pas "readable"...
-	-->
-	<!--bean id="jmxExporterNoAnnotation" class="org.springframework.jmx.export.MBeanExporter">
+	<!-- Liste des beans containers de message listeners exportés par JMX -->
+	<bean id="jmxMessageListenerContainerExporter" class="org.springframework.jmx.export.MBeanExporter">
+		<property name="autodetect" value="false"/>
+		<property name="assembler" ref="jmxMessageListenerContainerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsListenerContainer"/>
+				<entry key="ch.vd.uniregctb-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsListenerContainer"/>
 			</map>
 		</property>
-	</bean-->
+	</bean>
+
+	<bean id="jmxMessageListenerContainerAssembler" class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+		<property name="managedInterfaces">
+			<list>
+				<value>org.springframework.context.Lifecycle</value>
+				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
+			</list>
+		</property>
+	</bean>
 
 	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">
 		<property name="checker" ref="applicationChecker" />

@@ -18,7 +18,7 @@
 		<property name="demandeHandler" ref="identCtbService" />
 	</bean>
 
-	<bean id="jmsIdentCtbListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+	<bean id="jmsIdentCtbListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 		<property name="messageListener" ref="identCtbMessageHandler" />
 		<property name="transactionManager" ref="transactionManager" />

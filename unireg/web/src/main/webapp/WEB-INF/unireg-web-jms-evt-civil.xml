@@ -18,7 +18,7 @@
 	</bean>
 
 	<!-- Evt Civil -->
-	<bean id="evtCivilListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+	<bean id="evtCivilListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
 		<property name="concurrentConsumers" value="${extprop.jms.queue.evtCivil.consumers}" />
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 		<property name="destinationName" value="${extprop.jms.queue.evtCivil}" />

@@ -13,7 +13,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="evenementCediListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+	<bean id="evenementCediListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 		<property name="destinationName" value="${extprop.jms.queue.evtCedi}" />
 		<property name="messageListener" ref="evenementCediListener" />
