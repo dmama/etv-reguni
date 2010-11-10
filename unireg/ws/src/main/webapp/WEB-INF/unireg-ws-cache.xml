@@ -6,4 +6,29 @@
 	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
 	</bean>
 
+	<bean id="civilBerkeleyCache" class="ch.vd.uniregctb.persistentcache.BerkeleyPersistentCache">
+	  <property name="homeDirectory" value="${extprop.civil.cache.homedir}" />
+	  <property name="clazz" value="ch.vd.uniregctb.interfaces.service.IndividuCacheValueWithParts" />
+	  <property name="cachePercent" value="${extprop.civil.cache.cachePercent}" />
+	</bean>
+
+	<bean id="serviceCivilServicePersistentCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilPersistentCache" parent="serviceCivilServiceBase">
+		<property name="target" ref="serviceCivilServiceTracing" />
+		<property name="cache" ref="civilBerkeleyCache" />
+		<property name="name" value="CIVIL-PERSISTENT" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<!-- Override du cache *standard* du service civil pour le faire pointer vers le cache *persistent* -->
+	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
+		<property name="target" ref="serviceCivilServicePersistentCache" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceCivil" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
 </beans>
