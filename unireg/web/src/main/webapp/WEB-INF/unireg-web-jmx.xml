@@ -44,7 +44,7 @@
 		Je n'ai pas réussi à exporter ces beans avec JMX sans avoir des tas d'erreurs sur l'erreur standard
 		au sujet d'attributs qui ne sont pas "readable"...
 	-->
-	<!--bean id="jmxExporterAutoDetect" class="org.springframework.jmx.export.MBeanExporter">
+	<!--bean id="jmxExporterNoAnnotation" class="org.springframework.jmx.export.MBeanExporter">
 		<property name="beans">
 			<map>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivils" value-ref="evtCivilListenerContainer"/>

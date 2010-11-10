@@ -29,25 +29,27 @@
 		<property name="namingStrategy" ref="jmxNamingStrategy" />
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Application" value="applicationMonitoringJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value="uniregCacheManager" />
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Charge" value="webserviceLoadJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value="oracleConnectionJmxBean" />
-				<!--<entry key="ch.vd.regcdh:type=Connections,name=DB2" value="db2ConnectionJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Connections,name=HostInterface" value="hostInterfaceConnectionJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Connections,name=RefInf" value="refinfConnectionJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Jobs,name=MigrationMini" value="migrationMiniJobJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Jobs,name=MigrationFull" value="migrationFullJobJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Jobs,name=CoSousEtatClarifier" value="coSousEtatClarifierJobJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Jobs,name=Communication" value="communicationJobJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Jobs,name=Fea2RegPPLoader" value="fea2RegPPLoaderJobJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Jobs,name=PurgeAssignation" value="purgeAssignationJobJmxBean" />-->
-				<!--<entry key="ch.vd.regcdh:type=Jobs,name=RetourNumerosIndividus" value="retourNumerosIndividusJobJmxBean" />-->
-				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value="preferencesPropertiesJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value="othersPropertiesJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
+				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Charge" value-ref="webserviceLoadJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
 			</map>
 		</property>
 	</bean>
+
+	<!--
+		Je n'ai pas réussi à exporter ces beans avec JMX sans avoir des tas d'erreurs sur l'erreur standard
+		au sujet d'attributs qui ne sont pas "readable"...
+	-->
+	<!--bean id="jmxExporterNoAnnotation" class="org.springframework.jmx.export.MBeanExporter">
+		<property name="beans">
+			<map>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsListenerContainer"/>
+			</map>
+		</property>
+	</bean-->
 
 	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">
 		<property name="checker" ref="applicationChecker" />
