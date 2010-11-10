@@ -17,6 +17,7 @@
 	</bean>
 
 	<bean id="dataEventJmsListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="concurrentConsumers" value="${extprop.jms.queue.db.event.consumers}" />
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 		<property name="messageListener" ref="dataEventJmsListener" />
 		<property name="transactionManager" ref="transactionManager" />

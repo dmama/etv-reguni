@@ -16,7 +16,8 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	public void onTruncateDatabase() {
-		for (DataEventListener l : listeners) {
+		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) { // itération par index pour éviter des problèmes d'accès concurrents lors de l'établissement du context Spring
+			final DataEventListener l = listeners.get(i);
 			try {
 				l.onTruncateDatabase();
 			}
@@ -27,7 +28,8 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	public void onLoadDatabase() {
-		for (DataEventListener l : listeners) {
+		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) {
+			final DataEventListener l = listeners.get(i);
 			try {
 				l.onLoadDatabase();
 			}
@@ -38,7 +40,8 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	public void onTiersChange(long id) {
-		for (DataEventListener l : listeners) {
+		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) {
+			final DataEventListener l = listeners.get(i);
 			try {
 				l.onTiersChange(id);
 			}
@@ -49,7 +52,8 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	public void onIndividuChange(long id) {
-		for (DataEventListener l : listeners) {
+		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) {
+			final DataEventListener l = listeners.get(i);
 			try {
 				l.onIndividuChange(id);
 			}
@@ -60,7 +64,8 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	public void onDroitAccessChange(long ppId) {
-		for (DataEventListener l : listeners) {
+		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) {
+			final DataEventListener l = listeners.get(i);
 			try {
 				l.onDroitAccessChange(ppId);
 			}
