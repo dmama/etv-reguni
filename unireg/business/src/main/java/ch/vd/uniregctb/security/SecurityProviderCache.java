@@ -19,12 +19,13 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Niveau;
 
@@ -103,7 +104,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	}
 
 	public CacheStats buildStats() {
-		return new CacheStats(cache);
+		return new EhCacheStats(cache);
 	}
 
 	private static class KeyGetDroitAcces {

@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.cache;
 
-import ch.vd.uniregctb.stats.CacheStats;
-
 /**
  * Interface que doivent implémenter tous les caches d'Unireg.
  *

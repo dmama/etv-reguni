@@ -13,12 +13,13 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -58,7 +59,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	}
 
 	public CacheStats buildStats() {
-		return new CacheStats(cache);
+		return new EhCacheStats(cache);
 	}
 	
 	private void initCache() {

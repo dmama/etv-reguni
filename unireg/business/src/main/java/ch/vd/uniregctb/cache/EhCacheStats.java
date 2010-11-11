@@ -1,23 +1,23 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.uniregctb.cache;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Statistics;
 
 /**
- * Contient les statistiques de fonctionnement d'un cache.
+ * Expose les statistiques de fonctionnement d'un ehcache.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class CacheStats {
+public class EhCacheStats implements CacheStats {
 
 	private Long hitsPercent;
-	private Long hitsCount;
-	private Long totalCount;
+	private long hitsCount;
+	private long totalCount;
 	private long timeToIdle;
 	private long timeToLive;
 	private int maxElements;
 
-	public CacheStats(Ehcache cache) {
+	public EhCacheStats(Ehcache cache) {
 
 		timeToIdle = cache.getTimeToIdleSeconds();
 		timeToLive = cache.getTimeToLiveSeconds();
@@ -45,35 +45,35 @@ public class CacheStats {
 	/**
 	 * @return le nombre de hits sur le cache du service
 	 */
-	public Long getHitsCount() {
+	public long getHitsCount() {
 		return hitsCount;
 	}
 
 	/**
 	 * @return le nombre d'appels sur le cache du service
 	 */
-	public Long getTotalCount() {
+	public long getTotalCount() {
 		return totalCount;
 	}
 
 	/**
 	 * @return time-to-idle en secondes
 	 */
-	public long getTimeToIdle() {
+	public Long getTimeToIdle() {
 		return timeToIdle;
 	}
 
 	/**
 	 * @return time-to-live en secondes
 	 */
-	public long getTimeToLive() {
+	public Long getTimeToLive() {
 		return timeToLive;
 	}
 
 	/**
 	 * @return nombre maximum d'éléments en mémoire
 	 */
-	public int getMaxElements() {
+	public Integer getMaxElements() {
 		return maxElements;
 	}
 

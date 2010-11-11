@@ -15,7 +15,6 @@
 	<bean id="serviceCivilServicePersistentCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilPersistentCache" parent="serviceCivilServiceBase">
 		<property name="target" ref="serviceCivilServiceTracing" />
 		<property name="cache" ref="civilBerkeleyCache" />
-		<property name="name" value="CIVIL-PERSISTENT" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />

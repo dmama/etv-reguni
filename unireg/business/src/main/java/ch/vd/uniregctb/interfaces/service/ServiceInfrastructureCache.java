@@ -16,6 +16,8 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -26,7 +28,6 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
-import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceInfrastructureCache extends AbstractServiceInfrastructureService implements UniregCacheInterface,
@@ -50,11 +51,13 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 		initCache();
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheName(String cacheName) {
 		this.cacheName = cacheName;
 		initCache();
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
@@ -64,7 +67,7 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 	}
 
 	public CacheStats buildStats() {
-		return new CacheStats(cache);
+		return new EhCacheStats(cache);
 	}
 
 	private void initCache() {

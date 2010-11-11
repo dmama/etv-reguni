@@ -13,9 +13,10 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
@@ -89,7 +90,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	}
 
 	public CacheStats buildStats() {
-		return new CacheStats(cache);
+		return new EhCacheStats(cache);
 	}
 
 	private void initCache() {

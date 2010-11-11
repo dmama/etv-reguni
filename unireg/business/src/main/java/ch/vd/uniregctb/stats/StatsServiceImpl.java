@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 
@@ -318,7 +319,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		b.append("-+---------+---------------\n");
 
 		final int count = stats.size();
-		for (int i = 0 ; i < count ; ++ i) {
+		for (int i = 0; i < count; ++i) {
 			final String k = sortedKeys.get(i);
 			final LoadMonitorStats data = stats.get(i);
 			b.append(printLine(maxLen, k, data));
@@ -346,16 +347,19 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		final StringBuilder b = new StringBuilder();
 
 		final String hitPercent = (data.getHitsPercent() == null ? "-" : String.format("%d%%", data.getHitsPercent()));
-		final String hitCount = (data.getHitsCount() == null ? "-" : String.format("%9d", data.getHitsCount()));
-		final String totalCount = (data.getTotalCount() == null ? "-" : String.format("%9d", data.getTotalCount()));
+		final String hitCount = String.format("%9d", data.getHitsCount());
+		final String totalCount = String.format("%9d", data.getTotalCount());
+		final String timeToIdle = (data.getTimeToIdle() == null ? "-" : String.valueOf(data.getTimeToIdle()));
+		final String timeToLive = (data.getTimeToLive() == null ? "-" : String.valueOf(data.getTimeToLive()));
+		final String maxElements = (data.getMaxElements() == null ? "-" : String.valueOf(data.getMaxElements()));
 
 		b.append(' ').append(rpad(key, maxLen)).append(" | ");
 		b.append(lpad(hitPercent, 12)).append(" | ");
 		b.append(lpad(hitCount, 10)).append(" | ");
 		b.append(lpad(totalCount, 11)).append(" | ");
-		b.append(lpad(String.valueOf(data.getTimeToIdle()), 12)).append(" | ");
-		b.append(lpad(String.valueOf(data.getTimeToLive()), 12)).append(" | ");
-		b.append(lpad(String.valueOf(data.getMaxElements()), 11));
+		b.append(lpad(timeToIdle, 12)).append(" | ");
+		b.append(lpad(timeToLive, 12)).append(" | ");
+		b.append(lpad(maxElements, 11));
 		b.append('\n');
 
 		return b.toString();
@@ -384,10 +388,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	/**
 	 * Complète la chaîne de caractères spécifiée avec des espaces au début de manière à ce qu'elle atteigne le longueur spécifiée.
 	 *
-	 * @param s
-	 *            la chaîne de caractères à padder
-	 * @param len
-	 *            la longueur désirée
+	 * @param s   la chaîne de caractères à padder
+	 * @param len la longueur désirée
 	 * @return un chaîne de caractères de longueur minimale <i>len</i>.
 	 */
 	private static String lpad(String s, int len) {
@@ -401,10 +403,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	/**
 	 * Complète la chaîne de caractères spécifiée avec des espaces à la fin de manière à ce qu'elle atteigne le longueur spécifiée.
 	 *
-	 * @param s
-	 *            la chaîne de caractères à padder
-	 * @param len
-	 *            la longueur désirée
+	 * @param s   la chaîne de caractères à padder
+	 * @param len la longueur désirée
 	 * @return un chaîne de caractères de longueur minimale <i>len</i>.
 	 */
 	@SuppressWarnings("unused")

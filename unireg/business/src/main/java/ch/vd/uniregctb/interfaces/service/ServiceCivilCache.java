@@ -18,13 +18,14 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -71,7 +72,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	}
 
 	public CacheStats buildStats() {
-		return new CacheStats(cache);
+		return new EhCacheStats(cache);
 	}
 
 	private void initCache() {

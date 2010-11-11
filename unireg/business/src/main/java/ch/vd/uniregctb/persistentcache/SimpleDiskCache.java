@@ -17,6 +17,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.SimpleCacheStats;
+
 /**
  * Implémente un cache persistant où chaque objet est stocké sous forme de fichier sur le disque. Les fichiers sont stockés sous une arborescence de répertoire pour éviter d'avoir tous les fichiers en
  * vrac.
@@ -29,6 +32,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 
 	private String storeDir;
 	private static final String jvmName = ManagementFactory.getRuntimeMXBean().getName();
+	private SimpleCacheStats stats = new SimpleCacheStats();
 
 	public void setStoreDir(String storeDir) {
 		this.storeDir = storeDir;
@@ -59,6 +63,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		}
 		catch (FileNotFoundException e) {
 			// le fichier n'existe pas -> pas d'objet
+			stats.addMiss();
 			return null;
 		}
 
@@ -75,6 +80,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 			File file = new File(filename);
 			//noinspection ResultOfMethodCallIgnored
 			file.delete();
+			stats.addMiss();
 			return null;
 		}
 		finally {
@@ -84,6 +90,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 
 		LOGGER.warn("time to get = " + ((System.nanoTime() - start) / 1000000L) + " ms");
 
+		stats.addHit();
 		return object;
 	}
 
@@ -247,5 +254,9 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public CacheStats buildStats() {
+		return new SimpleCacheStats(stats);
 	}
 }

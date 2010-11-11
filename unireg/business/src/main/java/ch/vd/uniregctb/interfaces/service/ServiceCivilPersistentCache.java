@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
@@ -21,7 +22,6 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.persistentcache.ObjectKey;
 import ch.vd.uniregctb.persistentcache.PersistentCache;
-import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -31,12 +31,13 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilPersistentCache.class);
 
+	public static final String CACHE_NAME = "ServiceCivilPersistent";
+
 	private PersistentCache<IndividuCacheValueWithParts> cache;
 	private ServiceCivilService target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private DataEventService dataEventService;
-	private String name;
 
 	public void setTarget(ServiceCivilService target) {
 		this.target = target;
@@ -45,10 +46,6 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCache(PersistentCache<IndividuCacheValueWithParts> cache) {
 		this.cache = cache;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -66,12 +63,12 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	}
 
 	public CacheStats buildStats() {
-		return null; // TODO (msi)
+		return cache.buildStats();
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCache(name, this);
+			statsService.registerCache(CACHE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 		dataEventService.register(this);
@@ -80,7 +77,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	public void destroy() throws Exception {
 		uniregCacheManager.unregister(this);
 		if (statsService != null) {
-			statsService.unregisterCache(name);
+			statsService.unregisterCache(CACHE_NAME);
 		}
 	}
 
@@ -88,14 +85,14 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	 * {@inheritDoc}
 	 */
 	public String getDescription() {
-		return "service civil";
+		return "service civil persistent";
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public String getName() {
-		return name;
+		return "CIVIL-PERSISTENT";
 	}
 
 	/**

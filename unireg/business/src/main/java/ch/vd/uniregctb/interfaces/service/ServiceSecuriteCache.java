@@ -15,9 +15,10 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuriteService, InitializingBean, DisposableBean {
@@ -54,7 +55,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 	}
 
 	public CacheStats buildStats() {
-		return new CacheStats(cache);
+		return new EhCacheStats(cache);
 	}
 
 	private void initCache() {

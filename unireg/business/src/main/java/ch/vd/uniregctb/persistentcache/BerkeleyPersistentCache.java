@@ -21,13 +21,15 @@ import com.sleepycat.je.SecondaryCursor;
 import com.sleepycat.je.SecondaryDatabase;
 import com.sleepycat.je.SecondaryKeyCreator;
 import com.sleepycat.je.Transaction;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.SimpleCacheStats;
+
 public class BerkeleyPersistentCache<T extends Serializable> implements PersistentCache<T>, InitializingBean, DisposableBean {
 
-	private static final Logger LOGGER = Logger.getLogger(BerkeleyPersistentCache.class);
+//	private static final Logger LOGGER = Logger.getLogger(BerkeleyPersistentCache.class);
 
 	private Class<T> clazz;
 	private Environment env;
@@ -39,6 +41,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 	private TupleBinding<Long> secKeyBinding;
 	private SerialBinding<ObjectKey> keyBinding;
 	private int cachePercent = 5;
+	private SimpleCacheStats stats = new SimpleCacheStats();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHomeDirectory(String homeDirectory) {
@@ -115,7 +118,14 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 
 	@SuppressWarnings({"unchecked"})
 	public T get(ObjectKey key) {
-		return map.get(key);
+		final T o = map.get(key);
+		if (o == null) {
+			stats.addMiss();
+		}
+		else {
+			stats.addHit();
+		}
+		return o;
 	}
 
 	public void put(ObjectKey key, T object) {
@@ -188,5 +198,9 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 			secKeyBinding.objectToEntry(id, result);
 			return true;
 		}
+	}
+
+	public CacheStats buildStats() {
+		return new SimpleCacheStats(stats);
 	}
 }
