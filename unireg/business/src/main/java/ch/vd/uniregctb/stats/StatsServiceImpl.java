@@ -10,12 +10,12 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 
 public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService {
@@ -27,7 +27,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	private final Timer timer = new Timer("StatsServiceTicking");
 	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<String, ServiceTracingInterface>();
-	private final Map<String, Ehcache> cachedServices = new HashMap<String, Ehcache>();
+	private final Map<String, UniregCacheInterface> cachedServices = new HashMap<String, UniregCacheInterface>();
 	private final Map<String, LoadMonitor> loadMonitors = new HashMap<String, LoadMonitor>();
 	private long lastLoggedCallTime = 0;
 
@@ -67,7 +67,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		}
 	}
 
-	public void registerCache(String serviceName, Ehcache cache) {
+	public void registerCache(String serviceName, UniregCacheInterface cache) {
 		synchronized (cachedServices) {
 			cachedServices.put(serviceName, cache);
 		}
@@ -99,7 +99,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	private CacheStats getCacheStats(String cacheName) {
 
-		final Ehcache cache;
+		final UniregCacheInterface cache;
 		synchronized (cachedServices) {
 			cache = cachedServices.get(cacheName);
 		}
@@ -108,7 +108,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			return null;
 		}
 
-		return new CacheStats(cache);
+		return cache.buildStats();
 	}
 
 	public ServiceStats getServiceStats(String serviceName) {
@@ -174,15 +174,14 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		synchronized (rawServices) {
 			keys.addAll(rawServices.keySet());
 		}
-		synchronized (cachedServices) {
-			keys.addAll(cachedServices.keySet());
-		}
 
 		// extrait et analyse les stats des services
 		long lastCallTime = 0;
 		for (String k : keys) {
 			final ServiceStats data = getServiceStats(k);
-			lastCallTime = Math.max(lastCallTime, data.getLastCallTime());
+			if (data != null) {
+				lastCallTime = Math.max(lastCallTime, data.getLastCallTime());
+			}
 		}
 
 		return lastCallTime;

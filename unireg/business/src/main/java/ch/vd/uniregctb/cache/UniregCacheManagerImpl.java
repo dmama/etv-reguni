@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.stats.CacheStats;
 
 public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean {
 
@@ -53,7 +52,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 			throw new AttributeNotFoundException();
 		}
 
-		return new CacheStats(cache.getEhCache()).toString();
+		return cache.buildStats().toString();
 	}
 
 	public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
@@ -64,7 +63,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		AttributeList list = new AttributeList(attributes.length);
 		for (String a : attributes) {
 			final UniregCacheInterface cache = map.get(a);
-			list.add(new Attribute(a, new CacheStats(cache.getEhCache())));
+			list.add(new Attribute(a, cache.buildStats()));
 		}
 		return list;
 	}

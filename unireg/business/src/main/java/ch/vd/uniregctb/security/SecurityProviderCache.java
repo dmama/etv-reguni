@@ -24,6 +24,7 @@ import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Niveau;
 
@@ -101,8 +102,8 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		this.transactionManager = transactionManager;
 	}
 
-	public Ehcache getEhCache() {
-		return cache;
+	public CacheStats buildStats() {
+		return new CacheStats(cache);
 	}
 
 	private static class KeyGetDroitAcces {

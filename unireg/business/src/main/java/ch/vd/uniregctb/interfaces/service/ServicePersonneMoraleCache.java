@@ -18,6 +18,7 @@ import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -56,10 +57,10 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		this.statsService = statsService;
 	}
 
-	public Ehcache getEhCache() {
-		return cache;
+	public CacheStats buildStats() {
+		return new CacheStats(cache);
 	}
-
+	
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);
@@ -76,7 +77,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	public void afterPropertiesSet() throws Exception {
 		initCache();
 		if (statsService != null) {
-			statsService.registerCache(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}

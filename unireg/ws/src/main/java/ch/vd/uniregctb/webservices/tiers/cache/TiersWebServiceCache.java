@@ -3,11 +3,9 @@ package ch.vd.uniregctb.webservices.tiers.cache;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.stats.StatsService;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,13 +13,15 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.stats.CacheStats;
+import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.common.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers.Tiers;
+import ch.vd.uniregctb.webservices.tiers.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers.TiersHisto;
 import ch.vd.uniregctb.webservices.tiers.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers.TiersPart;
 import ch.vd.uniregctb.webservices.tiers.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers.params.GetTiersHisto;
@@ -65,8 +65,13 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		this.statsService = statsService;
 	}
 
-	public Ehcache getEhCache() {
+	// pour le testing
+	protected Ehcache getEhCache() {
 		return cache;
+	}
+
+	public CacheStats buildStats() {
+		return new CacheStats(cache);
 	}
 
 	private void initCache() {
@@ -78,7 +83,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCache(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}

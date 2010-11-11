@@ -6,17 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.stats.StatsService;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
@@ -28,6 +26,8 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.stats.CacheStats;
+import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceInfrastructureCache extends AbstractServiceInfrastructureService implements UniregCacheInterface,
 		ServiceInfrastructureService, InitializingBean, DisposableBean {
@@ -63,8 +63,8 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 		this.statsService = statsService;
 	}
 
-	public Ehcache getEhCache() {
-		return cache;
+	public CacheStats buildStats() {
+		return new CacheStats(cache);
 	}
 
 	private void initCache() {
@@ -76,7 +76,7 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCache(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}

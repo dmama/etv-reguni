@@ -4,11 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.stats.StatsService;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -19,6 +17,8 @@ import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.stats.CacheStats;
+import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuriteService, InitializingBean, DisposableBean {
 
@@ -53,8 +53,8 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		this.statsService = statsService;
 	}
 
-	public Ehcache getEhCache() {
-		return cache;
+	public CacheStats buildStats() {
+		return new CacheStats(cache);
 	}
 
 	private void initCache() {
@@ -66,7 +66,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCache(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}

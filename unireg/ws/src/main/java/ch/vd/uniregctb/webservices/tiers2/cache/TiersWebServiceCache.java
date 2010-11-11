@@ -15,6 +15,7 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
@@ -82,8 +83,13 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		this.statsService = statsService;
 	}
 
-	public Ehcache getEhCache() {
+	// pour le testing
+	protected Ehcache getEhCache() {
 		return cache;
+	}
+
+	public CacheStats buildStats() {
+		return new CacheStats(cache);
 	}
 
 	private void initCache() {
@@ -95,7 +101,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCache(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}

@@ -24,6 +24,7 @@ import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -69,8 +70,8 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		this.dataEventService = dataEventService;
 	}
 
-	public Ehcache getEhCache() {
-		return cache;
+	public CacheStats buildStats() {
+		return new CacheStats(cache);
 	}
 
 	private void initCache() {
@@ -82,7 +83,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCache(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 		dataEventService.register(this);

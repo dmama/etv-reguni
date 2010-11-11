@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.ehcache.Ehcache;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.persistentcache.ObjectKey;
 import ch.vd.uniregctb.persistentcache.PersistentCache;
+import ch.vd.uniregctb.stats.CacheStats;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -65,21 +65,22 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 		this.dataEventService = dataEventService;
 	}
 
-	public Ehcache getEhCache() {
-		return null;
+	public CacheStats buildStats() {
+		return null; // TODO (msi)
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-//			statsService.registerCache(SERVICE_NAME, cache);
+			statsService.registerCache(name, this);
 		}
 		uniregCacheManager.register(this);
 		dataEventService.register(this);
 	}
 
 	public void destroy() throws Exception {
+		uniregCacheManager.unregister(this);
 		if (statsService != null) {
-//			statsService.unregisterCache(SERVICE_NAME);
+			statsService.unregisterCache(name);
 		}
 	}
 

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.cache;
 
-import net.sf.ehcache.Ehcache;
+import ch.vd.uniregctb.stats.CacheStats;
 
 /**
  * Interface que doivent implémenter tous les caches d'Unireg.
@@ -20,9 +20,9 @@ public interface UniregCacheInterface {
 	String getDescription();
 
 	/**
-	 * @return le ehcache sous-jacent
+	 * @return construit et retourne les statistiques d'accès au cache
 	 */
-	Ehcache getEhCache();
+	CacheStats buildStats();
 
 	/**
 	 * Vide et réinitialise le cache pour retrouver son état au démarrage de l'application.

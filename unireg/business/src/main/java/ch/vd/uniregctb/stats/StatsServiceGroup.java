@@ -3,11 +3,11 @@ package ch.vd.uniregctb.stats;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.ehcache.Ehcache;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 
 /**
@@ -25,6 +25,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		this.statsService = statsService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
@@ -35,7 +36,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		}
 	}
 
-	public void registerCache(String serviceName, Ehcache cache) {
+	public void registerCache(String serviceName, UniregCacheInterface cache) {
 		throw new NotImplementedException();
 	}
 
