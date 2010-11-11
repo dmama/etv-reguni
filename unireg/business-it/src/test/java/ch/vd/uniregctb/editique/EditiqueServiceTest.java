@@ -49,10 +49,10 @@ public class EditiqueServiceTest extends BusinessItTest {
 	private static final String INPUT_QUEUE = "test.unireg.retourImpression";
 	private static final String OUTPUT_QUEUE = "imprimer";
 
-	private EditiqueServiceImpl service;
 	private EditiqueCompositionServiceImpl composition;
 	private EditiqueRetourImpressionStorageServiceImpl storageService;
 	private DefaultMessageListenerContainer container;
+	private static final int RECEIVE_TIMEOUT = 60;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -94,10 +94,10 @@ public class EditiqueServiceTest extends BusinessItTest {
 		container.setDestinationName(INPUT_QUEUE);
 		container.afterPropertiesSet();
 
-		service = new EditiqueServiceImpl();
+		final EditiqueServiceImpl service = new EditiqueServiceImpl();
 		service.setSender(sender);
 		service.setRetourImpressionStorage(storageService);
-		service.setReceiveTimeout(20);
+		service.setReceiveTimeout(RECEIVE_TIMEOUT);
 
 		final EditiqueHelperImpl editiqueHelper = new EditiqueHelperImpl();
 		editiqueHelper.setAdresseService(adresseService);
@@ -131,7 +131,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		addForPrincipal(jose, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Renens);
 
 		final EditiqueResultat resultat = composition.imprimeNouveauxDossiers(Arrays.asList((Contribuable) jose));
-		assertNotNull(resultat);
+		assertNotNull("Aucun document reçu en retour après " + RECEIVE_TIMEOUT + " secondes", resultat);
 		assertFalse(resultat.hasError());
 		assertEquals("application/pdf", resultat.getContentType());
 		assertTrue(resultat.getIdDocument().startsWith(String.format("%09d", jose.getId())));
