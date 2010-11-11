@@ -470,7 +470,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 
-			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable)tiers;
+			DebiteurPrestationImposable dpiFromView = (DebiteurPrestationImposable)tiers;
 
 
 
@@ -478,6 +478,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			final PeriodiciteView periodicite = tiersView.getPeriodicite();
 			if(periodicite!=null){
 				//Calcul de la date de début de validité de la nouvelle périodicité
+			    DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiFromView.getId());
 
 				RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
 				PeriodeDecompte periodeDecompte = null;
@@ -490,7 +491,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				final Periodicite periodiciteAjoutee = tiersService.addPeriodicite(dpi, periodiciteDecompte,periodeDecompte,debutValidite,null);
 				//permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
 				Assert.notNull(periodiciteAjoutee.getId());
-				dpi = periodiciteAjoutee.getDebiteur();
+				dpiFromView = periodiciteAjoutee.getDebiteur();
 
 			}
 
@@ -500,14 +501,14 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 				//ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ctbAss, dpi);
 				//getTiersDAO().getHibernateTemplate().merge(contact);
-				final RapportEntreTiers rapport = tiersService.addContactImpotSource(dpi, ctbAss);
+				final RapportEntreTiers rapport = tiersService.addContactImpotSource(dpiFromView, ctbAss);
 
 				final DebiteurPrestationImposable dpiRtr = (DebiteurPrestationImposable) tiersDAO.get(rapport.getObjetId());
 
 				return dpiRtr;
 			}
 			else { 
-				return tiersDAO.save(dpi);
+				return tiersDAO.save(dpiFromView);
 			}
 		}
 
