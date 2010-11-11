@@ -38,8 +38,8 @@
 
 					<tr id="date_for_periodique" class="<unireg:nextRowClass/>" >
 
-						<c:if test="${command.natureForFiscal == 'ForFiscalSecondaire'}">
-							<%-- Date d'ouverture (éditable) --%>
+						<c:if test="${command.dateOuvertureEditable}">
+							<%-- Date d''ouverture (éditable) --%>
 							<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 							<td>
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -50,7 +50,7 @@
 								</jsp:include>
 							</td>
 
-							<%-- Motif d'ouverture (éditable) --%>
+							<%-- Motif d''ouverture (éditable) --%>
 							<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 							<td>
 								<form:select path="motifOuverture" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
@@ -58,12 +58,12 @@
 							</td>
 						</c:if>
 
-						<c:if test="${command.natureForFiscal != 'ForFiscalSecondaire'}">
-							<%-- Date d'ouverture (non éditable) --%>
+						<c:if test="${!command.dateOuvertureEditable}">
+							<%-- Date d''ouverture (non éditable) --%>
 							<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 							<td><fmt:formatDate value="${command.dateOuverture}" pattern="dd.MM.yyyy"/></td>
 
-							<%-- Motif d'ouverture (non éditable) --%>
+							<%-- Motif d''ouverture (non éditable) --%>
 							<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 							<td><fmt:message key="option.motif.ouverture.${command.motifOuverture}" /></td>
 						</c:if>
@@ -76,8 +76,7 @@
 
 					<tr id="motif_for_periodique" class="<unireg:nextRowClass/>" >
 
-						<%-- [UNIREG-2322] la date de fin est éditable sur les fors principaux ouverts et sur tous les fors secondaires --%>
-						<c:if test="${command.dateFermetureIncoherente || command.dateFermeture == null || command.motifFermeture == null || command.natureForFiscal == 'ForFiscalSecondaire'}">
+						<c:if test="${command.dateFermetureEditable}">
 							<%-- Date de fermeture (éditable) --%>
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td>
@@ -96,7 +95,7 @@
 								<form:errors path="motifFermeture" cssClass="error" />
 							</td>
 						</c:if>
-						<c:if test="${!command.dateFermetureIncoherente && command.dateFermeture != null && command.motifFermeture != null && command.natureForFiscal != 'ForFiscalSecondaire'}">
+						<c:if test="${!command.dateFermetureEditable}">
 							<%-- Date de fermeture (non éditable) --%>
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td><fmt:formatDate value="${command.dateFermeture}" pattern="dd.MM.yyyy"/></td>
@@ -112,11 +111,11 @@
 
 			<script type="text/javascript">
 				// on met-à-jour les motifs d'ouverture et de fermeture au chargement de la page (genre impôt et rattachement sont fixés)
-				<c:if test="${command.natureForFiscal == 'ForFiscalSecondaire'}">
-				updateMotifsOuverture(E$('motifOuverture'), 'motifOuverture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifOuverture}');
+				<c:if test="${command.dateOuvertureEditable}">
+					updateMotifsOuverture(E$('motifOuverture'), 'motifOuverture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifOuverture}');
 				</c:if>
-				<c:if test="${ccommand.dateFermetureIncoherente || ommand.dateFermeture == null || command.motifFermeture == null || command.natureForFiscal == 'ForFiscalSecondaire'}">
-				updateMotifsFermeture(E$('motifFermeture'), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
+				<c:if test="${command.dateFermetureEditable}">
+					updateMotifsFermeture(E$('motifFermeture'), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
 				</c:if>
 			</script>
 

@@ -17,13 +17,28 @@
 		
 			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
-				<td><fmt:formatDate value="${command.dateOuverture}" pattern="dd.MM.yyyy"/></td>
+				<td>
+					<c:if test="${command.dateOuvertureEditable}">
+						<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+							<jsp:param name="path" value="dateOuverture" />
+							<jsp:param name="id" value="dateOuverture" />
+						</jsp:include>
+					</c:if>
+					<c:if test="${!command.dateOuvertureEditable}">
+						<fmt:formatDate value="${command.dateOuverture}" pattern="dd.MM.yyyy"/>
+					</c:if>
+				</td>
 				<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 				<td>
-					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-						<jsp:param name="path" value="dateFermeture" />
-						<jsp:param name="id" value="dateFermeture" />
-					</jsp:include>
+					<c:if test="${command.dateFermetureEditable}">
+						<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+							<jsp:param name="path" value="dateFermeture" />
+							<jsp:param name="id" value="dateFermeture" />
+						</jsp:include>
+					</c:if>
+					<c:if test="${!command.dateFermetureEditable}">
+						<fmt:formatDate value="${command.dateFermeture}" pattern="dd.MM.yyyy"/>
+					</c:if>
 				</td>
 			</tr>
 			

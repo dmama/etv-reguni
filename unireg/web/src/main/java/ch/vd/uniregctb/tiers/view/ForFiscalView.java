@@ -2,11 +2,14 @@ package ch.vd.uniregctb.tiers.view;
 
 import java.util.Date;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -65,10 +68,11 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 
 	private Boolean forGestion;
 
-	private boolean dateFermetureIncoherente;
+	private boolean dateOuvertureEditable = true;
+
+	private boolean dateFermetureEditable = true;
 
 	public ForFiscalView() {
-
 	}
 
 	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean dernierForPrincipalOuDebiteur) {
@@ -83,6 +87,15 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 		else {
 			this.dateOuverture = forFiscal.getDateDebut();
 			this.dateFermeture = forFiscal.getDateFin();
+
+			if (forFiscal instanceof ForFiscalSecondaire) {
+				this.dateOuvertureEditable = true;
+				this.dateFermetureEditable = true;
+			}
+			else {
+				this.dateOuvertureEditable = dateOuverture == null;
+				this.dateFermetureEditable = dateFermeture == null || !RegDateHelper.isBeforeOrEqual(dateFermeture, RegDate.get(), NullDateBehavior.LATEST);
+			}
 		}
 
 		this.typeAutoriteFiscale = forFiscal.getTypeAutoriteFiscale();
@@ -461,13 +474,11 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 		this.motifImposition = motifImposition;
 	}
 
-	public boolean isDateFermetureIncoherente() {
-		if(dateFermeture!=null){
-			dateFermetureIncoherente = dateFermeture.isAfter(RegDate.get());
-		}
-			
-		return dateFermetureIncoherente;
+	public boolean isDateOuvertureEditable() {
+		return dateOuvertureEditable;
 	}
 
-
+	public boolean isDateFermetureEditable() {
+		return dateFermetureEditable;
+	}
 }

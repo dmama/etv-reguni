@@ -23,7 +23,6 @@
 
 	<bean id="forFiscalManager" class="ch.vd.uniregctb.tiers.manager.ForFiscalManagerImpl"  parent="tiersManager">
 		<property name="forFiscalDAO" ref="forFiscalDAO" />
-		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />

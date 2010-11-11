@@ -17,7 +17,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -25,10 +24,8 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
-import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalDAO;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -52,17 +49,12 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManager {
 
 	private ForFiscalDAO forFiscalDAO;
-	private EvenementFiscalService evenementFiscalService;
 	private ServiceInfrastructureService serviceInfra;
 	private TacheManager tacheManager;
 	private PlatformTransactionManager transactionManager;
 
 	private static final String TITRE_SYNC_ACTIONS = "Les actions suivantes seront exécutées si vous confirmez les changements";
 	private static final String TITRE_SYNC_ACTIONS_INVALIDES = "Les erreurs de validation suivantes seront levées si vous confirmez les changements";
-
-	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
-		this.evenementFiscalService = evenementFiscalService;
-	}
 
 	public void setForFiscalDAO(ForFiscalDAO forFiscalDAO) {
 		this.forFiscalDAO = forFiscalDAO;
@@ -136,7 +128,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @return la map de droit d'édition des onglets
 	 */
 	private Map<String, Boolean> initAllowedOnglet(){
-		Map<String, Boolean> allowedOnglet = new HashMap<String, Boolean>();
+		final Map<String, Boolean> allowedOnglet = new HashMap<String, Boolean>();
 		allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
 		allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.FALSE);
 		allowedOnglet.put(TiersEditView.FISCAL_FOR_SEC, Boolean.FALSE);
@@ -160,15 +152,12 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.for.fiscal.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		Tiers tiers = forFiscal.getTiers();
-
-		ForFiscalView forFiscalView = new ForFiscalView();
+		final Tiers tiers = forFiscal.getTiers();
+		final ForFiscalView forFiscalView = new ForFiscalView(forFiscal, false, false);
 		forFiscalView.setChangementModeImposition(false);
-		forFiscalView.setId(forFiscal.getId());
-		forFiscalView.setNumeroCtb(tiers.getNumero());
-		forFiscalView.setGenreImpot(forFiscal.getGenreImpot());
+
 		if(tiers.getNatureTiers().equals(Tiers.NATURE_MENAGECOMMUN)){
-			MenageCommun menage = (MenageCommun)tiers;
+			final MenageCommun menage = (MenageCommun) tiers;
 			boolean isHabitant = false;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 				if (pp.isHabitantVD()) {
@@ -176,37 +165,30 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 					break;
 				}
 			}
-			if(isHabitant)
+			if (isHabitant) {
 				forFiscalView.setNatureTiers(Tiers.NATURE_HABITANT);
-			else forFiscalView.setNatureTiers(Tiers.NATURE_NONHABITANT);
+			}
+			else {
+				forFiscalView.setNatureTiers(Tiers.NATURE_NONHABITANT);
+			}
 		}
 		else {
 			forFiscalView.setNatureTiers(tiers.getNatureTiers());
 		}
-		forFiscalView.setAnnule(forFiscal.isAnnule());
-		if (forFiscal instanceof ForFiscalAutreImpot) {
-			forFiscalView.setDateEvenement(forFiscal.getDateDebut());
-		} else {
-			forFiscalView.setDateOuverture(forFiscal.getDateDebut());
-			forFiscalView.setDateFermeture(forFiscal.getDateFin());
-		}
-		TypeAutoriteFiscale typeForFiscal = forFiscal.getTypeAutoriteFiscale();
-		forFiscalView.setTypeAutoriteFiscale(typeForFiscal);
+
+		final TypeAutoriteFiscale typeForFiscal = forFiscal.getTypeAutoriteFiscale();
 		switch (typeForFiscal) {
 		case COMMUNE_OU_FRACTION_VD:
-			forFiscalView.setNumeroForFiscalCommune(forFiscal.getNumeroOfsAutoriteFiscale());
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
 				forFiscalView.setLibFractionCommune(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin()).getNomMinuscule());
 			}
 			break;
 		case COMMUNE_HC:
-			forFiscalView.setNumeroForFiscalCommuneHorsCanton(forFiscal.getNumeroOfsAutoriteFiscale());
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
 				forFiscalView.setLibCommuneHorsCanton(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin()).getNomMinuscule());
 			}
 			break;
 		case PAYS_HS:
-			forFiscalView.setNumeroForFiscalPays(forFiscal.getNumeroOfsAutoriteFiscale());
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
 				forFiscalView.setLibPays(serviceInfra.getPays(forFiscal.getNumeroOfsAutoriteFiscale()).getNomMinuscule());
 			}
@@ -214,18 +196,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		default:
 			break;
 		}
-		if (forFiscal instanceof ForFiscalRevenuFortune) {
-			ForFiscalRevenuFortune forFiscalRevenuFortune = (ForFiscalRevenuFortune) forFiscal;
-			forFiscalView.setMotifOuverture(forFiscalRevenuFortune.getMotifOuverture());
-			forFiscalView.setMotifFermeture(forFiscalRevenuFortune.getMotifFermeture());
-			forFiscalView.setMotifRattachement(forFiscalRevenuFortune.getMotifRattachement());
-		}
-		if (forFiscal instanceof ForFiscalPrincipal) {
-			ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
-			forFiscalView.setModeImposition(forFiscalPrincipal.getModeImposition());
-		}
-
-		forFiscalView.setNatureForFiscal(forFiscal.getClass().getSimpleName());
 
 		return forFiscalView;
 	}
@@ -271,92 +241,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		}
 		forFiscalView.setDateOuverture(RegDate.get());
 		return forFiscalView;
-	}
-
-	/**
-	 * Enrichi le for en fonction de ForFiscalView (partie ForFiscal)
-	 *
-	 * @param forFiscal
-	 * @param forFiscalView
-	 */
-	private void enrichiFor(final ForFiscal forFiscal, ForFiscalView forFiscalView) {
-
-		forFiscal.setAnnule(forFiscalView.isAnnule());
-		forFiscal.setGenreImpot(forFiscalView.getGenreImpot());
-
-		TypeAutoriteFiscale typeForFiscal = forFiscalView.getTypeAutoriteFiscale();
-		forFiscal.setTypeAutoriteFiscale(typeForFiscal);
-		switch (typeForFiscal) {
-		case COMMUNE_OU_FRACTION_VD:
-			forFiscal.setNumeroOfsAutoriteFiscale(forFiscalView.getNumeroForFiscalCommune());
-			break;
-		case COMMUNE_HC:
-			forFiscal.setNumeroOfsAutoriteFiscale(forFiscalView.getNumeroForFiscalCommuneHorsCanton());
-			break;
-		case PAYS_HS:
-			forFiscal.setNumeroOfsAutoriteFiscale(forFiscalView.getNumeroForFiscalPays());
-			break;
-		default:
-			break;
-		}
-	}
-
-	/**
-	 * Enrichi le for en fonction de ForFiscalView (partie ForFiscalAutreImpot)
-	 *
-	 * @param forFiscal
-	 * @param forFiscalView
-	 */
-	private void enrichiForAutreImpot(ForFiscal forFiscal, ForFiscalView forFiscalView) {
-		forFiscal.setDateDebut(forFiscalView.getRegDateEvenement());
-		forFiscal.setDateFin(forFiscalView.getRegDateEvenement());
-	}
-
-	/**
-	 * Enrichi le for en fonction de ForFiscalView (partie ForRevenuFortune)
-	 *
-	 * @param forFiscal
-	 * @param forFiscalView
-	 */
-	private void enrichiForRevenuFortune(ForFiscalRevenuFortune forRevenuFortune, ForFiscalView forFiscalView) {
-
-		if (forFiscalView.getDateChangement() == null) {
-			forRevenuFortune.setDateDebut(forFiscalView.getRegDateOuverture());
-			forRevenuFortune.setDateFin(forFiscalView.getRegDateFermeture());
-		} else {
-			forRevenuFortune.setDateDebut(forFiscalView.getRegDateChangement());
-			forRevenuFortune.setDateFin(null);
-		}
-		forRevenuFortune.setMotifRattachement(forFiscalView.getMotifRattachement());
-		forRevenuFortune.setMotifOuverture(forFiscalView.getMotifOuverture());
-
-		forRevenuFortune.setMotifFermeture(forFiscalView.getMotifFermeture());
-
-
-		if (forRevenuFortune instanceof ForFiscalPrincipal) {
-			enrichiForPrincipal((ForFiscalPrincipal) forRevenuFortune, forFiscalView);
-		}
-	}
-
-	/**
-	 * Enrichi le for en fonction de ForFiscalView (partie ForDebiteurPrestationImposable)
-	 *
-	 * @param forDebiteurPrestationImposable
-	 * @param forFiscalView
-	 */
-	private void enrichiForDebiteurPrestationImposable(ForDebiteurPrestationImposable forDebiteurPrestationImposable, ForFiscalView forFiscalView) {
-		forDebiteurPrestationImposable.setDateDebut(forFiscalView.getRegDateOuverture());
-		forDebiteurPrestationImposable.setDateFin(forFiscalView.getRegDateFermeture());
-	}
-
-	/**
-	 * Enrichi le for en fonction de ForFiscalView (partie ForPrincipal)
-	 *
-	 * @param forFiscal
-	 * @param forFiscalView
-	 */
-	private void enrichiForPrincipal(ForFiscalPrincipal forFiscalPrincipal, ForFiscalView forFiscalView) {
-		forFiscalPrincipal.setModeImposition(forFiscalView.getModeImposition());
 	}
 
 	public ForFiscal updateFor(ForFiscalView view) {
