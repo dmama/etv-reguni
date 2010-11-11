@@ -43,6 +43,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -3067,6 +3068,52 @@ public class TiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	//test UNIREG-3041 AJout d'une nouvelle périodicité avec une périodicité existante l'année suivante et une
+	//absence de LR sur l'année en cours
+	@Test
+	public void testAddPeriodicitesAbsencesLR() throws Exception{
+	//Ajout d'une première periodicite'
+		final int anneeReference = RegDate.get().year();
+		final int anneeSuivante = anneeReference +1;
+		final int anneePrecedente = anneeReference - 1;
+		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M11, date(anneeSuivante, 1, 1),null);
+
+				addForDebiteur(dpi,date(anneeReference-1, 1, 1),null, MockCommune.Bex);
+
+				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference-1);
+				final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeReference);
+
+				addLR(dpi, date(anneePrecedente,1,1),date(anneePrecedente,3,31), fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente,4,1),date(anneePrecedente,6,30), fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente,7,1),date(anneePrecedente,9,30), fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente,10,1),date(anneePrecedente,12,31), fiscale2009, TypeEtatDeclaration.EMISE);
+				return  dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				RegDate dateDebut = tiersService.getDateDebutNouvellePeriodicite(dpi);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M12, dateDebut,null);
+				Periodicite periodicite = dpi.getDernierePeriodicite();
+				assertEquals(dateDebut,periodicite.getDateDebut());
+				assertEquals(PeriodiciteDecompte.UNIQUE,periodicite.getPeriodiciteDecompte());
+				assertEquals(PeriodeDecompte.M12,periodicite.getPeriodeDecompte());
+
+
+				return null;
+			}
+		});
+
 	}
 
 	/**

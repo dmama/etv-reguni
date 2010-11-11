@@ -2204,7 +2204,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
-
+		annulerPeriodicitePosterieur(debiteur,dateDebut);
 		while (true) { // cette boucle permet de fusionner - si nécessaire - la nouvelle périodicité avec celles existantes
 			Periodicite courante = debiteur.getPeriodiciteAt(dateDebut);
 			if (courante == null) {
@@ -2252,6 +2252,24 @@ public class TiersServiceImpl implements TiersService {
 
 		final Periodicite nouvelle = new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, dateFin);
 		return addAndSave(debiteur, nouvelle);
+	}
+
+	/**Annule toute les périodicités du débiteur qui ont une date de début postérieur à la date passée en paramètre
+	 * UNIREG-3041
+	 * @param debiteur sur qui on veut annuler les périodicités
+	 * @param dateDebut date de référence  calculée par @link #getDateDebutNouvellePeriodicite
+	 */
+	private void annulerPeriodicitePosterieur(DebiteurPrestationImposable debiteur, RegDate dateDebut) {
+		List<Periodicite> periodicites=  debiteur.getPeriodicitesSorted();
+		if(periodicites !=null){
+			for (Periodicite periodicite : periodicites) {
+				if(!periodicite.isAnnule() && periodicite.getDateDebut().isAfter(dateDebut)){
+					periodicite.setAnnule(true);
+				}
+			}
+
+		}
+
 	}
 
 	/**
