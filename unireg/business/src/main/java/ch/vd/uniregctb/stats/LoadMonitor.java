@@ -9,11 +9,11 @@ public interface LoadMonitor {
 	/**
 	 * @return la charge instantanée du système considéré
 	 */
-	int getChargeInstantanee();
+	int getLoad();
 
 	/**
 	 * @return la moyenne de la charge sur les 5 dernières minutes
 	 */
-	double getMoyenneChargeCinqMinutes();
+	double getFiveMinuteAverageLoad();
 	
 }

@@ -68,7 +68,7 @@ public class LoadAverager {
 		this.samplingHighWaterMark = 0;
 	}
 
-	public double getLoadAverage() {
+	public double getAverageLoad() {
 		return getAverage();
 	}
 
@@ -78,7 +78,7 @@ public class LoadAverager {
 	private final class SamplingTask extends TimerTask {
 		@Override
 		public void run() {
-			final int charge = service.getChargeInstantanee();
+			final int charge = service.getLoad();
 			addSamplingData(charge);
 		}
 	}

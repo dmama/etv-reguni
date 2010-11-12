@@ -51,12 +51,12 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 
 				statsService.registerLoadMonitor(serviceName, new LoadMonitor() {
 
-					public int getChargeInstantanee() {
-						return service.getChargeInstantanee();
+					public int getLoad() {
+						return service.getLoad();
 					}
 
-					public double getMoyenneChargeCinqMinutes() {
-						return averager.getLoadAverage();
+					public double getFiveMinuteAverageLoad() {
+						return averager.getAverageLoad();
 					}
 				});
 			}
@@ -80,32 +80,32 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 	}
 
 	@ManagedAttribute
-	public Map<String, Integer> getChargeInstantanee() {
+	public Map<String, Integer> getLoad() {
 		final Map<String, Integer> map = new HashMap<String, Integer>(services.size());
 		for (Map.Entry<String, LoadMonitorable> entry : services.entrySet()) {
-			map.put(entry.getKey(), entry.getValue().getChargeInstantanee());
+			map.put(entry.getKey(), entry.getValue().getLoad());
 		}
 		return map;
 	}
 
 	@ManagedAttribute
-	public Map<String, Double> getMoyenneCharge() {
+	public Map<String, Double> getAverageLoad() {
 		final Map<String, Double> map = new HashMap<String, Double>(averagers.size());
 		for (Map.Entry<String, LoadAverager> entry : averagers.entrySet()) {
-			map.put(entry.getKey(), entry.getValue().getLoadAverage());
+			map.put(entry.getKey(), entry.getValue().getAverageLoad());
 		}
 		return map;
 	}
 
 	@ManagedOperation
-	public Integer getChargeInstantanee(String serviceName) {
+	public Integer getLoad(String serviceName) {
 		final LoadMonitorable service = services.get(serviceName);
-		return service != null ? service.getChargeInstantanee() : null;
+		return service != null ? service.getLoad() : null;
 	}
 
 	@ManagedOperation
-	public Double getMoyenneCharge(String serviceName) {
+	public Double getAverageLoad(String serviceName) {
 		final LoadAverager averager = averagers.get(serviceName);
-		return averager != null ? averager.getLoadAverage() : null;
+		return averager != null ? averager.getAverageLoad() : null;
 	}
 }

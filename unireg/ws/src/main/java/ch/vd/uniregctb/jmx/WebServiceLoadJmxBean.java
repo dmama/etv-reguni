@@ -11,15 +11,15 @@ import org.springframework.jmx.export.annotation.ManagedOperation;
 public interface WebServiceLoadJmxBean {
 
 	@ManagedAttribute(description = "Charge instantanée des services")
-	Map<String, Integer> getChargeInstantanee();
+	Map<String, Integer> getLoad();
 
 	@ManagedAttribute(description = "Moyenne de la charge des services sur les 5 dernières minutes")
-	Map<String, Double> getMoyenneCharge();
+	Map<String, Double> getAverageLoad();
 
 	@ManagedOperation
-	Integer getChargeInstantanee(String serviceName);
+	Integer getLoad(String serviceName);
 
 	@ManagedOperation
-	Double getMoyenneCharge(String serviceName);
+	Double getAverageLoad(String serviceName);
 
 }

@@ -8,5 +8,5 @@ public interface LoadMonitorable {
 	/**
 	 * @return la charge instantanée (par exemple le nombre d'appels actuellement en cours)
 	 */
-	int getChargeInstantanee();
+	int getLoad();
 }

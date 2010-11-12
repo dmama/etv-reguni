@@ -31,7 +31,7 @@
 			<map>
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Charge" value-ref="webserviceLoadJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=WebserviceLoad" value-ref="webserviceLoadJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />

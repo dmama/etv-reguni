@@ -82,7 +82,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		this.service = service;
 	}
 
-	public int getChargeInstantanee() {
+	public int getLoad() {
 		return appelsEnCours.intValue();
 	}
 
@@ -874,7 +874,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			final String user = getBasicAuthenticationUser();
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			READ_ACCESS.info(String.format("[%s] (%d ms) %s charge=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
 		}
 	}
 
@@ -889,7 +889,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			final String user = getBasicAuthenticationUser();
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s charge=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
 		}
 	}
 

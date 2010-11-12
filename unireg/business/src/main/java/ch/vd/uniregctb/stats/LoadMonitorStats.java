@@ -7,8 +7,8 @@ public class LoadMonitorStats {
 	private final double moyenneCharge;
 
 	public LoadMonitorStats(LoadMonitor monitor) {
-		this.chargeInstantanee = monitor.getChargeInstantanee();
-		this.moyenneCharge = monitor.getMoyenneChargeCinqMinutes();
+		this.chargeInstantanee = monitor.getLoad();
+		this.moyenneCharge = monitor.getFiveMinuteAverageLoad();
 	}
 
 	public int getChargeInstantanee() {
