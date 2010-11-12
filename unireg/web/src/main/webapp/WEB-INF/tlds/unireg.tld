@@ -99,6 +99,18 @@
 			<description>format Date</description>
 		</attribute>
 	</tag>
+	<tag>
+		<name>currency</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatCurrency</tag-class>
+		<body-content>JSP</body-content>
+		<description>display a currency</description>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>currency value to format</description>
+		</attribute>
+	</tag>
 
 	<tag>
 		<name>user</name>
