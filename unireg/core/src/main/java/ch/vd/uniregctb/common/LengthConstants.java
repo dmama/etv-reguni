@@ -1,6 +1,11 @@
 package ch.vd.uniregctb.common;
 
-public class LengthConstants {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+
+public abstract class LengthConstants {
 
 	public final static int HIBERNATE_LOGUSER = 65;
 
@@ -79,4 +84,26 @@ public class LengthConstants {
 	public final static int DOCINDEX_DESC = 255;
 
 	public final static int MAXLEN = 2000;
+
+	private static final Pattern MULTI_BLANKS = Pattern.compile("\\s{2,}");
+
+	public static String streamlineField(String fieldValue, int maxLength, boolean removeSuccessiveBlanks) {
+
+		// on enlève d'abord tous les blancs en surplus : trim + blanc successifs si demandé
+		String value = StringUtils.trimToNull(fieldValue);
+		if (value != null) {
+
+			// on retire maintenant les blancs successifs
+			if (removeSuccessiveBlanks) {
+				final Matcher matcher = MULTI_BLANKS.matcher(value);
+				value = matcher.replaceAll(" ");
+			}
+
+			// si la chaîne est trop longue, on tronque et puis c'est tout!
+			if (value.length() > maxLength) {
+				value = StringUtils.trimToNull(value.substring(0, maxLength));
+			}
+		}
+		return value;
+	}
 }

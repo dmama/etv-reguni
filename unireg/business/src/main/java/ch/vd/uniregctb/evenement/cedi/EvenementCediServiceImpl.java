@@ -3,10 +3,10 @@ package ch.vd.uniregctb.evenement.cedi;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -116,23 +116,23 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 	private void updateInformationsPersonnelles(Contribuable ctb, RetourDI scan) {
 
 		if (StringUtils.isNotBlank(scan.getTitulaireCompte())) {
-			ctb.setTitulaireCompteBancaire(scan.getTitulaireCompte());
+			ctb.setTitulaireCompteBancaire(LengthConstants.streamlineField(scan.getTitulaireCompte(), LengthConstants.TIERS_PERSONNE, true));
 		}
 
 		if (StringUtils.isNotBlank(scan.getIban())) {
-			ctb.setNumeroCompteBancaire(IbanHelper.removeSpaceAndDoUpperCase(scan.getIban()));
+			ctb.setNumeroCompteBancaire(LengthConstants.streamlineField(IbanHelper.removeSpaceAndDoUpperCase(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false));
 		}
 
 		if (StringUtils.isNotBlank(scan.getNoTelephone())) {
-			ctb.setNumeroTelephonePrive(scan.getNoTelephone());
+			ctb.setNumeroTelephonePrive(LengthConstants.streamlineField(scan.getNoTelephone(), LengthConstants.TIERS_NUMTEL, true));
 		}
 
 		if (StringUtils.isNotBlank(scan.getNoMobile())) {
-			ctb.setNumeroTelephonePortable(scan.getNoMobile());
+			ctb.setNumeroTelephonePortable(LengthConstants.streamlineField(scan.getNoMobile(), LengthConstants.TIERS_NUMTEL, true));
 		}
 
 		if (StringUtils.isNotBlank(scan.getEmail())) {
-			ctb.setAdresseCourrierElectronique(scan.getEmail());
+			ctb.setAdresseCourrierElectronique(LengthConstants.streamlineField(scan.getEmail(), LengthConstants.TIERS_EMAIL, true));
 		}
 	}
 
