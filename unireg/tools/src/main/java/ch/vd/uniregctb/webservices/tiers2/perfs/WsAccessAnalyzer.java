@@ -12,10 +12,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,33 +75,25 @@ public class WsAccessAnalyzer {
 
 	private static class Periode implements Comparable<Periode> {
 
-		private final int startHour;
-		private final int startMinute;
-		private final int endHour;
-		private final int endMinute;
+		private final HourMinutes start;
+		private final HourMinutes end;
 
 		private Periode(int startHour, int startMinute, int endHour, int endMinute) {
-			this.startHour = startHour;
-			this.startMinute = startMinute;
-			this.endHour = endHour;
-			this.endMinute = endMinute;
+			this.start = new HourMinutes(startHour, startMinute);
+			this.end = new HourMinutes(endHour, endMinute);
 		}
 
-		public boolean isInPeriode(Date timespamp) {
-			final Calendar cal = GregorianCalendar.getInstance();
-			cal.setTime(timespamp);
-			final int hour = cal.get(Calendar.HOUR_OF_DAY);
-			final int minutes = cal.get(Calendar.MINUTE);
-			return startHour <= hour && hour <= this.endHour && startMinute <= minutes && minutes <= endMinute;
+		public boolean isInPeriode(HourMinutes timespamp) {
+			return start.compareTo(timespamp) <= 0 && timespamp.compareTo(end) <= 0;
 		}
 
 		public int compareTo(Periode o) {
-			return Integer.valueOf(startHour).compareTo(o.startHour);
+			return Integer.valueOf(start.hour).compareTo(o.start.hour);
 		}
 
 		@Override
 		public String toString() {
-			return String.format("%02d:%02d", startHour, startMinute);
+			return String.format("%02d:%02d", start.hour, start.minutes);
 		}
 	}
 
@@ -197,7 +187,7 @@ public class WsAccessAnalyzer {
 			}
 		}
 
-		public boolean isInPeriode(Date timestamp) {
+		public boolean isInPeriode(HourMinutes timestamp) {
 			return periode.isInPeriode(timestamp);
 		}
 
@@ -302,7 +292,7 @@ public class WsAccessAnalyzer {
 
 		private Map<String, List<ResponseTimeRange>> results = new HashMap<String, List<ResponseTimeRange>>();
 
-		public void addCall(String method, Date timestamp, long milliseconds) {
+		public void addCall(String method, HourMinutes timestamp, long milliseconds) {
 
 			List<ResponseTimeRange> list = results.get(method);
 			if (list == null) {
@@ -425,7 +415,7 @@ public class WsAccessAnalyzer {
 	private abstract static class Analyzer {
 
 
-		public abstract void addCall(String method, Date timestamp, long millisecondes);
+		public abstract void addCall(String method, HourMinutes timestamp, long millisecondes);
 
 		public abstract void printHtml(String htmlFile, boolean localImages) throws IOException;
 
@@ -449,53 +439,23 @@ public class WsAccessAnalyzer {
 			}
 		}
 
-		private static final SimpleDateFormat TIMESTAMP_DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		private static final Pattern TIMESTAMP = Pattern.compile(".*?\\[.*?\\].*?\\[(.*?)\\].*");
-		private static final Pattern MILLI_METHOD = Pattern.compile(".*\\(([0-9]+) ms\\) ([^\\{]*).*");
 		private static final Pattern TIERS_NUMBERS = Pattern.compile(".*tiersNumbers=\\[([0-9, ]*)\\].*");
 
 		private void process(String line) {
 
 			try {
-				final Matcher matcher = MILLI_METHOD.matcher(line);
-				if (matcher.matches()) {
-					final long milliseconds = Long.parseLong(matcher.group(1));
-					final String method = matcher.group(2);
-
-					final int tiersCount = getTiersCount(line, method);
-					final Date timestamp = getTimestamp(line);
-
-					addCall(method, timestamp, milliseconds / tiersCount);
+				final Call call = Call.parse(line);
+				if (call == null) {
+					return;
 				}
+				addCall(call.getMethod(), call.getTimestamp(), call.getMilliseconds() / call.getTiersCount());
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		private Date getTimestamp(String line) throws java.text.ParseException {
-			final Matcher m = TIMESTAMP.matcher(line);
-			Assert.isTrue(m.matches());
-			final String timestampAsString = m.group(1);
-			return TIMESTAMP_DATEFORMAT.parse(timestampAsString);
-		}
-
-		private int getTiersCount(String line, String method) {
-			final int tiersCount;
-			if (method.startsWith("GetBatch")) {
-				// en cas de méthode batch, on calcul le temps moyen de réponse par tiers demandé
-				final Matcher m = TIERS_NUMBERS.matcher(line);
-				Assert.isTrue(m.matches());
-				final String tiersNumer = m.group(1);
-				tiersCount = StringUtils.countMatches(tiersNumer, ",") + 1;
-			}
-			else {
-				tiersCount = 1;
-			}
-			return tiersCount;
-		}
-
-		protected String buildChart(String method, String htmlFile, boolean localImages, String chartUrl) throws IOException {
+		protected String buildChart(String chartName, String htmlFile, boolean localImages, String chartUrl) throws IOException {
 
 			if (localImages) {
 				final String dirname = FilenameUtils.removeExtension(htmlFile);
@@ -509,7 +469,7 @@ public class WsAccessAnalyzer {
 				}
 
 				// on récupère l'image générée par Google et on la stocke dans le sous-répertoire
-				final String imagename = dirname + "/" + method + ".png";
+				final String imagename = dirname + "/" + chartName + ".png";
 				InputStream is = null;
 				OutputStream os = null;
 				try {
@@ -528,11 +488,11 @@ public class WsAccessAnalyzer {
 				}
 
 				// on inclut l'image stockée en local
-				final String imageurl = FilenameUtils.getName(dirname) + "/" + method + ".png";
-				return "<img src=\"" + imageurl + "\" width=\"1000\" height=\"200\" alt=\"" + method + "\"/><br/><br/><br/>";
+				final String imageurl = FilenameUtils.getName(dirname) + "/" + chartName + ".png";
+				return "<img src=\"" + imageurl + "\" width=\"1000\" height=\"200\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 			}
 			else {
-				return "<img src=\"" + chartUrl + "\" width=\"1000\" height=\"200\" alt=\"" + method + "\"/><br/><br/><br/>";
+				return "<img src=\"" + chartUrl + "\" width=\"1000\" height=\"200\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 			}
 		}
 	}
@@ -541,7 +501,9 @@ public class WsAccessAnalyzer {
 
 		private Map<String, List<ResponseTimePeriode>> results = new HashMap<String, List<ResponseTimePeriode>>();
 
-		public void addCall(String method, Date timestamp, long millisecondes) {
+		private int lastPeriodeIndex = 0;
+
+		public void addCall(String method, HourMinutes timestamp, long millisecondes) {
 
 			if (millisecondes == 0) {
 				// on ignore les appels qui prennent 0 millisecondes : il s'agit de valeurs non-représentatives retournées pas le cache.
@@ -557,12 +519,27 @@ public class WsAccessAnalyzer {
 				results.put(method, list);
 			}
 
+			// optim : on commence à la position de la dernière période trouvée
 			boolean found = false;
-			for (ResponseTimePeriode periode : list) {
+			for (int i = lastPeriodeIndex, listSize = list.size(); i < listSize; i++) {
+				final ResponseTimePeriode periode = list.get(i);
 				if (periode.isInPeriode(timestamp)) {
 					periode.add(millisecondes);
+					lastPeriodeIndex = i;
 					found = true;
 					break;
+				}
+			}
+			if (!found) {
+				// si on a pas trouvé, on recommence au début (ne devrait pas arriver, si les logs sont ordonnés de manière croissante dans le fichier)
+				for (int i = 0; i < lastPeriodeIndex; i++) {
+					final ResponseTimePeriode periode = list.get(i);
+					if (periode.isInPeriode(timestamp)) {
+						periode.add(millisecondes);
+						lastPeriodeIndex = i;
+						found = true;
+						break;
+					}
 				}
 			}
 			Assert.isTrue(found);
@@ -666,4 +643,136 @@ public class WsAccessAnalyzer {
 		}
 	}
 
+	private static class HourMinutes implements Comparable<HourMinutes> {
+		private int hour;
+		private int minutes;
+
+		private HourMinutes(int hour, int minutes) {
+			Assert.isTrue(0 <= hour && hour < 24);
+			Assert.isTrue(0 <= minutes && minutes < 60);
+			this.hour = hour;
+			this.minutes = minutes;
+		}
+
+		// exemple : "10:18"
+
+		public static HourMinutes parse(String string) {
+			if (StringUtils.isBlank(string)) {
+				return null;
+			}
+
+			int hour = Integer.parseInt(string.substring(0, 2));
+			int minutes = Integer.parseInt(string.substring(3, 5));
+			return new HourMinutes(hour, minutes);
+		}
+
+		public int compareTo(HourMinutes o) {
+			if (this.hour < o.hour) {
+				return -1;
+			}
+			else if (this.hour > o.hour) {
+				return 1;
+			}
+			if (this.minutes < o.minutes) {
+				return -1;
+			}
+			else if (this.minutes > o.minutes) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
+		}
+	}
+
+	private static class Call {
+		private String method;
+		private long milliseconds;
+		private int tiersCount;
+		private HourMinutes timestamp;
+
+		private Call(String method, long milliseconds, int tiersCount, HourMinutes timestamp) {
+			this.method = method;
+			this.milliseconds = milliseconds;
+			this.tiersCount = tiersCount;
+			this.timestamp = timestamp;
+		}
+
+		public String getMethod() {
+			return method;
+		}
+
+		public long getMilliseconds() {
+			return milliseconds;
+		}
+
+		public int getTiersCount() {
+			return tiersCount;
+		}
+
+		public HourMinutes getTimestamp() {
+			return timestamp;
+		}
+
+		// exemple de ligne de log : [tiers2.read] INFO  [2010-11-11 10:48:38.464] [web-it] (15 ms) GetTiersHisto{login=UserLogin{userId='zsimsn', oid=22}, tiersNumber=10010169, parts=[ADRESSES]} charge=1
+
+		public static Call parse(String line) throws java.text.ParseException {
+			if (StringUtils.isBlank(line)) {
+				return null;
+			}
+
+			// on saute le premier groupe []
+			int next = line.indexOf(']');
+
+			// on récupère le timestamp
+			final String timestampAsString;
+			{
+				int left = line.indexOf('[', next + 1);
+				int right = line.indexOf(']', next + 1);
+				timestampAsString = line.substring(left + 12, right - 7);
+				next = right;
+			}
+
+			// on saute le groupe [] suivant
+			next = line.indexOf(']', next + 1);
+
+			// on récupère les millisecondes
+			final String milliAsString;
+			{
+				int left = line.indexOf('(', next + 1);
+				int right = line.indexOf(')', next + 1);
+				milliAsString = line.substring(left + 1, right - 3);
+				next = right;
+			}
+
+			// on récupère le nom de la méthode
+			final String method;
+			{
+				int left = line.indexOf(' ', next + 1);
+				int right = line.indexOf('{', next + 1);
+				method = line.substring(left + 1, right);
+			}
+
+			final int tiersCount = extractTiersCount(line, method);
+			final HourMinutes timestamp = HourMinutes.parse(timestampAsString);
+			final long milliseconds = Long.parseLong(milliAsString);
+
+			return new Call(method, milliseconds, tiersCount, timestamp);
+		}
+
+		private static int extractTiersCount(String line, String method) {
+			final int tiersCount;
+			if (method.startsWith("GetBatch")) {
+				// en cas de méthode batch, on calcul le temps moyen de réponse par tiers demandé
+				final Matcher m = Analyzer.TIERS_NUMBERS.matcher(line);
+				Assert.isTrue(m.matches());
+				final String tiersNumer = m.group(1);
+				tiersCount = StringUtils.countMatches(tiersNumer, ",") + 1;
+			}
+			else {
+				tiersCount = 1;
+			}
+			return tiersCount;
+		}
+	}
 }
