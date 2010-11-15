@@ -121,9 +121,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	@SuppressWarnings({"unchecked"})
 	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
 		try {
-			final ch.vd.infrastructure.model.impl.CantonImpl c = new ch.vd.infrastructure.model.impl.CantonImpl();
-			c.setSigleOFS(ServiceInfrastructureService.SIGLE_CANTON_VD);
-			final List<ch.vd.infrastructure.model.Commune> list = serviceInfrastructure.getCommunes(c);
+			final List<ch.vd.infrastructure.model.Commune> list = serviceInfrastructure.getCommunes(ServiceInfrastructureService.SIGLE_CANTON_VD);
 			final List<Commune> communes = new ArrayList<Commune>();
 			for (ch.vd.infrastructure.model.Commune co : list) {
 				if (!co.isPrincipale()) {
@@ -301,9 +299,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		List<Localite> localites = new ArrayList<Localite>();
 		try {
 			for (Canton c : getAllCantons()) {
-				final ch.vd.infrastructure.model.impl.CantonImpl canton = new ch.vd.infrastructure.model.impl.CantonImpl();
-				canton.setSigleOFS(c.getSigleOFS());
-				List<?> localitesTmp = serviceInfrastructure.getLocalites(canton);
+				List<?> localitesTmp = serviceInfrastructure.getLocalites(c.getSigleOFS());
 				for (Object o : localitesTmp) {
 					ch.vd.infrastructure.model.Localite l = (ch.vd.infrastructure.model.Localite) o;
 					localites.add(LocaliteImpl.get(l));
@@ -322,9 +318,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		List<Rue> rues = new ArrayList<Rue>();
 		try {
-			final ch.vd.infrastructure.model.impl.LocaliteImpl l = new ch.vd.infrastructure.model.impl.LocaliteImpl();
-			l.setNoOrdre(localite.getNoOrdre());
-			final List<?> list = serviceInfrastructure.getRues(l);
+			final List<?> list = serviceInfrastructure.getRues(localite.getNoOrdre());
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
 				rues.add(RueImpl.get(r));
@@ -342,9 +336,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public List<Rue> getRues(Canton canton) throws InfrastructureException {
 		try {
 			ArrayList<Rue> rues = new ArrayList<Rue>();
-			final ch.vd.infrastructure.model.impl.CantonImpl c = new ch.vd.infrastructure.model.impl.CantonImpl();
-			c.setSigleOFS(canton.getSigleOFS());
-			final List<?> list = serviceInfrastructure.getRues(c);
+			final List<?> list = serviceInfrastructure.getRues(canton.getSigleOFS());
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
 				rues.add(RueImpl.get(r));
@@ -461,11 +453,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
 		try {
-			// TODO (FDE) A changer lors de la prochaine mise en prod des interfaces
-			final ch.vd.infrastructure.model.impl.CantonImpl cantonVaud = new ch.vd.infrastructure.model.impl.CantonImpl();
-			cantonVaud.setSigleOFS(ServiceInfrastructureService.SIGLE_CANTON_VD);
-
-			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(cantonVaud);
+			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(ServiceInfrastructureService.SIGLE_CANTON_VD);
 			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
 				if (isValid(c.getDateFinValidite())) {
 					collectivites.add(CollectiviteAdministrativeImpl.get(c));
