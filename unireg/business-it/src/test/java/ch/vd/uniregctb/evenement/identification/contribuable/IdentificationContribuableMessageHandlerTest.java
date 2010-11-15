@@ -298,8 +298,8 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		// Envoie le message
 		sendTextMessage(INPUT_QUEUE, texte);
 
-		// On attend le message jusqu'à 3 secondes
-		for (int i = 0; messages.isEmpty() && i < 30; i++) {
+		// On attend le message jusqu'à 10 secondes
+		for (int i = 0; messages.isEmpty() && i < 100; i++) {
 			Thread.sleep(100);
 		}
 		assertEquals(1, messages.size());

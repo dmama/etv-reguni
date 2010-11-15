@@ -117,8 +117,8 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		// Envoie le message
 		sendTextMessage(INPUT_QUEUE, texte);
 
-		// On attend le message jusqu'à 3 secondes
-		for (int i = 0; events.isEmpty() && i < 30; i++) {
+		// On attend le message jusqu'à 10 secondes
+		for (int i = 0; events.isEmpty() && i < 100; i++) {
 			Thread.sleep(100);
 		}
 		Assert.assertEquals(1, events.size());

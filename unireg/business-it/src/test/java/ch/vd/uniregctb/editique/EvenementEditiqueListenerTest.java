@@ -28,7 +28,6 @@ import ch.vd.uniregctb.evenement.EvenementTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * Classe de test du listener d'événements des retours d'impression de l'éditique.
@@ -135,8 +134,8 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		// Envoie le message
 		sendDiMessage(INPUT_QUEUE, texte, DI_ID);
 
-		// On attend le message jusqu'à 3 secondes
-		for (int i = 0; events.isEmpty() && i < 30; i++) {
+		// On attend le message jusqu'à 10 secondes
+		for (int i = 0; events.isEmpty() && i < 100; i++) {
 			Thread.sleep(100);
 		}
 		Assert.assertEquals(1, events.size());
