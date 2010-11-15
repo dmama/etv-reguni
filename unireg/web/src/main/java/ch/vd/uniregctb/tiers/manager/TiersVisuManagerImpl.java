@@ -37,7 +37,6 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
-import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
@@ -77,18 +76,11 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	private MouvementVisuManager mouvementVisuManager;
 
-	private IbanValidator ibanValidator;
-
-
 
 	private List<TypeAdresseCivil> typesAdressesCiviles = new ArrayList<TypeAdresseCivil>();
 
 	public void setMouvementVisuManager(MouvementVisuManager mouvementVisuManager) {
 		this.mouvementVisuManager = mouvementVisuManager;
-	}
-
-	public void setIbanValidator(IbanValidator ibanValidator) {
-		this.ibanValidator = ibanValidator;
 	}
 
 	/**
@@ -111,6 +103,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 
 		setTiersGeneralView(tiersVisuView, tiers);
+		tiersVisuView.setComplement(buildComplement(tiers));
 
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
@@ -198,24 +191,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			setDroitEdition(tiers, allowedOnglet);
 			tiersVisuView.setAllowedOnglet(allowedOnglet);
 		}
-		//[UNIREG-2582]
-		tiersVisuView.setIbanValidationMessage(verifierIban(tiers));
-		return tiersVisuView;
-	}
 
-	/**
-	 * Permet renseigner la view sur le fait que l'iban du tiers associé est valide ou pas
-	 * @param tiers le tiers dont l'IBAN doit être vérifié
-	 * @return <code>null</code> si l'IBAN est valide, explication textuelle de l'erreur sinon
-	 */
-	private String verifierIban(Tiers tiers) {
-		if (tiers != null) {
-			final String iban = tiers.getNumeroCompteBancaire();
-			if (iban != null) {
-				return ibanValidator.getIbanValidationError(iban);
-			}
-		}
-		return null;
+		return tiersVisuView;
 	}
 
 	/**

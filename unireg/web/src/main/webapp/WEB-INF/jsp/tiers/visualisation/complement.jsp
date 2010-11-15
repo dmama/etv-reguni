@@ -19,31 +19,31 @@
 	
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.complement.contact" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.personneContact}"/></td>
+			<td><c:out value="${command.complement.personneContact}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.complementNom}"/></td>
+			<td><c:out value="${command.complement.complementNom}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.numeroTelFixe" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.numeroTelephonePrive}"/></td>
+			<td><c:out value="${command.complement.numeroTelephonePrive}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.numeroTelPortable" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.numeroTelephonePortable}"/></td>
+			<td><c:out value="${command.complement.numeroTelephonePortable}"/></td>
 		</tr>			
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.numeroTelephoneProfessionnel}"/></td>
+			<td><c:out value="${command.complement.numeroTelephoneProfessionnel}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.numeroTelecopie}"/></td>
+			<td><c:out value="${command.complement.numeroTelecopie}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.email" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.adresseCourrierElectronique}"/></td>
+			<td><c:out value="${command.complement.adresseCourrierElectronique}"/></td>
 		</tr>
 	</table>
 </fieldset>
@@ -54,26 +54,30 @@
 	
 		<tr class="<unireg:nextRowClass/>" >
 			<td  width="25%"><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.numeroCompteBancaire}"/>
-				<c:if test="${command.ibanValidationMessage != null}">
+			<td><c:out value="${command.complement.numeroCompteBancaire}"/>
+				<c:if test="${command.complement.ibanValidationMessage != null}">
 					<span class="global-error">
-						<fmt:message key="error.iban"/>&nbsp;<c:out value="(${command.ibanValidationMessage})"/>
+						<fmt:message key="error.iban"/>&nbsp;<c:out value="(${command.complement.ibanValidationMessage})"/>
 					</span>
 				</c:if>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
+			<td><fmt:message key="label.complement.nomInstitutionFinanciere" />&nbsp;:</td>
+			<td><c:out value="${command.complement.nomInstitutionCompteBancaire}"/></td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.titulaireCompteBancaire}"/></td>
+			<td><c:out value="${command.complement.titulaireCompteBancaire}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.bicSwift" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.adresseBicSwift}"/></td>
+			<td><c:out value="${command.complement.adresseBicSwift}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.blocageRemboursementAutomatique" />&nbsp;:</td>
 			<td><input type="checkbox" name="blocageRemboursementAutomatique" value="true"
-				<c:if test="${command.tiers.blocageRemboursementAutomatique}">checked </c:if> disabled="disabled"/>
+				<c:if test="${command.complement.blocageRemboursementAutomatique}">checked </c:if> disabled="disabled"/>
 			</td>
 		</tr>
 		
@@ -87,7 +91,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td  width="25%"><fmt:message key="label.complement.ancienNumSourcier" />&nbsp;:</td>
 			<td>
-				<c:out value="${command.tiers.ancienNumeroSourcier}"/>
+				<c:out value="${command.complement.ancienNumeroSourcier}"/>
 			</td>
 		</tr>
 	</table>

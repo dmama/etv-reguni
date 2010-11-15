@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.iban.IbanValidationException;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -154,63 +153,6 @@ public class TiersEditValidator implements Validator {
 								errors.rejectValue("identificationPersonne.numRegistreEtranger", "error.numRegistreEtranger");
 								errors.reject("onglet.error.civil");
 							}
-						}
-					}
-				}
-
-				// --------- --------------Onglets Complements------------------------
-				if (StringUtils.isNotBlank(tiers.getNumeroTelecopie())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelecopie())) {
-						errors.rejectValue("tiers.numeroTelecopie", "error.telephone");
-						errors.reject("onglet.error.complements");
-					}
-				}
-
-				if (StringUtils.isNotBlank(tiers.getNumeroTelephonePrive())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelephonePrive())) {
-						errors.rejectValue("tiers.numeroTelephonePrive", "error.telephone");
-						errors.reject("onglet.error.complements");
-					}
-				}
-
-				if (StringUtils.isNotBlank(tiers.getNumeroTelephonePortable())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelephonePortable())) {
-						errors.rejectValue("tiers.numeroTelephonePortable", "error.telephone");
-						errors.reject("onglet.error.complements");
-					}
-				}
-
-				if (StringUtils.isNotBlank(tiers.getNumeroTelephoneProfessionnel())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelephoneProfessionnel())) {
-						errors.rejectValue("tiers.numeroTelephoneProfessionnel", "error.telephone");
-						errors.reject("onglet.error.complements");
-					}
-				}
-
-				if (StringUtils.isNotBlank(tiers.getAdresseCourrierElectronique())) {
-					tiers.setAdresseCourrierElectronique(tiers.getAdresseCourrierElectronique().trim());
-					if (!ValidateHelper.isValidEmail(tiers.getAdresseCourrierElectronique())) {
-						errors.rejectValue("tiers.adresseCourrierElectronique", "error.email");
-						errors.reject("onglet.error.complements");
-					}
-				}
-
-				if (StringUtils.isNotBlank(tiers.getNumeroCompteBancaire())) {
-					//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide. 
-					Tiers tiersInBase = tiersService.getTiers(tiers.getNumero());
-					if (!tiers.getNumeroCompteBancaire().equals(tiersInBase.getNumeroCompteBancaire())) {
-
-						try {
-							ibanValidator.validate(tiers.getNumeroCompteBancaire());
-						}
-						catch (IbanValidationException e) {
-							if (StringUtils.isBlank(e.getMessage())) {
-								errors.rejectValue("tiers.numeroCompteBancaire", "error.iban");
-							}
-							else {
-								errors.rejectValue("tiers.numeroCompteBancaire", "error.iban.detail", new Object[] { e.getMessage() }, "IBAN invalide");
-							}
-							errors.reject("onglet.error.complements");
 						}
 					}
 				}

@@ -1,19 +1,16 @@
 package ch.vd.uniregctb.tiers.validator;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.iban.IbanValidationException;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.ValidateHelper;
 
@@ -27,12 +24,9 @@ public class ComplementEditValidator implements Validator {
 
 	private IbanValidator ibanValidator;
 
-		private TiersService tiersService;
+	private TiersService tiersService;
 
-	public IbanValidator getIbanValidator() {
-		return ibanValidator;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
 	}
@@ -56,48 +50,47 @@ public class ComplementEditValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		TiersEditView tiersView = (TiersEditView) obj;
 		if (tiersView != null) {
-			Tiers tiers = tiersView.getTiers();
-			if (tiers != null) {
+			final ComplementView complement = tiersView.getComplement();
+			if (complement != null) {
 
 				// --------- --------------Onglets Complements------------------------
-				if (StringUtils.isNotBlank(tiers.getNumeroTelecopie())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelecopie())) {
+				if (StringUtils.isNotBlank(complement.getNumeroTelecopie())) {
+					if (!ValidateHelper.isNumberTel(complement.getNumeroTelecopie())) {
 						errors.rejectValue("tiers.numeroTelecopie", "error.telephone");
 					}
 				}
 
-				if (StringUtils.isNotBlank(tiers.getNumeroTelephonePrive())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelephonePrive())) {
+				if (StringUtils.isNotBlank(complement.getNumeroTelephonePrive())) {
+					if (!ValidateHelper.isNumberTel(complement.getNumeroTelephonePrive())) {
 						errors.rejectValue("tiers.numeroTelephonePrive", "error.telephone");
 					}
 				}
 
-				if (StringUtils.isNotBlank(tiers.getNumeroTelephonePortable())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelephonePortable())) {
+				if (StringUtils.isNotBlank(complement.getNumeroTelephonePortable())) {
+					if (!ValidateHelper.isNumberTel(complement.getNumeroTelephonePortable())) {
 						errors.rejectValue("tiers.numeroTelephonePortable", "error.telephone");
 					}
 				}
 
-				if (StringUtils.isNotBlank(tiers.getNumeroTelephoneProfessionnel())) {
-					if (!ValidateHelper.isNumberTel(tiers.getNumeroTelephoneProfessionnel())) {
+				if (StringUtils.isNotBlank(complement.getNumeroTelephoneProfessionnel())) {
+					if (!ValidateHelper.isNumberTel(complement.getNumeroTelephoneProfessionnel())) {
 						errors.rejectValue("tiers.numeroTelephoneProfessionnel", "error.telephone");
 					}
 				}
 
-				if (StringUtils.isNotBlank(tiers.getAdresseCourrierElectronique())) {
-					tiers.setAdresseCourrierElectronique(tiers.getAdresseCourrierElectronique().trim());
-					if (!ValidateHelper.isValidEmail(tiers.getAdresseCourrierElectronique())) {
+				if (StringUtils.isNotBlank(complement.getAdresseCourrierElectronique())) {
+					if (!ValidateHelper.isValidEmail(complement.getAdresseCourrierElectronique())) {
 						errors.rejectValue("tiers.adresseCourrierElectronique", "error.email");
 					}
 				}
 
 
-				if (StringUtils.isNotBlank(tiers.getNumeroCompteBancaire())) {
+				if (StringUtils.isNotBlank(complement.getNumeroCompteBancaire())) {
 					//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide. 
-					Tiers tiersInBase = tiersService.getTiers(tiers.getNumero());
-					if (!tiers.getNumeroCompteBancaire().equals(tiersInBase.getNumeroCompteBancaire())) {
+					Tiers tiersInBase = tiersService.getTiers(tiersView.getTiers().getNumero());
+					if (!complement.getNumeroCompteBancaire().equals(tiersInBase.getNumeroCompteBancaire())) {
 						try {
-							ibanValidator.validate(tiers.getNumeroCompteBancaire());
+							ibanValidator.validate(complement.getNumeroCompteBancaire());
 						}
 						catch (IbanValidationException e) {
 							if (StringUtils.isBlank(e.getMessage())) {
@@ -109,11 +102,6 @@ public class ComplementEditValidator implements Validator {
 						}
 					}
 				}
-
-				//Validation du tiers
-				ValidationResults results = tiers.validate();
-				List<String> erreurs = results.getErrors();
-				ValidateHelper.rejectErrors(erreurs, errors);
 			}
 		}
 	}

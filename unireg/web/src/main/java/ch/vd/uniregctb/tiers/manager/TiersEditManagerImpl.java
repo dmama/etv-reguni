@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
@@ -65,47 +67,44 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		if (tiers != null){
-			setTiersGeneralView(tiersEditView, tiers);
-			if (tiers instanceof PersonnePhysique) {
-				PersonnePhysique pp = (PersonnePhysique) tiers;
-				if (pp.isHabitantVD()) {
-					setHabitant(tiersEditView, pp);
-				} else {
-					setNonHabitant(tiersEditView, pp);
-				}
-			}
-			else if (tiers instanceof MenageCommun) {
-				MenageCommun menageCommun = (MenageCommun) tiers;
-				setMenageCommun(tiersEditView, menageCommun);
-			}
-			else if (tiers instanceof AutreCommunaute) {
-				AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
-				tiersEditView.setTiers(autreCommunaute);
-			}
-			else if (tiers instanceof DebiteurPrestationImposable) {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-				tiersEditView.setTiers(dpi);
-				if (dpi.getContribuableId() == null) {
-					tiersEditView.setAddContactISAllowed(true);
-				}
-				else {
-					tiersEditView.setAddContactISAllowed(false);
-				}
-			}
-			//gestion des droits d'édition
-			Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-			boolean allowed = setDroitEdition(tiers, allowedOnglet);
+		setTiersGeneralView(tiersEditView, tiers);
+		tiersEditView.setComplement(buildComplement(tiers));
 
-			tiersEditView.setAllowedOnglet(allowedOnglet);
-			tiersEditView.setAllowed(allowed);
-
-			if(!allowed){
-				tiersEditView.setTiers(null);
+		if (tiers instanceof PersonnePhysique) {
+			PersonnePhysique pp = (PersonnePhysique) tiers;
+			if (pp.isHabitantVD()) {
+				setHabitant(tiersEditView, pp);
+			} else {
+				setNonHabitant(tiersEditView, pp);
 			}
 		}
-		else {
-			tiersEditView.setAllowed(true);
+		else if (tiers instanceof MenageCommun) {
+			MenageCommun menageCommun = (MenageCommun) tiers;
+			setMenageCommun(tiersEditView, menageCommun);
+		}
+		else if (tiers instanceof AutreCommunaute) {
+			AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
+			tiersEditView.setTiers(autreCommunaute);
+		}
+		else if (tiers instanceof DebiteurPrestationImposable) {
+			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			tiersEditView.setTiers(dpi);
+			if (dpi.getContribuableId() == null) {
+				tiersEditView.setAddContactISAllowed(true);
+			}
+			else {
+				tiersEditView.setAddContactISAllowed(false);
+			}
+		}
+		//gestion des droits d'édition
+		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
+		boolean allowed = setDroitEdition(tiers, allowedOnglet);
+
+		tiersEditView.setAllowedOnglet(allowedOnglet);
+		tiersEditView.setAllowed(allowed);
+
+		if(!allowed){
+			tiersEditView.setTiers(null);
 		}
 
 		return tiersEditView;
@@ -191,6 +190,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 
 		setTiersGeneralView(tiersEditView, tiers);
+		tiersEditView.setComplement(buildComplement(tiers));
 
 		if( oldTiers != null) {
 			BeanUtils.simpleMerge(tiers, oldTiers);
@@ -439,23 +439,17 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * Enrichir un objet Tiers en fonction d'un objet TiersEditView
 	 */
 	private Tiers enrichiTiers(TiersEditView tiersView) {
+
 		final Tiers tiers = tiersView.getTiers();
 
-		tiers.setNumeroTelecopie(tiers.getNumeroTelecopie());
-		tiers.setNumeroTelephonePortable(tiers.getNumeroTelephonePortable());
-		tiers.setNumeroTelephonePrive(tiers.getNumeroTelephonePrive());
-		tiers.setNumeroTelephoneProfessionnel(tiers.getNumeroTelephoneProfessionnel());
-		String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(tiers.getNumeroCompteBancaire());
-		if(ibanSaisi!=null){
-		tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());	
-		}
-		tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(tiers.getAdresseBicSwift()));
+		enrichiComplement(tiers, tiersView.getComplement());
 
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitantVD()) {
 				return pp;
-			} else {
+			}
+			else {
 				// MAJ num AVS
 				pp.setNumeroAssureSocial(FormatNumeroHelper.removeSpaceAndDash(pp.getNumeroAssureSocial()));
 
@@ -470,32 +464,30 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 
-			DebiteurPrestationImposable dpiFromView = (DebiteurPrestationImposable)tiers;
-
-
+			DebiteurPrestationImposable dpiFromView = (DebiteurPrestationImposable) tiers;
 
 			//Test de la saisie d'une periodicite dans la vue
 			final PeriodiciteView periodicite = tiersView.getPeriodicite();
-			if(periodicite!=null){
+			if (periodicite != null) {
 				//Calcul de la date de début de validité de la nouvelle périodicité
-			    DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiFromView.getId());
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiFromView.getId());
 
 				RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
 				PeriodeDecompte periodeDecompte = null;
 
 				final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
-				if(PeriodiciteDecompte.UNIQUE == periodiciteDecompte){
+				if (PeriodiciteDecompte.UNIQUE == periodiciteDecompte) {
 					periodeDecompte = periodicite.getPeriodeDecompte();
 				}
 				//L'appel de addperiodicite permet de sauver le tiers et la periodicite
-				final Periodicite periodiciteAjoutee = tiersService.addPeriodicite(dpi, periodiciteDecompte,periodeDecompte,debutValidite,null);
+				final Periodicite periodiciteAjoutee = tiersService.addPeriodicite(dpi, periodiciteDecompte, periodeDecompte, debutValidite, null);
 				//permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
 				Assert.notNull(periodiciteAjoutee.getId());
 				dpiFromView = periodiciteAjoutee.getDebiteur();
 
 			}
 
-			if(tiersView.getNumeroCtbAssocie() != null) { //ajout d'un débiteur IS au contribuable
+			if (tiersView.getNumeroCtbAssocie() != null) { //ajout d'un débiteur IS au contribuable
 
 				final Contribuable ctbAss = (Contribuable) getTiersDAO().get(tiersView.getNumeroCtbAssocie());
 
@@ -507,12 +499,41 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 				return dpiRtr;
 			}
-			else { 
+			else {
 				return tiersDAO.save(dpiFromView);
 			}
 		}
 
 		return tiers;
+	}
+
+	private void enrichiComplement(Tiers tiers, ComplementView complement) {
+
+		if (tiers instanceof Entreprise) {
+			// les PMs ne peuvent pas être éditées dans Unireg pour l'instant
+			return;
+		}
+
+		// nom
+		tiers.setPersonneContact(complement.getPersonneContact());
+		tiers.setComplementNom(complement.getComplementNom());
+
+		// téléphone
+		tiers.setNumeroTelecopie(complement.getNumeroTelecopie());
+		tiers.setNumeroTelephonePortable(complement.getNumeroTelephonePortable());
+		tiers.setNumeroTelephonePrive(complement.getNumeroTelephonePrive());
+		tiers.setNumeroTelephoneProfessionnel(complement.getNumeroTelephoneProfessionnel());
+		if (StringUtils.isNotBlank(complement.getAdresseCourrierElectronique())) {
+			tiers.setAdresseCourrierElectronique(complement.getAdresseCourrierElectronique().trim());
+		}
+
+		// compte bancaire
+		String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(complement.getNumeroCompteBancaire());
+		if (ibanSaisi != null) {
+			tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());
+		}
+		tiers.setTitulaireCompteBancaire(complement.getTitulaireCompteBancaire());
+		tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(complement.getAdresseBicSwift()));
 	}
 
 	/**

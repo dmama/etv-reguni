@@ -42,15 +42,20 @@ import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.entreprise.HostPersonneMoraleService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
@@ -91,6 +96,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
+import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
@@ -147,6 +153,8 @@ public class TiersManager implements MessageSourceAware {
 	protected SituationFamilleService situationFamilleService;
 
 	protected RapportEntreTiersDAO rapportEntreTiersDAO;
+	protected IbanValidator ibanValidator;
+	private ServicePersonneMoraleService servicePM;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -1171,6 +1179,85 @@ public class TiersManager implements MessageSourceAware {
 			isEditable = false;
 		}
 		return isEditable;
+	}
+
+	protected ComplementView buildComplement(Tiers tiers) {
+
+		final ComplementView complement = new ComplementView();
+
+		if (tiers instanceof Entreprise) {
+
+			final PersonneMorale pm = servicePM.getPersonneMorale(tiers.getNumero(), PartPM.MANDATS);
+			if (pm != null) {
+				// numéros de téléphone
+				complement.setNumeroTelephonePrive(pm.getTelephoneContact());
+				complement.setNumeroTelecopie(pm.getTelecopieContact());
+				complement.setNumeroTelephonePortable(null);
+				complement.setNumeroTelephoneProfessionnel(null);
+
+				// comptes bancaires
+				complement.setTitulaireCompteBancaire(pm.getTitulaireCompte());
+
+				final List<CompteBancaire> comptes = pm.getComptesBancaires();
+				if (comptes != null && !comptes.isEmpty()) {
+					final CompteBancaire c = comptes.get(0);
+					complement.setNumeroCompteBancaire(c.getNumero());
+					complement.setNomInstitutionCompteBancaire(c.getNomInstitution());
+					complement.setAdresseBicSwift(null); // pas disponible
+				}
+			}
+
+			complement.setBlocageRemboursementAutomatique(tiers.getBlocageRemboursementAutomatique());
+		}
+		else {
+			// nom
+			complement.setPersonneContact(tiers.getPersonneContact());
+			complement.setComplementNom(tiers.getComplementNom());
+
+			// téléphone
+			complement.setNumeroTelecopie(tiers.getNumeroTelecopie());
+			complement.setNumeroTelephonePortable(tiers.getNumeroTelephonePortable());
+			complement.setNumeroTelephonePrive(tiers.getNumeroTelephonePrive());
+			complement.setNumeroTelephoneProfessionnel(tiers.getNumeroTelephoneProfessionnel());
+			complement.setAdresseCourrierElectronique(tiers.getAdresseCourrierElectronique());
+
+			// compte bancaire
+			complement.setNumeroCompteBancaire(tiers.getNumeroCompteBancaire());
+			complement.setTitulaireCompteBancaire(tiers.getTitulaireCompteBancaire());
+			complement.setAdresseBicSwift(tiers.getAdresseBicSwift());
+			complement.setIbanValidationMessage(verifierIban(tiers)); // [UNIREG-2582]
+
+			if (tiers instanceof PersonnePhysique) {
+				final PersonnePhysique pp =(PersonnePhysique) tiers;
+				complement.setAncienNumeroSourcier(pp.getAncienNumeroSourcier());
+			}
+			complement.setBlocageRemboursementAutomatique(tiers.getBlocageRemboursementAutomatique());
+		}
+
+		return complement;
+	}
+
+	/**
+	 * Permet renseigner la view sur le fait que l'iban du tiers associé est valide ou pas
+	 * @param tiers le tiers dont l'IBAN doit être vérifié
+	 * @return <code>null</code> si l'IBAN est valide, explication textuelle de l'erreur sinon
+	 */
+	private String verifierIban(Tiers tiers) {
+		if (tiers != null) {
+			final String iban = tiers.getNumeroCompteBancaire();
+			if (iban != null) {
+				return ibanValidator.getIbanValidationError(iban);
+			}
+		}
+		return null;
+	}
+
+	public void setServicePM(ServicePersonneMoraleService servicePM) {
+		this.servicePM = servicePM;
+	}
+
+	public void setIbanValidator(IbanValidator ibanValidator) {
+		this.ibanValidator = ibanValidator;
 	}
 
 	private static enum TypeImposition {

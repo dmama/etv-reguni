@@ -28,6 +28,8 @@ public class TiersView {
 
 	private TiersGeneralView tiersGeneral;
 
+	private ComplementView complement = new ComplementView();
+
 	private Tiers tiers;
 
 	private Tiers tiersPrincipal;
@@ -100,7 +102,13 @@ public class TiersView {
 
 	private Map<String, Boolean> allowedOnglet;
 
-	private String ibanValidationMessage;
+	public ComplementView getComplement() {
+		return complement;
+	}
+
+	public void setComplement(ComplementView complement) {
+		this.complement = complement;
+	}
 
 	/**
 	 * @return the tiers
@@ -465,13 +473,5 @@ public class TiersView {
 
 	public void setPeriodicite(PeriodiciteView periodicite) {
 		this.periodicite = periodicite;
-	}
-
-	public String getIbanValidationMessage() {
-		return ibanValidationMessage;
-	}
-
-	public void setIbanValidationMessage(String ibanValidationMessage) {
-		this.ibanValidationMessage = ibanValidationMessage;
 	}
 }
