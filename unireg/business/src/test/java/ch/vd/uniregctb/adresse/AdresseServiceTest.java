@@ -2833,24 +2833,34 @@ public class AdresseServiceTest extends BusinessTest {
 		{
 			AdresseCivile adresse = new AdresseCivile();
 			adresse.setDateDebut(date(2000, 3, 20));
-			adresse.setDateFin(null);
+			adresse.setDateFin(date(2010, 9, 20));
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setType(TypeAdresseCivil.PRINCIPALE);
+
+			AdresseCivile adresseBis = new AdresseCivile();
+			adresseBis.setDateDebut(date(2010, 11, 1));
+			adresseBis.setDateFin(null);
+			adresseBis.setUsage(TypeAdresseTiers.COURRIER);
+			adresseBis.setType(TypeAdresseCivil.PRINCIPALE);
 			habitant.addAdresseTiers(adresse);
+			habitant.addAdresseTiers(adresseBis);
 		}
 
 		tiersDAO.save(habitant);
 
 		{
 			// Vérification des adresses
-			final AdressesFiscales adresses = adresseService.getAdressesTiers(habitant);
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesTiers(habitant);
 			assertNotNull(adresses);
-			assertNotNull(adresses.courrier);
-			assertNull(adresses.representation);
-			assertNull(adresses.poursuite);
+			assertNotNull(adresses.courrier.get(0));
+			assertEquals(0,adresses.representation.size());
+			assertEquals(0,adresses.poursuite.size());
 
-			assertEquals(date(2000, 3, 20), adresses.courrier.getDateDebut());
-			assertEquals(Source.FISCALE, adresses.courrier.getSource());
+			assertEquals(date(2000, 3, 20), adresses.courrier.get(0).getDateDebut());
+			assertEquals(Source.FISCALE, adresses.courrier.get(0).getSource());
+
+			assertEquals(date(2010, 11, 1), adresses.courrier.get(1).getDateDebut());
+			assertEquals(Source.FISCALE, adresses.courrier.get(1).getSource());
 
 		}
 	}

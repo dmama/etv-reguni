@@ -1688,22 +1688,19 @@ public class TiersManager implements MessageSourceAware {
 
 		try {
 			List<AdresseView> adresses = new ArrayList<AdresseView>();
-			AdressesFiscales adressesFiscalesTiers = getAdresseService().getAdressesTiers(tiers);
+			AdressesFiscalesHisto adressesFiscalHisto = getAdresseService().getAdressesTiers(tiers);
 
-			if (adressesFiscalesTiers != null) {
+
+				if (adressesFiscalHisto != null) {
 				// rempli tous les types d'adresse
 				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-					AdresseGenerique adresse = adressesFiscalesTiers.ofType(type);
-					if(adresse!=null){
-						adresses.add(createAdresseView(adresse,type,tiers));
-					}
-
+					fillAdressesView(adresses, adressesFiscalHisto, type, tiers);
 				}
-
-				Collections.sort(adresses, new AdresseViewComparator());
 			}
 
-			
+			Collections.sort(adresses, new AdresseViewComparator());
+		
+
 			adresses = removeAdresseAnnulee(adresses);
 			tiersEditView.setAdressesFiscalesModifiables(adresses);
 		}

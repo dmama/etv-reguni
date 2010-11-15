@@ -207,5 +207,5 @@ public interface AdresseService {
 	 * @param tiers  le Tiers concerné
 	 * @return listes des adresses du tiers
 	 */
-	public AdressesFiscales getAdressesTiers(Tiers tiers) throws AdresseException;
+	public AdressesFiscalesHisto getAdressesTiers(Tiers tiers) throws AdresseException;
 }

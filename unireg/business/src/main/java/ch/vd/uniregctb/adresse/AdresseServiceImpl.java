@@ -2292,20 +2292,33 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public AdressesFiscales getAdressesTiers(Tiers tiers) throws AdresseException {
+	public AdressesFiscalesHisto getAdressesTiers(Tiers tiers) throws AdresseException {
 
-		final AdressesFiscales adressesFiscales = new AdressesFiscales();
+
+		final AdressesFiscalesHisto adressesFiscalesHisto = new AdressesFiscalesHisto();
+		adressesFiscalesHisto.courrier = new ArrayList<AdresseGenerique>();
+		adressesFiscalesHisto.domicile = new ArrayList<AdresseGenerique>();
+		adressesFiscalesHisto.representation = new ArrayList<AdresseGenerique>();
+		adressesFiscalesHisto.poursuite = new ArrayList<AdresseGenerique>();
+		adressesFiscalesHisto.poursuiteAutreTiers = new ArrayList<AdresseGenerique>();
 
 		final Set<AdresseTiers> adresses = tiers.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {
 			if(!adresse.isAnnule()){
 				final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresse, 0, false);
-				adressesFiscales.set(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
+				adressesFiscalesHisto.add(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
+				
 			}
 
 		}
 
-		return adressesFiscales;
+		Collections.sort(	adressesFiscalesHisto.courrier, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(	adressesFiscalesHisto.domicile, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(	adressesFiscalesHisto.representation, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(	adressesFiscalesHisto.poursuite, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(	adressesFiscalesHisto.poursuiteAutreTiers, new DateRangeComparator<AdresseGenerique>());
+	
+		return adressesFiscalesHisto;
 	}
 
 	private static int oneLevelDeeper(int callDepth, Tiers tiers, Tiers autreTiers, AdresseTiers adresseSurchargee) throws AdressesResolutionException {
