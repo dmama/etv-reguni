@@ -371,7 +371,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				final String ancienNumeroAssureSocial = tiersService.getAncienNumeroAssureSocial(pp);
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
 				s.append("\t<td width=\"25%\">").append(message("label.ancien.numero.avs")).append("&nbsp;:</td>\n");
-				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumAVS(ancienNumeroAssureSocial)).append("</td>\n");
+				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatAncienNumAVS(ancienNumeroAssureSocial)).append("</td>\n");
 				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 			}
