@@ -448,11 +448,16 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		if (urlRetour == null) {
 			s.append("<select name=\"AppSelect\" onchange=\"javascript:AppSelect_OnChange(this);\">\n");
 			s.append("\t<option value=\"\">---</option>\n");
-			s.append("\t<option value=\"").append(fidorService.getUrlTaoPP(tiers.getNumero())).append("\">").append(message("label.TAOPP")).append("</option>\n");
-			s.append("\t<option value=\"").append(fidorService.getUrlTaoBA(tiers.getNumero())).append("\">").append(message("label.TAOBA")).append("</option>\n");
-			s.append("\t<option value=\"").append(fidorService.getUrlTaoIS(tiers.getNumero())).append("\">").append(message("label.TAOIS")).append("</option>\n");
+			final boolean isEntreprise = tiers instanceof Entreprise;
+			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
+				s.append("\t<option value=\"").append(fidorService.getUrlTaoPP(tiers.getNumero())).append("\">").append(message("label.TAOPP")).append("</option>\n");
+				s.append("\t<option value=\"").append(fidorService.getUrlTaoBA(tiers.getNumero())).append("\">").append(message("label.TAOBA")).append("</option>\n");
+				s.append("\t<option value=\"").append(fidorService.getUrlTaoIS(tiers.getNumero())).append("\">").append(message("label.TAOIS")).append("</option>\n");
+			}
 			s.append("\t<option value=\"").append(fidorService.getUrlSipf(tiers.getNumero())).append("\">").append(message("label.SIPF")).append("</option>\n");
-			s.append("\t<option value=\"launchcat.do?numero=").append(tiers.getNumero()).append("\">").append(message("label.CAT")).append("</option>\n");
+			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
+				s.append("\t<option value=\"launchcat.do?numero=").append(tiers.getNumero()).append("\">").append(message("label.CAT")).append("</option>\n");
+			}
 			s.append("</select>\n");
 		}
 		else {
