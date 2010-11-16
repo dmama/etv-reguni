@@ -36,7 +36,10 @@
 		
 		<jsp:include page="for-debiteur.jsp"/>
 	</c:when>
-	<c:when test="${command.natureTiers != 'DebiteurPrestationImposable'}">
+	<c:when test="${command.natureTiers == 'Entreprise'}">
+		<jsp:include page="../pm/fors.jsp"/>
+	</c:when>
+	<c:when test="${command.natureTiers != 'DebiteurPrestationImposable' && command.natureTiers != 'Entreprise'}">
 		<jsp:include page="for.jsp"/>	
 		<jsp:include page="situation-famille.jsp"/>	
 	</c:when>

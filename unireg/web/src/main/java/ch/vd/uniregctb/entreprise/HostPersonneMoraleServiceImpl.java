@@ -8,17 +8,23 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.interfaces.model.Capital;
 import ch.vd.uniregctb.interfaces.model.EtatPM;
+import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.FormeJuridique;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.Siege;
 import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.view.EtatPMView;
+import ch.vd.uniregctb.tiers.view.ForFiscalView;
+import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
 import ch.vd.uniregctb.tiers.view.RegimeFiscalView;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.MotifRattachement;
 
 /**
  * Re-organisation des informations de l'entreprise pour l'affichage Web
@@ -49,7 +55,8 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 
 		EntrepriseView entrepriseView = new EntrepriseView();
 
-		final PersonneMorale pm = servicePersonneMoraleService.getPersonneMorale(numeroEntreprise, PartPM.ADRESSES, PartPM.FORMES_JURIDIQUES, PartPM.CAPITAUX, PartPM.SIEGES, PartPM.REGIMES_FISCAUX, PartPM.ETATS);
+		final PersonneMorale pm = servicePersonneMoraleService.getPersonneMorale(numeroEntreprise, PartPM.ADRESSES, PartPM.FORMES_JURIDIQUES, PartPM.CAPITAUX,
+				PartPM.SIEGES, PartPM.REGIMES_FISCAUX, PartPM.ETATS, PartPM.FORS_FISCAUX);
 		if (pm != null) {
 			entrepriseView.setNumeroIPMRO(pm.getNumeroIPMRO());
 			entrepriseView.setDesignationAbregee(pm.getDesignationAbregee());
@@ -59,6 +66,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 			entrepriseView.setRaisonSociale3(pm.getRaisonSociale3());
 			entrepriseView.setDateFinDernierExerciceCommercial(null);
 			entrepriseView.setDateBouclementFuture(pm.getDateBouclementFuture());
+			entrepriseView.setForsFiscaux(getForsFiscaux(pm.getForsFiscauxPrincipaux(), pm.getForsFiscauxSecondaires()));
 			entrepriseView.setSieges(getSieges(pm.getSieges()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(pm.getFormesJuridiques()));
 			entrepriseView.setCapitaux(getCapitaux(pm.getCapitaux()));
@@ -68,6 +76,39 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		}
 
 		return entrepriseView;
+	}
+
+	private List<ForFiscalView> getForsFiscaux(List<ForPM> forsFiscauxPrincipaux, List<ForPM> forsFiscauxSecondaires) {
+		if (forsFiscauxPrincipaux == null && forsFiscauxSecondaires == null) {
+			return null;
+		}
+		final List<ForFiscalView> list = new ArrayList<ForFiscalView>();
+		if (forsFiscauxPrincipaux != null) {
+			for (ForPM ffp : forsFiscauxPrincipaux) {
+				ForFiscalView v = new ForFiscalView();
+				v.setDateOuverture(ffp.getDateDebut());
+				v.setDateFermeture(ffp.getDateFin());
+				v.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				v.setMotifRattachement(MotifRattachement.DOMICILE);
+				v.setTypeEtNumeroForFiscal(EntrepriseHelper.getTypeAutoriteFiscaleForPM(ffp, serviceInfra), ffp.getNoOfsAutoriteFiscale());
+				v.setNatureForFiscal("ForFiscalPrincipal");
+				list.add(v);
+			}
+		}
+		if (forsFiscauxSecondaires != null) {
+			for (ForPM ffs : forsFiscauxSecondaires) {
+				ForFiscalView v = new ForFiscalView();
+				v.setDateOuverture(ffs.getDateDebut());
+				v.setDateFermeture(ffs.getDateFin());
+				v.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				v.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
+				v.setTypeEtNumeroForFiscal(EntrepriseHelper.getTypeAutoriteFiscaleForPM(ffs, serviceInfra), ffs.getNoOfsAutoriteFiscale());
+				v.setNatureForFiscal("ForFiscalSecondaire");
+				list.add(v);
+			}
+		}
+		Collections.sort(list, new ForFiscalViewComparator());
+		return list;
 	}
 
 	private List<SiegeView> getSieges(List<Siege> sieges) {

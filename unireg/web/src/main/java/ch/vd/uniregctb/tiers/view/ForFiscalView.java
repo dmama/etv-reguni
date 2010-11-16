@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers.view;
 
 import java.util.Date;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class ForFiscalView implements Comparable<ForFiscalView> {
+public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 
 	private Long id;
 
@@ -98,20 +99,7 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 			}
 		}
 
-		this.typeAutoriteFiscale = forFiscal.getTypeAutoriteFiscale();
-		switch (typeAutoriteFiscale) {
-		case COMMUNE_OU_FRACTION_VD:
-			this.numeroForFiscalCommune = forFiscal.getNumeroOfsAutoriteFiscale();
-			break;
-		case COMMUNE_HC:
-			this.numeroForFiscalCommuneHorsCanton = forFiscal.getNumeroOfsAutoriteFiscale();
-			break;
-		case PAYS_HS:
-			this.numeroForFiscalPays = forFiscal.getNumeroOfsAutoriteFiscale();
-			break;
-		default:
-			break;
-		}
+		setTypeEtNumeroForFiscal(forFiscal.getTypeAutoriteFiscale(), forFiscal.getNumeroOfsAutoriteFiscale());
 
 		if (forFiscal instanceof ForFiscalRevenuFortune) {
 			final ForFiscalRevenuFortune forFiscalRevenuFortune = (ForFiscalRevenuFortune) forFiscal;
@@ -229,6 +217,21 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 	 */
 	public void setNumeroForFiscalPays(Integer numeroForFiscalPays) {
 		this.numeroForFiscalPays = numeroForFiscalPays;
+	}
+
+	public void setTypeEtNumeroForFiscal(TypeAutoriteFiscale taf, int noOfs) {
+		this.typeAutoriteFiscale = taf;
+		switch (taf) {
+		case COMMUNE_OU_FRACTION_VD:
+			this.numeroForFiscalCommune = noOfs;
+			break;
+		case COMMUNE_HC:
+			this.numeroForFiscalCommuneHorsCanton = noOfs;
+			break;
+		case PAYS_HS:
+			this.numeroForFiscalPays = noOfs;
+			break;
+		}
 	}
 
 	/**
@@ -480,5 +483,17 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 
 	public boolean isDateFermetureEditable() {
 		return dateFermetureEditable;
+	}
+
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateOuverture, dateFermeture, NullDateBehavior.LATEST);
+	}
+
+	public RegDate getDateDebut() {
+		return dateOuverture;
+	}
+
+	public RegDate getDateFin() {
+		return dateFermeture;
 	}
 }

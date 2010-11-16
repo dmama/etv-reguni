@@ -2,7 +2,6 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -11,7 +10,7 @@ import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -121,43 +120,10 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 	}
 
 	private TypeAutoriteFiscale getTypeAutoriteFiscaleForPM(ForPM ffp) {
-		final TypeAutoriteFiscale type;
-		switch (ffp.getTypeAutoriteFiscale()) {
-		case COMMUNE_CH:
-			final Commune commune = getCommuneForPM(ffp);
-			if (commune.isVaudoise()) {
-				type = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			}
-			else {
-				type = TypeAutoriteFiscale.COMMUNE_HC;
-			}
-			break;
-		case PAYS_HS:
-			type = TypeAutoriteFiscale.PAYS_HS;
-			break;
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale PM inconnu = [" + ffp.getTypeAutoriteFiscale() + "]");
-		}
-		return type;
+		return EntrepriseHelper.getTypeAutoriteFiscaleForPM(ffp, serviceInfra);
 	}
 
 	private Commune getCommuneForPM(ForPM ffp) {
-		if (ffp.getTypeAutoriteFiscale() == TypeNoOfs.PAYS_HS) {
-			return null;
-		}
-
-		final Commune commune;
-		try {
-			commune = serviceInfra.getCommuneByNumeroOfsEtendu(ffp.getNoOfsAutoriteFiscale(), ffp.getDateDebut());
-		}
-		catch (InfrastructureException e) {
-			throw new IndexerException("Commune pas trouvée: noOfsEtendu=" + ffp.getNoOfsAutoriteFiscale(), e);
-		}
-
-		if (commune == null) {
-			throw new IndexerException("Commune pas trouvée: noOfsEtendu=" + ffp.getNoOfsAutoriteFiscale());
-		}
-
-		return commune;
+		return EntrepriseHelper.getCommuneForPM(ffp, serviceInfra);
 	}
 }

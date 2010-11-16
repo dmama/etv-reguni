@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.view.EtatPMView;
+import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.RegimeFiscalView;
 
 public class EntrepriseView {
@@ -17,6 +18,7 @@ public class EntrepriseView {
 	private RegDate dateFinDernierExerciceCommercial;
 	private RegDate dateBouclementFuture;
 
+	private List<ForFiscalView> forsFiscaux;
 	private List<SiegeView> sieges;
 	private List<FormeJuridiqueView> formesJuridiques;
 	private List<CapitalView> capitaux;
@@ -86,6 +88,14 @@ public class EntrepriseView {
 
 	public void setDateBouclementFuture(RegDate dateBouclementFuture) {
 		this.dateBouclementFuture = dateBouclementFuture;
+	}
+
+	public List<ForFiscalView> getForsFiscaux() {
+		return forsFiscaux;
+	}
+
+	public void setForsFiscaux(List<ForFiscalView> forsFiscaux) {
+		this.forsFiscaux = forsFiscaux;
 	}
 
 	public List<SiegeView> getSieges() {

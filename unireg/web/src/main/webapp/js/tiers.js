@@ -314,10 +314,20 @@ function hasClassName(objElement, strClass)
  */
 function refreshHistoTable(showHisto, table, dateFinIndex) {
 	var len = table.rows.length;
-	for (i = 2; i < len; i++) { // on ignore l'entête et la première ligne qui est toujours affichée
+	var firstLine = null;
+	var foundSomething = false; // vrai si une ligne au moins est affichée
+	var visibleCount = 0;
+
+	for (i = 1; i < len; i++) { // on ignore l'entête
 		var line = table.rows[i];
+		if (i == 1) {
+			firstLine = line;
+		}
 		var dateFin = line.cells[dateFinIndex].innerHTML;
-		if (dateFin != null && dateFin.length > 0) { // valeur historique
+		var isHisto = (dateFin != null && isNotBlank(dateFin)); // date fin != null -> valeur historique
+
+		// affiche ou cache la ligne
+		if (isHisto) {
 			if (showHisto) {
 				line.style.display = '';
 			}
@@ -325,5 +335,33 @@ function refreshHistoTable(showHisto, table, dateFinIndex) {
 				line.style.display = 'none';
 			}
 		}
+		else {
+			foundSomething = true;
+		}
+
+		if (showHisto || !isHisto) {
+			// on adapte le style des lignes odd/even
+			line.className = (visibleCount++ % 2 == 0 ? 'even' : 'odd');
+		}
+	}
+	if (!showHisto && !foundSomething) { // si toutes les valeurs sont historiques, on affiche au minimum la plus récente
+		firstLine.style.display = ''
 	}
 }
+
+function trim(string) {
+	if (string.trim) {
+		return string.trim();
+	}
+	else {
+		return string.replace(/^\s+|\s+$/g, "");
+	}
+};
+
+function isBlank(s) {
+	return trim(s).length == 0;
+};
+
+function isNotBlank(s) {
+	return !isBlank(s);
+};
