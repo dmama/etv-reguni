@@ -90,9 +90,11 @@
 							<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.di" /></a>
 						</li>
 					</c:if>
-					<li id="mouvementTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.mouvement" /></a>
-					</li>
+					<c:if test="${command.natureTiers != 'Entreprise'}">
+						<li id="mouvementTab">
+							<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.mouvement" /></a>
+						</li>
+					</c:if>
 					<c:if test="${command.natureTiers == 'Entreprise'}">
 						<li id="regimesFiscauxTab">
 							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.regimes.fiscaux" /></a>
@@ -150,9 +152,11 @@
 				</authz:authorize>
 			</c:if>
 		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-			<div id="tabContent_mouvementTab" class="visuTiers" style="display: none;">
-				<jsp:include page="mouvement/mouvements.jsp"/>
-			</div>
+			<c:if test="${command.natureTiers != 'Entreprise'}">
+				<div id="tabContent_mouvementTab" class="visuTiers" style="display: none;">
+					<jsp:include page="mouvement/mouvements.jsp"/>
+				</div>
+			</c:if>
 			<c:if test="${command.natureTiers == 'Entreprise'}">
 				<div id="tabContent_regimesFiscauxTab" class="visuTiers" style="display: none;">
 					<jsp:include page="pm/regimes-fiscaux.jsp"/>
