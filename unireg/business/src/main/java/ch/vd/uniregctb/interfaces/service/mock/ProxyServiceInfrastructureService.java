@@ -18,6 +18,8 @@ import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
+import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -255,5 +257,21 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 
 	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
 		return target.getTypeAffranchissement(noOfsPays);
+	}
+
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+		return target.getTypesRegimesFiscaux();
+	}
+
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
+		return target.getTypeRegimeFiscal(code);
+	}
+
+	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+		return target.getTypesEtatsPM();
+	}
+
+	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
+		return target.getTypeEtatPM(code);
 	}
 }

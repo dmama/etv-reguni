@@ -15,6 +15,8 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
+import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -427,6 +429,22 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 	}
 
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException {
+		return null;
+	}
+
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+		return null;
+	}
+
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
+		return null;
+	}
+
+	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+		return null;
+	}
+
+	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
 		return null;
 	}
 }

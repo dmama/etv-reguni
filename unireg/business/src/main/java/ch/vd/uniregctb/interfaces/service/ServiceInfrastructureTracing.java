@@ -5,14 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
-import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -24,6 +22,10 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
+import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
+import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.
@@ -887,6 +889,68 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 				@Override
 				public String toString() {
 					return String.format("noOfsPays=%d", noOfsPays);
+				}
+			});
+		}
+
+		return result;
+	}
+
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+		List<TypeRegimeFiscal> result;
+		long time = tracing.start();
+		try {
+			result = target.getTypesRegimesFiscaux();
+		}
+		finally {
+			tracing.end(time, "getTypesRegimesFiscaux", null);
+		}
+
+		return result;
+	}
+
+	public TypeRegimeFiscal getTypeRegimeFiscal(final String code) throws InfrastructureException {
+		TypeRegimeFiscal result;
+		long time = tracing.start();
+		try {
+			result = target.getTypeRegimeFiscal(code);
+		}
+		finally {
+			tracing.end(time, "getTypeRegimeFiscal", new Object() {
+				@Override
+				public String toString() {
+					return String.format("code=%s", code);
+				}
+			});
+		}
+
+		return result;
+	}
+
+	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+		List<TypeEtatPM> result;
+		long time = tracing.start();
+		try {
+			result = target.getTypesEtatsPM();
+		}
+		finally {
+			tracing.end(time, "getTypesEtatsPM", null);
+		}
+
+		return result;
+	}
+
+	public TypeEtatPM getTypeEtatPM(final String code) throws InfrastructureException {
+		TypeEtatPM result;
+		long time = tracing.start();
+		try {
+			result = target.getTypeEtatPM(code);
+		}
+		finally {
+			tracing.end(time, "getTypeEtatPM", new Object() {
+				@Override
+				public String toString() {
+					return String.format("code=%s", code);
 				}
 			});
 		}

@@ -147,25 +147,6 @@
 		refreshHistoTable(showHisto, table, 1);
 	}
 
-	/**
-	 * Affiche ou filtre les données historiques d'une table
-	 */
-	function refreshHistoTable(showHisto, table, dateFinIndex) {
-		var len = table.rows.length;
-		for (i = 2; i < len; i++) { // on ignore l'entête et la première ligne qui est toujours affichée
-			var line = table.rows[i];
-			var dateFin = line.cells[dateFinIndex].innerHTML;
-			if (dateFin != null && dateFin.length > 0) { // valeur historique
-				if (showHisto) {
-					line.style.display = '';
-				}
-				else {
-					line.style.display = 'none';
-				}
-			}
-		}
-	}
-
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page
 	refreshSiegesTable(E$('showSiegesHisto'));
 	refreshFormesJuridiquesTable(E$('showFormesJuridiquesHisto'));

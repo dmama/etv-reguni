@@ -34,6 +34,15 @@
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
 
+	<!-- Bean client serviceInfrastructureFiscal -->
+	<bean name="_serviceInfrastructureFiscal" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
 	<!-- Bean client serviceCivil -->
 	<bean name="_serviceCivil" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
 		<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}"/>

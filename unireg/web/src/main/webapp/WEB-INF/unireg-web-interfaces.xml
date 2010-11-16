@@ -25,6 +25,17 @@
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
 
+	<!-- Bean client serviceInfrastructureFiscal -->
+	<bean name="_serviceInfrastructureFiscal" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal-${host-interfaces.version-short}"/>
+		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="refreshHomeOnConnectFailure" value="true"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+	
 	<!-- Bean client serviceCivil -->
 	<bean name="_serviceCivil" class="${host-interfaces.ejb-proxy-class}">
 		<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}"/>

@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
+import ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal;
 import ch.vd.infrastructure.model.EnumPays;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -27,6 +28,8 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
+import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.impl.CantonImpl;
 import ch.vd.uniregctb.interfaces.model.impl.CollectiviteAdministrativeImpl;
 import ch.vd.uniregctb.interfaces.model.impl.CommuneImpl;
@@ -34,6 +37,8 @@ import ch.vd.uniregctb.interfaces.model.impl.InstitutionFinanciereImpl;
 import ch.vd.uniregctb.interfaces.model.impl.LocaliteImpl;
 import ch.vd.uniregctb.interfaces.model.impl.PaysImpl;
 import ch.vd.uniregctb.interfaces.model.impl.RueImpl;
+import ch.vd.uniregctb.interfaces.model.impl.TypeEtatPMImpl;
+import ch.vd.uniregctb.interfaces.model.impl.TypeRegimeFiscalImpl;
 
 /**
  * @author Jean-Eric CUENDET
@@ -44,6 +49,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureServiceImpl.class);
 
 	private ServiceInfrastructure serviceInfrastructure;
+	private ServiceInfrastructureFiscal serviceInfrastructureFiscal;
 
 	/**
 	 * Type de collectivite administrative OID
@@ -63,13 +69,14 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 
 	private Map<Integer,Localite> localitesByNPA;
 
-	/**
-	 * @param serviceInfrastructure
-	 *            The serviceInfrastructure to set.
-	 */
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfrastructure(ServiceInfrastructure serviceInfrastructure) {
 		this.serviceInfrastructure = serviceInfrastructure;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceInfrastructureFiscal(ServiceInfrastructureFiscal serviceInfrastructureFiscal) {
+		this.serviceInfrastructureFiscal = serviceInfrastructureFiscal;
 	}
 
 	public ServiceInfrastructureServiceImpl() {
@@ -580,5 +587,57 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		catch (RemoteException e) {
 			throw new InfrastructureException("Acces à l'institution financière", e);
 		}
+	}
+
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+		try {
+			ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal[] types = serviceInfrastructureFiscal.getTypeRegimesFiscaux();
+			List<TypeRegimeFiscal> list = new ArrayList<TypeRegimeFiscal>(types.length);
+			for (ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal type : types) {
+				list.add(TypeRegimeFiscalImpl.get(type));
+			}
+			return list;
+		}
+		catch (RemoteException e) {
+			throw new InfrastructureException("Acces aux types de régimes fiscaux", e);
+		}
+	}
+
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
+		final List<TypeRegimeFiscal> list = getTypesRegimesFiscaux();
+		if (list != null) {
+			for (TypeRegimeFiscal type : list) {
+				if (type.getCode().equals(code)) {
+					return type;
+				}
+			}
+		}
+		return null;
+	}
+
+	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+		try {
+			ch.vd.infrastructure.fiscal.model.TypeEtatPM[] types = serviceInfrastructureFiscal.getTypesEtatsPM();
+			List<TypeEtatPM> list = new ArrayList<TypeEtatPM>(types.length);
+			for (ch.vd.infrastructure.fiscal.model.TypeEtatPM type : types) {
+				list.add(TypeEtatPMImpl.get(type));
+			}
+			return list;
+		}
+		catch (RemoteException e) {
+			throw new InfrastructureException("Acces aux types des états PM", e);
+		}
+	}
+
+	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
+		final List<TypeEtatPM> list = getTypesEtatsPM();
+		if (list != null) {
+			for (TypeEtatPM type : list) {
+				if (type.getCode().equals(code)) {
+					return type;
+				}
+			}
+		}
+		return null;
 	}
 }

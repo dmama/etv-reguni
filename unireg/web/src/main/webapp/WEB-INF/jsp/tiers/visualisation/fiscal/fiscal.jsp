@@ -21,7 +21,7 @@
 
 		</tr>
 	</table>
-	
+
 </c:if>
 <c:choose>
 	<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">

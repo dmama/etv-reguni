@@ -85,12 +85,22 @@
 						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.dossiers.apparentes" /></a>
 					</li>
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<li id="diTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.di" /></a>
-					</li>
+					<c:if test="${command.natureTiers != 'Entreprise'}">
+						<li id="diTab">
+							<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.di" /></a>
+						</li>
+					</c:if>
 					<li id="mouvementTab">
 						<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.mouvement" /></a>
 					</li>
+					<c:if test="${command.natureTiers == 'Entreprise'}">
+						<li id="regimesFiscauxTab">
+							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.regimes.fiscaux" /></a>
+						</li>
+						<li id="etatsPMTab">
+							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.etats.pm" /></a>
+						</li>
+					</c:if>
 					</authz:authorize>
 				</c:if>
 				<li id="remarqueTab">
@@ -132,15 +142,25 @@
 					<jsp:include page="debiteur.jsp"/>
 				</div>
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<div id="tabContent_diTab" class="visuTiers" style="display: none;">
-						<jsp:include page="di/dis.jsp"/>
-					</div>
+					<c:if test="${command.natureTiers != 'Entreprise'}">
+						<div id="tabContent_diTab" class="visuTiers" style="display: none;">
+							<jsp:include page="di/dis.jsp"/>
+						</div>
+					</c:if>
 				</authz:authorize>
 			</c:if>
 		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 			<div id="tabContent_mouvementTab" class="visuTiers" style="display: none;">
 				<jsp:include page="mouvement/mouvements.jsp"/>
 			</div>
+			<c:if test="${command.natureTiers == 'Entreprise'}">
+				<div id="tabContent_regimesFiscauxTab" class="visuTiers" style="display: none;">
+					<jsp:include page="pm/regimes-fiscaux.jsp"/>
+				</div>
+				<div id="tabContent_etatsPMTab" class="visuTiers">
+					<jsp:include page="pm/etats.jsp"/>
+				</div>
+			</c:if>
 		</authz:authorize>
 
 		<div id="tabContent_remarqueTab" class="visuTiers" style="display:none">

@@ -7,7 +7,6 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
@@ -18,6 +17,9 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
+import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 
 public interface ServiceInfrastructureService {
 
@@ -339,7 +341,7 @@ public interface ServiceInfrastructureService {
 	 * Retourne la liste des collectivites administratives du canton
 	 *
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws InfrastructureException en cas de problème
 	 */
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException ;
 
@@ -347,7 +349,7 @@ public interface ServiceInfrastructureService {
 	 * Retourne la liste des collectivites administratives du canton
 	 * @param typesCollectivite
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws InfrastructureException en cas de problème
 	 */
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws InfrastructureException ;
 
@@ -356,7 +358,7 @@ public interface ServiceInfrastructureService {
 	 * Retourne l'entité representant un pays inconnu
 	 *
 	 * @return Pays
-	 * @throws InfrastructureException
+	 * @throws InfrastructureException en cas de problème
 	 */
 	public Pays getPaysInconnu() throws InfrastructureException ;
 
@@ -366,6 +368,7 @@ public interface ServiceInfrastructureService {
 	 * @param id
 	 *            l'id de l'institution financière
 	 * @return une institution financière ou <code>null</code> si aucune institution ne correspond à l'id spécifié.
+     * @throws InfrastructureException en cas de problème
 	 */
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException;
 
@@ -378,14 +381,15 @@ public interface ServiceInfrastructureService {
 	 * @param noClearing
 	 *            un numéro de clearing
 	 * @return 0, 1 ou plusieurs institutions financières.
+     * @throws InfrastructureException en cas de problème
 	 */
     public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException;
 
     /** Permet de retourner une localite a partir d'un npa
      *
-     * @param le npa
+     * @param npa le npa
      * @return la localite
-     * @throws InfrastructureException
+     * @throws InfrastructureException en cas de problème
      */
 	public Localite getLocaliteByNPA(int npa) throws InfrastructureException;
 
@@ -396,4 +400,30 @@ public interface ServiceInfrastructureService {
 	 * @return le type d'affranchissement du courrier.
 	 */
 	TypeAffranchissement getTypeAffranchissement(int noOfsPays);
+
+	/**
+	 * @return la liste des types de régimes fiscaux qui existent pour les personnes morales.
+	 * @throws InfrastructureException en cas de problème
+	 */
+	List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException;
+
+	/**
+	 * @param code un code de régime fiscal
+	 * @return le régime fiscal pour le code demandé; ou <null> si le code ne correspond à aucun régime fiscal connu,
+	 * @throws InfrastructureException en cas de problème
+	 */
+	TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException;
+
+	/**
+	 * @return la liste des types d'états qui existent pour les personnes morales.
+	 * @throws InfrastructureException en cas de problème
+	 */
+	List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException;
+
+	/**
+	 * @param code un code de type d'état PM
+	 * @return le type d'état PM pour le code demandé; ou <null> si le code ne correspond à aucun type d'état connu,
+	 * @throws InfrastructureException en cas de problème
+	 */
+	TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException;
 }

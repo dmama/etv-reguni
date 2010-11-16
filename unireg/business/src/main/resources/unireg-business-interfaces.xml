@@ -6,6 +6,7 @@
 	
 	<bean id="serviceInfrastructureServiceRaw" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureServiceImpl">
 		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
 	</bean>
 
 	<bean id="serviceInfrastructureTracing" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureTracing">

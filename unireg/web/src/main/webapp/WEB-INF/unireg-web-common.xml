@@ -347,6 +347,7 @@
 	
   	<bean id="hostPersonneMoraleService" class="ch.vd.uniregctb.entreprise.HostPersonneMoraleServiceImpl">
 		<property name="servicePersonneMoraleService" ref="servicePersonneMoraleService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
 	</bean>
 
 	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormController">

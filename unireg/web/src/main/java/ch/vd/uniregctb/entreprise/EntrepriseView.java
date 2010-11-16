@@ -3,6 +3,8 @@ package ch.vd.uniregctb.entreprise;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.view.EtatPMView;
+import ch.vd.uniregctb.tiers.view.RegimeFiscalView;
 
 public class EntrepriseView {
 
@@ -18,6 +20,9 @@ public class EntrepriseView {
 	private List<SiegeView> sieges;
 	private List<FormeJuridiqueView> formesJuridiques;
 	private List<CapitalView> capitaux;
+	private List<RegimeFiscalView> regimesFiscauxVD;
+	private List<RegimeFiscalView> regimesFiscauxCH;
+	private List<EtatPMView> etats;
 
 	public String getNumeroIPMRO() {
 		return numeroIPMRO;
@@ -105,5 +110,29 @@ public class EntrepriseView {
 
 	public void setCapitaux(List<CapitalView> capitaux) {
 		this.capitaux = capitaux;
+	}
+
+	public List<RegimeFiscalView> getRegimesFiscauxVD() {
+		return regimesFiscauxVD;
+	}
+
+	public void setRegimesFiscauxVD(List<RegimeFiscalView> regimesFiscauxVD) {
+		this.regimesFiscauxVD = regimesFiscauxVD;
+	}
+
+	public List<RegimeFiscalView> getRegimesFiscauxCH() {
+		return regimesFiscauxCH;
+	}
+
+	public void setRegimesFiscauxCH(List<RegimeFiscalView> regimesFiscauxCH) {
+		this.regimesFiscauxCH = regimesFiscauxCH;
+	}
+
+	public List<EtatPMView> getEtats() {
+		return etats;
+	}
+
+	public void setEtats(List<EtatPMView> etats) {
+		this.etats = etats;
 	}
 }
