@@ -10,4 +10,4 @@ do
         fi
 done
 
-java -cp $classpath ch.vd.uniregctb.webservices.tiers2.perfs.WsAccessAnalyzer $*
+java -cp $classpath ch.vd.uniregctb.webservices.tiers2.stats.WsAccessAnalyzer $*
