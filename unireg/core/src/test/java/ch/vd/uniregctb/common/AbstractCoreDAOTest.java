@@ -616,6 +616,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
+	protected static void assertTacheAnnulationDI(TypeEtatTache etat, long diId, boolean annule, TacheAnnulationDeclarationImpot tache) {
+		assertNotNull(tache);
+		assertEquals(etat, tache.getEtat());
+		assertEquals(Long.valueOf(diId), tache.getDeclarationImpotOrdinaire().getId());
+		assertEquals(annule, tache.isAnnule());
+	}
+
+	/**
+	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
+	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate echeance, final TacheNouveauDossier tache) {
 		assertNotNull(tache);
 		assertEquals(echeance, tache.getDateEcheance());

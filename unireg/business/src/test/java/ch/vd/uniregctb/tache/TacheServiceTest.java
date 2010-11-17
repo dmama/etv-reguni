@@ -13,6 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -3314,6 +3315,155 @@ public class TacheServiceTest extends BusinessTest {
 
 		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
 		assertEmpty(actions); // pas d'annulation de la déclaration courante
+	}
+
+	/**
+	 * [UNIREG-3028] Vérifie que l'annulation d'un for fiscale HC activité indépendante et son remplacement par un for ordinaire VD (cas du ctb n°833.153.01)
+	 */
+	@Test
+	public void testDetermineSynchronizeActionsAnnulationForActiviteIndependenteHCEtRemplacementForOrdinaireVD() throws Exception {
+
+		final int anneeCourante = RegDate.get().year();
+		final int anneeAvant = anneeCourante - 1;
+		final int anneeAvantAvant = anneeCourante - 2;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		class Ids {
+			long ctb;
+			long ffp;
+			long ffs;
+			long di1;
+			long di2;
+		}
+		final Ids ids = new Ids();
+
+		//
+		// Etape 1 : contribuable hors-canton avec une activité indépendente dans le canton
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Jean-Louis", "Ruedi", date(1954, 11, 23), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+				final ForFiscalSecondaire ffs =
+						addForSecondaire(pp, date(anneeAvantAvant, 1, 7), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+				final PeriodeFiscale periode1 = addPeriodeFiscale(anneeAvantAvant);
+				final ModeleDocument modele1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode1);
+				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode1, date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeContribuable.HORS_CANTON, modele1);
+				addEtatDeclaration(di1, date(anneeAvant, 1, 15), TypeEtatDeclaration.EMISE);
+				addEtatDeclaration(di1, date(anneeAvant, 4, 19), TypeEtatDeclaration.RETOURNEE);
+
+				final PeriodeFiscale periode2 = addPeriodeFiscale(anneeAvant);
+				final ModeleDocument modele2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2);
+				final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp, periode2, date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeContribuable.HORS_CANTON, modele2);
+				addEtatDeclaration(di2, date(anneeCourante, 1, 15), TypeEtatDeclaration.EMISE);
+				addEtatDeclaration(di2, date(anneeCourante, 4, 19), TypeEtatDeclaration.RETOURNEE);
+
+				ids.ctb = pp.getId();
+				ids.ffp = ffp.getId();
+				ids.ffs = ffs.getId();
+				ids.di1 = di1.getId();
+				ids.di2 = di2.getId();
+				return null;
+			}
+		});
+
+		// On vérifie qu'aucune tâche n'est générée (le contribuable est dans un état correct) :
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEmpty(tacheDAO.find(ids.ctb));
+				return null;
+			}
+		});
+
+		//
+		// Etape 2 : annulation du for secondaire
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final ForFiscal ffs = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffs);
+				assertNotNull(ffs);
+				ffs.setAnnule(true);
+				return null;
+			}
+		});
+
+		// On vérifie que le contribuable n'est plus assujetti et que des tâches d'annulation des déclarations existantes sont générées
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<Tache> taches = tacheDAO.find(ids.ctb);
+				assertEquals(2, taches.size());
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, false, (TacheAnnulationDeclarationImpot) taches.get(0));
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, false, (TacheAnnulationDeclarationImpot) taches.get(1));
+				return null;
+			}
+		});
+
+		//
+		// Etape 3 : annulation du for principal
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final ForFiscal ffp = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp);
+				assertNotNull(ffp);
+				ffp.setAnnule(true);
+				return null;
+			}
+		});
+
+		// On vérifie que rien ne change au niveau des tâches
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<Tache> taches = tacheDAO.find(ids.ctb);
+				assertEquals(2, taches.size());
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, false, (TacheAnnulationDeclarationImpot) taches.get(0));
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, false, (TacheAnnulationDeclarationImpot) taches.get(1));
+				return null;
+			}
+		});
+
+		//
+		// Etape 4 : ajout d'un for principal vaudois ordinaire en remplacement du for hors-canton
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+				assertNotNull(pp);
+				addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		// On vérifie que :
+		//  - les tâches d'annulation introduites à l'étape 2 sont annulées (le contribuable est de nouveau assujetti)
+		//  - le type de contribuable des déclarations pré-existantes est mis-à-jour (car les types de documents sont compatibles)
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<Tache> taches = tacheDAO.find(ids.ctb);
+				assertEquals(2, taches.size());
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, true, (TacheAnnulationDeclarationImpot) taches.get(0));
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, true, (TacheAnnulationDeclarationImpot) taches.get(1));
+
+				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
+				assertEquals(2, dis.size());
+				Collections.sort(dis, new DateRangeComparator<DeclarationImpotOrdinaire>());
+				assertDI(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+						cedi.getNumero(), null, dis.get(0));
+				assertDI(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+						cedi.getNumero(), null, dis.get(1));
+				return null;
+			}
+		});
 	}
 
 	@Test

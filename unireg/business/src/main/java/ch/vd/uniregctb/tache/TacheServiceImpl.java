@@ -449,7 +449,7 @@ public class TacheServiceImpl implements TacheService {
 
 		// On effectue toutes les actions nécessaires
 		final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
-		final CollectiviteAdministrative officeSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
+		final CollectiviteAdministrative officeSuccessions = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
 		Assert.notNull(officeSuccessions, "Impossible de trouver l'office des successions !");
 
 		final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions);
@@ -580,7 +580,7 @@ public class TacheServiceImpl implements TacheService {
 			}
 		}
 
-		// on retrange les déclarations pour lesquelles il existe déjà une tâche d'annulation
+		// on retranche les déclarations pour lesquelles il existe déjà une tâche d'annulation
 		if (!deleteActions.isEmpty()) {
 			for (int i = deleteActions.size() - 1; i >= 0; i--) {
 				final DeclarationImpotOrdinaire di = deleteActions.get(i).declaration;
@@ -626,7 +626,7 @@ public class TacheServiceImpl implements TacheService {
 					// il n'y a pas de période d'imposition correspondante, la tâche d'annulation est donc valide
 				}
 				else {
-					if (periode.getTypeContribuable() != declaration.getTypeContribuable()) {
+					if (periode.getTypeContribuable() != declaration.getTypeContribuable() && !peutMettreAJourDeclarationExistante(declaration, periode, anneeCourante)) { // [UNIREG-3028]
 						// la période et le type de contribuable ne correspondantes pas, la tâche d'annulation est donc valide
 					}
 					else {
