@@ -162,6 +162,7 @@
 	<bean id="droitAccesService" class="ch.vd.uniregctb.security.DroitAccesServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 	</bean>
 
 	<bean id="uniregCacheManager" class="ch.vd.uniregctb.cache.UniregCacheManagerImpl"/>

@@ -480,8 +480,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		});
 
 		// re-création du couple
-		doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final TiersGeneralView viewTiers1 = new TiersGeneralView();
 				viewTiers1.setNumero(ids.noHabMr);

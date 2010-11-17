@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.couple.CoupleHelper;
 import ch.vd.uniregctb.couple.CoupleHelper.Couple;
@@ -263,7 +264,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 								}
 								catch (DroitAccesException e) {
 									LOGGER.error("Erreur lors de la copie des droits d'accès au dossier", e);
-									throw new RuntimeException(e);
+									throw new ActionException(e.getMessage());
 								}
 							}
 

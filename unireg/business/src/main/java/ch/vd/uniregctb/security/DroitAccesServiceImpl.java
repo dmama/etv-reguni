@@ -10,7 +10,10 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -22,6 +25,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
+	private ServiceSecuriteService serviceSecuriteService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -29,6 +33,10 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 
 	public void setDroitAccesDAO(DroitAccesDAO droitAccesDAO) {
 		this.droitAccesDAO = droitAccesDAO;
+	}
+
+	public void setServiceSecuriteService(ServiceSecuriteService serviceSecuriteService) {
+		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
 	/**
@@ -213,9 +221,18 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 					return true;
 				}
 				else {
-					final String msg = String.format("Impossible d'ajouter le droit d'accès %s/%s sur le dossier %s à l'opérateur %d car celui-ci entrerait en conflit avec un droit %s/%s existant",
+					Operateur operateur;
+					try {
+						operateur = serviceSecuriteService.getOperateur(existant.getNoIndividuOperateur());
+					}
+					catch (ServiceSecuriteException e) {
+						operateur = null;
+					}
+					final String nomOperateur = operateur != null ? String.format("%s %s", operateur.getPrenom(), operateur.getNom()) : "?";
+					final String visaOperateur = operateur != null ? operateur.getCode() : "?";
+					final String msg = String.format("Impossible d'ajouter le droit d'accès %s/%s sur le dossier %s à l'opérateur '%s' (%s/%d) car celui-ci entrerait en conflit avec un droit %s/%s existant",
 													type, niveau, FormatNumeroHelper.numeroCTBToDisplay(existant.getTiers().getNumero()),
-													existant.getNoIndividuOperateur(), existant.getType(), existant.getNiveau());
+													nomOperateur, visaOperateur, existant.getNoIndividuOperateur(), existant.getType(), existant.getNiveau());
 					throw new DroitAccesException(msg);
 				}
 			}
