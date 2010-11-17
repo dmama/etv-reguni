@@ -38,6 +38,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Chamblon = new MockCommune(5904, "Chamblon", VAUD, MockOfficeImpot.OID_YVERDON);
 	public static final MockCommune GrangesMarnand = new MockCommune(5818, "Granges-près-Marnand", VAUD, MockOfficeImpot.OID_PAYERNE);
 	public static final MockCommune Bussigny = new MockCommune(5624, "Bussigny-près-Lausanne", VAUD, MockOfficeImpot.OID_MORGES);
+	public static final MockCommune Morges = new MockCommune(5642, "Morges", VAUD, MockOfficeImpot.OID_MORGES);
 	public static final MockCommune Echallens = new MockCommune(5518, "Echallens", VAUD, MockOfficeImpot.OID_ECHALLENS);
 	public static final MockCommune Lonay = new MockCommune(5638, "Lonay", VAUD, MockOfficeImpot.OID_MORGES);
 	public static final MockCommune RomanelSurLausanne = new MockCommune(5592, "Romanel-sur-Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);

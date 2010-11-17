@@ -22,18 +22,21 @@ import ch.vd.uniregctb.type.*;
 
 import noNamespace.DIBase;
 import noNamespace.DIDocument.DI;
+import noNamespace.DIHCDocument;
 import noNamespace.DIRetour;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse.Adresse;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings({"JavaDoc"})
 public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest {
@@ -80,6 +83,45 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		Date date = DateHelper.getCurrentDate();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 		assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
+
+	}
+	//UNIREG-2541 Adresse de retour pour les DI hors canton 
+
+	@Test
+	public void testAdresseRetourDIHorsCanton() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
+
+
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+
+
+		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+
+		final String numCtb = String.format("%09d", pp.getNumero());
+
+		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2010);
+		final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+		declaration2010.setNumeroOfsForGestion(MockCommune.Morges.getNoOFSEtendu());
+		declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+		{
+
+			final DIHCDocument.DIHC di = impressionDIHelper.remplitSpecifiqueDIHC(declaration2010, null);
+			assertNotNull(di);
+
+			// ... sur l'adresse du CEDI
+			final DIHCDocument.DIHC.AdresseRetour retour = di.getAdresseRetour();
+			assertNotNull(retour);
+			assertEquals("Centre d'enregistrement", retour.getADRES1RETOUR());
+			assertEquals("des déclarations d'impôt", retour.getADRES2RETOUR());
+			assertEquals("CEDI " + aci.getNumeroCollectiviteAdministrative(), retour.getADRES3RETOUR());
+			assertEquals("1014 Lausanne Adm cant", retour.getADRES4RETOUR());
+		}
+
 
 	}
 

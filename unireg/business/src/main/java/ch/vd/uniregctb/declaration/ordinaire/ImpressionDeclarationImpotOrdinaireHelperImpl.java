@@ -15,6 +15,7 @@ import noNamespace.DIDocument.DI.AdresseSuite;
 import noNamespace.DIHCDocument;
 import noNamespace.DIHCDocument.DIHC;
 import noNamespace.DIRetour;
+import noNamespace.DIRetourCivil;
 import noNamespace.DIVDTAXDocument;
 import noNamespace.DIVDTAXDocument.DIVDTAX;
 import noNamespace.InfoDocumentDocument1;
@@ -347,7 +348,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		remplitDIBase(declaration, annexes, di);
 		remplitAdresseRetour(declaration, di);
-		remplitContribuables(declaration, di);
+		if(di instanceof DIRetourCivil){
+			remplitContribuables(declaration, (DIRetourCivil)di);	
+		}
+
 	}
 
 	private void remplitAdresseRetour(DeclarationImpotOrdinaire declaration, DIRetour di) throws EditiqueException {
@@ -468,10 +472,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Alimente un objet DIVDTAX
 	 */
-	private DIHC remplitSpecifiqueDIHC(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	protected DIHC remplitSpecifiqueDIHC(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		final DIHC dihc = DIHCDocument.Factory.newInstance().addNewDIHC();
-		remplitDIBase(declaration, annexes, dihc);
+		remplitDIRetour(declaration, annexes, dihc);
 
 		return dihc;
 	}
@@ -598,7 +602,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return String.format("%02d-%d", officeImpotId, suffixe);
 	}
 
-	private void remplitContribuables(DeclarationImpotOrdinaire declaration, DIRetour didp) throws EditiqueException {
+	private void remplitContribuables(DeclarationImpotOrdinaire declaration, DIRetourCivil didp) throws EditiqueException {
 
 		final PersonnePhysique principal;
 		final PersonnePhysique conjoint;
@@ -622,7 +626,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			final String indnomprenom = calculIndividuNomPrenom(declaration, principal);
 			final String noavs = calculAVS(declaration, principal);
 
-			final noNamespace.DIRetour.Contrib1 contrib1 = didp.addNewContrib1();
+			final noNamespace.DIRetourCivil.Contrib1 contrib1 = didp.addNewContrib1();
 			contrib1.setINDDATENAISS1(displayDateNaissance);
 			if (etatCivil != null) {
 				contrib1.setINDETATCIVIL1(etatCivil.format());
@@ -637,7 +641,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			final String indnomprenom = calculIndividuNomPrenom(declaration, conjoint);
 			final String noavs = calculAVS(declaration, conjoint);
 
-			final noNamespace.DIRetour.Contrib2 contrib2 = didp.addNewContrib2();
+			final noNamespace.DIRetourCivil.Contrib2 contrib2 = didp.addNewContrib2();
 			contrib2.setINDDATENAISS2(displayDateNaissance);
 			if (etatCivil != null) {
 				contrib2.setINDETATCIVIL2(etatCivil.format());
