@@ -113,8 +113,6 @@
 		 	}
 		 	
 		 	function Page_ImprimerDI(ev, el) {		 
-				if(!confirm('Voulez-vous vraiment imprimer cette déclaration d\'impôt ?'))
-					return Event.stop(ev);
 				var form = F$("theForm");
 				form.doPostBack("imprimerDI", "");
 				el.disabled = true; 
