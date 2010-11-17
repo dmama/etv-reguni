@@ -244,7 +244,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("<tr class=\"evts-civils-non-traites\"><td colspan=\"3\" width=\"100%\"><center>\n");
 				s.append(message("label.tiers.evts.non.traites"));
 				for (Long no : nos) {
-					s.append(no).append(" ");
+					s.append(" ").append(no);
 				}
 				s.append("</center></td></tr>\n");
 			}
