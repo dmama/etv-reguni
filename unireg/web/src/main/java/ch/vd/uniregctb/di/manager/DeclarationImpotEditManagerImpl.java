@@ -483,7 +483,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException {
 		final DeclarationImpotOrdinaire declaration = diDAO.get(diImpressionView.getIdDI());
 
-		if (tiersService.getAndSetOfficeImpot(declaration.getTiers()) == null) {
+		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
 		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(declaration.getPeriode().getAnnee());
@@ -692,7 +692,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception {
 		//Sauvegarde de la DI
 		DeclarationImpotOrdinaire declaration = save(diEditView);
-		if (tiersService.getAndSetOfficeImpot(declaration.getTiers()) == null) {
+		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
 		//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
@@ -775,7 +775,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 			}
 			else {
-				final Integer officeImpot = tiersService.getAndSetOfficeImpot(ctb);
+				final Integer officeImpot = tiersService.getOfficeImpotId(ctb);
 				if (officeImpot == null) {
 					throw new ActionException("le contribuable ne possède pas de for de gestion");
 				}

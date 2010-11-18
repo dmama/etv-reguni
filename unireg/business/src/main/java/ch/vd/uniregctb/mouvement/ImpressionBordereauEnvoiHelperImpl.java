@@ -188,7 +188,7 @@ public class ImpressionBordereauEnvoiHelperImpl implements ImpressionBordereauEn
 		infoDocument.setLogo(LOGO_CANT);
 		infoDocument.setPopulations(POPULATIONS_PP);
 
-		Integer officeImpotId = tiersService.getAndSetOfficeImpot(mouvementDossier.getContribuable());
+		Integer officeImpotId = tiersService.getOfficeImpotId(mouvementDossier.getContribuable());
 		if (officeImpotId != null) {
 			String idEnvoi = officeImpotId.toString();
 			infoDocument.setIdEnvoi(idEnvoi);
@@ -215,7 +215,7 @@ public class ImpressionBordereauEnvoiHelperImpl implements ImpressionBordereauEn
 		prefixe += HAUT1;
 		infoEnteteDocument.setPrefixe(prefixe);
 
-		Integer officeImpotId = tiersService.getAndSetOfficeImpot(contribuable);
+		Integer officeImpotId = tiersService.getOfficeImpotId(contribuable);
 		if (officeImpotId != null) {
 			ch.vd.uniregctb.tiers.CollectiviteAdministrative  collectiviteAsCore = tiersService.getOrCreateCollectiviteAdministrative(officeImpotId.intValue());
 			if (collectiviteAsCore != null) {

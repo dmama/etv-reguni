@@ -2716,7 +2716,7 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Integer getAndSetOfficeImpot(Tiers tiers) {
+	public Integer getOfficeImpotId(Tiers tiers) {
 		return getOfficeImpotIdAt(tiers, null);
 	}
 

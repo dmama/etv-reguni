@@ -143,7 +143,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 
 	private String getLocaliteExpedition(DeclarationImpotOrdinaire di) throws EditiqueException {
 
-		Integer oid =  tiersService.getAndSetOfficeImpot(di.getTiers());
+		Integer oid =  tiersService.getOfficeImpotId(di.getTiers());
 		String sLocalite = "Lausanne";
 		if (oid == null) {
 			LOGGER.warn( String.format(
@@ -201,7 +201,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 			if (adresseEnvoiDetaillee.isSuisse() && !params.isMiseSousPliImpossible()) {
 				idEnvoi = "";
 			} else {
-				final Integer officeImpotId = tiersService.getAndSetOfficeImpot(params.getDi().getTiers());
+				final Integer officeImpotId = tiersService.getOfficeImpotId(params.getDi().getTiers());
 			if (officeImpotId != null) {
 					idEnvoi = officeImpotId.toString();
 				} else {

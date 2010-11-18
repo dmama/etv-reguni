@@ -844,12 +844,12 @@ public interface TiersService {
 	public String getAncienNumeroAssureSocial(PersonnePhysique pp);
 
 	/**
-	 * récupère l'office d'impôt du contribuable et le renseigne si null
+	 * récupère l'office d'impôt du contribuable
 	 *
 	 * @param tiers un contribuable
 	 * @return l'office d'impot dont dépend le contribuable ou null s'il n'en possède pas
 	 */
-	public Integer getAndSetOfficeImpot(Tiers tiers);
+	public Integer getOfficeImpotId(Tiers tiers);
 
 	/**
 	 * Calcule l'id de l'office d'impôt responsable d'un tiers à une date donnée.
