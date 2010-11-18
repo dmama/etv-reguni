@@ -32,7 +32,6 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 
 		final AutreCommunaute ac = (AutreCommunaute) tiers;
 
-		data.setNumeros(IndexerFormatHelper.objectToString(ac.getNumero()));
 		data.addNomRaison(ac.getNom());
 		data.addNomRaison(ac.getComplementNom());
 		data.setNom1(ac.getNom());

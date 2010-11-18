@@ -1,31 +1,27 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.Date;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.indexer.IndexableData;
+import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.indexer.AbstractIndexable;
-import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public abstract class TiersIndexable extends AbstractIndexable {
+public abstract class TiersIndexable {
 
 	private Logger LOGGER = Logger.getLogger(TiersIndexable.class);
 
@@ -43,10 +39,6 @@ public abstract class TiersIndexable extends AbstractIndexable {
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
-	}
-
-	public Long getID() {
-		return tiers.getNumero();
 	}
 
 	public String getType() {
@@ -68,6 +60,7 @@ public abstract class TiersIndexable extends AbstractIndexable {
 
 	protected void fillBaseData(TiersIndexableData data) {
 
+		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
 		data.setDebiteurInactif(IndexerFormatHelper.objectToString(tiers.isDebiteurInactif()));
 		data.setAnnule(IndexerFormatHelper.objectToString(tiers.isDesactive(null)));
 		data.setRoleLigne1(tiers.getRoleLigne1());

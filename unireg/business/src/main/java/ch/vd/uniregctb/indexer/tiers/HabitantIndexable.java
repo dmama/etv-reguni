@@ -1,13 +1,13 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -38,7 +38,6 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		final PersonnePhysique pp =(PersonnePhysique) tiers;
 		final HistoriqueIndividu histo = individu.getDernierHistoriqueIndividu();
 
-		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
 		data.addAutresNom(histo.getPrenom());
 		data.addAutresNom(histo.getNom());
 		data.addAutresNom(histo.getNomNaissance());

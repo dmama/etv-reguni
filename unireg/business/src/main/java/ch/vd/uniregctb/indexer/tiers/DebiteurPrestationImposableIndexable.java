@@ -95,8 +95,6 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 
-		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
-
 		final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
 		data.setNomRaison(concat(raisonSociale, " "));
 		data.setCategorieDebiteurIs(IndexerFormatHelper.objectToString(dpi.getCategorieImpotSource()));
