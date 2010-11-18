@@ -5,9 +5,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
-
 @ContextConfiguration(locations = {
 		ClientConstants.UNIREG_BUSINESS_INTERFACES,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_CACHE,
@@ -26,6 +23,11 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 		System.getProperties().setProperty(Context.PROVIDER_URL, "t3://localhost:7001");
 	}
 	*/
+
+	/**
+	 * Timeout par défaut pour les attentes de messages JMS dans les tests BIT
+	 */
+	public static final long JMS_TIMEOUT = 120000;
 
 	private static final Pattern valiPattern = Pattern.compile("( *---.{4}-)");
 

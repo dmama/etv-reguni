@@ -23,6 +23,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
@@ -88,7 +89,7 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		container.destroy();
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testRetourImpression() throws Exception {
 
 		final List<EditiqueResultat> events = new ArrayList<EditiqueResultat>();
@@ -134,8 +135,8 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		// Envoie le message
 		sendDiMessage(INPUT_QUEUE, texte, DI_ID);
 
-		// On attend le message jusqu'à 10 secondes
-		for (int i = 0; events.isEmpty() && i < 100; i++) {
+		// On attend le message
+		while (events.isEmpty()) {
 			Thread.sleep(100);
 		}
 		Assert.assertEquals(1, events.size());

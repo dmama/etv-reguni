@@ -25,6 +25,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
@@ -279,7 +280,7 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveDemandeIdentificationCtb() throws Exception {
 
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
@@ -298,8 +299,8 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		// Envoie le message
 		sendTextMessage(INPUT_QUEUE, texte);
 
-		// On attend le message jusqu'à 10 secondes
-		for (int i = 0; messages.isEmpty() && i < 100; i++) {
+		// On attend le message
+		while (messages.isEmpty()) {
 			Thread.sleep(100);
 		}
 		assertEquals(1, messages.size());

@@ -24,6 +24,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
 import static org.junit.Assert.assertEquals;
@@ -95,7 +96,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		container.destroy();
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveRetourDI() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
@@ -113,8 +114,8 @@ public class EvenementCediListenerTest extends EvenementTest {
 		// Envoie le message
 		sendTextMessage(INPUT_QUEUE, texte);
 
-		// On attend le message jusqu'à 10 secondes
-		for (int i = 0; events.isEmpty() && i < 100; i++) {
+		// On attend le message
+		while (events.isEmpty()) {
 			Thread.sleep(100);
 		}
 		Assert.assertEquals(1, events.size());
@@ -136,7 +137,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 	 * [UNIREG-2603] Vérifie qu'on ne crashe pas quand on reçoit un retour de DI presque vide.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveRetourDIPresqueVide() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
@@ -154,8 +155,8 @@ public class EvenementCediListenerTest extends EvenementTest {
 		// Envoie le message
 		sendTextMessage(INPUT_QUEUE, texte);
 
-		// On attend le message jusqu'à 10 secondes
-		for (int i = 0; events.isEmpty() && i < 100; i++) {
+		// On attend le message
+		while (events.isEmpty()) {
 			Thread.sleep(100);
 		}
 		Assert.assertEquals(1, events.size());
