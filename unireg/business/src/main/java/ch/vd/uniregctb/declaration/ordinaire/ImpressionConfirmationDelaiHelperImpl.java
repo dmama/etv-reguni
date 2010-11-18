@@ -26,19 +26,17 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ImpressionConfirmationDelaiHelperImpl implements
-		ImpressionConfirmationDelaiHelper {
+public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirmationDelaiHelper {
 
 	private static final String VERSION_XSD = "1.0";
 
 	private EditiqueHelper editiqueHelper;
 	private AdresseService adresseService;
-
-
 
 	public String calculPrefixe() {
 		return "RGPC0801";
@@ -136,16 +134,9 @@ public class ImpressionConfirmationDelaiHelperImpl implements
 			return infoDocument;
 	}
 
-	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
-		return String.format(
-				"%s %s %s %s",
-				declaration.getPeriode().getAnnee().toString(),
-				StringUtils.leftPad(declaration.getNumero().toString(), 2, '0'),
-				StringUtils.leftPad(declaration.getTiers().getNumero().toString(), 9, '0'),
-				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(
-						declaration.getLogCreationDate()
-				)
-		);
+	public String construitIdDocument(DelaiDeclaration delai) {
+		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) delai.getDeclaration();
+		return String.format("%d %02d %09d %d", di.getPeriode().getAnnee(), di.getNumero(), di.getTiers().getNumero(), delai.getId());
 	}
 
 	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {

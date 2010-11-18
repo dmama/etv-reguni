@@ -232,7 +232,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String[] infoOperateur = getInfoOperateur();
 		final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1]);
 		final FichierImpressionDocument document = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params);
-		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(di);
+		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(delai);
 		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PDF, document, false);
 	}
 
