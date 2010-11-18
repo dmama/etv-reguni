@@ -1,25 +1,22 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.text.SimpleDateFormat;
-
+import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.ConfirmationDelaiDocument;
+import noNamespace.ConfirmationDelaiDocument.ConfirmationDelai;
 import noNamespace.FichierImpressionDocument;
 import noNamespace.InfoDocumentDocument1;
-import noNamespace.InfoEnteteDocumentDocument1;
-import noNamespace.TypAdresse;
-import noNamespace.TypFichierImpression;
-import noNamespace.TypPeriode;
-import noNamespace.CleRgpDocument.CleRgp;
-import noNamespace.ConfirmationDelaiDocument.ConfirmationDelai;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
+import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.TypAdresse;
+import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
+import noNamespace.TypPeriode;
 import noNamespace.TypPeriode.Entete;
 import noNamespace.TypPeriode.Entete.ImpCcn;
 import noNamespace.TypPeriode.Entete.Tit;
-
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
