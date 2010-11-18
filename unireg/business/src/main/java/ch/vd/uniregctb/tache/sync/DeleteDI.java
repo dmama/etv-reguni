@@ -44,7 +44,9 @@ public class DeleteDI extends SynchronizeAction {
 
 	@Override
 	public String toString() {
-		return String.format("création d'une tâche d'annulation la déclaration d'impôt %s couvrant la période du %s au %s", declaration.getTypeContribuable().description(),
+		// [UNIREG-3031] Certaines anciennes DIs ne possèdent pas de type de contribuable connu
+		final String descriptionTypeContribuable = (declaration.getTypeContribuable() == null ? "de type inconnu" : declaration.getTypeContribuable().description());
+		return String.format("création d'une tâche d'annulation la déclaration d'impôt %s couvrant la période du %s au %s", descriptionTypeContribuable,
 				RegDateHelper.dateToDisplayString(declaration.getDateDebut()), RegDateHelper.dateToDisplayString(declaration.getDateFin()));
 	}
 }
