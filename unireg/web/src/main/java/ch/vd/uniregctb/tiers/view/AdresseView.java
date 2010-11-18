@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class AdresseView  implements Comparable<AdresseView>, Annulable{
@@ -58,7 +59,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 
 	private TypeAdresseTiers usage;
 
-	private String usageCivil;
+	private TypeAdresseCivil usageCivil;
 
 	private List<AdresseView> adressesList;
 
@@ -462,11 +463,11 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 		this.active = active;
 	}
 
-	public String getUsageCivil() {
+	public TypeAdresseCivil getUsageCivil() {
 		return usageCivil;
 	}
 
-	public void setUsageCivil(String usageCivil) {
+	public void setUsageCivil(TypeAdresseCivil usageCivil) {
 		this.usageCivil = usageCivil;
 	}
 

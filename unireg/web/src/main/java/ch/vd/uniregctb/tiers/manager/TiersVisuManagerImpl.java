@@ -319,7 +319,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		try {
 			AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, false, getServiceInfrastructureService());
 			AdresseView adresseView = createVisuAdresseView(adrGen, null, tiers);
-			adresseView.setUsageCivil(type.name());
+			adresseView.setUsageCivil(type);
 			adressesView.add(adresseView);
 
 		}

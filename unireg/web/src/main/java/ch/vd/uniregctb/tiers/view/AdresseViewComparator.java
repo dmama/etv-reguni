@@ -9,6 +9,7 @@ import java.util.List;
 
 import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.GentilComparator;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 /**
@@ -17,11 +18,13 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 public final class AdresseViewComparator implements Comparator<AdresseView> {
 	//UNIREG-1813 la liste des types d'adresse est donnée dans l'ordre suivant:
 	//Domicile(P), Courrier(C), Secondaire(S).  P correspondant à Principal
-	private static final List<String> ordreUsageAdresseCivile = Arrays.asList("P", "C", "S");
+	private static final List<TypeAdresseCivil> ordreUsageAdresseCivile = Arrays.asList(TypeAdresseCivil.PRINCIPALE,
+			TypeAdresseCivil.COURRIER,
+			TypeAdresseCivil.SECONDAIRE);
 	private static final List<TypeAdresseTiers> ordreUsageAdresseFiscale = Arrays.asList(TypeAdresseTiers.COURRIER,
 			TypeAdresseTiers.REPRESENTATION,
 			TypeAdresseTiers.POURSUITE);
-	private static final Comparator<String> comparatorUsageAdresseCivile = new GentilComparator<String>(ordreUsageAdresseCivile);
+	private static final Comparator<TypeAdresseCivil> comparatorUsageAdresseCivile = new GentilComparator<TypeAdresseCivil>(ordreUsageAdresseCivile);
 
 	private static final Comparator<TypeAdresseTiers> comparatorUsageAdresseFiscal = new GentilComparator<TypeAdresseTiers>(ordreUsageAdresseFiscale);
 
