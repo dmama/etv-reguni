@@ -66,6 +66,9 @@ class TimelineAnalyze extends Analyze {
 	String buildGoogleChartUrl(String method) {
 
 		final List<ResponseTimePeriode> time = results.get(method);
+		if (time == null) {
+			return null;
+		}
 
 		//		final String labels = "|00:00|01:00|02:00|03:00|04:00|05:00";
 		StringBuilder labels = new StringBuilder();
@@ -100,7 +103,7 @@ class TimelineAnalyze extends Analyze {
 		return new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x").append("&chs=1000x200")
 				.append("&cht=lc").append("&chco=000000,008000,AA0033").append("&chds=").append(valuesRange).append("&chd=t:").append(avgValues).append("|").append(minValues).append("|")
 				.append(maxValues).append("&chdl=average|min|max").append("&chg=-1.3,-1,1,1").append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method)
-				.append(" - Response Time Line (min/max/avg ms each hour)").toString();
+				.append("%20-%20Response%20Time%20Line%20(min/max/avg%20ms%20each%20hour)").toString();
 	}
 
 	public void print() {
@@ -123,5 +126,10 @@ class TimelineAnalyze extends Analyze {
 			}
 			System.out.println(line);
 		}
+	}
+
+	@Override
+	String name() {
+		return "timeline";
 	}
 }

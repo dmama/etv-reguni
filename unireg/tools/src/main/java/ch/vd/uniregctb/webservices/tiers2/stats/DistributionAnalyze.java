@@ -67,6 +67,9 @@ class DistributionAnalyze extends Analyze {
 	String buildGoogleChartUrl(String method) {
 
 		final List<ResponseTimeRange> time = results.get(method);
+		if (time == null) {
+			return null;
+		}
 
 		//		final String labels = "|0|1|2|3|4|5";
 		StringBuilder labels = new StringBuilder();
@@ -99,6 +102,11 @@ class DistributionAnalyze extends Analyze {
 
 		return new StringBuilder().append("http://chart.apis.google.com/chart?chxl=0:").append(labels).append("&chxr=1,").append(valuesRange)
 				.append("&chxs=0,676767,8,0,l,676767&chxt=x,y&chbh=23,5&chs=1000x200&cht=bvg&chco=76A4FB&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chg=20,50&chtt=")
-				.append(method).append(" - Response Time Distribution (ms/call)").toString();
+				.append(method).append("%20-%20Response%20Time%20Distribution%20(ms/call)").toString();
+	}
+
+	@Override
+	String name() {
+		return "distribution";
 	}
 }

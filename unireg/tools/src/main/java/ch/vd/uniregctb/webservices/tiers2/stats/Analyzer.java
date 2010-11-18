@@ -65,7 +65,10 @@ class Analyzer {
 
 		for (String method : list) {
 			for (Analyze analyze : analyzes) {
-				content += "    " + buildChart(method, htmlFile, localImages, analyze.buildGoogleChartUrl(method)) + "\n";
+				final String chartUrl = analyze.buildGoogleChartUrl(method);
+				if (chartUrl != null) {
+					content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, localImages, chartUrl) + "\n";
+				}
 			}
 		}
 

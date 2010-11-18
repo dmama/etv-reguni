@@ -4,7 +4,15 @@ abstract class Analyze {
 
 	abstract void addCall(String method, HourMinutes timestamp, long millisecondes);
 
+	/**
+	 * Construit et retourne l'url d'un graphique Google.
+	 *
+	 * @param method le nom d'une méthode du web-service
+	 * @return l'url d'un graphique Google; ou <b>null</b> si aucune donnée n'existe pour la méthode spécifiée.
+	 */
 	abstract String buildGoogleChartUrl(String method);
 
 	abstract void print();
+
+	abstract String name();
 }

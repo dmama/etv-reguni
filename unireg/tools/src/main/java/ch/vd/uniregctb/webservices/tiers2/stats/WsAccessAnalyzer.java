@@ -41,11 +41,11 @@ public class WsAccessAnalyzer {
 		}
 
 		final Analyzer analyzer = new Analyzer();
-		if (distribution) {
-			analyzer.registerAnalyze(new DistributionAnalyze());
-		}
 		if (timeline) {
 			analyzer.registerAnalyze(new TimelineAnalyze());
+		}
+		if (distribution) {
+			analyzer.registerAnalyze(new DistributionAnalyze());
 		}
 		analyzer.analyze(files);
 
