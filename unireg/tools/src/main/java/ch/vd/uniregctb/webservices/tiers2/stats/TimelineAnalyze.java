@@ -1,18 +1,17 @@
 package ch.vd.uniregctb.webservices.tiers2.stats;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
 
-class HistogramAnalyzer extends Analyzer {
+/**
+ * Analyse qui calcul et affiche l'évolution des temps de réponse heure par heure (0-1h, 1-2h, 2-3h, ...).
+ */
+class TimelineAnalyze extends Analyze {
 
 	private Map<String, List<ResponseTimePeriode>> results = new HashMap<String, List<ResponseTimePeriode>>();
 
@@ -60,45 +59,13 @@ class HistogramAnalyzer extends Analyzer {
 		Assert.isTrue(found);
 	}
 
-	public void printHtml(String htmlFile, boolean localImages) throws IOException {
-
-		if (!htmlFile.toLowerCase().endsWith(".html") && !htmlFile.toLowerCase().endsWith(".htm")) {
-			htmlFile += ".html";
-		}
-
-		final List<String> methods = new ArrayList<String>(results.keySet());
-		Collections.sort(methods);
-
-		String content = "<html>\n" +
-				"  <head>\n" +
-				"    <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" +
-				"    <title>Temps de réponse du web-service Tiers 2</title>\n" +
-				"    <script language=\"javascript\" src=\"http://www.google.com/jsapi\"></script>\n" +
-				"  </head>\n" +
-				"  <body>\n" +
-				"    <h1>Temps de réponse du web-service Tiers 2</h1>\n" +
-				"    Les graphiques ci-dessous montrent les historiques des temps de réponse (min, max, moyenne) des appels (en millisecondes).<br/>\n";
-
-		for (String method : methods) {
-			final List<ResponseTimePeriode> time = results.get(method);
-			content += "    " + buildChart(method, htmlFile, localImages, buildGoogleChartUrl(method, time)) + "\n";
-		}
-
-		content += "    <br/>\n" +
-				"    (Dernière mise-à-jour le " + new SimpleDateFormat("dd.MM.yyyy à HH:mm:ss").format(new Date()) + ")\n" +
-				"  </body>\n" +
-				"</html>";
-
-		final FileWriter writer = new FileWriter(htmlFile);
-		writer.write(content);
-		writer.close();
-	}
-
 	/**
 	 * Voir http://code.google.com/apis/chart/docs/chart_wizard.html
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	private String buildGoogleChartUrl(String method, List<ResponseTimePeriode> time) {
+	String buildGoogleChartUrl(String method) {
+
+		final List<ResponseTimePeriode> time = results.get(method);
 
 		//		final String labels = "|00:00|01:00|02:00|03:00|04:00|05:00";
 		StringBuilder labels = new StringBuilder();
@@ -132,7 +99,8 @@ class HistogramAnalyzer extends Analyzer {
 
 		return new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x").append("&chs=1000x200")
 				.append("&cht=lc").append("&chco=000000,008000,AA0033").append("&chds=").append(valuesRange).append("&chd=t:").append(avgValues).append("|").append(minValues).append("|")
-				.append(maxValues).append("&chdl=average|min|max").append("&chg=-1.3,-1,1,1").append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method).append("").toString();
+				.append(maxValues).append("&chdl=average|min|max").append("&chg=-1.3,-1,1,1").append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method)
+				.append(" - Response Time Line (min/max/avg ms each hour)").toString();
 	}
 
 	public void print() {

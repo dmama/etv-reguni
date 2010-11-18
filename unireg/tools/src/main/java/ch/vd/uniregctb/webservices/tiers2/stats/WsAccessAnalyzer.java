@@ -26,19 +26,12 @@ public class WsAccessAnalyzer {
 		final boolean localImages = commandLine.hasOption("localImages");
 		final String[] files = commandLine.getArgs();
 		final String proxy = commandLine.getOptionValue("proxy");
-		final boolean overall = commandLine.hasOption("overall");
-		final boolean histogram = commandLine.hasOption("histogram");
+		final boolean timeline = commandLine.hasOption("timeline");
+		final boolean distribution = commandLine.hasOption("distribution");
 
-		final Analyzer analyzer;
-		if (overall && histogram) {
-			System.err.println("Parameter '-histogram' cannot be used with '-overall'");
+		if (!timeline && !distribution) {
+			System.err.println("At least one of '-distribution' and '-timeline' parameters must be specified.");
 			return;
-		}
-		else if (!histogram) {
-			analyzer = new OverallAnalyzer();
-		}
-		else {
-			analyzer = new HistogramAnalyzer();
 		}
 
 		if (StringUtils.isNotBlank(proxy)) {
@@ -47,6 +40,13 @@ public class WsAccessAnalyzer {
 			System.setProperty("http.proxyPort", p[1]);
 		}
 
+		final Analyzer analyzer = new Analyzer();
+		if (distribution) {
+			analyzer.registerAnalyze(new DistributionAnalyze());
+		}
+		if (timeline) {
+			analyzer.registerAnalyze(new TimelineAnalyze());
+		}
 		analyzer.analyze(files);
 
 		if (StringUtils.isNotBlank(htmlFile)) {
@@ -66,16 +66,16 @@ public class WsAccessAnalyzer {
 			CommandLineParser parser = new GnuParser();
 			Option help = new Option("help", "display this help");
 			Option html = OptionBuilder.withArgName("file").hasArg().withDescription("output results in a html file").create("html");
-			Option overall = new Option("overall", "analyze data and output calls numbers per response times (default)");
-			Option histogram = new Option("histogram", "analyze data and output histogram of response times");
+			Option distribution = new Option("distribution", "analyzes data and outputs the distribution of response times");
+			Option timeline = new Option("timeline", "analyzes data and outputs the timeline of response times");
 			Option localImages = new Option("localImages", "store images in local folder (with -html)");
 			Option proxy = OptionBuilder.withArgName("host:port").hasArg().withDescription("use HTTP proxy on given port").create("proxy");
 
 			Options options = new Options();
 			options.addOption(help);
 			options.addOption(html);
-			options.addOption(overall);
-			options.addOption(histogram);
+			options.addOption(timeline);
+			options.addOption(distribution);
 			options.addOption(localImages);
 			options.addOption(proxy);
 
