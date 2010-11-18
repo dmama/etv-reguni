@@ -27,12 +27,14 @@
 				<td>
 					<form:select path="genreImpot" items="${genresImpot}" id="genre_impot"
 						onchange="selectGenreImpot(this.options[this.selectedIndex].value, updateMotifsFors);" />
-					</td>
+					<form:errors path="genreImpot" cssClass="error"/>
+				</td>
 				<td id="div_rattachement_label" ><fmt:message key="label.rattachement"/>&nbsp;:</td>
 				<td id="div_rattachement" >
 					<form:select path="motifRattachement"
 							items="${rattachements}" id="rattachement" 
 							onchange="updateMotifsFors(this); selectRattachement(this.options[this.selectedIndex].value);"/>
+					<form:errors path="motifRattachement" cssClass="error"/>
 				</td>
 			</tr>
 			<tr id="date_for_periodique"  class="<unireg:nextRowClass/>" >

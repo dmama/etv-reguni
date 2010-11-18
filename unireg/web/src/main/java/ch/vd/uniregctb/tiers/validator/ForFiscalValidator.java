@@ -231,17 +231,16 @@ public class ForFiscalValidator implements Validator {
 
 			//gestion des droits
 			//seul la date de fermeture et le motif de fermeture (si existant) sont éditables
-			String msgErrorModeImpo = (forFiscalView.getId() == null) ? "error.mode.imposition.interdit" : "error.tiers.interdit";
 			String msgErrorForSec = (forFiscalView.getId() == null) ? "error.motif.rattachement.interdit" : "error.tiers.interdit";
 
 			final Niveau acces = SecurityProvider.getDroitAcces(forFiscalView.getNumeroCtb());
 			if (acces == null || acces == Niveau.LECTURE) {
-				errors.reject("error.tiers.interdit");
+				errors.reject("global.error.msg", "Droits insuffisants pour modifier ce tiers");
 			}
 
 			if(typeFor == TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE){
 				if(!SecurityProvider.isGranted(Role.CREATE_DPI)){
-					errors.reject("error.tiers.interdit");
+					errors.rejectValue("genreImpot", "error.tiers.interdit");
 				}
 			}
 			else if(typeFor == TypeForFiscal.PRINCIPAL){
@@ -249,7 +248,7 @@ public class ForFiscalValidator implements Validator {
 				if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_HABITANT)){
 					if((isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HAB)) ||
 							(!isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))){
-						errors.reject(msgErrorModeImpo);
+						errors.rejectValue("motifRattachement", msgErrorForSec);
 					}
 				}
 				else if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_NONHABITANT)){
@@ -261,37 +260,37 @@ public class ForFiscalValidator implements Validator {
 							(!isOrdinaire && !isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HCHS)) ||
 							(isOrdinaire && isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_GRIS)) ||
 							(!isOrdinaire && isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_GRIS))){
-						errors.reject(msgErrorModeImpo);
+						errors.rejectValue("motifRattachement", msgErrorForSec);
 					}
 				}
 				else {
 					//pour + tard : traiter le cas des entreprises
-					errors.reject("error.tiers.interdit");
+					errors.reject("global.error.msg", "Droits insuffisants pour modifier ce tiers");
 				}
 			}
 			else if(typeFor == TypeForFiscal.SECONDAIRE){
 				//pour + tard : traiter le cas des entreprises
 				if(!SecurityProvider.isGranted(Role.FOR_SECOND_PP)){
-					errors.reject(msgErrorForSec);
+					errors.rejectValue("motifRattachement", msgErrorForSec);
 				}
 			}
 			else if(typeFor == TypeForFiscal.AUTRE_ELEMENT){
 				if(!SecurityProvider.isGranted(Role.FOR_AUTRE)){
-					errors.reject(msgErrorForSec);
+					errors.rejectValue("motifRattachement", msgErrorForSec);
 				}
 			}
 			else if(typeFor == TypeForFiscal.AUTRE_IMPOT){
 				if(!SecurityProvider.isGranted(Role.FOR_AUTRE)){
-					errors.reject((forFiscalView.getId() == null) ? "error.genre.impot.interdit" : "error.tiers.interdit");
+					errors.rejectValue("genreImpot", (forFiscalView.getId() == null) ? "error.genre.impot.interdit" : "error.tiers.interdit");
 				}
 			}
 			if (TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE == typeFor) {
 				if (TypeAutoriteFiscale.PAYS_HS == forFiscalView.getTypeAutoriteFiscale()) {
-					errors.reject("error.type.autorite.incorrect");
+					errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
 				}
 			} else if (TypeForFiscal.PRINCIPAL != typeFor
 					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != forFiscalView.getTypeAutoriteFiscale()) {
-				errors.reject("error.type.autorite.incorrect");
+				errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
 			}
 
 		}
