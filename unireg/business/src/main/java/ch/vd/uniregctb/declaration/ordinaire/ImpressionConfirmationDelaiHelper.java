@@ -10,6 +10,5 @@ public interface ImpressionConfirmationDelaiHelper {
 
 	FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException;
 
-	public String construitIdDocument(DelaiDeclaration declaration);
-
+	String construitIdDocument(DelaiDeclaration delai);
 }

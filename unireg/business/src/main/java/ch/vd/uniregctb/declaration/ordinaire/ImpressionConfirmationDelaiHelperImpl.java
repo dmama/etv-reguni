@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -133,7 +134,9 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 
 	public String construitIdDocument(DelaiDeclaration delai) {
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) delai.getDeclaration();
-		return String.format("%d %02d %09d %d", di.getPeriode().getAnnee(), di.getNumero(), di.getTiers().getNumero(), delai.getId());
+		final String principal = AuthenticationHelper.getCurrentPrincipal();
+		final long ts = (System.nanoTime() % 1000000000L) / 1000L;      // fraction de seconde en microsecondes
+		return String.format("%d %02d %09d %d_%s_%d", di.getPeriode().getAnnee(), di.getNumero(), di.getTiers().getNumero(), delai.getId(), principal, ts);
 	}
 
 	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
