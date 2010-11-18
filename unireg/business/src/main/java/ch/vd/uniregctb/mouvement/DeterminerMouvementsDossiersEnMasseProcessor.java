@@ -211,74 +211,74 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 			if (DateRangeHelper.intersect(rangesUtiles.rangeAnneeNMoinsUn, assujettissements)) {
 				// assujettissement n-1
 
-				// [UNIREG-2992] Tout ce qui pourra être fait ici va conduire à un mouvement de dossier inter-offices
-				// -> si on n'est pas censé le faire, alors pas la peine d'aller plus loin
-				if (!archivesSeulement) {
+				if (DateRangeHelper.intersect(rangesUtiles.rangeAnneeN, assujettissements)) {
+					// assujettissement n aussi
 
-					if (DateRangeHelper.intersect(rangesUtiles.rangeAnneeN, assujettissements)) {
-						// assujettissement n aussi
+					// déterminons les deux OID de gestion à comparer
 
-						// déterminons les deux OID de gestion à comparer
+					// de toute façon, le for de gestion "après" pour la comparaison est toujours celui qui est valide à la fin de l'année n-1
+					final ForGestion apres = findForGestion(histoForGestion, rangesUtiles.rangeAnneeNMoinsUn, false);
 
-						// de toute façon, le for de gestion "après" pour la comparaison est toujours celui qui est valide à la fin de l'année n-1
-						final ForGestion apres = findForGestion(histoForGestion, rangesUtiles.rangeAnneeNMoinsUn, false);
+					final RegDate dateAvant;
+					final ForGestion avant;
+					final List<DateRange> intersectionAnneeNMoinsDeux = DateRangeHelper.intersections(rangesUtiles.rangeAnneeNMoinsDeux, assujettissements);
+					if (intersectionAnneeNMoinsDeux != null) {
+						// assujettissement n-2 -> "avant" est la fin n-2
+						avant = findForGestion(histoForGestion, rangesUtiles.rangeAnneeNMoinsDeux, false);
+						dateAvant = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsDeux, avant).getDateFin();
+					}
+					else {
+						// pas d'assujettissement n-2 -> "avant" est le début n-1
 
-						final RegDate dateAvant;
-						final ForGestion avant;
-						final List<DateRange> intersectionAnneeNMoinsDeux = DateRangeHelper.intersections(rangesUtiles.rangeAnneeNMoinsDeux, assujettissements);
-						if (intersectionAnneeNMoinsDeux != null) {
-							// assujettissement n-2 -> "avant" est la fin n-2
-							avant = findForGestion(histoForGestion, rangesUtiles.rangeAnneeNMoinsDeux, false);
-							dateAvant = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsDeux, avant).getDateFin();
-						}
-						else {
-							// pas d'assujettissement n-2 -> "avant" est le début n-1
+						// [UNIREG-2854] début = début du premier for VAUDOIS de la période fiscale n-1
+						// [UNIREG-2757] début = début du premier for VAUDOIS AU RÔLE de la période fiscale n-1
+						ForFiscal premierForVaudoisAnneeNMoinsUn = null;
+						final List<ForFiscal> ff = ctb.getForsFiscauxNonAnnules(true);
+						for (ForFiscal forCandidat : ff) {
+							if (forCandidat instanceof ForFiscalRevenuFortune) {
+								final ForFiscalRevenuFortune forRevenuFortune = (ForFiscalRevenuFortune) forCandidat;
 
-							// [UNIREG-2854] début = début du premier for VAUDOIS de la période fiscale n-1
-							// [UNIREG-2757] début = début du premier for VAUDOIS AU RÔLE de la période fiscale n-1
-							ForFiscal premierForVaudoisAnneeNMoinsUn = null;
-							final List<ForFiscal> ff = ctb.getForsFiscauxNonAnnules(true);
-							for (ForFiscal forCandidat : ff) {
-								if (forCandidat instanceof ForFiscalRevenuFortune) {
-									final ForFiscalRevenuFortune forRevenuFortune = (ForFiscalRevenuFortune) forCandidat;
+								// [UNIREG-2757] on ne prend pas en compte les fors principaux source
+								if (forRevenuFortune instanceof ForFiscalPrincipal && ((ForFiscalPrincipal) forRevenuFortune).getModeImposition() == ModeImposition.SOURCE) {
+									continue;
+								}
 
-									// [UNIREG-2757] on ne prend pas en compte les fors principaux source
-									if (forRevenuFortune instanceof ForFiscalPrincipal && ((ForFiscalPrincipal) forRevenuFortune).getModeImposition() == ModeImposition.SOURCE) {
-										continue;
-									}
-
-									if (forRevenuFortune.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && DateRangeHelper.intersect(rangesUtiles.rangeAnneeNMoinsUn, forCandidat)) {
-										if (premierForVaudoisAnneeNMoinsUn == null || premierForVaudoisAnneeNMoinsUn.getDateDebut().isAfter(forCandidat.getDateDebut())) {
-											premierForVaudoisAnneeNMoinsUn = forCandidat;
-										}
+								if (forRevenuFortune.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && DateRangeHelper.intersect(rangesUtiles.rangeAnneeNMoinsUn, forCandidat)) {
+									if (premierForVaudoisAnneeNMoinsUn == null || premierForVaudoisAnneeNMoinsUn.getDateDebut().isAfter(forCandidat.getDateDebut())) {
+										premierForVaudoisAnneeNMoinsUn = forCandidat;
 									}
 								}
 							}
-							if (premierForVaudoisAnneeNMoinsUn == null) {
-								throw new IllegalArgumentException("Assujettissement année n-1 sans for vaudois?");
-							}
-
-							// on sait qu'il y a un assujettissement dans l'année n-1, dont on va essayer de trouver la date
-							avant = findForGestion(histoForGestion, premierForVaudoisAnneeNMoinsUn, true);
-							dateAvant = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsUn, avant).getDateDebut();
+						}
+						if (premierForVaudoisAnneeNMoinsUn == null) {
+							throw new IllegalArgumentException("Assujettissement année n-1 sans for vaudois?");
 						}
 
-						// calculons les OID de gestion pour ces fors de gestion là
-						final Integer oidAvant = tiersService.getOfficeImpotId(avant);
-						final Integer oidApres = tiersService.getOfficeImpotId(apres);
-						if (oidAvant == null || oidApres == null) {
-							// erreur -> on ne peut pas déterminer l'office d'impôt de gestion alors que le contribuable est assujetti
-							if (oidAvant == null) {
-								onAbsenseOidGestion(ctb, dateAvant, rapport);
-							}
-							if (oidApres == null) {
-								final RegDate dateApres = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsUn, apres).getDateFin();
-								onAbsenseOidGestion(ctb, dateApres, rapport);
-							}
-						}
-						else if (!oidAvant.equals(oidApres)) {
-							// générons un mouvement de dossier
+						// on sait qu'il y a un assujettissement dans l'année n-1, dont on va essayer de trouver la date
+						avant = findForGestion(histoForGestion, premierForVaudoisAnneeNMoinsUn, true);
+						dateAvant = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsUn, avant).getDateDebut();
+					}
 
+					// calculons les OID de gestion pour ces fors de gestion là
+					final Integer oidAvant = tiersService.getOfficeImpotId(avant);
+					final Integer oidApres = tiersService.getOfficeImpotId(apres);
+					if (oidAvant == null || oidApres == null) {
+						// erreur -> on ne peut pas déterminer l'office d'impôt de gestion alors que le contribuable est assujetti
+						if (oidAvant == null) {
+							onAbsenseOidGestion(ctb, dateAvant, rapport);
+						}
+						if (oidApres == null) {
+							final RegDate dateApres = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsUn, apres).getDateFin();
+							onAbsenseOidGestion(ctb, dateApres, rapport);
+						}
+					}
+					else if (!oidAvant.equals(oidApres)) {
+						// générons un mouvement de dossier
+
+						if (archivesSeulement) {
+							creerReceptionArchivesSiNecessaire(ctb, oidAvant, caCache, rapport);
+						}
+						else {
 							final CollectiviteAdministrative caApres = getCollectiviteAdministrativeByNumeroTechnique(oidApres, caCache);
 							final CollectiviteAdministrative caAvant = getCollectiviteAdministrativeByNumeroTechnique(oidAvant, caCache);
 
@@ -292,48 +292,57 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 						}
 					}
 				}
-
 			}
 			else if (DateRangeHelper.intersect(rangesUtiles.rangeAnneeNMoinsDeux, assujettissements)) {
 				// pas d'assujettisement ni n-1 ni n, mais n-2 -> mouvement vers les archives si n'existe pas déjà
 
-				final List<MouvementDossier> mvts = mouvementDossierDAO.findByNumeroDossier(ctb.getNumero(), false, false);
-
-				// trouvons le dernier mouvement
-				MouvementDossier dernierMouvement = null;
-				for (MouvementDossier mvt : mvts) {
-					if (mvt.getEtat() != EtatMouvementDossier.RETIRE) {
-						if (dernierMouvement == null || mvt.getLogCreationDate().after(dernierMouvement.getLogCreationDate())) {
-							dernierMouvement = mvt;
-						}
-					}
+				// il faut trouver le dernier OID de gestion du contribuable
+				final ForGestion forGestion = findForGestion(histoForGestion, rangesUtiles.rangeAnneeNMoinsDeux, false);
+				final Integer oid = tiersService.getOfficeImpotId(forGestion);
+				if (oid == null) {
+					// erreur -> on ne peut pas déterminer l'office d'impôt de gestion au moment du dernier assujettissement
+					final RegDate dateFin = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsDeux, forGestion).getDateFin();
+					onAbsenseOidGestion(ctb, dateFin, rapport);
 				}
-
-				// pas de mouvement, ou dernier pas réception vers les archives ?
-				if (dernierMouvement == null || !(dernierMouvement instanceof ReceptionDossierArchives)) {
-
-					// il faut trouver le dernier OID de gestion du contribuable
-					final ForGestion forGestion = findForGestion(histoForGestion, rangesUtiles.rangeAnneeNMoinsDeux, false);
-					final Integer oid = tiersService.getOfficeImpotId(forGestion);
-					if (oid == null) {
-						// erreur -> on ne peut pas déterminer l'office d'impôt de gestion au moment du dernier assujettissement
-						final RegDate dateFin = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsDeux, forGestion).getDateFin();
-						onAbsenseOidGestion(ctb, dateFin, rapport);
-					}
-					else {
-						final CollectiviteAdministrative ca = getCollectiviteAdministrativeByNumeroTechnique(oid, caCache);
-
-						final ReceptionDossier receptionDossier = new ReceptionDossierArchives();
-						receptionDossier.setContribuable(ctb);
-						receptionDossier.setEtat(EtatMouvementDossier.A_TRAITER);
-						receptionDossier.setCollectiviteAdministrativeReceptrice(ca);
-						hibernateTemplate.merge(receptionDossier); // force le save
-
-						rapport.addMouvementVersArchives(ctb.getNumero(), oid);
-					}
+				else {
+					creerReceptionArchivesSiNecessaire(ctb, oid, caCache, rapport);
 				}
 			}
 		}
+	}
+
+	private ReceptionDossierArchives creerReceptionArchivesSiNecessaire(Contribuable ctb, Integer oid, Map<Integer, CollectiviteAdministrative> caCache, DeterminerMouvementsDossiersEnMasseResults rapport) {
+		
+		final List<MouvementDossier> mvts = mouvementDossierDAO.findByNumeroDossier(ctb.getNumero(), false, false);
+
+		// trouvons le dernier mouvement
+		MouvementDossier dernierMouvement = null;
+		for (MouvementDossier mvt : mvts) {
+			if (mvt.getEtat() != EtatMouvementDossier.RETIRE) {
+				if (dernierMouvement == null || mvt.getLogCreationDate().after(dernierMouvement.getLogCreationDate())) {
+					dernierMouvement = mvt;
+				}
+			}
+		}
+
+		// pas de mouvement, ou dernier pas réception vers les archives ?
+		final ReceptionDossierArchives receptionGeneree;
+		if (dernierMouvement == null || !(dernierMouvement instanceof ReceptionDossierArchives)) {
+			final CollectiviteAdministrative ca = getCollectiviteAdministrativeByNumeroTechnique(oid, caCache);
+
+			final ReceptionDossier receptionDossier = new ReceptionDossierArchives();
+			receptionDossier.setContribuable(ctb);
+			receptionDossier.setEtat(EtatMouvementDossier.A_TRAITER);
+			receptionDossier.setCollectiviteAdministrativeReceptrice(ca);
+			receptionGeneree = (ReceptionDossierArchives) hibernateTemplate.merge(receptionDossier); // force le save
+
+			rapport.addMouvementVersArchives(ctb.getNumero(), oid);
+		}
+		else {
+			rapport.addMouvementNonGenereVersArchivesCarDejaExistant(ctb.getNumero());
+			receptionGeneree = null;
+		}
+		return receptionGeneree;
 	}
 
 	private void onAbsenseOidGestion(Contribuable ctb, RegDate date, DeterminerMouvementsDossiersEnMasseResults rapport) {

@@ -38,6 +38,7 @@ import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
 import ch.vd.uniregctb.mouvement.ReceptionDossier;
+import ch.vd.uniregctb.mouvement.ReceptionDossierArchives;
 import ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel;
 import ch.vd.uniregctb.mouvement.view.ContribuableView;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -375,6 +376,11 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			view.setNomPrenomUtilisateur(infoCollaborateur.nomPrenom);
 			view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
 			view.setUtilisateurReception(infoCollaborateur.visaOperateur);
+		}
+		else if (reception instanceof ReceptionDossierArchives && ((ReceptionDossierArchives) reception).getBordereau() != null) {
+			final Object[] params = {Integer.toString(reception.getDateMouvement().year())};
+			final String localisationStr = messageSource.getMessage("option.localisation.archives.periode", params, WebContextUtils.getDefaultLocale());
+			view.setDestinationUtilisateur(localisationStr);
 		}
 		else {
 			final String messageKey = String.format("option.localisation.%s", reception.getLocalisation().name());

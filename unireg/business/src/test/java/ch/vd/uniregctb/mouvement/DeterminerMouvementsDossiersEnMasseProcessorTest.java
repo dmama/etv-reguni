@@ -256,8 +256,10 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// normalement, mouvement d'envoi de Aubonne à Lausanne, mais comme on ne veut que les mouvements vers les archives,
-		// aucun mouvement ne doit avoir été généré
-		assertPasDeMouvement(results, ctb);
+		// le mouvement généré doit être un mouvement de réception vers les archives de Rolle/Aubonne
+		assertMouvementReceptionArchives(results, ctb, noOidRolleAubonne);
+		Assert.assertEquals(1, caCache.size());
+		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
 	}
 
 	private void assertMouvementReceptionArchives(DeterminerMouvementsDossiersEnMasseResults results, Contribuable ctb, long oid) {

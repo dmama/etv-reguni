@@ -15,6 +15,7 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 
 		PAS_OID_GESTION("Impossible de déterminer l'OID de gestion"),
 		SOURCIER_PUR("Sourcier pur"),
+		DEJA_ARCHIVE("Dossier déjà archivé"),
 		EXCEPTION(EXCEPTION_DESCRIPTION);
 
 		private final String description;
@@ -130,6 +131,10 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 
 	public void addMouvementVersArchives(long numero, int oid) {
 		mouvements.add(new MouvementArchives(numero, oid));
+	}
+
+	public void addMouvementNonGenereVersArchivesCarDejaExistant(long numero) {
+		addIgnore(numero, null, Raison.DEJA_ARCHIVE);
 	}
 
 	public void addErreurDeterminationOidGestion(long numero, RegDate date) {
