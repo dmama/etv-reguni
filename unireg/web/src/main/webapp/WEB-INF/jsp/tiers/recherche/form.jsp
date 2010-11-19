@@ -39,7 +39,7 @@
 			<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
 				<jsp:param name="inputId" value="localiteOuPays" />
 				<jsp:param name="dataValueField" value="nomComplet" />
-				<jsp:param name="dataTextField" value="{nomComplet}" />
+				<jsp:param name="dataTextField" value="{nomComplet} ({numero})" />
 				<jsp:param name="dataSource" value="selectionnerLocaliteOuPays" />
 			</jsp:include>
 		</td>
