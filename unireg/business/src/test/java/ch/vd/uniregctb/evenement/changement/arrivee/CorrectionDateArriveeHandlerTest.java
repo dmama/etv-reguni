@@ -71,21 +71,6 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 		});
 	}
 
-	private void launchEvent(final MockEvenementCivil evtCivil, final List<EvenementCivilErreur> erreurs, final List<EvenementCivilErreur> warnings) throws Exception {
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				evenementCivilHandler.checkCompleteness(evtCivil, erreurs, warnings);
-				if (erreurs.isEmpty()) {
-					evenementCivilHandler.validate(evtCivil, erreurs, warnings);
-					if (erreurs.isEmpty()) {
-						evenementCivilHandler.handle(evtCivil, warnings);
-					}
-				}
-				return null;
-			}
-		});
-	}
-
 	private MockEvenementCivil createValidEvenement(long noIndividu, int ofsCommune, Long principalId) {
 		final MockEvenementCivil evt = new MockEvenementCivil();
 		evt.setIndividu(serviceCivil.getIndividu(noIndividu, 2400));
@@ -95,29 +80,6 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 		evt.setNumeroEvenement(noEvenement.incrementAndGet());
 		evt.setPrincipalPPId(principalId);
 		return evt;
-	}
-
-	private void assertSansErreurNiWarning(MockEvenementCivil evt) throws Exception {
-		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-		launchEvent(evt, erreurs, warnings);
-		Assert.assertEquals(0, erreurs.size());
-		Assert.assertEquals(0, warnings.size());
-	}
-
-	private void assertErreurs(MockEvenementCivil evt, List<String> messages) throws Exception {
-		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-		launchEvent(evt, erreurs, warnings);
-
-		Assert.assertEquals(messages.size(), erreurs.size());
-		Assert.assertEquals(0, warnings.size());
-
-		for (int i = 0 ; i < messages.size() ; ++ i) {
-			final String expected = messages.get(i);
-			final EvenementCivilErreur erreurTrouvee = erreurs.get(i);
-			Assert.assertEquals("Index " + i, expected, erreurTrouvee.getMessage());
-		}
 	}
 
 	@Test
