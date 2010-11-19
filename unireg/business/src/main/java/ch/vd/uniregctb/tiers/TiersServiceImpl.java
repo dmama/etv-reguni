@@ -3871,6 +3871,18 @@ public class TiersServiceImpl implements TiersService {
 		return nom;
 	}
 
+	public boolean isHorsCanton(Contribuable contribuable, RegDate date) {
+		ForsParTypeAt forsParTypeAt = contribuable.getForsParTypeAt(date,true);
+		ForFiscalPrincipal forPrincipal = forsParTypeAt.principal;
+		if(forPrincipal!=null){
+			if(TypeAutoriteFiscale.COMMUNE_HC == forPrincipal.getTypeAutoriteFiscale()){
+				return true;
+			}
+
+		}
+		return false;
+	}
+
 	/**
 	 * Extrait Le numéro d'individu à partir d'un tiers si c'est possible
 	 *

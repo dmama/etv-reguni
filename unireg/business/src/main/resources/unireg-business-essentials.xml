@@ -122,6 +122,7 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="parametres" ref="parametreAppService" />
+		<property name="adresseService" ref="adresseService" />
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl"/>

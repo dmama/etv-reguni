@@ -1209,5 +1209,13 @@ public interface TiersService {
 	 * @return le nom de la collectivité adminsitrative
 	 */
 	public String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative);
+
+	/**Permet de savoir si un contribuable possède un for hors canton à une date données
+	 *
+	 * @param contribuable à analyser
+	 * @param date référence
+	 * @return
+	 */
+	boolean isHorsCanton(Contribuable contribuable, RegDate date);
 }
 

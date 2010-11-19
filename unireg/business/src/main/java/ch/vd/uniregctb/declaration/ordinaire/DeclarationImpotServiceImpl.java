@@ -8,6 +8,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -58,6 +59,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private DelaisService delaisService;
 
 	private ServiceInfrastructureService infraService;
+
+	private AdresseService adresseService;
 
 	private ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper;
 
@@ -149,6 +152,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public void setParametres(ParametreAppService parametres) {
 		this.parametres = parametres;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	/**
@@ -448,7 +455,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	public ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
-		ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager);
+		ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager, tiersService, adresseService, infraService);
 		return processor.run(dateTraitement, annee, nbThreads, statusManager);
 	}
 }

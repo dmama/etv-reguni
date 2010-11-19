@@ -18,14 +18,19 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ListeNoteProcessor {
 
@@ -35,22 +40,27 @@ public class ListeNoteProcessor {
 
 	private final PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
+	private TiersService tiersService;
+	private AdresseService adresseService;
+	private ServiceInfrastructureService infraService;
 	private int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ListeNoteResults> rapport = new ThreadLocal<ListeNoteResults>();
 
-	public ListeNoteProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager) {
+	public ListeNoteProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService,
+	                          ServiceInfrastructureService infraService) {
 
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
-
-
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
+		this.infraService = infraService;
 	}
 
 
 	public ListeNoteResults run(final RegDate dateTraitement, final int annee, int nbThreads, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final ListeNoteResults rapportFinal = new ListeNoteResults(dateTraitement,annee);
+		final ListeNoteResults rapportFinal = new ListeNoteResults(dateTraitement, annee);
 		status.setMessage("Récupération des contribuables ...");
 		final List<Long> ids = recupererContribuables(annee);
 
@@ -108,24 +118,52 @@ public class ListeNoteProcessor {
 		});
 
 		for (Contribuable contribuable : list) {
-			rapport.get().nbContribuable++;
-			List<PeriodeImposition> periodesImposition = PeriodeImposition.determine(contribuable, annee);
-			if (periodesImposition != null) {
-				for (PeriodeImposition periodeImposition : periodesImposition) {
-					if (periodeImposition.isRemplaceeParNote()) {
-						rapport.get().addContribuableAvecNote(contribuable);
-					}
+			//Absence de for secondaire ouvert
+			final RegDate dateFinSecondaire = getDateFermetureForSecondaire(contribuable);
+			if (dateFinSecondaire != null) {
+				if (tiersService.isHorsCanton(contribuable, dateFinSecondaire)) {
+					rapport.get().nbContribuable++;
+					rapport.get().addContribuableAvecNote(new ListeNoteResults.InfoContribuableAvecNote(
+							contribuable, dateFinSecondaire, adresseService, tiersService, infraService));
+
+
 				}
+
 			}
+
 
 		}
 
+
+	}
+
+
+	/**
+	 * Permet de recherche la date de fin du for secondaire fermé Si un for secondaire ouvert existe, alors on renvoie null
+	 *
+	 * @param contribuable à analyser
+	 * @return la date de fin du for secondaire ou null si il existe un for secondaire ouvert
+	 */
+	private RegDate getDateFermetureForSecondaire(Contribuable contribuable) {
+		ForsParType forsParType = contribuable.getForsParType(true);
+		List<ForFiscalSecondaire> forsSecondaires = forsParType.secondaires;
+		RegDate dateFin = null;
+		for (ForFiscalSecondaire forsSecondaire : forsSecondaires) {
+			if (forsSecondaire.getDateFin() == null) {
+				return null;
+			}
+			dateFin = forsSecondaire.getDateFin();
+
+		}
+		return dateFin;
 	}
 
 
 	private List<Long> recupererContribuables(final int annee) {
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
-		final String queryIdsCtbWithFors = // --------------------------------
+
+		//Identifier les contribuables ayant vendu leur dernier immeuble ou cessé leur dernière activité indépendante dans une PF donnée
+		final String queryIdsCtbForsSecondaire = // --------------------------------
 				"SELECT DISTINCT                                                                         "
 						+ "    cont.id                                                                   "
 						+ "FROM                                                                          "
@@ -133,13 +171,13 @@ public class ListeNoteProcessor {
 						+ "INNER JOIN                                                                    "
 						+ "    cont.forsFiscaux AS fors                                                  "
 						+ "WHERE                                                                         "
-						+ "    cont.annulationDate IS null                                               "
+						+ "        cont.annulationDate IS null                                           "
 						+ "    AND fors.annulationDate IS null                                           "
-						+ "    AND fors.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'                   "
-						+ "    AND (fors.class = ForFiscalPrincipal OR fors.class = ForFiscalSecondaire) "
-						+ "    AND (fors.modeImposition IS null OR fors.modeImposition != 'SOURCE')      "
-						+ "    AND (fors.dateDebut IS null OR fors.dateDebut <= :finAnnee)               "
-						+ "    AND (fors.dateFin IS null OR fors.dateFin >= :debutAnnee)                 " // [UNIREG-1742] for actif n'importe quand dans l'année
+						+ "    AND fors.class = ForFiscalSecondaire                                      "
+						+ "    AND fors.motifFermeture IN ('VENTE_IMMOBILIER', 'FIN_EXPLOITATION')       "
+						+ "    AND fors.dateFin IS NOT null                                              "
+						+ "    AND fors.dateFin >= :debutAnnee                                           "
+						+ "    AND fors.dateFin <= :finAnnee                                             "
 						+ "ORDER BY cont.id ASC                                                          ";
 
 
@@ -153,7 +191,7 @@ public class ListeNoteProcessor {
 
 				final List<Long> idsFors = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryIdsCtbWithFors);
+						Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
 						queryObject.setParameter("finAnnee", finAnnee.index());
 						return queryObject.list();
