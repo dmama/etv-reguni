@@ -47,46 +47,53 @@ public class CorrectionDateArriveeHandler extends EvenementCivilHandlerBase {
 	@Override
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
-		// une personne physique doit être trouvée ici (sinon, le cas aurait dû être vu dans le validateCommon, non ?)
-		final PersonnePhysique pp = (PersonnePhysique) getService().getTiers(target.getPrincipalPPId());
-
-		// on vérifie que le dernier for principal est bien un for ouvert pour motif "arrivée" ou "déménagement"
-		final ForFiscalPrincipal ffp = getForFiscalPrincipalDeterminant(pp);
-		if (ffp == null) {
-			// si le tiers est mineur à la date d'arrivée (la nouvelle), on passe tout droit
-			final RegDate dateNaissance = getService().getDateNaissance(pp);
-			if (dateNaissance == null || dateNaissance.addYears(18).isBeforeOrEqual(target.getDate())) {
-				erreurs.add(new EvenementCivilErreur("L'individu n'a pas de for fiscal principal connu."));
-			}
-			else {
-				Audit.info(target.getNumeroEvenement(), "Individu mineur au moment de l'arrivée, événement ignoré.");
+		// il se peut encore ici qu'aucun tiers ne soit trouvé avec ce numéro d'individu... si c'est le cas, l'erreur a déjà été logguée dans
+		// le validateCommon, donc pas besoin de la logguer une nouvelle fois, si ?
+		final PersonnePhysique pp = getService().getPersonnePhysiqueByNumeroIndividu(target.getNoIndividu());
+		if (pp == null) {
+			if (erreurs.isEmpty()) {
+				erreurs.add(new EvenementCivilErreur(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", target.getNoIndividu())));
 			}
 		}
 		else {
 
-			// la commune d'annonce doit correspondre à la commune du for
-			final Integer ofsCommuneAnnonce = target.getNumeroOfsCommuneAnnonce();
-			if (ofsCommuneAnnonce == null) {
-				erreurs.add(new EvenementCivilErreur("L'identifiant de la commune d'annonce est vide."));
-			}
-			else {
-				if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-					final String msg = String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-					erreurs.add(new EvenementCivilErreur(msg));
-				}
-				else if (!ofsCommuneAnnonce.equals(ffp.getNumeroOfsAutoriteFiscale())) {
-					final String msg = String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-					erreurs.add(new EvenementCivilErreur(msg));
+			// on vérifie que le dernier for principal est bien un for ouvert pour motif "arrivée" ou "déménagement"
+			final ForFiscalPrincipal ffp = getForFiscalPrincipalDeterminant(pp);
+			if (ffp == null) {
+				// si le tiers est mineur à la date d'arrivée (la nouvelle), on passe tout droit
+				if (getService().isMineur(pp, target.getDate())) {
+					Audit.info(target.getNumeroEvenement(), "Individu mineur au moment de l'arrivée, événement ignoré.");
 				}
 				else {
-					final MotifFor motifOuverture = ffp.getMotifOuverture();
-					if (motifOuverture != MotifFor.ARRIVEE_HS && motifOuverture != MotifFor.ARRIVEE_HC && motifOuverture != MotifFor.DEMENAGEMENT_VD) {
-						final String msg = String.format("Le dernier for principal sur le contribuable %s n'a pas été ouvert pour un motif d'arrivée (trouvé : %s).",
-														FormatNumeroHelper.numeroCTBToDisplay(ffp.getTiers().getNumero()), motifOuverture.getDescription(true));
+					erreurs.add(new EvenementCivilErreur("L'individu n'a pas de for fiscal principal connu."));
+				}
+			}
+			else {
+
+				// la commune d'annonce doit correspondre à la commune du for
+				final Integer ofsCommuneAnnonce = target.getNumeroOfsCommuneAnnonce();
+				if (ofsCommuneAnnonce == null) {
+					erreurs.add(new EvenementCivilErreur("L'identifiant de la commune d'annonce est vide."));
+				}
+				else {
+					if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+						final String msg = String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
 						erreurs.add(new EvenementCivilErreur(msg));
 					}
-					else if (target.getDate().year() != ffp.getDateDebut().year()) {
-						erreurs.add(new EvenementCivilErreur("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
+					else if (!ofsCommuneAnnonce.equals(ffp.getNumeroOfsAutoriteFiscale())) {
+						final String msg = String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
+						erreurs.add(new EvenementCivilErreur(msg));
+					}
+					else {
+						final MotifFor motifOuverture = ffp.getMotifOuverture();
+						if (motifOuverture != MotifFor.ARRIVEE_HS && motifOuverture != MotifFor.ARRIVEE_HC && motifOuverture != MotifFor.DEMENAGEMENT_VD) {
+							final String msg = String.format("Le dernier for principal sur le contribuable %s n'a pas été ouvert pour un motif d'arrivée (trouvé : %s).",
+															FormatNumeroHelper.numeroCTBToDisplay(ffp.getTiers().getNumero()), motifOuverture.getDescription(true));
+							erreurs.add(new EvenementCivilErreur(msg));
+						}
+						else if (target.getDate().year() != ffp.getDateDebut().year()) {
+							erreurs.add(new EvenementCivilErreur("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
+						}
 					}
 				}
 			}

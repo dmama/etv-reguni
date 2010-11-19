@@ -41,6 +41,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 	private static final long NO_IND_DEJA_BONNE_DATE = 7L;
 	private static final long NO_IND_MARIE = 8L;
 	private static final long NO_IND_CELIBATAIRE = 9L;
+	private static final long NO_IND_INCONNU = 9999L;
 
 	private static AtomicLong noEvenement = new AtomicLong(0L);
 
@@ -65,6 +66,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 				addIndividu(NO_IND_DEJA_BONNE_DATE, dateNaissance, "Elève", "Bon", true);
 				addIndividu(NO_IND_MARIE, dateNaissance, "Marié", "Lui", true);
 				addIndividu(NO_IND_CELIBATAIRE, dateNaissance, "Sainte", "Catherine", false);
+				addIndividu(NO_IND_INCONNU, dateNaissance, "Incognito", "Maestro", true);
 			}
 		});
 	}
@@ -84,7 +86,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 		});
 	}
 
-	private MockEvenementCivil createValidEvenement(long noIndividu, int ofsCommune, long principalId) {
+	private MockEvenementCivil createValidEvenement(long noIndividu, int ofsCommune, Long principalId) {
 		final MockEvenementCivil evt = new MockEvenementCivil();
 		evt.setIndividu(serviceCivil.getIndividu(noIndividu, 2400));
 		evt.setType(TypeEvenementCivil.CORREC_DATE_ARRIVEE);
@@ -399,5 +401,12 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 				return null;
 			}
 		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testIndividuInconnu() throws Exception {
+		final MockEvenementCivil evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
+		assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", NO_IND_INCONNU)));
 	}
 }
