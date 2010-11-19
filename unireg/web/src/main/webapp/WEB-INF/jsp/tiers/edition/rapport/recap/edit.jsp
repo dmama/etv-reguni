@@ -169,7 +169,7 @@
 							E$('executionForcee').style.display = '';
 							E$('executionForceeLabel').style.display = '';
 
-							// [UNIREG-1341] execution forcee est seulement valable pour les non-habitants
+							// [UNIREG-1341/UNIREG-2655] execution forcee est seulement valable pour les contribuables hors-Suisse
 							var sens = E$('sensRapport');
 							var tiersRepresente;
 							switch (sens.value) {
@@ -183,17 +183,18 @@
 								break;
 							}
 
-							var natureRepresente = getNatureTiers(tiersRepresente);
+							var typeFFP = getTypeForPrincipalActif(tiersRepresente);
 
-							if (natureRepresente == 'Habitant') {
-								E$('executionForcee').disabled = 'disabled';
-								E$('executionForceeLabel').style.color = 'gray';
-								E$('executionForceeLabel').title = "L'extension de l'exécution forcée est uniquement autorisée pour les tiers domiciliés à l'étranger";
-							}
-							else {
+							if (typeFFP == 'PAYS_HS') {
 								E$('executionForcee').disabled = null;
 								E$('executionForceeLabel').style.color = '';
 								E$('executionForceeLabel').title = "";
+							}
+							else {
+								E$('executionForcee').checked = null;
+								E$('executionForcee').disabled = 'disabled';
+								E$('executionForceeLabel').style.color = 'gray';
+								E$('executionForceeLabel').title = "Uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse";
 							}
 						}
 						else {
@@ -216,16 +217,16 @@
 					 }
 
 				
-					function getNatureTiers(divTiers) {
+					function getTypeForPrincipalActif(divTiers) {
 						var inputs = divTiers.getElementsByTagName('input');
-						var natureInput;
+						var typeInput;
 						for (var i = 0; i < inputs.length; ++i) {
-							if (inputs[i].name == 'debugNatureTiers') {
-								natureInput = inputs[i];
+							if (inputs[i].name == 'debugTypeForPrincipalActif') {
+								typeInput = inputs[i];
 								break;
 							}
 						}
-						return natureInput.value;
+						return typeInput.value;
 					}
 
 					function onTypeChange(element) {

@@ -64,6 +64,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	// -- uniquement pour RepresentationConventionnelle --
 
 	private Boolean extensionExecutionForcee;
+	private boolean extensionExecutionForceeAllowed;
 
 	private String toolTipMessage;
 
@@ -247,6 +248,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public void setExtensionExecutionForcee(Boolean extensionExecutionForcee) {
 		this.extensionExecutionForcee = extensionExecutionForcee;
+	}
+
+	public boolean isExtensionExecutionForceeAllowed() {
+		return extensionExecutionForceeAllowed;
+	}
+
+	public void setExtensionExecutionForceeAllowed(boolean extensionExecutionForceeAllowed) {
+		this.extensionExecutionForceeAllowed = extensionExecutionForceeAllowed;
 	}
 
 	public static BaseComparator<RapportView> getComparator() {

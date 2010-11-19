@@ -68,7 +68,13 @@
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%" />
 					<td width="75%" colspan="3">
-						<form:checkbox path="extensionExecutionForcee" label="Extension de l'exécution forcée" />
+						<c:if test="${command.extensionExecutionForceeAllowed}">
+							<form:checkbox path="extensionExecutionForcee" label="Extension de l'exécution forcée"/>
+						</c:if>
+						<c:if test="${!command.extensionExecutionForceeAllowed}">
+							<input id="extensionExecutionForcee1" type="checkbox" <c:if test="${command.extensionExecutionForcee}">checked="checked"</c:if> disabled="disabled"/>
+							<label for="extensionExecutionForcee1" title="Uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse" style="color:gray">Extension de l'exécution forcée</label>
+						</c:if>
 					</td>
 				</tr>
 			</c:if>

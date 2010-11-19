@@ -37,6 +37,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -44,6 +45,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.WebContextUtils;
 import ch.vd.uniregctb.wsclient.fidor.FidorService;
 
@@ -189,7 +191,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				StringBuilder s = new StringBuilder();
 				s.append("<fieldset class=\"").append(cssClass).append("\">\n");
 				s.append("<legend><span>").append(HtmlUtils.htmlEscape(titre)).append("</span></legend>\n");
-				s.append("<input name=\"debugNatureTiers\" type=\"hidden\" value=\"").append(HtmlUtils.htmlEscape(tiers.getNatureTiers())).append("\"/>\n");
+				s.append(buildDebugInfo(tiers));
 
 				if (showAvatar) {
 					s.append("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td>\n");
@@ -207,6 +209,17 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				return s.toString();
 			}
 		});
+	}
+
+	private String buildDebugInfo(Tiers tiers) {
+		StringBuilder s1 = new StringBuilder();
+		s1.append("<input name=\"debugNatureTiers\" type=\"hidden\" value=\"").append(HtmlUtils.htmlEscape(tiers.getNatureTiers())).append("\"/>\n");
+
+		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(null);
+		final TypeAutoriteFiscale type = (ffp == null ? null : ffp.getTypeAutoriteFiscale());
+		s1.append("<input name=\"debugTypeForPrincipalActif\" type=\"hidden\" value=\"").append(type).append("\"/>\n");
+
+		return s1.toString();
 	}
 
 	private String buildDescriptifTiers(Tiers tiers) {

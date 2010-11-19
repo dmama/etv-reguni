@@ -22,13 +22,11 @@ import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
@@ -146,6 +144,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 			final Boolean b = repres.getExtensionExecutionForcee();
 			rapportView.setExtensionExecutionForcee(b != null && b);
+			final boolean isHorsSuisse = isHorsSuisse(rapportEntreTiers.getSujetId(), rapportEntreTiers);
+			rapportView.setExtensionExecutionForceeAllowed(isHorsSuisse); // [UNIREG-2655]
 			rapportView.setAllowed(checkDroitEdit(tiersCourant)); // [UNIREG-2814]
 		}
 		else {//rapport de non travail
@@ -187,8 +187,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			// [UNIREG-755] tenir compte de l'extension de l'exécution à la création du rapport
 			if (rapport instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapport;
-				validateRepresentationConventionnelle(rapportView, sujet);
 				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
+				validateExecutionForcee(repres, sujet);
 			}
 
 			if (rapport instanceof RepresentationLegale) {
@@ -214,9 +214,9 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			}
 			else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
-				final Tiers sujet = tiersDAO.get(repres.getSujetId());
-				validateRepresentationConventionnelle(rapportView, sujet);
 				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
+				final Tiers sujet = tiersDAO.get(repres.getSujetId());
+				validateExecutionForcee(repres, sujet);
 			}
 		}
 
@@ -229,10 +229,10 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		return null;
 	}
 
-	private void validateRepresentationConventionnelle(RapportView rapportView, Tiers sujet) {
-		if (rapportView.getExtensionExecutionForcee() && sujet instanceof PersonnePhysique && ((PersonnePhysique)sujet).isHabitantVD()) {
-			// [UNIREG-1341]
-			throw new ValidationException(sujet, "L'extension de l'exécution forcée est uniquement autorisée pour les tiers domiciliés à l'étranger");
+	private void validateExecutionForcee(RepresentationConventionnelle rapport, Tiers sujet) {
+		if (rapport.getExtensionExecutionForcee() && !isHorsSuisse(sujet.getId(), rapport)) {
+			// [UNIREG-1341/UNIREG-2655]
+			throw new ValidationException(sujet, "L'extension de l'exécution forcée est uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse");
 		}
 	}
 

@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -419,6 +421,8 @@ public class TiersManager implements MessageSourceAware {
 					final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 					final Boolean b = repres.getExtensionExecutionForcee();
 					rapportView.setExtensionExecutionForcee(b != null && b);
+					final boolean isHorsSuisse = isHorsSuisse(rapportEntreTiers.getSujetId(), rapportEntreTiers);
+					rapportView.setExtensionExecutionForceeAllowed(isHorsSuisse); // [UNIREG-2655]
 				}
 				else if (rapportEntreTiers instanceof RepresentationLegale) {
 					setNomAutoriteTutelaire(rapportEntreTiers, rapportView);
@@ -1258,6 +1262,28 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
+	}
+
+	/**
+	 * [UNIREG-2655] Détermine si un tiers possède un for fiscal principal hors-Suisse durant une certaine période
+	 *
+	 * @param tiersId l'id d'un iters
+	 * @param range   une période temporelle
+	 * @return <b>vrai</b> si le tiers possède au moins un fors fiscal principal hors-Suisse pendant la période considérée.
+	 */
+	protected boolean isHorsSuisse(Long tiersId, DateRange range) {
+		final Tiers tiers = tiersDAO.get(tiersId);
+		Assert.notNull(tiers);
+
+		boolean horsSuisse = false;
+
+		for (ForFiscal ff : tiers.getForsFiscaux()) {
+			if (!ff.isAnnule() && ff.isPrincipal() && DateRangeHelper.intersect(ff, range)) {
+				horsSuisse |= ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
+			}
+		}
+
+		return horsSuisse;
 	}
 
 	private static enum TypeImposition {
