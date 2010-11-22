@@ -13,21 +13,24 @@ import ch.vd.registre.base.utils.Assert;
  */
 class DistributionAnalyze extends Analyze {
 
-	private Map<String, List<ResponseTimeRange>> results = new HashMap<String, List<ResponseTimeRange>>();
+	private Map<String, List<DistributionData>> results = new HashMap<String, List<DistributionData>>();
 
-	public void addCall(String method, HourMinutes timestamp, long milliseconds) {
+	public void addCall(Call call) {
 
-		List<ResponseTimeRange> list = results.get(method);
+		final String method = call.getMethod();
+		final long milliseconds = call.getMilliseconds() / call.getTiersCount();
+
+		List<DistributionData> list = results.get(call.getMethod());
 		if (list == null) {
-			list = new ArrayList<ResponseTimeRange>();
-			for (TimeRange timeRange : ResponseTimeRange.DEFAULT_TIME_RANGES) {
-				list.add(new ResponseTimeRange(timeRange));
+			list = new ArrayList<DistributionData>();
+			for (TimeRange timeRange : DistributionData.DEFAULT_TIME_RANGES) {
+				list.add(new DistributionData(timeRange));
 			}
 			results.put(method, list);
 		}
 
 		boolean found = false;
-		for (ResponseTimeRange range : list) {
+		for (DistributionData range : list) {
 			if (range.isInRange(milliseconds)) {
 				range.incCount();
 				found = true;
@@ -44,7 +47,7 @@ class DistributionAnalyze extends Analyze {
 
 		final StringBuilder header = new StringBuilder();
 		header.append("Nom de méthode;");
-		for (TimeRange range : ResponseTimeRange.DEFAULT_TIME_RANGES) {
+		for (TimeRange range : DistributionData.DEFAULT_TIME_RANGES) {
 			header.append(range).append(";");
 		}
 		System.out.println(header);
@@ -52,9 +55,9 @@ class DistributionAnalyze extends Analyze {
 		for (String method : methods) {
 			final StringBuilder line = new StringBuilder();
 			line.append(method).append(";");
-			final List<ResponseTimeRange> time = results.get(method);
-			for (ResponseTimeRange t : time) {
-				line.append(t.getCount()).append(';');
+			final List<DistributionData> time = results.get(method);
+			for (DistributionData data : time) {
+				line.append(data.getCount()).append(';');
 			}
 			System.out.println(line);
 		}
@@ -64,16 +67,16 @@ class DistributionAnalyze extends Analyze {
 	 * Voir http://code.google.com/apis/chart/docs/chart_wizard.html
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	String buildGoogleChartUrl(String method) {
+	Chart buildGoogleChart(String method) {
 
-		final List<ResponseTimeRange> time = results.get(method);
-		if (time == null) {
+		final List<DistributionData> data = results.get(method);
+		if (data == null) {
 			return null;
 		}
 
 		//		final String labels = "|0|1|2|3|4|5";
 		StringBuilder labels = new StringBuilder();
-		for (TimeRange range : ResponseTimeRange.DEFAULT_TIME_RANGES) {
+		for (TimeRange range : DistributionData.DEFAULT_TIME_RANGES) {
 			if (range.getEnd() == 0) {
 				labels.append("| 0 ms");
 			}
@@ -88,8 +91,8 @@ class DistributionAnalyze extends Analyze {
 		//		final String values = "50,30,10,60,65,190";
 		StringBuilder values = new StringBuilder();
 		long max = 0;
-		for (int i = 0, timeSize = time.size(); i < timeSize; i++) {
-			final ResponseTimeRange range = time.get(i);
+		for (int i = 0, timeSize = data.size(); i < timeSize; i++) {
+			final DistributionData range = data.get(i);
 			values.append(range.getCount());
 			if (i < timeSize - 1) {
 				values.append(',');
@@ -100,9 +103,10 @@ class DistributionAnalyze extends Analyze {
 		//		final String valuesRange = "0,200";
 		final String valuesRange = "0," + max;
 
-		return new StringBuilder().append("http://chart.apis.google.com/chart?chxl=0:").append(labels).append("&chxr=1,").append(valuesRange)
+		final String url = new StringBuilder().append("http://chart.apis.google.com/chart?chxl=0:").append(labels).append("&chxr=1,").append(valuesRange)
 				.append("&chxs=0,676767,8,0,l,676767&chxt=x,y&chbh=23,5&chs=1000x200&cht=bvg&chco=76A4FB&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chg=20,50&chtt=")
 				.append(method).append("%20-%20Response%20Time%20Distribution%20(ms/call)").toString();
+		return new Chart(url, 1000, 200);
 	}
 
 	@Override

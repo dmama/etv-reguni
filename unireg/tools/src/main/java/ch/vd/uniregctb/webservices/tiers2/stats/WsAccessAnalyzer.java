@@ -28,9 +28,10 @@ public class WsAccessAnalyzer {
 		final String proxy = commandLine.getOptionValue("proxy");
 		final boolean timeline = commandLine.hasOption("timeline");
 		final boolean distribution = commandLine.hasOption("distribution");
+		final boolean parts = commandLine.hasOption("parts");
 
-		if (!timeline && !distribution) {
-			System.err.println("At least one of '-distribution' and '-timeline' parameters must be specified.");
+		if (!timeline && !distribution && !parts) {
+			System.err.println("At least one of '-distribution', '-timeline' or '-parts' parameters must be specified.");
 			return;
 		}
 
@@ -46,6 +47,9 @@ public class WsAccessAnalyzer {
 		}
 		if (distribution) {
 			analyzer.registerAnalyze(new DistributionAnalyze());
+		}
+		if (parts) {
+			analyzer.registerAnalyze(new PartsAnalyze());
 		}
 		analyzer.analyze(files);
 
@@ -68,6 +72,7 @@ public class WsAccessAnalyzer {
 			Option html = OptionBuilder.withArgName("file").hasArg().withDescription("output results in a html file").create("html");
 			Option distribution = new Option("distribution", "analyzes data and outputs the distribution of response times");
 			Option timeline = new Option("timeline", "analyzes data and outputs the timeline of response times");
+			Option parts = new Option("parts", "analyzes data and outputs parts usage");
 			Option localImages = new Option("localImages", "store images in local folder (with -html)");
 			Option proxy = OptionBuilder.withArgName("host:port").hasArg().withDescription("use HTTP proxy on given port").create("proxy");
 
@@ -76,6 +81,7 @@ public class WsAccessAnalyzer {
 			options.addOption(html);
 			options.addOption(timeline);
 			options.addOption(distribution);
+			options.addOption(parts);
 			options.addOption(localImages);
 			options.addOption(proxy);
 

@@ -30,10 +30,10 @@ class Analyzer {
 		analyzes.add(a);
 	}
 
-	public void addCall(String method, HourMinutes timestamp, long millisecondes) {
+	public void addCall(Call call) {
 		for (Analyze analyze : analyzes) {
-			methods.add(method);
-			analyze.addCall(method, timestamp, millisecondes);
+			methods.add(call.getMethod());
+			analyze.addCall(call);
 		}
 	}
 
@@ -65,9 +65,9 @@ class Analyzer {
 
 		for (String method : list) {
 			for (Analyze analyze : analyzes) {
-				final String chartUrl = analyze.buildGoogleChartUrl(method);
-				if (chartUrl != null) {
-					content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, localImages, chartUrl) + "\n";
+				final Chart chart = analyze.buildGoogleChart(method);
+				if (chart != null) {
+					content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, localImages, chart) + "\n";
 				}
 			}
 		}
@@ -107,14 +107,14 @@ class Analyzer {
 			if (call == null) {
 				return;
 			}
-			addCall(call.getMethod(), call.getTimestamp(), call.getMilliseconds() / call.getTiersCount());
+			addCall(call);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	protected String buildChart(String chartName, String htmlFile, boolean localImages, String chartUrl) throws IOException {
+	protected String buildChart(String chartName, String htmlFile, boolean localImages, Chart chart) throws IOException {
 
 		if (localImages) {
 			final String dirname = FilenameUtils.removeExtension(htmlFile);
@@ -132,7 +132,7 @@ class Analyzer {
 			InputStream is = null;
 			OutputStream os = null;
 			try {
-				URL u = new URL(chartUrl);
+				URL u = new URL(chart.getUrl());
 				is = u.openStream();
 				os = new FileOutputStream(imagename, false);
 				FileCopyUtils.copy(is, os);
@@ -148,10 +148,10 @@ class Analyzer {
 
 			// on inclut l'image stockée en local
 			final String imageurl = FilenameUtils.getName(dirname) + "/" + chartName + ".png";
-			return "<img src=\"" + imageurl + "\" width=\"1000\" height=\"200\" alt=\"" + chartName + "\"/><br/><br/><br/>";
+			return "<img src=\"" + imageurl + "\" width=\"" + chart.getWidth() + "\" height=\"" + chart.getHeight() + "\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 		}
 		else {
-			return "<img src=\"" + chartUrl + "\" width=\"1000\" height=\"200\" alt=\"" + chartName + "\"/><br/><br/><br/>";
+			return "<img src=\"" + chart.getUrl() + "\" width=\"" + chart.getWidth() + "\" height=\"" + chart.getHeight() + "\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 		}
 	}
 }

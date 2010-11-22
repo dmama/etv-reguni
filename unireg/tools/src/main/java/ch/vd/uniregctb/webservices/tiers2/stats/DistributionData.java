@@ -5,7 +5,7 @@ import ch.vd.registre.base.utils.Assert;
 /**
  * Statistiques des temps de réponse par plage de temps de réponse (1-4 ms, 5-9 ms, 10-19 ms, ...).
  */
-class ResponseTimeRange implements Comparable<ResponseTimeRange> {
+class DistributionData implements Comparable<DistributionData> {
 
 	static final TimeRange[] DEFAULT_TIME_RANGES =
 			{new TimeRange(0, 0), new TimeRange(1, 4), new TimeRange(5, 9), new TimeRange(10, 19), new TimeRange(20, 29), new TimeRange(30, 39), new TimeRange(40, 49), new TimeRange(50, 74),
@@ -17,7 +17,7 @@ class ResponseTimeRange implements Comparable<ResponseTimeRange> {
 	private final TimeRange range;
 	private long count;
 
-	ResponseTimeRange(TimeRange range) {
+	DistributionData(TimeRange range) {
 		Assert.notNull(range);
 		this.range = range;
 	}
@@ -34,7 +34,7 @@ class ResponseTimeRange implements Comparable<ResponseTimeRange> {
 		return range.isInRange(milliseconds);
 	}
 
-	public int compareTo(ResponseTimeRange o) {
+	public int compareTo(DistributionData o) {
 		return this.range.compareTo(o.range);
 	}
 

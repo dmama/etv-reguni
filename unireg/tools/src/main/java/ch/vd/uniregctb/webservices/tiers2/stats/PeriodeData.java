@@ -5,7 +5,7 @@ import ch.vd.registre.base.utils.Assert;
 /**
  * Statistiques des temps de réponse par période horaire (0-1h, 1-2h, 2-3h, ...)
  */
-class ResponseTimePeriode implements Comparable<ResponseTimePeriode> {
+class PeriodeData implements Comparable<PeriodeData> {
 
 	static final Periode[] DEFAULT_PERIODES;
 
@@ -22,7 +22,7 @@ class ResponseTimePeriode implements Comparable<ResponseTimePeriode> {
 	private long total;
 	private long count;
 
-	ResponseTimePeriode(Periode periode) {
+	PeriodeData(Periode periode) {
 		Assert.notNull(periode);
 		this.periode = periode;
 	}
@@ -60,7 +60,7 @@ class ResponseTimePeriode implements Comparable<ResponseTimePeriode> {
 		return periode.isInPeriode(timestamp);
 	}
 
-	public int compareTo(ResponseTimePeriode o) {
+	public int compareTo(PeriodeData o) {
 		return this.periode.compareTo(o.periode);
 	}
 
