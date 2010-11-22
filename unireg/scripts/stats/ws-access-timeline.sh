@@ -18,7 +18,7 @@ if [ -z "$SRV" ]; then
 	if [ "$NB_SERVICES" -gt 1 ]; then
 		IDX=1
 		echo "$SERVICES" | while read LINE; do
-			echo -e "\t$IDX:\t$LINE"
+			echo -e "\t$IDX:\t$LINE" >&2
 			((++IDX))
 		done
 		CHOSEN=""
@@ -37,7 +37,7 @@ else
 		exit 1
 	fi
 fi
-echo "Service choisi : $SERVICE"
+echo "Service choisi : $SERVICE" >&2
 
 function remove-leading-zeroes() {
 	sed -e 's/\b0\+\([1-9]\)/\1/g'
