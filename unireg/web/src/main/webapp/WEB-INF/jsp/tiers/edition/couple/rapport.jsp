@@ -6,7 +6,7 @@
 	<c:if test="${not empty warnings}">
 		<table class="warnings" cellspacing="0" cellpadding="0" border="0">
 			<tr><td class="heading"><fmt:message key="label.couple.avertissements"/></td></tr>
-			<tr id="val_errors"><td class="details"><ul>
+			<tr><td class="details"><ul>
 			<c:forEach var="warn" items="${warnings}">
 				<li class="warn"><c:out value="${warn}"/></li>
 			</c:forEach>

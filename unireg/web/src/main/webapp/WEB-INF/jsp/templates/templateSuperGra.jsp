@@ -150,7 +150,7 @@ function ouvrirAide(url) {
 							<c:if test="${globalErrorCount > 0}">
 								<table class="action_error" cellspacing="0" cellpadding="0" border="0">
 									<tr><td class="heading"><fmt:message key="label.action.problemes.detectes"/></td></tr>
-									<tr id="val_errors"><td class="details"><ul>
+									<tr><td class="details"><ul>
 									<c:forEach var="error" items="${errors.globalErrors}">
 										<c:if test="${unireg:startsWith(error.code, 'global.error')}">
 											<li class="err"><spring:message message="${error}" /></li>

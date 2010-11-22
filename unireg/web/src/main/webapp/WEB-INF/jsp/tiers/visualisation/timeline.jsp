@@ -34,7 +34,7 @@
 		<c:if test="${fn:length(command.exceptions) > 0}">
 			<table class="validation_error" cellspacing="0" cellpadding="0" border="0">
 				<tr><td class="heading">Les assujettissements n'ont pas tous pu être calculés pour les raisons suivantes:</td></tr>
-				<tr id="val_errors"><td class="details"><ul>
+				<tr><td class="details"><ul>
 				<c:forEach var="err" items="${command.exceptions}">
 					<li class="err"><fmt:message key="label.validation.erreur"/>: <c:out value="${err.message}"/></li>
 				</c:forEach>

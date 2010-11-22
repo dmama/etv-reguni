@@ -40,7 +40,7 @@
 			<c:if test="${entity.validationResults != null && (!empty entity.validationResults.errors || !empty entity.validationResults.warnings)}">
 				<table class="validation_error" cellspacing="0" cellpadding="0" border="0">
 					<tr><td class="heading">Un ou plusieurs problèmes ont été détectés sur cette entité</td></tr>
-					<tr id="val_errors"><td class="details"><ul>
+					<tr><td class="details"><ul>
 					<c:forEach var="err" items="${entity.validationResults.errors}">
 						<li class="err"><fmt:message key="label.validation.erreur"/>: <c:out value="${err}"/></li>
 					</c:forEach>
