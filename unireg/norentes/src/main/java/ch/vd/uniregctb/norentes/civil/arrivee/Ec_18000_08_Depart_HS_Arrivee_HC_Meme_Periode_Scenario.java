@@ -102,7 +102,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 		assertNotNull(f, "For fiscal principal null");
 		assertEquals(MotifFor.DEPART_HS, f.getMotifOuverture(), "Dernier for ouvert pour mauvais motif");
 
-		final List<Declaration> declarations = alain.getDeclarationForPeriode(dateDepartHS.year());
+		final List<Declaration> declarations = alain.getDeclarationsForPeriode(dateDepartHS.year());
 		assertNotNull(declarations, "Liste des DI nulle");
 		assertEquals(1, declarations.size(), "Mauvais nombre de déclarations");
 		final Declaration di = declarations.get(0);

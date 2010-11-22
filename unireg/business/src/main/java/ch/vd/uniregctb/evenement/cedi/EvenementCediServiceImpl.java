@@ -54,7 +54,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		}
 
 		final int annee = scan.getPeriodeFiscale();
-		final List<Declaration> declarations = ctb.getDeclarationForPeriode(annee);
+		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee);
 		if (declarations == null || declarations.isEmpty()) {
 			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + ".");
 		}

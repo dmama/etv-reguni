@@ -23,6 +23,9 @@ public class UpdateDI extends SynchronizeAction {
 		declaration.setDateDebut(periodeImposition.getDateDebut());
 		declaration.setDateFin(periodeImposition.getDateFin());
 		declaration.setTypeContribuable(periodeImposition.getTypeContribuable());
+
+		// [UNIREG-2735] Une DI qui s'est adapté à une période d'imposition existante n'est plus une DI libre
+		declaration.setLibre(false);
 	}
 
 	@Override

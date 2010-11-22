@@ -156,7 +156,7 @@ public class ValidationJobThread extends Thread {
 	private static void checkCoherenceAssujettissementAvecDI(Contribuable contribuable, ValidationJobResults results, int annee, List<PeriodeImposition> periodesImposition) {
 
 		// filtrage des di annulées
-		final List<Declaration> toutesDIs = contribuable.getDeclarationForPeriode(annee);
+		final List<Declaration> toutesDIs = contribuable.getDeclarationsForPeriode(annee);
 		List<Declaration> dis = toutesDIs == null || toutesDIs.size() == 0 ? null : new ArrayList<Declaration>(toutesDIs.size());
 		if (dis != null) {
 			for (Declaration di : toutesDIs) {

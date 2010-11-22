@@ -22,6 +22,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -822,7 +823,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertEquals(2, taches.size()); // 2006 et 2007
 
 			// la date de fin de la déclaration 2005 doit avoir été mis-à-jour
-			final List<Declaration> declarations2005 = raoul.getDeclarationForPeriode(2005);
+			final List<Declaration> declarations2005 = raoul.getDeclarationsForPeriode(2005);
 			assertNotNull(declarations2005);
 			assertEquals(1, declarations2005.size());
 
@@ -1050,7 +1051,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(1, taches.size()); // 2007
 
 		// la date de fin dela déclaration 2006 doit avoir été mise-à-jour
-		final List<Declaration> declarations2006 = pp.getDeclarationForPeriode(2006);
+		final List<Declaration> declarations2006 = pp.getDeclarationsForPeriode(2006);
 		assertNotNull(declarations2006);
 		assertEquals(1, declarations2006.size());
 
@@ -1893,7 +1894,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// les types de contribuables doivent avoir été mis-à-jour
 		for (int i = 2005; i < RegDate.get().year(); ++i) {
-			final List<Declaration> declarations = simon.getDeclarationForPeriode(i);
+			final List<Declaration> declarations = simon.getDeclarationsForPeriode(i);
 			assertNotNull(declarations);
 			assertEquals(1, declarations.size());
 			assertDI(date(i, 1, 1), date(i, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
@@ -4169,6 +4170,132 @@ public class TacheServiceTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * Encore un cas du UNIREG-2735
+	 */
+	@Test
+	@NotTransactional
+	public void testTacheAnnulationDIQuittanceeSurAnnulationDepartHS() throws Exception {
+
+		// exemple:
+		// - départ dans la période courante (= aujourd'hui)
+		// - une DI est émise (et quittancée) pour le début de l'année passée sur le sol helvétique
+		// - en fait, le départ est annulé
+		// - on devrait donc avoir une tâche d'annulation de DI
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.DEPART_HS, MockCommune.Bussigny);
+				addForPrincipal(pp, aujourdhui.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.EtatsUnis);
+
+				// le contribuable avait déclaré son départ, mais la date n'était pas la date du véritable départ
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), date(anneeCourante, 1, 2), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				di.addEtat(new EtatDeclaration(aujourdhui, TypeEtatDeclaration.EMISE));
+				di.addEtat(new EtatDeclaration(aujourdhui, TypeEtatDeclaration.RETOURNEE));
+				di.setLibre(true);
+
+				return pp.getNumero();
+			}
+		});
+
+		// on vérifie que la DI est bien là quittancée, et qu'aucune tâche n'existe encore sur ce contribuable
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final List<Declaration> dis = pp.getDeclarationsForPeriode(anneeCourante);
+				assertNotNull(dis);
+				assertEquals(1, dis.size());
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) dis.get(0);
+				assertNotNull(di);
+				assertFalse(di.isAnnule());
+				assertFalse(di.isLibre());      // la DI a été adaptée au for
+				assertEquals(date(anneeCourante, 1, 1), di.getDateDebut());
+				assertEquals(aujourdhui, di.getDateFin());
+				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+
+				return null;
+			}
+		});
+
+		// maintenant on va annuler le for HS (et donc ré-ouvrir le for vaudois)
+		// -> une tâche d'annulation de DI devrait être générée
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal forHS = pp.getDernierForFiscalPrincipal();
+				assertNotNull(forHS);
+				assertEquals(aujourdhui.getOneDayAfter(), forHS.getDateDebut());
+				assertNull(forHS.getDateFin());
+				assertEquals(TypeAutoriteFiscale.PAYS_HS, forHS.getTypeAutoriteFiscale());
+
+				tiersService.annuleForFiscal(forHS, true);
+				return null;
+			}
+		});
+
+		// vérification de l'existence de catte tâche d'annulation de DI
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal forVD = pp.getDernierForFiscalPrincipal();
+				assertNotNull(forVD);
+				assertEquals(date(anneeCourante, 1, 1), forVD.getDateDebut());
+				assertNull(forVD.getDateFin());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forVD.getTypeAutoriteFiscale());
+				assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) forVD.getNumeroOfsAutoriteFiscale());
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertInstanceOf(TacheAnnulationDeclarationImpot.class, tache);
+				assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				assertFalse(tache.isAnnule());
+
+				final TacheAnnulationDeclarationImpot annulation = (TacheAnnulationDeclarationImpot) tache;
+				final DeclarationImpotOrdinaire diAAnnuler = annulation.getDeclarationImpotOrdinaire();
+				assertNotNull(diAAnnuler);
+				assertFalse(diAAnnuler.isAnnule());
+				assertFalse(diAAnnuler.isLibre());      // la DI a été adaptée au for
+				assertEquals(date(anneeCourante, 1, 1), diAAnnuler.getDateDebut());
+				assertEquals(aujourdhui, diAAnnuler.getDateFin());
+				assertEquals(TypeEtatDeclaration.RETOURNEE, diAAnnuler.getDernierEtat().getEtat());
+
+				return null;
+			}
+		});
+	}
+
 	@Test
 	@NotTransactional
 	public void testModificationDateFinAssujettissementDansPeriodeCourante() throws Exception {
@@ -4671,7 +4798,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
 
-				final List<Declaration> di = pp.getDeclarationForPeriode(anneeCourante);
+				final List<Declaration> di = pp.getDeclarationsForPeriode(anneeCourante);
 				assertNotNull(di);
 				assertEquals(1, di.size());
 				assertFalse(di.get(0).isAnnule());      // pas annulée, mais une tâche d'annulation doit être présente

@@ -951,7 +951,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *            l'année correspondant à la période fiscale
 	 * @return une liste de déclaration, ou <b>null</b> si le tiers ne possède pas de déclaration pour la période spécifiée.
 	 */
-	public List<Declaration> getDeclarationForPeriode(int annee) {
+	public List<Declaration> getDeclarationsForPeriode(int annee) {
 		if (declarations == null) {
 			return null;
 		}

@@ -384,8 +384,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				final RegDate dateEvenement = RegDate.get(2007, 5, 12);
-				assertTrue(eric.getDeclarationForPeriode(2006).size() == 1);
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationForPeriode(2006).get(0);
+				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
+				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
 				assertNotNull(service.retourDI(eric, di, dateEvenement));
 				return null;
 			}
@@ -396,8 +396,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				assertTrue(eric.getDeclarationForPeriode(2006).size() == 1);
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationForPeriode(2006).get(0);
+				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
+				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
 				assertEquals(RegDate.get(2007, 5, 12), di.getDateRetour());
 				return null;
@@ -410,8 +410,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				final RegDate dateEvenement = RegDate.get(2007, 8, 8);
-				assertTrue(eric.getDeclarationForPeriode(2006).size() == 1);
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationForPeriode(2006).get(0);
+				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
+				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
 				assertNotNull(service.retourDI(eric, di, dateEvenement));
 				return null;
 			}
@@ -422,8 +422,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				assertTrue(eric.getDeclarationForPeriode(2006).size() == 1);
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationForPeriode(2006).get(0);
+				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
+				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
 				assertEquals(RegDate.get(2007, 8, 8), di.getDateRetour());
 				return null;
@@ -628,18 +628,18 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon, 2007));
 
-				assertEmpty(paul.getDeclarationForPeriode(2007));
-				assertEmpty(eric.getDeclarationForPeriode(2007));
-				assertEmpty(olrik.getDeclarationForPeriode(2007));
-				assertEmpty(guillaume.getDeclarationForPeriode(2007));
-				assertEmpty(jean.getDeclarationForPeriode(2007));
-				assertEmpty(jacques.getDeclarationForPeriode(2007));
-				assertEmpty(mitt.getDeclarationForPeriode(2007));
-				assertEmpty(georges.getDeclarationForPeriode(2007));
-				assertEmpty(jacky.getDeclarationForPeriode(2007));
-				assertEmpty(bruno.getDeclarationForPeriode(2007));
-				assertEmpty(marc.getDeclarationForPeriode(2007));
-				assertEmpty(ramon.getDeclarationForPeriode(2007));
+				assertEmpty(paul.getDeclarationsForPeriode(2007));
+				assertEmpty(eric.getDeclarationsForPeriode(2007));
+				assertEmpty(olrik.getDeclarationsForPeriode(2007));
+				assertEmpty(guillaume.getDeclarationsForPeriode(2007));
+				assertEmpty(jean.getDeclarationsForPeriode(2007));
+				assertEmpty(jacques.getDeclarationsForPeriode(2007));
+				assertEmpty(mitt.getDeclarationsForPeriode(2007));
+				assertEmpty(georges.getDeclarationsForPeriode(2007));
+				assertEmpty(jacky.getDeclarationsForPeriode(2007));
+				assertEmpty(bruno.getDeclarationsForPeriode(2007));
+				assertEmpty(marc.getDeclarationsForPeriode(2007));
+				assertEmpty(ramon.getDeclarationsForPeriode(2007));
 
 				return null;
 			}
@@ -661,11 +661,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
 
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
-					eric.getDeclarationForPeriode(2007));
+					eric.getDeclarationsForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
-					olrik.getDeclarationForPeriode(2007));
+					olrik.getDeclarationsForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
-					ramon.getDeclarationForPeriode(2007));
+					ramon.getDeclarationsForPeriode(2007));
 		}
 
 		/*
@@ -681,7 +681,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable guillaume = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
-					guillaume.getDeclarationForPeriode(2007));
+					guillaume.getDeclarationsForPeriode(2007));
 		}
 
 		/*
@@ -697,7 +697,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable paul = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE, idOidLausanne, date(2008, 3, 31),
-					paul.getDeclarationForPeriode(2007));
+					paul.getDeclarationsForPeriode(2007));
 		}
 
 		/*
@@ -713,7 +713,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable georges = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, idOidLausanne, date(2008, 3, 31),
-					georges.getDeclarationForPeriode(2007));
+					georges.getDeclarationsForPeriode(2007));
 		}
 
 		/*
@@ -729,7 +729,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable jean = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jeanId); // ordinaire
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
-					jean.getDeclarationForPeriode(2007));
+					jean.getDeclarationsForPeriode(2007));
 		}
 
 		/*
@@ -745,7 +745,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable jacques = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jacquesId); // ordinaire
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
-					jacques.getDeclarationForPeriode(2007));
+					jacques.getDeclarationsForPeriode(2007));
 		}
 
 		/*
@@ -760,17 +760,17 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		{
 			final Contribuable jacky = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse
-			assertEmpty(jacky.getDeclarationForPeriode(2007)); // hors suisse depuis toujours: ne reçoit pas de déclaration
+			assertEmpty(jacky.getDeclarationsForPeriode(2007)); // hors suisse depuis toujours: ne reçoit pas de déclaration
 			final Contribuable lionel = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.lionelId); // hors suisse
-			assertEmpty(lionel.getDeclarationForPeriode(2007)); // [UNIREG-1742] hors suisse avec immeuble première : déclaration optionnelle
+			assertEmpty(lionel.getDeclarationsForPeriode(2007)); // [UNIREG-1742] hors suisse avec immeuble première : déclaration optionnelle
 
 			final Contribuable bruno = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
-					bruno.getDeclarationForPeriode(2007));
+					bruno.getDeclarationsForPeriode(2007));
 
 			final Contribuable mitt = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.mittId); // ordinaire
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
-					mitt.getDeclarationForPeriode(2007));
+					mitt.getDeclarationsForPeriode(2007));
 		}
 
 		/*
@@ -796,7 +796,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		{
 			final Contribuable marc = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
-			assertEmpty(marc.getDeclarationForPeriode(2007)); // diplomate suisse: ne reçoit pas de déclaration
+			assertEmpty(marc.getDeclarationsForPeriode(2007)); // diplomate suisse: ne reçoit pas de déclaration
 		}
 
 		{
@@ -898,8 +898,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
 
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
-				assertEmpty(john.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationsForPeriode(2007));
+				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
 			}
 		});
@@ -958,8 +958,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
 				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertFalse(eric.getDeclarationForPeriode(2007).isEmpty());
-				assertEmpty(john.getDeclarationForPeriode(2007));
+				assertFalse(eric.getDeclarationsForPeriode(2007).isEmpty());
+				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
 			}
 		});
@@ -1010,8 +1010,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
 				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertEmpty(eric.getDeclarationForPeriode(2007));
-				assertEmpty(john.getDeclarationForPeriode(2007));
+				assertEmpty(eric.getDeclarationsForPeriode(2007));
+				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
 			}
 		});
@@ -1032,8 +1032,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
 				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertFalse(eric.getDeclarationForPeriode(2007).isEmpty());
-				assertEmpty(john.getDeclarationForPeriode(2007));
+				assertFalse(eric.getDeclarationsForPeriode(2007).isEmpty());
+				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
 			}
 		});
@@ -1090,8 +1090,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
 				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertEmpty(eric.getDeclarationForPeriode(2007));
-				assertEmpty(john.getDeclarationForPeriode(2007));
+				assertEmpty(eric.getDeclarationsForPeriode(2007));
+				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
 			}
 		});
@@ -1111,8 +1111,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
 				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertFalse(eric.getDeclarationForPeriode(2007).isEmpty());
-				assertEmpty(john.getDeclarationForPeriode(2007));
+				assertFalse(eric.getDeclarationsForPeriode(2007).isEmpty());
+				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
 			}
 		});
@@ -1193,9 +1193,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable jean = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jeanId);
 				final Contribuable jacques = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jacquesId);
 				final Contribuable pierre = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.pierreId);
-				assertFalse(jean.getDeclarationForPeriode(2007).isEmpty());
-				assertEmpty(jacques.getDeclarationForPeriode(2007));
-				assertFalse(pierre.getDeclarationForPeriode(2007).isEmpty());
+				assertFalse(jean.getDeclarationsForPeriode(2007).isEmpty());
+				assertEmpty(jacques.getDeclarationsForPeriode(2007));
+				assertFalse(pierre.getDeclarationsForPeriode(2007).isEmpty());
 
 				// test les tâches
 				assertEquals(1, tacheDAO.find(ids.jeanId).size());
@@ -1299,13 +1299,13 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable ours = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.oursId);
 				final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId);
 				final Contribuable totor = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.totorId);
-				assertEmpty(eric.getDeclarationForPeriode(2007));
-				assertEmpty(john.getDeclarationForPeriode(2007));
-				assertEmpty(ours.getDeclarationForPeriode(2007));
+				assertEmpty(eric.getDeclarationsForPeriode(2007));
+				assertEmpty(john.getDeclarationsForPeriode(2007));
+				assertEmpty(ours.getDeclarationsForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationsForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, totor.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, totor.getDeclarationsForPeriode(2007));
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
 								2007));
@@ -1341,15 +1341,15 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId);
 				final Contribuable totor = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.totorId);
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationsForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, john.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, john.getDeclarationsForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idAci, date(2008, 3, 25), ours.getDeclarationForPeriode(2007)); // [UNIREG-1852], [UNIREG-1861]
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idAci, date(2008, 3, 25), ours.getDeclarationsForPeriode(2007)); // [UNIREG-1852], [UNIREG-1861]
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationsForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, totor.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, totor.getDeclarationsForPeriode(2007));
 				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
 								2007));

@@ -1444,7 +1444,7 @@ public class TestData {
 		ed0.setDateObtention(RegDate.get(2008, 3, 20));
 		ed0.setLogModifDate(new Timestamp(1199142000000L));
 		ed0.setEtat(TypeEtatDeclaration.EMISE);
-		dis0.addEtatDeclaration(ed0);
+		dis0.addEtat(ed0);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
 		EtatDeclaration ed1 = new EtatDeclaration();
@@ -1452,7 +1452,7 @@ public class TestData {
 		ed1.setDateObtention(RegDate.get(2008, 5, 15));
 		ed1.setLogModifDate(new Timestamp(1199142000000L));
 		ed1.setEtat(TypeEtatDeclaration.SOMMEE);
-		dis0.addEtatDeclaration(ed1);
+		dis0.addEtat(ed1);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
 		EtatDeclaration ed2 = new EtatDeclaration();
@@ -1460,7 +1460,7 @@ public class TestData {
 		ed2.setDateObtention(RegDate.get(2008, 5, 25));
 		ed2.setLogModifDate(new Timestamp(1199142000000L));
 		ed2.setEtat(TypeEtatDeclaration.RETOURNEE);
-		dis0.addEtatDeclaration(ed2);
+		dis0.addEtat(ed2);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
 		EtatDeclaration ed3 = new EtatDeclaration();
@@ -1468,7 +1468,7 @@ public class TestData {
 		ed3.setDateObtention(RegDate.get(2008, 6, 20));
 		ed3.setLogModifDate(new Timestamp(1199142000000L));
 		ed3.setEtat(TypeEtatDeclaration.EMISE);
-		dis1.addEtatDeclaration(ed3);
+		dis1.addEtat(ed3);
 		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
 
 		EtatDeclaration ed4 = new EtatDeclaration();
@@ -1476,7 +1476,7 @@ public class TestData {
 		ed4.setDateObtention(RegDate.get(2006, 1, 15));
 		ed4.setLogModifDate(new Timestamp(1199142000000L));
 		ed4.setEtat(TypeEtatDeclaration.EMISE);
-		dio0.addEtatDeclaration(ed4);
+		dio0.addEtat(ed4);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
 		EtatDeclaration ed5 = new EtatDeclaration();
@@ -1484,7 +1484,7 @@ public class TestData {
 		ed5.setDateObtention(RegDate.get(2006, 4, 13));
 		ed5.setLogModifDate(new Timestamp(1199142000000L));
 		ed5.setEtat(TypeEtatDeclaration.RETOURNEE);
-		dio0.addEtatDeclaration(ed5);
+		dio0.addEtat(ed5);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
 		EtatDeclaration ed6 = new EtatDeclaration();
@@ -1492,7 +1492,7 @@ public class TestData {
 		ed6.setDateObtention(RegDate.get(2007, 1, 16));
 		ed6.setLogModifDate(new Timestamp(1199142000000L));
 		ed6.setEtat(TypeEtatDeclaration.EMISE);
-		dio1.addEtatDeclaration(ed6);
+		dio1.addEtat(ed6);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
 		EtatDeclaration ed7 = new EtatDeclaration();
@@ -1500,7 +1500,7 @@ public class TestData {
 		ed7.setDateObtention(RegDate.get(2007, 9, 15));
 		ed7.setLogModifDate(new Timestamp(1199142000000L));
 		ed7.setEtat(TypeEtatDeclaration.SOMMEE);
-		dio1.addEtatDeclaration(ed7);
+		dio1.addEtat(ed7);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
 		EtatDeclaration ed8 = new EtatDeclaration();
@@ -1508,7 +1508,7 @@ public class TestData {
 		ed8.setDateObtention(RegDate.get(2007, 11, 1));
 		ed8.setLogModifDate(new Timestamp(1199142000000L));
 		ed8.setEtat(TypeEtatDeclaration.ECHUE);
-		dio1.addEtatDeclaration(ed8);
+		dio1.addEtat(ed8);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
 		EtatDeclaration ed9 = new EtatDeclaration();
@@ -1516,7 +1516,7 @@ public class TestData {
 		ed9.setDateObtention(RegDate.get(2007, 1, 15));
 		ed9.setLogModifDate(new Timestamp(1199142000000L));
 		ed9.setEtat(TypeEtatDeclaration.EMISE);
-		dio2.addEtatDeclaration(ed9);
+		dio2.addEtat(ed9);
 		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
 
 		EtatDeclaration ed10 = new EtatDeclaration();
@@ -1524,7 +1524,7 @@ public class TestData {
 		ed10.setDateObtention(RegDate.get(2008, 3, 20));
 		ed10.setLogModifDate(new Timestamp(1199142000000L));
 		ed10.setEtat(TypeEtatDeclaration.EMISE);
-		dis2.addEtatDeclaration(ed10);
+		dis2.addEtat(ed10);
 		dis2 = (DeclarationImpotSource) hibernateTemplate.merge(dis2);
 
 		DelaiDeclaration dd0 = new DelaiDeclaration();
@@ -1532,7 +1532,7 @@ public class TestData {
 		dd0.setConfirmationEcrite(false);
 		dd0.setDelaiAccordeAu(RegDate.get(2008, 4, 30));
 		dd0.setLogModifDate(new Timestamp(1199142000000L));
-		dis0.addDelaiDeclaration(dd0);
+		dis0.addDelai(dd0);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
 		DelaiDeclaration dd1 = new DelaiDeclaration();
@@ -1540,7 +1540,7 @@ public class TestData {
 		dd1.setConfirmationEcrite(false);
 		dd1.setDelaiAccordeAu(RegDate.get(2008, 7, 31));
 		dd1.setLogModifDate(new Timestamp(1199142000000L));
-		dis1.addDelaiDeclaration(dd1);
+		dis1.addDelai(dd1);
 		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
 
 		DelaiDeclaration dd2 = new DelaiDeclaration();
@@ -1550,7 +1550,7 @@ public class TestData {
 		dd2.setDateTraitement(RegDate.get(2008, 6, 25));
 		dd2.setDelaiAccordeAu(RegDate.get(2008, 9, 30));
 		dd2.setLogModifDate(new Timestamp(1199142000000L));
-		dis1.addDelaiDeclaration(dd2);
+		dis1.addDelai(dd2);
 		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
 
 		DelaiDeclaration dd3 = new DelaiDeclaration();
@@ -1558,7 +1558,7 @@ public class TestData {
 		dd3.setConfirmationEcrite(false);
 		dd3.setDelaiAccordeAu(RegDate.get(2006, 3, 15));
 		dd3.setLogModifDate(new Timestamp(1199142000000L));
-		dio0.addDelaiDeclaration(dd3);
+		dio0.addDelai(dd3);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
 		DelaiDeclaration dd4 = new DelaiDeclaration();
@@ -1568,7 +1568,7 @@ public class TestData {
 		dd4.setDateTraitement(RegDate.get(2006, 2, 20));
 		dd4.setDelaiAccordeAu(RegDate.get(2006, 7, 31));
 		dd4.setLogModifDate(new Timestamp(1199142000000L));
-		dio0.addDelaiDeclaration(dd4);
+		dio0.addDelai(dd4);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
 		DelaiDeclaration dd5 = new DelaiDeclaration();
@@ -1576,7 +1576,7 @@ public class TestData {
 		dd5.setConfirmationEcrite(false);
 		dd5.setDelaiAccordeAu(RegDate.get(2007, 3, 15));
 		dd5.setLogModifDate(new Timestamp(1199142000000L));
-		dio1.addDelaiDeclaration(dd5);
+		dio1.addDelai(dd5);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
 		DelaiDeclaration dd6 = new DelaiDeclaration();
@@ -1584,7 +1584,7 @@ public class TestData {
 		dd6.setConfirmationEcrite(false);
 		dd6.setDelaiAccordeAu(RegDate.get(2008, 3, 15));
 		dd6.setLogModifDate(new Timestamp(1199142000000L));
-		dio2.addDelaiDeclaration(dd6);
+		dio2.addDelai(dd6);
 		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
 
 		DelaiDeclaration dd7 = new DelaiDeclaration();
@@ -1594,7 +1594,7 @@ public class TestData {
 		dd7.setDateTraitement(RegDate.get(2008, 4, 12));
 		dd7.setDelaiAccordeAu(RegDate.get(2008, 9, 15));
 		dd7.setLogModifDate(new Timestamp(1199142000000L));
-		dio2.addDelaiDeclaration(dd7);
+		dio2.addDelai(dd7);
 		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
 
 		AppartenanceMenage am0 = new AppartenanceMenage();

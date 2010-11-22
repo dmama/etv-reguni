@@ -222,14 +222,6 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		// end-user-code
 	}
 
-	public void addDelaiDeclaration(DelaiDeclaration delai) {
-		if (delais == null) {
-			delais = new HashSet<DelaiDeclaration>();
-		}
-		delai.setDeclaration(this);
-		delais.add(delai);
-	}
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -255,14 +247,6 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		// begin-user-code
 		etats = theEtats;
 		// end-user-code
-	}
-
-	public void addEtatDeclaration(EtatDeclaration etat) {
-		if (etats == null) {
-			etats = new HashSet<EtatDeclaration>();
-		}
-		etat.setDeclaration(this);
-		etats.add(etat);
 	}
 
 	/**

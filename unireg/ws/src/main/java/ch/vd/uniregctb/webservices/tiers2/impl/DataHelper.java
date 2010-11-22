@@ -247,7 +247,7 @@ public class DataHelper {
 	public static Long getAssociatedDi(ch.vd.uniregctb.metier.assujettissement.PeriodeImposition periodeImposition) {
 
 		final Contribuable contribuable = periodeImposition.getContribuable();
-		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationForPeriode(periodeImposition.getDateDebut()
+		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut()
 				.year());
 		if (dis == null) {
 			return null;

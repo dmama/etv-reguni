@@ -613,7 +613,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 
 			// [UNIREG-2110] Détermine les LRs émises et celles manquantes
-			final List<? extends DateRange> lrEmises = debiteur.getDeclarationForPeriode(params.periodeFiscale);
+			final List<? extends DateRange> lrEmises = debiteur.getDeclarationsForPeriode(params.periodeFiscale);
 			final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(debiteur, RegDate.get(params.periodeFiscale, 12, 31), new ArrayList<DateRange>());
 
 			DebiteurInfo info = new DebiteurInfo();
