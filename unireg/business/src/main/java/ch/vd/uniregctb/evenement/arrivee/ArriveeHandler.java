@@ -336,7 +336,8 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			 */
 			final ArriveeType type = getArriveeType(getService().getServiceInfra(), arrivee);
 
-			final RegDate dateEvenement = getDateEvenementPourFor(arrivee);
+			// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
+			final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), arrivee.getDate());
 
 			final boolean individuMajeur = FiscalDateHelper.isMajeurAt(individu, dateEvenement);
 			final CommuneSimple communeArrivee = getCommuneArrivee(getService().getServiceInfra(), arrivee, type);
@@ -391,13 +392,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				}
 
 				// détermination de la date d'ouverture
-				final RegDate dateOuverture;
-				if (isSourcier(modeImposition)) {
-					dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getAncienneCommunePrincipale());
-				}
-				else {
-					dateOuverture = dateEvenement;
-				}
+				final RegDate dateOuverture = dateEvenement; // [UNIREG-2212] La date d'ouverture est toujours la date d'événement
 
 				if (modeImposition != null) {
 					if (motifOuverture == null) {
@@ -592,7 +587,8 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		Assert.notNull(individu); // prérequis
 		final Individu conjoint = getServiceCivil().getConjoint(arrivee.getNoIndividu(), arrivee.getDate());
 
-		final RegDate dateEvenement = getDateEvenementPourFor(arrivee);
+		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
+		final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), arrivee.getDate());
 		final Long numeroEvenement = arrivee.getNumeroEvenement();
 
 		/*
@@ -649,62 +645,16 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	private RegDate getDateEvenementPourFor(Arrivee arrivee) {
+	private RegDate getDateEvenementPourFor(TypeEvenementCivil typeArrivee, RegDate dateArrivee) {
 		final RegDate dateEvenement;
-		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == arrivee.getType()) {
+		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == typeArrivee) {
 			// vérification du dépassement du 20/12
-			dateEvenement = FiscalDateHelper.getDateEvenementFiscal(arrivee.getDate());
+			dateEvenement = FiscalDateHelper.getDateOuvertureForFiscal(dateArrivee);
 		}
 		else {
-			dateEvenement = arrivee.getDate();
+			dateEvenement = dateArrivee;
 		}
 		return dateEvenement;
-	}
-
-	/**
-	 * Calcule la date d'ouverture du for fiscal principal d'un sourcier en
-	 * fonction de sa date d'arrivée et du canton d'origine.
-	 *
-	 * @param date
-	 *            la date d'arrivée. Cette datte ne correspond pas forcement à
-	 *            celle de l'événement car d'autres règles peuvent être
-	 *            appliquées avant l'appel à cette méthode.
-	 * @param type
-	 *            Le type d'événement d'arrivée.
-	 * @param commune
-	 *            La commune d'origine.
-	 * @return
-	 */
-	private RegDate findDateOuvertureSourcier(final RegDate date, final TypeEvenementCivil type, final CommuneSimple commune) {
-
-		RegDate dateOuverture = date;
-
-		/*
-		 * - En cas d’arrivée d’un autre canton ou à l’étranger, si la date de l’événement survient
-		 * 	 après le 25 du mois et que le mode d’imposition est l’une des formes d’impôt à la source,
-		 *   le for principal est ouvert au premier jour du mois suivant.
-		 */
-		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC == type || TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS == type) {
-			if (date.isAfter(RegDate.get(date.year(), date.month(), 25))) {
-				dateOuverture = RegDateHelper.getFirstDayOfNextMonth(date);
-			}
-		}
-
-		/*
-		 * - En cas d’arrivée du canton de Neuchâtel avec l’une des formes d’impôt à la source,
-		 *   le for principal est ouvert au premier jour du mois de l’événement si la date de
-		 *   l’événement est située entre le 1er et le 15 du mois, ces deux dates comprises,
-		 *   et au premier jour du mois suivant si la date de l’événement est postérieure au 15 du mois.
-		 */
-		if (commune != null && commune.getSigleCanton().equalsIgnoreCase("NE")) {
-			if (date.isBeforeOrEqual(RegDate.get(date.year(), date.month(), 15))) {
-				dateOuverture = RegDate.get(date.year(), date.month(), 1);
-			}
-			else {
-				dateOuverture = RegDateHelper.getFirstDayOfNextMonth(date);
-			}
-		}
-		return dateOuverture;
 	}
 
 	/**
@@ -894,7 +844,8 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			return;
 		}
 
-		final RegDate dateEvenement = infosFor.getSecond();
+		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
+		final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), infosFor.getSecond());
 		final CommuneSimple commune = infosFor.getFirst();
 
 		try {
@@ -959,13 +910,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			}
 
 			// détermination de la date d'ouverture
-			final RegDate dateOuvertureFor;
-			if (isSourcier(modeImposition)) {
-				dateOuvertureFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), commune);
-			}
-			else {
-				dateOuvertureFor = dateEvenement;
-			}
+			final RegDate dateOuvertureFor = dateEvenement; // [UNIREG-2212] La date d'ouverture est toujours la date d'événement
 
 			if (modeImposition != null) {
 				if (motifOuverture == null) {

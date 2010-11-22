@@ -2783,13 +2783,13 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 				final PersonnePhysique julie = addHabitant(noIndividuJulie);
 				final EnsembleTiersCouple menage = addEnsembleTiersCouple(pierre, julie, dateMariage, dateSeparationFiscale);
-				final ForFiscalPrincipal ffpMenage = addForPrincipal(menage.getMenage(), dateArriveInitiale, MotifFor.ARRIVEE_HS, dateSeparationFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				addForPrincipal(menage.getMenage(), dateArriveInitiale, MotifFor.ARRIVEE_HS, dateSeparationFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
-				final ForFiscalPrincipal ffpPierreVaudois = addForPrincipal(pierre, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
-				final ForFiscalPrincipal ffpPierreGenevois = addForPrincipal(pierre, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Geneve);
+				addForPrincipal(pierre, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+				addForPrincipal(pierre, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Geneve);
 
-				final ForFiscalPrincipal ffpJulieVaudois = addForPrincipal(julie, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
-				final ForFiscalPrincipal ffpJulieNeuchatelois = addForPrincipal(julie, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Neuchatel);
+				addForPrincipal(julie, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+				addForPrincipal(julie, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Neuchatel);
 
 				ids.noCtbJulie = julie.getNumero();
 				ids.noCtbPierre = pierre.getNumero();
@@ -2903,6 +2903,194 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
 		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.SOURCE,
 				(ForFiscalPrincipal) fors.get(2));
+	}
+
+
+	/**
+	 * [UNIREG-2212] Vérifie qu'un déménagement vaudois au 20 décembre ouvre bien un nouveau for fiscal au 20 décembre sur la nouvelle commune (règle de fin d'année non-active)
+	 */
+	@Test
+	public void testDemenagementVaudois20Decembre() throws Exception {
+
+		final long noInd = 1;
+		final long noTiers = 10000001;
+
+		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1950, 1, 1), "Descombaz", "Louis", true);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		final RegDate dateArrivee = date(2009, 12, 20);
+
+		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
+		final MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE);
+		arrivee.setIndividu(serviceCivil.getIndividu(noInd, 2400));
+
+		final MockAdresse nouvelleAdresse = new MockAdresse();
+		nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+		arrivee.setNouvelleCommunePrincipale(MockCommune.Bussigny);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Bussigny.getNoOFSEtendu());
+		arrivee.setDate(dateArrivee);
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE);
+
+		// Traite l'événement d'arrivée
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		evenementCivilHandler.handle(arrivee, warnings);
+		assertEmpty(erreurs);
+
+		// On vérifique que la for principal sur Bussigny a été ouvert le 1er janvier 2009
+		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
+		assertNotNull(hab);
+
+		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
+		assertEquals(2, fors.size());
+		assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(dateArrivee, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
+				(ForFiscalPrincipal) fors.get(1));
+	}
+
+	/**
+	 * [UNIREG-2212] Vérifie qu'un déménagement vaudois au 21 décembre ouvre bien un nouveau for fiscal au 1er janvier de l'année suivante sur la nouvelle commune (règle de fin d'année activée).
+	 */
+	@Test
+	public void testDemenagementVaudois21Decembre() throws Exception {
+
+		final long noInd = 1;
+		final long noTiers = 10000001;
+
+		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1950, 1, 1), "Descombaz", "Louis", true);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		final RegDate dateArrivee = date(2009, 12, 21);
+
+		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
+		final MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE);
+		arrivee.setIndividu(serviceCivil.getIndividu(noInd, 2400));
+
+		final MockAdresse nouvelleAdresse = new MockAdresse();
+		nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+		arrivee.setNouvelleCommunePrincipale(MockCommune.Bussigny);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Bussigny.getNoOFSEtendu());
+		arrivee.setDate(dateArrivee);
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE);
+
+		// Traite l'événement d'arrivée
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		evenementCivilHandler.handle(arrivee, warnings);
+		assertEmpty(erreurs);
+
+		// On vérifique que la for principal sur Bussigny a été ouvert le 1er janvier 2009
+		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
+		assertNotNull(hab);
+
+		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
+		assertEquals(2, fors.size());
+		assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE,
+				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+	}
+
+	/**
+	 * [UNIREG-2212] Vérifie qu'une arrivée de hors-Canton au 21 décembre ouvre bien un nouveau for fiscal au 21 décembre sur la nouvelle commune (pas de règle de fin d'année)
+	 */
+	@Test
+	public void testArriveeDeHorsCanton21Decembre() throws Exception {
+
+		final long noInd = 1;
+		final long noTiers = 10000001;
+
+		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Descombaz", "Louis", true);
+				addNationalite(ind, MockPays.Suisse, date(1950, 1, 1), null, 1);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Zurich);
+				return null;
+			}
+		});
+
+		final RegDate dateArrivee = date(2009, 12, 20);
+
+		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
+		final MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC);
+		arrivee.setIndividu(serviceCivil.getIndividu(noInd, 2400));
+
+		final MockAdresse nouvelleAdresse = new MockAdresse();
+		nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+		arrivee.setNouvelleCommunePrincipale(MockCommune.Bussigny);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Bussigny.getNoOFSEtendu());
+		arrivee.setDate(dateArrivee);
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC);
+
+		// Traite l'événement d'arrivée
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		evenementCivilHandler.handle(arrivee, warnings);
+		assertEmpty(erreurs);
+
+		// On vérifique que la for principal sur Bussigny a été ouvert le 1er janvier 2009
+		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
+		assertNotNull(hab);
+
+		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
+		assertEquals(2, fors.size());
+		assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, 
+				MockCommune.Zurich.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
+				(ForFiscalPrincipal) fors.get(1));
 	}
 
 	private static PersonnePhysique newHabitant(long noIndividuPrincipal) throws Exception {

@@ -79,7 +79,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		}
 
 		final MotifFor motifFermeture = findMotifFermeture(depart);
-		final RegDate dateFermeture = findDateFermeture(depart, pp, motifFermeture == MotifFor.DEMENAGEMENT_VD);
+		final RegDate dateFermeture = findDateFermeture(depart, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 		final Contribuable contribuable = findContribuable(depart, pp, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 
 		if (depart.getType() == TypeEvenementCivil.DEPART_COMMUNE) {
@@ -126,7 +126,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 			 */
 			fermeAdresseTiersTemporaire(contribuable, evenement.getDate().getOneDayBefore());
 
-			int numeroOfsAutoriteFiscale = 0;
+			int numeroOfsAutoriteFiscale;
 			if (motifFermeture == MotifFor.DEPART_HC) {
 				if (depart.getNouvelleCommunePrincipale() != null) {
 					numeroOfsAutoriteFiscale = depart.getNouvelleCommunePrincipale().getNoOFS();
@@ -157,27 +157,27 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	}
 
 
-	/**Permet de transformer un habitant et son conjoint en non habitant dans le cas d'un ancien Type de départ
+	/**
+	 * Permet de transformer un habitant et son conjoint en non habitant dans le cas d'un ancien Type de départ
 	 *
-	 * @param depart
-	 * @param habitant
+	 * @param depart un événement de départ
+	 * @param pp     une personne physique
 	 */
-		private void traiteHabitantOfAncienDepart(final Depart depart, final PersonnePhysique habitant) {
-			final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, depart.getDate());
-			final PersonnePhysique conjoint;
-			if (couple != null) {
-				conjoint = couple.getConjoint(habitant);
-				if (conjoint!=null) {
-					getService().changeHabitantenNH(conjoint);
-				}
+	private void traiteHabitantOfAncienDepart(final Depart depart, final PersonnePhysique pp) {
+		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(pp, depart.getDate());
+		final PersonnePhysique conjoint;
+		if (couple != null) {
+			conjoint = couple.getConjoint(pp);
+			if (conjoint != null) {
+				getService().changeHabitantenNH(conjoint);
 			}
-			getService().changeHabitantenNH(habitant);
 		}
+		getService().changeHabitantenNH(pp);
+	}
 
 	/**
-	 * Renvoi true si l'habitant est celibataire, marié seul, ou marié et son conjoint est aussi parti
-	 * @param depart
-	 * @return
+	 * @param depart un événement de départ
+	 * @return <b>true</b> si l'habitant est celibataire, marié seul, ou marié et son conjoint est aussi parti; <b>false</b> autrement.
 	 */
 	private boolean isDepartComplet(Depart depart) {
 
@@ -193,89 +193,58 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		}
 
 		return !(conjoint != null && conjoint.isHabitantVD());
-
 	}
 
 	/**
 	 * Détermine si l'habitant est seul ou en ménage et renvoi dans ce cas son ménage.
-	 * @param depart
-	 * @param habitant
-	 * @param demenagementVD
-	 * @return
+	 *
+	 * @param depart         un événement de départ
+	 * @param pp             une personne physique
+	 * @param demenagementVD <b>vrai</b> s'il s'agit d'un déménagement entre commune vaudoise; <b>false</b> autrement.
+	 * @return le contribuable concerné par le déménagement
 	 */
-	private Contribuable findContribuable(Depart depart, PersonnePhysique habitant, boolean demenagementVD) {
+	private Contribuable findContribuable(Depart depart, PersonnePhysique pp, boolean demenagementVD) {
 
-		final RegDate dateEvenement = demenagementVD ? FiscalDateHelper.getDateEvenementFiscal(depart.getDate()) : depart.getDate();
+		final RegDate dateEvenement = findDateFermeture(depart, demenagementVD);
 
-		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, dateEvenement);
+		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(pp, dateEvenement);
 		if (couple != null) {
 			final MenageCommun menage = couple.getMenage();
 			if (menage != null) {
 				return menage;
 			}
 		}
-		return habitant;
+		return pp;
 	}
 
 	/**
-	 * Calcule la date de fermeture du for fiscal principal en fonction de la date de départ et du canton de destination
+	 * [UNIREG-2212] Calcule la date de fermeture du for fiscal principal en fonction de la date de départ
 	 *
-	 * @param depart
-	 * @param habitant
-	 * @param demenagementVD
+	 * @param depart         un événement de départ
+	 * @param demenagementVD <b>vrai</b> s'il s'agit d'un déménagement entre commune vaudoise; <b>false</b> autrement.
 	 * @return la date de fermeture du for fiscal
 	 */
-	private RegDate findDateFermeture(Depart depart, PersonnePhysique habitant, boolean demenagementVD) {
+	private RegDate findDateFermeture(Depart depart, boolean demenagementVD) {
 
-		final RegDate dateEvenement = demenagementVD ? FiscalDateHelper.getDateEvenementFiscal(depart.getDate()) : depart.getDate();
-		RegDate dateFermeture = dateEvenement;
-
-		ForFiscalPrincipal forFiscal = habitant.getForFiscalPrincipalAt(dateEvenement);
-		if (forFiscal == null) {
-			final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, dateEvenement);
-			if (couple != null) {
-				final MenageCommun menage = couple.getMenage();
-				if (menage != null) {
-					forFiscal = menage.getForFiscalPrincipalAt(dateEvenement);
-				}
-			}
+		final RegDate dateFermeture;
+		if (demenagementVD) {
+			dateFermeture = FiscalDateHelper.getDateFermetureForFiscal(depart.getDate());
+		}
+		else {
+			dateFermeture = depart.getDate();
 		}
 
-		ModeImposition modeImposition = null;
-		if (forFiscal != null) {
-			modeImposition = forFiscal.getModeImposition();
-		}
-
-		if (ModeImposition.SOURCE == modeImposition || ModeImposition.MIXTE_137_1 == modeImposition || ModeImposition.MIXTE_137_2 == modeImposition) {
-			if (dateEvenement.isAfter(RegDate.get(dateEvenement.year(), dateEvenement.month(), 25))) {
-				dateFermeture = dateEvenement.getLastDayOfTheMonth();
-			}
-			// Depart Vers le canton de Neuchatel
-			final CommuneSimple commune = depart.getNouvelleCommunePrincipale();
-			if (commune != null && commune.getSigleCanton().equals("NE")) {
-				// la date de départ est comprise entre le 1er et le 15 du mois courant
-				if (dateEvenement.isBeforeOrEqual(RegDate.get(dateEvenement.year(), dateEvenement.month(), 15))) {
-					// la date de fermeture est au dernier jour du mois précédent
-					dateFermeture = RegDate.get(dateEvenement.year(), dateEvenement.month(), 1).getOneDayBefore();
-				}
-				// la date de l'événement se situe après le 15 du mois courant
-				else if (dateEvenement.isAfter(RegDate.get(dateEvenement.year(), dateEvenement.month(), 15))) {
-					// la date de fermeture est au dernier jour du mois
-					dateFermeture = dateEvenement.getLastDayOfTheMonth();
-				}
-			}
-		}
 		return dateFermeture;
 	}
 
 	/**
 	 * calcule le motif de fermeture du for fiscal
 	 *
-	 * @param depart
+	 * @param depart         un événement de départ
 	 * @return le motif de fermeture
 	 */
 	private MotifFor findMotifFermeture(Depart depart) {
-		MotifFor motifFermeture = null;
+		MotifFor motifFermeture;
 
 		// Départ vers l'etranger
 		Adresse nouvelleAdressePrincipale = depart.getNouvelleAdressePrincipale();
@@ -382,7 +351,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	 *
 	 * @param adresse
 	 * @param commune
-	 * @param depart
+	 * @param depart         un événement de départ
 	 * @param erreurs
 	 */
 	public void validateCoherenceAdresse(Adresse adresse, CommuneSimple commune, Depart depart, List<EvenementCivilErreur> erreurs) {
@@ -413,37 +382,40 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	/**
 	 * Permet d'ouvrir un for principal sur une commune hors canton
 	 *
-	 * @param contribuable
-	 * @param dateOuverture
-	 * @param numeroOfsAutoriteFiscale
-	 * @param modeImposition
-	 * @param motifOuverture
-	 * @return
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param modeImposition           le mode d'imposition du for fiscal principal
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal openForFiscalPrincipalHC(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture) {
-		return getService().openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale,
-				TypeAutoriteFiscale.COMMUNE_HC, modeImposition, motifOuverture, false);
+	protected ForFiscalPrincipal openForFiscalPrincipalHC(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition,
+	                                                      MotifFor motifOuverture) {
+		return getService()
+				.openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.COMMUNE_HC, modeImposition, motifOuverture, false);
 	}
 
 	/**
 	 * Permet d'ouvrir un for principal sur un pays
 	 *
-	 * @param contribuable
-	 * @param dateOuverture
-	 * @param numeroOfsAutoriteFiscale
-	 * @param motifOuverture
-	 * @return
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param modeImposition           le mode d'imposition du for fiscal principal
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal openForFiscalPrincipalHS(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture) {
-		return getService().openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale,
-				TypeAutoriteFiscale.PAYS_HS, modeImposition, motifOuverture, false);
+	protected ForFiscalPrincipal openForFiscalPrincipalHS(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition,
+	                                                      MotifFor motifOuverture) {
+		return getService()
+				.openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.PAYS_HS, modeImposition, motifOuverture, false);
 	}
 
 	/**
 	 * Traite un depart d'une residence principale
 	 *
-	 * @param depart
-	 * @param habitant
+	 * @param depart         un événement de départ
+	 * @param contribuable
 	 * @param dateFermeture
 	 * @param motifFermeture
 	 */
@@ -517,9 +489,8 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	/**
 	 * Traite un depart d'une residence secondaire
 	 *
-	 * @param depart
-	 * @param forPrincipal
-	 * @param habitant
+	 * @param depart         un événement de départ
+	 * @param contribuable
 	 * @param dateFermeture
 	 * @param motifFermeture
 	 */

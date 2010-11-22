@@ -43,6 +43,10 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @SuppressWarnings({"JavaDoc"})
 public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -732,6 +736,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	 * En cas de départ dans un autre canton ou à l’étranger, si la date de l’événement survient après le 25 du mois et que le mode
 	 * d’imposition est l’une des formes d’impôt à la source, le for principal est fermé au dernier jour du mois
 	 *
+	 * Update 22.11.2010 [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
 	 */
 	@Test
 	public void testDateDeFermetureFinDeMois() throws Exception {
@@ -739,57 +744,64 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		MockDepart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, true);
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
-		Assert.assertNotNull(forFiscalPrincipal);
+		assertNotNull(forFiscalPrincipal);
 
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
-		RegDate dateAttendu = depart.getDate().getLastDayOfTheMonth();
-		Assert.assertEquals("La date de fermeture est incorrecte", dateAttendu, forFiscalPrincipalFerme.getDateFin());
+		// [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
+		// RegDate dateAttendu = depart.getDate().getLastDayOfTheMonth();
+		RegDate dateAttendu = depart.getDate();
+		assertEquals("La date de fermeture est incorrecte", dateAttendu, forFiscalPrincipalFerme.getDateFin());
 	}
 
 	/**
 	 * En cas de départ dans le canton de Neuchâtel avec l’une des formes d’impôt à la source, le for principal est fermé au dernier jour du
 	 * mois précédent l’événement si la date de l’événement est située entre le 1er et le 15 du mois, ces deux dates comprises.
+	 *
+	 * Update 22.11.2010 [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
 	 */
 	@Test
 	public void testDateDeFermetureNeuchatelDebutMois() throws Exception {
 
-		LOGGER.debug("Test de date de fermeture pour un depart vers Neuchatel entre le 1 et 15.");
-
 		MockDepart depart = createValidDepart(1240, DATE_EVENEMENT_DEBUT_MOIS, true);
 		depart.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
-		Assert.assertNotNull(forFiscalPrincipal);
-		RegDate dateAttendu = RegDate.get(2008, 6, 30);
+		assertNotNull(forFiscalPrincipal);
+
+		// [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
+		// RegDate dateAttendu = RegDate.get(2008, 6, 30);
+		RegDate dateAttendu = DATE_EVENEMENT_DEBUT_MOIS;
 
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(dateAttendu);
 
-		Assert.assertTrue("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + " " + dateAttendu, forFiscalPrincipalFerme.getDateFin().equals(dateAttendu));
-		LOGGER.debug("Test de date de fermeture pour un depart vers Neuchatel entre le 1 et 15 OK");
+		assertTrue("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + " " + dateAttendu, forFiscalPrincipalFerme.getDateFin().equals(dateAttendu));
 	}
 
 	/**
 	 * En cas de départ dans le canton de Neuchâtel avec l’une des formes d’impôt à la source, le for principal est fermé au dernier jour du
 	 * mois de l’événement si la date de l’événement est située après le 15 du mois.
+	 * 
+	 * Update 22.11.2010 [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
 	 */
 	@Test
 	public void testDateDeFermetureNeuchatelFinMois() throws Exception {
 
-		LOGGER.debug("Test de date de fermeture pour un depart vers Neuchatel après le 15.");
-
 		MockDepart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, true);
 		depart.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
-		RegDate dateAttendu = depart.getDate().getLastDayOfTheMonth();
+
+		// [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
+		// RegDate dateAttendu = depart.getDate().getLastDayOfTheMonth();
+		RegDate dateAttendu = depart.getDate();
+
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
-		Assert.assertNotNull(forFiscalPrincipal);
+		assertNotNull(forFiscalPrincipal);
 
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(dateAttendu);
 
-		Assert.assertTrue("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + "" + dateAttendu, forFiscalPrincipalFerme.getDateFin().equals(dateAttendu));
-		LOGGER.debug("Test de date de fermeture pour un depart vers Neuchatel après le 15 OK");
+		assertEquals("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + "" + dateAttendu, dateAttendu, forFiscalPrincipalFerme.getDateFin());
 	}
 
 	/**
@@ -1216,6 +1228,141 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		Assert.assertEquals(MotifFor.DEPART_HC, ffp.getMotifOuverture());
 		Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+	}
+
+	/**
+	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 19 décembre ouvre bien un nouveau for fiscal au 19 décembre sur la nouvelle commune (règle de fin d'année non-active)
+	 */
+	@Test
+	public void testDepartResidenceSecondaire19Decembre() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2009, 12, 19);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(1956, 4, 30), null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
+			}
+		});
+
+		// Note (msi) : je ne sais pas s'il est possible d'avoir une configuration de fors fiscaux comme celle ci-dessous. D'après le code, oui,
+		// mais d'un point de vue métier, je ne sais pas. Dans tous les cas, j'utilise cette configuration dans le seul but pour tester la règle
+		// de décalage des dates de fin d'année.
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+
+		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
+		assertNotNull(ff);
+		assertEquals(3, ff.size());
+		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
+		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDepart, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(1));
+		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+				ModeImposition.ORDINAIRE, ff.get(2));
+	}
+
+	/**
+	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 20 décembre ne ferme effectivement le for que le 31 décembre (règle de fin d'année activée)
+	 */
+	@Test
+	public void testDepartResidenceSecondaire20Decembre() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2009, 12, 21);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(1956, 4, 30), null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
+			}
+		});
+
+		// Note (msi) : je ne sais pas s'il est possible d'avoir une configuration de fors fiscaux comme celle ci-dessous. D'après le code, oui,
+		// mais d'un point de vue métier, je ne sais pas. Dans tous les cas, j'utilise cette configuration dans le seul but pour tester la règle
+		// de décalage des dates de fin d'année.
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+
+		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
+		assertNotNull(ff);
+		assertEquals(3, ff.size());
+		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
+		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(1));
+		assertForPrincipal(date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+				ModeImposition.ORDINAIRE, ff.get(2));
+	}
+
+	/**
+	 * [UNIREG-2212] Vérifie qu'un départ hors-Canton au 20 décembre ouvre bien un nouveau for fiscal au 21 décembre sur la nouvelle commune (pas de règle de fin d'année)
+	 */
+	@Test
+	public void testDepartHorsCanton20Decembre() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2009, 12, 20);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(1956, 4, 30), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.VoltaStrasse, null, dateDepart.getOneDayAfter(), null);
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+
+		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
+		assertNotNull(ff);
+		assertEquals(2, ff.size());
+		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
+		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+				ModeImposition.ORDINAIRE, ff.get(1));
 	}
 
 	/**

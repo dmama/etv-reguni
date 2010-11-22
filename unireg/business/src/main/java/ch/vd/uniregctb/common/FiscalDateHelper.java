@@ -95,17 +95,14 @@ public abstract class FiscalDateHelper {
 	}
 
 	/**
-	 * Calcul et retourne la RegDate d'événement fiscal correcte pour une RegDate donnée.
-	 * <p>
-	 * Si la RegDate donnée tombe entre la fin de l'année fiscale et la fin de
-	 * l'année civile, la RegDate est décalée au début de l'année civile suivante.
-	 * Dans les autres cas, la RegDate reste inchangée.
+	 * Calcul et retourne la date d'ouverture correcte d'un for fiscal.
+	 * <p/>
+	 * Si la date donnée tombe entre la fin de l'année fiscale et la fin de l'année civile, la date est décalée au début de l'année civile suivante. Dans les autres cas, la date reste inchangée.
 	 *
-	 * @param date
-	 *            n'importe quelle RegDate
-	 * @return la RegDate correcte à utiliser pour une année fiscale
+	 * @param date une date d'ouverture de for fiscal
+	 * @return la date correcte à utiliser pour ouvrir un for fiscal
 	 */
-	public static RegDate getDateEvenementFiscal(RegDate date) {
+	public static RegDate getDateOuvertureForFiscal(RegDate date) {
 
 		final int mois = date.month() - 1; // 0..11
 		final int jour = date.day(); // 1..31
@@ -117,7 +114,22 @@ public abstract class FiscalDateHelper {
 			return RegDate.get(date.year() + 1, 1, 1);
 		}
 		else
+		{
 			return date;
+		}
+	}
+
+	/**
+	 * Calcul et retourne la date de fermeture correcte d'un for fiscal.
+	 * <p/>
+	 * Si la date donnée tombe entre la fin de l'année fiscale et la fin de l'année civile, la date est décalée à la fin de l'année civile courante. Dans les autres cas, la date reste inchangée.
+	 *
+	 * @param date une date de fermeture de for fiscal
+	 * @return la date correcte à utiliser pour fermer un for fiscal
+	 */
+	public static RegDate getDateFermetureForFiscal(RegDate date) {
+		// pour une date de fermeture n, la date d'ouverture du for suivant est n+1 : on évite de coder deux fois l'algorithme et on passe par 'getDateOuvertureForFiscal' 
+		return getDateOuvertureForFiscal(date.getOneDayAfter()).getOneDayBefore();
 	}
 
 	/**

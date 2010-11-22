@@ -98,7 +98,7 @@ public class DemenagementHandler extends EvenementCivilHandlerBase {
 
 			// Date poussée au 1er janvier si la
 			// mutation est envoyé après le 20 décembre.
-			RegDate dateEvenement = FiscalDateHelper.getDateEvenementFiscal(evenement.getDate());
+			RegDate dateEvenement = FiscalDateHelper.getDateOuvertureForFiscal(evenement.getDate());
 
 			/*
 			 * le contribuable est seul, on ferme ses for principaux et on
