@@ -107,6 +107,11 @@ public class DecesHandler extends EvenementCivilHandlerBase {
 			
 			if (dateDecesUnireg.equals(deces.getDate())) {
 				// si l'evt civil de Décès est identique à la date de décès dans UNIREG : OK (evt traité sans modif dans UNIREG)
+
+				// [UNIREG-2653] Mais il faut tout de même passer l'individu en "non-habitant"
+				if (defunt.isHabitantVD()) {
+					getService().changeHabitantenNH(defunt);
+				}
 				return null;
 			}
 			else {
@@ -114,6 +119,11 @@ public class DecesHandler extends EvenementCivilHandlerBase {
 				final boolean unJourDifference = RegDateHelper.isBetween(deces.getDate(), dateDecesUnireg.getOneDayBefore(), dateDecesUnireg.getOneDayAfter(), NullDateBehavior.EARLIEST);
 				if (unJourDifference && dateDecesUnireg.year() == deces.getDate().year()) {
 					// si 1 jour de différence dans la même Période Fiscale (même année) : OK (evt traité sans modif dans UNIREG)
+
+					// [UNIREG-2653] Mais il faut tout de même passer l'individu en "non-habitant"
+					if (defunt.isHabitantVD()) {
+						getService().changeHabitantenNH(defunt);
+					}
 					return null;
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != deces.getDate().year()) {

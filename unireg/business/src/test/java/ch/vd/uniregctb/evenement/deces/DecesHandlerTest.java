@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -34,6 +35,7 @@ import static junit.framework.Assert.assertTrue;
  * @author Ludovic BERTIN
  *
  */
+@SuppressWarnings({"JavaDoc"})
 public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 
 	private static final Logger LOGGER = Logger.getLogger(DecesHandlerTest.class);
@@ -106,7 +108,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, 2008);
-		final Deces deces = createValidDeces(celibataire, null);
+		final Deces deces = createValidDeces(celibataire, null, DATE_DECES);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -151,7 +153,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, 2008);
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, 2008);
-				final Deces deces = createValidDeces(marie, conjoint);
+				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -246,7 +248,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, 2008);
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008, AttributeIndividu.ADRESSES);
-				final Deces deces = createValidDeces(marie, conjoint);
+				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -319,11 +321,11 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
-	private Deces createValidDeces(Individu ppal, Individu conjoint) {
+	private Deces createValidDeces(Individu ppal, Individu conjoint, final RegDate dateDeces) {
 
 		doModificationIndividu(ppal.getNoTechnique(), new IndividuModification() {
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(DATE_DECES);
+				individu.setDateDeces(dateDeces);
 			}
 		});
 
@@ -331,10 +333,76 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		deces.setIndividu(ppal);
 		deces.setConjointSurvivant(conjoint);
 		deces.setNumeroOfsCommuneAnnonce(5652);
-		deces.setDate(DATE_DECES);
+		deces.setDate(dateDeces);
 		deces.init(tiersDAO);
 
 		return deces;
 	}
 
+	/**
+	 * Cas trouvé dans UNIREG-2653<p/>
+	 * Un événement civil de décès doit faire passer le décédé en "non-habitant" même si le décès avait déjà été traité fiscalement
+	 */
+	@Test
+	@NotTransactional
+	public void testDecesCivilApresDecesFiscalEtFlagHabitant() throws Exception {
+
+		final long noIndividu = 12356723L;
+		final RegDate dateDeces = date(2009, 5, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1934, 2, 4), "Riddle", "Tom", true);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				pp.setDateDeces(dateDeces);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification du flag "habitant"
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertEquals(dateDeces, pp.getDateDeces());
+				assertTrue(pp.isHabitantVD());
+				return null;
+			}
+		});
+
+		// envoi de l'événement civil de décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final Individu ind = serviceCivil.getIndividu(noIndividu, 2400);
+				final Deces deces = createValidDeces(ind, null, dateDeces);
+
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+				evenementCivilHandler.checkCompleteness(deces, erreurs, warnings);
+				evenementCivilHandler.validate(deces, erreurs, warnings);
+				evenementCivilHandler.handle(deces, warnings);
+
+				assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
+				return null;
+			}
+		});
+
+		// vérification du flag habitant sur le contribuable
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertEquals(dateDeces, pp.getDateDeces());
+				assertFalse(pp.isHabitantVD());
+				return null;
+			}
+		});
+	}
 }
