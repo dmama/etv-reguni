@@ -2400,6 +2400,65 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
+	/**
+	 * [UNIREG-2806] Vérifie que l'ouverture d'un for principal avec motif d'ouverture 'permis C/Suisse' planifie une réindexation pour le 1er du mois suivant.
+	 */
+	@Test
+	public void testAddForPrincipalDateReindexationFutur1() throws Exception {
+
+		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+		ffp.setModeImposition(ModeImposition.SOURCE);
+
+		// état initial : pas de réindexation prévue dans le futur
+		assertNull(pp.getReindexOn());
+
+		tiersService.addForPrincipal(pp, date(2010, 11, 23), MotifFor.PERMIS_C_SUISSE, null, null, MotifRattachement.DOMICILE, MockCommune.Chamblon.getNoOFS(),
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
+
+		// après changement du mode d'imposition : réindexation prévue pour le 1er du mois suivant
+		assertEquals(date(2010, 12, 1), pp.getReindexOn());
+	}
+
+	/**
+	 * [UNIREG-2806] Vérifie que l'ouverture d'un for principal avec motif d'ouverture 'changement mode d'imposition' planifie une réindexation pour le 1er du mois suivant.
+	 */
+	@Test
+	public void testAddForPrincipalDateReindexationFutur2() throws Exception {
+
+		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+		ffp.setModeImposition(ModeImposition.SOURCE);
+
+		// état initial : pas de réindexation prévue dans le futur
+		assertNull(pp.getReindexOn());
+
+		tiersService.addForPrincipal(pp, date(2010, 11, 23), MotifFor.CHGT_MODE_IMPOSITION, null, null, MotifRattachement.DOMICILE, MockCommune.Chamblon.getNoOFS(),
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
+
+		// après changement du mode d'imposition : réindexation prévue pour le 1er du mois suivant
+		assertEquals(date(2010, 12, 1), pp.getReindexOn());
+	}
+
+	/**
+	 * [UNIREG-2806] Vérifie qu'un changement du mode d'imposition planifie une réindexation pour le 1er du mois suivant.
+	 */
+	@Test
+	public void testChangeModeImpositionDateReindexationFutur() throws Exception {
+
+		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+		ffp.setModeImposition(ModeImposition.SOURCE);
+
+		// état initial : pas de réindexation prévue dans le futur
+		assertNull(pp.getReindexOn());
+
+		tiersService.changeModeImposition(pp, date(2010, 11, 23), ModeImposition.MIXTE_137_2, MotifFor.CHGT_MODE_IMPOSITION);
+
+		// après changement du mode d'imposition : réindexation prévue pour le 1er du mois suivant
+		assertEquals(date(2010, 12, 1), pp.getReindexOn());
+	}
+
 	@Test
 	public void testAnnulationForSansOidGestion() throws Exception {
 

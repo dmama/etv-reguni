@@ -2093,6 +2093,10 @@ public class TiersServiceImpl implements TiersService {
 		// [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois
 		resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
 
+		// [UNIREG-2806] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
+		final RegDate debutMoisProchain = RegDate.get(dateChangementModeImposition.year(), dateChangementModeImposition.month(), 1).addMonths(1);
+		contribuable.scheduleReindexationOn(debutMoisProchain);
+
 		return nouveauForFiscal;
 	}
 
@@ -2179,6 +2183,13 @@ public class TiersServiceImpl implements TiersService {
 		else {
 			forRtr = openAndCloseForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, dateFin, motifFermeture, true);
 		}
+
+		if (motifOuverture == MotifFor.PERMIS_C_SUISSE || motifOuverture == MotifFor.CHGT_MODE_IMPOSITION) {
+			// [UNIREG-2806] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
+			final RegDate debutMoisProchain = RegDate.get(dateDebut.year(), dateDebut.month(), 1).addMonths(1);
+			contribuable.scheduleReindexationOn(debutMoisProchain);
+		}
+
 		return forRtr;
 	}
 
