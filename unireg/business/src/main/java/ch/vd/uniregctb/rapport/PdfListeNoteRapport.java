@@ -59,7 +59,7 @@ public class PdfListeNoteRapport extends PdfRapport {
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de contribuables analysés :", String.valueOf(results.nbContribuable));
-					table.addLigne("Nombre de contribuables avec note  :", String.valueOf(results.listeContribuableAvecNote.size()));
+					table.addLigne("Nombre de fors succeptibles de déclencher une note  :", String.valueOf(results.listeContribuableAvecNote.size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
 					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
