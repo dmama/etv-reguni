@@ -2,12 +2,10 @@ package ch.vd.uniregctb.declaration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -30,7 +28,7 @@ public class CopieConformeController extends AbstractSimpleFormController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		fetchAndDownload(request, response);
-		return new ModelAndView(new RedirectView(getSuccessView()));
+		return null;
 	}
 
 	private void fetchAndDownload(HttpServletRequest request, HttpServletResponse response) throws EditiqueException, IOException {
