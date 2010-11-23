@@ -112,16 +112,15 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	/**
 	 * Sauvegarde de l'adresse en base de donnees
 	 *
-	 * @param adresseView
+	 * @param adresseView la vue web de l'adresse à sauver
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(AdresseView adresseView) {
 		if (adresseView.getId() == null) {
-			AdresseTiers adresseTiers = enrichiAdresseTiers(adresseView);
-
-			Tiers tiers = getTiersService().getTiers(adresseView.getNumCTB());
+			AdresseTiers adresseTiers = createAdresseTiers(adresseView);
 			if (adresseTiers != null) {
-				getAdresseService().addAdresse(tiers, adresseTiers);
+				Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
+				adresseService.addAdresse(tiers, adresseTiers);
 			}
 		}
 		else {
@@ -132,17 +131,17 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	/**
 	 * Met à jour en base de données une adresse
 	 *
-	 * @param adresseView
+	 * @param adresseView la vue web de l'adresse à sauver
 	 */
 	private void updateAdresse(AdresseView adresseView) {
 		AdresseTiers adresseTiers = getAdresseTiersDAO().get(adresseView.getId());
 
 		if (TYPE_LOCALITE_SUISSE.equals(adresseView.getTypeLocalite())) {
-			adresseTiers = fillAdresseSuisse(adresseView, (AdresseSuisse) adresseTiers);
+			updateAdresseSuisse(adresseView, (AdresseSuisse) adresseTiers);
 		}
 
 		if (TYPE_LOCALITE_PAYS.equals(adresseView.getTypeLocalite())) {
-			adresseTiers = fillAdresseEtrangere(adresseView, (AdresseEtrangere) adresseTiers);
+			updateAdresseEtrangere(adresseView, (AdresseEtrangere) adresseTiers);
 		}
 
 	}
@@ -150,12 +149,12 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	/**
 	 * Sauvegarde d'une reprise d'adresse
 	 *
-	 * @param adresseView
+	 * @param adresseView la vue web de l'adresse à sauver
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveReprise(AdresseView adresseView) {
 
-		Tiers tiers = getTiersService().getTiers(adresseView.getNumCTB());
+		Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
 
 		Integer index = Integer.valueOf(adresseView.getIndex());
 		AdresseDisponibleView addDisponibleView = adresseView.getAdresseDisponibles().get(index);
@@ -230,90 +229,79 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	}
 
 	/**
-	 * Alimente AdresseTiers de core en fonction de la vue
+	 * Crée une adresse tiers à partir de la vue web d'une adresse.
 	 *
-	 * @param adresseView
-	 * @return
+	 * @param adresseView la vue web d'une adresse
+	 * @return une adresse tiers; ou <b>null</b> si la vue spécifiée n'est pas suffisemment renseignée.
 	 */
-	private AdresseTiers enrichiAdresseTiers(AdresseView adresseView) {
+	private AdresseTiers createAdresseTiers(AdresseView adresseView) {
 
 		AdresseTiers adresseTiers = null;
 
 		if (TYPE_LOCALITE_SUISSE.equals(adresseView.getTypeLocalite())) {
-
 			AdresseSuisse adresse = new AdresseSuisse();
-			adresseTiers = fillAdresseSuisse(adresseView, adresse);
-
+			updateAdresseSuisse(adresseView, adresse);
+			adresseTiers = adresse;
 		}
 
 		if (TYPE_LOCALITE_PAYS.equals(adresseView.getTypeLocalite())) {
-
 			AdresseEtrangere adresseEtrangere = new AdresseEtrangere();
-			adresseTiers = fillAdresseEtrangere(adresseView, adresseEtrangere);
+			updateAdresseEtrangere(adresseView, adresseEtrangere);
+			adresseTiers = adresseEtrangere;
 		}
 
 		return adresseTiers;
 	}
 
 	/**
-	 * Alimente un objet AdresseEtrangere en fonction de AdresseView
+	 * Met-à-jour une adresse étrangère en fonction d'une vue web d'une adresse.
 	 *
-	 * @param adresseView
-	 * @param adresseEtrangere
-	 * @return
+	 * @param source la vue web d'une adresse
+	 * @param target une adresse fiscale étrangère
 	 */
-	private AdresseTiers fillAdresseEtrangere(AdresseView adresseView, AdresseEtrangere adresseEtrangere) {
-		AdresseTiers adresseTiers;
-
-		if (adresseEtrangere.getId() == null) {
-			adresseEtrangere.setDateDebut(adresseView.getRegDateDebut());
+	private void updateAdresseEtrangere(AdresseView source, AdresseEtrangere target) {
+		if (target.getId() == null) {
+			target.setDateDebut(source.getRegDateDebut());
 		}
-
-		adresseEtrangere.setUsage(adresseView.getUsage());
-		adresseEtrangere.setNumeroMaison(adresseView.getNumeroMaison());
-		adresseEtrangere.setNumeroOfsPays(adresseView.getPaysOFS());
-		adresseEtrangere.setComplement(adresseView.getComplements());
-		adresseEtrangere.setPermanente(adresseView.isPermanente());
-		adresseEtrangere.setNumeroAppartement(adresseView.getNumeroAppartement());
-		adresseEtrangere.setNumeroCasePostale(adresseView.getNumeroCasePostale());
-		adresseEtrangere.setRue(adresseView.getRue());
-		adresseEtrangere.setTexteCasePostale(adresseView.getTexteCasePostale());
-		adresseEtrangere.setNumeroPostalLocalite(adresseView.getLocaliteNpa());
-		adresseEtrangere.setComplement(adresseView.getComplements());
-		adresseEtrangere.setComplementLocalite(adresseView.getComplementLocalite());
-		adresseTiers = adresseEtrangere;
-		return adresseTiers;
+		target.setUsage(source.getUsage());
+		target.setNumeroMaison(source.getNumeroMaison());
+		target.setNumeroOfsPays(source.getPaysOFS());
+		target.setComplement(source.getComplements());
+		target.setPermanente(source.isPermanente());
+		target.setNumeroAppartement(source.getNumeroAppartement());
+		target.setNumeroCasePostale(source.getNumeroCasePostale());
+		target.setRue(source.getRue());
+		target.setTexteCasePostale(source.getTexteCasePostale());
+		target.setNumeroPostalLocalite(source.getLocaliteNpa());
+		target.setComplement(source.getComplements());
+		target.setComplementLocalite(source.getComplementLocalite());
 	}
 
 	/**
-	 * Alimente un objet AdresseSuisse en fonction de AdresseView
+	 * Met-à-jour une adresse suisse en fonction d'une vue web d'une adresse.
 	 *
-	 * @param adresseView
-	 * @param adresse
-	 * @return
+	 * @param source la vue web d'une adresse
+	 * @param target une adresse fiscale suisse
 	 */
-	private AdresseTiers fillAdresseSuisse(AdresseView adresseView, AdresseSuisse adresse) {
-		AdresseTiers adresseTiers;
+	private void updateAdresseSuisse(AdresseView source, AdresseSuisse target) {
 
-		if (adresse.getId() == null) {
-			adresse.setDateDebut(adresseView.getRegDateDebut());
+		if (target.getId() == null) {
+			target.setDateDebut(source.getRegDateDebut());
 		}
-		adresse.setUsage(adresseView.getUsage());
-		adresse.setNumeroMaison(adresseView.getNumeroMaison());
-		adresse.setNumeroRue(adresseView.getNumeroRue());
+		target.setUsage(source.getUsage());
+		target.setNumeroMaison(source.getNumeroMaison());
+		target.setNumeroRue(source.getNumeroRue());
 		Integer numeroOrdrePoste = null;
-		if (!StringUtils.isEmpty(adresseView.getNumeroOrdrePoste())) {
-			numeroOrdrePoste = new Integer(adresseView.getNumeroOrdrePoste());
+		if (!StringUtils.isEmpty(source.getNumeroOrdrePoste())) {
+			numeroOrdrePoste = new Integer(source.getNumeroOrdrePoste());
 		}
-		adresse.setNumeroOrdrePoste(numeroOrdrePoste);
-		adresse.setComplement(adresseView.getComplements());
-		adresse.setPermanente(adresseView.isPermanente());
-		adresse.setNumeroAppartement(adresseView.getNumeroAppartement());
-		adresse.setNumeroCasePostale(adresseView.getNumeroCasePostale());
-		adresse.setRue(adresseView.getRue());
-		adresse.setTexteCasePostale(adresseView.getTexteCasePostale());
-		adresseTiers = adresse;
-		return adresseTiers;
+		target.setNumeroOrdrePoste(numeroOrdrePoste);
+		target.setComplement(source.getComplements());
+		target.setPermanente(source.isPermanente());
+		target.setNumeroAppartement(source.getNumeroAppartement());
+		target.setNumeroCasePostale(source.getNumeroCasePostale());
+		target.setRue(source.getRue());
+		target.setTexteCasePostale(source.getTexteCasePostale());
 	}
 
 	/**
