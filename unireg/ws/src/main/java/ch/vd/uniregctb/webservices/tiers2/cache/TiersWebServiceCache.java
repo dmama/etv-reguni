@@ -569,16 +569,17 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		return target.searchEvenementsPM(params);
 	}
 
-	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws
-			BusinessException, AccessDeniedException, TechnicalException {
+	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final DebiteurInfo resultat;
 
+		final GetDebiteurInfoKey key = new GetDebiteurInfoKey(params.numeroDebiteur, params.periodeFiscale);
+
 		try {
-			final Element element = cache.get(params);
+			final Element element = cache.get(key);
 			if (element == null) {
 				resultat = target.getDebiteurInfo(params);
-				cache.put(new Element(params, resultat));
+				cache.put(new Element(key, resultat));
 			}
 			else {
 				resultat = (DebiteurInfo) element.getObjectValue();

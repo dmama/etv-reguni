@@ -21,12 +21,15 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -40,6 +43,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.Contribuable;
 import ch.vd.uniregctb.webservices.tiers2.data.ContribuableHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommun;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
@@ -50,6 +54,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 
@@ -69,6 +74,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 	private static class Ids {
 		public Long eric;
+		public Long debiteur;
 
 		public Long monsieur;
 		public Long madame;
@@ -105,6 +111,10 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(),
 						MotifRattachement.IMMEUBLE_PRIVE);
 				ids.eric = eric.getNumero();
+
+				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2000, 1, 1));
+				ids.debiteur = debiteur.getId();
+
 				return null;
 			}
 		});
@@ -408,6 +418,28 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		assertEquals("Av de Beaulieu", menageApres.adresseEnvoi.ligne4);
 		assertEquals("1000 Lausanne", menageApres.adresseEnvoi.ligne5);
 		assertNull(menageApres.adresseEnvoi.ligne6);
+	}
+
+	@Test
+	public void testEvictDebiteurInfo() throws Exception {
+
+		// On charge le cache avec des tiers
+
+		GetDebiteurInfo params = new GetDebiteurInfo();
+		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
+		params.numeroDebiteur = ids.debiteur;
+		params.periodeFiscale = 2010;
+
+		assertNotNull(cache.getDebiteurInfo(params));
+		assertNotNull(getCacheValue(params));
+
+		// On evicte les tiers
+
+		cache.evictTiers(ids.debiteur);
+
+		// On vérifie que le cache est vide
+
+		assertNull(getCacheValue(params));
 	}
 
 	@Test
@@ -753,6 +785,16 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		final Element element = ehcache.get(key);
 		if (element != null) {
 			value = (GetTiersHistoValue) element.getObjectValue();
+		}
+		return value;
+	}
+
+	private DebiteurInfo getCacheValue(GetDebiteurInfo params) {
+		DebiteurInfo value = null;
+		final GetDebiteurInfoKey key = new GetDebiteurInfoKey(params.numeroDebiteur, params.periodeFiscale);
+		final Element element = ehcache.get(key);
+		if (element != null) {
+			value = (DebiteurInfo) element.getObjectValue();
 		}
 		return value;
 	}
