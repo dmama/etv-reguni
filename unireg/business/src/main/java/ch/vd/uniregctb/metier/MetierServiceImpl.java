@@ -486,6 +486,7 @@ public class MetierServiceImpl implements MetierService {
 			final ForSecondaireWrapper that = (ForSecondaireWrapper) o;
 
 			return forFiscal.getTypeAutoriteFiscale() == that.forFiscal.getTypeAutoriteFiscale() &&
+					forFiscal.getMotifRattachement() == that.forFiscal.getMotifRattachement() &&
 					forFiscal.getMotifFermeture() == that.forFiscal.getMotifFermeture() &&
 					areEqual(forFiscal.getNumeroOfsAutoriteFiscale(), that.forFiscal.getNumeroOfsAutoriteFiscale()) &&
 					areEqual(forFiscal.getDateDebut(), that.forFiscal.getDateDebut()) &&
@@ -498,10 +499,12 @@ public class MetierServiceImpl implements MetierService {
 			final RegDate dateFermeture = forFiscal.getDateFin();
 			final MotifFor motifFermeture = forFiscal.getMotifFermeture();
 			final TypeAutoriteFiscale typeAutoriteFiscale = forFiscal.getTypeAutoriteFiscale();
+			final MotifRattachement motifRattachement = forFiscal.getMotifRattachement();
 			final Integer noOfsAutoriteFiscale = forFiscal.getNumeroOfsAutoriteFiscale();
 
 			int result = noOfsAutoriteFiscale != null ? noOfsAutoriteFiscale.hashCode() : 0;
 			result = 31 * result + (typeAutoriteFiscale != null ? typeAutoriteFiscale.hashCode() : 0);
+			result = 31 * result + (motifRattachement != null ? motifRattachement.hashCode() : 0);
 			result = 31 * result + (dateOuverture != null ? dateOuverture.hashCode() : 0);
 			result = 31 * result + (dateFermeture != null ? dateFermeture.hashCode() : 0);
 			result = 31 * result + (motifFermeture != null ? motifFermeture.hashCode() : 0);
