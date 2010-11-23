@@ -11,8 +11,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<a href="adresse.do?numero=<c:out value="${command.tiers.numero}"></c:out>&height=530&width=850&index=&TB_iframe=true&modal=true" 
-					class="add thickbox" title="Ajouter Adresse">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
+					<unireg:raccourciAjouter link="adresse.do?numero=${command.tiers.numero}" tooltip="Ajouter Adresse" display="label.bouton.ajouter"/>
 				</td>
 			</tr>
 		</table>

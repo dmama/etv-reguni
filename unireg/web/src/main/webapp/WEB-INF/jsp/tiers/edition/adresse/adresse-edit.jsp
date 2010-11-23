@@ -7,9 +7,14 @@
 
 <form:hidden path="mode"/>
 <form:hidden path="index"/>
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
-	<tiles:put name="head"></tiles:put>
-	<tiles:put name="title"></tiles:put>
+
+<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+  	<tiles:put name="title">
+  		<fmt:message key="title.creation.adresse">
+  			<fmt:param><unireg:numCTB numero="${command.numCTB}"/></fmt:param>
+  		</fmt:message>
+  	</tiles:put>
+
 	<tiles:put name="body">
 	<div id="adresses" class="adresses">
 	<fieldset>
@@ -282,7 +287,7 @@
 					</c:otherwise>
 				</c:choose>
 			</td>
-			<td width="25%"><input type="button" name="cancel" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()"/></td>
+			<td width="25%"><input type="button" name="cancel" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../adresses/edit.do?id=' + ${command.numCTB}" /></td>
 			<td width="25%"></td>
 		</tr>
 		</table>

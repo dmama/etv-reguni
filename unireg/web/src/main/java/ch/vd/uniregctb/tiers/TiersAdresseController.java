@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -50,32 +48,6 @@ public class TiersAdresseController extends AbstractTiersController {
 		return adresseView;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
-			throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBindAndValidate(javax.servlet.http.HttpServletRequest,
-	 *      java.lang.Object, org.springframework.validation.BindException)
-	 */
-	@Override
-	protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors) throws Exception {
-		super.onBindAndValidate(request, command, errors);
-
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
@@ -90,18 +62,10 @@ public class TiersAdresseController extends AbstractTiersController {
 			adresseManager.save(adresseView);
 		}
 
-		return mav;
-	}
-
-
-	public AdresseManager getAdresseManager() {
-		return adresseManager;
+		return new ModelAndView("redirect:../adresses/edit.do?id=" + adresseView.getNumCTB());
 	}
 
 	public void setAdresseManager(AdresseManager adresseManager) {
 		this.adresseManager = adresseManager;
 	}
-
-
-
 }
