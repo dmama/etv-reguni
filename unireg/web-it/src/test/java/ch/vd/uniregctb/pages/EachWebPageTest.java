@@ -1,18 +1,14 @@
 package ch.vd.uniregctb.pages;
 
-import static junit.framework.Assert.assertEquals;
-
-import java.util.Iterator;
-
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.Assert;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WebitTest;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import static junit.framework.Assert.assertEquals;
 
 public class EachWebPageTest extends WebitTest {
 
@@ -138,7 +134,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'une adresse
 	@Test
 	public void testTiersEditAdresse() throws Exception {
-		assertPage("/adresses/adresse.do?idAdresse=1", "");
+		assertPage("/adresses/adresse.do?idAdresse=1", "Création d'une adresse sur le tiers 129.000.01");
 	}
 
 	@Test
