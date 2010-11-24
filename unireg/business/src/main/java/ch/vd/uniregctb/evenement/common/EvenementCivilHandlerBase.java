@@ -135,7 +135,9 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	 */
 	public void validate(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		validateCommon(target, erreurs, warnings);
-		validateSpecific(target, erreurs, warnings);
+		if (erreurs.isEmpty()) {
+			validateSpecific(target, erreurs, warnings);
+		}
 	}
 
 	/**
@@ -184,6 +186,12 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 			if (evenement.getNoIndividuConjoint() != null && evenement.getConjointPPId() == null) {
 				erreurs.add(new EvenementCivilErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + evenement.getNoIndividuConjoint()));
 			}
+		}
+
+		// en tout cas, l'individu devrait exister dans le registre civil !
+		final Individu individu = evenement.getIndividu();
+		if (individu == null) {
+			erreurs.add(new EvenementCivilErreur("L'individu est introuvable dans le registre civil!"));
 		}
 	}
 

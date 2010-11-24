@@ -32,12 +32,15 @@ public class NaissanceAdapter extends GenericEvenementAdapter implements Naissan
 		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
 
 		/* Récupération des parents du nouveau né */
-		if ( getIndividu().getPere() != null )
-			parents.add(getIndividu().getPere());
-
-		if ( getIndividu().getMere() != null )
-			parents.add(getIndividu().getMere());
-
+		final Individu bebe = getIndividu();
+		if (bebe != null) {
+			if (bebe.getPere() != null) {
+				parents.add(getIndividu().getPere());
+			}
+			if (bebe.getMere() != null) {
+				parents.add(getIndividu().getMere());
+			}
+		}
 	}
 
 	/* (non-Javadoc)

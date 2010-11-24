@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.jms;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -136,15 +138,23 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		sendMessageSync(xmlContent);
 
 		// vérifie que l'evenement est bien là, mais que le numéro d'individu inconnu a bien provoqué une erreur
-		List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
+		final List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
 		assertEquals(1, evenements.size());
-		EvenementCivilData evenement = evenements.get(0);
+		final EvenementCivilData evenement = evenements.get(0);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evenement.getEtat());
 		assertTrue("La date de l'événement n'a pas été récupérée correctement", RegDate.get(2007, 9, 18).equals(evenement.getDateEvenement()));
 		assertEquals("Le numéro technique n'a pas été récupéré correctement", new Long(id), evenement.getId());
 		assertEquals("Le type d'événement n'a pas été récupéré correctement", TypeEvenementCivil.NAISSANCE, evenement.getType());
 		assertEquals("Le numéro d'individu n'a pas été récupéré correctement", new Long(9876543L), evenement.getNumeroIndividuPrincipal());
 		assertEquals("Le numéro OFS n'a pas été récupéré correctement", new Integer(MockCommune.Lausanne.getNoOFSEtendu()), evenement.getNumeroOfsCommuneAnnonce());
+
+		final Set<EvenementCivilErreur> erreurs = evenement.getErreurs();
+		assertNotNull(erreurs);
+		assertEquals(1, erreurs.size());
+
+		final EvenementCivilErreur erreur = erreurs.iterator().next();
+		assertNotNull(erreur);
+		assertEquals("L'individu est introuvable dans le registre civil!", erreur.getMessage());
 	}
 
 	@Test(timeout = 10000)

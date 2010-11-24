@@ -37,11 +37,13 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 
 			@Override
 			protected void init() {
-				MockIndividu marine = addIndividu(34567, RegDate.get(1964, 4, 8), "DELACROIX", "Marine", false);
+				final MockIndividu marine = addIndividu(34567, RegDate.get(1964, 4, 8), "DELACROIX", "Marine", false);
 				addDefaultAdressesTo(marine);
 				addOrigine(marine, MockPays.France, null, RegDate.get(1973, 8, 20));
 				addNationalite(marine, MockPays.Suisse, RegDate.get(1973, 8, 20), DATE_FIN_NATIONALITE, 0);
 				addPermis(marine, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, 0, false);
+				
+				addIndividu(NUMERO_INDIVIDU, RegDate.get(1965, 8, 12), "Mariano", "Luis", true);
 			}
 
 		});
