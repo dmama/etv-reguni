@@ -39,7 +39,7 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 	}
 
-	@Test(timeout = 30000)
+	@Test(timeout = 120000)
 	@NotTransactional
 	/**
 	 * Not transactional: pour rendre visibles les données DBUnit au job qui tourne dans un autre thread
