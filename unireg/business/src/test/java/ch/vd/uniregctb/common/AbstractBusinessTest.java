@@ -38,6 +38,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
@@ -263,6 +264,17 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		}
 		f = tiersService.addAndSave(dpi, f);
 		return f;
+	}
+
+	protected RapportPrestationImposable addRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RegDate debut, RegDate fin, boolean annule) {
+		RapportPrestationImposable rpi = new RapportPrestationImposable(debut, fin, sourcier, dpi);
+		rpi.setAnnule(annule);
+		rpi = (RapportPrestationImposable) hibernateTemplate.merge(rpi);
+
+		dpi.addRapportObjet(rpi);
+		sourcier.addRapportSujet(rpi);
+
+		return rpi;
 	}
 
 	protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, RegDate fin, MockRue rue) {

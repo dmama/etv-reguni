@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebTest;
@@ -19,16 +21,23 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -36,6 +45,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -279,6 +289,120 @@ public class ForFiscalManagerTest extends WebTest {
 				assertEquals(date(1985, 2, 14), forSuisse.getDateFin());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forSuisse.getTypeAutoriteFiscale());
 				assertEquals(MockCommune.VillarsSousYens.getNoOFS(), forSuisse.getNumeroOfsAutoriteFiscale().intValue());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testFermetureForDebiteur() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 1);
+		final RegDate dateFermeture = date(2010, 6, 30);
+
+		// mise en place fiscale
+		final ForFiscalView view = (ForFiscalView) doInNewTransactionAndSession(new TransactionCallback() {
+			public ForFiscalView doInTransaction(TransactionStatus status) {
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				final ForDebiteurPrestationImposable ff = addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+
+				return new ForFiscalView(ff, false, true);
+			}
+		});
+
+		// fermeture du for
+		view.setDateFermeture(dateFermeture);
+		manager.updateFor(view);
+
+		// vérification que le for est bien fermé et que le rapport de travail aussi
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getNumeroCtb());
+				assertNotNull(dpi);
+
+				final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);
+				assertNotNull(ff);
+				assertFalse(ff.isAnnule());
+				assertEquals(dateDebut, ff.getDateDebut());
+				assertEquals(dateFermeture, ff.getDateFin());
+
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				assertNotNull(rapports);
+				assertEquals(1, rapports.size());
+
+				final RapportEntreTiers r = rapports.iterator().next();
+				assertNotNull(r);
+				assertInstanceOf(RapportPrestationImposable.class, r);
+				assertEquals(dateDebut, r.getDateDebut());
+				assertEquals(dateFermeture, r.getDateFin());
+				assertFalse(r.isAnnule());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testDemenagementDebiteur() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 1);
+		final RegDate dateOuvertureNouveauFor = date(2010, 7, 1);
+		final RegDate dateDepart = dateOuvertureNouveauFor.getOneDayBefore();
+
+		// mise en place fiscale
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// ouverture d'un nouveau for sur une autre commune
+		final ForFiscalView nveau = manager.create(dpiId, true);
+		nveau.setDateOuverture(dateOuvertureNouveauFor);
+		nveau.setNumeroForFiscalCommune(MockCommune.Vevey.getNoOFSEtendu());
+		manager.addFor(nveau);
+
+		// vérification que le for est bien fermé, qu'un autre est bien ouvert et que le rapport de travail n'a pas été fermé
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDepart);
+				assertNotNull(forFerme);
+				assertFalse(forFerme.isAnnule());
+				assertEquals(dateDebut, forFerme.getDateDebut());
+				assertEquals(dateDepart, forFerme.getDateFin());
+				assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) forFerme.getNumeroOfsAutoriteFiscale());
+
+				final ForDebiteurPrestationImposable forOuvert = dpi.getForDebiteurPrestationImposableAt(null);
+				assertNotNull(forOuvert);
+				assertFalse(forOuvert.isAnnule());
+				assertEquals(dateOuvertureNouveauFor, forOuvert.getDateDebut());
+				assertEquals(MockCommune.Vevey.getNoOFSEtendu(), (int) forOuvert.getNumeroOfsAutoriteFiscale());
+
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				assertNotNull(rapports);
+				assertEquals(1, rapports.size());
+
+				final RapportEntreTiers r = rapports.iterator().next();
+				assertNotNull(r);
+				assertInstanceOf(RapportPrestationImposable.class, r);
+				assertEquals(dateDebut, r.getDateDebut());
+				assertNull(r.getDateFin());
+				assertFalse(r.isAnnule());
 				return null;
 			}
 		});

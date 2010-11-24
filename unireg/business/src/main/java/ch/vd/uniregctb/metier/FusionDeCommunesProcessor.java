@@ -260,7 +260,7 @@ public class FusionDeCommunesProcessor {
 			}
 			else {
 				final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) deb.getTiers();
-				tiersService.closeForDebiteurPrestationImposable(debiteur, deb, dateFusion.getOneDayBefore());
+				tiersService.closeForDebiteurPrestationImposable(debiteur, deb, dateFusion.getOneDayBefore(), false);
 				tiersService.openForDebiteurPrestationImposable(debiteur, dateFusion, nouveauNoOfs, deb.getTypeAutoriteFiscale());
 			}
 		}

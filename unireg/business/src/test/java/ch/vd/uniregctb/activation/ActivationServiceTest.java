@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
@@ -22,18 +23,24 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -946,6 +953,239 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertNull(ffsReactivation.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsReactivation.getTypeAutoriteFiscale());
 				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffsReactivation.getNumeroOfsAutoriteFiscale());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testDesactivationDebiteurPrestationImposable() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 1);
+		final RegDate dateDesactivation = date(2009, 10, 31);
+
+		// mise en place
+		final long dpiId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Long execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
+
+				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+				addRapportPrestationImposable(dpi, pp2, dateDebut, dateDesactivation.addMonths(-1), false);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// désactivation
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				activationService.desactiveTiers(dpi, dateDesactivation);
+				return null;
+			}
+		});
+
+		// vérification de l'état des fors et des rapports de travail
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+
+				// plus de for ouvert au jour d'aujourd'hui
+				final ForDebiteurPrestationImposable forCourant = dpi.getForDebiteurPrestationImposableAt(null);
+				Assert.assertNull(forCourant);
+
+				// le for précédemment ouvert a été fermé à la date de désactivation
+				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDesactivation);
+				Assert.assertNotNull(forFerme);
+				Assert.assertEquals(dateDesactivation, forFerme.getDateFin());
+				Assert.assertEquals(dateDebut, forFerme.getDateDebut());
+				Assert.assertFalse(forFerme.isAnnule());
+
+				// les rapports de travail encore ouverts ont été fermés à la date de désactivation
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				Assert.assertNotNull(rapports);
+				Assert.assertEquals(2, rapports.size());
+
+				boolean foundExOpen = false;
+				boolean foundAlreadyClosed = false;
+				for (RapportEntreTiers r : rapports) {
+					Assert.assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					Assert.assertEquals(dateDebut, r.getDateDebut());
+					Assert.assertFalse(r.isAnnule());
+					Assert.assertNotNull(r.getDateFin());
+					if (dateDesactivation.equals(r.getDateFin())) {
+						Assert.assertFalse(foundExOpen);
+						foundExOpen = true;
+					}
+					else {
+						Assert.assertFalse(foundAlreadyClosed);
+						Assert.assertEquals(dateDesactivation.addMonths(-1), r.getDateFin());
+						foundAlreadyClosed = true;
+					}
+				}
+				Assert.assertTrue(foundExOpen);
+				Assert.assertTrue(foundAlreadyClosed);
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	@Ignore(value = "La réactivation d'un DPI ne fonctionne pas puisqu'il n'y a pas de moyen de stocker la date de désactivation sur un débiteur")
+	public void testDesactivationEtReactivationDebiteurPrestationImposable() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 1);
+		final RegDate dateDesactivation = date(2009, 10, 31);
+
+		// mise en place
+		final long dpiId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Long execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
+
+				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+				addRapportPrestationImposable(dpi, pp2, dateDebut, dateDesactivation.addMonths(-1), false);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// désactivation
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				activationService.desactiveTiers(dpi, dateDesactivation);
+				return null;
+			}
+		});
+
+		// vérification de l'état des fors et des rapports de travail
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+
+				// plus de for ouvert au jour d'aujourd'hui
+				final ForDebiteurPrestationImposable forCourant = dpi.getForDebiteurPrestationImposableAt(null);
+				Assert.assertNull(forCourant);
+
+				// le for précédemment ouvert a été fermé à la date de désactivation
+				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDesactivation);
+				Assert.assertNotNull(forFerme);
+				Assert.assertEquals(dateDesactivation, forFerme.getDateFin());
+				Assert.assertEquals(dateDebut, forFerme.getDateDebut());
+				Assert.assertFalse(forFerme.isAnnule());
+
+				// les rapports de travail encore ouverts ont été fermés à la date de désactivation
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				Assert.assertNotNull(rapports);
+				Assert.assertEquals(2, rapports.size());
+
+				boolean foundExOpen = false;
+				boolean foundAlreadyClosed = false;
+				for (RapportEntreTiers r : rapports) {
+					Assert.assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					Assert.assertEquals(dateDebut, r.getDateDebut());
+					Assert.assertFalse(r.isAnnule());
+					Assert.assertNotNull(r.getDateFin());
+					if (dateDesactivation.equals(r.getDateFin())) {
+						Assert.assertFalse(foundExOpen);
+						foundExOpen = true;
+					}
+					else {
+						Assert.assertFalse(foundAlreadyClosed);
+						Assert.assertEquals(dateDesactivation.addMonths(-1), r.getDateFin());
+						foundAlreadyClosed = true;
+					}
+				}
+				Assert.assertTrue(foundExOpen);
+				Assert.assertTrue(foundAlreadyClosed);
+
+				return null;
+			}
+		});
+
+		final RegDate dateReactivation = date(2010, 5, 1);
+
+		// réactivation du tiers
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				activationService.reactiveTiers(dpi, dateReactivation);
+				return null;
+			}
+		});
+
+		// vérification des fors et rapports de travail après ré-activation
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+
+				// il y a maintenant un for ouvert depuis la réactivation
+				final ForDebiteurPrestationImposable forCourant = dpi.getForDebiteurPrestationImposableAt(null);
+				Assert.assertNotNull(forCourant);
+				Assert.assertEquals(dateReactivation, forCourant.getDateDebut());
+				Assert.assertFalse(forCourant.isAnnule());
+
+				// le for précédemment ouvert est resté fermé à la date de désactivation
+				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDesactivation);
+				Assert.assertNotNull(forFerme);
+				Assert.assertEquals(dateDesactivation, forFerme.getDateFin());
+				Assert.assertEquals(dateDebut, forFerme.getDateDebut());
+				Assert.assertFalse(forFerme.isAnnule());
+
+				// le rapport de travail qui avait été fermé doit avoir été ré-ouvert à la date de réactivation
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				Assert.assertNotNull(rapports);
+				Assert.assertEquals(3, rapports.size());
+
+				boolean foundExOpen = false;
+				boolean foundAlreadyClosed = false;
+				boolean foundReOpen = false;
+				for (RapportEntreTiers r : rapports) {
+					Assert.assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					Assert.assertEquals(dateDebut, r.getDateDebut());
+					Assert.assertFalse(r.isAnnule());
+					Assert.assertNotNull(r.getDateFin());
+					if (r.getDateFin() != null) {
+						if (dateDesactivation.equals(r.getDateFin())) {
+							Assert.assertFalse(foundExOpen);
+							foundExOpen = true;
+						}
+						else {
+							Assert.assertFalse(foundAlreadyClosed);
+							Assert.assertEquals(dateDesactivation.addMonths(-1), r.getDateFin());
+							foundAlreadyClosed = true;
+						}
+					}
+					else {
+						Assert.assertFalse(foundReOpen);
+						Assert.assertEquals(dateReactivation, r.getDateDebut());
+						foundReOpen = true;
+					}
+				}
+				Assert.assertTrue(foundExOpen);
+				Assert.assertTrue(foundAlreadyClosed);
+				Assert.assertTrue(foundReOpen);
 
 				return null;
 			}

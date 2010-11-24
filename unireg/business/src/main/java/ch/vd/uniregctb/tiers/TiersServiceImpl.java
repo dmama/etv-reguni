@@ -1829,6 +1829,24 @@ public class TiersServiceImpl implements TiersService {
 		return nouveauForFiscal;
 	}
 
+	/**
+	 * Ré-ouvre les rapports de prestation imposables du débiteur qui ont été fermés à la date de désactivation avec une nouvelle date d'ouverture à la réactivation
+	 * @param debiteur              le débiteur sur lequel les rapports de prestation imposable doivent être ré-ouverts
+	 * @param dateDesactivation     la date à laquelle les rapports avaient été fermés
+	 * @param dateReactivation      la date à laquelle les rapports doivent être ré-ouverts
+	 */
+	public void reopenRapportsPrestation(DebiteurPrestationImposable debiteur, RegDate dateDesactivation, RegDate dateReactivation) {
+		final List<RapportEntreTiers> nouveaux = new ArrayList<RapportEntreTiers>(debiteur.getRapportsObjet().size());
+		for (RapportEntreTiers rapport : debiteur.getRapportsObjet()) {
+			if (rapport instanceof RapportPrestationImposable && rapport.isValidAt(dateDesactivation) && dateDesactivation.equals(rapport.getDateFin())) {
+				final Tiers sourcier = getTiers(rapport.getSujetId());
+				final RapportPrestationImposable rpi = new RapportPrestationImposable(dateReactivation, null, (Contribuable) sourcier, debiteur);
+				nouveaux.add(rpi);
+			}
+		}
+		debiteur.getRapportsObjet().addAll(nouveaux);
+	}
+
 	private void afterForDebiteurPrestationImposableAdded(DebiteurPrestationImposable debiteur, ForDebiteurPrestationImposable forDebiteur) {
 		RegDate dateOuverture = forDebiteur.getDateDebut();
 		this.evenementFiscalService.publierEvenementFiscalOuvertureFor(debiteur, dateOuverture, null, forDebiteur.getId());
@@ -2331,7 +2349,7 @@ public class TiersServiceImpl implements TiersService {
 	public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, int autoriteFiscale) {
 		final ForDebiteurPrestationImposable dernierForDebiteur = debiteur.getDernierForDebiteur();
 		if (dernierForDebiteur != null && dernierForDebiteur.getDateFin() == null) {
-			closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore());
+			closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore(), false);
 		}
 		if (dernierForDebiteur == null) {
 			//[UNIREG-2885] dans le cas de la création d'un premier for, on doit adapter si besoin la première périodicité
@@ -2340,7 +2358,7 @@ public class TiersServiceImpl implements TiersService {
 
 		ForDebiteurPrestationImposable forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		if (dateFin != null) {
-			forRtr = closeForDebiteurPrestationImposable(debiteur, forRtr, dateFin);
+			forRtr = closeForDebiteurPrestationImposable(debiteur, forRtr, dateFin, true);
 		}
 		return forRtr;
 	}
@@ -2376,14 +2394,16 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * Ferme le for debiteur d'un contribuable.
 	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param dateFermeture
-	 *            la date de fermeture du for
+	 * @param debiteur                       le debiteur concerné
+	 * @param forDebiteurPrestationImposable le for débiteur concerné
+	 * @param dateFermeture                  la date de fermeture du for
+	 * @param fermerRapportsPrestation       <code>true</code> s'il faut fermer les rapports "prestation" du débiteur, <code>false</code> s'il faut les laisser ouverts
 	 * @return le for debiteur fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	public ForDebiteurPrestationImposable closeForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
-	                                                                          ForDebiteurPrestationImposable forDebiteurPrestationImposable, RegDate dateFermeture) {
+	                                                                          ForDebiteurPrestationImposable forDebiteurPrestationImposable,
+	                                                                          RegDate dateFermeture,
+	                                                                          boolean fermerRapportsPrestation) {
 		if (forDebiteurPrestationImposable != null) {
 			if (forDebiteurPrestationImposable.getDateDebut().isAfter(dateFermeture)) {
 				throw new ValidationException(forDebiteurPrestationImposable, "La date de fermeture ("
@@ -2391,6 +2411,15 @@ public class TiersServiceImpl implements TiersService {
 						+ RegDateHelper.dateToDisplayString(forDebiteurPrestationImposable.getDateDebut()) + ") du for fiscal actif");
 			}
 			forDebiteurPrestationImposable.setDateFin(dateFermeture);
+
+			// [UNIREG-2144] Fermeture des rapports de travail
+			if (fermerRapportsPrestation) {
+				for (RapportEntreTiers rapport : debiteur.getRapportsObjet()) {
+					if (rapport instanceof RapportPrestationImposable && rapport.isValidAt(dateFermeture) && rapport.getDateFin() == null) {
+						rapport.setDateFin(dateFermeture);
+					}
+				}
+			}
 
 			this.evenementFiscalService.publierEvenementFiscalFermetureFor(debiteur, dateFermeture, null,
 					forDebiteurPrestationImposable.getId());

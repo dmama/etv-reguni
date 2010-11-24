@@ -4041,4 +4041,149 @@ public class TiersServiceTest extends BusinessTest {
 			Assert.assertFalse(tiersService.isMineur(pp, dateNaissance.addYears(18)));
 		}
 	}
+
+	@Test
+	@NotTransactional
+	public void testFermetureForDebiteurSansFermetureRT() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 1);
+		final RegDate dateFermetureFor = date(2009, 10, 31);
+
+		// mise en place
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
+
+				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+				addRapportPrestationImposable(dpi, pp2, dateDebut, dateFermetureFor.addMonths(-1), false);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// fermeture du for débiteur
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
+				assertNotNull(forDebiteur);
+
+				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, false);
+				return null;
+			}
+		});
+
+		// vérification des rapports de travail : ils ne doivent pas avoir bougé
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				assertNotNull(rapports);
+				assertEquals(2, rapports.size());
+
+				boolean foundOpen = false;
+				boolean foundClosed = false;
+				for (RapportEntreTiers r : rapports) {
+					assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					assertEquals(dateDebut, r.getDateDebut());
+					assertFalse(r.isAnnule());
+					if (r.getDateFin() == null) {
+						assertFalse(foundOpen);
+						foundOpen = true;
+					}
+					else {
+						assertFalse(foundClosed);
+						assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
+						foundClosed = true;
+					}
+				}
+				assertTrue(foundOpen);
+				assertTrue(foundClosed);
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testFermetureForDebiteurAvecFermetureRT() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 1);
+		final RegDate dateFermetureFor = date(2009, 10, 31);
+
+		// mise en place
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
+
+				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+				addRapportPrestationImposable(dpi, pp2, dateDebut, dateFermetureFor.addMonths(-1), false);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// fermeture du for débiteur
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
+				assertNotNull(forDebiteur);
+
+				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, true);
+				return null;
+			}
+		});
+
+		// vérification des rapports de travail : ils ne doivent pas avoir bougé
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				assertNotNull(rapports);
+				assertEquals(2, rapports.size());
+
+				boolean foundExOpen = false;
+				boolean foundAlreadyClosed = false;
+				for (RapportEntreTiers r : rapports) {
+					assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					assertEquals(dateDebut, r.getDateDebut());
+					assertFalse(r.isAnnule());
+					assertNotNull(r.getDateFin());
+					if (dateFermetureFor.equals(r.getDateFin())) {
+						assertFalse(foundExOpen);
+						foundExOpen = true;
+					}
+					else {
+						assertFalse(foundAlreadyClosed);
+						assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
+						foundAlreadyClosed = true;
+					}
+				}
+				assertTrue(foundExOpen);
+				assertTrue(foundAlreadyClosed);
+
+				return null;
+			}
+		});
+	}
 }

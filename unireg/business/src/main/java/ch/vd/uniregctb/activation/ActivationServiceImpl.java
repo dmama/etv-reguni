@@ -79,7 +79,7 @@ public class ActivationServiceImpl implements ActivationService {
 		if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 			final ForDebiteurPrestationImposable forDebiteurPrestationImposable = debiteur.getForDebiteurPrestationImposableAt(dateAnnulation);
-			tiersService.closeForDebiteurPrestationImposable(debiteur, forDebiteurPrestationImposable, dateAnnulation);
+			tiersService.closeForDebiteurPrestationImposable(debiteur, forDebiteurPrestationImposable, dateAnnulation, true);
 		}
 
 		// s'il n'y a pas de for actif à la date de désactivation, il faut carrément annuler le tiers complètement
@@ -203,6 +203,9 @@ public class ActivationServiceImpl implements ActivationService {
 					if (tiers instanceof DebiteurPrestationImposable) {
 						final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 						tiersService.openForDebiteurPrestationImposable(debiteur, dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getTypeAutoriteFiscale());
+
+						// [UNIREG-2144] il faut également ré-ouvrir les rapports de travail fermés à la date de désactivation
+						tiersService.reopenRapportsPrestation(debiteur, derniereDateDesactivation, dateReactivation);
 					}
 					if (tiers instanceof Contribuable) {
 						final Contribuable contribuable = (Contribuable) tiers;

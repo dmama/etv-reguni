@@ -572,6 +572,14 @@ public interface TiersService {
 	                                                                  TypeAutoriteFiscale typeAutoriteFiscale);
 
 	/**
+	 * Ré-ouvre les rapports de prestation imposables du débiteur qui ont été fermés à la date de désactivation avec une nouvelle date d'ouverture à la réactivation
+	 * @param debiteur              le débiteur sur lequel les rapports de prestation imposable doivent être ré-ouverts
+	 * @param dateDesactivation     la date à laquelle les rapports avaient été fermés
+	 * @param dateReactivation      la date à laquelle les rapports doivent être ré-ouverts
+	 */
+	void reopenRapportsPrestation(DebiteurPrestationImposable debiteur, RegDate dateDesactivation, RegDate dateReactivation);
+
+	/**
 	 * Ferme le for fiscal principal d'un contribuable.
 	 *
 	 * @param contribuable   le contribuable concerné
@@ -625,10 +633,12 @@ public interface TiersService {
 	 * @param debiteur                       le debiteur concerné
 	 * @param forDebiteurPrestationImposable le for débiteur concerné
 	 * @param dateFermeture                  la date de fermeture du for
+	 * @param fermerRapportsPrestation       <code>true</code> s'il faut fermer les rapports "prestation" du débiteur, <code>false</code> s'il faut les laisser ouverts
 	 * @return le for debiteur fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	ForDebiteurPrestationImposable closeForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
-	                                                                   ForDebiteurPrestationImposable forDebiteurPrestationImposable, RegDate dateFermeture);
+	                                                                   ForDebiteurPrestationImposable forDebiteurPrestationImposable,
+	                                                                   RegDate dateFermeture, boolean fermerRapportsPrestation);
 
 	/**
 	 * Ferme le for autre impôt d'un tiers.

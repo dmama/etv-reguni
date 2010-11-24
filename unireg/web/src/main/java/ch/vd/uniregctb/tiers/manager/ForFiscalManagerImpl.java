@@ -272,7 +272,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 		if (fdpi.getDateFin() == null && dateFermeture != null) {
 			// le for a été fermé
-			updated = tiersService.closeForDebiteurPrestationImposable((DebiteurPrestationImposable) fdpi.getTiers(), fdpi, dateFermeture);
+			updated = tiersService.closeForDebiteurPrestationImposable((DebiteurPrestationImposable) fdpi.getTiers(), fdpi, dateFermeture, true);
 		}
 
 		return updated;
