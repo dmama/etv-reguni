@@ -154,6 +154,11 @@ public class ContribuableTest extends WithoutSpringTest {
 			public String getNatureTiers() {
 				throw new NotImplementedException();
 			}
+
+			@Override
+			public TypeTiers getType() {
+				throw new NotImplementedException();
+			}
 		};
 
 		// Tiers invalide (situation de famille avec date de début nulle) mais annulé => pas d'erreur

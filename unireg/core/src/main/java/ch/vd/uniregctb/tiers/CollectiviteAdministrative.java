@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Set;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -78,6 +77,12 @@ public class CollectiviteAdministrative extends Contribuable {
 	@Override
 	public String getNatureTiers() {
 		return CollectiviteAdministrative.class.getSimpleName();
+	}
+
+	@Transient
+	@Override
+	public TypeTiers getType() {
+		return TypeTiers.COLLECTIVITE_ADMINISTRATIVE;
 	}
 
 	@Override

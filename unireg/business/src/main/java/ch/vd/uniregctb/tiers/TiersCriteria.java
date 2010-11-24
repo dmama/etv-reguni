@@ -52,7 +52,28 @@ public class TiersCriteria implements Serializable {
 		COLLECTIVITE_ADMINISTRATIVE,
 		AUTRE_COMMUNAUTE,
 		NON_HABITANT_OU_MENAGE_COMMUN,
-		CONTRIBUABLE_PP
+		CONTRIBUABLE_PP;
+
+		public static TypeTiers fromCore(ch.vd.uniregctb.tiers.TypeTiers type) {
+			switch (type) {
+			case PERSONNE_PHYSIQUE:
+				return PERSONNE_PHYSIQUE;
+			case MENAGE_COMMUN:
+				return MENAGE_COMMUN;
+			case ENTREPRISE:
+				return ENTREPRISE;
+			case ETABLISSEMENT:
+				return ETABLISSEMENT;
+			case COLLECTIVITE_ADMINISTRATIVE:
+				return COLLECTIVITE_ADMINISTRATIVE;
+			case AUTRE_COMMUNAUTE:
+				return AUTRE_COMMUNAUTE;
+			case DEBITEUR_PRESTATION_IMPOSABLE:
+				return DEBITEUR_PRESTATION_IMPOSABLE;
+			default:
+				throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
+			}
+		}
 	}
 
 	public enum TypeVisualisation {

@@ -1779,10 +1779,16 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	}
 
 	/**
-	 * return le nom de la classe du tiers
+	 * @return le nom de la classe du tiers
 	 */
 	@Transient
 	public abstract String getNatureTiers();
+
+	/**
+	 * @return le type concret du tiers courant.
+	 */
+	@Transient
+	public abstract TypeTiers getType();
 
 	@Override
 	public String toString() {

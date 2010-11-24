@@ -2,10 +2,12 @@ package ch.vd.uniregctb.activation.view;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class TiersAnnulationRecapView {
 
 	private TiersGeneralView tiers;
+	private TypeTiers typeTiers;
 
 	private TiersGeneralView tiersRemplacant;
 
@@ -19,6 +21,14 @@ public class TiersAnnulationRecapView {
 
 	public void setTiers(TiersGeneralView tiers) {
 		this.tiers = tiers;
+	}
+
+	public TypeTiers getTypeTiers() {
+		return typeTiers;
+	}
+
+	public void setTypeTiers(TypeTiers typeTiers) {
+		this.typeTiers = typeTiers;
 	}
 
 	public TiersGeneralView getTiersRemplacant() {

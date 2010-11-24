@@ -48,6 +48,12 @@ public class Entreprise extends Contribuable {
 		return Entreprise.class.getSimpleName();
 	}
 
+	@Transient
+	@Override
+	public TypeTiers getType() {
+		return TypeTiers.ENTREPRISE;
+	}
+
 	@Override
 	protected ValidationResults validateTypeAdresses() {
 

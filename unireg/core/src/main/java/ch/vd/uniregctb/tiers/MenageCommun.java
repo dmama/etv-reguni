@@ -39,6 +39,11 @@ public class MenageCommun extends Contribuable {
         return MenageCommun.class.getSimpleName();
     }
 
+	@Transient
+	@Override
+	public TypeTiers getType() {
+		return TypeTiers.MENAGE_COMMUN;
+	}
 
     /**
      * {@inheritDoc}

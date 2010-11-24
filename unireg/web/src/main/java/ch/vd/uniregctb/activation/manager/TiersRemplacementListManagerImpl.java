@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.activation.manager;
 
 import ch.vd.uniregctb.activation.view.TiersRemplacementListView;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class TiersRemplacementListManagerImpl implements TiersRemplacementListManager{
 
@@ -10,10 +12,9 @@ public class TiersRemplacementListManagerImpl implements TiersRemplacementListMa
 	 * @param type
 	 * @return
 	 */
-	public TiersRemplacementListView get(String type) {
+	public TiersRemplacementListView get(TypeTiers type) {
 		TiersRemplacementListView tiersRemplacementListView = new TiersRemplacementListView();
-		tiersRemplacementListView.setType(type);
+		tiersRemplacementListView.setTypeTiers(TiersCriteria.TypeTiers.fromCore(type));
 		return tiersRemplacementListView;
 	}
-
 }

@@ -171,6 +171,12 @@ public class DebiteurPrestationImposable extends Tiers {
 		return DebiteurPrestationImposable.class.getSimpleName();
 	}
 
+	@Transient
+	@Override
+	public TypeTiers getType() {
+		return TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE;
+	}
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "DEBITEUR_ID", nullable = false)
 	@ForeignKey(name = "FK_PERIODICITE_DB_ID")

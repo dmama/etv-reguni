@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<c:url var="tiersURL" value="/activation/remplacement/list.do?type=${command.tiers.type}&TB_iframe=true&modal=true&height=350&width=800" />
+<c:url var="tiersURL" value="/activation/remplacement/list.do?type=${command.typeTiers}&TB_iframe=true&modal=true&height=350&width=800" />
 
 <script type="text/javascript" language="Javascript">
 	function nouveauTiersHandle() {

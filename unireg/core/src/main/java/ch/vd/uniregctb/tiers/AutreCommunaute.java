@@ -154,6 +154,12 @@ public class AutreCommunaute extends Contribuable {
 		return AutreCommunaute.class.getSimpleName();
 	}
 
+	@Transient
+	@Override
+	public TypeTiers getType() {
+		return TypeTiers.AUTRE_COMMUNAUTE;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

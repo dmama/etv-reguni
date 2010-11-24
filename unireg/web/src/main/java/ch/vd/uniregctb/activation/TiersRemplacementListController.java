@@ -17,6 +17,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class TiersRemplacementListController extends AbstractTiersListController{
 
@@ -42,15 +43,15 @@ public class TiersRemplacementListController extends AbstractTiersListController
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
-		String typeTiers = request.getParameter(TYPE_TIERS_PARAMETER_NAME);
+		final HttpSession session = request.getSession();
+		final String action = request.getParameter(ACTION_PARAMETER_NAME);
 
 		TiersRemplacementListView bean = (TiersRemplacementListView) session.getAttribute(REMPLACEMENT_CRITERIA_NAME);
-		if(	(bean == null) ||
-				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
+		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
+			final String typeTiersAsString = request.getParameter(TYPE_TIERS_PARAMETER_NAME);
+			final TypeTiers typeTiers = TypeTiers.valueOf(typeTiersAsString);
 			bean = tiersRemplacementListManager.get(typeTiers);
-	 	}
+		}
 		return bean;
 	}
 

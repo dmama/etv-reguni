@@ -45,6 +45,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 
 		final TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
 		final Tiers tiers = tiersService.getTiers(numeroTiers);
+		tiersAnnulationRecapView.setTypeTiers(tiers.getType());
 
 		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 		tiersAnnulationRecapView.setTiers(tiersGeneralView);
@@ -65,6 +66,8 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 
 		final TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
 		final Tiers tiers = tiersService.getTiers(numeroTiers);
+		tiersAnnulationRecapView.setTypeTiers(tiers.getType());
+
 		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 		tiersAnnulationRecapView.setTiers(tiersGeneralView);
 

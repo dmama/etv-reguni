@@ -197,6 +197,12 @@ public class PersonnePhysique extends Contribuable {
 
 	@Transient
 	@Override
+	public TypeTiers getType() {
+		return TypeTiers.PERSONNE_PHYSIQUE;
+	}
+
+	@Transient
+	@Override
 	public String getRoleLigne1() {
 		if (habitant)
 			return "Contribuable PP";

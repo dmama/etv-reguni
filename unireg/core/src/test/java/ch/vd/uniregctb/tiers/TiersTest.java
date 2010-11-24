@@ -309,6 +309,11 @@ public class TiersTest extends WithoutSpringTest {
 			public String getNatureTiers() {
 				throw new NotImplementedException();
 			}
+
+			@Override
+			public TypeTiers getType() {
+				throw new NotImplementedException();
+			}
 		};
 
 		// Tiers invalide (for fiscal avec date de début nulle) mais annulé => pas d'erreur
