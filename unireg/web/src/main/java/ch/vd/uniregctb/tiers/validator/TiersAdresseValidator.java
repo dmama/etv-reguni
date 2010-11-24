@@ -296,7 +296,7 @@ public class TiersAdresseValidator implements Validator {
 				isHabitant = ((PersonnePhysique) ctb).isHabitantVD();
 			}
 			else {
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, null);
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, RegDate.get());
 				final PersonnePhysique principal = couple.getPrincipal();
 				final PersonnePhysique conjoint = couple.getConjoint();
 				isHabitant = (principal != null && principal.isHabitantVD()) || (conjoint != null && conjoint.isHabitantVD());
@@ -311,7 +311,7 @@ public class TiersAdresseValidator implements Validator {
 	private Contribuable getContribuableAssujettissable(Contribuable ctb) {
 		final Contribuable assujettissable;
 		if (ctb instanceof PersonnePhysique) {
-			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((PersonnePhysique) ctb, null);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((PersonnePhysique) ctb, RegDate.get());
 			if (couple != null && couple.getMenage() != null) {
 				assujettissable = couple.getMenage();
 			}
