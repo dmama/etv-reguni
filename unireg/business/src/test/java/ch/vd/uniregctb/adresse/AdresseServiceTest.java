@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -5883,5 +5884,69 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2009, 7, 8), null, "Zurich", Source.FISCALE, true, adresses.domicile.get(0));
 		assertAdressesEquals(adresses.domicile.get(0), adresses.poursuite.get(0));
 		assertAdressesEquals(adresses.domicile.get(0), adresses.representation.get(0));
+	}
+
+	@Test
+	@NotTransactional
+	public void testGetNomCourrierSurMenageDontMembrePrincipalAUneSurchargeRepriseDuCivil() throws Exception {
+
+		final long noIndividuM = 12345687L;
+		final long noIndividuMme = 43562146L;
+		final RegDate dateMariage = date(2004, 5, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu m = addIndividu(noIndividuM, date(1974, 4, 27), "Popov", "Alexander", true);
+				final MockIndividu mme = addIndividu(noIndividuMme, date(1975, 2, 19), "Popova", "Sabrina", false);
+				marieIndividus(m, mme, dateMariage);
+				addAdresse(m, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateMariage, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addHabitant(noIndividuM);
+				final PersonnePhysique mme = addHabitant(noIndividuMme);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				return mc.getNumero();
+			}
+		});
+
+		// vérification du nom complet du ménage et assignation de la surcharge d'adresse
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+				final List<String> nom = adresseService.getNomCourrier(mc, null, false);
+				assertNotNull(nom);
+				assertEquals(2, nom.size());
+				assertEquals("Alexander Popov", nom.get(0));
+				assertEquals("Sabrina Popova", nom.get(1));
+
+				final PersonnePhysique m = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuM);
+				final AdresseCivile adresseSurchargee = new AdresseCivile();
+				adresseSurchargee.setDateDebut(date(2009, 1, 1));
+				adresseSurchargee.setType(TypeAdresseCivil.PRINCIPALE);
+				adresseSurchargee.setUsage(TypeAdresseTiers.COURRIER);
+				m.addAdresseTiers(adresseSurchargee);
+				return null;
+			}
+		});
+
+		// vérification du nom complet du ménage
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+				final List<String> nom = adresseService.getNomCourrier(mc, null, false);
+				assertNotNull(nom);
+				assertEquals(2, nom.size());
+				assertEquals("Alexander Popov", nom.get(0));
+				assertEquals("Sabrina Popova", nom.get(1));
+				return null;
+			}
+		});
 	}
 }
