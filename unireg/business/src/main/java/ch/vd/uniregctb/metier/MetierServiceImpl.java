@@ -25,6 +25,7 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
@@ -116,8 +117,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * @param adresseService
-	 *            the adresseService to set
+	 * @param adresseService the adresseService to set
 	 */
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
@@ -159,7 +159,8 @@ public class MetierServiceImpl implements MetierService {
 		 */
 		final EnsembleTiersCouple ensemblePrincipal = tiersService.getEnsembleTiersCouple(pp, date);
 		if (ensemblePrincipal != null && ensemblePrincipal.getMenage() != null) {
-			resultat.addError("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + " appartient déjà au ménage commun n° " + FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()));
+			resultat.addError("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + " appartient déjà au ménage commun n° " +
+					FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()));
 		}
 		else {
 			checkRapportsMenage(pp, date, resultat);
@@ -216,7 +217,8 @@ public class MetierServiceImpl implements MetierService {
 		return (MotifFor.DEPART_HC == motif || MotifFor.DEPART_HS == motif);
 	}
 
-	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement, boolean changeHabitantFlag) {
+	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement,
+	                                             boolean changeHabitantFlag) {
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
 
@@ -372,7 +374,8 @@ public class MetierServiceImpl implements MetierService {
 								typeAutoriteCommune = ffpPrincipal.getTypeAutoriteFiscale();
 							}
 							else {
-								final String msg = String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()));
+								final String msg =
+										String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()));
 								throw new EvenementCivilHandlerException(msg);
 							}
 						}
@@ -391,7 +394,8 @@ public class MetierServiceImpl implements MetierService {
 									}
 								}
 								else {
-									final String msg = String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
+									final String msg =
+											String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
 									throw new EvenementCivilHandlerException(msg);
 								}
 							}
@@ -411,7 +415,7 @@ public class MetierServiceImpl implements MetierService {
 						forPourMenage = forConjoint;
 					}
 					else {
-						forPourMenage  = forPrincipal;
+						forPourMenage = forPrincipal;
 					}
 				}
 				else {
@@ -515,7 +519,8 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * [UNIREG-2323] si les deux membres du couple ont deux fois les mêmes fors secondaires, il ne faut les recopier qu'une seule fois sur le ménage
 	 */
-	private void createForsSecondairesApresMariage(RegDate date, MenageCommun menage, List<ForFiscalSecondaire> forsSecondairesDuPrincipal, List<ForFiscalSecondaire> forsSecondairesDuConjoint, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+	private void createForsSecondairesApresMariage(RegDate date, MenageCommun menage, List<ForFiscalSecondaire> forsSecondairesDuPrincipal, List<ForFiscalSecondaire> forsSecondairesDuConjoint,
+	                                               MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 		final boolean principalHasFors = forsSecondairesDuPrincipal != null && forsSecondairesDuPrincipal.size() > 0;
 		final boolean conjointHasFors = forsSecondairesDuConjoint != null && forsSecondairesDuConjoint.size() > 0;
 		if (principalHasFors && conjointHasFors) {
@@ -563,8 +568,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * Classe interne qui permet de conserver les données qui peuvent passer d'un for à
-	 * l'autre suite à l'annulation du premier en vu de création du deuxième
+	 * Classe interne qui permet de conserver les données qui peuvent passer d'un for à l'autre suite à l'annulation du premier en vu de création du deuxième
 	 */
 	private static final class DonneesOuvertureFor {
 
@@ -574,7 +578,7 @@ public class MetierServiceImpl implements MetierService {
 		private final TypeAutoriteFiscale typeAutoriteFiscale;
 
 		public DonneesOuvertureFor(MotifFor motifOuverture, RegDate dateDebut, Integer numeroOfsAutoriteFiscale,
-				TypeAutoriteFiscale typeAutoriteFiscale) {
+		                           TypeAutoriteFiscale typeAutoriteFiscale) {
 			this.motifOuverture = motifOuverture;
 			this.dateDebut = dateDebut;
 			this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
@@ -611,7 +615,7 @@ public class MetierServiceImpl implements MetierService {
 			ffp.setAnnule(true);
 
 			// on garde le motif d'ouverture, la date d'ouverture, ainsi que la commune d'ouverture pour le nouveau for à créer
-			retour = new DonneesOuvertureFor(ffp.getMotifOuverture(),  ffp.getDateDebut(), ffp.getNumeroOfsAutoriteFiscale(), ffp.getTypeAutoriteFiscale());
+			retour = new DonneesOuvertureFor(ffp.getMotifOuverture(), ffp.getDateDebut(), ffp.getNumeroOfsAutoriteFiscale(), ffp.getTypeAutoriteFiscale());
 		}
 
 		return retour;
@@ -681,7 +685,8 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) {
+	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag,
+	                          Long numeroEvenement) {
 		/*
 		 * Création d'un tiers MenageCommun
 		 */
@@ -759,7 +764,8 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-    public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) {
+	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille,
+	                                    boolean changeHabitantFlag, Long numeroEvenement) {
 		/*
 		 * Création des rapports entre tiers ménage commun
 		 */
@@ -980,12 +986,12 @@ public class MetierServiceImpl implements MetierService {
 
 		//UNIREG-27771
 		//Si le ménage à annuler possède encore des fors ou des declarations, on doit remonter une exception
-		if(isTiersActifFiscalement(autreMenage)){
-			final String messageErreur = String.format("le ménage n°%s  du contribuable n°%s  ne peut pas être annulé car il possède un for actif ou une Déclaration active",
-					FormatNumeroHelper.numeroCTBToDisplay(autreMenage.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
+		if (isTiersActifFiscalement(autreMenage)) {
+			final String messageErreur = String.format("le ménage n°%s  du contribuable n°%s  ne peut pas être annulé car il possède un for ou une déclaration non annule(e) ",
+					FormatNumeroHelper.numeroCTBToDisplay(autreMenage.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
 			throw new EvenementCivilHandlerException(messageErreur);
 		}
-		else{
+		else {
 			// annulation du ménage n'ayant plus d'intérêt
 			tiersService.annuleTiers(autreMenage);
 
@@ -1033,16 +1039,45 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * Permet de savoir si un tiers possède un for ou une déclaration d'impot
+	 * Permet de savoir si un tiers possède un for ou une déclaration d'impot non annulee
 	 *
 	 * @param tiers
 	 * @return
 	 */
 	private boolean isTiersActifFiscalement(Tiers tiers) {
-		if (tiers.getForFiscalPrincipalAt(null) != null || tiers.getDeclarationActive(null) != null) {
-	 	    return true;
+		if (hasForNonAnnulee(tiers) || hasDiNonAnnulee(tiers)) {
+			return true;
 		}
 		return false;
+	}
+
+	private boolean hasForNonAnnulee(Tiers tiers) {
+		Set<ForFiscal> fors = tiers.getForsFiscaux();
+		if (fors != null) {
+			for (ForFiscal unFor : fors) {
+				if (!unFor.isAnnule()) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+
+	}
+
+	private boolean hasDiNonAnnulee(Tiers tiers) {
+		Set<Declaration> declarations = tiers.getDeclarations();
+
+		if (declarations != null) {
+			for (Declaration declaration : declarations) {
+				if (!declaration.isAnnule()) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+
 	}
 
 	public void annuleMariage(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) {
@@ -1115,7 +1150,8 @@ public class MetierServiceImpl implements MetierService {
 
 	/**
 	 * Ré-ouvre les fors fermés lors du mariage (traitement de l'annulation du mariage)
-	 * @param pp personne physique sur laquelle le ou les fors doivent être ré-ouverts
+	 *
+	 * @param pp   personne physique sur laquelle le ou les fors doivent être ré-ouverts
 	 * @param date date du mariage que l'on annule maintenant
 	 */
 	private void reouvreForsFermesPourMariage(PersonnePhysique pp, RegDate date) {
@@ -1317,7 +1353,9 @@ public class MetierServiceImpl implements MetierService {
 		return processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, status);
 	}
 
-	/** (non-Javadoc)
+	/**
+	 * (non-Javadoc)
+	 *
 	 * @see ch.vd.uniregctb.metier.MetierService#validateSeparation(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.tiers.PersonnePhysique, ch.vd.uniregctb.tiers.PersonnePhysique)
 	 */
 	public ValidationResults validateSeparation(MenageCommun menage, RegDate date) {
@@ -1382,10 +1420,12 @@ public class MetierServiceImpl implements MetierService {
 				final ModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
-				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
+				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
+						false);
 				if (conjoint != null) {
 					// null si marié seul
-					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
+					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
+							false);
 				}
 			}
 
@@ -1573,9 +1613,10 @@ public class MetierServiceImpl implements MetierService {
 
 	/**
 	 * Retourne true si les tiers appartenant au ménage sont séparés fiscalement.
-	 * @param date date pour laquelle la vérification s'effectue
+	 *
+	 * @param date      date pour laquelle la vérification s'effectue
 	 * @param principal l'habitant
-	 * @param conjoint son conjoint (peut être null si le tiers est marié seul).
+	 * @param conjoint  son conjoint (peut être null si le tiers est marié seul).
 	 * @return
 	 */
 	private boolean isSeparesFiscalement(RegDate date, PersonnePhysique principal, PersonnePhysique conjoint) {
@@ -1586,11 +1627,12 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * Crée un nouveau for fiscal principal pour le tiers en suivant les règles pour divorce/séparation.
 	 *
-	 * @param pp le contribuable pour qui on ouvre le nouveau for.
-	 * @param motifOuverture le motif d'ouverture
+	 * @param pp                 le contribuable pour qui on ouvre le nouveau for.
+	 * @param motifOuverture     le motif d'ouverture
 	 * @param changeHabitantFlag
 	 * @param numeroEvenement
-	 * @param autoriseSortieDuCantonVersEtranger si <code>true</code>, un for couple vaudois pourra donner naissance à un for individuel HS, si <code>false</code> une erreur est levée dans ce cas
+	 * @param autoriseSortieDuCantonVersEtranger
+	 *                           si <code>true</code>, un for couple vaudois pourra donner naissance à un for individuel HS, si <code>false</code> une erreur est levée dans ce cas
 	 * @return le for créé.
 	 */
 	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
@@ -1605,7 +1647,8 @@ public class MetierServiceImpl implements MetierService {
 			final TypeAutoriteFiscale typeAutoriteFiscale;
 			if (adresseDomicile == null) {
 				// pas d'adresse de domicile connue -> on n'ouvre aucun for
-				final String message = String.format("Adresse de domicile du contribuable %s inconnue au %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date));
+				final String message = String.format("Adresse de domicile du contribuable %s inconnue au %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
+						RegDateHelper.dateToDisplayString(date));
 				Audit.warn(numeroEvenement, message);
 
 				noOfsEtendu = null;
@@ -1620,7 +1663,8 @@ public class MetierServiceImpl implements MetierService {
 				}
 				else {
 					// pas de commune identifiable -> c'est une erreur grave (adresse suisse sans commune...)
-					final String message = String.format("Commune non identifiable pour l'adresse de domicile du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date));
+					final String message = String.format("Commune non identifiable pour l'adresse de domicile du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
+							RegDateHelper.dateToDisplayString(date));
 					throw new EvenementCivilHandlerException(message);
 				}
 			}
@@ -1636,8 +1680,9 @@ public class MetierServiceImpl implements MetierService {
 					// que la date de l'événement (et avant)
 					final RegDate dateDebutDomicileHS = adresseDomicile.getDateDebut();
 					if (dateDebutDomicileHS != null && dateDebutDomicileHS.year() == date.year()) {
-						final String message = String.format("D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
-															FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
+						final String message = String.format(
+								"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
+								FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
 						throw new EvenementCivilHandlerException(message);
 					}
 				}
@@ -1645,7 +1690,9 @@ public class MetierServiceImpl implements MetierService {
 
 			if (noOfsEtendu != null) {
 				final Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition());
-				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfsEtendu, typeAutoriteFiscale, nouveauMode.getModeImposition(), motifOuverture, changeHabitantFlag);
+				return tiersService
+						.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfsEtendu, typeAutoriteFiscale, nouveauMode.getModeImposition(), motifOuverture,
+								changeHabitantFlag);
 			}
 			else {
 				return null;
@@ -1667,20 +1714,22 @@ public class MetierServiceImpl implements MetierService {
 
 	/**
 	 * Ouvre les fors secondaires sur le contribuable.
-	 * @param date la date d'ouverture des nouveaux fors secondaires.
-	 * @param contribuable le contribuable.
-	 * @param forsSecondaires liste de fors secondaires à recopier (ceux qui sont valides à la veille de la date donnée, et fermés depuis avec le motif qui sera utilisé comme motif d'ouverture des nouveaux fors)
-	 * @param motifOuverture motif d'ouverture à assigner aux nouveaux fors.
-	 * @param dateFermeture (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
-	 * @param motifFermeture (nullable) si les fors secondaires doivent être créés fermés, motif de fermeture
+	 *
+	 * @param date            la date d'ouverture des nouveaux fors secondaires.
+	 * @param contribuable    le contribuable.
+	 * @param forsSecondaires liste de fors secondaires à recopier (ceux qui sont valides à la veille de la date donnée, et fermés depuis avec le motif qui sera utilisé comme motif d'ouverture des
+	 *                        nouveaux fors)
+	 * @param motifOuverture  motif d'ouverture à assigner aux nouveaux fors.
+	 * @param dateFermeture   (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
+	 * @param motifFermeture  (nullable) si les fors secondaires doivent être créés fermés, motif de fermeture
 	 */
 	private void createForsSecondaires(RegDate date, Contribuable contribuable, List<ForFiscalSecondaire> forsSecondaires, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 		for (ForFiscalSecondaire forFiscalSecondaire : forsSecondaires) {
 			if (forFiscalSecondaire.isValidAt(date.getOneDayBefore()) && forFiscalSecondaire.getMotifFermeture() == motifOuverture) {
 				final ForFiscalSecondaire ffs = tiersService.openForFiscalSecondaire(contribuable,
-																					date, forFiscalSecondaire.getMotifRattachement(),
-																					forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
-																					forFiscalSecondaire.getTypeAutoriteFiscale(), motifOuverture);
+						date, forFiscalSecondaire.getMotifRattachement(),
+						forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
+						forFiscalSecondaire.getTypeAutoriteFiscale(), motifOuverture);
 				if (ffs != null && dateFermeture != null && motifFermeture != null) {
 					tiersService.closeForFiscalSecondaire(contribuable, ffs, dateFermeture, motifFermeture);
 				}
@@ -1690,20 +1739,23 @@ public class MetierServiceImpl implements MetierService {
 
 	/**
 	 * Ouvre les fors de type autre élément imposable sur le contribuable.
-	 * @param date la date d'ouverture des nouveaux fors secondaires.
-	 * @param contribuable le contribuable.
-	 * @param fors liste de fors autre élément imposable à recopier (ceux qui sont valides à la veille de la date donnée, et fermés depuis avec le motif qui sera utilisé comme motif d'ouverture des nouveaux fors)
+	 *
+	 * @param date           la date d'ouverture des nouveaux fors secondaires.
+	 * @param contribuable   le contribuable.
+	 * @param fors           liste de fors autre élément imposable à recopier (ceux qui sont valides à la veille de la date donnée, et fermés depuis avec le motif qui sera utilisé comme motif d'ouverture
+	 *                       des nouveaux fors)
 	 * @param motifOuverture motif d'ouverture assigner aux nouveaux fors.
-	 * @param dateFermeture (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
+	 * @param dateFermeture  (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
 	 * @param motifFermeture (nullable) si les fors secondaires doivent être créés fermés, motif de fermeture
 	 */
-	private void createForsAutreElementImpossable(RegDate date, Contribuable contribuable, List<ForFiscalAutreElementImposable> fors, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+	private void createForsAutreElementImpossable(RegDate date, Contribuable contribuable, List<ForFiscalAutreElementImposable> fors, MotifFor motifOuverture, RegDate dateFermeture,
+	                                              MotifFor motifFermeture) {
 		for (ForFiscalAutreElementImposable forFiscalAutreElementImposable : fors) {
 			if (forFiscalAutreElementImposable.isValidAt(date.getOneDayBefore()) && forFiscalAutreElementImposable.getMotifFermeture() == motifOuverture) {
 				final ForFiscalAutreElementImposable ffaei = tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(),
-																											date, forFiscalAutreElementImposable.getMotifRattachement(),
-																											forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
-																											forFiscalAutreElementImposable.getTypeAutoriteFiscale(), motifOuverture);
+						date, forFiscalAutreElementImposable.getMotifRattachement(),
+						forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
+						forFiscalAutreElementImposable.getTypeAutoriteFiscale(), motifOuverture);
 				if (ffaei != null && dateFermeture != null && motifFermeture != null) {
 					tiersService.closeForFiscalAutreElementImposable(contribuable, ffaei, dateFermeture, motifFermeture);
 				}
@@ -1727,8 +1779,8 @@ public class MetierServiceImpl implements MetierService {
 			 */
 			PersonnePhysique veuf = menageComplet.getConjoint(defunt);
 
-			if(veuf != null && veuf.getForFiscalPrincipalAt(null) != null) {
-				results.addError("Le conjoint survivant possède un for fiscal principal actif" );
+			if (veuf != null && veuf.getForFiscalPrincipalAt(null) != null) {
+				results.addError("Le conjoint survivant possède un for fiscal principal actif");
 			}
 		}
 
@@ -1742,7 +1794,7 @@ public class MetierServiceImpl implements MetierService {
 			if (menageApresDeces != null && menageApresDeces.getMenage() != null) {
 				ForFiscalPrincipal ffpMenage = menageApresDeces.getMenage().getDernierForFiscalPrincipal();
 				if (ffpMenage != null && ffpMenage.getDateDebut().isAfter(date)) {
-					results.addError("Le ménage du défunt possède un for fiscal principal ouvert après la date de décès" );
+					results.addError("Le ménage du défunt possède un for fiscal principal ouvert après la date de décès");
 				}
 			}
 			else {
@@ -1750,7 +1802,7 @@ public class MetierServiceImpl implements MetierService {
 				// Pour le défunt
 				final ForFiscalPrincipal ffpDefunt = defunt.getDernierForFiscalPrincipal();
 				if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date) && MotifFor.VEUVAGE_DECES != ffpDefunt.getMotifOuverture()) {
-					results.addError("Le défunt possède un for fiscal principal ouvert après la date de décès" );
+					results.addError("Le défunt possède un for fiscal principal ouvert après la date de décès");
 				}
 			}
 		}
@@ -1767,7 +1819,7 @@ public class MetierServiceImpl implements MetierService {
 		final Remarque r = new Remarque();
 		r.setTexte(remarque);
 		r.setTiers(tiers);
-		
+
 		remarqueDAO.save(r);
 	}
 
@@ -1923,8 +1975,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * Réouvre les rapports entre tiers fermés à cette date.
-	 * Si le tiers est un menage commun, réouvre les rapports des membres de celui-ci.
+	 * Réouvre les rapports entre tiers fermés à cette date. Si le tiers est un menage commun, réouvre les rapports des membres de celui-ci.
 	 *
 	 * @param tiers
 	 * @param date
@@ -1951,7 +2002,7 @@ public class MetierServiceImpl implements MetierService {
 	 * Réouvre tous les rapports-sujet qui sont fermés à la date spécifiée.
 	 *
 	 * @param rapports
-	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
+	 * @param date     la date de fermeture des rapports qu'il faut réouvrir.
 	 */
 	private void reopenRapportsAt(Set<RapportEntreTiers> rapports, RegDate date) {
 
@@ -2016,8 +2067,7 @@ public class MetierServiceImpl implements MetierService {
 			results.addError("Le veuvage ne peut s'appliquer qu'à une personne mariée seule dans le civil.");
 		}
 
-		if (!results.hasErrors())
-		{
+		if (!results.hasErrors()) {
 			if (couple != null) {
 
 				/*
@@ -2029,7 +2079,7 @@ public class MetierServiceImpl implements MetierService {
 				if (dernierCouple != null && dernierCouple.getMenage() != null) {
 					final ForFiscalPrincipal ffpMenage = dernierCouple.getMenage().getDernierForFiscalPrincipal();
 					if (ffpMenage != null && ffpMenage.getDateDebut().isAfter(date)) {
-						results.addError("Le ménage du veuf possède un for fiscal principal ouvert après la date de décès" );
+						results.addError("Le ménage du veuf possède un for fiscal principal ouvert après la date de décès");
 					}
 				}
 				else {
@@ -2037,7 +2087,7 @@ public class MetierServiceImpl implements MetierService {
 					// Pour le veuf
 					final ForFiscalPrincipal ffpDefunt = veuf.getDernierForFiscalPrincipal();
 					if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date)) {
-						results.addError("Le veuf possède un for fiscal principal ouvert après la date de décès" );
+						results.addError("Le veuf possède un for fiscal principal ouvert après la date de décès");
 					}
 				}
 			}
@@ -2054,12 +2104,12 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * Un veuvage et un décès sont conceptuellement la même chose, ce n'est juste pas le même conjoint que l'on met en avant :
-	 * le veuf d'un côté, le défunt de l'autre...
-	 * @param veuf (nullable) la personne physique survivante
-	 * @param defunt (nullable) la personne physique décédée
-	 * @param date date du décès / veuvage
-	 * @param remarque (nullable) remarque à ajouter aux tiers couple et personnes physiques
+	 * Un veuvage et un décès sont conceptuellement la même chose, ce n'est juste pas le même conjoint que l'on met en avant : le veuf d'un côté, le défunt de l'autre...
+	 *
+	 * @param veuf            (nullable) la personne physique survivante
+	 * @param defunt          (nullable) la personne physique décédée
+	 * @param date            date du décès / veuvage
+	 * @param remarque        (nullable) remarque à ajouter aux tiers couple et personnes physiques
 	 * @param numeroEvenement (nullable) numéro d'événement si le traitement fait suite à l'arrivée d'un événement civil
 	 */
 	private void veuvageDeces(PersonnePhysique veuf, PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) {
@@ -2076,9 +2126,9 @@ public class MetierServiceImpl implements MetierService {
 					final PersonnePhysique conjointDuDefunt = menageComplet.getConjoint(defunt);
 					if (veuf != conjointDuDefunt) {
 						final String msg = String.format("Le ménage courant (%s) du défunt (%s) ne fait pas référence au veuf (%s)",
-														FormatNumeroHelper.numeroCTBToDisplay(menageComplet.getMenage().getNumero()),
-														FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
-														FormatNumeroHelper.numeroCTBToDisplay(veuf.getNumero()));
+								FormatNumeroHelper.numeroCTBToDisplay(menageComplet.getMenage().getNumero()),
+								FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
+								FormatNumeroHelper.numeroCTBToDisplay(veuf.getNumero()));
 						throw new EvenementCivilHandlerException(msg);
 					}
 				}
@@ -2187,7 +2237,8 @@ public class MetierServiceImpl implements MetierService {
 						final ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
 
 						// d'abord le for fiscal principal
-						final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
+						final ForFiscalPrincipal ffp =
+								createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
 						final MotifFor motifFermeture;
 						if (dateDecesVeuf != null) {
 							motifFermeture = MotifFor.VEUVAGE_DECES;
@@ -2233,7 +2284,7 @@ public class MetierServiceImpl implements MetierService {
 			final ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(null);
 
 			if (dernierForMenage != null && date.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES == dernierForMenage.getMotifFermeture()
-					&& forCourantVeuf == null ) {
+					&& forCourantVeuf == null) {
 				return true;
 			}
 		}
@@ -2252,7 +2303,7 @@ public class MetierServiceImpl implements MetierService {
 		final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 		final EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.contient(tiers)) {
-			 throw new EvenementCivilHandlerException("Le dernier ménage n'est pas composé du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
+			throw new EvenementCivilHandlerException("Le dernier ménage n'est pas composé du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		}
 		final PersonnePhysique conjointDecede = ensembleTiersCouple.getConjoint(tiers);
 
@@ -2275,7 +2326,7 @@ public class MetierServiceImpl implements MetierService {
 			// [UNIREG-1422] Traitement du conjoint décédé inconnu du civil
 			if (conjointDecede != null) {
 				final RapportEntreTiers rapportDecede = conjointDecede.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				
+
 				// Réouverture du rapport tiers-ménage
 				final RapportEntreTiers nouveauRapportDecede = rapportDecede.duplicate();
 				nouveauRapportDecede.setDateFin(null);
@@ -2302,7 +2353,7 @@ public class MetierServiceImpl implements MetierService {
 
 	public ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status) {
 		ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, serviceInfra);
-		return processor.run(dateTraitement,nbThreads,status);
+		return processor.run(dateTraitement, nbThreads, status);
 	}
 
 }

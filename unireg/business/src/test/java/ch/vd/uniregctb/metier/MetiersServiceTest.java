@@ -28,6 +28,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -55,7 +56,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Classe de test du métier service.
- * <p>
+ * <p/>
  * <b>Note:</b> la majeure partie des tests du métier service sont fait au travers des test Norentes.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -129,8 +130,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1121] Teste que la séparation/divorce d'un couple hors-canton ouvre bien les fors principaux hors-canton sur le contribuables
-	 * séparés
+	 * [UNIREG-1121] Teste que la séparation/divorce d'un couple hors-canton ouvre bien les fors principaux hors-canton sur le contribuables séparés
 	 */
 	@Test
 	public void testSepareHorsCanton() throws Exception {
@@ -265,9 +265,77 @@ public class MetiersServiceTest extends BusinessTest {
 		}
 	}
 
+	//UNIREG-2771 La fusion doit être empéchée s'il existe au moins un for ou une Di non annule 
+
+	@Test
+	public void testFusionMenagePresenceForOuDiNonAnnulee() throws Exception {
+
+		final RegDate dateDebutAlfredo = RegDate.get(2003, 1, 1);
+		final RegDate dateDemenagementArmando = RegDate.get(2003, 1, 1);
+		final RegDate dateMariageAlfredo = RegDate.get(2003, 1, 6);
+		final RegDate dateMariageArmando = RegDate.get(2003, 7, 1);
+		class Ids {
+			private long noHabAlfredo;
+			private long noHabArmando;
+			private long noMenageAlfredo;
+			private long noMenageArmando;
+
+		}
+		final Ids ids = new Ids();
+
+		// Crée un couple avec un contribuable hors-Suisse
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// Alfredo
+				final PersonnePhysique alfredo = addNonHabitant("Alfredo", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.noHabAlfredo = alfredo.getNumero();
+
+				// ménage Alfredo
+				{
+					MenageCommun menage = new MenageCommun();
+					menage = (MenageCommun) tiersDAO.save(menage);
+					ids.noMenageAlfredo = menage.getNumero();
+					tiersService.addTiersToCouple(menage, alfredo, dateMariageAlfredo, null);
+
+					final ForFiscalPrincipal f = addForPrincipal(menage,dateMariageAlfredo,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+							date(2009,3,1),MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+					f.setModeImposition(ModeImposition.ORDINAIRE);
+					menage.setBlocageRemboursementAutomatique(false);
+				}
+
+				// Armando
+				final PersonnePhysique armando =  addNonHabitant("Armando", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.noHabArmando = armando.getNumero();
+
+				// ménage Armando
+				{
+					MenageCommun menage = new MenageCommun();
+					menage = (MenageCommun) tiersDAO.save(menage);
+					ids.noMenageArmando = menage.getNumero();
+					tiersService.addTiersToCouple(menage, armando, dateMariageArmando, null);
+
+					final ForFiscalPrincipal f = addForPrincipal(menage,dateMariageArmando,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+							date(2009,3,1),MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+
+					f.setModeImposition(ModeImposition.ORDINAIRE);
+					menage.setBlocageRemboursementAutomatique(false);
+				}
+				return null;
+			}
+		});
+try {
+			metierService.fusionneMenages((MenageCommun) tiersDAO.get(ids.noMenageAlfredo), (MenageCommun) tiersDAO.get(ids.noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
+			ch.vd.registre.base.utils.Assert.fail();
+		 }
+		 catch (EvenementCivilHandlerException e){
+		  ch.vd.registre.base.utils.Assert.hasText(e.getMessage());
+		}
+	}
+
+
 	/**
-	 * [UNIREG-1121] Teste que le décès d'un contribuable marié hors-canton ouvre bien un for principal hors-canton sur le conjoint
-	 * survivant
+	 * [UNIREG-1121] Teste que le décès d'un contribuable marié hors-canton ouvre bien un for principal hors-canton sur le conjoint survivant
 	 */
 	@Test
 	public void testDecesHorsCanton() throws Exception {
@@ -576,8 +644,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes
-	 * crée bien les fors au bon endroit
+	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
 	public void testSeparationAdresseDomicileOuCourrierHorsCanton() throws Exception {
@@ -654,7 +721,7 @@ public class MetiersServiceTest extends BusinessTest {
 					}
 				});
 
-				 // changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
+				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
 				doModificationIndividu(noIndGeorgette, new IndividuModification() {
 					public void modifyIndividu(MockIndividu individu) {
 						assertNotNull(individu);
@@ -724,8 +791,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes
-	 * crée bien les fors au bon endroit
+	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
 	public void testSeparationAdresseDomicileOuCourrierHorsSuisseDepuisMemePf() throws Exception {
@@ -802,7 +868,7 @@ public class MetiersServiceTest extends BusinessTest {
 					}
 				});
 
-				 // changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
+				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
 				doModificationIndividu(noIndGeorgette, new IndividuModification() {
 					public void modifyIndividu(MockIndividu individu) {
 						assertNotNull(individu);
@@ -816,7 +882,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateDepart);
 
 						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
+						individu.getAdresses()
+								.add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
 					}
 				});
 
@@ -828,8 +895,9 @@ public class MetiersServiceTest extends BusinessTest {
 					fail("La séparation aurait dû partir en erreur puisque l'on passe pour Georgette d'un couple vaudois à un for hors-Suisse");
 				}
 				catch (EvenementCivilHandlerException e) {
-					final String attendu = String.format("D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
-														FormatNumeroHelper.numeroCTBToDisplay(ids.georgette), FormatNumeroHelper.numeroCTBToDisplay(ids.menage));
+					final String attendu = String.format(
+							"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
+							FormatNumeroHelper.numeroCTBToDisplay(ids.georgette), FormatNumeroHelper.numeroCTBToDisplay(ids.menage));
 					assertEquals(attendu, e.getMessage());
 				}
 				return null;
@@ -839,8 +907,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes
-	 * crée bien les fors au bon endroit
+	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
 	public void testSeparationAdresseDomicileOuCourrierHorsSuisseDepuisPfAnterieure() throws Exception {
@@ -917,7 +984,7 @@ public class MetiersServiceTest extends BusinessTest {
 					}
 				});
 
-				 // changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER (et ce depuis un an déjà au moment de la séparation -> période fiscale différente)
+				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER (et ce depuis un an déjà au moment de la séparation -> période fiscale différente)
 				doModificationIndividu(noIndGeorgette, new IndividuModification() {
 					public void modifyIndividu(MockIndividu individu) {
 						assertNotNull(individu);
@@ -930,7 +997,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.addYears(-1).getOneDayBefore());
 
 						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateSeparation.addYears(-1), null));
+						individu.getAdresses()
+								.add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateSeparation.addYears(-1), null));
 					}
 				});
 
@@ -988,8 +1056,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes
-	 * crée bien les fors au bon endroit
+	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
 	public void testSeparationAdresseInconnue() throws Exception {
@@ -1066,7 +1133,7 @@ public class MetiersServiceTest extends BusinessTest {
 					}
 				});
 
-				 // vérification de l'absence d'adresse sur Georgette
+				// vérification de l'absence d'adresse sur Georgette
 				{
 					final Individu individu = serviceCivil.getIndividu(noIndGeorgette, null, AttributeIndividu.ADRESSES);
 					assertNotNull(individu);
@@ -1122,8 +1189,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Teste que la clôture d'un ménage par décès pour lequel les adresses des membres du couple sont différentes
-	 * crée bien les fors au bon endroit
+	 * Teste que la clôture d'un ménage par décès pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
 	public void testDecesAdresseDomicileHorsCanton() throws Exception {
@@ -1251,8 +1317,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Teste que la clôture d'un ménage par décès pour lequel les adresses des membres du couple sont différentes
-	 * crée bien les fors au bon endroit
+	 * Teste que la clôture d'un ménage par décès pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
 	public void testDecesAdresseDomicileHorsSuisse() throws Exception {
@@ -1462,7 +1527,8 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique patricia = addNonHabitant("Patricia", "Dutrou", date(1969, 4, 12), Sexe.FEMININ);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fabrice, patricia, dateMariage, dateSeparation.getOneDayBefore());
 				final MenageCommun menage = couple.getMenage();
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						MockCommune.Lausanne);
 				addForPrincipal(fabrice, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 				return fabrice.getNumero();
 			}
@@ -1518,7 +1584,8 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique patricia = addNonHabitant("Patricia", "Dutrou", date(1969, 4, 12), Sexe.FEMININ);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fabrice, patricia, dateMariage, dateSeparation.getOneDayBefore());
 				final MenageCommun menage = couple.getMenage();
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						MockCommune.Lausanne);
 				return fabrice.getNumero();
 			}
 		});
@@ -1808,8 +1875,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant
-	 * (sauf s'il n'est pas résident sur le canton...)
+	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant (sauf s'il n'est pas résident sur le canton...)
 	 */
 	@Test
 	public void testAnnulationDecesCivilResidentHorsCanton() throws Exception {
@@ -1987,7 +2053,8 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
 				addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(),
+						MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addHabitant(noIndividuMadame);
 				addForPrincipal(mme, date(2002, 8, 12), MotifFor.ARRIVEE_HS, MockCommune.Renens);
@@ -2163,9 +2230,8 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas du JIRA UNIREG-2323 : si les deux membres du couple ont tous deux le même for secondaire
-	 * (= même date d'ouverture, même commune), il ne doit y avoir qu'un seul for équivalent ouvert
-	 * sur le couple
+	 * Cas du JIRA UNIREG-2323 : si les deux membres du couple ont tous deux le même for secondaire (= même date d'ouverture, même commune), il ne doit y avoir qu'un seul for équivalent ouvert sur le
+	 * couple
 	 */
 	@Test
 	@NotTransactional
@@ -2251,8 +2317,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas du JIRA UNIREG-2323 : si les fors secondaires sur les membres du couple n'ont pas
-	 * la même commune, ils doivent tous deux se retrouver sur le couple
+	 * Cas du JIRA UNIREG-2323 : si les fors secondaires sur les membres du couple n'ont pas la même commune, ils doivent tous deux se retrouver sur le couple
 	 */
 	@Test
 	@NotTransactional
@@ -2353,8 +2418,8 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas du JIRA UNIREG-3074 : si les fors secondaires sur les membres du couple n'ont pas
-	 * le même motif de rattachement, ils doivent tous deux se retrouver sur le couple (immeuble et activité indépendante)
+	 * Cas du JIRA UNIREG-3074 : si les fors secondaires sur les membres du couple n'ont pas le même motif de rattachement, ils doivent tous deux se retrouver sur le couple (immeuble et activité
+	 * indépendante)
 	 */
 	@Test
 	@NotTransactional
@@ -2456,9 +2521,8 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas du JIRA UNIREG-2323 : si les fors secondaires sur les membres du couple n'ont pas
-	 * la même date d'ouverture (même s'ils sont sur la même commune), ils doivent tous deux
-	 * se retrouver sur le couple
+	 * Cas du JIRA UNIREG-2323 : si les fors secondaires sur les membres du couple n'ont pas la même date d'ouverture (même s'ils sont sur la même commune), ils doivent tous deux se retrouver sur le
+	 * couple
 	 */
 	@Test
 	@NotTransactional
