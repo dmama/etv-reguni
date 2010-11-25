@@ -291,16 +291,14 @@ public class TiersAdresseValidator implements Validator {
 	 */
 	private boolean isHabitant(Contribuable ctb) {
 		final boolean isHabitant;
-		if (ctb instanceof PersonnePhysique || ctb instanceof MenageCommun) {
-			if (ctb instanceof PersonnePhysique) {
-				isHabitant = ((PersonnePhysique) ctb).isHabitantVD();
-			}
-			else {
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, RegDate.get());
-				final PersonnePhysique principal = couple.getPrincipal();
-				final PersonnePhysique conjoint = couple.getConjoint();
-				isHabitant = (principal != null && principal.isHabitantVD()) || (conjoint != null && conjoint.isHabitantVD());
-			}
+		if (ctb instanceof PersonnePhysique) {
+			isHabitant = ((PersonnePhysique) ctb).isHabitantVD();
+		}
+		else if (ctb instanceof MenageCommun) {
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, RegDate.get());
+			final PersonnePhysique principal = couple.getPrincipal();
+			final PersonnePhysique conjoint = couple.getConjoint();
+			isHabitant = (principal != null && principal.isHabitantVD()) || (conjoint != null && conjoint.isHabitantVD());
 		}
 		else {
 			isHabitant = false;
