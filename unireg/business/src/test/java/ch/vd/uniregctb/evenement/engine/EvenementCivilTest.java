@@ -25,6 +25,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -157,7 +158,8 @@ public class EvenementCivilTest extends BusinessTest {
 			}
 		});
 	}
-	 	/**
+
+	/**
 	 * Ce test vérifie que le user de création de l'évenement civil a bien
 	 * été initialisé avec le visa de mutation provenant de RcPers ou REgPP.
 	 */
@@ -165,8 +167,14 @@ public class EvenementCivilTest extends BusinessTest {
 	@Test
 	public void testVisaMutation() throws Exception {
 
-		 
 		final long jeanNoInd = 1234;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(jeanNoInd, date(1978, 3, 2), "De la Fontaine", "Jean", true);
+			}
+		});
 
 		// Crée le contribuable correspondant
 		final Long jeanId = (Long) doInNewTransaction(new TxCallback() {
@@ -177,8 +185,6 @@ public class EvenementCivilTest extends BusinessTest {
 				return jean.getNumero();
 			}
 		});
-
-
 
 		// Simulation de l'arrivée de l'événement civil
 		doInNewTransaction(new TxCallback() {
@@ -211,6 +217,7 @@ public class EvenementCivilTest extends BusinessTest {
 			}
 		});
 	}
+
 	private void assertNomIndexer(String nom, String prenom, final Long tiersId) {
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison(prenom + " " + nom);
