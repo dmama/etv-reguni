@@ -51,6 +51,10 @@
 		<level value="ERROR" />
 	</logger>
 
+	<logger name="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
+		<level value="INFO" />
+	</logger>
+
 	<!-- Suppress "Request is to process authentication" debug logging from acegi AbstractProcessingFilter -->
 	<logger name="ch.vd.uniregctb.security.IFOSecAuthenticationProcessingFilter">
 		<level value="INFO" />
