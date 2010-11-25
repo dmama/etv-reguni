@@ -214,6 +214,8 @@ public abstract class XmlEntityAdapter {
 		entity.setModeIdentification(translateModeIdentification(xml.getDemande().getModeIdentification()));
 		entity.setPrioriteUtilisateur(xml.getDemande().getPrioriteUtilisateur());
 		entity.setTypeMessage(xml.getDemande().getTypeMessage());
+		//TODO(BNM) à adapter en fonction du type de demande reçu. En attente d'une nouvelle XSD
+		entity.setTypeDemande(TypeDemande.MELDEWESEN);
 		return entity;
 	}
 
