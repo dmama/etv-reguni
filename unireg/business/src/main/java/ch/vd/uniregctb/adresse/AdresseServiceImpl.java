@@ -1886,11 +1886,8 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final AdresseCivile a = (AdresseCivile) adresseSurchargee;
 			final TypeAdresseCivil type = a.getType();
-
-			// par définition, seul un habitant peut posséder une adresse civile
-			// [UNIREG-3083] certes, mais cette adresse peut être utilisée sur un ménage commun, par exemple, si la surcharge est faite sur le contribuable principal du ménage
-			//                  donc il ne faut pas prendre le tiers passé en paramètre comme habitant, mais bien le tiers attaché à l'adresse surchargée
-			final PersonnePhysique habitant = (PersonnePhysique) a.getTiers();
+			
+			final PersonnePhysique habitant = (PersonnePhysique) tiers; /* par définition, seul un habitant peut posséder une adresse civile */
 			final AdressesCiviles adressesCiviles = getAdressesCiviles(habitant, adresseSurchargee.getDateDebut(), strict);
 			Assert.notNull(adressesCiviles);
 
