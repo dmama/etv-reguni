@@ -53,9 +53,9 @@ if [ -z "$SRV" ]; then
 		done
 	
 	        SERVICE=$(echo "$SERVICES" | sed -e "$CHOSEN !D")
-		echo "Service choisi : $SERVICE"
+		echo "Service choisi : $SERVICE" >&2
 	else
-		echo "L'utilisateur '$WS_USER' n'a jamais appelé qu'une seule méthode du web-service : $SERVICES"
+		echo "L'utilisateur '$WS_USER' n'a jamais appelé qu'une seule méthode du web-service : $SERVICES" >&2
 		SERVICE="$SERVICES"
 	fi
 else
@@ -69,21 +69,28 @@ fi
 OLD_TS=""
 COUNT=0
 SUM_TIMES=0
+MIN_TIME=99999999999999
+MAX_TIME=-1
+echo "TIMESTAMP;AVG_TIME;COUNT;MIN_TIME;MAX_TIME"
 while read TS TIME; do
 
 	if [ "$OLD_TS" != "$TS" ]; then
 		if [ -n "$OLD_TS" ]; then
-			echo "$OLD_TS;$(($SUM_TIMES / $COUNT))"
+			echo "$OLD_TS;$(($SUM_TIMES / $COUNT));$COUNT;$MIN_TIME;$MAX_TIME"
 			COUNT=0
 			SUM_TIMES=0
+			MIN_TIME=99999999999999
+			MAX_TIME=-1
 		fi
 		OLD_TS="$TS"
 	fi
 	((++COUNT))
 	((SUM_TIMES+=TIME))
+	if [ -z "$MIN_TIME" -o "$TIME" -lt "$MIN_TIME" ]; then MIN_TIME=$TIME; fi
+	if [ -z "$MAX_TIME" -o "$TIME" -gt "$MAX_TIME" ]; then MAX_TIME=$TIME; fi
 
 done < <(cat_file "$FILE" | grep "\[$WS_USER\]" | awk " \$8 ~ /^$SERVICE\{/ { print \$3 \" \" \$4 \" \" \$6; }" | sed -e 's/[^0-9\.: ]//g' -e 's/ /-/' -e 's/:[0-9]\+\.[0-9]\+//')
 
 if [ "$COUNT" -gt 0 ]; then
-	echo "$OLD_TS;$(($SUM_TIMES / $COUNT))"
+	echo "$OLD_TS;$(($SUM_TIMES / $COUNT));$COUNT;$MIN_TIME;$MAX_TIME"
 fi
