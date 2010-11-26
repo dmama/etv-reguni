@@ -61,20 +61,8 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @DiscriminatorColumn(name = "TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class Tiers extends HibernateEntity implements Validateable, BusinessComparable<Tiers> {
 
-	public static final String NATURE_HABITANT = "Habitant";
-	public static final String NATURE_NONHABITANT = "NonHabitant";
-	public static final String NATURE_ENTREPRISE = "Entreprise";
-	public static final String NATURE_ETABLISSEMENT = "Etablissement";
-	public static final String NATURE_MENAGECOMMUN = "MenageCommun";
-	public static final String NATURE_AUTRECOMMUNAUTE = "AutreCommunaute";
-	public static final String NATURE_DPI = "DebiteurPrestationImposable";
-	public static final String NATURE_COLLECTIVITEADMINISTRATIVE = "CollectiviteAdministrative";
-
 	private static final Logger LOGGER = Logger.getLogger(Tiers.class);
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -265874466414875812L;
 
 	/**
@@ -1779,10 +1767,10 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	}
 
 	/**
-	 * @return le nom de la classe du tiers
+	 * @return la nature du tiers courant
 	 */
 	@Transient
-	public abstract String getNatureTiers();
+	public abstract NatureTiers getNatureTiers();
 
 	/**
 	 * @return le type concret du tiers courant.

@@ -213,7 +213,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	private String buildDebugInfo(Tiers tiers) {
 		StringBuilder s1 = new StringBuilder();
-		s1.append("<input name=\"debugNatureTiers\" type=\"hidden\" value=\"").append(HtmlUtils.htmlEscape(tiers.getNatureTiers())).append("\"/>\n");
+		s1.append("<input name=\"debugNatureTiers\" type=\"hidden\" value=\"").append(tiers.getNatureTiers()).append("\"/>\n");
 
 		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(null);
 		final TypeAutoriteFiscale type = (ffp == null ? null : ffp.getTypeAutoriteFiscale());

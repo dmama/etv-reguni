@@ -11,7 +11,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.wsclient.fidor.FidorService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.wsclient.fidor.FidorService;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier
@@ -91,8 +91,8 @@ public class TiersVisuController extends AbstractTiersController {
 				}
 				//pas de droits pour les inactifs, les DPI et les gris
 				if(tiersVisuView.isDebiteurInactif() ||
-					tiersVisuView.getNatureTiers().equals(Tiers.NATURE_DPI) ||
-					(tiersVisuView.getNatureTiers().equals(Tiers.NATURE_NONHABITANT) &&
+						tiersVisuView.getNatureTiers() == NatureTiers.DebiteurPrestationImposable ||
+					(tiersVisuView.getNatureTiers() == NatureTiers.NonHabitant &&
 						tiersVisuView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)){
 					isAllowed = false;
 					tiersVisuView.setTiers(null);

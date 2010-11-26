@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -18,11 +18,11 @@ import ch.vd.uniregctb.type.MotifRattachement;
 public class MotifsForHelper {
 
 	public static class TypeFor {
-		public final String natureTiers;
+		public final NatureTiers natureTiers;
 		public final GenreImpot genreImpot;
 		public final MotifRattachement rattachement;
 
-		public TypeFor(String natureTiers, GenreImpot genreImpot, MotifRattachement rattachement) {
+		public TypeFor(NatureTiers natureTiers, GenreImpot genreImpot, MotifRattachement rattachement) {
 			this.natureTiers = natureTiers;
 			this.genreImpot = genreImpot;
 			this.rattachement = rattachement;
@@ -53,13 +53,13 @@ public class MotifsForHelper {
 		case DOMICILE:
 			// for principal
 			motifs.add(MotifFor.DEMENAGEMENT_VD);
-			if (Tiers.NATURE_HABITANT.equals(type.natureTiers) || Tiers.NATURE_NONHABITANT.equals(type.natureTiers)) {
+			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
 				motifs.add(MotifFor.MAJORITE);
 				motifs.add(MotifFor.PERMIS_C_SUISSE);
 				motifs.add(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				motifs.add(MotifFor.VEUVAGE_DECES);
 			}
-			else if (Tiers.NATURE_MENAGECOMMUN.equals(type.natureTiers)) {
+			else if (NatureTiers.MenageCommun == type.natureTiers) {
 				motifs.add(MotifFor.PERMIS_C_SUISSE);
 				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			}
@@ -120,11 +120,11 @@ public class MotifsForHelper {
 		case DOMICILE:
 			// for principal
 			motifs.add(MotifFor.DEMENAGEMENT_VD);
-			if (Tiers.NATURE_HABITANT.equals(type.natureTiers) || Tiers.NATURE_NONHABITANT.equals(type.natureTiers)) {
+			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
 				motifs.add(MotifFor.PERMIS_C_SUISSE);
 				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			}
-			else if (Tiers.NATURE_MENAGECOMMUN.equals(type.natureTiers)) {
+			else if (NatureTiers.MenageCommun == type.natureTiers) {
 				motifs.add(MotifFor.PERMIS_C_SUISSE);
 				motifs.add(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				motifs.add(MotifFor.VEUVAGE_DECES);

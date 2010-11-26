@@ -15,6 +15,7 @@ import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersException;
@@ -107,7 +108,7 @@ public class ForFiscalValidator implements Validator {
 					}
 				}
 				else if(forFiscalView.getMotifOuverture() != null){
-					if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_AUTRECOMMUNAUTE)){
+					if(forFiscalView.getNatureTiers() == NatureTiers.AutreCommunaute){
 						if(forFiscalView.getMotifOuverture() == MotifFor.MAJORITE ||
 								forFiscalView.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE){
 							errors.rejectValue("motifOuverture", "error.motif.ouverture.invalide");
@@ -140,7 +141,7 @@ public class ForFiscalValidator implements Validator {
 						}
 					}
 					else {
-						if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_AUTRECOMMUNAUTE)){
+						if(forFiscalView.getNatureTiers() == NatureTiers.AutreCommunaute){
 							if(forFiscalView.getMotifFermeture() == MotifFor.VEUVAGE_DECES ||
 									forFiscalView.getMotifFermeture() == MotifFor.PERMIS_C_SUISSE){
 								errors.rejectValue("motifFermeture", "error.motif.fermeture.invalide");
@@ -245,13 +246,13 @@ public class ForFiscalValidator implements Validator {
 			}
 			else if(typeFor == TypeForFiscal.PRINCIPAL){
 				//forFiscalView.getNatureTiers est tjs != MENEAGE_COMMUN (si couple => HABITANT ou NON_HABITANT
-				if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_HABITANT)){
+				if(forFiscalView.getNatureTiers() == NatureTiers.Habitant){
 					if((isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HAB)) ||
 							(!isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))){
 						errors.rejectValue("motifRattachement", msgErrorForSec);
 					}
 				}
-				else if(forFiscalView.getNatureTiers().equals(Tiers.NATURE_NONHABITANT)){
+				else if(forFiscalView.getNatureTiers() == NatureTiers.NonHabitant){
 					boolean isGris = false;
 					if(forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD){
 						isGris = true;

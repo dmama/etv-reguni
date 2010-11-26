@@ -151,7 +151,7 @@ public class ContribuableTest extends WithoutSpringTest {
 			}
 
 			@Override
-			public String getNatureTiers() {
+			public NatureTiers getNatureTiers() {
 				throw new NotImplementedException();
 			}
 

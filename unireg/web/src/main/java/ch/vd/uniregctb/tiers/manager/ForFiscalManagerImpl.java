@@ -28,6 +28,7 @@ import ch.vd.uniregctb.tiers.ForFiscalDAO;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
@@ -156,7 +157,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final ForFiscalView forFiscalView = new ForFiscalView(forFiscal, false, false);
 		forFiscalView.setChangementModeImposition(false);
 
-		if(tiers.getNatureTiers().equals(Tiers.NATURE_MENAGECOMMUN)){
+		if(tiers.getNatureTiers() == NatureTiers.MenageCommun){
 			final MenageCommun menage = (MenageCommun) tiers;
 			boolean isHabitant = false;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
@@ -166,10 +167,10 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 				}
 			}
 			if (isHabitant) {
-				forFiscalView.setNatureTiers(Tiers.NATURE_HABITANT);
+				forFiscalView.setNatureTiers(NatureTiers.Habitant);
 			}
 			else {
-				forFiscalView.setNatureTiers(Tiers.NATURE_NONHABITANT);
+				forFiscalView.setNatureTiers(NatureTiers.NonHabitant);
 			}
 		}
 		else {
@@ -213,7 +214,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		forFiscalView.setNumeroCtb(numeroCtb);
 
 		final Tiers tiers = tiersDAO.get(numeroCtb);
-		if(Tiers.NATURE_MENAGECOMMUN.equals(tiers.getNatureTiers())){
+		if(NatureTiers.MenageCommun == tiers.getNatureTiers()){
 			final MenageCommun menage = (MenageCommun)tiers;
 			boolean isHabitant = false;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
@@ -222,7 +223,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 					break;
 				}
 			}
-			forFiscalView.setNatureTiers(isHabitant ? Tiers.NATURE_HABITANT : Tiers.NATURE_NONHABITANT);
+			forFiscalView.setNatureTiers(isHabitant ? NatureTiers.Habitant : NatureTiers.NonHabitant);
 		}
 		else {
 			forFiscalView.setNatureTiers(tiers.getNatureTiers());

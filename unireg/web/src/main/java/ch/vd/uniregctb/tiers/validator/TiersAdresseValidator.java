@@ -28,6 +28,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -148,8 +149,8 @@ public class TiersAdresseValidator implements Validator {
 
 		//gestion des droits de création d'une adresse
 		boolean isAllowed = false;
-		if(tiers.getNatureTiers().equals(Tiers.NATURE_HABITANT) || tiers.getNatureTiers().equals(Tiers.NATURE_NONHABITANT) ||
-				tiers.getNatureTiers().equals(Tiers.NATURE_MENAGECOMMUN)){
+		if(tiers.getNatureTiers() == NatureTiers.Habitant || tiers.getNatureTiers() == NatureTiers.NonHabitant ||
+				tiers.getNatureTiers() == NatureTiers.MenageCommun){
 			//PP
 			switch (usage) {
 				case COURRIER :
@@ -205,7 +206,7 @@ public class TiersAdresseValidator implements Validator {
 					throw new IllegalArgumentException("Valeur non supportée : " + usage);
 			}
 		}
-		else if(tiers.getNatureTiers().equals(Tiers.NATURE_DPI)) {
+		else if(tiers.getNatureTiers() == NatureTiers.DebiteurPrestationImposable) {
 			if (usage == TypeAdresseTiers.POURSUITE) {
 				isAllowed = SecurityProvider.isGranted(Role.ADR_P);
 			}

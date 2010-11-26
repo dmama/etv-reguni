@@ -18,6 +18,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.utils.UniregModeHelper;
@@ -64,7 +65,7 @@ public class DatabasePreviewController extends AbstractSimpleFormController {
 				for (Tiers t : list) {
 
 					final Long numero = t.getNumero();
-					final String type = t.getNatureTiers();
+					final NatureTiers type = t.getNatureTiers();
 					List<String> nomsPrenoms;
 					try {
 						nomsPrenoms = adresseService.getNomCourrier(t, null, false);

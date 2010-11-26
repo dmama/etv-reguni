@@ -47,7 +47,6 @@ public class TiersEditController extends AbstractTiersController {
 		TiersEditView tiersView = new TiersEditView();
 
 		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
-		String natureParam = request.getParameter(TIERS_NATURE_PARAMETER_NAME);
 		if (idParam != null) {
 			Long id = Long.parseLong(idParam);
 			if (!"".equals(idParam)) {
@@ -59,7 +58,9 @@ public class TiersEditController extends AbstractTiersController {
 			}
 		}
 		else {
-			if (natureParam.equals(Tiers.NATURE_NONHABITANT)) {
+			final String natureParamString = request.getParameter(TIERS_NATURE_PARAMETER_NAME);
+			final NatureTiers natureParam = NatureTiers.valueOf(natureParamString);
+			if (natureParam == NatureTiers.NonHabitant) {
 				//vérifier les droits de création d'un non habitant
 				if(SecurityProvider.isGranted(Role.CREATE_NONHAB)){
 					tiersView = tiersEditManager.creePersonne();
@@ -69,7 +70,7 @@ public class TiersEditController extends AbstractTiersController {
 					tiersView.setAllowed(false);
 				}
 			}
-			else if (natureParam.equals(Tiers.NATURE_AUTRECOMMUNAUTE)) {
+			else if (natureParam == NatureTiers.AutreCommunaute) {
 				//vérifier les droits de création d'une autre communauté
 				if(SecurityProvider.isGranted(Role.CREATE_AC)){
 					tiersView = tiersEditManager.creeOrganisation();
@@ -79,7 +80,7 @@ public class TiersEditController extends AbstractTiersController {
 					tiersView.setAllowed(false);
 				}
 			}
-			else if (natureParam.equals(Tiers.NATURE_DPI)) {
+			else if (natureParam == NatureTiers.DebiteurPrestationImposable) {
 				String numeroCtbAssParam = request.getParameter(NUMERO_CTB_ASSOCIE_PARAMETER_NAME);
 				if (numeroCtbAssParam != null) {
 					//vérifier les droits de création d'un DPI

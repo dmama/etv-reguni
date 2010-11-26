@@ -167,8 +167,8 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	@Transient
 	@Override
-	public String getNatureTiers() {
-		return DebiteurPrestationImposable.class.getSimpleName();
+	public NatureTiers getNatureTiers() {
+		return NatureTiers.DebiteurPrestationImposable;
 	}
 
 	@Transient

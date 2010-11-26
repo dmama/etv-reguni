@@ -306,7 +306,7 @@ public class TiersTest extends WithoutSpringTest {
 			}
 
 			@Override
-			public String getNatureTiers() {
+			public NatureTiers getNatureTiers() {
 				throw new NotImplementedException();
 			}
 

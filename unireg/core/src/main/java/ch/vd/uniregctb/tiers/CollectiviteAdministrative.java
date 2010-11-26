@@ -75,8 +75,8 @@ public class CollectiviteAdministrative extends Contribuable {
 
 	@Transient
 	@Override
-	public String getNatureTiers() {
-		return CollectiviteAdministrative.class.getSimpleName();
+	public NatureTiers getNatureTiers() {
+		return NatureTiers.CollectiviteAdministrative;
 	}
 
 	@Transient

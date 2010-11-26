@@ -35,8 +35,8 @@ public class MenageCommun extends Contribuable {
 
     @Transient
     @Override
-    public String getNatureTiers() {
-        return MenageCommun.class.getSimpleName();
+    public NatureTiers getNatureTiers() {
+        return NatureTiers.MenageCommun;
     }
 
 	@Transient

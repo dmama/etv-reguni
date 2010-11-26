@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.di;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -13,9 +12,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
@@ -30,7 +29,7 @@ import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class DeclarationImpotEditController extends AbstractDeclarationImpotController {
@@ -280,9 +279,9 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		Assert.notNull(diListView);
 
 		diEditManager.findByNumero(id, diListView);
-		String natureTiers = diListView.getContribuable().getNatureTiers();
-		if (natureTiers.equals(Tiers.NATURE_HABITANT) || natureTiers.equals(Tiers.NATURE_MENAGECOMMUN)
-				|| natureTiers.equals(Tiers.NATURE_NONHABITANT)) {
+		NatureTiers natureTiers = diListView.getContribuable().getNatureTiers();
+		if (natureTiers == NatureTiers.Habitant || natureTiers == NatureTiers.MenageCommun
+				|| natureTiers == NatureTiers.NonHabitant) {
 			if (SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
 				diListView.setAllowedEmission(true);
 			}
@@ -342,8 +341,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 				diDetailView.setDelaiAccorde(delaiAccorde);
 			}
 
-			final String natureTiers = diDetailView.getContribuable().getNatureTiers();
-			if(natureTiers.equals(Tiers.NATURE_HABITANT) || natureTiers.equals(Tiers.NATURE_MENAGECOMMUN) || natureTiers.equals(Tiers.NATURE_NONHABITANT)){
+			final NatureTiers natureTiers = diDetailView.getContribuable().getNatureTiers();
+			if(natureTiers == NatureTiers.Habitant || natureTiers == NatureTiers.MenageCommun || natureTiers == NatureTiers.NonHabitant){
 				if(!SecurityProvider.isGranted(Role.DI_EMIS_PP)){
 					throw new AccessDeniedException("vous n'avez pas le droit d'émettre une DI");
 				}

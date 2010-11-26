@@ -14,6 +14,7 @@ import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -144,11 +145,11 @@ public class TiersView {
 	 * 								/ Habitant / Non Habitant
 	 * 								/ AutreCommunaute / MenageCommun)
 	 */
-	public String getNatureTiers() {
+	public NatureTiers getNatureTiers() {
 		if(tiers != null){
 			return tiers.getNatureTiers();
 		}
-		return "";
+		return null;
 	}
 
 	/**
@@ -198,16 +199,16 @@ public class TiersView {
 		this.historiqueAdresses = historiqueAdresses;
 	}
 
-	public String getNatureMembrePrincipal() {
+	public NatureTiers getNatureMembrePrincipal() {
 		if(tiersPrincipal != null)
 			return tiersPrincipal.getNatureTiers();
-		return "";
+		return null;
 	}
 
-	public String getNatureMembreConjoint() {
+	public NatureTiers getNatureMembreConjoint() {
 		if(tiersConjoint != null)
 			return tiersConjoint.getNatureTiers();
-		return "";
+		return null;
 	}
 
 	public Tiers getTiersPrincipal() {

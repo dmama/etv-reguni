@@ -11,6 +11,7 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -61,7 +62,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 
 	private String natureForFiscal;
 
-	private String natureTiers;
+	private NatureTiers natureTiers;
 
 	private boolean dernierForPrincipalOuDebiteur;
 
@@ -437,11 +438,11 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 		this.annule = annule;
 	}
 
-	public String getNatureTiers() {
+	public NatureTiers getNatureTiers() {
 		return natureTiers;
 	}
 
-	public void setNatureTiers(String natureTiers) {
+	public void setNatureTiers(NatureTiers natureTiers) {
 		this.natureTiers = natureTiers;
 	}
 

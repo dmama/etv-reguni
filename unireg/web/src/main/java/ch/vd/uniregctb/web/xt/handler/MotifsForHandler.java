@@ -23,6 +23,7 @@ import org.springmodules.xt.ajax.component.Component;
 import org.springmodules.xt.ajax.component.Option;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
@@ -137,7 +138,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 				if (tiers == null) {
 					return null;
 				}
-				final String natureTiers = tiers.getNatureTiers();
+				final NatureTiers natureTiers = tiers.getNatureTiers();
 				return new TypeFor(natureTiers, genreImpot, rattachement);
 			}
 		});

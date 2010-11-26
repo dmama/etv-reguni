@@ -188,11 +188,13 @@ public class PersonnePhysique extends Contribuable {
 
 	@Transient
 	@Override
-	public String getNatureTiers() {
-		if (habitant)
-			return NATURE_HABITANT;
-		else
-			return NATURE_NONHABITANT;
+	public NatureTiers getNatureTiers() {
+		if (habitant) {
+			return NatureTiers.Habitant;
+		}
+		else {
+			return NatureTiers.NonHabitant;
+		}
 	}
 
 	@Transient

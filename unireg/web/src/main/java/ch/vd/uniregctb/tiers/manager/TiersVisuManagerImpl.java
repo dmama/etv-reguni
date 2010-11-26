@@ -54,6 +54,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -157,8 +158,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			tiersVisuView.setHistoriqueAdresses(getAdressesHistoriques(tiers, adressesHisto));
 
 			//Les entreprises et les etablissement ne sont pas pris en charge par l'adresseService
-			if (!Tiers.NATURE_ENTREPRISE.equals(tiersVisuView.getNatureTiers()) &&
-					!Tiers.NATURE_ETABLISSEMENT.equals(tiersVisuView.getNatureTiers())) {
+			if (NatureTiers.Entreprise != tiersVisuView.getNatureTiers() &&
+					NatureTiers.Etablissement != tiersVisuView.getNatureTiers()) {
 				tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, adressesHistoCiviles));
 				final Tiers conjoint = tiersVisuView.getTiersConjoint();
 				if (conjoint != null) {

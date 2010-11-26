@@ -6,6 +6,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -83,7 +84,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 
 	private String index ;
 
-	private String nature ;
+	private NatureTiers nature ;
 
 	private boolean surVaud;
 
@@ -420,11 +421,11 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 		this.mode = mode;
 	}
 
-	public String getNature() {
+	public NatureTiers getNature() {
 		return nature;
 	}
 
-	public void setNature(String nature) {
+	public void setNature(NatureTiers nature) {
 		this.nature = nature;
 	}
 

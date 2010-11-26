@@ -69,8 +69,8 @@ public class Etablissement extends Contribuable {
 
 	@Transient
 	@Override
-	public String getNatureTiers() {
-		return Etablissement.class.getSimpleName();
+	public NatureTiers getNatureTiers() {
+		return NatureTiers.Etablissement;
 	}
 
 	@Transient

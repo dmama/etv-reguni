@@ -201,7 +201,7 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 				MenageCommun menageCommun = null;
 				int nbMenagesCommuns = 0;
 				for (RapportEntreTiers rapport : andre.getRapportsSujet()) {
-					if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+					if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 						++ nbMenagesCommuns;
 						menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 						assertEquals(ids.mcId, (long) menageCommun.getNumero());
@@ -327,7 +327,7 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 				MenageCommun menageCommun = null;
 				int nbMenagesCommuns = 0;
 				for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
-					if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+					if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 						nbMenagesCommuns++;
 						menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 						assertEquals(ids.idMc, (long) menageCommun.getNumero());

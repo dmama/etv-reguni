@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.general.view;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.NatureTiers;
 
 /**
  * TiersGeneralView
@@ -27,7 +28,7 @@ public class TiersGeneralView {
 
 	private String ancienNumeroAVS;
 
-	private String natureTiers;
+	private NatureTiers natureTiers;
 
 	private boolean annule;
 
@@ -71,11 +72,11 @@ public class TiersGeneralView {
 		this.ancienNumeroAVS = ancienNumeroAVS;
 	}
 
-	public String getNatureTiers() {
+	public NatureTiers getNatureTiers() {
 		return natureTiers;
 	}
 
-	public void setNatureTiers(String natureTiers) {
+	public void setNatureTiers(NatureTiers natureTiers) {
 		this.natureTiers = natureTiers;
 	}
 

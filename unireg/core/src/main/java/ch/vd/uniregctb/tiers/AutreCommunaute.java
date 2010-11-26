@@ -150,8 +150,8 @@ public class AutreCommunaute extends Contribuable {
 
 	@Transient
 	@Override
-	public String getNatureTiers() {
-		return AutreCommunaute.class.getSimpleName();
+	public NatureTiers getNatureTiers() {
+		return NatureTiers.AutreCommunaute;
 	}
 
 	@Transient

@@ -78,7 +78,7 @@ public class TiersEditControllerTest extends WebTest {
 
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		request.addParameter("tiers.nom", "Kamel");
-		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, Tiers.NATURE_NONHABITANT);
+		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
 
 
@@ -106,7 +106,7 @@ public class TiersEditControllerTest extends WebTest {
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		request.addParameter("tiers.nom", nom);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
-		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, Tiers.NATURE_NONHABITANT);
+		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
 
 		request.setMethod("POST");
@@ -128,7 +128,7 @@ public class TiersEditControllerTest extends WebTest {
 
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		request.addParameter("tiers.dateNaissance", "12/*/.2008");
-		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, Tiers.NATURE_NONHABITANT);
+		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		//request.addParameter(AbstractTiersController.ONGLET_PARAMETER_NAME, Onglet.civilTab.toString());
 		request.setMethod("POST");
 		ModelAndView mav = controller.handleRequest(request, response);
@@ -148,7 +148,7 @@ public class TiersEditControllerTest extends WebTest {
 		request.addParameter("tiers.nom", "TestKamel");
 		RegDate dateN = RegDate.get(2008, 04, 12);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
-		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, Tiers.NATURE_NONHABITANT);
+		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
 
 		request.setMethod("POST");
@@ -173,7 +173,7 @@ public class TiersEditControllerTest extends WebTest {
 		request.addParameter("tiers.nom", "Kamel");
 		request.addParameter("tiers.numero", "12600002");
 		request.addParameter("tiers.prenom", "toto");
-		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, Tiers.NATURE_NONHABITANT);
+		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		//request.addParameter(AbstractTiersController.ONGLET_PARAMETER_NAME, Onglet.civilTab.toString());
 		Tiers tiers = tiersDAO.get(new Long(12600002));
 		PersonnePhysique nh = (PersonnePhysique)tiers;
@@ -199,7 +199,7 @@ public class TiersEditControllerTest extends WebTest {
 		request.addParameter("tiers.nom", "Kamel");
 		request.addParameter("aiguillage", "annulerAdresse");
 		request.addParameter("idAdresse", "5");
-		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, Tiers.NATURE_NONHABITANT);
+		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		//request.addParameter(AbstractTiersController.ONGLET_PARAMETER_NAME, Onglet.civilTab.toString());
 		request.setMethod("POST");
 		ModelAndView mav = controller.handleRequest(request, response);

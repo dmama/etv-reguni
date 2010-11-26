@@ -2,16 +2,18 @@ package ch.vd.uniregctb.admin;
 
 import java.util.List;
 
+import ch.vd.uniregctb.tiers.NatureTiers;
+
 /**
  * Information de base sur un tiers
  */
 public class InfoTiers {
 
 	private final long numero;
-	private final String type;
+	private final NatureTiers type;
 	private final String nomsPrenoms;
 
-	public InfoTiers(long numero, String type, List<String> nomsPrenoms) {
+	public InfoTiers(long numero, NatureTiers type, List<String> nomsPrenoms) {
 		this.numero = numero;
 		this.type = type;
 
@@ -29,7 +31,7 @@ public class InfoTiers {
 		return numero;
 	}
 
-	public String getType() {
+	public NatureTiers getType() {
 		return type;
 	}
 
