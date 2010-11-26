@@ -70,6 +70,7 @@ class Analyzer {
 					content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, localImages, chart) + "\n";
 				}
 			}
+			content += "    <hr/>";
 		}
 
 		content += "    <br/>\n" +

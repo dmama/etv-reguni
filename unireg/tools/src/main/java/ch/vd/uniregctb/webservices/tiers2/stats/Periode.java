@@ -5,12 +5,15 @@ class Periode implements Comparable<Periode> {
 	static final Periode[] DEFAULT_PERIODES;
 
 	static {
-		DEFAULT_PERIODES = new Periode[24];
+		DEFAULT_PERIODES = new Periode[4 * 24]; // au quart-d'heure
 		for (int i = 0; i < 24; ++i) {
-			DEFAULT_PERIODES[i] = new Periode(i, 0, i, 59);
+			DEFAULT_PERIODES[4 * i] = new Periode(i, 0, i, 14);
+			DEFAULT_PERIODES[4 * i + 1] = new Periode(i, 14, i, 29);
+			DEFAULT_PERIODES[4 * i + 2] = new Periode(i, 30, i, 44);
+			DEFAULT_PERIODES[4 * i + 3] = new Periode(i, 45, i, 59);
 		}
 	}
-	
+
 	private final HourMinutes start;
 	private final HourMinutes end;
 

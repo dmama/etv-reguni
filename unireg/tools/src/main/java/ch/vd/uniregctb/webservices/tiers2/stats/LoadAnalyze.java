@@ -70,8 +70,12 @@ class LoadAnalyze extends Analyze {
 
 		//		final String labels = "|00:00|01:00|02:00|03:00|04:00|05:00";
 		StringBuilder labels = new StringBuilder();
-		for (Periode periode : Periode.DEFAULT_PERIODES) {
-			labels.append("|").append(periode);
+		for (int i = 0; i < Periode.DEFAULT_PERIODES.length; i++) {
+			labels.append("|");
+			if (i % 4 == 0) { // on ne met un label que sur les heures piles
+				final Periode periode = Periode.DEFAULT_PERIODES[i];
+				labels.append(periode);
+			}
 		}
 
 		//		final String values = "50,30,10,60,65,190";
@@ -89,10 +93,9 @@ class LoadAnalyze extends Analyze {
 		final String valuesRange = "0," + max;
 
 		final String url =
-				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x").append("&chs=1000x200")
-						.append("&cht=lc").append("&chco=3D7930").append("&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chdl=calls")
-						.append("&chg=-1.3,-1,1,1").append("&chls=1").append("&chtt=").append(method)
-						.append("%20-%20Load%20(calls%20each%20hour)").toString();
+				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x&chxtc=1,4")
+						.append("&chs=1000x200").append("&cht=lc").append("&chco=3D7930").append("&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chdl=calls")
+						.append("&chg=-1.3,-1,1,1").append("&chls=1").append("&chtt=").append(method).append("%20-%20Load%20(calls/quarter%20hour)").toString();
 		return new Chart(url, 1000, 200);
 	}
 
