@@ -2,6 +2,15 @@ package ch.vd.uniregctb.webservices.tiers2.stats;
 
 class Periode implements Comparable<Periode> {
 
+	static final Periode[] DEFAULT_PERIODES;
+
+	static {
+		DEFAULT_PERIODES = new Periode[24];
+		for (int i = 0; i < 24; ++i) {
+			DEFAULT_PERIODES[i] = new Periode(i, 0, i, 59);
+		}
+	}
+	
 	private final HourMinutes start;
 	private final HourMinutes end;
 

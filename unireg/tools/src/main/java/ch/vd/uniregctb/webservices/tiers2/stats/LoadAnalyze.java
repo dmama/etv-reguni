@@ -9,30 +9,24 @@ import java.util.Map;
 import ch.vd.registre.base.utils.Assert;
 
 /**
- * Analyse qui calcul et affiche l'évolution des temps de réponse heure par heure (0-1h, 1-2h, 2-3h, ...).
+ * Analyse qui calcul et affiche l'évolution de la charge heure par heure (0-1h, 1-2h, 2-3h, ...).
  */
-class TimelineAnalyze extends Analyze {
+class LoadAnalyze extends Analyze {
 
-	private Map<String, List<TimelineData>> results = new HashMap<String, List<TimelineData>>();
+	private Map<String, List<LoadData>> results = new HashMap<String, List<LoadData>>();
 
 	private int lastPeriodeIndex = 0;
 
 	public void addCall(Call call) {
 
-		final long milliseconds = call.getMilliseconds() / call.getTiersCount();
-		if (milliseconds == 0) {
-			// on ignore les appels qui prennent 0 millisecondes : il s'agit de valeurs non-représentatives retournées pas le cache.
-			return;
-		}
-
 		final String method = call.getMethod();
 		final HourMinutes timestamp = call.getTimestamp();
 
-		List<TimelineData> list = results.get(method);
+		List<LoadData> list = results.get(method);
 		if (list == null) {
-			list = new ArrayList<TimelineData>();
+			list = new ArrayList<LoadData>();
 			for (Periode periode : Periode.DEFAULT_PERIODES) {
-				list.add(new TimelineData(periode));
+				list.add(new LoadData(periode));
 			}
 			results.put(method, list);
 		}
@@ -40,9 +34,9 @@ class TimelineAnalyze extends Analyze {
 		// optim : on commence à la position de la dernière période trouvée
 		boolean found = false;
 		for (int i = lastPeriodeIndex, listSize = list.size(); i < listSize; i++) {
-			final TimelineData data = list.get(i);
+			final LoadData data = list.get(i);
 			if (data.isInPeriode(timestamp)) {
-				data.add(milliseconds);
+				data.add();
 				lastPeriodeIndex = i;
 				found = true;
 				break;
@@ -51,9 +45,9 @@ class TimelineAnalyze extends Analyze {
 		if (!found) {
 			// si on a pas trouvé, on recommence au début (ne devrait pas arriver, si les logs sont ordonnés de manière croissante dans le fichier)
 			for (int i = 0; i < lastPeriodeIndex; i++) {
-				final TimelineData data = list.get(i);
+				final LoadData data = list.get(i);
 				if (data.isInPeriode(timestamp)) {
-					data.add(milliseconds);
+					data.add();
 					lastPeriodeIndex = i;
 					found = true;
 					break;
@@ -69,7 +63,7 @@ class TimelineAnalyze extends Analyze {
 	@SuppressWarnings({"JavaDoc"})
 	Chart buildGoogleChart(String method) {
 
-		final List<TimelineData> data = results.get(method);
+		final List<LoadData> data = results.get(method);
 		if (data == null) {
 			return null;
 		}
@@ -81,34 +75,24 @@ class TimelineAnalyze extends Analyze {
 		}
 
 		//		final String values = "50,30,10,60,65,190";
-		StringBuilder minValues = new StringBuilder();
-		StringBuilder maxValues = new StringBuilder();
-		StringBuilder avgValues = new StringBuilder();
+		StringBuilder values = new StringBuilder();
 		long max = 0;
 		for (int i = 0, timeSize = data.size(); i < timeSize; i++) {
-			final TimelineData range = data.get(i);
-			minValues.append(range.getMin());
+			final LoadData range = data.get(i);
+			values.append(range.getCount());
 			if (i < timeSize - 1) {
-				minValues.append(',');
+				values.append(',');
 			}
-			maxValues.append(range.getMax());
-			if (i < timeSize - 1) {
-				maxValues.append(',');
-			}
-			avgValues.append(range.getAverage());
-			if (i < timeSize - 1) {
-				avgValues.append(',');
-			}
-			max = Math.max(max, range.getMax());
+			max = Math.max(max, range.getCount());
 		}
 
 		final String valuesRange = "0," + max;
 
 		final String url =
 				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x").append("&chs=1000x200")
-						.append("&cht=lc").append("&chco=000000,008000,AA0033").append("&chds=").append(valuesRange).append("&chd=t:").append(avgValues).append("|").append(minValues).append("|")
-						.append(maxValues).append("&chdl=average|min|max").append("&chg=-1.3,-1,1,1").append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method)
-						.append("%20-%20Response%20Time%20Line%20(min/max/avg%20ms%20each%20hour)").toString();
+						.append("&cht=lc").append("&chco=3D7930").append("&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chdl=calls")
+						.append("&chg=-1.3,-1,1,1").append("&chls=1").append("&chtt=").append(method)
+						.append("%20-%20Load%20(calls%20each%20hour)").toString();
 		return new Chart(url, 1000, 200);
 	}
 
@@ -126,8 +110,8 @@ class TimelineAnalyze extends Analyze {
 		for (String method : methods) {
 			final StringBuilder line = new StringBuilder();
 			line.append(method).append(";");
-			final List<TimelineData> data = results.get(method);
-			for (TimelineData t : data) {
+			final List<LoadData> data = results.get(method);
+			for (LoadData t : data) {
 				line.append(t).append(';');
 			}
 			System.out.println(line);
@@ -136,6 +120,6 @@ class TimelineAnalyze extends Analyze {
 
 	@Override
 	String name() {
-		return "timeline";
+		return "load";
 	}
 }

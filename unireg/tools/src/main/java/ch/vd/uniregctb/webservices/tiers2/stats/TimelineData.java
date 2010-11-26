@@ -5,16 +5,7 @@ import ch.vd.registre.base.utils.Assert;
 /**
  * Statistiques des temps de réponse par période horaire (0-1h, 1-2h, 2-3h, ...)
  */
-class PeriodeData implements Comparable<PeriodeData> {
-
-	static final Periode[] DEFAULT_PERIODES;
-
-	static {
-		DEFAULT_PERIODES = new Periode[24];
-		for (int i = 0; i < 24; ++i) {
-			DEFAULT_PERIODES[i] = new Periode(i, 0, i, 59);
-		}
-	}
+class TimelineData implements Comparable<TimelineData> {
 
 	private final Periode periode;
 	private long min = Long.MAX_VALUE;
@@ -22,7 +13,7 @@ class PeriodeData implements Comparable<PeriodeData> {
 	private long total;
 	private long count;
 
-	PeriodeData(Periode periode) {
+	TimelineData(Periode periode) {
 		Assert.notNull(periode);
 		this.periode = periode;
 	}
@@ -60,7 +51,7 @@ class PeriodeData implements Comparable<PeriodeData> {
 		return periode.isInPeriode(timestamp);
 	}
 
-	public int compareTo(PeriodeData o) {
+	public int compareTo(TimelineData o) {
 		return this.periode.compareTo(o.periode);
 	}
 
