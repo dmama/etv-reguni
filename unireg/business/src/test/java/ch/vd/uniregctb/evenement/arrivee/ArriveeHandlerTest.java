@@ -56,7 +56,6 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		super.onSetUp();
 		serviceCivil.setUp(new DefaultMockServiceCivil());
-		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
 	@Test
@@ -64,6 +63,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 	 * Teste les différents scénarios devant échouer au test de complétude de l'arrivée.
 	 */
 	public void testCheckCompleteness() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -86,6 +87,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 	 * Teste les différents scénarios devant échouer à la validation.
 	 */
 	public void testValidate() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -138,6 +141,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testValidateException() throws Exception {
 
+		loadDatabase(DB_UNIT_DATA_FILE);
+
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
@@ -171,6 +176,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 	@Test
 	public void testHandle() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		Arrivee arrivee = createValidArrivee(individu);
@@ -261,7 +268,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		final Ids ids = new Ids();
 
 		setWantIndexation(true);
-		
+		removeIndexData();
+
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jeanNomPrenom = addNonHabitant("Jean", "Dupneu", null, null);
@@ -348,10 +356,11 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
 		}
 
-		// Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas en trouver puisque le seul candidat ne possède pas de date de naissance
+		// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
 		{
 			final List<PersonnePhysique> list = handler.findNonHabitants(civil.roger, true);
-			assertEmpty(list);
+			assertEquals(1, list.size());
+			assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
 		}
 
 		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que

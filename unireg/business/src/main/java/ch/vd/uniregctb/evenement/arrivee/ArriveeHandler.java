@@ -421,6 +421,13 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
+	/**
+	 * [UNIREG-3073] Recherche un ou plusieurs non-habitants à partir du prénom, du nom, de la date de naissance et du sexe d'un individu.
+	 *
+	 * @param individu                    un individu
+	 * @param assujettissementObligatoire <b>vrai</b> s'il les non-habitants recherchés doivent posséder un for principal actif.
+	 * @return une liste de non-habitants qui correspondent aux critères.
+	 */
 	protected List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) {
 
 		// les critères de recherche
@@ -456,14 +463,6 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				continue;
 			}
 			nonHabitants.add(pp);
-		}
-
-		if (nonHabitants.size() == 1) {
-			// [UNIREG-1603] en cas de résultat unique, le candidat doit correspondre parfaitement aux critères
-			final PersonnePhysique candidat = nonHabitants.get(0);
-			if (candidat.getDateNaissance() == null || candidat.getSexe() == null) {
-				nonHabitants.clear(); // le candidat n'est pas complet, on l'enlève
-			}
 		}
 
 		return nonHabitants;
@@ -515,10 +514,29 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		else {
 			final List<PersonnePhysique> nonHabitants = findNonHabitants(individu, behavior.isAssujettissementObligatoire());
 			if (nonHabitants.size() == 1) {
-				final PersonnePhysique nhab = nonHabitants.get(0);
-				habitant = getService().changeNHenHabitant(nhab, individu.getNoTechnique(), dateEvenement);
-				Audit.info(evenementId, "Le non habitant " + habitant.getNumero() + " devient habitant");
-				nouveau.setValue(true);
+				final PersonnePhysique candidat = nonHabitants.get(0);
+				if (candidat.getDateNaissance() == null || candidat.getSexe() == null) {
+					// [UNIREG-3073] si le prénom/nom correspondent mais que la date de naissance ou le sexe manquent, on lève une erreur pour que l'utilisateur puisse gérer le cas manuellement.
+					final StringBuilder message = new StringBuilder();
+					message.append("Un non-habitant (n°").append(candidat.getNumero()).append(") qui possède le même prénom/nom que l'individu a été trouvé, mais ");
+					if (candidat.getDateNaissance() == null && candidat.getSexe() == null) {
+						message.append("la date de naissance et le sexe ne sont pas renseignés.");
+					}
+					else if (candidat.getDateNaissance() == null) {
+						message.append("la date de naissance n'est pas renseignée.");
+					}
+					else {
+						message.append("le sexe n'est pas renseigné.");
+					}
+					message.append(" Veuillez vérifier manuellement.");
+					throw new EvenementCivilHandlerException(message.toString());
+				}
+				else {
+					// [UNIREG-1603] le candidat correspond parfaitement aux critères
+					habitant = getService().changeNHenHabitant(candidat, individu.getNoTechnique(), dateEvenement);
+					Audit.info(evenementId, "Le non habitant " + habitant.getNumero() + " devient habitant");
+					nouveau.setValue(true);
+				}
 			}
 			else if (nonHabitants.size() == 0 || !behavior.isErrorOnMultiples()) {
 				final PersonnePhysique nouvelHabitant = new PersonnePhysique(true);

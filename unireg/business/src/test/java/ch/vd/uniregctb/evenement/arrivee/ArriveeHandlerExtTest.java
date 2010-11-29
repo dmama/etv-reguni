@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -16,6 +18,7 @@ import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.arrivee.ArriveeHandler.ArriveeType;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandler;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -3091,6 +3094,76 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockCommune.Zurich.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
 		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				(ForFiscalPrincipal) fors.get(1));
+	}
+
+	/**
+	 * [UNIREG-3073] Vérifie que l'arrivée d'un individu provoque bien la recherche d'un éventuel non-habitant, et que si ce dernier ne possède pas de date de naissance, l'événement part en erreur.
+	 */
+	@Test
+	public void testHandleArriveeNonHabitantSansDateNaissance() throws Exception {
+
+		setWantIndexation(true);
+		removeIndexData();
+
+		//
+		// Crée un individu
+		//
+		class ServiceCivil extends MockServiceCivil {
+
+			private MockIndividu roger;
+
+			@Override
+			protected void init() {
+				roger = addIndividu(585858, date(1960, 1, 1), "Roger", "Dupneu", true);
+				addNationalite(roger, MockPays.France, date(1960, 1, 1), null, 1);
+			}
+		}
+
+		final ServiceCivil civil = new ServiceCivil();
+		serviceCivil.setUp(civil);
+
+		//
+		// Crée un non-habitant avec le même prénom/nom que l'individu qui arrive, mais sans date naissance
+		//
+		class Ids {
+			Long roger;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique roger = addNonHabitant("Roger", "Dupneu", null, Sexe.MASCULIN);
+				addForPrincipal(roger, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+				ids.roger = roger.getId();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		//
+		// Traite l'événement d'arrivée
+		//
+
+		final MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC);
+		arrivee.setIndividu(civil.roger);
+
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+
+		try {
+			evenementCivilHandler.handle(arrivee, warnings);
+			Assert.fail("L'événement d'arrivée aurait dû lever une erreur parce que le non-habitant trouvé n'est pas complet");
+		}
+		catch (EvenementCivilHandlerException e) {
+			final String message = "Un non-habitant (n°" + ids.roger + ") qui possède le même prénom/nom que l'individu a été trouvé, " +
+					"mais la date de naissance n'est pas renseignée. Veuillez vérifier manuellement.";
+			assertEquals(message, e.getMessage());
+		}
 	}
 
 	private static PersonnePhysique newHabitant(long noIndividuPrincipal) throws Exception {
