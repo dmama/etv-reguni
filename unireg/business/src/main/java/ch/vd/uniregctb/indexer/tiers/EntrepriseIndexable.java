@@ -29,6 +29,9 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 	                           Entreprise entreprise) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, entreprise);
 		this.pm = servicePM.getPersonneMorale(entreprise.getNumero(), PartPM.ADRESSES, PartPM.FORS_FISCAUX, PartPM.ASSUJETTISSEMENTS);
+		if (pm == null) {
+			throw new IndexerException("Impossible de trouver la personne morale n°" + entreprise.getNumero() + " dans le registre PM.");
+		}
 	}
 
 	public String getSubType() {
