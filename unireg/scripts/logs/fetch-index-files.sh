@@ -36,5 +36,5 @@ wget --no-check-certificate "$URL" -O - | grep "<a href=" | grep -v "Parent Dire
 done
 
 echo "Génération du fichier d'archive $DEST_FILE..." >&2
-(cd "$TMP_DIR" && tar --create --lzma --verbose --file "$DEST_FILE" .)
+(cd "$TMP_DIR" && tar --create --use-compress-program /usr/bin/lzma --verbose --file "$DEST_FILE" .)
 rm -rf "$TMP_DIR"
