@@ -490,7 +490,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		if (!pasDeNouveauNosAvs.isEmpty()) {
 			final StandardBatchIterator<Long> it = new StandardBatchIterator<Long>(pasDeNouveauNosAvs, 500);
 			while (it.hasNext()) {
-				final List<Long> ids = asList(it.next());
+				final List<Long> ids = it.next();
 
 				final List ancienNosAvs = (List) tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -544,7 +544,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		final Set<Long> numerosIndividus = rapportsByNumeroIndividu.keySet();
 		final StandardBatchIterator<Long> iterator = new StandardBatchIterator<Long>(numerosIndividus, 500);
 		while (iterator.hasNext()) {
-			final List<Long> batch = asList(iterator.next());
+			final List<Long> batch = iterator.next();
 			final List<Individu> individus = serviceCivilService.getIndividus(batch, null);
 			for (Individu ind : individus) {
 				final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
@@ -574,14 +574,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			noAVS = FormatNumeroHelper.formatNumAVS(ind.getNouveauNoAVS());
 		}
 		return noAVS;
-	}
-
-	private List<Long> asList(Iterator<Long> i) {
-		List<Long> b = new ArrayList<Long>();
-		while (i.hasNext()) {
-			b.add(i.next());
-		}
-		return b;
 	}
 
 	private String getNomPrenom(String prenom, String nom) {

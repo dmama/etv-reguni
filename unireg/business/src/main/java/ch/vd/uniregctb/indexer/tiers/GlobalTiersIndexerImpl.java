@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -310,13 +309,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		BatchIterator<Long> iter = new StandardBatchIterator<Long>(list, CIVIL_BATCH_SIZE);
 		while (iter.hasNext() && !statusManager.interrupted()) {
 
-			Iterator<Long> batch = iter.next();
-
-			final Set<Long> ids = new HashSet<Long>();
-			while (batch.hasNext()) {
-				Long id = batch.next();
-				ids.add(id);
-			}
+			final Set<Long> ids = new HashSet<Long>(iter.next());
 
 			statusManager.setMessage("Indexation du tiers " + i + " sur " + size, (100 * i) / size);
 
@@ -786,10 +779,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         this.tiersService = tiersService;
     }
 
-    public AdresseService getAdresseService() {
-        return adresseService;
-    }
-
     public void setAdresseService(AdresseService adresseService) {
         this.adresseService = adresseService;
     }
@@ -812,6 +801,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		this.statsService = statsService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
 		this.servicePM = servicePM;
 	}

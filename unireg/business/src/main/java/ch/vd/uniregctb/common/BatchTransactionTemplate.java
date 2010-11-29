@@ -176,12 +176,11 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 		while (iterator.hasNext() && processNextBatch) {
 
-			final Iterator<E> next = iterator.next();
-			if (next == null) {
+			final List<E> batch = iterator.next();
+			if (batch == null) {
 				break;
 			}
 
-			final List<E> batch = asList(next);
 			action.percent = iterator.getPercent();
 
 			if (statusManager != null && statusManager.interrupted()) {
@@ -354,17 +353,6 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 				return BatchTransactionTemplate.this.doInTransaction(action, batch, rapport);
 			}
 		});
-	}
-
-	/**
-	 * Extrait les éléments de l'itérateur et stocke-les dans une liste.
-	 */
-	private static <T> List<T> asList(Iterator<T> iter) {
-		final List<T> batch = new ArrayList<T>(100);
-		while (iter.hasNext()) {
-			batch.add(iter.next());
-		}
-		return batch;
 	}
 
 	public boolean isReadonly() {

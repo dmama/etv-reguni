@@ -13,11 +13,11 @@ import ch.vd.registre.base.utils.NotImplementedException;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class StandardBatchIterator<E> implements Iterator<Iterator<E>>, BatchIterator<E> {
+public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterator<E> {
 
 	private final int batchSize;
 	private final Iterator<E> sourceIterator;
-	private Iterator<E> next;
+	private List<E> next;
 
 	private int percent;
 	private int i;
@@ -43,13 +43,13 @@ public class StandardBatchIterator<E> implements Iterator<Iterator<E>>, BatchIte
 
 		this.percent = 0;
 		this.i = 0;
-		int size = calculateSize(list.size(), batchSize);
-		this.size = size;
+		this.size = calculateSize(list.size(), batchSize);
 	}
 
 	/**
-	 * @return le nombre de batches nécessaire au processing d'un liste contenant <i>listSize</i> éléments en utilisant des batches de
-	 *         taille <i>batchSize</i>.
+	 * @param listSize  la taille de la liste de départ
+	 * @param batchSize la taille des lots
+	 * @return le nombre de batches nécessaire au processing d'un liste contenant <i>listSize</i> éléments en utilisant des batches de taille <i>batchSize</i>.
 	 */
 	protected static int calculateSize(int listSize, int batchSize) {
 		int size = listSize / batchSize;
@@ -63,9 +63,8 @@ public class StandardBatchIterator<E> implements Iterator<Iterator<E>>, BatchIte
 		return next != null;
 	}
 
-	// TODO (msi) faire retourner une liste
-	public Iterator<E> next() {
-		Iterator<E> result = next;
+	public List<E> next() {
+		List<E> result = next;
 		next = buildNext();
 		if (size > 0) {
 			percent = (++i * 100) / size;
@@ -80,7 +79,7 @@ public class StandardBatchIterator<E> implements Iterator<Iterator<E>>, BatchIte
 		return percent;
 	}
 
-	private Iterator<E> buildNext() {
+	private List<E> buildNext() {
 		List<E> list = new ArrayList<E>();
 		for (int i = 0; i < batchSize && sourceIterator.hasNext(); ++i) {
 			E e = sourceIterator.next();
@@ -90,7 +89,7 @@ public class StandardBatchIterator<E> implements Iterator<Iterator<E>>, BatchIte
 			return null;
 		}
 		else {
-			return list.iterator();
+			return list;
 		}
 	}
 

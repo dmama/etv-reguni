@@ -1,17 +1,17 @@
 package ch.vd.uniregctb.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class StandardBatchIteratorTest extends WithoutSpringTest {
 
@@ -53,20 +53,15 @@ public class StandardBatchIteratorTest extends WithoutSpringTest {
 		assertTrue(iter.hasNext());
 		assertEquals(0, iter.getPercent());
 
-		final Iterator<Integer> batch = iter.next();
+		final List<Integer> batch = iter.next();
 		assertNotNull(batch);
+		assertEquals(5, batch.size());
 		assertEquals(100, iter.getPercent());
-		assertTrue(batch.hasNext());
-		assertEquals(Integer.valueOf(1), batch.next());
-		assertTrue(batch.hasNext());
-		assertEquals(Integer.valueOf(2), batch.next());
-		assertTrue(batch.hasNext());
-		assertEquals(Integer.valueOf(3), batch.next());
-		assertTrue(batch.hasNext());
-		assertEquals(Integer.valueOf(4), batch.next());
-		assertTrue(batch.hasNext());
-		assertEquals(Integer.valueOf(5), batch.next());
-		assertFalse(batch.hasNext());
+		assertEquals(Integer.valueOf(1), batch.get(0));
+		assertEquals(Integer.valueOf(2), batch.get(1));
+		assertEquals(Integer.valueOf(3), batch.get(2));
+		assertEquals(Integer.valueOf(4), batch.get(3));
+		assertEquals(Integer.valueOf(5), batch.get(4));
 	}
 
 	@Test
@@ -82,32 +77,27 @@ public class StandardBatchIteratorTest extends WithoutSpringTest {
 
 		assertTrue(iter.hasNext());
 		assertEquals(0, iter.getPercent());
-		final Iterator<Integer> batch1 = iter.next();
+		final List<Integer> batch1 = iter.next();
 		assertNotNull(batch1);
+		assertEquals(2, batch1.size());
 		assertEquals(33, iter.getPercent());
-		assertTrue(batch1.hasNext());
-		assertEquals(Integer.valueOf(1), batch1.next());
-		assertTrue(batch1.hasNext());
-		assertEquals(Integer.valueOf(2), batch1.next());
-		assertFalse(batch1.hasNext());
+		assertEquals(Integer.valueOf(1), batch1.get(0));
+		assertEquals(Integer.valueOf(2), batch1.get(1));
 
 		assertTrue(iter.hasNext());
-		final Iterator<Integer> batch2 = iter.next();
+		final List<Integer> batch2 = iter.next();
 		assertNotNull(batch2);
+		assertEquals(2, batch2.size());
 		assertEquals(66, iter.getPercent());
-		assertTrue(batch2.hasNext());
-		assertEquals(Integer.valueOf(3), batch2.next());
-		assertTrue(batch2.hasNext());
-		assertEquals(Integer.valueOf(4), batch2.next());
-		assertFalse(batch2.hasNext());
+		assertEquals(Integer.valueOf(3), batch2.get(0));
+		assertEquals(Integer.valueOf(4), batch2.get(1));
 
 		assertTrue(iter.hasNext());
-		final Iterator<Integer> batch3 = iter.next();
+		final List<Integer> batch3 = iter.next();
 		assertNotNull(batch3);
+		assertEquals(1, batch3.size());
 		assertEquals(100, iter.getPercent());
-		assertTrue(batch3.hasNext());
-		assertEquals(Integer.valueOf(5), batch3.next());
-		assertFalse(batch3.hasNext());
+		assertEquals(Integer.valueOf(5), batch3.get(0));
 
 		assertFalse(iter.hasNext());
 	}

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.common;
 
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * Interface de l'itérateur sur lots. Elle définit grosso-modo la même genre d'interface que {@link java.util.Iterator}, mais avec une sémantique légèrement différente pour permettre des
@@ -21,7 +21,7 @@ public interface BatchIterator<E> {
 	/**
 	 * @return le prochain lot à traiter; ou <i>null</i> s'il n'y a plus rien à faire.
 	 */
-	Iterator<E> next();
+	List<E> next();
 
 	/**
 	 * @return le pourcentage de progression de l'itération.
