@@ -92,7 +92,7 @@
 				document.location.href='nonIdentifie.do?id='+id;
 			}
 
-			function VoirMessage() {
+			function voirMessage() {
 				var form = F$("theForm");
 				form.action = 'edit.do?fichier_acicom=true';
 				form.submit();
