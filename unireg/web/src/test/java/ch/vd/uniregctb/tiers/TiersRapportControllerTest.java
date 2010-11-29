@@ -1,97 +1,135 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Map;
+import java.util.Set;
 
-import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
+import ch.vd.uniregctb.rapport.view.RapportView;
+import ch.vd.uniregctb.type.Sexe;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+@SuppressWarnings({"JavaDoc"})
 public class TiersRapportControllerTest extends WebTest {
 
-	/**
-	 * Le nom du controller a tester.
-	 */
 	private final static String CONTROLLER_NAME = "tiersRapportController";
-
-	private final static String DB_UNIT_FILE = "TiersRapportControllerTest.xml";
 
 	private TiersRapportController controller;
 
 	@Override
 	public void onSetUp() throws Exception {
-
 		super.onSetUp();
 		controller = getBean(TiersRapportController.class, CONTROLLER_NAME);
-
-		servicePM.setUp(new DefaultMockServicePM());
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-
-				final MockIndividu individu1 = addIndividu(333908, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", true);
-				final MockIndividu individu2 = addIndividu(333905, RegDate.get(1974, 3, 22), "Cuendet", "Biloute", true);
-				final MockIndividu individu3 = addIndividu(674417, RegDate.get(1974, 3, 22), "Dardare", "Francois", true);
-				final MockIndividu individu4 = addIndividu(327706, RegDate.get(1974, 3, 22), "Dardare", "Marcel", true);
-
-				addAdresse(individu1, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
-				addAdresse(individu2, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1980, 1, 1), null);
-				addAdresse(individu3, TypeAdresseCivil.COURRIER, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
-				addAdresse(individu4, TypeAdresseCivil.COURRIER, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
-
-				addAdresse(individu1, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
-				addAdresse(individu2, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1980, 1, 1), null);
-				addAdresse(individu3, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
-				addAdresse(individu4, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
-
-
-			}
-		});
-
 	}
 
 	/**
-	 * @throws Exception
+	 * Vérifie les données retournées pour l'édition d'un rapport d'appartenance ménage.
 	 */
 	@Test
 	public void testShowForm() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		// Crée un ménage commun
+		final PersonnePhysique jean = addNonHabitant("Jean", "Tiaget", date(1950, 1, 1), Sexe.MASCULIN);
+		final PersonnePhysique jeanne = addNonHabitant("Jeanne", "Tiaget", date(1950, 1, 1), Sexe.FEMININ);
+		final RegDate dateMariage = date(1975, 1, 1);
+		addEnsembleTiersCouple(jean, jeanne, dateMariage, null);
 
+		// Récupère le rapport d'appartenance ménage du principal
+		final Set<RapportEntreTiers> rapports = jean.getRapportsSujet();
+		assertNotNull(rapports);
+		assertEquals(1, rapports.size());
+		final AppartenanceMenage appartenance = (AppartenanceMenage) rapports.iterator().next();
+		assertNotNull(appartenance);
+
+		// Vérifie que les données exposées sont bien correctes
 		request.setMethod("GET");
-		request.addParameter("idRapport", "1");
+		request.addParameter("idRapport", String.valueOf(appartenance.getId()));
 		request.addParameter("sens", "OBJET");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		final ModelAndView mav = controller.handleRequest(request, response);
+		final RapportView view = (RapportView) mav.getModel().get(controller.getCommandName());
+		assertNotNull(view);
+		assertEquals(jean.getNumero(), view.getNumero());
+		assertEquals(dateMariage, view.getRegDateDebut());
+		assertNull(view.getRegDateFin());
+		assertEquals("AppartenanceMenage", view.getNatureRapportEntreTiers());
+		assertFalse(view.isAllowed());
+		assertEquals(SensRapportEntreTiers.OBJET, view.getSensRapportEntreTiers());
 	}
 
 	/**
-	 * @throws Exception
+	 * Vérifie qu'il est possible de renseigner une date de fin sur un rapport de représentation conventionnelle.
 	 */
 	@Test
 	public void testOnSubmit() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		class Ids {
+			Long marcel;
+			Long geraldine;
+			Long rapport;
+		}
+		final Ids ids = new Ids();
 
-		request.addParameter("idRapport", "1");
-		request.addParameter("sens", "OBJET");
-		request.setMethod("POST");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
-		/*
-		 * TODO (FDE) Completer test ? Verifier que ca s'est bien passé
-		 */
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique marcel = addNonHabitant("Marcel", "Ragnol", date(1932, 1, 1), Sexe.MASCULIN);
+				ids.marcel = marcel.getId();
+				final PersonnePhysique geraldine = addNonHabitant("Géraldine", "Massnacht", date(1982, 1, 1), Sexe.FEMININ);
+				ids.geraldine = geraldine.getId();
+				final RepresentationConventionnelle rapport = addRepresentationConventionnelle(marcel, geraldine, date(2000, 1, 1), false);
+				ids.rapport = rapport.getId();
+				return null;
+			}
+		});
+
+		// On simule l'affichage de la page d'édition de ce rapport
+		{
+			request.setMethod("GET");
+			request.addParameter("idRapport", String.valueOf(ids.rapport));
+			request.addParameter("sens", "OBJET");
+			final ModelAndView mav = controller.handleRequest(request, response);
+			final RapportView view = (RapportView) mav.getModel().get(controller.getCommandName());
+			assertNotNull(view);
+			assertEquals(ids.marcel, view.getNumero());
+			assertEquals(date(2000, 1, 1), view.getRegDateDebut());
+			assertNull(view.getRegDateFin());
+			assertEquals("RepresentationConventionnelle", view.getNatureRapportEntreTiers());
+			assertTrue(view.isAllowed());
+			assertEquals(SensRapportEntreTiers.OBJET, view.getSensRapportEntreTiers());
+		}
+
+		// On simule l'édition de la date de fin du rapport
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				request.addParameter("idRapport", String.valueOf(ids.rapport));
+				request.addParameter("sens", "OBJET");
+				request.addParameter("dateFin", "29.11.2010"); // <-- date de fin renseignée
+				request.setMethod("POST");
+				controller.handleRequest(request, response);
+				return null;
+			}
+		});
+
+		// On vérifie que le rapport a bien été fermé
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final RepresentationConventionnelle rapport = (RepresentationConventionnelle) hibernateTemplate.get(RepresentationConventionnelle.class, ids.rapport);
+				assertNotNull(rapport);
+				assertEquals(date(2010, 11, 29), rapport.getDateFin());
+				return null;
+			}
+		});
 	}
 
 }
