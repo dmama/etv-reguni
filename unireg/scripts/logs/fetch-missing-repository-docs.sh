@@ -52,6 +52,7 @@ recursive-filenames "$URL" | while read FILE; do
 	fi
 	if [ ! -e "$RELATIVE_FILENAME" ]; then
 		wget --no-check-certificate "$FILE" -O "$RELATIVE_FILENAME"
+		echo "Fichier $RELATIVE_FILENAME récupéré"
 	else
 		echo "Fichier $RELATIVE_FILENAME déjà connu" >&2
 	fi
