@@ -36,6 +36,8 @@ public class EvenementCivilListener extends EsbMessageListener {
 	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
 
 	private static final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
+	private static final AtomicInteger nombreMessagesRenvoyesEnErreur = new AtomicInteger(0);
+	private static final AtomicInteger nombreMessagesRenvoyesEnException = new AtomicInteger(0);
 
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
@@ -56,13 +58,16 @@ public class EvenementCivilListener extends EsbMessageListener {
 			}
 		}
 		catch (EvenementCivilException e) {
-			// on a un truc qui a sauté au moment de l'insertion de l'événement
+			// on a un truc qui a sauté au moment de l'arrivée de l'événement (test métier)
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
+			nombreMessagesRenvoyesEnErreur.incrementAndGet();
 			LOGGER.error(e.getMessage(), e);
 			getEsbTemplate().sendError(esbMessage, e.getMessage(), e, ErrorType.UNKNOWN, "");
 		}
 		catch (RuntimeException e) {
+			// boom technique (bug ou problème avec la DB) -> départ dans la DLQ
+			nombreMessagesRenvoyesEnException.incrementAndGet();
 			LOGGER.error(e, e);
 			throw e;
 		}
@@ -70,6 +75,14 @@ public class EvenementCivilListener extends EsbMessageListener {
 
 	public static int getNombreMessagesRecus() {
 		return nombreMessagesRecus.intValue();
+	}
+
+	public static int getNombreMessagesRenvoyesEnErreur() {
+		return nombreMessagesRenvoyesEnErreur.intValue();
+	}
+
+	public static int getNombreMessagesRenvoyesEnException() {
+		return nombreMessagesRenvoyesEnException.intValue();
 	}
 
 	/**
@@ -116,7 +129,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 		evenementCivilAsyncProcessor.sync();
 	}
 
-	private EvenementCivilData extractEvenement(String xmlMessage) {
+	private EvenementCivilData extractEvenement(String xmlMessage) throws EvenementCivilException {
 
 		/* On parse le message XML */
 		EvtRegCivilDocument doc;
@@ -125,7 +138,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 		}
 		catch (XmlException e) {
 			LOGGER.warn("Le message suivant n'est pas un document XML valide:\n" + xmlMessage, e);
-			throw new IllegalArgumentException("Message invalide", e);
+			throw new EvenementCivilException("Message XML invalide", e);
 		}
 		final EvtRegCivil bean = doc.getEvtRegCivil();
 
@@ -137,50 +150,50 @@ public class EvenementCivilListener extends EsbMessageListener {
 		}
 
 		final EvenementCivilData evenement = new EvenementCivilData(bean);
-		Assert.notNull(evenement.getId(), "L'ID de l'événement ne peut pas être nul");
-		Assert.notNull(evenement.getDateEvenement(), "La date de l'événement ne peut pas être nulle");
-		Assert.notNull(evenement.getNumeroIndividuPrincipal(), "Le numéro d'individu de l'événement ne peut pas être nul");
-
+		if (evenement.getId() == null) {
+			throw new EvenementCivilException("L'ID de l'événement ne peut pas être nul");
+		}
+		if (evenement.getDateEvenement() == null) {
+			throw new EvenementCivilException("La date de l'événement ne peut pas être nulle");
+		}
+		if (evenement.getNumeroIndividuPrincipal() == null) {
+			throw new EvenementCivilException("Le numéro d'individu de l'événement ne peut pas être nul");
+		}
 		return evenement;
 	}
 
-	private boolean insertEvenement(final EvenementCivilData evenement) throws EvenementCivilException {
+	private boolean insertEvenement(final EvenementCivilData evenement) {
 
 		final Long id = evenement.getId();
 		Audit.info(id, "Arrivée du message JMS avec l'id " + id);
 
-		try {
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 
-			final boolean ok = (Boolean) template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
+		final boolean ok = (Boolean) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-					if (evenementCivilDAO.exists(id)) {
-						Audit.warn(id, String.format("L'événement civil n°%d existe DEJA en DB", id));
-						return false; // rien de plus à faire
-					}
-
-					evenementCivilDAO.save(evenement);
-
-					final StringBuilder b = new StringBuilder();
-					b.append("L'événement civil ").append(id).append(" est inséré en base de données {");
-					b.append("id=").append(id);
-					b.append(", type=").append(evenement.getType());
-					b.append(", date=").append(RegDateHelper.dateToDisplayString(evenement.getDateEvenement()));
-					b.append(", no individu=").append(evenement.getNumeroIndividuPrincipal());
-					b.append(", OFS commune=").append(evenement.getNumeroOfsCommuneAnnonce()).append("}.");
-					Audit.info(id, b.toString());
-
-					return true;
+				if (evenementCivilDAO.exists(id)) {
+					Audit.warn(id, String.format("L'événement civil n°%d existe DEJA en DB", id));
+					return false; // rien de plus à faire
 				}
-			});
 
-			return ok;
-		}
-		catch (TransactionException e) {
-			throw new EvenementCivilException(e);
-		}
+				evenementCivilDAO.save(evenement);
+
+				final StringBuilder b = new StringBuilder();
+				b.append("L'événement civil ").append(id).append(" est inséré en base de données {");
+				b.append("id=").append(id);
+				b.append(", type=").append(evenement.getType());
+				b.append(", date=").append(RegDateHelper.dateToDisplayString(evenement.getDateEvenement()));
+				b.append(", no individu=").append(evenement.getNumeroIndividuPrincipal());
+				b.append(", OFS commune=").append(evenement.getNumeroOfsCommuneAnnonce()).append("}.");
+				Audit.info(id, b.toString());
+
+				return true;
+			}
+		});
+
+		return ok;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {

@@ -5,19 +5,25 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 public interface EvenementsCivilsJmxBean {
 
 	@ManagedAttribute(description = "Total number of events received from the JMS queue")
-	int getAllEventsReceived();
+	int getNbEventsReceived();
+
+	@ManagedAttribute(description = "Total number of events sent to the error queue")
+	int getNbEventsRejectedToErrorQueue();
+
+	@ManagedAttribute(description = "Total number of rejected events (DLQ)")
+	int getNbEventsRejectedException();
 
 	@ManagedAttribute(description = "Total number of events posted for processing since application start")
-	int getMeaningfullEventsReceived();
+	int getNbMeaningfullEventsReceived();
 
 	@ManagedAttribute(description = "Total number of events treated since application start")
-	int getEventsTreated();
+	int getNbEventsTreated();
 
 	@ManagedAttribute(description = "Number of events currently waiting to be processed sequencially")
 	int getTreatmentQueueSize();
 
 	@ManagedAttribute(description = "Number of concurrent consumers listening to the ESB queue")
-	int getConsumers();
+	int getNbConsumers();
 
 	@ManagedAttribute(description = "Time to wait (seconds) before trying to sort incoming events")
 	int getAcknowledgementDelay();

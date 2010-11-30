@@ -15,17 +15,27 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean {
 	private DefaultMessageListenerContainer evtCivilListenerContainer;
 
 	@ManagedAttribute
-	public int getAllEventsReceived() {
+	public int getNbEventsReceived() {
 		return EvenementCivilListener.getNombreMessagesRecus();
 	}
 
 	@ManagedAttribute
-	public int getMeaningfullEventsReceived() {
+	public int getNbEventsRejectedToErrorQueue() {
+		return EvenementCivilListener.getNombreMessagesRenvoyesEnErreur();
+	}
+
+	@ManagedAttribute
+	public int getNbEventsRejectedException() {
+		return EvenementCivilListener.getNombreMessagesRenvoyesEnException();
+	}
+
+	@ManagedAttribute
+	public int getNbMeaningfullEventsReceived() {
 		return evenementCivilAsyncProcessor.getNombreEvenementsRecus();
 	}
 
 	@ManagedAttribute
-	public int getEventsTreated() {
+	public int getNbEventsTreated() {
 		return evenementCivilAsyncProcessor.getNombreEvenementsTraites();
 	}
 
@@ -35,7 +45,7 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean {
 	}
 
 	@ManagedAttribute
-	public int getConsumers() {
+	public int getNbConsumers() {
 		return evtCivilListenerContainer.getConcurrentConsumers();
 	}
 
@@ -49,10 +59,12 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean {
 		evenementCivilAsyncProcessor.setDelaiPriseEnCompte(delay);
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilAsyncProcessor(EvenementCivilAsyncProcessor evenementCivilAsyncProcessor) {
 		this.evenementCivilAsyncProcessor = evenementCivilAsyncProcessor;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvtCivilListenerContainer(DefaultMessageListenerContainer evtCivilListenerContainer) {
 		this.evtCivilListenerContainer = evtCivilListenerContainer;
 	}
