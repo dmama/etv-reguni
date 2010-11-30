@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.store.EsbStore;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -66,7 +65,6 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final EsbJmsTemplate noTxEsbTemplate = getBean(EsbJmsTemplate.class, "noTxEsbJmsTemplate");
 		final EsbMessageFactory esbMessageFactory = getBean(EsbMessageFactory.class, "esbMessageFactory");
 		final ConnectionFactory connectionFactory = getBean(ConnectionFactory.class, "noTxConnectionFactory");
-		final EsbStore esbStore = getBean(EsbStore.class, "raftEsbStore");
 
 		// On setup à la main le reste (= le mininum de beans pour faire passer le test)
 		final EvenementEditiqueSenderImpl sender = new EvenementEditiqueSenderImpl();
@@ -82,7 +80,6 @@ public class EditiqueServiceTest extends BusinessItTest {
 
 		final EvenementEditiqueListenerImpl listener = new EvenementEditiqueListenerImpl();
 		listener.setStorageService(storageService);
-		listener.setEsbStore(esbStore);
 		listener.setEsbTemplate(esbTemplate);
 		if (listener instanceof InitializingBean) {
 			((InitializingBean) listener).afterPropertiesSet();

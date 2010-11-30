@@ -68,7 +68,6 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		clearQueue(INPUT_QUEUE);
 
 		listener = new EvenementEditiqueListenerImpl();
-		listener.setEsbStore(esbStore);
 		listener.setEsbTemplate(esbTemplate);
 		if (listener instanceof InitializingBean) {
 			((InitializingBean) listener).afterPropertiesSet();
