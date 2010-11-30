@@ -42,7 +42,7 @@
 				<c:if test="${command.allowedDelai}">
 					<c:if test="${page == 'edit' }">
 						<c:if test="${(!delai.annule) && (!delai.first)}">
-							<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerDelai(${delai.id});"/>
+							<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerDelai(${delai.id});" tooltip="Annuler le délai"/>
 						</c:if>
 					</c:if>
 				</c:if>

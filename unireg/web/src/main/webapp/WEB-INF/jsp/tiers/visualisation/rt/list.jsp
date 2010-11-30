@@ -70,7 +70,7 @@
 					<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=RapportEntreTiers&id=${rapportPrestation.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
 					<c:if test="${!rapportPrestation.annule && command.editionAllowed}">
 						<unireg:raccourciModifier link="../tiers/rapport.do?height=250&width=800&idRapport=${rapportPrestation.id}&sens=SUJET&TB_iframe=true&modal=true&viewRetour=../rapports-prestation/list.do?idDpi=${command.idDpi}" thickbox="true" tooltip="Edition de rapport"/>
-						<unireg:raccourciAnnuler onClick="javascript:annulerRapportPrestation(${rapportPrestation.id}, true);"/>
+						<unireg:raccourciAnnuler onClick="javascript:annulerRapportPrestation(${rapportPrestation.id}, true);" tooltip="Annulation de rapport"/>
 					</c:if>
 				</display:column>
 				<display:setProperty name="paging.banner.all_items_found" value=""/>

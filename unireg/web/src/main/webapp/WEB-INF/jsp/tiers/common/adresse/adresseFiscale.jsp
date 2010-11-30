@@ -62,7 +62,7 @@
 						<c:if test="${adresse.dateFin == null}">
 							<unireg:raccourciModifier link="adresse-close.do?idAdresse=${adresse.id}" tooltip="Fermeture de l'adresse"/>
 						</c:if>
-						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresse.id});"/>
+						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresse.id});" tooltip="Annulation de l'adresse"/>
 					</c:if>
 				</c:if>
 			</c:if>
@@ -101,7 +101,7 @@
 						((adresseEnErreur.usage == 'REPRESENTATION') && (command.allowedOnglet.ADR_B)) ||
 						((adresse.usage == 'DOMICILE') && (command.allowedOnglet.ADR_D))}">
 						<unireg:raccourciModifier link="adresse.do?height=530&width=850&idAdresse=${adresseEnErreur.id}&numero=${command.tiers.numero}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition d'adresse"/>
-						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresseEnErreur.id});"/>
+						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresseEnErreur.id});" tooltip="Annulation de l'adresse"/>
 					</c:if>
 				</c:if>
 			</c:if>

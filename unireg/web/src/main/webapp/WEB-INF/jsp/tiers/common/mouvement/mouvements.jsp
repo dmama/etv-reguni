@@ -48,7 +48,7 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${mouvement.annulable}">
-				<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerMvt(${mouvement.id});"/>
+				<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerMvt(${mouvement.id});" tooltip="Annulation de mouvement"/>
 			</c:if>
 		</c:if>
 	</display:column>

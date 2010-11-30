@@ -60,7 +60,7 @@
 					((adresse.usage == 'REPRESENTATION') && (command.allowedOnglet.ADR_B)) ||
 					((adresse.usage == 'DOMICILE') && (command.allowedOnglet.ADR_D))}">
 						<!-- <a href="adresse.do?height=530&width=850&idAdresse=${adresse.id}&numero=<c:out value="${command.tiers.numero}"></c:out>&TB_iframe=true&modal=true" class="thickbox edit" title="Edition d'adresse">&nbsp;</a> -->
-						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresse.id});"/>
+						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresse.id});" tooltip="Annuler"/>
 					</c:if>
 				</c:if>
 			</c:if>
@@ -99,7 +99,7 @@
 						((adresseEnErreur.usage == 'REPRESENTATION') && (command.allowedOnglet.ADR_B)) ||
 						((adresse.usage == 'DOMICILE') && (command.allowedOnglet.ADR_D))}">
 						<unireg:raccourciModifier link="adresse.do?height=530&width=850&idAdresse=${adresseEnErreur.id}&numero=${command.tiers.numero}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition d'adresse"/>
-						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresseEnErreur.id});"/>
+						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresseEnErreur.id});" tooltip="Annuler"/>
 					</c:if>
 				</c:if>
 			</c:if>

@@ -39,7 +39,7 @@
 					<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
 				</c:if>
 				<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-					<unireg:raccourciAnnuler onClick="javascript:annulerFor(${forFiscal.id});"/>
+					<unireg:raccourciAnnuler onClick="javascript:annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
 				</c:if>
 			</c:if>
 		</c:if>
