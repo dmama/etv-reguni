@@ -126,6 +126,13 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 	}
 
+	/**
+	 * @return un timestamp correspondant à l'instant actuel en millisecondes
+	 */
+	private static long getTimestampMillis() {
+		return System.nanoTime() / 1000000L;
+	}
+
 	public EditiqueResultat getDocument(String nomDocument, long timeout) {
 
 		Assert.isTrue(timeout > 0);
@@ -134,7 +141,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 			LOGGER.debug(String.format("Demande de récupération du document '%s'", nomDocument));
 		}
 
-		final long tsAttente = System.currentTimeMillis() + timeout;        // on n'attendra pas plus tard...
+		final long tsAttente = getTimestampMillis() + timeout;        // on n'attendra pas plus tard...
 
 		synchronized (impressionsRecues) {
 
@@ -146,7 +153,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 				if (resultat == null) {
 
 					// et non, on attends un peu... mais pas trop quand-même !
-					final long tempsRestant = tsAttente - System.currentTimeMillis();
+					final long tempsRestant = tsAttente - getTimestampMillis();
 					if (tempsRestant <= 0) {
 
 						if (LOGGER.isDebugEnabled()) {
