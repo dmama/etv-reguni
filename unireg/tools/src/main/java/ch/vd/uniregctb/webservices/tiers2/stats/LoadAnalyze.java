@@ -81,6 +81,7 @@ class LoadAnalyze extends Analyze {
 		//		final String values = "50,30,10,60,65,190";
 		StringBuilder values = new StringBuilder();
 		long max = 0;
+		long total = 0;
 		for (int i = 0, timeSize = data.size(); i < timeSize; i++) {
 			final LoadData range = data.get(i);
 			values.append(range.getCount());
@@ -88,13 +89,15 @@ class LoadAnalyze extends Analyze {
 				values.append(',');
 			}
 			max = Math.max(max, range.getCount());
+			total += range.getCount();
 		}
 
 		final String valuesRange = "0," + max;
 
+		final String callLabel = "calls%20(total:%20" + total + ")";
 		final String url =
 				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x&chxtc=1,4")
-						.append("&chs=1000x200").append("&cht=lc").append("&chco=3D7930").append("&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chdl=calls")
+						.append("&chs=1000x200").append("&cht=lc").append("&chco=3D7930").append("&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chdl=").append(callLabel)
 						.append("&chg=-1.3,-1,1,1").append("&chls=1").append("&chtt=").append(method).append("%20-%20Load%20(calls/quarter%20hour)").toString();
 		return new Chart(url, 1000, 200);
 	}

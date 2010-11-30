@@ -88,7 +88,10 @@ class TimelineAnalyze extends Analyze {
 		StringBuilder minValues = new StringBuilder();
 		StringBuilder maxValues = new StringBuilder();
 		StringBuilder avgValues = new StringBuilder();
+		long min = Long.MAX_VALUE;
 		long max = 0;
+		long total = 0;
+		long count = 0;
 		for (int i = 0, timeSize = data.size(); i < timeSize; i++) {
 			final TimelineData range = data.get(i);
 			minValues.append(range.getMin());
@@ -104,15 +107,23 @@ class TimelineAnalyze extends Analyze {
 				avgValues.append(',');
 			}
 			max = Math.max(max, range.getMax());
+			if (range.getMin() > 0) {
+				min = Math.min(min, range.getMin());
+			}
+			total += range.getTotal();
+			count += range.getCount();
 		}
 
 		final String valuesRange = "0," + max;
 
+		final String averageLabel = "average%20(" + (total / count) + "%20ms)";
+		final String minLabel = "min%20(" + min + "%20ms)";
+		final String maxLabel = "max%20(" + max + "%20ms)";
 		final String url =
 				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x&chxtc=1,4")
 						.append("&chs=1000x200").append("&cht=lc").append("&chco=000000,008000,AA0033").append("&chds=").append(valuesRange).append("&chd=t:").append(avgValues).append("|")
-						.append(minValues).append("|").append(maxValues).append("&chdl=average|min|max").append("&chg=-1.3,-1,1,1").append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method)
-						.append("%20-%20Response%20Time%20Line%20(min/max/avg%20ms/quarter%20hour)").toString();
+						.append(minValues).append("|").append(maxValues).append("&chdl=").append(averageLabel).append("|").append(minLabel).append("|").append(maxLabel).append("&chg=-1.3,-1,1,1")
+						.append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method).append("%20-%20Response%20Time%20Line%20(min/max/avg%20ms/quarter%20hour)").toString();
 		return new Chart(url, 1000, 200);
 	}
 

@@ -47,6 +47,15 @@ class TimelineData implements Comparable<TimelineData> {
 		}
 	}
 
+	public long getTotal() {
+		return total;
+	}
+
+	public long getCount() {
+
+		return count;
+	}
+
 	public boolean isInPeriode(HourMinutes timestamp) {
 		return periode.isInPeriode(timestamp);
 	}
