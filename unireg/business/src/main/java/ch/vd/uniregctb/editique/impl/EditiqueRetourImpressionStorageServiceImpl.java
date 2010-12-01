@@ -14,13 +14,21 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
+import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * Implémentation du service de stockage des retours d'impression de l'éditique
  */
 public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetourImpressionStorageService, InitializingBean, DisposableBean {
 
-	public final static Logger LOGGER = Logger.getLogger(EditiqueRetourImpressionStorageServiceImpl.class);
+	public static final Logger LOGGER = Logger.getLogger(EditiqueRetourImpressionStorageServiceImpl.class);
+
+	private static final String SERVICE_NAME = "ImpressionLocale";
+
+	private StatsService statsService;
+
+	private final ServiceTracing serviceTracing = new ServiceTracing(SERVICE_NAME);
 
 	private final Map<String, EditiqueResultat> impressionsRecues = new HashMap<String, EditiqueResultat>();
 
@@ -52,6 +60,10 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 				LOGGER.info(String.format("Le délai de purge des documents imprimés non réclamés est de %d seconde%s.", cleanupPeriod, cleanupPeriod > 1 ? "s" : ""));
 			}
 		}
+	}
+
+	public void setStatsService(StatsService statsService) {
+		this.statsService = statsService;
 	}
 
 	private void restartCleanupTimer() {
@@ -99,11 +111,13 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 		cleanupTimer = new Timer("RetourImpressionCleanup");
 		restartCleanupTimer();
+		statsService.registerService(SERVICE_NAME, serviceTracing);
 	}
 
 	public void destroy() throws Exception {
 		cleanupTimer.cancel();
 		cleanupTimer = null;
+		statsService.unregisterService(SERVICE_NAME);
 	}
 
 	public void onArriveeRetourImpression(EditiqueResultat resultat) {
@@ -141,6 +155,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 			LOGGER.debug(String.format("Demande de récupération du document '%s'", nomDocument));
 		}
 
+		final long start = serviceTracing.start();
 		final long tsAttente = getTimestampMillis() + timeout;        // on n'attendra pas plus tard...
 
 		synchronized (impressionsRecues) {
@@ -175,6 +190,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug(String.format("Document '%s' trouvé", nomDocument));
 					}
+					serviceTracing.end(start, "getDocument", nomDocument);
 					return resultat;
 				}
 			}

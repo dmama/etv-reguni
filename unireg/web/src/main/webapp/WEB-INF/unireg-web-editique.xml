@@ -17,6 +17,7 @@
 
 	<bean id="retourImpressionStorageService" class="ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl">
 		<property name="cleanupPeriod" value="${editique.locale.attente.timeout}"/>
+		<property name="statsService" ref="statsService"/>
 	</bean>
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.impl.EditiqueServiceImpl" lazy-init="true">
