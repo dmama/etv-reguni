@@ -19,7 +19,7 @@
 				/errors/**=httpSessionContextIntegrationFilter
 				/ws/**=#NONE#
 				/remoting/**=#NONE#
-				/chooseoid.do=httpSessionContextIntegrationFilter
+				/chooseoid.do=httpSessionContextIntegrationFilter,iamAuthenticationProcessingFilter
 				/authenticationfailed.do=httpSessionContextIntegrationFilter
 				<!-- Version IAM + IFOSEC -->
 				/**/*.do=httpSessionContextIntegrationFilter, logoutFilter, exceptionTranslationFilter, iamAuthenticationProcessingFilter, ifoSecAuthenticationProcessingFilter, contextHolderAwareRequestFilter, filterInvocationInterceptor

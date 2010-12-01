@@ -29,7 +29,6 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 	private static final Logger LOGGER = Logger.getLogger(IFOSecAuthenticationProcessingFilter.class);
 
 	public static final String IFOSEC_OID_REQUEST_KEY = "_ifosec-oid-key";
-	public static final String IFOSEC_OID_USER_LIST = "collectivites";
 	public static final String USER_OID_SIGLE = "OIDSigle";
 
 	private ServiceSecuriteService serviceSecurite = null;
@@ -115,19 +114,17 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 		final String oidStr = request.getParameter(IFOSEC_OID_REQUEST_KEY);
 		if (oidStr == null) {
 			// l'OID n'est pas renseigné, on tente de le détermine automatiquement (dans le cas ou l'opérateur ne travaille que pour une collectivité administrative)
-			try {
-				oi = determineOfficeImpot(visa);
-			}
-			catch (MultipleOIDFoundException e) {
-				// on stocke la liste des collectivités dans la session, pour renseigner la combobox de chooseOID.jsp
-				request.getSession().setAttribute(IFOSEC_OID_USER_LIST, e.getCollectivites());
-				throw e;
-			}
+			oi = determineOfficeImpot(visa);
 		}
 		else {
 			// Si on arrive ici, c'est que l'utilisateur a dû choisir un office d'impôt parmi une liste.
 			final int oid = Integer.parseInt(oidStr);
-			final List<CollectiviteAdministrative> list = (List<CollectiviteAdministrative>) request.getSession().getAttribute(IFOSEC_OID_USER_LIST);
+
+			final List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(visa);
+			if (list == null || list.isEmpty()) {
+				throw new AuthenticationFailedException("Authentification échouée : l'opérateur " + visa + " ne possède aucune collectivités");
+			}
+
 			CollectiviteAdministrative c = null;
 			for (CollectiviteAdministrative ca : list) {
 				if (ca.getNoColAdm() == oid) {
@@ -136,8 +133,9 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 				}
 			}
 			if (c == null) {
-				throw new IllegalArgumentException("L'OID choisi [" + oid + "] ne fait pas partie des collectivités de l'utilisateur [" + visa + "]");
+				throw new AuthenticationFailedException("L'OID choisi [" + oid + "] ne fait pas partie des collectivités de l'utilisateur [" + visa + "]");
 			}
+
 			oi = new OfficeImpot(oid, c.getSigle());
 		}
 		return oi;
@@ -206,7 +204,7 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 	 * @param auth l'objet Authentication
 	 * @return le visa opérateur
 	 */
-	private String getVisaOperateur(Authentication auth) {
+	private static String getVisaOperateur(Authentication auth) {
 		String result = null;
 		Object principal = auth.getPrincipal();
 
@@ -236,7 +234,7 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 
 		try {
 			final String visaOperateur = getVisaOperateur(auth);
-			final ProfilOperateur profil = getProfileOperateur(visaOperateur, oi.getId());
+			final ProfilOperateur profil = getProfilOperateur(visaOperateur, oi.getId());
 
 			// Enregistrement du profil dans l'objet Authentication
 			final UniregSecurityDetails details = (UniregSecurityDetails) auth.getDetails();
@@ -270,7 +268,7 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 	 * @param oid  le numéro de l'office d'impôt
 	 * @return le profil de l'opérateur
 	 */
-	private ProfilOperateur getProfileOperateur(String visa, Integer oid) {
+	private ProfilOperateur getProfilOperateur(String visa, Integer oid) {
 		final ProfilOperateur profil;
 		if (isDebug()) {
 			final ProfilOperateur profil1;// On va chercher les profils de debug spécifiés dans le fichier unireg.properties
