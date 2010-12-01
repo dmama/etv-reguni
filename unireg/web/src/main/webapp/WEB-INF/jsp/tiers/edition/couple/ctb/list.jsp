@@ -6,7 +6,7 @@
   	
   	<tiles:put name="body">
 		<h1><fmt:message key="title.recherche.contribuable.existant" /></h1>
-		<div class="flash"><fmt:message key="label.couple.contribuable.existant.aide"/></div>
+		<div class="bulletted-info"><fmt:message key="label.couple.contribuable.existant.aide"/></div>
 	  	<c:if test="${numeroPP1 != null}">
 			<jsp:include page="../../../../general/pp.jsp">
 				<jsp:param name="page" value="couple" />
