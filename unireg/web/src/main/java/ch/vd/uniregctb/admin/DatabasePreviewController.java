@@ -43,6 +43,7 @@ public class DatabasePreviewController extends AbstractSimpleFormController {
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
 		if (!UniregModeHelper.isTestMode() || !(SecurityProvider.isGranted(Role.TESTER) || SecurityProvider.isGranted(Role.ADMIN))) {
+			flashWarning("Vous ne possédez pas les droits suffisants pour accéder à la prévisualisation des tiers !");
 			return new ModelAndView(new RedirectView("../tiers/list.do"));
 		}
 		return super.showForm(request, response, errors);
