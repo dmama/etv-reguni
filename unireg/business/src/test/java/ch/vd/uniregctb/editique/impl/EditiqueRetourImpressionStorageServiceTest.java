@@ -3,12 +3,56 @@ package ch.vd.uniregctb.editique.impl;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
+import ch.vd.uniregctb.stats.LoadMonitor;
+import ch.vd.uniregctb.stats.ServiceStats;
+import ch.vd.uniregctb.stats.StatsService;
 
 public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTest {
 
 	private EditiqueRetourImpressionStorageServiceImpl service;
+
+	/**
+	 * Dummy class pour ne pas avoir besoin de tout spring pour juste du log...
+	 */
+	private static class DummyStatsService implements StatsService {
+
+		public void registerService(String serviceName, ServiceTracingInterface tracing) {
+			// celle-ci est censée être appelée dans le onSetup()
+		}
+
+		public void registerCache(String serviceName, UniregCacheInterface cache) {
+			throw new NotImplementedException();
+		}
+
+		public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
+			throw new NotImplementedException();
+		}
+
+		public void unregisterService(String serviceName) {
+			// celle-ci est censée être appelée dans le onTearDown()
+		}
+
+		public void unregisterCache(String serviceName) {
+			throw new NotImplementedException();
+		}
+
+		public void unregisterLoadMonitor(String serviceName) {
+			throw new NotImplementedException();
+		}
+
+		public ServiceStats getServiceStats(String serviceName) {
+			throw new NotImplementedException();
+		}
+
+		public String buildStats() {
+			throw new NotImplementedException();
+		}
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -16,6 +60,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		service = new EditiqueRetourImpressionStorageServiceImpl();
 		service.setCleanupPeriod(1);    // 1 seconde
+		service.setStatsService(new DummyStatsService());
 		service.afterPropertiesSet();
 	}
 
