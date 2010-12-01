@@ -6,18 +6,19 @@
   	
   	<tiles:put name="body">
 		<h1><fmt:message key="title.recherche.contribuable.existant" /></h1>
+		<div class="flash"><fmt:message key="label.couple.contribuable.existant.aide"/></div>
 	  	<c:if test="${numeroPP1 != null}">
 			<jsp:include page="../../../../general/pp.jsp">
 				<jsp:param name="page" value="couple" />
 				<jsp:param name="path" value="premierePersonne" />
 			</jsp:include>
 		</c:if>
-		
+
 		<unireg:nextRowClass reset="1"/>
 	    <form:form method="post" id="formRechercheCTB">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
-				<form:errors  cssClass="error"/>
+				<form:errors cssClass="error"/>
 				<jsp:include page="../../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="couple" />
 				</jsp:include>
