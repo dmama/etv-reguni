@@ -23,6 +23,7 @@ import ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelperImpl;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -65,6 +66,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final EsbJmsTemplate noTxEsbTemplate = getBean(EsbJmsTemplate.class, "noTxEsbJmsTemplate");
 		final EsbMessageFactory esbMessageFactory = getBean(EsbMessageFactory.class, "esbMessageFactory");
 		final ConnectionFactory connectionFactory = getBean(ConnectionFactory.class, "noTxConnectionFactory");
+		final StatsService statsService = getBean(StatsService.class, "statsService");
 
 		// On setup à la main le reste (= le mininum de beans pour faire passer le test)
 		final EvenementEditiqueSenderImpl sender = new EvenementEditiqueSenderImpl();
@@ -75,6 +77,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		sender.setServiceReplyTo(INPUT_QUEUE);
 
 		storageService = new EditiqueRetourImpressionStorageServiceImpl();
+		storageService.setStatsService(statsService);
 		storageService.setCleanupPeriod(20);
 		storageService.afterPropertiesSet();
 
