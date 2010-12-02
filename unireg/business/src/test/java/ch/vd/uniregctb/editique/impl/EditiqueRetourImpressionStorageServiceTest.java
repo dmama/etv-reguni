@@ -185,7 +185,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final long tsFin = currentTimeMillis();
 		Assert.assertNotNull(resultat);
 		Assert.assertEquals(nomDocument, resultat.getIdDocument());
-		Assert.assertTrue(tsFin - tsDebut < 20);
+		Assert.assertTrue(tsFin - tsDebut < 50);
 	}
 
 	@Test(timeout = 1000)
@@ -209,7 +209,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final long tsFin = currentTimeMillis();
 			Assert.assertNotNull(resultat);
 			Assert.assertEquals(nomDocument, resultat.getIdDocument());
-			Assert.assertTrue(tsFin - tsDebut < 20);
+			Assert.assertTrue(tsFin - tsDebut < 50);
 		}
 
 		// seconde réception : on doit taper dans le timeout sans résultat
@@ -329,7 +329,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final long tsFin = currentTimeMillis();
 			Assert.assertNotNull(resultat);
 			Assert.assertEquals(nomDocumentVoyageurTemporel, resultat.getIdDocument());
-			Assert.assertTrue(tsFin - tsDebut < 20);
+			Assert.assertTrue(tsFin - tsDebut < 50);
 		}
 	}
 
