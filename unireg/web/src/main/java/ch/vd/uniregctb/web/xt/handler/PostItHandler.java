@@ -94,6 +94,7 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			{
 				topRow.addAttribute("class", "top");
 				TableData data = new TableData(new SimpleText(""));
+				data.addAttribute("class", "iepngfix");
 				topRow.addTableData(data);
 			}
 			addTableRow(topRow);
@@ -102,6 +103,7 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			{
 				middleRow.addAttribute("class", "middle");
 				TableData data = new TableData(new PostItBody(tachesEnInstanceCount, dossiersEnInstanceCount));
+				data.addAttribute("class", "iepngfix");
 				middleRow.addTableData(data);
 			}
 			addTableRow(middleRow);
@@ -110,6 +112,7 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			{
 				bottomRow.addAttribute("class", "bottom");
 				TableData data = new TableData(new SimpleText(""));
+				data.addAttribute("class", "iepngfix");
 				bottomRow.addTableData(data);
 			}
 			addTableRow(bottomRow);

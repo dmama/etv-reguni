@@ -232,7 +232,7 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 
 		@Override
 		protected String getCssClass() {
-			return "alert";
+			return "alert iepngfix";
 		}
 	}
 
@@ -258,7 +258,7 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 
 		@Override
 		protected String getCssClass() {
-			return "key";
+			return "key iepngfix";
 		}
 	}
 

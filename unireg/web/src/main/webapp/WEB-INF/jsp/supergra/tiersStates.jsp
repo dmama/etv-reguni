@@ -23,14 +23,14 @@
 						<table cellspacing="0" border="0">
 							<tr>
 								<c:if test="${s.valid}">
-									<c:set var="header_class" value="header_valid"/>
+									<c:set var="header_class" value="header_valid iepngfix"/>
 								</c:if>
 								<c:if test="${s.inError}">
 										<c:set var="header_class" value="header_error"/>
 										<c:set var="hasError" value="true"/>
 								</c:if>
 								<c:if test="${!s.valid && !s.inError}">
-										<c:set var="header_class" value="header_warning"/>
+										<c:set var="header_class" value="header_warning iepngfix"/>
 								</c:if>
 								<td class="${header_class}" colspan="2"><a href="<c:url value="/supergra/entity.do?id=${s.key.id}&class=${s.key.type}"/>"><c:out value="${s.key}"/></a></td>
 							</tr>

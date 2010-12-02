@@ -27,7 +27,7 @@ function ouvrirAide(url) {
 		<%-- Workaround du bug IE6 qui ne tient pas compte de la transparence dans les images PNG --%>
 		<!--[if IE 6]>
 		<style type="text/css">
-			img, div { 
+			.iepngfix { 
 				behavior: url(<c:url value="/css/x/iepngfix.htc"/>); 
 			}
 		</style>
@@ -87,7 +87,7 @@ function ouvrirAide(url) {
 						<span style="color:white;font-size:21pt;font-weight: bold">)</span>
 					</div>
 				</unireg:testMode>
-				<div class="application_supergra"></div>
+				<div class="application_supergra iepngfix"></div>
 
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<script type="text/javascript">

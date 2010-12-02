@@ -24,9 +24,9 @@
 				<table id="flecheSensRapport" cellpadding="0" cellspacing="0">
 					<tr>
 						<td style="width:1em;"/>
-						<td id="flecheGauche" class="fleche_droite_bord_gauche"/>
+						<td id="flecheGauche" class="fleche_droite_bord_gauche iepngfix"/>
 						<td id="flecheMilieu" class="fleche_milieu"><fmt:message key="label.fleche.debiteur.sourcier"/></td>
-						<td id="flecheDroite" class="fleche_droite_bord_droit"/>
+						<td id="flecheDroite" class="fleche_droite_bord_droit iepngfix"/>
 						<td style="width:1em;"/>
 					</tr>
 				</table>

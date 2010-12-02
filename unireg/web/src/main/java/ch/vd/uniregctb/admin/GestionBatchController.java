@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.admin;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -158,7 +157,7 @@ public class GestionBatchController extends AbstractEnhancedSimpleFormController
 		row.addAttribute("class", rowClass);
 		if (job.isRunning() && !readonly) {
 			Anchor stopAction = new Anchor("javascript:stopJob('" + job.getName() + "');");
-			stopAction.addAttribute("class", "stop");
+			stopAction.addAttribute("class", "stop iepngfix");
 			row.addTableData(new TableData(stopAction));
 		}
 		else {

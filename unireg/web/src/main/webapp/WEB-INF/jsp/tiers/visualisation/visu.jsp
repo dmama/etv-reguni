@@ -23,7 +23,7 @@
 	<tiles:put name="body">
 	
 	<c:if test="${not empty warnings}">
-		<table class="warnings" cellspacing="0" cellpadding="0" border="0">
+		<table class="warnings iepngfix" cellspacing="0" cellpadding="0" border="0">
 			<tr><td class="heading"><fmt:message key="label.action.avertissements"/></td></tr>
 			<tr><td class="details"><ul>
 			<c:forEach var="warn" items="${warnings}">

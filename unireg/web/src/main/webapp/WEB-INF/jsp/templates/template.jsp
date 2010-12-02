@@ -26,8 +26,8 @@ function ouvrirAide(url) {
 		<%-- Workaround du bug IE6 qui ne tient pas compte de la transparence dans les images PNG --%>
 		<!--[if IE 6]>
 		<style type="text/css">
-			img, div { 
-				behavior: url(<c:url value="/css/x/iepngfix.htc"/>); 
+			.iepngfix {
+				behavior: url(<c:url value="/css/x/iepngfix.htc"/>);
 			}
 		</style>
 		<![endif]-->
@@ -58,7 +58,7 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/quicksearch.js"/>"></script>
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
-			
+
 		<title><tiles:getAsString name='title' ignore='false'/></title>
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>
@@ -231,7 +231,7 @@ function ouvrirAide(url) {
 				<unireg:norentes>
 					<div style="left:170px; top:100px; color:white; position:absolute; font-size:12pt"><unireg:norentesScenarioName/></div>
 				</unireg:norentes>
-				<div class="application"></div>
+				<div class="application iepngfix"></div>
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<div class="quicksearch">
 					<fmt:message key="label.acces.rapide"/>&nbsp;

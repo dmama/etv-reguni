@@ -530,7 +530,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		final String image = getImageUrl(type);
 
 		final StringBuilder s = new StringBuilder();
-		s.append("<img src=\"").append(url(image)).append("\">\n");
+		s.append("<img class=\"iepngfix\" src=\"").append(url(image)).append("\">\n");
 
 		return s.toString();
 	}

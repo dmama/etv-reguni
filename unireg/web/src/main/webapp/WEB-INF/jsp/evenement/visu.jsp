@@ -173,7 +173,7 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.tiers.associes" /></span></legend>
 			<c:if test="${not empty command.erreursTiersAssocies}">
-				<ul class="warnings">
+				<ul class="warnings iepngfix">
 					<c:forEach items="${command.erreursTiersAssocies}" var="err">
 						<li class="warn"><c:out value="${err}"/></li>
 					</c:forEach>
