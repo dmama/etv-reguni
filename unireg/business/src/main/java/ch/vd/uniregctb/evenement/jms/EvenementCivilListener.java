@@ -5,13 +5,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument.EvtRegCivil;
 import ch.vd.technical.esb.ErrorType;
@@ -19,15 +17,16 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessor;
+import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Listener des évéments civils envoyés par le registre civil (REG-PP ou RCPers) et reçus à travers l'ESB.
  */
-public class EvenementCivilListener extends EsbMessageListener {
+public class EvenementCivilListener extends EsbMessageListener implements ErrorMonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilListener.class);
 
@@ -35,9 +34,9 @@ public class EvenementCivilListener extends EsbMessageListener {
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
 
-	private static final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
-	private static final AtomicInteger nombreMessagesRenvoyesEnErreur = new AtomicInteger(0);
-	private static final AtomicInteger nombreMessagesRenvoyesEnException = new AtomicInteger(0);
+	private final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
+	private final AtomicInteger nombreMessagesRenvoyesEnErreur = new AtomicInteger(0);
+	private final AtomicInteger nombreMessagesRenvoyesEnException = new AtomicInteger(0);
 
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
@@ -73,15 +72,15 @@ public class EvenementCivilListener extends EsbMessageListener {
 		}
 	}
 
-	public static int getNombreMessagesRecus() {
+	public int getNombreMessagesRecus() {
 		return nombreMessagesRecus.intValue();
 	}
 
-	public static int getNombreMessagesRenvoyesEnErreur() {
+	public int getNombreMessagesRenvoyesEnErreur() {
 		return nombreMessagesRenvoyesEnErreur.intValue();
 	}
 
-	public static int getNombreMessagesRenvoyesEnException() {
+	public int getNombreMessagesRenvoyesEnException() {
 		return nombreMessagesRenvoyesEnException.intValue();
 	}
 

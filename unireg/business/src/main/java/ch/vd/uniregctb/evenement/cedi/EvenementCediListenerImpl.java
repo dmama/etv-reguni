@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.cedi;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -17,14 +17,17 @@ import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EvenementCediListenerImpl extends EsbMessageListener {
+public class EvenementCediListenerImpl extends EsbMessageListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCediListenerImpl.class);
 
 	private EvenementCediHandler handler;
 
 	private HibernateTemplate hibernateTemplate;
+
+	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementCediHandler handler) {
@@ -38,6 +41,8 @@ public class EvenementCediListenerImpl extends EsbMessageListener {
 
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
+
+		nbMessagesRecus.incrementAndGet();
 
 		AuthenticationHelper.pushPrincipal("JMS-EvtCedi");
 
@@ -154,6 +159,9 @@ public class EvenementCediListenerImpl extends EsbMessageListener {
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu = " + evt.getClass());
 		}
+	}
 
+	public int getNombreMessagesRecus() {
+		return nbMessagesRecus.intValue();
 	}
 }

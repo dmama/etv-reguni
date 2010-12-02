@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.evenement.externe;
 
 
-import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
-import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
-import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageListener;
-import ch.vd.uniregctb.common.AuthenticationHelper;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
@@ -15,22 +13,29 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
+import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.EsbMessage;
+import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 /**
  * Listener qui reçoit les messages JMS concernant les événements externes, les valide, les transforme et les transmet au handler approprié.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EvenementExterneListenerImpl extends EsbMessageListener {
+public class EvenementExterneListenerImpl extends EsbMessageListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementExterneListenerImpl.class);
 
 	private EvenementExterneHandler handler;
 
 	private HibernateTemplate hibernateTemplate;
+
+	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementExterneHandler handler) {
@@ -44,6 +49,8 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
+
+		nbMessagesRecus.incrementAndGet();
 
 		AuthenticationHelper.pushPrincipal("JMS-EvtExt");
 
@@ -151,5 +158,9 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 
 	private static RegDate cal2regdate(Calendar cal) {
 		return cal == null ? null : RegDate.get(cal.getTime());
+	}
+
+	public int getNombreMessagesRecus() {
+		return nbMessagesRecus.intValue();
 	}
 }

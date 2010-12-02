@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.data;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -16,18 +17,20 @@ import ch.vd.fiscalite.registre.databaseEvent.DatabaseTruncateEventDocument;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.database.DatabaseService;
+import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 /**
  * Bean qui écoute les messages JMS de modification de la database pour propager l'information au database service
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class DataEventJmsListener extends EsbMessageListener {
+public class DataEventJmsListener extends EsbMessageListener implements MonitorableMessageListener {
 
 	private static Logger LOGGER = Logger.getLogger(DataEventJmsListener.class);
 
 	private DataEventService dataEventService;
+
+	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataEventService(DataEventService dataEventService) {
@@ -36,6 +39,8 @@ public class DataEventJmsListener extends EsbMessageListener {
 
 	@Override
 	public void onEsbMessage(EsbMessage msg) throws Exception {
+
+		nbMessagesRecus.incrementAndGet();
 
 		// Parse le message sous forme XML
 		final XmlObject doc = XmlObject.Factory.parse(msg.getBodyAsString());
@@ -117,5 +122,9 @@ public class DataEventJmsListener extends EsbMessageListener {
 			LOGGER.debug("Réception d'un événement de truncate de la database");
 		}
 		dataEventService.onTruncateDatabase();
+	}
+
+	public int getNombreMessagesRecus() {
+		return nbMessagesRecus.intValue();
 	}
 }

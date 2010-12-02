@@ -28,4 +28,19 @@ public class JmxAwareDefaultMessageListenerContainer extends DefaultMessageListe
 			LOGGER.info(String.format("Ecoute sur la queue '%s' arrêtée", getDestinationName()));
 		}
 	}
+
+	@Override
+	public void setMessageListener(Object messageListener) {
+		if (messageListener instanceof MonitorableMessageListener) {
+			super.setMessageListener(messageListener);
+		}
+		else {
+			throw new IllegalArgumentException("Le listener doit implémenter l'interface " + MonitorableMessageListener.class.getName());
+		}
+	}
+
+	public int getReceivedMessages() {
+		final MonitorableMessageListener listener = (MonitorableMessageListener) getMessageListener();
+		return listener.getNombreMessagesRecus();
+	}
 }

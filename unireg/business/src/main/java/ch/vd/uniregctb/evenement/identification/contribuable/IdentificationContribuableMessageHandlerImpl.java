@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -16,6 +17,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 /**
  * Classe technique qui reçoit des événements de demande d'identification de contribuable, et qui permet d'envoyer les réponses.
@@ -25,7 +27,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class IdentificationContribuableMessageHandlerImpl extends EsbMessageListener implements IdentificationContribuableMessageHandler {
+public class IdentificationContribuableMessageHandlerImpl extends EsbMessageListener implements IdentificationContribuableMessageHandler, MonitorableMessageListener {
 
 	private static Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageHandlerImpl.class);
 
@@ -33,6 +35,8 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 	private EsbMessageFactory esbMessageFactory;
 	private HibernateTemplate hibernateTemplate;
 	private DemandeHandler demandeHandler;
+
+	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	/**
 	 * for testing purpose
@@ -58,6 +62,9 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 
 	@Override
 	public void onEsbMessage(EsbMessage msg) throws Exception {
+
+		// pour la statistique
+		nbMessagesRecus.incrementAndGet();
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("message=" + msg.getBodyAsString());
@@ -132,4 +139,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		getEsbTemplate().send(m);
 	}
 
+	public int getNombreMessagesRecus() {
+		return nbMessagesRecus.intValue();
+	}
 }

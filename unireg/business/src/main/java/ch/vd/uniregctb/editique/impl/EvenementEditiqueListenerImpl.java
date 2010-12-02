@@ -3,6 +3,7 @@ package ch.vd.uniregctb.editique.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
@@ -12,13 +13,16 @@ import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
+import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 /**
  * Listener des retours d'impression éditique
  */
-public class EvenementEditiqueListenerImpl extends EsbMessageListener {
+public class EvenementEditiqueListenerImpl extends EsbMessageListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementEditiqueListenerImpl.class);
+
+	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	private static final String PDF_MIME = "application/pdf";
 	private static final String PCL_MIME = "application/x-pcl";
@@ -43,6 +47,8 @@ public class EvenementEditiqueListenerImpl extends EsbMessageListener {
 
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
+
+		nbMessagesRecus.incrementAndGet();
 
 		final String idDocument = message.getHeader(EditiqueHelper.DI_ID);
 		LOGGER.info(String.format("Arrivée d'un retour d'impression pour le document '%s'", idDocument));
@@ -85,5 +91,9 @@ public class EvenementEditiqueListenerImpl extends EsbMessageListener {
 		}
 
 		return resultat;
+	}
+
+	public int getNombreMessagesRecus() {
+		return nbMessagesRecus.intValue();
 	}
 }

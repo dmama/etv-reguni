@@ -27,4 +27,9 @@ public interface MessageListenerContainerJmxInterface {
 	 */
 	int getMaxConcurrentConsumers();
 
+	/**
+	 * @return le nombre de messages reçus depuis le démarrage de l'application
+	 */
+	int getReceivedMessages();
+
 }
