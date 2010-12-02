@@ -155,15 +155,15 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			}
 
-			tiersVisuView.setHistoriqueAdresses(getAdressesHistoriques(tiers, adressesHisto));
+			tiersVisuView.setHistoriqueAdresses(getAdressesHistoriques(tiers, true));
 
 			//Les entreprises et les etablissement ne sont pas pris en charge par l'adresseService
 			if (NatureTiers.Entreprise != tiersVisuView.getNatureTiers() &&
 					NatureTiers.Etablissement != tiersVisuView.getNatureTiers()) {
-				tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, adressesHistoCiviles));
+				tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, true));
 				final Tiers conjoint = tiersVisuView.getTiersConjoint();
 				if (conjoint != null) {
-					tiersVisuView.setHistoriqueAdressesCivilesConjoint(getAdressesHistoriquesCiviles(conjoint, adressesHistoCivilesConjoint));
+					tiersVisuView.setHistoriqueAdressesCivilesConjoint(getAdressesHistoriquesCiviles(conjoint, true));
 				}
 			}
 
