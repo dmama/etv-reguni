@@ -8,6 +8,11 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
+	<!-- Le ehcache manager pour ne pas avoir à inclure le fichier unireg-ws-cache.xml -->
+	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
+	</bean>
+
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService"/>

@@ -9,7 +9,6 @@
 			classpath*:/unireg-core-sf.xml,
 			classpath*:/unireg-business-essentials.xml;
 			classpath*:/unireg-business-evtfiscal.xml,
-			/WEB-INF/unireg-ws-cache.xml,
 			/WEB-INF/unireg-ws-config.xml,
 			/WEB-INF/unireg-ws-database.xml,
 			/WEB-INF/unireg-ws-properties.xml,
