@@ -19,9 +19,14 @@ function toggleRowsIsHisto(tableName,elementId, numCol){
 		for (i=1 ; i< len; i++){
 			if (!E$(elementId).checked ){		
 				var x = tbl.rows[i].cells;
-				if ((trim(x[numCol].innerHTML) == '') && (x[numCol].innerHTML.indexOf('strike')== -1) && !hasClassName(tbl.rows[i], 'strike')){
+				if (numCol >= x.length) {
+					// work-around parce que le tag <display:table> ajoute une ligne avec une *seule* colonne lorsque la table est vide
+					// cette ligne est masquée par défaut, on ne fait donc rien
+				}
+				else if (trim(x[numCol].innerHTML) == '' && x[numCol].innerHTML.indexOf('strike')== -1 && !hasClassName(tbl.rows[i], 'strike')) {
 					tbl.rows[i].style.display = '';
-				}else {
+				}
+				else {
 					tbl.rows[i].style.display = 'none';
 				}
 			 }  else {
