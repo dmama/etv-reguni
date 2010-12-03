@@ -291,10 +291,6 @@ td.code {
 	clear: both;
 }
 
-select {
-	min-width: 146px;
-}
-
 .select-with-errors {
 	background-color: #f26b6b;
 }

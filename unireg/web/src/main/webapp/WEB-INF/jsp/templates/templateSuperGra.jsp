@@ -14,52 +14,43 @@ function ouvrirAide(url) {
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<tiles:getAsString name='refresh' ignore='true'/>
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
+
 		<link media="screen" href="<c:url value="/css/x/layout.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/tabs.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/suggest.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/supergra.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/thickbox.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
+		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
+		<link media="screen" href="<c:url value="/css/x/ui-smoothness/jquery-ui-1.8.6.custom.css"/>" rel="stylesheet" type="text/css">
 
 		<%-- Workaround du bug IE6 qui ne tient pas compte de la transparence dans les images PNG --%>
 		<!--[if IE 6]>
+		<script type="text/javascript" language="javascript">
+			function getContextPath() {
+			  return '<c:url value="/"/>';
+			}
+		</script>
 		<style type="text/css">
-			.iepngfix { 
-				behavior: url(<c:url value="/css/x/iepngfix.htc"/>); 
+			.iepngfix {
+				behavior: url(<c:url value="/css/x/iepngfix.htc"/>);
 			}
 		</style>
 		<![endif]-->
 
 		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/layout.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/tabs.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/thickbox.css"/>" rel="stylesheet" type="text/css">
-		
+
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/request.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/custom.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/thickbox.js"/>"></script>		
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/calendar.js"/>"></script>		
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/for.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/di.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/rapport.js"/>"></script>	
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>	
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/suggest.js"/>"></script>	
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tab.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jtip.js"/>"></script>	
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/quicksearch.js"/>"></script>
-		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
-			
+
 		<title><tiles:getAsString name='title' ignore='false'/></title>
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>

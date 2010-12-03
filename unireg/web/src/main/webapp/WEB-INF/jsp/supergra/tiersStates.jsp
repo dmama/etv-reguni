@@ -60,7 +60,7 @@
 					</form>
 					ou
 					<form id="delAllForm" method="post" style="display:inline;">
-						<a href="#" onclick="F$('delAllForm').submit(); return false;">tout annuler</a>
+						<a href="#" onclick="$('#delAllForm').submit(); return false;">tout annuler</a>
 						<input type="hidden" name="rollbackAll" value="rollbackAll" />
 					</form>
 				</td>

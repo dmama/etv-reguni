@@ -236,10 +236,17 @@ public class JspTagFormField extends BodyTagSupport {
 			}
 			else {
 				final String line1 =
-						String.format("<input type=\"text\" name=\"%s\" value=\"%s\" id=\"%s\" size=\"10\" maxlength =\"10\" class=\"date\"/>", path, displayDate, id);
-				final String line2 =
-						String.format("<a href=\"#\" name=\"%s_Anchor\" id=\"%s_Anchor\" tabindex=\"9999\" class=\"calendar\" onclick=\"calendar(E$('%s'), '%s_Anchor');\" >&nbsp;</a>",
-								id, id, id, id);
+						String.format("<input type=\"text\" name=\"%s\" value=\"%s\" id=\"%s\" />\n", path, displayDate, id);
+				final String line2 = "\t<script>\n" +
+						"\t$(function() {\n" +
+						"\t\t$( \"#" + id + "\" ).datepicker({" +
+						"showOn: \"button\", " +
+						"buttonImage: \"" + request.getContextPath() + "/css/x/calendar_off.gif\", " +
+						"buttonImageOnly: true, " +
+						"changeMonth: true, " +
+						"changeYear: true});\n" +
+						"\t});\n" +
+						"\t</script>";
 				editor.append(line1);
 				editor.append(line2);
 			}
