@@ -45,6 +45,8 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Moudon = new MockCommune(5678, "Moudon", VAUD, MockOfficeImpot.OID_MOUDON);
 	public static final MockCommune Pully = new MockCommune(5590, "Pully", VAUD, MockOfficeImpot.OID_LAVAUX);
 	public static final MockCommune Prilly = new MockCommune(5589, "Prilly", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
+	public static final MockCommune Nyon = new MockCommune(5724, "Nyon", VAUD, MockOfficeImpot.OID_NYON);
+	public static final MockCommune Aigle = new MockCommune(5401, "Aigle", VAUD, MockOfficeImpot.OID_AIGLE);
 
 	// commune avec fractions de commmunes
 	public static final MockCommune LAbbaye = new CommuneFractionnee(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);

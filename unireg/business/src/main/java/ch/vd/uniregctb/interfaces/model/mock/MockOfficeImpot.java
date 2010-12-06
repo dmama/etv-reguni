@@ -16,7 +16,7 @@ public class MockOfficeImpot extends MockCollectiviteAdministrative implements O
 	public static MockOfficeImpot OID_LAVAUX = new MockOfficeImpot(9, null, "Office d'impôt du district", "de Lavaux - Oron", null, "OID LAVAUX");
 	public static MockOfficeImpot OID_MORGES = new MockOfficeImpot(10, new MockAdresse("rue de la Paix", "1", "1110", "Morges"), "Office d'impôt du district", "de Morges", null, "OID MORGES");
 	public static MockOfficeImpot OID_MOUDON = new MockOfficeImpot(11, null, "Office d'impôt du district", "de la Broye - Vully", "Bureau de Moudon", "OID MOUDON");
-	public static MockOfficeImpot OID_NYON = new MockOfficeImpot(12, null, "Office d'impôt du district", "de Nyon", null, "OID NYON");
+	public static MockOfficeImpot OID_NYON = new MockOfficeImpot(12, new MockAdresse("Avenue Reverdil", "4-6", "1341", "Nyon"), "Office d'impôt du district", "de Nyon", null, "OID NYON");
 	public static MockOfficeImpot OID_ORBE = new MockOfficeImpot(13, new MockAdresse("rue de la Poste", "2", "1350", "Orbe"), "Office d'impôt du district", "du Jura - Nord vaudois", "Bureau d'Orbe", "OID ORBE");
 	public static MockOfficeImpot OID_ORON = new MockOfficeImpot(14, null, "Office d'impôt du district", "de Lavaux - Oron", "Bureau d'Oron", "OID ORON");
 	public static MockOfficeImpot OID_PAYERNE = new MockOfficeImpot(15, null, "Office d'impôt du district", "de la Broye - Vully", null, "OID PAYERNE");

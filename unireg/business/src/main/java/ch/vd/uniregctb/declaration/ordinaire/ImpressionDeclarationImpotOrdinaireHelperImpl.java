@@ -365,9 +365,26 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		if (col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) { // Cas spécial pour le CEDI
 
-			// Cas général, les déclarations sont adressées au CEDI pour scannage avec le numéro de l'office d'impôt destinataire dans l'adresse
-			// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-			final Integer officeImpot = tiersService.getOfficeImpotIdAt(declaration.getTiers(), declaration.getDateFin());
+
+		   // Remplace UNIREG-
+			//UNIREG-3059  Pour ce qui concerne le gros numéro en gras, l'adresse CEDI XX, et le code à barre :
+			//l'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de laquel l'édition du document a lieu)
+			//-> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre), alors l'OID doit être l'OID de gestion courant du moment de l'édition du docuement.
+
+
+			final int anneeCourante = RegDate.get().year();
+
+			final RegDate finPeriodeCourante = RegDate.get(anneeCourante,12,31);
+			final RegDate finPeriodePrecedente = RegDate.get(anneeCourante - 1,12,31);
+			RegDate dateRecherche=null;
+			if(declaration.getPeriode().getAnnee()== anneeCourante){
+				dateRecherche = finPeriodeCourante;
+			}
+			else{
+				dateRecherche = finPeriodePrecedente;
+			}
+			final Integer officeImpot = tiersService.getOfficeImpotIdAt(declaration.getTiers(), dateRecherche);
+
 			Assert.notNull(officeImpot);
 			remplitAdresseRetourCEDI(adresseRetour, officeImpot);
 		}
