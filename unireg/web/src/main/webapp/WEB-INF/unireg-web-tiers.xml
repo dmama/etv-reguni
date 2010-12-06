@@ -205,5 +205,12 @@
 		<property name="tiersEditManager" ref="tiersEditManager" />
 	</bean>
 
+	<bean id="tiersPickerController" class="ch.vd.uniregctb.tiers.picker.TiersPickerController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.picker.TiersPickerView" />
+		<property name="formView" value="tiers/picker/tiers-picker" />
+		<property name="successView" value="tiers/picker/tiers-picker" />
+		<property name="searcher" ref="globalTiersSearcher" />
+	</bean>
 
 </beans>

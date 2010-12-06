@@ -62,7 +62,7 @@
 	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
         <property name="handlerMappings">
             <props>
-                <prop key="/**/*.do">ajaxAutoCompleteHandler,ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler</prop>
+                <prop key="/**/*.do">ajaxAutoCompleteHandler,ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler,tiersPickerController</prop>
 				<prop key="/fiscal/for.do">tiersForController</prop>
 				<prop key="/tiers/*.do">ajaxRemarqueHandler</prop>
                 <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>
@@ -169,7 +169,8 @@
 				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
 				<entry key="/fiscal/situation-famille.do" value-ref="tiersSituationFamilleController" />
 				<entry key="/tiers/mouvement.do" value-ref="mouvementVisuController" />
-				
+				<entry key="/tiers/picker/tiers-picker.do" value-ref="tiersPickerController" />
+
 				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
 				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />
 				<entry key="/adresses/edit.do" value-ref="adressesEditController" />
