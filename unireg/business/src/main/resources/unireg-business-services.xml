@@ -264,9 +264,4 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-	<bean id="serviceCivilCacheWarmer" class="ch.vd.uniregctb.cache.ServiceCivilCacheWarmerImpl">
-		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="serviceCivilService" ref="serviceCivilService"/>
-	</bean>
-
 </beans>
