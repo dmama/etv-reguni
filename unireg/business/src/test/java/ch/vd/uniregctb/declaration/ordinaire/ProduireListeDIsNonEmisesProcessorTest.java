@@ -6,6 +6,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -37,8 +38,9 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
 		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
+		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 
-		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager, parametreAppService);
+		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager, parametreAppService, serviceCivilCacheWarmer);
 	}
 
 	@Test

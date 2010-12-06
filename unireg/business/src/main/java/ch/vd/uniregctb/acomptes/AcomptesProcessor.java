@@ -12,10 +12,10 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -31,16 +31,16 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 
 	private final TiersDAO tiersDAO;
 
-	private final ServiceCivilService serviceCivilService;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	public AcomptesProcessor(HibernateTemplate hibernateTemplate,
 	                         TiersService tiersService,
-	                         ServiceCivilService serviceCivilService,
+	                         ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                         PlatformTransactionManager transactionManager,
 	                         TiersDAO tiersDAO) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
-		this.serviceCivilService = serviceCivilService;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 	}
@@ -60,7 +60,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 			}
 
 			public AcomptesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilService, tiersService,
+				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilCacheWarmer, tiersService,
 						status, compteur, transactionManager, tiersDAO, hibernateTemplate);
 			}
 

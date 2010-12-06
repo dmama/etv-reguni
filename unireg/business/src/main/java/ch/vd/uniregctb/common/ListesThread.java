@@ -2,10 +2,8 @@ package ch.vd.uniregctb.common;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -24,12 +22,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
@@ -51,7 +46,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
     private final TiersDAO tiersDAO;
 
-	private final ServiceCivilService serviceCivilService;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	private final TiersService tiersService;
 
@@ -69,14 +64,14 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 	    PARTS_FISCALES = Collections.unmodifiableSet(parts);
     }
 
-    public ListesThread(BlockingQueue<List<Long>> queue,
-                        StatusManager status, AtomicInteger compteur, ServiceCivilService serviceCivilService,
+    public ListesThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur,
+                        ServiceCivilCacheWarmer serviceCivilCacheWarmer,
                         TiersService tiersService, PlatformTransactionManager transactionManager,
                         TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, T results) {
         this.queue = queue;
         this.status = status;
         this.compteur = compteur;
-	    this.serviceCivilService = serviceCivilService;
+	    this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	    this.tiersService = tiersService;
 	    this.hibernateTemplate = hibernateTemplate;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
@@ -145,7 +140,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 							final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);
 
 							// prefetch des données civiles
-							prefetchDonneesCiviles(tiers, null);
+							prefetchDonneesCiviles(ids, null);
 
 							for (Tiers t : tiers) {
 								traiteTiers(t);
@@ -169,49 +164,17 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 	    }
     }
 
-	protected void prefetchDonneesCiviles(List<Tiers> tiers, RegDate date) {
-		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<Long, PersonnePhysique>(tiers.size() * 2);
-		for (Tiers t : tiers) {
-			if (t instanceof PersonnePhysique) {
-				final PersonnePhysique pp = (PersonnePhysique) t;
-				if (pp.isConnuAuCivil()) {
-					ppByNoIndividu.put(pp.getNumeroIndividu(), pp);
-				}
-			}
-			else if (t instanceof MenageCommun) {
-				final MenageCommun mc = (MenageCommun) t;
-				final Set<PersonnePhysique> membres = tiersService.getComposantsMenage(mc, null);
-				if (membres != null) {
-					for (PersonnePhysique pp : membres) {
-						if (pp.isConnuAuCivil()) {
-							ppByNoIndividu.put(pp.getNumeroIndividu(), pp);
-						}
-					}
-				}
-			}
+	protected void prefetchDonneesCiviles(List<Long> idsTiers, RegDate date) {
+		final Set<AttributeIndividu> attributes = new HashSet<AttributeIndividu>();
+		fillAttributesIndividu(attributes);
+		final AttributeIndividu[] attributesArray;
+		if (attributes.size() > 0) {
+			attributesArray = attributes.toArray(new AttributeIndividu[attributes.size()]);
 		}
-
-		// récupération des attributs civils à récupérer
-		if (ppByNoIndividu.size() > 0) {
-			final Set<AttributeIndividu> attributes = new HashSet<AttributeIndividu>();
-			fillAttributesIndividu(attributes);
-			final AttributeIndividu[] attributesArray;
-			if (attributes.size() > 0) {
-				attributesArray = attributes.toArray(new AttributeIndividu[attributes.size()]);
-			}
-			else {
-				attributesArray = null;
-			}
-
-			// pré-chargement des individus
-			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, attributesArray);
-
-			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès)
-			for (Individu individu : individus) {
-				final PersonnePhysique pp = ppByNoIndividu.get(individu.getNoTechnique());
-				pp.setIndividuCache(individu);
-			}
+		else {
+			attributesArray = null;
 		}
+		serviceCivilCacheWarmer.warmIndividusPourTiers(idsTiers, date, attributesArray);
 	}
 
 	protected void fillAttributesIndividu(Set<AttributeIndividu> attributes) {

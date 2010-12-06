@@ -6,6 +6,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -30,7 +31,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		super.onSetUp();
 
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		processor = new ExtractionAfcProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivil, tiersDAO, serviceInfra);
+		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+		processor = new ExtractionAfcProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, serviceInfra);
 	}
 
 	@Test

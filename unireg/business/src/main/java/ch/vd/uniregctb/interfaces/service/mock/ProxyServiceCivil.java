@@ -137,6 +137,7 @@ public class ProxyServiceCivil implements ServiceCivilService {
 	}
 
 	public boolean isWarmable() {
+		assertTargetNotNull();
 		return target.isWarmable();
 	}
 

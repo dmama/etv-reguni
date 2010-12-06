@@ -4,8 +4,8 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -21,7 +21,7 @@ public class ExtractionAfcServiceImpl implements ExtractionAfcService {
 
 	private TiersService tiersService;
 
-	private ServiceCivilService serviceCivilService;
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	private TiersDAO tiersDAO;
 
@@ -39,8 +39,8 @@ public class ExtractionAfcServiceImpl implements ExtractionAfcService {
 		this.tiersService = tiersService;
 	}
 
-	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
-		this.serviceCivilService = serviceCivilService;
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -60,7 +60,7 @@ public class ExtractionAfcServiceImpl implements ExtractionAfcService {
 	 * @return extraction
 	 */
 	public ExtractionAfcResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionAfc mode, int nbThreads, StatusManager statusManager) {
-		final ExtractionAfcProcessor proc = new ExtractionAfcProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilService, tiersDAO, infraService);
+		final ExtractionAfcProcessor proc = new ExtractionAfcProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService);
 		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
 	}
 }

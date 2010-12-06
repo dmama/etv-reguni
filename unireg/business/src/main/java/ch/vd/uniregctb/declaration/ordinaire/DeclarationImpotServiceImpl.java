@@ -10,6 +10,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -65,6 +66,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	private ImpressionSommationDIHelper impressionSommationDIHelper;
 
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+
 	private TiersService tiersService;
 
 	private ParametreAppService parametres;
@@ -79,7 +82,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 			TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
 			TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
-			ParametreAppService parametres) {
+			ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -91,6 +94,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.impressionDIHelper = impressionDIHelper;
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
@@ -157,6 +161,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.adresseService = adresseService;
 	}
 
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+	}
+
 	/**
 	 * Pour le testing uniquement
 	 */
@@ -182,7 +190,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-				delaisService, this, tailleLot, transactionManager, parametres);
+				delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, status);
 	}
 
@@ -210,7 +218,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status)
 			throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
-				tacheDAO, tiersService, delaisService, this, transactionManager, parametres);
+				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 

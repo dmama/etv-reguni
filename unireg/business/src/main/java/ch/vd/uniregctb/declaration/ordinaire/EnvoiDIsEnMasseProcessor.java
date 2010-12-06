@@ -28,6 +28,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -88,9 +90,11 @@ public class EnvoiDIsEnMasseProcessor {
 
 	private final ParametreAppService parametreService;
 
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+
 	private final int tailleLot;
 
-	private  RegDate dateExclusionDecedes;
+	private RegDate dateExclusionDecedes;
 
 	private static class Cache {
 		public final CollectiviteAdministrative cedi;
@@ -111,7 +115,8 @@ public class EnvoiDIsEnMasseProcessor {
 
 	public EnvoiDIsEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
-	                                PlatformTransactionManager transactionManager, ParametreAppService parametreService) {
+	                                PlatformTransactionManager transactionManager, ParametreAppService parametreService,
+	                                ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -121,6 +126,7 @@ public class EnvoiDIsEnMasseProcessor {
 		this.diService = diService;
 		this.transactionManager = transactionManager;
 		this.parametreService = parametreService;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.dateExclusionDecedes = null;
 		Assert.isTrue(tailleLot > 0);
 	}
@@ -210,6 +216,11 @@ public class EnvoiDIsEnMasseProcessor {
 
 		initCache(anneePeriode, categorie);
 		final DeclarationsCache dcache = new DeclarationsCache(anneePeriode, ids);
+
+		// pré-chauffage du cache des individus du civil
+		if (serviceCivilCacheWarmer != null) {
+			serviceCivilCacheWarmer.warmIndividusPourTiers(ids, null, AttributeIndividu.ADRESSES);
+		}
 
 		final Iterator<TacheEnvoiDeclarationImpot> iter = createIteratorOnTaches(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), ids);
 		while (iter.hasNext()) {
@@ -378,8 +389,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @return <b>vrai</b> si la tâche a été traitée, <b>faux</b> autrement
 	 */
-	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache)
-			throws DeclarationException {
+	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache) throws DeclarationException {
 		return traiterTache(tache, dateTraitement, dcache, false);
 	}
 

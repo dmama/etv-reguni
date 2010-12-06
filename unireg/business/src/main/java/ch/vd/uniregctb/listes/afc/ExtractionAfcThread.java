@@ -9,9 +9,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesThread;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
@@ -26,10 +26,10 @@ public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 	private final int periodeFiscale;
 	private final TypeExtractionAfc mode;
 
-	public ExtractionAfcThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur, ServiceCivilService serviceCivilService, TiersService tiersService,
+	public ExtractionAfcThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur, ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersService tiersService,
 	                           ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, RegDate dateTraitement,
 	                           int periodeFiscale, TypeExtractionAfc mode, int nbThreads) {
-		super(queue, status, compteur, serviceCivilService, tiersService, transactionManager, tiersDAO, hibernateTemplate, new ExtractionAfcResults(dateTraitement, periodeFiscale, mode, nbThreads, tiersService, infraService));
+		super(queue, status, compteur, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate, new ExtractionAfcResults(dateTraitement, periodeFiscale, mode, nbThreads, tiersService, infraService));
 		this.periodeFiscale = periodeFiscale;
 		this.mode = mode;
 	}

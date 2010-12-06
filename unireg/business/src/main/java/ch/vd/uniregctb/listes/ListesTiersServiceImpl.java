@@ -1,18 +1,18 @@
 package ch.vd.uniregctb.listes;
 
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesProcessor;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisProcessor;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -33,7 +33,7 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 
 	private ServiceInfrastructureService infraService;
 
-	private ServiceCivilService serviceCivilService;
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -59,19 +59,19 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 		this.infraService = infraService;
 	}
 
-	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
-		this.serviceCivilService = serviceCivilService;
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	public ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuables, boolean avecDebiteurs,
 	                                                          StatusManager statusManager) {
-		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilService);
+		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilCacheWarmer);
 		return processor.run(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, statusManager);
 	}
 
 	public ListeContribuablesResidentsSansForVaudoisResults produireListeContribuablesSuissesOuPermisCResidentsMaisSansForVd(RegDate dateTraitement, int nbThreads, StatusManager statusManager) {
 		final ListeContribuablesResidentsSansForVaudoisProcessor processor = new ListeContribuablesResidentsSansForVaudoisProcessor(hibernateTemplate,
-				tiersService, adresseService, transactionManager, tiersDAO, infraService, serviceCivilService);
+				tiersService, adresseService, transactionManager, tiersDAO, infraService, serviceCivilCacheWarmer);
 		return processor.run(dateTraitement, nbThreads, statusManager);
 	}
 }

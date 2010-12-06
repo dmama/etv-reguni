@@ -12,10 +12,10 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -30,16 +30,16 @@ public class ExtractionAfcProcessor extends ListesProcessor<ExtractionAfcResults
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
-	private final ServiceCivilService serviceCivilService;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final ServiceInfrastructureService infraService;
 	private final TiersDAO tiersDAO;
 
-	public ExtractionAfcProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, ServiceCivilService serviceCivilService,
+	public ExtractionAfcProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                              TiersDAO tiersDAO, ServiceInfrastructureService infraService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
-		this.serviceCivilService = serviceCivilService;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.tiersDAO = tiersDAO;
 		this.infraService = infraService;
 	}
@@ -59,7 +59,7 @@ public class ExtractionAfcProcessor extends ListesProcessor<ExtractionAfcResults
 			}
 
 			public ExtractionAfcThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-				return new ExtractionAfcThread(queue, status, compteur, serviceCivilService, tiersService, infraService, transactionManager, tiersDAO, hibernateTemplate, dateTraitement, pf, mode, nbThreads);
+				return new ExtractionAfcThread(queue, status, compteur, serviceCivilCacheWarmer, tiersService, infraService, transactionManager, tiersDAO, hibernateTemplate, dateTraitement, pf, mode, nbThreads);
 			}
 		});
 	}

@@ -82,7 +82,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
-		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 	</bean>
 
 	<bean id="acomptesService" class="ch.vd.uniregctb.acomptes.AcomptesServiceImpl">
@@ -90,7 +90,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 	</bean>
 
 	<bean id="extractionAfcService" class="ch.vd.uniregctb.listes.afc.ExtractionAfcServiceImpl">
@@ -98,7 +98,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
@@ -262,6 +262,11 @@
 		<property name="evenementExterneDAO" ref="evenementExterneDAO"/>
 		<property name="evenementExterneService" ref="evenementExterneService"/>
 		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="serviceCivilCacheWarmer" class="ch.vd.uniregctb.cache.ServiceCivilCacheWarmerImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="serviceCivilService" ref="serviceCivilService"/>
 	</bean>
 
 </beans>

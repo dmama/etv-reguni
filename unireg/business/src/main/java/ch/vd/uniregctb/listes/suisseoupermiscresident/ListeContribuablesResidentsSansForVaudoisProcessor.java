@@ -2,10 +2,10 @@ package ch.vd.uniregctb.listes.suisseoupermiscresident;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -30,18 +30,18 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 	private final PlatformTransactionManager transactionManager;
 	private final TiersDAO tiersDAO;
 	private final ServiceInfrastructureService infraService;
-	private final ServiceCivilService serviceCivilService;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	public ListeContribuablesResidentsSansForVaudoisProcessor(HibernateTemplate hibernateTemplate, TiersService tiersService, AdresseService adresseService,
 	                                                          PlatformTransactionManager transactionManager, TiersDAO tiersDAO, ServiceInfrastructureService infraService,
-	                                                          ServiceCivilService serviceCivilService) {
+	                                                          ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.infraService = infraService;
-		this.serviceCivilService = serviceCivilService;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 
 		    public ListeContribuablesResidentsSansForVaudoisThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
 		                                               AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, status, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService, serviceCivilService);
+		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, status, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService, serviceCivilCacheWarmer);
 		    }
 
 		    public Iterator<Long> getIdIterator(Session session) {

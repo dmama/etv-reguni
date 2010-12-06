@@ -16,12 +16,12 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.ListesThread;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -48,8 +48,8 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	}
 
 	public ListeContribuablesResidentsSansForVaudoisThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                                                       TiersDAO tiersDAO, TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfrastructure, ServiceCivilService serviceCivilService) {
-		super(queue, status, compteur, serviceCivilService, tiersService, transactionManager, tiersDAO, hibernateTemplate,
+	                                                       TiersDAO tiersDAO, TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfrastructure, ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		super(queue, status, compteur, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate,
 				new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nombreThreads, tiersService));
 		this.dateTraitement = dateTraitement;
 		this.tiersService = tiersService;

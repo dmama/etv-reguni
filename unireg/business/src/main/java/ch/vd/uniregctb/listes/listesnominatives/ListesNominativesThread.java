@@ -12,10 +12,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesThread;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -32,10 +32,10 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
 
     public ListesNominativesThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, TypeAdresse adressesIncluses,
                                    boolean avecContribuables, boolean avecDebiteurs, TiersService tiersService,
-                                   AdresseService adresseService, ServiceCivilService serviceCivilService, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
+                                   AdresseService adresseService, ServiceCivilCacheWarmer serviceCivilCacheWarmer, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
                                    TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
-        super(queue, status, compteur, serviceCivilService, tiersService, transactionManager, tiersDAO, hibernateTemplate,
+        super(queue, status, compteur, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate,
                 new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService));
 
 	    this.adressesIncluses = adressesIncluses;

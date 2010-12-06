@@ -15,6 +15,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -30,6 +31,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -66,18 +68,21 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		TiersService tiersService = getBean(TiersService.class, "tiersService");
+		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
-		PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
-		ModeleDocumentDAO modeleDAO = getBean(ModeleDocumentDAO.class, "modeleDocumentDAO");
-		DelaisService delaisService = getBean(DelaisService.class, "delaisService");
-		DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
+		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
+		final ModeleDocumentDAO modeleDAO = getBean(ModeleDocumentDAO.class, "modeleDocumentDAO");
+		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
+		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
-		PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
+		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
+		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+
+		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
-				diService, 100, transactionManager, parametreAppService);
+				diService, 100, transactionManager, parametreAppService, serviceCivilCacheWarmer);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);

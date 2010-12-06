@@ -2,10 +2,10 @@ package ch.vd.uniregctb.listes.listesnominatives;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import org.apache.log4j.Logger;
@@ -37,20 +37,20 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 
     private final AdresseService adresseService;
 
-	private final ServiceCivilService serviceCivilService;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
     public ListesNominativesProcessor(HibernateTemplate hibernateTemplate,
                                       TiersService tiersService,
                                       AdresseService adresseService,
                                       PlatformTransactionManager transactionManager,
                                       TiersDAO tiersDAO,
-                                      ServiceCivilService serviceCivilService) {
+                                      ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
         this.hibernateTemplate = hibernateTemplate;
         this.tiersService = tiersService;
         this.adresseService = adresseService;
         this.transactionManager = transactionManager;
         this.tiersDAO = tiersDAO;
-	    this.serviceCivilService = serviceCivilService;
+	    this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
     }
 
     /**
@@ -77,7 +77,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 		                avecDebiteurs,
 		                tiersService,
                         adresseService,
-		                serviceCivilService,
+		                serviceCivilCacheWarmer,
 		                status,
                         compteur,
                         transactionManager,

@@ -9,6 +9,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -49,6 +50,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private final DelaisService delaisService;
 	private final DeclarationImpotService diService;
 	private final ParametreAppService parametres;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	private DeterminationDIsAEmettreProcessor determinationDIsAEmettreProcessor;
 	private EnvoiDIsEnMasseProcessor envoiDIsEnMasseProcessor;
@@ -57,7 +59,8 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	public ProduireListeDIsNonEmisesProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 			ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
-			DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres) {
+			DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres,
+			ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.modeleDocumentDAO = modeleDocumentDAO;
@@ -67,13 +70,14 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.diService = diService;
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres);
+		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres, serviceCivilCacheWarmer);
 		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager);
 
 		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement);
