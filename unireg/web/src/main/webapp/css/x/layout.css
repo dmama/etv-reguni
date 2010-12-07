@@ -178,6 +178,10 @@ fieldset legend {
     font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 }
 
+button {
+	padding: 1px 6px;
+}
+
 html {
 	
 }

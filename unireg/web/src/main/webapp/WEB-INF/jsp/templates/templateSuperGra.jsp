@@ -21,15 +21,15 @@ function ouvrirAide(url) {
 		<link media="screen" href="<c:url value="/css/x/supergra.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/ui-smoothness/jquery-ui-1.8.6.custom.css"/>" rel="stylesheet" type="text/css">
 
-		<%-- Workaround du bug IE6 qui ne tient pas compte de la transparence dans les images PNG --%>
-		<!--[if IE 6]>
 		<script type="text/javascript" language="javascript">
 			function getContextPath() {
 			  return '<c:url value="/"/>';
 			}
 		</script>
+
+		<%-- Workaround du bug IE6 qui ne tient pas compte de la transparence dans les images PNG --%>
+		<!--[if IE 6]>
 		<style type="text/css">
 			.iepngfix {
 				behavior: url(<c:url value="/css/x/iepngfix.htc"/>);
@@ -48,6 +48,7 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers-picker.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/quicksearch.js"/>"></script>
 

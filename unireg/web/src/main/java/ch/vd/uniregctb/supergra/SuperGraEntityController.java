@@ -113,8 +113,13 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 				final Class<?> type = a.getType();
 
 				PropertyEditor editor = binder.findCustomEditor(type, null);
-				if (editor == null && type.isEnum()) {
-					editor = new EnumEditor((Class<? extends Enum>) type, true);
+				if (editor == null) {
+					if (type.isEnum()) {
+						editor = new EnumEditor((Class<? extends Enum>) type, true);
+					}
+					else if (EntityKey.class.isAssignableFrom(type)) {
+						editor = new EntityKeyEditor(a.getEntityType(), true);
+					}
 				}
 
 				if (editor != null) {

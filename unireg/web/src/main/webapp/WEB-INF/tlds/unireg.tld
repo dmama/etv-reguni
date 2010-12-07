@@ -252,15 +252,15 @@
 	</tag>
 
 	<tag>
-		<name>superGraFormField</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagSuperGraFormField</tag-class>
+		<name>entityField</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagEntityField</tag-class>
 		<body-content>JSP</body-content>
-		<description>Tag qui génère un champ d'édition pour la propriété spécifiée en mode SuperGra.</description>
+		<description>Tag qui génère un champ d'édition pour une propriété de type 'lien vers une entité hibernate'.</description>
 		<attribute>
-			<name>clazz</name>
+			<name>type</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Le type de la propriété à éditer</description>
+			<description>Le type (EntityType) de la propriété à éditer</description>
 		</attribute>
 		<attribute>
 			<name>value</name>

@@ -28,8 +28,10 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
@@ -39,12 +41,18 @@ import ch.vd.uniregctb.supergra.view.CollectionView;
 import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Curatelle;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
@@ -54,7 +62,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	protected final Logger LOGGER = Logger.getLogger(SuperGraManagerImpl.class);
 
 	private static final String DISCRIMINATOR_ATTNAME = "<discriminator>";
-	
+
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private TiersService tiersService;
@@ -74,7 +82,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		readonlyProps.add("logCreationUser");
 		readonlyProps.add("logModifDate");
 		readonlyProps.add("logModifUser");
-		
+
 		// déclaration
 		readonlyProps.add("modeleDocument");
 		readonlyProps.add("periode");
@@ -100,7 +108,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private static final Map<AttributeKey, AttributeBuilder> attributeCustomBuilders = new HashMap<AttributeKey, AttributeBuilder>();
 
 	private static interface AttributeBuilder {
-		AttributeView build(Property p, Object value);
+		AttributeView build(Property p, Object value, SuperGraContext context);
 	}
 
 	/**
@@ -242,8 +250,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 				final HibernateEntity entity = context.getEntity(key);
 				if (entity != null) {
-					fillView(entity, view);
-					
+					fillView(entity, view, context);
+
 					if (entity instanceof Tiers) {
 						// on affiche un tiers, on en profite pour mémoriser son numéro de manière à pouvoir revenir sur lui plus tard
 						session.setLastKnownTiersId((Long) entity.getKey());
@@ -308,7 +316,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		}
 	}
 
-	private List<AttributeView> buildAttributes(HibernateEntity entity) {
+	private List<AttributeView> buildAttributes(HibernateEntity entity, SuperGraContext context) {
 
 		final List<AttributeView> attributes = new ArrayList<AttributeView>();
 		try {
@@ -322,7 +330,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				final AttributeView attributeView;
 				if (customBuilder != null) {
 					// si un custom builder est spécifié, on l'utilise
-					attributeView = customBuilder.build(p, value);
+					attributeView = customBuilder.build(p, value, context);
 				}
 				else if (p.isDiscriminator()) {
 					// le discriminator ne possède pas de getter/setter, et ne peux donc pas être édité.
@@ -335,7 +343,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				}
 				else {
 					// cas général, on affiche l'éditeur pour l'attribut
-					final boolean readonly = p.isPrimaryKey() || readonlyProps.contains(propName);
+					final boolean readonly = p.isPrimaryKey() || p.isParentForeignKey() || readonlyProps.contains(propName);
 					attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isParentForeignKey(), false, readonly);
 				}
 
@@ -381,7 +389,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					final Collection<HibernateEntity> coll = (Collection<HibernateEntity>) getCollection(collName, entity);
 
 					if (coll != null) {
-						final List<EntityView> entities = buildEntities(coll);
+						final List<EntityView> entities = buildEntities(coll, context);
 						final CollMetaData collData = analyzeCollection(entity, collName, coll, session);
 
 						final EntityType keyType = EntityType.fromHibernateClass(collData.getPrimaryKeyType());
@@ -516,7 +524,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		}
 	}
 
-	private List<EntityView> buildEntities(Collection<? extends HibernateEntity> coll) {
+	private List<EntityView> buildEntities(Collection<? extends HibernateEntity> coll, SuperGraContext context) {
 
 		if (coll == null || coll.isEmpty()) {
 			return Collections.emptyList();
@@ -525,7 +533,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		final List<EntityView> entities = new ArrayList<EntityView>(coll.size());
 		for (HibernateEntity e : coll) {
 			final EntityView v = new EntityView();
-			fillView(e, v);
+			fillView(e, v, context);
 			entities.add(v);
 		}
 
@@ -535,15 +543,16 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	/**
 	 * Renseigne la clé, les attributs et les éventuels résultats de validation pour l'entité spécifiée.
 	 *
-	 * @param entity l'entité de référence
-	 * @param view   la vue à remplir
+	 * @param entity  l'entité de référence
+	 * @param view    la vue à remplir
+	 * @param context le context SuperGra
 	 */
-	private void fillView(HibernateEntity entity, EntityView view) {
+	private void fillView(HibernateEntity entity, EntityView view, SuperGraContext context) {
 		final Long id = (Long) entity.getKey();
 		final EntityType type = EntityType.fromHibernateClass(entity.getClass());
 
 		view.setKey(new EntityKey(type, id));
-		view.setAttributes(buildAttributes(entity));
+		view.setAttributes(buildAttributes(entity, context));
 
 		if (entity instanceof Validateable) {
 			final Validateable val = (Validateable) entity;
@@ -588,97 +597,137 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private void initCustomAttributeBuilder() {
 		// Appartenance ménage
 		attributeCustomBuilders.put(new AttributeKey(AppartenanceMenage.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "personne physique", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "personne physique", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(AppartenanceMenage.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "ménage commun", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "ménage commun", MenageCommun.class, entity, false, false, false);
 			}
 		});
 
 		// Contact impôt source
 		attributeCustomBuilders.put(new AttributeKey(ContactImpotSource.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "sourcier", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "sourcier", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(ContactImpotSource.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "débiteur", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "débiteur", DebiteurPrestationImposable.class, entity, false, false, false);
 			}
 		});
 
 		// Annule et remplace
 		attributeCustomBuilders.put(new AttributeKey(AnnuleEtRemplace.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "tiers remplacé", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "tiers remplacé", Tiers.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(AnnuleEtRemplace.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "tiers remplaçant", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "tiers remplaçant", Tiers.class, entity, false, false, false);
 			}
 		});
 
 		// Curatelle
 		attributeCustomBuilders.put(new AttributeKey(Curatelle.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "pupille", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "pupille", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(Curatelle.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "curateur", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "curateur", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 
 		// Tutelle
 		attributeCustomBuilders.put(new AttributeKey(Tutelle.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "pupille", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "pupille", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(Tutelle.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "tuteur", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "tuteur", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 
 		// Conseil légal
 		attributeCustomBuilders.put(new AttributeKey(ConseilLegal.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "pupille", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "pupille", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(ConseilLegal.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "conseiller légal", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "conseiller légal", PersonnePhysique.class, entity, false, false, false);
 			}
 		});
 
 		// Représentation conventionnel
 		attributeCustomBuilders.put(new AttributeKey(RepresentationConventionnelle.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "représenté", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "représenté", Tiers.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(RepresentationConventionnelle.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "représentant", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "représentant", Tiers.class, entity, false, false, false);
 			}
 		});
 
 		// Rapport de prestation imposable
 		attributeCustomBuilders.put(new AttributeKey(RapportPrestationImposable.class, "sujetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "contribuable", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "contribuable", Contribuable.class, entity, false, false, false);
 			}
 		});
 		attributeCustomBuilders.put(new AttributeKey(RapportPrestationImposable.class, "objetId"), new AttributeBuilder() {
-			public AttributeView build(Property p, Object value) {
-				return new AttributeView(p.getName(), "débiteur", p.getType().getJavaType(), value, false, false, false);
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "débiteur", DebiteurPrestationImposable.class, entity, false, false, false);
+			}
+		});
+
+		// Situation de famille ménage-commun
+		attributeCustomBuilders.put(new AttributeKey(SituationFamilleMenageCommun.class, "contribuablePrincipalId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "contribuable principal", PersonnePhysique.class, entity, false, false, false);
+			}
+		});
+
+		// Adresse autre tiers
+		attributeCustomBuilders.put(new AttributeKey(AdresseAutreTiers.class, "autreTiersId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "autre tiers", Tiers.class, entity, false, false, false);
+			}
+		});
+
+		// Déclaration impôt ordinaire
+		attributeCustomBuilders.put(new AttributeKey(DeclarationImpotOrdinaire.class, "retourCollectiviteAdministrativeId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "retour collectivité administrative", CollectiviteAdministrative.class, entity, false, false, false);
 			}
 		});
 	}

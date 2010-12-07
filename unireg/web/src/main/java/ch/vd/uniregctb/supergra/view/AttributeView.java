@@ -14,6 +14,10 @@ public class AttributeView {
 	private String displayName;
 	private Object value;
 	private Class<?> type;
+	/**
+	 * Type d'entité si le {@link #type} est {@link EntityKey}.
+	 */
+	private EntityType entityType;
 	private boolean parentForeignKey;
 	private boolean collection;
 	private boolean readonly;
@@ -23,6 +27,7 @@ public class AttributeView {
 		this.displayName = name;
 		this.value = resolveValue(value);
 		this.type = resolveType(type, value, isParentForeignKey);
+		this.entityType = resolveEntityType(type, value, isParentForeignKey);
 		this.parentForeignKey = isParentForeignKey;
 		this.collection = isCollection;
 		this.readonly = isReadonly;
@@ -33,6 +38,7 @@ public class AttributeView {
 		this.displayName = displayName;
 		this.value = resolveValue(value);
 		this.type = resolveType(type, value, isParentForeignKey);
+		this.entityType = resolveEntityType(type, value, isParentForeignKey);
 		this.collection = isCollection;
 		this.readonly = isReadonly;
 	}
@@ -62,6 +68,29 @@ public class AttributeView {
 		}
 		else {
 			t = type;
+		}
+		return t;
+	}
+
+	/**
+	 * Cette méthode détermine le type d'entité hibernate correspondant au type et à la valeur de l'attribut spécifié.
+	 *
+	 * @param type             le type réel de l'attribut
+	 * @param value            la valeur réelle de l'attribut
+	 * @param parentForeignKey vrai si l'attribut est la foreign key de l'entité parente
+	 * @return le type d'entité hibernate de la valeur présentée à l'utilisateur
+	 */
+	private EntityType resolveEntityType(Class<?> type, Object value, boolean parentForeignKey) {
+		final EntityType t;
+		if (parentForeignKey) {
+			final HibernateEntity entity = (HibernateEntity) value;
+			t = (entity == null ? null : EntityType.fromHibernateClass(entity.getClass()));
+		}
+		else if (HibernateEntity.class.isAssignableFrom(type)) {
+			t = EntityType.fromHibernateClass(type);
+		}
+		else {
+			t = null;
 		}
 		return t;
 	}
@@ -100,24 +129,16 @@ public class AttributeView {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDisplayName() {
 		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public Class<?> getType() {
 		return type;
 	}
 
-	public void setType(Class<?> type) {
-		this.type = type;
+	public EntityType getEntityType() {
+		return entityType;
 	}
 
 	public Object getValue() {
@@ -136,11 +157,11 @@ public class AttributeView {
 		return collection;
 	}
 
-	public boolean isReadonly() {
-		return readonly;
+	public boolean isEntity() {
+		return type == EntityKey.class;
 	}
 
-	public void setReadonly(boolean readonly) {
-		this.readonly = readonly;
+	public boolean isReadonly() {
+		return readonly;
 	}
 }

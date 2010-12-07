@@ -74,7 +74,21 @@ public class AttributeUpdate extends Delta {
 		try {
 			PropertyDescriptor descr = new PropertyDescriptor(name, entity.getClass());
 			Method setter = descr.getWriteMethod();
-			setter.invoke(entity, newValue);
+
+			if (newValue instanceof EntityKey) {
+				if (Number.class.isAssignableFrom(descr.getPropertyType())) {
+					// cas spécial du lien vers une entité gérée à la main (pour les rapport-entre-tiers, par exemple) : on doit travailler directement avec les ids.
+					setter.invoke(entity, ((EntityKey) newValue).getId());
+				}
+				else {
+					// dans le cas d'une entity key, il faut aller chercher l'entité hibernate elle-même et l'assigner.
+					HibernateEntity newEntity = context.getEntity((EntityKey) newValue);
+					setter.invoke(entity, newEntity);
+				}
+			}
+			else {
+				setter.invoke(entity, newValue);
+			}
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
