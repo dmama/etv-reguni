@@ -223,6 +223,11 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 			return results;
 		}
 
+		// L'usage doit être renseigné
+		if (usage == null) {
+			results.addError("L'adresse " + toString() + " possède un usage nul");
+		}
+
 		// La date de début doit être renseignée
 		if (dateDebut == null) {
 			results.addError("L'adresse " + toString() + " possède une date de début nulle");

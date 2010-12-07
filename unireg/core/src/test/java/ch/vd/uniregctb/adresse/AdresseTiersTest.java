@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -23,6 +24,7 @@ public class AdresseTiersTest extends WithoutSpringTest {
 				throw new NotImplementedException();
 			}
 		};
+		adresse.setUsage(TypeAdresseTiers.COURRIER);
 
 		// Date de début nulle
 		{
@@ -30,7 +32,7 @@ public class AdresseTiersTest extends WithoutSpringTest {
 			assertTrue(results.hasErrors());
 			final List<String> errors = results.getErrors();
 			assertEquals(1, errors.size());
-			assertEquals("L'adresse AdresseTiers{id=null, dateDebut=null, dateFin=null, usage=null, tiers=null} possède une date de début nulle", errors.get(0));
+			assertEquals("L'adresse AdresseTiers{id=null, dateDebut=null, dateFin=null, usage=COURRIER, tiers=null} possède une date de début nulle", errors.get(0));
 		}
 
 		// Date de début renseignée
