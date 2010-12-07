@@ -41,10 +41,16 @@ function open_tiers_picker(button, on_tiers_selection) {
 			var current = query.val();
 			if (last != current) { // on ne rafraîchit que si le texte a vraiment changé
 				last = current;
-				XT.doAjaxAction('updateTiersPickerSearch', document.getElementById('tiers-picker-query'), {
-					'query' : current,
-					'buttonId' : button.id
-				});
+
+				clearTimeout($.data(this, "tiers-picker-timer"));
+				// on retarde l'appel javascript de 200ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
+				var timer = setTimeout(function() {
+					XT.doAjaxAction('updateTiersPickerSearch', document.getElementById('tiers-picker-query'), {
+						'query' : current,
+						'buttonId' : button.id
+					});
+			    }, 200); // 200 ms
+			    $.data(this, "tiers-picker-timer", timer);
 			}
 		});
 	});
