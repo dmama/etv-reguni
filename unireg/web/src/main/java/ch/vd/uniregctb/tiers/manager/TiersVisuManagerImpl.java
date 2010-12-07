@@ -301,7 +301,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 
 
-	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHistoriques adressesCivilesHisto, TypeAdresseCivil type, Tiers tiers) throws AdresseDataException,
+	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHistoriques adressesCivilesHisto, TypeAdresseCivil type, Tiers tiers) throws AdressesResolutionException,
 			InfrastructureException {
 		final List<Adresse> adresses = adressesCivilesHisto.ofType(type);
 		if (adresses == null) {
@@ -316,7 +316,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 	}
 
-	private void AdaptAdresseCivileToAdresseView(List<AdresseView> adressesView, TypeAdresseCivil type, Tiers tiers, Adresse adresse) throws AdresseDataException, InfrastructureException {
+	private void AdaptAdresseCivileToAdresseView(List<AdresseView> adressesView, TypeAdresseCivil type, Tiers tiers, Adresse adresse) throws AdressesResolutionException, InfrastructureException {
 		try {
 			AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, false, getServiceInfrastructureService());
 			AdresseView adresseView = createVisuAdresseView(adrGen, null, tiers);
@@ -325,7 +325,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		}
 		catch (DonneesCivilesException e) {
-			throw new AdresseDataException(e.getMessage());
+			throw new AdressesResolutionException(e.getMessage());
 		}
 	}
 
@@ -333,7 +333,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * Remplir la collection des adressesView avec l'adresse civile du type spécifié.
 	 */
 	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCivilesActives adressesCiviles, TypeAdresseCivil type,
-	                                       Tiers tiers) throws AdresseDataException, InfrastructureException {
+	                                       Tiers tiers) throws AdressesResolutionException, InfrastructureException {
 
 		if (TypeAdresseCivil.SECONDAIRE == type) {
 			List<Adresse> addressesSecondaires = adressesCiviles.secondaires;
