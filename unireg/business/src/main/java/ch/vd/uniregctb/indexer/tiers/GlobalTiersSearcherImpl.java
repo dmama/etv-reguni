@@ -7,8 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -22,6 +25,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.LuceneEngine;
 import ch.vd.uniregctb.indexer.SearchAllCallback;
 import ch.vd.uniregctb.indexer.SearchCallback;
+import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -76,6 +80,48 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return list;
 	}
 
+	public TopList<TiersIndexedData> searchTop(String keywords, int max) throws IndexerException {
+
+		final int tokenMinLength = 3;
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Recherche des tiers correspondant aux mots-clés =" + keywords);
+		}
+
+		if (StringUtils.isBlank(keywords)) {
+			return new TopList<TiersIndexedData>();
+		}
+
+		keywords = keywords.toLowerCase();
+
+		// critère sur le numéro de contribuable
+		final BooleanQuery query = new BooleanQuery();
+		query.add(LuceneEngine.getAnyTermsExact(TiersIndexableData.NUMEROS, keywords), BooleanClause.Occur.SHOULD);
+
+		// critère sur le différents noms
+		final Query subQuery = LuceneEngine.getAnyTermsContient(TiersIndexableData.NOM_RAISON, keywords, tokenMinLength);
+		if (subQuery != null) {
+			subQuery.setBoost(5.0f); // on booste la recherche sur le nom de famille / raison sociale
+			query.add(subQuery, BooleanClause.Occur.SHOULD);
+		}
+		final Query subQuery2 = LuceneEngine.getAnyTermsContient(TiersIndexableData.AUTRES_NOM, keywords, tokenMinLength);
+		if (subQuery2 != null) {
+			query.add(subQuery2, BooleanClause.Occur.SHOULD);
+		}
+
+		// critère sur la localité ou le pays
+		final Query q = LuceneEngine.getAnyTermsCommence(TiersIndexableData.LOCALITE_PAYS, keywords, tokenMinLength);
+		query.add(q, BooleanClause.Occur.SHOULD);
+
+		// on effectue la recherche
+		final TopList<TiersIndexedData> list = new TopList<TiersIndexedData>();
+		final TopCallback callback = new TopCallback(list);
+		globalIndex.search(query, max, callback);
+
+		return list;
+	}
+
+
 	/**
 	 * [UNIREG-1386] exécute la requête, et si une exception BooleanQuery.TooManyClause est levée par lucene, adapte la requête en supprimant les termes les plus courts.
 	 *
@@ -87,7 +133,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		final List<TiersIndexedData> list = new ArrayList<TiersIndexedData>();
 
 		QueryConstructor contructor = new QueryConstructor(criteria);
-		TooManyResultsIndexerException toomany = null;
+		TooManyClausesIndexerException toomany = null;
 
 		// [UNIREG-1386] exécute la requête, et si une exception BooleanQuery.TooManyClause est levée par lucene, adapte la requête en
 		// supprimant les termes les plus courts.
@@ -101,7 +147,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 				}
 				else {
 					// la nouvelle requête ne contient plus de critère, on abandonne et on relance l'exception initiale.
-					throw toomany;
+					throw new TooManyResultsIndexerException(toomany);
 				}
 			}
 
@@ -110,13 +156,13 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 				globalIndex.search(query, maxHits, new Callback(list));
 				break;
 			}
-			catch (TooManyResultsIndexerException e) {
-				if (e.getNbResults() > 0 || essais >= 10) {
-					// il y a bien trop de résultats (ou on a essayé 10 fois)
-					throw e;
+			catch (TooManyClausesIndexerException e) {
+				if (essais >= 10) {
+					// on a déjà essayé 10 fois
+					throw new TooManyResultsIndexerException(e);
 				}
 
-				// autrement, c'est que le nombre maximal de termes lucene a été dépassé, et on peut essayer de corriger ça automatiquement
+				// le nombre maximal de termes lucene a été dépassé, et on peut essayer de corriger ça automatiquement
 				contructor = contructor.constructBroaderQuery();
 				toomany = e;
 			}
@@ -151,6 +197,28 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		}
 	}
 
+	private final class TopCallback implements SearchCallback {
+		
+		private final TopList<TiersIndexedData> list;
+
+		private TopCallback(TopList<TiersIndexedData> list) {
+			this.list = list;
+		}
+
+		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+			list.setTotalHits(hits.totalHits);
+			try {
+				for (ScoreDoc h : hits.scoreDocs) {
+					Document doc = docGetter.get(h.doc);
+					TiersIndexedData data = new TiersIndexedData(doc);
+					list.add(data);
+				}
+			}
+			catch (IOException e) {
+				throw new IndexerException(e);
+			}
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -314,10 +382,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		this.globalIndex = globalIndex;
 	}
 
-	public ParametreAppService getParametreAppService() {
-		return parametreAppService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
 	}

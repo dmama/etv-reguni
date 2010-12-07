@@ -13,9 +13,10 @@ import org.springmodules.xt.ajax.component.Component;
 import org.springmodules.xt.ajax.component.SimpleText;
 
 import ch.vd.uniregctb.common.CommonSimpleFormController;
+import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.indexer.tiers.TopList;
 
 public class TiersPickerController extends CommonSimpleFormController implements AjaxHandler {
 
@@ -36,20 +37,31 @@ public class TiersPickerController extends CommonSimpleFormController implements
 			components.add(new SimpleText("Veuillez saisir au minium 3 caractères."));
 		}
 		else {
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.CONTIENT);
-			criteria.setNomRaison(query);
-			final List<TiersIndexedData> list = searcher.search(criteria);
-			if (list != null && !list.isEmpty()) {
-				components.add(new TiersPickerResultsTable(list, buttonId));
+			try {
+				final TopList<TiersIndexedData> list = searcher.searchTop(query, 50);
+				if (list != null && !list.isEmpty()) {
+					components.add(new SimpleText(buildSummary(list)));
+					components.add(new TiersPickerResultsTable(list, buttonId));
+				}
+				else {
+					components.add(new SimpleText("Aucun tiers trouvé."));
+				}
 			}
-			else {
-				components.add(new SimpleText("Aucun tiers trouvé."));
+			catch (TooManyClausesIndexerException e) {
+				components.add(new SimpleText("Un ou plusieurs mots-clés sont trop généraux."));
 			}
 		}
 
 		response.addAction(new ReplaceContentAction("tiers-picker-results", components));
 		return response;
+	}
+
+	private static String buildSummary(TopList<TiersIndexedData> list) {
+		String summary = "Trouvé " + list.getTotalHits() + " tiers";
+		if (list.size() < list.getTotalHits()) {
+			summary += " (affichage des " + list.size() + " premiers)";
+		}
+		return summary;
 	}
 
 	public boolean supports(AjaxEvent event) {

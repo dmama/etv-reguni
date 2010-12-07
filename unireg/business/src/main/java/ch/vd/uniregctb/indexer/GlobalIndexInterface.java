@@ -42,6 +42,14 @@ public interface GlobalIndexInterface {
 
 	void removeEntity(Long id, String type) throws IndexerException;
 
+	/**
+	 * Recherche les <i>maxHits</i> meilleures résultats.
+	 *
+	 * @param query    les critères de recherche
+	 * @param maxHits  le nombre maximal de résultats retournés.
+	 * @param callback le callback appelé sur chacun des résultats trouvés
+	 * @throws IndexerException en cas d'erreur dans l'indexeur
+	 */
 	void search(Query query, int maxHits, SearchCallback callback) throws IndexerException;
 
 	void search(String query, int maxHits, SearchCallback callback) throws IndexerException;

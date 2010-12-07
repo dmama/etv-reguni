@@ -1,17 +1,23 @@
 package ch.vd.uniregctb.indexer;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Wrapper autour d'un index searcher lucene qui permet d'effectuer des recherches selon les besoins d'Unireg.
@@ -92,7 +98,7 @@ public class LuceneSearcher extends LuceneEngine {
 			is.search(query, collector);
 		}
 		catch (BooleanQuery.TooManyClauses e) {
-			throw new TooManyResultsIndexerException(e.getMessage(), -1);
+			throw new TooManyClausesIndexerException(e.getMessage());
 		}
 		catch (IndexerException e) {
 			throw e;
@@ -118,7 +124,7 @@ public class LuceneSearcher extends LuceneEngine {
 			topDocs = is.search(query, maxHits);
 		}
 		catch (BooleanQuery.TooManyClauses e) {
-			throw new TooManyResultsIndexerException(e.getMessage(), -1);
+			throw new TooManyClausesIndexerException(e.getMessage());
 		}
 		catch (IndexerException e) {
 			throw e;

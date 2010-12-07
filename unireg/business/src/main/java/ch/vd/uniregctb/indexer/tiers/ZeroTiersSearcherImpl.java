@@ -14,6 +14,10 @@ public class ZeroTiersSearcherImpl implements GlobalTiersSearcher {
 		return Collections.emptyList();
 	}
 
+	public TopList<TiersIndexedData> searchTop(String keywords, int max) throws IndexerException {
+		return new TopList<TiersIndexedData>();
+	}
+
 	public boolean exists(Long numero) throws IndexerException {
 		return false;
 	}

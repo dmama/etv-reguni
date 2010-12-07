@@ -19,7 +19,6 @@ import ch.vd.registre.base.utils.Assert;
  * Classe aidant a transformer les criteres de recherche en Lucene Query
  *
  * @author <a href="mailto:jean-eric.cuendet@vd.ch">Jean-Eric Cuendet</a>
- *
  */
 public abstract class LuceneEngine {
 
@@ -81,23 +80,20 @@ public abstract class LuceneEngine {
 		try {
 			StringReader reader = new StringReader(value);
 			stream = an.tokenStream("", reader);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new IndexerException(e);
 		}
 		return stream;
 	}
 
 	/**
-	 * Retourne un Term qui contient les valeurs passees en parametre. Ne prend
-	 * en compte que le premier "token" trouve.
+	 * Retourne un Term qui contient les valeurs passees en parametre. Ne prend en compte que le premier "token" trouve.
 	 *
-	 * @param field
-	 *            Le champ
-	 * @param value
-	 *            La valeur a matcher (le premier token est utilise seulement)
+	 * @param field Le champ
+	 * @param value La valeur a matcher (le premier token est utilise seulement)
 	 * @return Le term qui contient les le field/value
-	 * @throws IndexerException
-	 *             Pour toute erreur
+	 * @throws IndexerException Pour toute erreur
 	 */
 	public static Term getTerm(String field, String value) throws IndexerException {
 
@@ -125,24 +121,39 @@ public abstract class LuceneEngine {
 	}
 
 	/**
-	 * Crée une BooleanQuery pour la recherche de type contient.
+	 * Crée une BooleanQuery pour la recherche de type contient sur <b>tous</b> les termes.
 	 *
-	 * @param field
-	 * @param value
-	 * @param minLength
-	 *            la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
-	 * @return une BooleanQuery
-	 * @throws IndexerException
+	 * @param field     le champ lucene sur lequel s'exécutera la query
+	 * @param value     le ou les critères de recherche
+	 * @param minLength la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
+	 * @return la query résultante
+	 * @throws IndexerException en cas de problème dans l'indexer
 	 */
 	public static Query getTermsContient(String field, String value, int minLength) throws IndexerException {
+		return getTermsContient_(field, value, minLength, BooleanClause.Occur.MUST);
+	}
 
+	/**
+	 * Crée une BooleanQuery pour la recherche de type contient sur <b>n'importe lequel</b> les termes.
+	 *
+	 * @param field     le champ lucene sur lequel s'exécutera la query
+	 * @param value     le ou les critères de recherche
+	 * @param minLength la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
+	 * @return la query résultante
+	 * @throws IndexerException en cas de problème dans l'indexer
+	 */
+	public static Query getAnyTermsContient(String field, String value, int minLength) throws IndexerException {
+		return getTermsContient_(field, value, minLength, BooleanClause.Occur.SHOULD);
+	}
+
+	private static Query getTermsContient_(String field, String value, int minLength, BooleanClause.Occur occur) {
 		Query simpleQuery = null; // utilisé si un seul token
 		BooleanQuery complexQuery = null; // utilisé si >1 token
 
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
 			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
-			
+
 			while (stream.incrementToken()) {
 				if (minLength == 0 || att.termLength() >= minLength) {
 					final Query q = new WildcardQuery(newTermContient(field, att));
@@ -152,13 +163,13 @@ public abstract class LuceneEngine {
 						}
 						else {
 							complexQuery = new BooleanQuery();
-							complexQuery.add(simpleQuery, BooleanClause.Occur.MUST);
-							complexQuery.add(q, BooleanClause.Occur.MUST);
+							complexQuery.add(simpleQuery, occur);
+							complexQuery.add(q, occur);
 							simpleQuery = null;
 						}
 					}
 					else {
-						complexQuery.add(q, BooleanClause.Occur.MUST);
+						complexQuery.add(q, occur);
 					}
 				}
 			}
@@ -172,17 +183,32 @@ public abstract class LuceneEngine {
 	}
 
 	/**
-	 * Cree une BooleanQuery pour la recherche de type contenant
+	 * Crée une BooleanQuery pour la recherche de type contenant sur <b>tous</b> les termes.
 	 *
-	 * @param field
-	 * @param value
-	 * @param minLength
-	 *            la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
-	 * @return une BooleanQuery
-	 * @throws IndexerException
+	 * @param field     le champ lucene sur lequel s'exécutera la query
+	 * @param value     le ou les critères de recherche
+	 * @param minLength la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
+	 * @return la query résultante
+	 * @throws IndexerException en cas de problème dans l'indexer
 	 */
 	public static Query getTermsCommence(String field, String value, int minLength) throws IndexerException {
+		return getTermsCommence(field, value, minLength, BooleanClause.Occur.MUST);
+	}
 
+	/**
+	 * Crée une BooleanQuery pour la recherche de type contenant sur <b>n'importe lequel</b> les termes.
+	 *
+	 * @param field     le champ lucene sur lequel s'exécutera la query
+	 * @param value     le ou les critères de recherche
+	 * @param minLength la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
+	 * @return la query résultante
+	 * @throws IndexerException en cas de problème dans l'indexer
+	 */
+	public static Query getAnyTermsCommence(String field, String value, int minLength) throws IndexerException {
+		return getTermsCommence(field, value, minLength, BooleanClause.Occur.SHOULD);
+	}
+
+	private static Query getTermsCommence(String field, String value, int minLength, BooleanClause.Occur occur) {
 		Query simpleQuery = null; // utilisé si un seul token
 		BooleanQuery complexQuery = null; // utilisé si >1 token
 
@@ -192,21 +218,21 @@ public abstract class LuceneEngine {
 
 			while (stream.incrementToken()) {
 				if (minLength == 0 || att.termLength() >= minLength) {
-				final Query q = new WildcardQuery(newTermCommence(field, att));
-				if (complexQuery == null) {
-					if (simpleQuery == null) {
-						simpleQuery = q;
+					final Query q = new WildcardQuery(newTermCommence(field, att));
+					if (complexQuery == null) {
+						if (simpleQuery == null) {
+							simpleQuery = q;
+						}
+						else {
+							complexQuery = new BooleanQuery();
+							complexQuery.add(simpleQuery, occur);
+							complexQuery.add(q, occur);
+							simpleQuery = null;
+						}
 					}
 					else {
-						complexQuery = new BooleanQuery();
-						complexQuery.add(simpleQuery, BooleanClause.Occur.MUST);
-						complexQuery.add(q, BooleanClause.Occur.MUST);
-						simpleQuery = null;
+						complexQuery.add(q, occur);
 					}
-				}
-				else {
-					complexQuery.add(q, BooleanClause.Occur.MUST);
-				}
 				}
 			}
 		}
@@ -219,15 +245,30 @@ public abstract class LuceneEngine {
 	}
 
 	/**
-	 * Cree une BooleanQuery pour la recherche de type parfaite correspondance
+	 * Crée une BooleanQuery pour la recherche de type parfaite correspondance sur <b>tous</b> les termes.
 	 *
-	 * @param field
-	 * @param value
-	 * @return une BooleanQuery
-	 * @throws IndexerException
+	 * @param field le champ lucene sur lequel s'exécutera la query
+	 * @param value le ou les critères de recherche
+	 * @return la query résultante
+	 * @throws IndexerException en cas de problème dans l'indexer
 	 */
 	public static Query getTermsExact(String field, String value) throws IndexerException {
+		return getTermsExact(field, value, BooleanClause.Occur.MUST);
+	}
 
+	/**
+	 * Crée une BooleanQuery pour la recherche de type parfaite correspondance sur <b>n'importe lequel</b> des termes.
+	 *
+	 * @param field le champ lucene sur lequel s'exécutera la query
+	 * @param value le ou les critères de recherche
+	 * @return la query résultante
+	 * @throws IndexerException en cas de problème dans l'indexer
+	 */
+	public static Query getAnyTermsExact(String field, String value) throws IndexerException {
+		return getTermsExact(field, value, BooleanClause.Occur.SHOULD);
+	}
+
+	private static Query getTermsExact(String field, String value, BooleanClause.Occur occur) {
 		Query simpleQuery = null; // utilisé si un seul token
 		BooleanQuery complexQuery = null; // utilisé si >1 token
 
@@ -243,13 +284,13 @@ public abstract class LuceneEngine {
 					}
 					else {
 						complexQuery = new BooleanQuery();
-						complexQuery.add(simpleQuery, BooleanClause.Occur.MUST);
-						complexQuery.add(q, BooleanClause.Occur.MUST);
+						complexQuery.add(simpleQuery, occur);
+						complexQuery.add(q, occur);
 						simpleQuery = null;
 					}
 				}
 				else {
-					complexQuery.add(q, BooleanClause.Occur.MUST);
+					complexQuery.add(q, occur);
 				}
 			}
 		}
