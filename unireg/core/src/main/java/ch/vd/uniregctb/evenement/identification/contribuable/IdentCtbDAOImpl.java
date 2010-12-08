@@ -2,7 +2,9 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -73,7 +75,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 				Object[] values = criteria.toArray();
 				if (values != null) {
 					for (int i = 0; i < values.length; i++) {
-						queryObject.setParameter(i, values[i]);
+						if(values[i] instanceof Date){
+							queryObject.setTimestamp(i, (Date)values[i]);
+						}
+						else{
+							queryObject.setParameter(i, values[i]);
+						}
+
 					}
 				}
 				queryObject.setFirstResult(firstResult);
@@ -189,6 +197,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		if (dateMessageFin != null) {
 			queryWhere += " and identificationContribuable.demande.date <= ? ";
 			// On prends la date a 24 Hour
+			Calendar calendar = Calendar.getInstance();
+			// Initialisé à la date de fin.
+			calendar.setTime(dateMessageFin);
+			calendar.add(Calendar.HOUR,23);
+			calendar.add(Calendar.MINUTE,59);
+			dateMessageFin = calendar.getTime();
+			
 			criteria.add(dateMessageFin);
 		}
 
