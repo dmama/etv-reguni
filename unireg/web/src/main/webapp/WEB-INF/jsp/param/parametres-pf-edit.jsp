@@ -32,35 +32,30 @@
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireVaud" />
 						<jsp:param name="id" value="sommationReglementaireVaud" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireHorsCanton" />
 						<jsp:param name="id" value="sommationReglementaireHorsCanton" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireHorsSuisse" />
 						<jsp:param name="id" value="sommationReglementaireHorsSuisse" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireDepense" />
 						<jsp:param name="id" value="sommationReglementaireDepense" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireDiplomate" />
 						<jsp:param name="id" value="sommationReglementaireDiplomate" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				
@@ -71,35 +66,30 @@
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveVaud" />
 						<jsp:param name="id" value="sommationEffectiveVaud" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveHorsCanton" />
 						<jsp:param name="id" value="sommationEffectiveHorsCanton" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveHorsSuisse" />
 						<jsp:param name="id" value="sommationEffectiveHorsSuisse" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveDepense" />
 						<jsp:param name="id" value="sommationEffectiveDepense" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveDiplomate" />
 						<jsp:param name="id" value="sommationEffectiveDiplomate" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 			</tr>
@@ -109,35 +99,30 @@
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIVaud" />
 						<jsp:param name="id" value="finEnvoiMasseDIVaud" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIHorsCanton" />
 						<jsp:param name="id" value="finEnvoiMasseDIHorsCanton" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIHorsSuisse" />
 						<jsp:param name="id" value="finEnvoiMasseDIHorsSuisse" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIDepense" />
 						<jsp:param name="id" value="finEnvoiMasseDIDepense" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIDiplomate" />
 						<jsp:param name="id" value="finEnvoiMasseDIDiplomate" />
-						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
 			</tr>

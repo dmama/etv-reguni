@@ -61,7 +61,6 @@
 				<td nowrap="nowrap">Date Evenement<span class="mandatory" title="Champ obligatoire">*</span></td>
 				<td>
 	                 <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-	                 	<jsp:param name="form" value="civilunitaire" />
 						<jsp:param name="path" value="command.dateEvenement" />
 						<jsp:param name="id" value="dateEvenement" />
 					</jsp:include>
@@ -72,7 +71,6 @@
 				<td nowrap="nowrap">Date Traitement<span class="mandatory" title="Champ obligatoire">*</span></td>
 				<td>            
 	                 <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-	                 	<jsp:param name="form" value="civilunitaire" />
 						<jsp:param name="path" value="command.dateTraitement" />
 						<jsp:param name="id" value="dateTraitement" />
 					</jsp:include>

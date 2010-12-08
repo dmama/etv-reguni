@@ -35,7 +35,6 @@
 				<td nowrap="nowrap">Date debut<span class="mandatory" title="Champ obligatoire">*</span></td>
 				<td>
 	                 <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-	                 	<jsp:param name="form" value="quittancement" />
 						<jsp:param name="path" value="command.dateDebut" />
 						<jsp:param name="id" value="dateDebut" />
 					</jsp:include>
@@ -46,7 +45,6 @@
 				<td nowrap="nowrap">Date fin</td>
 				<td>            
 	                 <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-	                 	<jsp:param name="form" value="quittancement" />
 						<jsp:param name="path" value="command.dateFin" />
 						<jsp:param name="id" value="dateFin" />
 					</jsp:include>
@@ -57,7 +55,6 @@
 				<td nowrap="nowrap">Date quittancement<span class="mandatory" title="Champ obligatoire">*</span></td>
 				<td>
 	                 <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-	                 	<jsp:param name="form" value="quittancement" />
 						<jsp:param name="path" value="command.dateQuittance" />
 						<jsp:param name="id" value="dateQuittance" />
 					</jsp:include>

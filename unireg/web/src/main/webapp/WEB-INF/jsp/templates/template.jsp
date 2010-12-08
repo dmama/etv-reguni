@@ -22,6 +22,7 @@ function ouvrirAide(url) {
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/thickbox.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
+		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
 
 		<%-- Workaround du bug IE6 qui ne tient pas compte de la transparence dans les images PNG --%>
 		<!--[if IE 6]>
@@ -44,8 +45,9 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/custom.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/thickbox.js"/>"></script>		
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/calendar.js"/>"></script>		
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/thickbox.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/for.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/di.js"/>"></script>
