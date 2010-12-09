@@ -1036,7 +1036,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertNull(adresseEnvoi.getSalutations());
 		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("Mme B. Zingrich Ebibi / CP 300", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLigne3()));
 		assertEquals("1001 Lausanne", adresseEnvoi.getLigne4());
 		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
