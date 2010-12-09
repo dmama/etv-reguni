@@ -32,10 +32,16 @@
 		<property name="connectionManager" ref="jdbcConnectionManager"/>
 	</bean>
 
-	<bean id="dataSource" class="ch.vd.registre.base.dbutils.DebugDataSource">
+	<bean id="debugDataSource" class="ch.vd.registre.base.dbutils.DebugDataSource">
 		<property name="target" ref="realDataSource" />
 		<property name="maxConnections" value="${extprop.jdbc.poolMaxSize}" />
 		<property name="enabled" value="${extprop.jdbc.datasource.debug}" />
+	</bean>
+
+	<bean id="dataSource" class="ch.vd.uniregctb.database.TracingDataSource">
+		<property name="target" ref="debugDataSource" />
+		<property name="statsService" ref="statsService" />
+		<property name="enabled" value="${extprop.jdbc.datasource.tracing}" />
 	</bean>
 
 	<bean id="hibernateDialect" class="${oracle.hibernate.dialect}"/>
