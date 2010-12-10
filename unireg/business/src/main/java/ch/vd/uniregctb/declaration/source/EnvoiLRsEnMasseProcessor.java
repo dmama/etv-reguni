@@ -24,7 +24,9 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class EnvoiLRsEnMasseProcessor {
 
@@ -37,7 +39,7 @@ public class EnvoiLRsEnMasseProcessor {
 	private final ListeRecapService lrService;
 
 	public EnvoiLRsEnMasseProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-			ListeRecapService lrService) {
+	                                ListeRecapService lrService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.lrService = lrService;
@@ -59,7 +61,8 @@ public class EnvoiLRsEnMasseProcessor {
 		// Liste de tous les DPI à passer en revue
 		final List<Long> list = getListDPI();
 
-		final BatchTransactionTemplate<Long, EnvoiLRsResults> template = new BatchTransactionTemplate<Long, EnvoiLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
+		final BatchTransactionTemplate<Long, EnvoiLRsResults> template =
+				new BatchTransactionTemplate<Long, EnvoiLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, EnvoiLRsResults>() {
 
 			private EnvoiLRsResults rapport;
@@ -108,8 +111,20 @@ public class EnvoiLRsEnMasseProcessor {
 
 	private void traiteDebiteur(Long id, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id);
-		traiteDebiteur(dpi, dateFinPeriode, rapport);
-		rapport.addDebiteur(dpi);
+		if (isdebiteurSansPeriodiciteUnique(dpi)) {
+			traiteDebiteur(dpi, dateFinPeriode, rapport);
+			rapport.addDebiteur(dpi);
+		}
+
+	}
+
+	private boolean isdebiteurSansPeriodiciteUnique(DebiteurPrestationImposable dpi) {
+		Periodicite periodicite = dpi.getPeriodiciteAt(RegDate.get());
+		if (PeriodiciteDecompte.UNIQUE.equals(periodicite.getPeriodiciteDecompte())) {
+			return false;
+		}
+		return true;
+
 	}
 
 	private void traiteDebiteur(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
@@ -124,9 +139,9 @@ public class EnvoiLRsEnMasseProcessor {
 				if (periodeInteressante.isValidAt(lrPourCreation.getDateFin())) {
 					if (DateRangeHelper.intersect(lrPourCreation, lrTrouvees)) {
 						final String message = String.format("Le débiteur %s possède déjà une LR qui intersecte la période du %s au %s.",
-															FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
-															RegDateHelper.dateToDisplayString(lrPourCreation.getDateDebut()),
-															RegDateHelper.dateToDisplayString(lrPourCreation.getDateFin()));
+								FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
+								RegDateHelper.dateToDisplayString(lrPourCreation.getDateDebut()),
+								RegDateHelper.dateToDisplayString(lrPourCreation.getDateFin()));
 						rapport.addErrorLRCollision(dpi, message);
 					}
 					else {
@@ -156,7 +171,7 @@ public class EnvoiLRsEnMasseProcessor {
 					public Object doInHibernate(Session session) throws HibernateException {
 						final String queryDPI =
 								"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +
-										"WHERE dpi.annulationDate IS NULL AND dpi.periodiciteDecompte != 'UNIQUE' AND dpi.sansListeRecapitulative = false";
+										"WHERE dpi.annulationDate IS NULL AND dpi.sansListeRecapitulative = false";
 						final Query queryObject = session.createQuery(queryDPI);
 						return queryObject.list();
 					}

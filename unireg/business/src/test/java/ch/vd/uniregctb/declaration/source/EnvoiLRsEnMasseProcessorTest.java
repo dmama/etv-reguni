@@ -20,6 +20,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -59,7 +60,6 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				dpi.setSansListeRecapitulative(false);
-				dpi.setPeriodiciteDecompte(PeriodiciteDecompte.TRIMESTRIEL);
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, null, date(anneeReference, 9, 1), null);
 				addForDebiteur(dpi, date(anneeReference, 9, 1), null, MockCommune.Bex);
@@ -82,5 +82,37 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(dpiId,envoiLRsResults.LRTraitees.get(0).noCtb);
 	}
 
+
+	@Test
+	public void testEnvoiLRPeriodiciteUnique() throws Exception {
+
+
+		final int anneeReference = 2010;
+		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				dpi.setSansListeRecapitulative(false);
+
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 9, 1), null);
+				addForDebiteur(dpi, date(anneeReference, 9, 1), null, MockCommune.Bex);
+
+				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
+				return dpi.getNumero();
+			}
+		});
+
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, dpiId);
+			Assert.assertNotNull(dpi);
+		final EnvoiLRsResults envoiLRsResults = (EnvoiLRsResults) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				return processor.run(date(2010, 12, 31), null);
+			}
+		});
+
+		assertEquals(0,envoiLRsResults.LRTraitees.size());
+		assertEquals(0,envoiLRsResults.nbDPIsTotal);
+	}
 
 }
