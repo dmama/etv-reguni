@@ -6,6 +6,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
@@ -89,7 +90,11 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	}
 
 	public void addLrTraitee(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin) {
-		final PeriodiciteDecompte periodicite = dpi.getPeriodiciteAt(dateDebut).getPeriodiciteDecompte();
+		//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
+		final Periodicite periodiciteAt = dpi.findPeriodicite(dateDebut,dateFin);
+
+		final PeriodiciteDecompte periodicite = periodiciteAt.getPeriodiciteDecompte();
+
 		switch (periodicite) {
 			case MENSUEL :
 				++ nbLrMensuellesTraitees;

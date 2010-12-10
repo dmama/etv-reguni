@@ -60,7 +60,7 @@ public interface EditiqueCompositionService {
 	 * committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 * <p>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
-	 * {@link ch.vd.uniregctb.declaration.source.ListeRecapService#imprimerLR(ch.vd.uniregctb.tiers.DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate)}
+	 * {@link ch.vd.uniregctb.declaration.source.ListeRecapService#imprimerLR(ch.vd.uniregctb.tiers.DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate)}
 	 * @param lr la LR à imprimer
 	 * @param dateEvenement la date d'impression
 	 */

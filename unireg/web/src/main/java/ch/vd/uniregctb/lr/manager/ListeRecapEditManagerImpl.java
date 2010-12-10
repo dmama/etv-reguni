@@ -315,7 +315,9 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			if (lrManquantes != null && lrManquantes.size() > 0 && periodeInteressante.isValidAt(lrManquantes.get(0).getDateFin()) && !DateRangeHelper.intersect(lrManquantes.get(0), lrTrouvees)) {
 				lrEditView.setDateDebutPeriode(lrManquantes.get(0).getDateDebut());
 				lrEditView.setDateFinPeriode(lrManquantes.get(0).getDateFin());
-				lrEditView.setPeriodicite(dpi.getPeriodiciteAt(lrManquantes.get(0).getDateDebut()).getPeriodiciteDecompte());
+				//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
+				Periodicite periodiciteAt = dpi.findPeriodicite(lrManquantes.get(0).getDateDebut(),lrManquantes.get(0).getDateFin());
+				lrEditView.setPeriodicite(periodiciteAt.getPeriodiciteDecompte());
 			}
 			else {
 

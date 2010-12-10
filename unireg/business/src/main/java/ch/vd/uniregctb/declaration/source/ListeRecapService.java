@@ -62,11 +62,13 @@ public interface ListeRecapService {
 
 	/**
 	 * création et impression batch d'une LR
+	 *
 	 * @param dpi
 	 * @param dateDebutPeriode
+	 * @param dateFinPeriode
 	 * @throws Exception
 	 */
-	void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode) throws Exception ;
+	void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception ;
 
 
 	/**

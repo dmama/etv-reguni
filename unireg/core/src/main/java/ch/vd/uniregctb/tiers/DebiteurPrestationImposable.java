@@ -312,6 +312,16 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	}
 
+	public Periodicite findPeriodicite(RegDate dateDebutPeriode, RegDate dateFinPeriode){
+			Periodicite periodiciteAt = this.getPeriodiciteAt(dateDebutPeriode);
+		//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
+		if(periodiciteAt==null){
+			periodiciteAt = this.getPeriodiciteAt(dateFinPeriode);
+		}
+
+		return periodiciteAt;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

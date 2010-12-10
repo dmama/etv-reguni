@@ -129,12 +129,14 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	/**
 	 * Impression d'une LR - Creation en base de donnée de la LR avec calcul de son nom de document - Alimentation de l'objet EditiqueListeRecap - Envoi des informations nécessaires à l'éditique
 	 *
+	 *
 	 * @param dpi
 	 * @param dateDebutPeriode
+	 * @param dateFinPeriode
 	 * @throws Exception
 	 */
-	public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode) throws Exception {
-		final DeclarationImpotSource lrSaved = saveLR(dpi, dateDebutPeriode);
+	public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
+		final DeclarationImpotSource lrSaved = saveLR(dpi, dateDebutPeriode,dateFinPeriode);
 		/*
 		 * Set<Declaration> declarations = dpiSaved.getDeclarations(); Iterator<Declaration> itDec = declarations.iterator();
 		 * DeclarationImpotSource lr = null; while (itDec.hasNext()) { Declaration declaration = itDec.next(); if (declaration instanceof
@@ -146,11 +148,13 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		evenementFiscalService.publierEvenementFiscalOuverturePeriodeDecompteLR(dpi, lrSaved, RegDate.get());
 	}
 
-	private DeclarationImpotSource saveLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode) throws Exception {
+	private DeclarationImpotSource saveLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(dateDebutPeriode);
-		lr.setDateFin(dpi.getPeriodiciteAt(dateDebutPeriode).getFinPeriode(dateDebutPeriode));
-		lr.setPeriodicite(dpi.getPeriodiciteAt(dateDebutPeriode).getPeriodiciteDecompte());
+			//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
+		Periodicite periodiciteAt = dpi.findPeriodicite(dateDebutPeriode,dateFinPeriode);
+		lr.setDateFin(periodiciteAt.getFinPeriode(dateDebutPeriode));
+		lr.setPeriodicite(periodiciteAt.getPeriodiciteDecompte());
 		lr.setModeCommunication(dpi.getModeCommunication());
 
 		final PeriodeFiscale periodeFiscale = periodeDAO.getPeriodeFiscaleByYear(dateDebutPeriode.year());

@@ -25,7 +25,6 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class EnvoiLRsEnMasseProcessor {
 
@@ -131,7 +130,7 @@ public class EnvoiLRsEnMasseProcessor {
 						rapport.addErrorLRCollision(dpi, message);
 					}
 					else {
-						lrService.imprimerLR(dpi, lrPourCreation.getDateDebut());
+						lrService.imprimerLR(dpi, lrPourCreation.getDateDebut(), lrPourCreation.getDateFin());
 						rapport.addLrTraitee(dpi, lrPourCreation.getDateDebut(), lrPourCreation.getDateFin());
 					}
 				}
