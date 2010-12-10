@@ -46,19 +46,21 @@ public class ValidationJobThread extends Thread {
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final int premiereAnneeFiscale;
+	private final ValidationService validationService;
 
 	private final BlockingQueue<Long> queue;
 	private final ValidationJobResults results; // accès concurrents sur cette variable !
 
 	public ValidationJobThread(BlockingQueue<Long> queue, ValidationJobResults results, TiersDAO tiersDAO,
 			PlatformTransactionManager transactionManager, AdresseService adresseService, ServiceInfrastructureService serviceInfra,
-			ParametreAppService parametreService) {
+			ParametreAppService parametreService, ValidationService validationService) {
 		this.queue = queue;
 		this.results = results;
 		this.tiersDAO = tiersDAO;
 		this.transactionManager = transactionManager;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
+		this.validationService = validationService;
 
 		this.premiereAnneeFiscale = parametreService.getPremierePeriodeFiscale();
 	}
@@ -117,7 +119,7 @@ public class ValidationJobThread extends Thread {
 	}
 
 	private void checkValidation(final Contribuable contribuable, ValidationJobResults results) {
-		final ValidationResults r = contribuable.validate();
+		final ValidationResults r = validationService.validate(contribuable);
 		if (r.hasErrors()) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Le contribuable n°" + contribuable.getNumero() + " est invalide");

@@ -4,8 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import ch.vd.registre.base.validation.ValidationResults;
-
 @Entity
 @DiscriminatorValue("AdresseSuisse")
 public class AdresseSuisse extends AdresseSupplementaire {
@@ -81,18 +79,5 @@ public class AdresseSuisse extends AdresseSupplementaire {
 		// begin-user-code
 		numeroOrdrePoste = theNumeroOrdrePoste;
 		// end-user-code
-	}
-
-	public ValidationResults validate() {
-		ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if ((numeroRue == null || numeroRue == 0) && (numeroOrdrePoste == null || numeroOrdrePoste == 0)) {
-			results.addError("Le numéro de rue ou le numéro d'ordre poste doit être renseigné sur une adresse suisse [" + this + "]");
-		}
-		return results;
 	}
 }

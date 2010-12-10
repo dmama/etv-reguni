@@ -1,11 +1,5 @@
 package ch.vd.uniregctb.role;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +20,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -49,6 +42,13 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationService;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
 public class ProduireRolesProcessorTest extends BusinessTest {
@@ -68,9 +68,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		final ServiceCivilService serviceCivilService = getBean(ServiceCivilService.class, "serviceCivilService");
+		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService);
+		processor = new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService, validationService);
 	}
 
 	@Test

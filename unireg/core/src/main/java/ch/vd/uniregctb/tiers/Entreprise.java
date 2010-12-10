@@ -3,11 +3,6 @@ package ch.vd.uniregctb.tiers;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.Set;
-
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 
 /**
  * Entreprise ou l'etablissement connue du registre des personnes morales de
@@ -52,27 +47,6 @@ public class Entreprise extends Contribuable {
 	@Override
 	public TypeTiers getType() {
 		return TypeTiers.ENTREPRISE;
-	}
-
-	@Override
-	protected ValidationResults validateTypeAdresses() {
-
-		ValidationResults results = new ValidationResults();
-
-		final Set<AdresseTiers> adresses = getAdressesTiers();
-		if (adresses != null) {
-			for (AdresseTiers a : adresses) {
-				if (a.isAnnule()) {
-					continue;
-				}
-				if (a instanceof AdresseCivile) {
-					results.addError("L'adresse de type 'personne civile' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur une entreprise.");
-				}
-			}
-		}
-
-		return results;
 	}
 
 	/**

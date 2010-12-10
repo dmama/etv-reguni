@@ -29,6 +29,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Classe de base abstraite représentant une période d'assujettissement.
@@ -36,6 +37,19 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public abstract class Assujettissement implements CollatableDateRange {
+
+	/**
+	 * Service de validation initialisé par le biais du contexte spring (bean {@link ch.vd.uniregctb.metier.assujettissement.AssujettissementSpringInitializer})
+	 */
+	private static ValidationService validationService = null;
+
+	/**
+	 * Visibilité package seulement
+	 * @param validationService le service de validation
+	 */
+	static void setValidationService(ValidationService validationService) {
+		Assujettissement.validationService = validationService;
+	}
 
 	private static final Adapter adapter = new Adapter();
 
@@ -234,15 +248,16 @@ public abstract class Assujettissement implements CollatableDateRange {
 			return assujettissements.size() == 0 ? null : assujettissements;
 		}
 		catch (AssujettissementException e) {
-			final ValidationResults vr = ctb.validateFors();
-			if (vr.hasErrors()) {
-				// si le contribuable ne valide pas, on est un peu plus explicite
-				throw new AssujettissementException("Une exception a été levée sur le contribuable n°" + ctb.getNumero() + " lors du calcul des assujettissements, mais en fait le contribuable ne valide pas: " + vr.toString(), e);
+			if (validationService != null) {
+				final ValidationResults vr = validationService.validate(ctb);
+				if (vr.hasErrors()) {
+					// si le contribuable ne valide pas, on est un peu plus explicite
+					throw new AssujettissementException("Une exception a été levée sur le contribuable n°" + ctb.getNumero() + " lors du calcul des assujettissements, mais en fait le contribuable ne valide pas: " + vr.toString(), e);
+				}
 			}
-			else {
-				// autrement, on propage simplement l'exception
-				throw e;
-			}
+
+			// autrement, on propage simplement l'exception
+			throw e;
 		}
 	}
 

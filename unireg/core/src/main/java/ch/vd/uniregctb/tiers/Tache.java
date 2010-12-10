@@ -19,8 +19,6 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.Validateable;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -44,7 +42,7 @@ import ch.vd.uniregctb.type.TypeTache;
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TACHE_TYPE", discriminatorType = DiscriminatorType.STRING, length = LengthConstants.TACHE_TYPE)
-public abstract class Tache extends HibernateEntity implements Validateable {
+public abstract class Tache extends HibernateEntity {
 
 	/**
 	 *
@@ -249,14 +247,4 @@ public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable
 	 */
 	@Transient
 	public abstract TypeTache getTypeTache();
-
-	public ValidationResults validate() {
-
-		final ValidationResults results = new ValidationResults();
-		if (collectiviteAdministrativeAssignee == null && etat != TypeEtatTache.TRAITE && !isAnnule()) {
-			results.addError("La collectivité assignée doit être renseignée.");
-		}
-
-		return results;
-	}
 }

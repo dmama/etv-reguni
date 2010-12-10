@@ -10,7 +10,6 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -247,29 +246,4 @@ public class DeclarationImpotOrdinaire extends Declaration {
 		}
 		return modele.getTypeDocument();
 	}
-
-	@Override
-	public ValidationResults validate() {
-
-		final ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (getPeriode() == null) {
-			results.addError("La période ne peut pas être nulle.");
-		}
-
-		if (getModeleDocument() == null) {
-			results.addError("Le modèle de document ne peut pas être nul.");
-		}
-
-		if (numero == null) {
-			results.addError("Le numéro de séquence de la déclaration ne peut pas être nul.");
-		}
-
-		return results;
-	}
-
 }

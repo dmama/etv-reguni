@@ -1,21 +1,31 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
@@ -291,44 +301,482 @@ public class TiersTest extends WithoutSpringTest {
 
 	}
 
-	@Test
-	public void testValidateTiersAnnule() {
+	private PersonnePhysique createHabitantWithFors() {
 
-		final Tiers tiers = new Tiers() {
-			@Override
-			protected ValidationResults validateTypeAdresses() {
-				return new ValidationResults();
-			}
+		PersonnePhysique hab = new PersonnePhysique(true);
+		hab.setNumero(100011010L);
+		hab.setNumeroIndividu(43L);
 
-			@Override
-			public String getRoleLigne1() {
-				throw new NotImplementedException();
-			}
-
-			@Override
-			public NatureTiers getNatureTiers() {
-				throw new NotImplementedException();
-			}
-
-			@Override
-			public TypeTiers getType() {
-				throw new NotImplementedException();
-			}
-		};
-
-		// Tiers invalide (for fiscal avec date de début nulle) mais annulé => pas d'erreur
+		Set<ForFiscal> fors = new HashSet<ForFiscal>();
 		{
-			tiers.addForFiscal(new ForFiscalAutreElementImposable());
-			tiers.setAnnule(true);
-			assertFalse(tiers.validate().hasErrors());
+			ForFiscalAutreImpot forFiscal = new ForFiscalAutreImpot();
+			forFiscal.setGenreImpot(GenreImpot.DROIT_MUTATION);
+			forFiscal.setDateDebut(RegDate.get(2004, 3, 1));
+			forFiscal.setDateFin(RegDate.get(2006, 2, 28));
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(1235);
+			fors.add(forFiscal);
+		}
+		{
+			ForFiscalAutreElementImposable forFiscal = new ForFiscalAutreElementImposable();
+			forFiscal.setMotifRattachement(MotifRattachement.ACTIVITE_LUCRATIVE_CAS);
+			forFiscal.setDateDebut(RegDate.get(2006, 6, 1));
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(1236);
+			forFiscal.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+			fors.add(forFiscal);
+		}
+		{
+			ForFiscalSecondaire forFiscal = new ForFiscalSecondaire();
+			forFiscal.setMotifRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE);
+			forFiscal.setDateDebut(RegDate.get(2002, 6, 1));
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(1237);
+			forFiscal.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+			fors.add(forFiscal);
 		}
 
-		// Tiers valide et annulée => pas d'erreur
+		// Principaux
+		// 2002, 1, 1 - 2005, 8, 11
 		{
-			tiers.getForsFiscaux().clear();
-			tiers.setAnnule(true);
-			assertFalse(tiers.validate().hasErrors());
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
+			forFiscal.setDateFin(RegDate.get(2005, 8, 11));
+			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			forFiscal.setMotifFermeture(MotifFor.DEPART_HS);
+
+			fors.add(forFiscal);
+		}
+		// Annule : 2004, 6, 6 - 2005, 9, 9
+		{
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			forFiscal.setAnnule(true);
+			forFiscal.setDateDebut(RegDate.get(2004, 6, 6));
+			forFiscal.setDateFin(RegDate.get(2005, 9, 9));
+			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(1563);
+			fors.add(forFiscal);
+		}
+		// 2005, 8, 12 - 2007, 2, 28
+		{
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
+			forFiscal.setDateFin(RegDate.get(2007, 2, 28));
+			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
+			forFiscal.setNumeroOfsAutoriteFiscale(1234);
+			forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HS);
+			fors.add(forFiscal);
+		}
+		// 2007, 3, 1 -> 2007, 3, 1 (1 jour)
+		{
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			forFiscal.setDateDebut(RegDate.get(2007, 3, 1));
+			forFiscal.setDateFin(RegDate.get(2007, 3, 1));
+			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			fors.add(forFiscal);
+		}
+		// 2007, 3, 2 -> Ouvert
+		{
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			forFiscal.setDateDebut(RegDate.get(2007, 3, 2));
+			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			fors.add(forFiscal);
+		}
+		hab.setForsFiscaux(fors);
+		return hab;
+	}
+
+	private void assertForFiscauxInSortOrder(List<?> fors) {
+
+		RegDate lastDate = null;
+		for (Object o : fors) {
+			ForFiscal ff = (ForFiscal) o;
+			// String debut = ff.getDateDebut() != null ? ff.getDateDebut().toString() : "<null>";
+			// String fin = ff.getDateFin() != null ? ff.getDateFin().toString() : "<null>";
+			// String last = lastDate != null ? lastDate.toString() : "<null>";
+			assertTrue("debut=" + ff.getDateDebut() + " last=" + lastDate, lastDate == null || ff.getDateDebut() == null
+					|| ff.getDateDebut().isAfter(lastDate));
+			lastDate = ff.getDateFin();
 		}
 	}
 
+	@Test
+	public void testGetForsFiscauxPrincipaux() {
+		PersonnePhysique hab = createHabitantWithFors();
+
+		List<ForFiscalPrincipal> ffps = hab.getForsFiscauxPrincipauxActifsSorted();
+		assertEquals(4, ffps.size());
+		assertForFiscauxInSortOrder(ffps);
+	}
+
+	@Test
+	public void testGetForFiscalPrincipalAt() {
+		PersonnePhysique hab = createHabitantWithFors();
+
+		{
+			ForFiscalPrincipal ffp = hab.getForFiscalPrincipalAt(RegDate.get(2001, 8, 11));
+			assertNull(ffp);
+		}
+		{
+			ForFiscalPrincipal ffp = hab.getForFiscalPrincipalAt(RegDate.get(2006, 12, 20));
+			assertNotNull(ffp);
+			assertEquals(new Integer(1234), ffp.getNumeroOfsAutoriteFiscale());
+		}
+		{
+			ForFiscalPrincipal ffp = hab.getForFiscalPrincipalAt(RegDate.get(2008, 3, 1));
+			assertNotNull(ffp);
+			assertEquals(new Integer(563), ffp.getNumeroOfsAutoriteFiscale());
+		}
+	}
+
+	@Test
+	public void testGetForsFiscauxValidAt() {
+		PersonnePhysique hab = createHabitantWithFors();
+		List<ForFiscal> list = hab.getForsFiscauxValidAt(RegDate.get(2005, 9, 9));
+		assertNotNull(list);
+		assertEquals(3, list.size());
+
+		// liste de fors valides
+		List<ForFiscal> list1903 = hab.getForsFiscauxValidAt(RegDate.get(1903, 1, 1));
+		assertNotNull(list1903);
+		assertEmpty(list1903);
+	}
+
+	@Test
+	public void testGetDernierForFiscalPrincipal() {
+		PersonnePhysique hab = createHabitantWithFors();
+		ForFiscalPrincipal ffp = hab.getDernierForFiscalPrincipal();
+		assertEquals(RegDate.get(2007, 3, 2), ffp.getDateDebut());
+		assertNull(ffp.getDateFin());
+	}
+
+	/**
+	 * Collection vide
+	 */
+	@Test
+	public void testExistForPrincipalListVide() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2005, 1, 1)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(2005, 1, 1)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+	}
+
+	/**
+	 * 1 for principal [2000-1-1; 2004-12-31]
+	 */
+	@Test
+	public void testExistForPrincipalSurUnFor() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2000, 1, 1));
+			f.setDateFin(RegDate.get(2004, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2004, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), RegDate.get(2020, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 1 for principal ouvert à gauche ]null; 2004-12-31]
+	 */
+	@Test
+	public void testExistForPrincipalSurUnForOuvertAGauche() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(null);
+			f.setDateFin(RegDate.get(2004, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		assertTrue(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2004, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), RegDate.get(2020, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 1 for principal ouvert à droite [2000-1-1; null[
+	 */
+	@Test
+	public void testExistForPrincipalSurUnForOuvertADroite() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2000, 1, 1));
+			f.setDateFin(null);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2004, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), RegDate.get(2020, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 1 for principal ouvert des deux côtés ]null; null[
+	 */
+	@Test
+	public void testExistForPrincipalSurUnForOuvertDesDeuxCotes() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(null);
+			f.setDateFin(null);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		assertTrue(Tiers.existForPrincipal(list, null, null));
+		assertTrue(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2004, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), RegDate.get(2020, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 2 fors principaux accolés [2000-1-1; 2002-12-31] + [2003-1-1; 2004-12-31]
+	 */
+	@Test
+	public void testExistForPrincipalSurDeuxForsAccoles() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2000, 1, 1));
+			f.setDateFin(RegDate.get(2002, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2003, 1, 1));
+			f.setDateFin(RegDate.get(2004, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2004, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 2 fors principaux accolés ouverts à gauche ]null; 2002-12-31] + [2003-1-1; 2004-12-31]
+	 */
+	@Test
+	public void testExistForPrincipalSurDeuxForsAccolesOuvertsAGauche() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(null);
+			f.setDateFin(RegDate.get(2002, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2003, 1, 1));
+			f.setDateFin(RegDate.get(2004, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		assertTrue(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2004, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 2 fors principaux accolés ouverts à droite [2000-1-1; 2002-12-31] + [2003-1-1; null[
+	 */
+	@Test
+	public void testExistForPrincipalSurDeuxForsAccolesOuvertsADroite() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2000, 1, 1));
+			f.setDateFin(RegDate.get(2002, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2003, 1, 1));
+			f.setDateFin(null);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2004, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 2 fors principaux non-accolés [2000-1-1; 2002-12-31] + [2003-1-2; 2004-12-31]
+	 */
+	@Test
+	public void testExistForPrincipalSurDeuxForsNonAccoles() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2000, 1, 1));
+			f.setDateFin(RegDate.get(2002, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2003, 1, 2));
+			f.setDateFin(RegDate.get(2004, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2001, 1, 1), RegDate.get(2002, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2001, 1, 1), RegDate.get(2004, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2003, 1, 2), RegDate.get(2004, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 2 fors principaux non-accolés ouverts à gauche ]null; 2002-12-31] + [2003-1-2; 2004-12-31]
+	 */
+	@Test
+	public void testExistForPrincipalSurDeuxForsNonAccolesOuvertsAGauche() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(null);
+			f.setDateFin(RegDate.get(2002, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2003, 1, 2));
+			f.setDateFin(RegDate.get(2004, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		assertTrue(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2001, 1, 1), RegDate.get(2002, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2001, 1, 1), RegDate.get(2004, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2003, 1, 2), RegDate.get(2004, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
+
+	/**
+	 * 2 fors principaux non-accolés ouverts à droite [2000-1-1; 2002-12-31] + [2003-1-2; null[
+	 */
+	@Test
+	public void testExistForPrincipalSurDeuxForsNonAccolesOvertsADroite() {
+		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2000, 1, 1));
+			f.setDateFin(RegDate.get(2002, 12, 31));
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		{
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
+			f.setDateDebut(RegDate.get(2003, 1, 2));
+			f.setDateFin(null);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			list.add(f);
+		}
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, null));
+		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1980, 1, 1), RegDate.get(1982, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), RegDate.get(2002, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2001, 1, 1), RegDate.get(2002, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2001, 1, 1), RegDate.get(2004, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2003, 1, 2), RegDate.get(2004, 12, 31)));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2003, 1, 2), RegDate.get(2010, 12, 31)));
+		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(1990, 1, 1), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2003, 1, 2), null));
+		assertTrue(Tiers.existForPrincipal(list, RegDate.get(2010, 1, 1), null));
+	}
 }

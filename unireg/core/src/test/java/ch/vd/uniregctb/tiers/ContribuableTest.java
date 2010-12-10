@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -23,12 +20,12 @@ import static org.junit.Assert.assertTrue;
 public class ContribuableTest extends WithoutSpringTest {
 
 	private ForFiscalAutreImpot newForChien(RegDate dateDebut, RegDate dateFin) {
-		ForFiscalAutreImpot for0 = new ForFiscalAutreImpot();
+		final ForFiscalAutreImpot for0 = new ForFiscalAutreImpot();
 		for0.setDateDebut(dateDebut);
 		for0.setDateFin(dateFin);
 		for0.setGenreImpot(GenreImpot.CHIENS);
 		for0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		for0.setNumeroOfsAutoriteFiscale(Integer.valueOf(1234));
+		for0.setNumeroOfsAutoriteFiscale(1234);
 		return for0;
 	}
 
@@ -134,45 +131,5 @@ public class ContribuableTest extends WithoutSpringTest {
 		// annulation du dernier for -> l'annulation devrait redevenir active
 		dernierFfp.setAnnule(true);
 		assertEquals(dateReDesactivation, pp.getDateDesactivation());
-	}
-
-	@Test
-	public void testValidateTiersAnnule() {
-
-		final Contribuable tiers = new Contribuable() {
-			@Override
-			protected ValidationResults validateTypeAdresses() {
-				return new ValidationResults();
-			}
-
-			@Override
-			public String getRoleLigne1() {
-				throw new NotImplementedException();
-			}
-
-			@Override
-			public NatureTiers getNatureTiers() {
-				throw new NotImplementedException();
-			}
-
-			@Override
-			public TypeTiers getType() {
-				throw new NotImplementedException();
-			}
-		};
-
-		// Tiers invalide (situation de famille avec date de début nulle) mais annulé => pas d'erreur
-		{
-			tiers.addSituationFamille(new SituationFamillePersonnePhysique());
-			tiers.setAnnule(true);
-			Assert.assertFalse(tiers.validate().hasErrors());
-		}
-
-		// Tiers valide et annulée => pas d'erreur
-		{
-			tiers.getSituationsFamille().clear();
-			tiers.setAnnule(true);
-			Assert.assertFalse(tiers.validate().hasErrors());
-		}
 	}
 }

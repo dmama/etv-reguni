@@ -50,6 +50,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -71,9 +72,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		final ParametreAppService parametres = getBean(ParametreAppService.class, "parametreAppService");
+		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager);
+		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);

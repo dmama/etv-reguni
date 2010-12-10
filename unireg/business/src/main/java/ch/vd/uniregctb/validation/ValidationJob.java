@@ -6,14 +6,11 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.scheduler.*;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -21,7 +18,12 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
+import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
@@ -50,6 +52,7 @@ public class ValidationJob extends JobDefinition {
 	private AdresseService adresseService;
 	private ServiceInfrastructureService serviceInfra;
 	private ParametreAppService paramService;
+	private ValidationService validationService;
 
 	public ValidationJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -114,6 +117,10 @@ public class ValidationJob extends JobDefinition {
 		this.paramService = paramService;
 	}
 
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
@@ -167,7 +174,7 @@ public class ValidationJob extends JobDefinition {
 		// Création des threads de processing
 		final List<ValidationJobThread> threads = new ArrayList<ValidationJobThread>(nbThreads);
 		for (int i = 0; i < nbThreads; i++) {
-			final ValidationJobThread t = new ValidationJobThread(queue, results, tiersDAO, transactionManager, adresseService, serviceInfra, paramService);
+			final ValidationJobThread t = new ValidationJobThread(queue, results, tiersDAO, transactionManager, adresseService, serviceInfra, paramService, validationService);
 			threads.add(t);
 			t.setName("ValidThread-" + i);
 			t.start();

@@ -8,10 +8,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -100,43 +98,6 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 		ddump(nbTabs, "Mode imposition: "+modeImposition);
 	}
 
-	@Override
-	public boolean isRattachementCoherent(MotifRattachement motif) {
-		boolean valid = MotifRattachement.DOMICILE == motif || MotifRattachement.DIPLOMATE_SUISSE == motif || MotifRattachement.DIPLOMATE_ETRANGER == motif;
-		return valid;
-	}
-
-	@Override
-	public ValidationResults validate() {
-
-		final ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (modeImposition == null) {
-			results.addError("Le mode d'imposition est obligatoire sur un for fiscal principal.");
-		}
-		else if (getMotifRattachement() == MotifRattachement.DOMICILE && getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			if (modeImposition != ModeImposition.ORDINAIRE && modeImposition != ModeImposition.SOURCE && modeImposition != ModeImposition.MIXTE_137_1) {
-				results.addError("Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, " +
-						"les modes d'imposition possibles sont \"ordinaire\", \"source\" ou \"mixte 137 al1\".");
-			}
-		}
-
-		// [UNIREG-911]
-		if (getMotifOuverture() == MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE && getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE) {
-			results.addError("Le motif de début d'activité diplomatique est uniquement applicable aux diplomates suisses basés à l'étranger");
-		}
-
-		if (getMotifFermeture() == MotifFor.FIN_ACTIVITE_DIPLOMATIQUE && getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE) {
-			results.addError("Le motif de fin d'activité diplomatique est uniquement applicable aux diplomates suisses basés à l'étranger");
-		}
-
-		return results;
-	}
-
 	/*
 		 * (non-Javadoc)
 		 *
@@ -167,5 +128,4 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 	public ForFiscal duplicate() {
 		return new ForFiscalPrincipal(this);
 	}
-
 }

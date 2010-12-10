@@ -150,9 +150,4 @@
 
 	<bean id="fakeInterceptorHibernate" class="ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor" />
 
-	<bean id="validationInterceptor" class="ch.vd.uniregctb.validation.ValidationInterceptor">
-		<property name="chainingInterceptor" ref="chainingInterceptor" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-	</bean>
-
 </beans>

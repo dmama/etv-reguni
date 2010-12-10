@@ -21,6 +21,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,6 +38,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		service.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		service.setModeleDocumentDAO(getBean(ModeleDocumentDAO.class, "modeleDocumentDAO"));
 		service.setPeriodeFiscaleDAO(getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"));
+		service.setValidationService(getBean(ValidationService.class, "validationService"));
 	}
 
 	@Test

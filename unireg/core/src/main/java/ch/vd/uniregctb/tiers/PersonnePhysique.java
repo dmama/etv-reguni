@@ -8,33 +8,20 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdressePM;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc --> Être humain sous l'angle du droit, individualisée par ses caractéristiques, telles que son
@@ -213,118 +200,6 @@ public class PersonnePhysique extends Contribuable {
 			return "Contribuable PP";
 		}
 		return "Autre tiers";
-	}
-
-	private static final Pattern NOM_PRENOM_PATTERN = Pattern.compile("[']?[A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž]['A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž. /-]*");
-	private static final Pattern NOM_PRENOM_ESPACES = Pattern.compile("([^ ]+ )*[^ ]+");
-
-	@Override
-	public ValidationResults validate() {
-		final ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (habitant == null) {
-			results.addError("La personne physique doit être habitant ou non habitant");
-		}
-		else if (habitant && (numeroIndividu == null || numeroIndividu <= 0L)) {
-			results.addError("Le numéro d'individu du registre civil est un attribut obligatoire pour un habitant");
-		}
-		else if (!habitant) {
-
-			// nom : obligatoire
-			if (StringUtils.isBlank(nom)) {
-				results.addError("Le nom est un attribut obligatoire pour un non-habitant");
-			}
-			else {
-				if (!NOM_PRENOM_PATTERN.matcher(nom).matches()) {
-					results.addWarning("Le nom du non-habitant contient au moins un caractère invalide");
-				}
-				if (!NOM_PRENOM_ESPACES.matcher(nom).matches()) {
-					results.addWarning("Le nom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
-				}
-			}
-
-			// prénom : facultatif, donc on laisse passer empty, mais pas des espaces seuls
-			if (!StringUtils.isEmpty(prenom)) {
-				if (!NOM_PRENOM_PATTERN.matcher(prenom).matches()) {
-					results.addWarning("Le prénom du non-habitant contient au moins un caractère invalide");
-				}
-				if (!NOM_PRENOM_ESPACES.matcher(prenom).matches()) {
-					results.addWarning("Le prénom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
-				}
-			}
-		}
-
-		return results;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ValidationResults validateFors() {
-
-		ValidationResults results = super.validateFors();
-
-		/*
-		 * On n'autorise pas la présence de fors durant la ou les périodes d'appartenance à un couple
-		 */
-		// Détermine les périodes de validités ininterrompues du ménage commun
-		List<RapportEntreTiers> rapportsMenages = new ArrayList<RapportEntreTiers>();
-		Set<RapportEntreTiers> rapports = getRapportsSujet();
-		if (rapports != null) {
-			for (RapportEntreTiers r : rapports) {
-				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
-					rapportsMenages.add(r);
-				}
-			}
-		}
-		Collections.sort(rapportsMenages, new DateRangeComparator<RapportEntreTiers>());
-		final List<DateRange> periodes = DateRangeHelper.collateRange(rapportsMenages);
-
-		// Vérifie que chaque for est entièrement compris à l'extérieur d'une période de validité
-		final Set<ForFiscal> fors = getForsFiscaux();
-		if (fors != null) {
-			for (ForFiscal f : fors) {
-				if (f.isAnnule()) {
-					continue;
-				}
-				if (DateRangeHelper.intersect(f, periodes)) {
-					results.addError("Le for fiscal [" + f + "] ne peut pas exister alors que le tiers [" + getNumero()
-							+ "] appartient à un ménage-commun");
-				}
-			}
-		}
-
-		return results;
-	}
-
-	@Override
-	protected ValidationResults validateTypeAdresses() {
-
-		ValidationResults results = new ValidationResults();
-
-		final Set<AdresseTiers> adresses = getAdressesTiers();
-		if (adresses != null) {
-			for (AdresseTiers a : adresses) {
-				if (a.isAnnule()) {
-					continue;
-				}
-				if (a instanceof AdressePM) {
-					results.addError("L'adresse de type 'personne morale' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur une personne physique.");
-				}
-				else if (!habitant && a instanceof AdresseCivile && a.getDateFin() == null) {
-					results.addError("L'adresse de type 'personne civile' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur un non-habitant.");
-				}
-			}
-		}
-
-		return results;
 	}
 
 	@Override

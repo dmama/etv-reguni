@@ -19,6 +19,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Scénario de l'annulation de mariage du cas JIRA UNIREG-1086.
@@ -29,9 +30,14 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCivilScenario {
 
 	private MetierService metierService;
+	private ValidationService validationService;
 
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
+	}
+
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
 	}
 
 	public static final String NAME = "4001_07_AnnulationMariage";
@@ -160,9 +166,9 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 			this.errorMessage = ece.getMessage();
 		}
 
-		MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);
+		final MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);
 		assertFalse(mc.isAnnule(), "L'annulation de mariage ne devrait pas annuler le ménage commun");
-		ValidationResults vr = mc.validate();
+		final ValidationResults vr = validationService.validate(mc);
 		assertEquals(0, vr.getErrors().size(), "Le ménage ne devrait avoir aucune erreur");
 		assertEquals(0, vr.getWarnings().size(), "Le ménage ne devrait avoir aucun warning");
 	}

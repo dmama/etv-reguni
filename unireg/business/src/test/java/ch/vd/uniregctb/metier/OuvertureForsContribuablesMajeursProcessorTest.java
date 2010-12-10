@@ -27,6 +27,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,10 +44,11 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		final GlobalTiersSearcher searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
+		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager, hibernateTemplate, tiersService, adresseService,
-				serviceInfra, searcher);
+				serviceInfra, searcher, validationService);
 	}
 
 	/**

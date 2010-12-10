@@ -66,6 +66,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class MetierServiceImpl implements MetierService {
 
@@ -79,6 +80,7 @@ public class MetierServiceImpl implements MetierService {
 	private SituationFamilleService situationFamilleService;
 	private GlobalTiersSearcher tiersSearcher;
 	private RemarqueDAO remarqueDAO;
+	private ValidationService validationService;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -141,6 +143,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void setTiersSearcher(GlobalTiersSearcher globalTiersSearcher) {
 		this.tiersSearcher = globalTiersSearcher;
+	}
+
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
 	}
 
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
@@ -1340,8 +1346,8 @@ public class MetierServiceImpl implements MetierService {
 	 * {@inheritDoc}
 	 */
 	public OuvertureForsResults ouvertureForsContribuablesMajeurs(RegDate dateReference, StatusManager status) {
-		OuvertureForsContribuablesMajeursProcessor processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager,
-				hibernateTemplate, tiersService, adresseService, serviceInfra, tiersSearcher);
+		final OuvertureForsContribuablesMajeursProcessor processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager,
+				hibernateTemplate, tiersService, adresseService, serviceInfra, tiersSearcher, validationService);
 		return processor.run(dateReference, status);
 	}
 
@@ -1349,7 +1355,7 @@ public class MetierServiceImpl implements MetierService {
 	 * {@inheritDoc}
 	 */
 	public FusionDeCommunesResults fusionDeCommunes(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, StatusManager status) {
-		FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra);
+		final FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService);
 		return processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, status);
 	}
 

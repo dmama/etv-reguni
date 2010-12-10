@@ -1,16 +1,10 @@
 package ch.vd.uniregctb.metier;
 
-import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -22,10 +16,27 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Processor qui effectue les changements sur les fors fiscaux suite à une fusion de communes.
@@ -42,16 +53,18 @@ public class FusionDeCommunesProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
 	private final ServiceInfrastructureService serviceInfra;
+	private final ValidationService validationService;
 
 	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<Class<? extends ForFiscal>, Strategy>();
 
 	protected FusionDeCommunesResults rapport;
 
-	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra) {
+	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra, ValidationService validationService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.serviceInfra = serviceInfra;
+		this.validationService = validationService;
 
 		this.strategies.put(ForFiscalPrincipal.class, new ForPrincipalStrategy());
 		this.strategies.put(ForFiscalSecondaire.class, new ForSecondaireStrategy());
@@ -143,7 +156,7 @@ public class FusionDeCommunesProcessor {
 		rapport.nbTiersTotal++;
 
 		// On ne traite pas les tiers qui ne valident pas
-		final ValidationResults results = tiers.validate();
+		final ValidationResults results = validationService.validate(tiers);
 		if (results.hasErrors()) {
 			rapport.addTiersInvalide(tiers, results);
 			return;

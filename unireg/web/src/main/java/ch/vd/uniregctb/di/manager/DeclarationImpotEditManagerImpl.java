@@ -81,6 +81,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Service offrant des methodes pour gérer le controller DeclarationImpotEditController
@@ -118,6 +119,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	private DelaiDeclarationDAO delaiDeclarationDAO;
 
+	private ValidationService validationService;
 
 	private ParametreAppService parametres;
 
@@ -275,7 +277,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	protected List<PeriodeImposition> calculateRangesProchainesDIs(final Contribuable contribuable) throws ValidationException {
 
 		// le contribuable doit être valide
-		final ValidationResults results = contribuable.validate();
+		final ValidationResults results = validationService.validate(contribuable);
 		if (results.hasErrors()) {
 			throw new ValidationException(contribuable, results.getErrors(), results.getWarnings());
 		}
@@ -375,7 +377,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		// le contribuable doit être valide
-		final ValidationResults results = contribuable.validate();
+		final ValidationResults results = validationService.validate(contribuable);
 		if (results.hasErrors()) {
 			throw new ValidationException(contribuable, results.getErrors(), results.getWarnings());
 		}
@@ -1142,6 +1144,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	public void setDelaiDeclarationDAO(DelaiDeclarationDAO delaiDeclarationDAO) {
 		this.delaiDeclarationDAO = delaiDeclarationDAO;
+	}
+
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)

@@ -4,12 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.Set;
-
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdressePM;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 
 /**
  *
@@ -83,31 +77,6 @@ public class CollectiviteAdministrative extends Contribuable {
 	@Override
 	public TypeTiers getType() {
 		return TypeTiers.COLLECTIVITE_ADMINISTRATIVE;
-	}
-
-	@Override
-	protected ValidationResults validateTypeAdresses() {
-
-		ValidationResults results = new ValidationResults();
-
-		final Set<AdresseTiers> adresses = getAdressesTiers();
-		if (adresses != null) {
-			for (AdresseTiers a : adresses) {
-				if (a.isAnnule()) {
-					continue;
-				}
-				if (a instanceof AdressePM) {
-					results.addError("L'adresse de type 'personne morale' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur une collectivité administrative.");
-				}
-				else if (a instanceof AdresseCivile) {
-					results.addError("L'adresse de type 'personne civile' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur une collectivité administrative.");
-				}
-			}
-		}
-
-		return results;
 	}
 
 	/**

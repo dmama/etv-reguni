@@ -11,7 +11,6 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -98,18 +97,5 @@ public class AdresseAutreTiers extends AdresseTiers {
 		// begin-user-code
 		autreTiersId = id;
 		// end-user-code
-	}
-
-	public ValidationResults validate() {
-		ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (type == null) {
-			results.addError("Le type d'adresse doit être renseigné sur une adresse autre tiers [" + this + "]");
-		}
-		return results;
 	}
 }

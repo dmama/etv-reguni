@@ -9,12 +9,9 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.Validateable;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
@@ -34,7 +31,7 @@ import ch.vd.uniregctb.type.TypeTache;
  */
 @Entity
 @DiscriminatorValue("ENVOI_DI")
-public class TacheEnvoiDeclarationImpot extends Tache implements DateRange, Validateable {
+public class TacheEnvoiDeclarationImpot extends Tache implements DateRange {
 
 	private static final long serialVersionUID = 6038437798535074010L;
 
@@ -243,30 +240,6 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange, Vali
 	 */
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ValidationResults validate() {
-
-		ValidationResults results = new ValidationResults();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		DateRangeHelper.validate(this, false, false, results);
-
-		if (typeContribuable == null) {
-			results.addError("Le type de contribuable ne peut pas être nul.");
-		}
-
-		if (typeDocument == null) {
-			results.addError("Le type de document ne peut pas être nul.");
-		}
-
-		return results;
 	}
 
 	@Transient

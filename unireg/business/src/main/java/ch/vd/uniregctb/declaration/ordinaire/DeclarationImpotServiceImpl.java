@@ -33,6 +33,7 @@ import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
@@ -72,6 +73,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	private ParametreAppService parametres;
 
+	private ValidationService validationService;
+
 	private int tailleLot = 100; // valeur par défaut
 
 	private static final String CONTEXTE_COPIE_CONFORME_SOMMATION = "SommationDI";
@@ -82,7 +85,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 			TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
 			TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
-			ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+			ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -95,6 +98,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+		this.validationService = validationService;
 	}
 
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
@@ -165,6 +169,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
+	}
+
 	/**
 	 * Pour le testing uniquement
 	 */
@@ -179,7 +187,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throws DeclarationException {
 
 		final DeterminationDIsAEmettreProcessor processer = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-				parametres, tiersService, transactionManager);
+				parametres, tiersService, transactionManager, validationService);
 		return processer.run(anneePeriode, dateTraitement, nbThreads, status);
 	}
 
@@ -218,7 +226,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status)
 			throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
-				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer);
+				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer, validationService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 

@@ -52,6 +52,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -68,6 +69,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	private TiersService tiersService;
 	private PeriodeFiscaleDAO periodeDAO;
 	private ParametreAppService parametres;
+	private ValidationService validationService;
 	private Long idCedi;
 	private Long idOidLausanne;
 	private Long idAci;
@@ -89,6 +91,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		parametres = getBean(ParametreAppService.class, "parametreAppService");
 		final ServiceCivilCacheWarmer cacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+		validationService = getBean(ValidationService.class, "validationService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
@@ -97,7 +100,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		 * et seul l'interface publique est accessible)
 		 */
 		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService,
-				infraService, tiersService, impressionDIHelper, transactionManager, parametres, cacheWarmer);
+				infraService, tiersService, impressionDIHelper, transactionManager, parametres, cacheWarmer, validationService);
 		// Initialisation du bean par le setter afin de ne pas changer la signature du constructeur
 		service.setEvenementFiscalService(evenementFiscalService);
 
@@ -189,7 +192,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
 
 			DeterminationDIsAEmettreProcessor processor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-					parametres, tiersService, transactionManager);
+					parametres, tiersService, transactionManager, validationService);
 
 			// Lance et interrompt l'envoi en masse après 2 contribuables (message de démarrage + message d'envoi de la DI d'eric)
 			InterruptingStatusManager status = new InterruptingStatusManager(2);
@@ -218,10 +221,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final long idJohn = 10000004L;
 
 		final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, idEric);
-		assertFalse(eric.validate().hasErrors());
+		assertFalse(validationService.validate(eric).hasErrors());
 
 		final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, idJohn);
-		assertTrue(john.validate().hasErrors());
+		assertTrue(validationService.validate(john).hasErrors());
 
 		// Détermine les DIs à émettre : le contribuable invalide ne devrait pas être pris en compte
 		assertResults(1, service.determineDIsAEmettre(2007, date(2008, 1, 20), 1, null));
@@ -318,9 +321,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		{
 			final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-			assertFalse(eric.validate().hasErrors());
+			assertFalse(validationService.validate(eric).hasErrors());
 			final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-			assertFalse(john.validate().hasErrors());
+			assertFalse(validationService.validate(john).hasErrors());
 
 			// Détermine les DIs à émettre : le status manager va lancer une exception sur le traitement de John.
 			StatusManager status = new StatusManager() {

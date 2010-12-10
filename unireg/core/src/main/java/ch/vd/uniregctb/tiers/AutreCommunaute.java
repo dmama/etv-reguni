@@ -4,14 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.Set;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdressePM;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.FormeJuridique;
 
@@ -100,46 +95,6 @@ public class AutreCommunaute extends Contribuable {
 		// begin-user-code
 		formeJuridique = theFormeJuridique;
 		// end-user-code
-	}
-
-	@Override
-	public ValidationResults validate() {
-		ValidationResults results = super.validate();
-		
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (nom == null || nom.equals("")) {
-			results.addError("Le nom est un attribut obligatoire");
-		}
-
-		return results;
-	}
-
-	@Override
-	protected ValidationResults validateTypeAdresses() {
-
-		ValidationResults results = new ValidationResults();
-
-		final Set<AdresseTiers> adresses = getAdressesTiers();
-		if (adresses != null) {
-			for (AdresseTiers a : adresses) {
-				if (a.isAnnule()) {
-					continue;
-				}
-				if (a instanceof AdressePM) {
-					results.addError("L'adresse de type 'personne morale' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur une autre communauté.");
-				}
-				else if (a instanceof AdresseCivile) {
-					results.addError("L'adresse de type 'personne civile' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur une autre communauté.");
-				}
-			}
-		}
-
-		return results;
 	}
 
 	@Transient

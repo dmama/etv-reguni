@@ -72,8 +72,7 @@
 	</bean>
 	
 	<bean id="tiersEditValidator" class="ch.vd.uniregctb.tiers.validator.TiersEditValidator" >
-		<property name="ibanValidator" ref="ibanValidator" />
-		<property name="tiersService" ref="tiersService" />
+		<property name="validationService" ref="validationService" />
 	</bean>
 	
 	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">

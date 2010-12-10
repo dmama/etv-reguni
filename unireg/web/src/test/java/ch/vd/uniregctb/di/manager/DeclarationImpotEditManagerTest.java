@@ -1,18 +1,12 @@
 package ch.vd.uniregctb.di.manager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.List;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -31,6 +25,13 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.validation.ValidationService;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * La classe ci-dessous permet de tester le manager web de gestion des déclaration d'impôt.
@@ -56,6 +57,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager = new DeclarationImpotEditManagerImpl();
 		manager.setDiDAO(diDAO);
 		manager.setParametres(parametres);
+		manager.setValidationService(getBean(ValidationService.class, "validationService"));
 	}
 
 	@Test

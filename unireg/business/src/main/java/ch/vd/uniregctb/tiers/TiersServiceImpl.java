@@ -95,6 +95,7 @@ import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Service de recherche des tiers. Effectue conjointement la recherche en base et dans le moteur de recherche.
@@ -114,6 +115,7 @@ public class TiersServiceImpl implements TiersService {
 	private AdresseService adresseService;
 	private RemarqueDAO remarqueDAO;
 	private ServicePersonneMoraleService servicePM;
+	private ValidationService validationService;
 
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
@@ -179,6 +181,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
 		this.servicePM = servicePM;
+	}
+
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
 	}
 
 	/**
@@ -1473,7 +1479,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
 		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
-		if (contribuable.validate().errorsCount() == 0) {
+		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
 		}
 
@@ -1529,7 +1535,7 @@ public class TiersServiceImpl implements TiersService {
 
 		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
-		if (contribuable.validate().errorsCount() == 0) {
+		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
 		}
 
@@ -1799,7 +1805,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
-		if (contribuable.validate().errorsCount() == 0) {
+		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForAutreImportAdded(contribuable, nouveauForFiscal);
 		}
 
@@ -1821,7 +1827,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal = addAndSave(debiteur, nouveauForFiscal);
 
-		if (debiteur.validate().errorsCount() == 0) {
+		if (validationService.validate(debiteur).errorsCount() == 0) {
 			afterForDebiteurPrestationImposableAdded(debiteur, nouveauForFiscal);
 		}
 
@@ -1913,7 +1919,7 @@ public class TiersServiceImpl implements TiersService {
 			if ((forsPrincipaux && reopenedFor instanceof ForFiscalPrincipal) || (!forsPrincipaux && reopenedFor instanceof ForFiscalSecondaire)) {
 				reopenedFor = addAndSave(tiers, reopenedFor);
 				// exécution des règles événements fiscaux
-				if (tiers.validate().errorsCount() == 0) {
+				if (validationService.validate(tiers).errorsCount() == 0) {
 					afterForAdded(reopenedFor);
 				}
 			}
@@ -1931,7 +1937,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setDateFin(null);
 		nouveauForFiscal = addAndSave(tiers, nouveauForFiscal);
 		// exécution des règles événements fiscaux
-		if (tiers.validate().errorsCount() == 0) {
+		if (validationService.validate(tiers).errorsCount() == 0) {
 			afterForAdded(nouveauForFiscal);
 		}
 	}
@@ -2100,7 +2106,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setMotifOuverture(motifFor);
 		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
-		if (contribuable.validate().errorsCount() == 0) {
+		if (validationService.validate(contribuable).errorsCount() == 0) {
 			tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, nouveauForFiscal, forFiscalPrincipal.getModeImposition());
 			//Envoi d'un événement fiscal
 			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == nouveauForFiscal.getTypeAutoriteFiscale()) {
@@ -2318,7 +2324,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setMotifFermeture(motifFermeture);
 		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
-		if (contribuable.validate().errorsCount() == 0) {
+		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForFiscalSecondaireAdded(contribuable, nouveauForFiscal);
 		}
 

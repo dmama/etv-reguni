@@ -47,6 +47,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.uniregctb.validation.ValidationService;
 import ch.vd.uniregctb.wsclient.fidor.FidorService;
 
 /**
@@ -66,6 +67,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static AdresseService adresseService;
 	private static FidorService fidorService;
 	private static PlatformTransactionManager transactionManager;
+	private static ValidationService validationService;
 
 	private Long numero;
 	private String titre;
@@ -163,6 +165,11 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		JspTagBandeauTiers.transactionManager = transactionManager;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setValidationService(ValidationService validationService) {
+		JspTagBandeauTiers.validationService = validationService;
 	}
 
 	private String buidHtlm() {
@@ -264,7 +271,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 
 		if (showValidation) {
-			final ValidationResults validationResults = tiers.validate();
+			final ValidationResults validationResults = validationService.validate(tiers);
 			setErreursEtatsCivils(tiers, validationResults);
 			setErreursAdresses(tiers, validationResults);
 

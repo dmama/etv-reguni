@@ -26,6 +26,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -46,9 +47,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		super.onSetUp();
 
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
+		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra);
+		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService);
 
 		// Annexion de Croy et Vaulion par Romainmôtier (scénario prophétique et stimulant)
 		anciensNoOfs = new HashSet<Integer>();

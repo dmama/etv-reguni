@@ -7,21 +7,29 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class TacheManagerImpl implements TacheManager {
 
 	private TacheService tacheService;
+
+	private ValidationService validationService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheService(TacheService tacheService) {
 		this.tacheService = tacheService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
+	}
+
 	public SynchronizeActionsTable buildSynchronizeActionsTable(Contribuable ctb, String titre, String titreErreurValidation) {
 
 		final SynchronizeActionsTable table;
 
-		final ValidationResults vr = ctb.validate();
+		final ValidationResults vr = validationService.validate(ctb);
 		if (vr.hasErrors()) {
 			table = new SynchronizeActionsTable(titreErreurValidation);
 			table.addErrors(vr.getErrors());			

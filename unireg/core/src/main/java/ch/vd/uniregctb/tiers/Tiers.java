@@ -34,8 +34,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.validation.Validateable;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -59,7 +57,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Table(name = "TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class Tiers extends HibernateEntity implements Validateable, BusinessComparable<Tiers> {
+public abstract class Tiers extends HibernateEntity implements BusinessComparable<Tiers> {
 
 	private static final Logger LOGGER = Logger.getLogger(Tiers.class);
 
@@ -1407,90 +1405,6 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	public ValidationResults validate() {
-
-		ValidationResults results = new ValidationResults();
-
-		// UNIREG-601 on ignore toutes les erreurs pour un tiers annulé
-		if (!isAnnule()) {
-			results.merge(validateAdresses());
-			results.merge(validateFors());
-			results.merge(validateDeclarations());
-			results.merge(validateRapports());
-		}
-
-		return results;
-	}
-
-	protected ValidationResults validateRapports() {
-		// rien de spécial ici
-		return new ValidationResults();
-	}
-
-	private ValidationResults validateDeclarations() {
-
-		ValidationResults results = new ValidationResults();
-
-		final List<Declaration> decls = getDeclarationsSorted();
-		if (decls != null) {
-			Declaration last = null;
-			for (Declaration d : decls) {
-				if (d.isAnnule()) {
-					continue;
-				}
-				// On valide la déclaration pour elle-même
-				results.merge(d.validate());
-
-				// Les plages de validité des déclarations ne doivent pas se chevaucher
-				if (last != null && DateRangeHelper.intersect(last, d)) {
-					final String message = String.format("La déclaration n°%d %s chevauche la déclaration précédente n°%d %s", d.getId(),
-							DateRangeHelper.toString(d), last.getId(), DateRangeHelper.toString(last));
-					results.addError(message);
-				}
-				last = d;
-			}
-		}
-
-		return results;
-	}
-
-	private ValidationResults validateAdresses() {
-
-		ValidationResults results = new ValidationResults();
-
-		results.merge(validateTypeAdresses());
-
-		for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-			results.merge(validateAdresses(getAdressesTiersSorted(type)));
-		}
-
-		return results;
-	}
-
-	/**
-	 * Valide les adresses tiers en fonction de leurs type
-	 */
-	protected abstract ValidationResults validateTypeAdresses();
-
-	public ValidationResults validateFors() {
-
-		// dumpForDebug();
-
-		ValidationResults results = new ValidationResults();
-
-		// On valide tous les fors pour eux-mêmes
-		if (forsFiscaux != null) {
-			for (ForFiscal f : forsFiscaux) {
-				results.merge(f.validate());
-			}
-		}
-
-		return results;
-	}
-
-	/**
 	 * @return vrai s'il existe un for principal (ou une succession ininterrompue de fors principaux) durant la période spécifiée.
 	 */
 	public static boolean existForPrincipal(List<ForFiscalPrincipal> principaux, RegDate dateDebut, RegDate dateFin) {
@@ -1541,55 +1455,6 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 
 		// on a pas trouvé de for s'étendant sur toute la plage demandée
 		return false;
-	}
-
-	private ValidationResults validateAdresses(List<AdresseTiers> sorted) {
-
-		if (sorted == null || sorted.size() == 0) {
-			return null;
-		}
-
-		// on ignore les adresses annulées
-		// [UNIREG-467] on crée une nouvelle liste pour avoir les indexes corrects
-		List<AdresseTiers> list = new ArrayList<AdresseTiers>(sorted.size());
-		for (AdresseTiers a : sorted) {
-			if (!a.isAnnule()) {
-				list.add(a);
-			}
-		}
-
-		ValidationResults results = new ValidationResults();
-
-		RegDate lastDateFin = null;
-		RegDate lastDateDebut = null;
-		for (int i = 0; i < list.size(); i++) {
-			AdresseTiers adr = list.get(i);
-			if (i > 0) {
-				if (lastDateFin == null || adr.getDateDebut().isBeforeOrEqual(lastDateFin)) {
-					// Overlap
-					final String message =
-							String.format("L'adresse fiscale numéro %d (type=%s début=%s fin=%s) chevauche l'adresse fiscale numéro %d (type=%s début=%s fin=%s)", i,
-									adr.getUsage().name().toLowerCase(), RegDateHelper.dateToDisplayString(lastDateDebut), RegDateHelper.dateToDisplayString(lastDateFin), (i + 1),
-									adr.getUsage().name().toLowerCase(), RegDateHelper.dateToDisplayString(adr.getDateDebut()), RegDateHelper.dateToDisplayString(adr.getDateFin()));
-					results.addError(message);
-				}
-			}
-
-			// Date de début doit être avant la date de fin
-			if (adr.getDateDebut() != null && adr.getDateFin() != null && !adr.getDateDebut().isBefore(adr.getDateFin())) {
-				results.addError("La date de début de l'adresse " + i + " est après la date de fin");
-			}
-
-			// Date debut peut pas etre nulle
-			if (adr.getDateDebut() == null) {
-				results.addError("L'adresse " + i + " n'a pas de date de début");
-			}
-
-			lastDateDebut = adr.getDateDebut();
-			lastDateFin = adr.getDateFin();
-		}
-
-		return results;
 	}
 
 	/**

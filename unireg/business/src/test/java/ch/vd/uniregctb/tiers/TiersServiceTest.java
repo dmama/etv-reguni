@@ -52,6 +52,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -71,6 +72,7 @@ public class TiersServiceTest extends BusinessTest {
 	private TiersDAO tiersDAO;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private ValidationInterceptor validationInterceptor;
+	private ValidationService validationService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -80,6 +82,7 @@ public class TiersServiceTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		rapportEntreTiersDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
 		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
+		validationService = getBean(ValidationService.class, "validationService");
 	}
 
 	@Test
@@ -3161,10 +3164,10 @@ public class TiersServiceTest extends BusinessTest {
 		// On vérifie l'état initial : paul doit valider mais pas le ménage commun
 		final PersonnePhysique paul = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.paul);
 		assertNotNull(paul);
-		assertFalse(paul.validate().hasErrors()); // ok
+		assertFalse(validationService.validate(paul).hasErrors()); // ok
 		final MenageCommun mc = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.mc);
 		assertNotNull(mc);
-		assertTrue(mc.validate().hasErrors()); // manque l'appartenance ménage
+		assertTrue(validationService.validate(mc).hasErrors()); // manque l'appartenance ménage
 
 		// Maintenant, on ajoute un rapport d'appartenance ménage entre le non-habitant et le ménage-commun
 		AppartenanceMenage rapport = new AppartenanceMenage();
@@ -3179,7 +3182,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertNotNull(rapport);
 		assertEquals(paul.getNumero(), rapport.getSujetId());
 		assertEquals(mc.getNumero(), rapport.getObjetId());
-		assertFalse(mc.validate().hasErrors()); // plus d'erreur sur le ménage
+		assertFalse(validationService.validate(mc).hasErrors()); // plus d'erreur sur le ménage
 	}
 
 	@Test

@@ -32,6 +32,7 @@ import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class ProduireListeDIsNonEmisesProcessor {
 
@@ -51,6 +52,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private final DeclarationImpotService diService;
 	private final ParametreAppService parametres;
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	private final ValidationService validationService;
 
 	private DeterminationDIsAEmettreProcessor determinationDIsAEmettreProcessor;
 	private EnvoiDIsEnMasseProcessor envoiDIsEnMasseProcessor;
@@ -60,7 +62,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	public ProduireListeDIsNonEmisesProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 			ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
 			DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres,
-			ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+			ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.modeleDocumentDAO = modeleDocumentDAO;
@@ -71,6 +73,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+		this.validationService = validationService;
 	}
 
 	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, StatusManager s) throws DeclarationException {
@@ -78,7 +81,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres, serviceCivilCacheWarmer);
-		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager);
+		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService);
 
 		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement);
 
@@ -139,7 +142,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		rapport.nbCtbsTotal++;
 
 		final Contribuable contribuable = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
-		if (contribuable.validate().hasErrors()) {
+		if (validationService.validate(contribuable).hasErrors()) {
 			LOGGER.info("Le ctb n'a pas pu recevoir de DI car il est invalide");
 			return;
 		}

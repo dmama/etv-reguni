@@ -21,7 +21,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -179,33 +178,6 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		assertFalse(dao.exists(1234456567L));
 		assertTrue(dao.exists(10007890L));
-	}
-
-	@Test
-	public void testValidationException() throws Exception {
-
-		// On teste que si le nom est NULL, on a une erreur de validation
-		try {
-			doInNewTransaction(new TxCallback() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nh = new PersonnePhysique(false);
-					dao.save(nh);
-					fail();
-					return null;
-				}
-			});
-		}
-		catch (ValidationException e) {
-			assertEquals(1, e.getErrors().size());
-		}
-
-		// On teste que si le nom est PAS null, on n'a pas d'erreurs de validation
-		{
-			PersonnePhysique nh = new PersonnePhysique(false);
-			nh.setNom("toto");
-			dao.save(nh);
-		}
 	}
 
 	/**

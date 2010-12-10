@@ -130,6 +130,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersService.setServiceCivilService(serviceCivil);
 		tiersService.setTiersDAO(tiersDAO);
 		tiersService.setServicePM(servicePM);
+		tiersService.setValidationService(null);
 
 		adresseService = new AdresseServiceImpl();
 		adresseService.setServiceInfra(new DefaultMockServiceInfrastructureService());

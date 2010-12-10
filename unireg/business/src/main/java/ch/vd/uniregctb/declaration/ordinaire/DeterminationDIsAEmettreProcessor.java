@@ -51,6 +51,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class DeterminationDIsAEmettreProcessor {
 
@@ -64,19 +65,22 @@ public class DeterminationDIsAEmettreProcessor {
 	private final ParametreAppService parametres;
 	private final TiersService tiersService;
 	private final PlatformTransactionManager transactionManager;
+	private final ValidationService validationService;
 
 	private final ThreadLocal<DeterminationDIsResults> rapport = new ThreadLocal<DeterminationDIsResults>();
 
 	private int batchSize = BATCH_SIZE;
 
 	public DeterminationDIsAEmettreProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO, TacheDAO tacheDAO,
-	                                         ParametreAppService parametres, TiersService tiersService, PlatformTransactionManager transactionManager) {
+	                                         ParametreAppService parametres, TiersService tiersService, PlatformTransactionManager transactionManager,
+	                                         ValidationService validationService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.tacheDAO = tacheDAO;
 		this.parametres = parametres;
 		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
+		this.validationService = validationService;
 	}
 
 	public DeterminationDIsResults run(final int anneePeriode, final RegDate dateTraitement, int nbThreads, final StatusManager s)
@@ -216,7 +220,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 		rapport.get().nbCtbsTotal++;
 
-		if (contribuable.validate().hasErrors()) {
+		if (validationService.validate(contribuable).hasErrors()) {
 			rapport.get().addErrorCtbInvalide(contribuable);
 			return;
 		}

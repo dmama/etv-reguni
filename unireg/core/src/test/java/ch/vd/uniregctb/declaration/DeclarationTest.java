@@ -149,25 +149,4 @@ public class DeclarationTest extends WithoutSpringTest {
 	private static RegDate date(int year, int month, int day) {
 		return RegDate.get(year, month, day);
 	}
-
-	@Test
-	public void testValidateDeclarationAnnulee() {
-
-		final Declaration declaration = new Declaration() {};
-
-		// Adresse invalide (date début nul) mais annulée => pas d'erreur
-		{
-			declaration.setDateDebut(null);
-			declaration.setAnnule(true);
-			assertFalse(declaration.validate().hasErrors());
-		}
-
-		// Adresse valide et annulée => pas d'erreur
-		{
-			declaration.setDateDebut(date(2000, 1, 1));
-			declaration.setAnnule(true);
-			assertFalse(declaration.validate().hasErrors());
-		}
-	}
-
 }

@@ -282,6 +282,7 @@
         <property name="adresseService" ref="adresseService"/>
         <property name="serviceInfra" ref="serviceInfrastructureService"/>
 		<property name="paramService" ref="parametreAppService"/>
+		<property name="validationService" ref="validationService"/>
     </bean>
     <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob"
           class="ch.vd.uniregctb.tache.ListeTachesEnIstanceParOIDJob">

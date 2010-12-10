@@ -56,6 +56,7 @@ import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
@@ -66,6 +67,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private TiersService tiersService;
+	private ValidationService validationService;
 	private List<String> annotatedClass;
 	private Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new HashMap<EntityType, List<Class<? extends HibernateEntity>>>();
 
@@ -169,6 +171,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -294,7 +301,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		// Détermine la validité de tous les tiers
 		final List<TiersState> tiersStates = new ArrayList<TiersState>(tiers.size());
 		for (Tiers t : tiers.values()) {
-			final ValidationResults res = t.validate();
+			final ValidationResults res = validationService.validate(t);
 			tiersStates.add(new TiersState(new EntityKey(EntityType.Tiers, t.getId()), res));
 		}
 

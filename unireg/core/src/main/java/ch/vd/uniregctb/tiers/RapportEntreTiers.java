@@ -23,8 +23,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.Validateable;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -42,7 +40,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Table(name = "RAPPORT_ENTRE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "RAPPORT_ENTRE_TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, LinkedEntity, Validateable {
+public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, LinkedEntity {
 
 	private static final long serialVersionUID = 956676848057330463L;
 
@@ -259,27 +257,6 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 		}
 
 		return list;
-	}
-
-	public ValidationResults validate() {
-
-		ValidationResults results = new ValidationResults();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		// La date de début doit être renseignée
-		if (dateDebut == null) {
-			results.addError("Le rapport-entre-tiers " + toString() + " possède une date de début nulle");
-		}
-
-		// Date de début doit être avant (ou égale) la date de fin
-		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
-			results.addError("Le rapport-entre-tiers " + toString() + " possède une date de début qui est après la date de fin: début = " + dateDebut + " fin = " + dateFin + "");
-		}
-
-		return results;
 	}
 
 	/**

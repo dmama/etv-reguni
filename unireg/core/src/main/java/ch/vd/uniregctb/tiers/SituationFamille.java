@@ -21,12 +21,9 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.Validateable;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -45,7 +42,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 @Table(name = "SITUATION_FAMILLE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "SITUATION_FAMILLE_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class SituationFamille extends HibernateEntity implements DateRange, Validateable, Duplicable<SituationFamille>, LinkedEntity {
+public abstract class SituationFamille extends HibernateEntity implements DateRange, Duplicable<SituationFamille>, LinkedEntity {
 
 	private static final long serialVersionUID = 2322061257210000162L;
 
@@ -217,18 +214,6 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	 */
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ValidationResults validate() {
-		final ValidationResults results = new ValidationResults();
-		if (isAnnule()) {
-			return results;
-		}
-		DateRangeHelper.validate(this, false, true, results);
-		return results;
 	}
 
 	@Transient

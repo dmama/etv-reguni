@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -151,8 +150,6 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 		// end-user-code
 	}
 
-	public abstract boolean isRattachementCoherent(MotifRattachement motif);
-
 	@Override
 	protected void dumpForDebug(int nbTabs) {
 		super.dumpForDebug(nbTabs);
@@ -160,37 +157,6 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 		ddump(nbTabs, "Motif rattach: "+motifRattachement);
 		ddump(nbTabs, "Motif ouv: "+motifOuverture);
 		ddump(nbTabs, "Motif ferm: "+motifFermeture);
-	}
-
-	@Override
-	public ValidationResults validate() {
-
-		ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
-			results.addError("Par définition, le genre d'impôt d'un for fiscal 'revenu-fortune' doit être REVENU_FORTUNE.");
-		}
-
-		if (!isRattachementCoherent(motifRattachement)){
-			results.addError("Le for " + toString() + " avec motif de rattachement = " + motifRattachement + " est invalide");
-		}
-
-		if (getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			if (motifOuverture == null) {
-				results.addError("Le motif d'ouverture est obligatoire sur le for fiscal [" + this
-						+ "] car il est rattaché à une commune vaudoise.");
-			}
-			if (motifFermeture == null && getDateFin() != null) {
-				results.addError("Le motif de fermeture est obligatoire sur le for fiscal [" + this
-						+ "] car il est rattaché à une commune vaudoise.");
-			}
-		}
-
-		return results;
 	}
 
 	/* (non-Javadoc)

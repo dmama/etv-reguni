@@ -73,6 +73,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="adresseService" ref="adresseService"/>
 		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="validationService" ref="validationService" />
 	</bean>
 	
 	<bean id="listesTiersService" class="ch.vd.uniregctb.listes.ListesTiersServiceImpl">
@@ -118,6 +119,7 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
+		<property name="validationService" ref="validationService"/>
 	</bean>
 
 	<bean id="rapportService" class="ch.vd.uniregctb.rapport.RapportServiceImpl">

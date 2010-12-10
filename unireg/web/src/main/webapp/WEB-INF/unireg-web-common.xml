@@ -388,6 +388,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="fidorService" ref="fidorService" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="validationService" ref="validationService" />
 	</bean>
 
     <bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl" >

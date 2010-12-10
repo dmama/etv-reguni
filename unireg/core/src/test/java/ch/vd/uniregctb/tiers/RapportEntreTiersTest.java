@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -273,34 +272,5 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 		assertFalse(rapport.isValidAt(RegDate.get(2004, 1, 1)));
 		assertFalse(rapport.isValidAt(RegDate.get(1990, 1, 1)));
 		assertFalse(rapport.isValidAt(RegDate.get(2060, 1, 1)));
-	}
-
-	@Test
-	public void testValidateRapportAnnule() {
-
-		final RapportEntreTiers rapport = new RapportEntreTiers() {
-			@Override
-			public TypeRapportEntreTiers getType() {
-				throw new NotImplementedException();
-			}
-
-			public RapportEntreTiers duplicate() {
-				throw new NotImplementedException();
-			}
-		};
-
-		// Adresse invalide (date début nul) mais annulée => pas d'erreur
-		{
-			rapport.setDateDebut(null);
-			rapport.setAnnule(true);
-			assertFalse(rapport.validate().hasErrors());
-		}
-
-		// Adresse valide et annulée => pas d'erreur
-		{
-			rapport.setDateDebut(date(2000, 1, 1));
-			rapport.setAnnule(true);
-			assertFalse(rapport.validate().hasErrors());
-		}
 	}
 }

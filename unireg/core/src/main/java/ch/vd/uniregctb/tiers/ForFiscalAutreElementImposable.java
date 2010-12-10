@@ -3,10 +3,6 @@ package ch.vd.uniregctb.tiers;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc -->
  * @author jec
@@ -28,33 +24,7 @@ public class ForFiscalAutreElementImposable extends ForFiscalRevenuFortune {
 		super(ffaei);
 	}
 
-	@Override
-	public boolean isRattachementCoherent(MotifRattachement motif) {
-		boolean valid = MotifRattachement.ACTIVITE_LUCRATIVE_CAS == motif
-		|| MotifRattachement.ADMINISTRATEUR == motif
-		|| MotifRattachement.CREANCIER_HYPOTHECAIRE == motif
-		|| MotifRattachement.PRESTATION_PREVOYANCE == motif
-		|| MotifRattachement.LOI_TRAVAIL_AU_NOIR == motif;
-		return valid;
-	}
-
-	@Override
-	public ValidationResults validate() {
-		final ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			results.addError("Par définition, le type d'autorité fiscale d'un for fiscal 'autre élément imposable' est limité à COMMUNE_OU_FRACTION_VD");
-		}
-
-		return results;
-	}
-
 	public ForFiscal duplicate() {
 		return new ForFiscalAutreElementImposable(this);
 	}
-
 }

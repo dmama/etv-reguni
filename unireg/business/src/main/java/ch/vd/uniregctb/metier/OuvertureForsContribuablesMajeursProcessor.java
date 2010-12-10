@@ -46,6 +46,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Processor qui rechercher les habitants nouvellement majeurs et qui ouvre les fors principaux.
@@ -62,18 +63,20 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final GlobalTiersSearcher searcher;
+	private final ValidationService validationService;
 
 	protected OuvertureForsResults rapport;
 
 	public OuvertureForsContribuablesMajeursProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-			TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfra,
-			GlobalTiersSearcher searcher) {
+	                                                  TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfra,
+	                                                  GlobalTiersSearcher searcher, ValidationService validationService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
 		this.searcher = searcher;
+		this.validationService = validationService;
 	}
 
 	/**
@@ -253,7 +256,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			LOGGER.debug("Traitement de l'habitant n° " + habitant.getNumero());
 		}
 
-		final ValidationResults vr = habitant.validate();
+		final ValidationResults vr = validationService.validate(habitant);
 		if (vr.hasErrors()) {
 			throw new OuvertureForsException(habitant, ErreurType.VALIDATION, vr.toString());
 		}

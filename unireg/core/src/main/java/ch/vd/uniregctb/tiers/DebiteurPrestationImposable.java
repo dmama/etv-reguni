@@ -18,21 +18,14 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdressePM;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc --> Tiers ayant l'obligation de retenir et de verser périodiquement l'impôt dû sur les prestations imposables à la source
@@ -186,112 +179,6 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	public void setPeriodicites(Set<Periodicite> periodicites) {
 		this.periodicites = periodicites;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ValidationResults validateFors() {
-		ValidationResults results = super.validateFors();
-
-		final ForsParType fors = getForsParType(true /* triés par ordre chronologique */);
-
-		// Les plages de validité des fors ne doivent pas se chevaucher
-		ForDebiteurPrestationImposable lastFor = null;
-		for (ForDebiteurPrestationImposable fdpis : fors.dpis) {
-			if (lastFor != null && DateRangeHelper.intersect(lastFor, fdpis)) {
-				results.addError("Le for DPI qui commence le " + fdpis.getDateDebut() + " et se termine le " + fdpis.getDateFin()
-						+ " chevauche le for précédent");
-			}
-			lastFor = fdpis;
-			if (fdpis.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-				results.addError("Les for DPI hors suisse ne sont pas autorisés.");
-			}
-		}
-
-		// Seuls les for DPI sont autorisés
-		for (ForFiscal f : fors.principaux) {
-			results.addError("Le for " + f + " n'est pas un type de for autorisé sur un débiteur de prestations imposables.");
-		}
-		for (ForFiscal f : fors.secondaires) {
-			results.addError("Le for " + f + " n'est pas un type de for autorisé sur un débiteur de prestations imposables.");
-		}
-
-		return results;
-	}
-
-
-	@Override
-	protected ValidationResults validateTypeAdresses() {
-
-		ValidationResults results = new ValidationResults();
-
-		final Set<AdresseTiers> adresses = getAdressesTiers();
-		if (adresses != null) {
-			for (AdresseTiers a : adresses) {
-				if (a.isAnnule()) {
-					continue;
-				}
-				if (a instanceof AdressePM) {
-					results.addError("L'adresse de type 'personne morale' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur un débiteur de prestations imposables.");
-				}
-				else if (a instanceof AdresseCivile) {
-					results.addError("L'adresse de type 'personne civile' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
-							+ a.getDateFin() + ") n'est pas autorisée sur un débiteur de prestations imposables.");
-				}
-			}
-		}
-
-		return results;
-	}
-
-	@Override
-	public ValidationResults validate() {
-		final ValidationResults results = super.validate();
-		if (isAnnule()) {
-			return results;
-		}
-		
-		results.merge(validatePeriodicites());
-		return results;
-	}
-
-	private ValidationResults validatePeriodicites() {
-		final ValidationResults results = new ValidationResults();
-		if (periodicites == null || periodicites.isEmpty()) {
-			results.addWarning("ce débiteur n'a aucune périodicité");
-		}
-		else {
-			// Les plages de validité des fors ne doivent pas se chevaucher
-			Periodicite lastPeriodicite = null;
-			for (Periodicite p : getPeriodicitesSorted()) {
-				if (p.isAnnule()) {
-					continue;
-				}
-				// on valide les périodicités pour elles-mêmes
-				results.merge(p.validate());
-
-				// on s'assure que les périodicités ne se chevauchent pas
-				if (lastPeriodicite != null && DateRangeHelper.intersect(lastPeriodicite, p)) {
-					results.addError("La périodicité qui commence le " + p.getDateDebut() + " et se termine le " + p.getDateFin() + " chevauche la périodicité précédente");
-				}
-				lastPeriodicite = p;
-			}
-
-			ForDebiteurPrestationImposable premierForFiscal = getPremierForDebiteur();
-			if (premierForFiscal != null) {
-				Periodicite premierePeriodicite = getPremierePeriodicite();
-				if (premierForFiscal.getDateDebut().isBefore(premierePeriodicite.getDateDebut())) {
-					results.addError(" aucune périodicité n'est définie entre le début d'activité le " +
-							RegDateHelper.dateToDisplayString(premierForFiscal.getDateDebut()) +
-							" et la date de début de la première périodicité " + RegDateHelper.dateToDisplayString(premierePeriodicite.getDateDebut()));
-				}
-			}
-
-		}
-		return results;
 	}
 
 	/**

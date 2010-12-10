@@ -32,9 +32,10 @@
 
 	<bean id="tacheManager" class="ch.vd.uniregctb.tiers.manager.TacheManagerImpl">
 		<property name="tacheService" ref="tacheService" />
+		<property name="validationService" ref="validationService" />
 	</bean>
 
-	<bean id="forFiscalValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalValidator" >
+	<bean id="forFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalViewValidator" >
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
@@ -46,7 +47,7 @@
 		<property name="successView" value="common/refresh-parent" />
 		<property name="forFiscalManager" ref="forFiscalManager" />
 		<property name="paramService" ref="parametreAppService" />
-		<property name="validator" ref="forFiscalValidator" />
+		<property name="validator" ref="forFiscalViewValidator" />
 	</bean>
 
 	<bean id="tiersSituationFamilleController" class="ch.vd.uniregctb.tiers.TiersSituationFamilleController" parent="abstractTiersController">
@@ -56,7 +57,7 @@
 		<property name="formView" value="tiers/edition/fiscal/situation-famille-edit" />
 		<property name="successView" value="common/refresh-parent" />
 		<property name="situationFamilleManager" ref="situationFamilleManager" />
-		<property name="validator" ref="situationFamilleValidator" />
+		<property name="validator" ref="situationFamilleViewValidator" />
 	</bean>
 
 	<bean id="situationFamilleManager" class="ch.vd.uniregctb.tiers.manager.SituationFamilleManagerImpl">
@@ -67,7 +68,7 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
-	<bean id="situationFamilleValidator" class="ch.vd.uniregctb.tiers.validator.SituationFamilleValidator" >
+	<bean id="situationFamilleViewValidator" class="ch.vd.uniregctb.tiers.validator.SituationFamilleViewValidator" >
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 

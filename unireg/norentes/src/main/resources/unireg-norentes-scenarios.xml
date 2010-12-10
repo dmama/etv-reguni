@@ -117,9 +117,9 @@
 		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_05_AnnulationMariage_Couple_Scenario" />
 	<bean id="ec_4001_06_AnnulationMariage_JIRA1157_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_06_AnnulationMariage_JIRA1157_Scenario" />
-	<bean id="ec_4001_07_AnnulationMariage_JIRA1086_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_07_AnnulationMariage_JIRA1086_Scenario" >
+	<bean id="ec_4001_07_AnnulationMariage_JIRA1086_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_07_AnnulationMariage_JIRA1086_Scenario" >
 		<property name="metierService" ref="metierService" />
+		<property name="validationService" ref="validationService" />
 	</bean>
 		
 		

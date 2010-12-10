@@ -2,7 +2,6 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.List;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
@@ -10,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.PeriodiciteDAO;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -172,62 +170,6 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 
 	}
 
-	/**
-	 * Cas où un for intermédiaire est ouvert (date de fin = null).
-	 */
-	@Test
-	public void testDetectionChevauchementForsDebiteurForIntermediateOuvert() {
-
-		DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
-		{
-			ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
-			forFiscal.setDateDebut(date(2003, 12, 1));
-			forFiscal.setDateFin(date(2004, 8, 11));
-			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5601); // Chexbres
-			debiteur.addForFiscal(forFiscal);
-		}
-		{
-			ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
-			forFiscal.setDateDebut(date(2004, 8, 12));
-			forFiscal.setDateFin(date(2006, 10, 1));
-			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5890); // Vevey
-			debiteur.addForFiscal(forFiscal);
-		}
-		{ // ce for intermédiaire est ouvert => il doit entrer en conflit avec le for suivant
-			ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
-			forFiscal.setDateDebut(date(2006, 10, 2));
-			forFiscal.setDateFin(null);
-			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5889); // La Tour-de-Peilz
-			debiteur.addForFiscal(forFiscal);
-		}
-		{
-			ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
-			forFiscal.setDateDebut(date(2006, 10, 3));
-			forFiscal.setDateFin(date(2007, 3, 30));
-			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5889); // La Tour-de-Peilz
-			debiteur.addForFiscal(forFiscal);
-		}
-		{
-			ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
-			forFiscal.setDateDebut(date(2007, 3, 31));
-			forFiscal.setDateFin(null);
-			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5886); // Montreux
-			debiteur.addForFiscal(forFiscal);
-		}
-
-		assertEquals(1, debiteur.validate().errorsCount());
-	}
-
 	@Test
 	public void testAjoutPeriodicite() throws Exception {
 	doInNewTransaction(new TxCallback() {
@@ -295,25 +237,5 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 		// annulation du dernier for -> rien ne change
 		f2.setAnnule(true);
 		assertNull(dpi.getDateDesactivation());
-	}
-
-	@Test
-	public void testValidateTiersAnnule() {
-
-		final DebiteurPrestationImposable tiers = new DebiteurPrestationImposable();
-
-		// Tiers invalide (périodicité avec date de début nulle) mais annulé => pas d'erreur
-		{
-			tiers.addPeriodicite(new Periodicite());
-			tiers.setAnnule(true);
-			Assert.assertFalse(tiers.validate().hasErrors());
-		}
-
-		// Tiers valide et annulée => pas d'erreur
-		{
-			tiers.getPeriodicites().clear();
-			tiers.setAnnule(true);
-			Assert.assertFalse(tiers.validate().hasErrors());
-		}
 	}
 }

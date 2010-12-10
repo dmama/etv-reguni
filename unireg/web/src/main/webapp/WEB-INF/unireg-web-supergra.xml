@@ -27,6 +27,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="annotatedClass" ref="hibernateAnnotatedClasses"/>
 		<property name="tiersService" ref="tiersService"/>
+		<property name="validationService" ref="validationService"/>
 	</bean>
 
 </beans>

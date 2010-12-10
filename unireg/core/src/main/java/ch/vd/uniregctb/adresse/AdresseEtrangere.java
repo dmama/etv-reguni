@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
@@ -113,18 +112,5 @@ public class AdresseEtrangere extends AdresseSupplementaire {
 		// begin-user-code
 		numeroOfsPays = theNumeroOfsPays;
 		// end-user-code
-	}
-
-	public ValidationResults validate() {
-		ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if ((numeroOfsPays == null || numeroOfsPays == 0)) {
-			results.addError("Le numéro Ofs du pays doit être renseigné sur une adresse étrangère [" + this + "]");
-		}
-		return results;
 	}
 }

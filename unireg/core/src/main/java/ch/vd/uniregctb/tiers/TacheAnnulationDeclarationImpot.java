@@ -9,7 +9,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -72,21 +71,6 @@ public class TacheAnnulationDeclarationImpot extends Tache {
 		// begin-user-code
 		declarationImpotOrdinaire = theDeclarationImpotOrdinaire;
 		// end-user-code
-	}
-
-	public ValidationResults validate() {
-
-		ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (declarationImpotOrdinaire == null) {
-			results.addError("La déclaration ne peut pas être nulle.");
-		}
-
-		return results;
 	}
 
 	@Transient

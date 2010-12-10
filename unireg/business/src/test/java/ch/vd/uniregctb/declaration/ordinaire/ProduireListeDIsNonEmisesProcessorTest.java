@@ -23,6 +23,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 
@@ -39,8 +40,9 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
 		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 
-		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager, parametreAppService, serviceCivilCacheWarmer);
+		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager, parametreAppService, serviceCivilCacheWarmer, validationService);
 	}
 
 	@Test

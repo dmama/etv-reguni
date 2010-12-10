@@ -9,6 +9,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class RoleServiceImpl implements RoleService {
 
@@ -25,6 +26,8 @@ public class RoleServiceImpl implements RoleService {
 	private AdresseService adresseService;
 
 	private ServiceCivilService serviceCivilService;
+
+	private ValidationService validationService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -54,8 +57,12 @@ public class RoleServiceImpl implements RoleService {
 		this.serviceCivilService = serviceCivilService;
 	}
 
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
+	}
+
 	private ProduireRolesProcessor createProcessor() {
-		return new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService);
+		return new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService, validationService);
 	}
 
 	/**

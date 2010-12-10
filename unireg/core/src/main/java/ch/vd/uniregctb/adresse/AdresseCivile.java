@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -59,18 +58,5 @@ public class AdresseCivile extends AdresseTiers {
 		// begin-user-code
 		type = theType;
 		// end-user-code
-	}
-
-	public ValidationResults validate() {
-		ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (type == null) {
-			results.addError("Le type d'adresse doit être renseigné sur une adresse civile [" + this + "]");
-		}
-		return results;
 	}
 }

@@ -11,16 +11,15 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.AVSValidator;
 import ch.vd.uniregctb.utils.EAN13CheckDigitOperation;
 import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Validateur de l'objet du meme nom.
@@ -29,19 +28,12 @@ import ch.vd.uniregctb.utils.ValidateHelper;
  */
 public class TiersEditValidator implements Validator {
 
+	private ValidationService validationService;
 
-	private IbanValidator ibanValidator;
-
-	private TiersService tiersService;
-
-	public void setIbanValidator(IbanValidator ibanValidator) {
-		this.ibanValidator = ibanValidator;
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
 	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
-
 
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -158,8 +150,8 @@ public class TiersEditValidator implements Validator {
 				}
 
 				//Validation du tiers
-				ValidationResults results = tiers.validate();
-				List<String> erreurs = results.getErrors();
+				final ValidationResults results = validationService.validate(tiers);
+				final List<String> erreurs = results.getErrors();
 				ValidateHelper.rejectErrors(erreurs, errors);
 			}
 		}

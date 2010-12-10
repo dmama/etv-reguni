@@ -29,12 +29,9 @@ import org.hibernate.annotations.Type;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.Validateable;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -53,7 +50,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 @Table(name = "DECLARATION")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class Declaration extends HibernateEntity implements DateRange, Validateable, LinkedEntity {
+public abstract class Declaration extends HibernateEntity implements DateRange, LinkedEntity {
 
 	private static final long serialVersionUID = 5952424159981114355L;
 
@@ -506,31 +503,6 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	 */
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ValidationResults validate() {
-		ValidationResults results = new ValidationResults();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		DateRangeHelper.validate(this, false, false, results);
-
-		if (dateDebut != null && periode != null && dateDebut.year() != periode.getAnnee()) {
-			results.addError("La date de début [" + dateDebut + "] doit correspondre avec l'année de la période [" + periode.getAnnee()
-					+ "].");
-		}
-
-		if (dateFin != null && periode != null && dateFin.year() != periode.getAnnee()) {
-			results.addError("La date de fin [" + dateFin + "] doit correspondre avec l'année de la période [" + periode.getAnnee()
-					+ "].");
-		}
-
-		return results;
 	}
 
 	@Transient

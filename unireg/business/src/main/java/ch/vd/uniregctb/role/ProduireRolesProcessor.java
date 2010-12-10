@@ -68,6 +68,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Processeur spécialisé dans la production des rôles pour les communes vaudoises. Ce processeur doit être appelé par le service 'rôle'
@@ -95,8 +96,10 @@ public class ProduireRolesProcessor {
 
 	private final ServiceCivilService serviceCivilService;
 
+	private final ValidationService validationService;
+
 	public ProduireRolesProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService, TiersDAO tiersDAO, PlatformTransactionManager transactionManager,
-	                                     AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivilService) {
+	                                     AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivilService, ValidationService validationService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.tiersDAO = tiersDAO;
@@ -104,6 +107,7 @@ public class ProduireRolesProcessor {
 		this.adresseService = adresseService;
 		this.tiersService = tiersService;
 		this.serviceCivilService = serviceCivilService;
+		this.validationService = validationService;
 	}
 
 	private static interface GroupementCommunes {
@@ -431,7 +435,7 @@ public class ProduireRolesProcessor {
 		if (tiersService.isSourcierGris(ctb, RegDate.get(anneePeriode, 12, 31))) {
 			rapport.addCtbIgnoreSourcierGris(ctb);
 		}
-		else if (ctb.validate().hasErrors()) {
+		else if (validationService.validate(ctb).hasErrors()) {
 			rapport.addErrorCtbInvalide(ctb);
 		}
 		else {

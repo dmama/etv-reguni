@@ -17,12 +17,14 @@ import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.validation.ValidationService;
 
 public class EvenementCediServiceImpl implements EvenementCediService, EvenementCediHandler {
 
 	private TiersDAO tiersDAO;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private ModeleDocumentDAO modeleDocumentDAO;
+	private ValidationService validationService;
 
 	public void onEvent(EvenementCedi event) throws EvenementCediException {
 
@@ -43,7 +45,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 			throw new EvenementCediException("Le contribuable n°" + ctbId + " n'existe pas.");
 		}
 
-		final ValidationResults results = ctb.validate();
+		final ValidationResults results = validationService.validate(ctb);
 		if (results.hasErrors()) {
 			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
 		}
@@ -176,5 +178,9 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 
 	public void setModeleDocumentDAO(ModeleDocumentDAO modeleDocumentDAO) {
 		this.modeleDocumentDAO = modeleDocumentDAO;
+	}
+
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
 	}
 }

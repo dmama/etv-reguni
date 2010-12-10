@@ -4,7 +4,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -26,34 +25,12 @@ public class ForFiscalSecondaire extends ForFiscalRevenuFortune {
 	public ForFiscalSecondaire() {
 	}
 
-	public ForFiscalSecondaire(RegDate ouverture, RegDate fermeture, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-			MotifRattachement motifRattachement) {
+	public ForFiscalSecondaire(RegDate ouverture, RegDate fermeture, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {
 		super(ouverture, fermeture, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifRattachement);
 	}
 
 	public ForFiscalSecondaire(ForFiscalSecondaire ffs) {
 		super(ffs);
-	}
-
-	@Override
-	public boolean isRattachementCoherent(MotifRattachement motif) {
-		return MotifRattachement.ACTIVITE_INDEPENDANTE == motif || MotifRattachement.IMMEUBLE_PRIVE == motif
-			|| MotifRattachement.SEJOUR_SAISONNIER == motif || MotifRattachement.DIRIGEANT_SOCIETE == motif;
-	}
-
-	@Override
-	public ValidationResults validate() {
-		final ValidationResults results = super.validate();
-
-		if (isAnnule()) {
-			return results;
-		}
-
-		if (getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			results.addError("Par définition, le type d'autorité fiscale d'un for fiscal secondaire est limité à COMMUNE_OU_FRACTION_VD");
-		}
-
-		return results;
 	}
 
 	/* (non-Javadoc)
