@@ -193,6 +193,46 @@ public class ListeRecapManagerTest extends WebTest {
 	}
 
 
+	//[UNIREG-3120]
+	@Test
+	public void testLRForPeriodicites_3120() throws Exception{
+	//Ajout d'une première periodicite'
+		final int anneeReference =2009;
+		final int anneeSuivante = 2010;
+		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 9, 1), null);
+				addForDebiteur(dpi,date(anneeReference, 1, 1),date(anneeReference, 6, 30), MockCommune.Bex);
+				addForDebiteur(dpi,date(anneeSuivante, 10, 1),null, MockCommune.Bex);
+
+				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
+
+				addLR(dpi, date(anneeReference,1,1),date(anneeReference,3,31), fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference,4,1),date(anneeReference,6,30), fiscale, TypeEtatDeclaration.EMISE);
+
+				return  dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				assertNotNull(lrView);
+				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 10, 1);
+				RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 12, 31);
+				assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
+				assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
+				return null;
+			}
+		});
+
+	}
+
+
+
 		@Test
 	public void testLRForPeriodicitesMultiplesUniques() throws Exception{
 	//Ajout d'une première periodicite'

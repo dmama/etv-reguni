@@ -312,7 +312,10 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
 			final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, aujourdhui, lrTrouvees);
 			final DateRange periodeInteressante = new DateRangeHelper.Range(null, aujourdhui);
-			if (lrManquantes != null && lrManquantes.size() > 0 && periodeInteressante.isValidAt(lrManquantes.get(0).getDateFin()) && !DateRangeHelper.intersect(lrManquantes.get(0), lrTrouvees)) {
+			//[UNIREG-3120] la LR à ajouter doit recouper au moins une période d'activité du débiteur
+			if (lrManquantes != null && lrManquantes.size() > 0
+					&& (periodeInteressante.isValidAt(lrManquantes.get(0).getDateFin()) || periodeInteressante.isValidAt(lrManquantes.get(0).getDateDebut()))
+					&& !DateRangeHelper.intersect(lrManquantes.get(0), lrTrouvees)) {
 				lrEditView.setDateDebutPeriode(lrManquantes.get(0).getDateDebut());
 				lrEditView.setDateFinPeriode(lrManquantes.get(0).getDateFin());
 				//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
