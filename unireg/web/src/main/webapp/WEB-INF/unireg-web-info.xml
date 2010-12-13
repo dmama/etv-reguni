@@ -19,6 +19,16 @@
 		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
 	</bean>
 
+	<bean id="autoCompleteInfraController" class="ch.vd.uniregctb.json.AutoCompleteInfraController">
+		<property name="viewName" value="autocomplete/infra" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="autoCompleteSecurityController" class="ch.vd.uniregctb.json.AutoCompleteSecurityController">
+		<property name="viewName" value="autocomplete/security" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+	</bean>
+
 	<bean id="infoIFOSecController" class="ch.vd.uniregctb.admin.InfoIFOSecController">
 		<property name="viewName" value="admin/ifosec" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />

@@ -10,7 +10,6 @@
 		<link media="screen" href="<c:url value="/css/x/tabs.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/suggest.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/thickbox.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
@@ -20,7 +19,6 @@
 		<link media="print" href="<c:url value="/css/print/tabs.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/suggest.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/thickbox.css"/>" rel="stylesheet" type="text/css">
 		
@@ -34,7 +32,6 @@
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/rapport.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/suggest.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jtip.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>

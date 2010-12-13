@@ -154,4 +154,13 @@ public final class StringComparator implements Comparator<String> {
 			map.put(src, destination);
 		}
 	}
+
+	public static String toLowerCaseWithoutAccent(String str) {
+		if (str == null) {
+			return "";
+		}
+		else {
+			return removeAccents(str).toLowerCase();
+		}
+	}
 }

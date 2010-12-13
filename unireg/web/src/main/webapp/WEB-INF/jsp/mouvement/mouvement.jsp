@@ -38,20 +38,19 @@
 					<form:input path="utilisateurEnvoi" id="utilisateurEnvoi" />
 					<form:errors path="utilisateurEnvoi" cssClass="error"/>
 					<form:hidden path="numeroUtilisateurEnvoi" id="numeroUtilisateurEnvoi"  />
-					<script type="text/javascript">
-							function utilisateurEnvoi_onChange(row) {	
-								var form = document.forms["formEditMvt"];
-								form.numeroUtilisateurEnvoi.value = ( row ? row.individuNoTechnique : "");
-							}
+					<script>
+						$(function() {
+							autocomplete_security('user', '#utilisateurEnvoi', function(item) {
+								if (item) {
+									$('#numeroUtilisateurEnvoi').val(item.id2); // le numéro technique
+								}
+								else {
+									$('#utilisateurEnvoi').val(null);
+									$('#numeroUtilisateurEnvoi').val(null);
+								}
+							});
+						});
 					</script>
-					<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-						<jsp:param name="inputId" value="utilisateurEnvoi" />
-						<jsp:param name="dataValueField" value="visaOperateur" />
-						<jsp:param name="dataTextField" value="{nom} {prenom} ({visaOperateur})" />
-						<jsp:param name="dataSource" value="selectionnerUtilisateur" />
-						<jsp:param name="onChange" value="utilisateurEnvoi_onChange" />
-						<jsp:param name="autoSynchrone" value="false"/>
-					</jsp:include>
 				</div>
 			</td>
 		<tr class="<unireg:nextRowClass/>" >
@@ -63,19 +62,19 @@
 				<div id="collectivites" <c:if test="${param.depuisTache != 'true'}">style="display:none;"</c:if> >
 					<form:input path="collAdmDestinataireEnvoi" id="collAdmDestinataireEnvoi" />
 					<form:hidden path="noCollAdmDestinataireEnvoi" id="noCollAdmDestinataireEnvoi"  />
-					<script type="text/javascript">
-					function libCollAdmDestinataireEnvoi_onChange(row) {
-						document.forms["formEditMvt"].noCollAdmDestinataireEnvoi.value = (row ? row.noColAdm : "");
-					}
+					<script>
+						$(function() {
+							autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataireEnvoi', function(item) {
+								if (item) {
+									$('#noCollAdmDestinataireEnvoi').val(item.id1); // le numéro de collectivité
+								}
+								else {
+									$('#collAdmDestinataireEnvoi').val(null);
+									$('#noCollAdmDestinataireEnvoi').val(null);
+								}
+							});
+						});
 					</script>
-					<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-						<jsp:param name="inputId" value="collAdmDestinataireEnvoi" />
-						<jsp:param name="dataValueField" value="nomCourt" />
-						<jsp:param name="dataTextField" value="{nomCourt}" />
-						<jsp:param name="dataSource" value="selectionnerCollectiviteAdministrative" />
-						<jsp:param name="onChange" value="libCollAdmDestinataireEnvoi_onChange" />
-						<jsp:param name="autoSynchrone" value="false"/>
-					</jsp:include>
 				</div>
 			</td>
 		</tr>
@@ -94,20 +93,19 @@
 					<form:input path="utilisateurReception" id="utilisateurReception" />
 					<form:errors path="utilisateurReception" cssClass="error"/>
 					<form:hidden path="numeroUtilisateurReception" id="numeroUtilisateurReception"  />
-					<script type="text/javascript">
-							function utilisateurReception_onChange(row) {	
-								var form = document.forms["formEditMvt"];
-								form.numeroUtilisateurReception.value = ( row ? row.individuNoTechnique : "");
-							}
+					<script>
+						$(function() {
+							autocomplete_security('user', '#utilisateurReception', function(item) {
+								if (item) {
+									$('#numeroUtilisateurReception').val(item.id2); // le numéro technique
+								}
+								else {
+									$('#numeroUtilisateurEnvoi').val(null);
+									$('#numeroUtilisateurReception').val(null);
+								}
+							});
+						});
 					</script>
-					<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-						<jsp:param name="inputId" value="utilisateurReception" />
-						<jsp:param name="dataValueField" value="visaOperateur" />
-						<jsp:param name="dataTextField" value="{nom} {prenom} ({visaOperateur})" />
-						<jsp:param name="dataSource" value="selectionnerUtilisateur" />
-						<jsp:param name="onChange" value="utilisateurReception_onChange" />
-						<jsp:param name="autoSynchrone" value="false"/>
-					</jsp:include>
 				</div>
 			</td>
 		<tr class="<unireg:nextRowClass/>" >

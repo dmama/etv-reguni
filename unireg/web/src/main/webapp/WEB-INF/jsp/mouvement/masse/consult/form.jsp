@@ -55,38 +55,37 @@
         <td>
             <form:input path="collAdmDestinataire" id="collAdmDestinataire" />
             <form:hidden path="noCollAdmDestinataire" id="noCollAdmDestinataire"  />
-            <script type="text/javascript">
-            function libCollAdmDestinataire_onChange(row) {
-                document.forms["formRechercherMouvementsMasse"].noCollAdmDestinataire.value = (row ? row.noColAdm : "");
-            }
-            </script>
-            <jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-                <jsp:param name="inputId" value="collAdmDestinataire" />
-                <jsp:param name="dataValueField" value="nomCourt" />
-                <jsp:param name="dataTextField" value="{nomCourt}" />
-                <jsp:param name="dataSource" value="selectionnerCollectiviteAdministrative" />
-                <jsp:param name="onChange" value="libCollAdmDestinataire_onChange" />
-                <jsp:param name="autoSynchrone" value="false"/>
-            </jsp:include>
+			<script>
+				$(function() {
+					autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataire', function(item) {
+						if (item) {
+							$('#noCollAdmDestinataire').val(item.id1); // le numéro de collectivité
+						}
+						else {
+							$('#collAdmDestinataire').val(null);
+							$('#noCollAdmDestinataire').val(null);
+						}
+					});
+				});
+			</script>
         </td>
         <td><fmt:message key="label.envoi.utilisateur"/>&nbsp;:</td>
         <td>
             <form:input path="individuDestinataire" id="individuDestinataire" />
             <form:hidden path="noIndividuDestinataire" id="noIndividuDestinataire"  />
-            <script type="text/javascript">
-                    function individuDestinataire_onChange(row) {
-                        var form = document.forms["formRechercherMouvementsMasse"];
-                        form.noIndividuDestinataire.value = ( row ? row.individuNoTechnique : "");
-                    }
-            </script>
-            <jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-                <jsp:param name="inputId" value="individuDestinataire" />
-                <jsp:param name="dataValueField" value="visaOperateur" />
-                <jsp:param name="dataTextField" value="{nom} {prenom} ({visaOperateur})" />
-                <jsp:param name="dataSource" value="selectionnerUtilisateur" />
-                <jsp:param name="onChange" value="individuDestinataire_onChange" />
-                <jsp:param name="autoSynchrone" value="false"/>
-            </jsp:include>
+			<script>
+				$(function() {
+					autocomplete_security('user', '#individuDestinataire', function(item) {
+						if (item) {
+							$('#noIndividuDestinataire').val(item.id2); // le numéro technique
+						}
+						else {
+							$('#individuDestinataire').val(null);
+							$('#noIndividuDestinataire').val(null);
+						}
+					});
+				});
+			</script>
         </td>
 	</tr>
 
@@ -111,20 +110,19 @@
 	    <td id="choixUtilisateurReception" width="25%">
             <form:input path="individuReception" id="individuReception" />
             <form:hidden path="noIndividuReception" id="noIndividuReception"  />
-            <script type="text/javascript">
-                    function individuReception_onChange(row) {
-                        var form = document.forms["formRechercherMouvementsMasse"];
-                        form.noIndividuReception.value = ( row ? row.individuNoTechnique : "");
-                    }
-            </script>
-            <jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-                <jsp:param name="inputId" value="individuReception" />
-                <jsp:param name="dataValueField" value="visaOperateur" />
-                <jsp:param name="dataTextField" value="{nom} {prenom} ({visaOperateur})" />
-                <jsp:param name="dataSource" value="selectionnerUtilisateur" />
-                <jsp:param name="onChange" value="individuReception_onChange" />
-                <jsp:param name="autoSynchrone" value="false"/>
-            </jsp:include>
+			<script>
+				$(function() {
+					autocomplete_security('user', '#individuReception', function(item) {
+						if (item) {
+							$('#noIndividuReception').val(item.id2); // le numéro technique
+						}
+						else {
+							$('#individuReception').val(null);
+							$('#noIndividuReception').val(null);
+						}
+					});
+				});
+			</script>
 	    </td>
 	    <td id="localisationNonUtilisateur" width="50%" colspan=2>&nbsp;</td>
     </tr>

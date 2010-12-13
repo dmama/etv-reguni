@@ -25,11 +25,6 @@
 
 	<!--  xt-Spring configuration -->
 	
-	<bean id="ajaxAutoCompleteHandler" class="ch.vd.uniregctb.web.xt.handler.AutoCompleteHandler">
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
-    </bean>
-    
     <bean id="ajaxToolTipHandler" class="ch.vd.uniregctb.web.xt.handler.ToolTipHandler" />
     
     <bean id="ajaxTabulationHandler" class="ch.vd.uniregctb.web.xt.handler.TabulationHandler" />
@@ -62,7 +57,7 @@
 	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
         <property name="handlerMappings">
             <props>
-                <prop key="/**/*.do">ajaxAutoCompleteHandler,ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler,tiersPickerController</prop>
+                <prop key="/**/*.do">ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler,tiersPickerController</prop>
 				<prop key="/fiscal/for.do">tiersForController</prop>
 				<prop key="/tiers/*.do">ajaxRemarqueHandler</prop>
                 <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>
@@ -98,6 +93,10 @@
 				<!-- SuperGra -->
 				<entry key="/supergra/entity.do" value-ref="superGraEntityController"/>
 				<entry key="/supergra/coll.do" value-ref="superGraCollectionController"/>
+
+				<!-- Autocomplete -->
+				<entry key="/autocomplete/infra.do" value-ref="autoCompleteInfraController" />
+				<entry key="/autocomplete/security.do" value-ref="autoCompleteSecurityController" />
 
 				<!-- Mapping des beans de remoting -->
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />

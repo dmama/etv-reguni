@@ -144,25 +144,37 @@
 							<form:input path="localiteSuisse"  id="localiteSuisse" cssErrorClass="input-with-errors" size ="25" />
 							<form:hidden path="numeroOrdrePoste" id="numeroOrdrePoste"  />
 							<form:hidden path="numCommune" id="numCommune"  />
-							<script type="text/javascript">
-									function localiteSuisse_onChange(row) {
-										var form = document.forms["formAddAdresse"];
-										form.numeroOrdrePoste.value = ( row ? row.noOrdre : "");
-										form.numCommune.value = ( row ? row.numCommune : "");
-										form.numeroRue.value ='';
-										form.rue.value ='';
-										AddressEdit_Adjust();
-									}
-							</script>
-							<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-								<jsp:param name="inputId" value="localiteSuisse" />
-								<jsp:param name="dataValueField" value="nomCommune" />
-								<jsp:param name="dataTextField" value="{nomCommune} ({npa})" />
-								<jsp:param name="dataSource" value="selectionnerLocalite" />
-								<jsp:param name="onChange" value="localiteSuisse_onChange" />
-								<jsp:param name="autoSynchrone" value="false"/>
-							</jsp:include>
+							<script>
+								$(function() {
+									autocomplete_infra('localite', '#localiteSuisse', function(item) {
+										if (item) {
+											$('#numeroOrdrePoste').val(item.id1);
+											$('#numCommune').val(item.id2);
+										}
+										else {
+											$('#localiteSuisse').val(null);
+											$('#numeroOrdrePoste').val(null);
+											$('#numCommune').val(null);
+										}
+										$('#numeroRue').val('');
+										$('#rue').val('');
+										
+										// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence
+										autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', function(i) {
+											if (i) {
+												$('#numeroRue').val(i.id1);
+												$('#numeroOrdrePoste').val(i.id2);
+											}
+											else {
+												$('#numeroRue').val(null);
+												$('#numeroOrdrePoste').val(null);
+											}
+										});
 
+										AddressEdit_Adjust();
+									});
+								});
+							</script>
 							<form:errors path="localiteSuisse" cssClass="error"/>
 						</div>
 						<div id="div_input_pays_npa" style="display:none;">
@@ -189,48 +201,35 @@
 							<form:hidden path="paysOFS" id="tiers_numeroOfsNationalite"/>
 							<form:input path="paysNpa" id="pays" cssErrorClass="input-with-errors" size ="20" />
 							<form:errors path="paysNpa" cssClass="error"/>
-							<script type="text/javascript">
-									function paysNpa_onChange(row) {
-										document.forms["formAddAdresse"].paysOFS.value = (row ? row.noOFS : "");
-									}
+							<script>
+								$(function() {
+									autocomplete_infra('pays', '#pays', function(item) {
+										$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
+									});
+								});
 							</script>
-							<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-								<jsp:param name="inputId" value="pays" />
-								<jsp:param name="dataValueField" value="nomMinuscule" />
-								<jsp:param name="dataTextField" value="{nomMinuscule}" />
-								<jsp:param name="dataSource" value="selectionnerPays" />
-								<jsp:param name="onChange" value="paysNpa_onChange" />
-								<jsp:param name="autoSynchrone" value="false"/>
-							</jsp:include>
-
 					</td>
 				</tr>
 				<tr class="even">
 					<td width="25%"><fmt:message key="label.rue" />&nbsp;:</td>
 					<td width="25%">
-						<form:input path="rue" id="rue" size ="25" cssErrorClass="input-with-errors"
-						maxlength="${lengthadrnom}" />
+						<form:input path="rue" id="rue" size ="25" cssErrorClass="input-with-errors" maxlength="${lengthadrnom}" />
 						<form:errors path="rue" cssClass="error"/>
 						<form:hidden path="numeroRue" id="numeroRue"/>
-						<script type="text/javascript">
-									function rue_onChange(row) {
-										var form = document.forms["formAddAdresse"];
-										form.numeroRue.value = ( row ? row.noRue : "") ;
-										if (row) {
-											form.localiteSuisse.value =row.nomLocalite;
-											form.numeroOrdrePoste.value = row.noLocalite;
-										}
+						<script>
+							$(function() {
+								autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', function(i) {
+									if (i) {
+										$('#numeroRue').val(i.id1);
+										$('#numeroOrdrePoste').val(i.id2);
 									}
+									else {
+										$('#numeroRue').val(null);
+										$('#numeroOrdrePoste').val(null);
+									}
+								});
+							}):
 						</script>
-						<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-								<jsp:param name="inputId" value="rue" />
-								<jsp:param name="dataValueField" value="designationCourrier" />
-								<jsp:param name="dataTextField" value="{designationCourrier}" />
-								<jsp:param name="dataSource" value="selectionnerRue" />
-								<jsp:param name="onChange" value="rue_onChange" />
-								<jsp:param name="autoSynchrone" value="true"/>
-						</jsp:include>
-
 					</td>
 					<td width="25%"><fmt:message key="label.numero.maison" />:</td>
 					<td width="25%">
@@ -357,18 +356,19 @@
 		AddressEdit_Adjust();
 		Element.fireObserver( F$("formAddAdresse").texteCasePostale, "change");
 	});
+	
 	function AddressEdit_Adjust() {
 		var form = F$("formAddAdresse");
-		Element.removeClassName( form.rue, "readonly");
-		if ( form.typeLocalite1.checked) {
-			rue_autoComplete.start();
-		} else {
-			rue_autoComplete.stop();
+		if (!isBlankString(form.numeroOrdrePoste.value) || !form.typeLocalite1.checked) {
+			form.rue.readOnly = '';
+			$('#rue').removeClass("readonly");
+			$('#rue').autocomplete("enable");
 		}
-		var readonly =  form.numeroOrdrePoste.value === "" && form.typeLocalite1.checked;
-		form.rue.readOnly = readonly;
-		if (readonly) {
-			Element.addClassName( form.rue, "readonly");
+		else {
+			form.rue.readOnly = 'readonly';
+			$('#rue').addClass("readonly");
+			$('#rue').autocomplete("disable");
+			$('#rue').val('^^^ entrez une localité ^^^');
 		}
 	}
 

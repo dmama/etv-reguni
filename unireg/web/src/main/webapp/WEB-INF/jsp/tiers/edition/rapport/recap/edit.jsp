@@ -60,22 +60,24 @@
 						</form:select>
 					</p>
 					
-					<p><%-- Autorité tutélaire, uniquement pour tutelle --%>
-					<script type="text/javascript">
-				      function autoriteTutelaire_onChange(row) {
-				              document.forms[0].autoriteTutelaireId.value = (row ? row.noColAdm : "");				              
-				      }
-					</script>
+					<p>
+						<%-- Autorité tutélaire, uniquement pour tutelle --%>
 						<label id="autoriteTutelaireLabel"  for="autoriteTutelaire"><fmt:message key="label.autorite.tutelaire" />&nbsp;:</label>
 						<form:input path="nomAutoriteTutelaire" id="nomAutoriteTutelaire" size ="65"/>
 						<form:hidden path="autoriteTutelaireId" id="autoriteTutelaireId" />
-						<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-							<jsp:param name="inputId" value="nomAutoriteTutelaire" />
-							<jsp:param name="dataValueField" value="nomComplet" />
-							<jsp:param name="dataTextField" value="{nomComplet}" />
-							<jsp:param name="dataSource" value="selectionnerAutoriteTutelaire" />
-							<jsp:param name="onChange" value="autoriteTutelaire_onChange" />
-						</jsp:include>
+						<script>
+							$(function() {
+								autocomplete_infra('justicePaix', '#nomAutoriteTutelaire', function(item) {
+									if (item) {
+										$('#autoriteTutelaireId').val(item.id1);
+									}
+									else {
+										$('#nomAutoriteTutelaire').val(null);
+										$('#autoriteTutelaireId').val(null);
+									}
+								});
+							});
+						</script>
 					</p>
 					<p>
 						<%-- Date de début --%>					

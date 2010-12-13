@@ -19,20 +19,19 @@
 						<form:input path="utilisateur" id="utilisateur" />
 						<form:errors path="utilisateur" cssClass="error"/>
 						<form:hidden path="numeroUtilisateur" id="numeroUtilisateur"  />
-						<script type="text/javascript">
-								function utilisateur_onChange(row) {	
-									var form = document.forms["formAddRestriction"];
-									form.numeroUtilisateur.value = ( row ? row.individuNoTechnique : "");
-								}
+						<script>
+							$(function() {
+								autocomplete_security('user', '#utilisateur', function(item) {
+									if (item) {
+										$('#numeroUtilisateur').val(item.id2); // le numéro technique
+									}
+									else {
+										$('#utilisateur').val(null);
+										$('#numeroUtilisateur').val(null);
+									}
+								});
+							});
 						</script>
-						<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-							<jsp:param name="inputId" value="utilisateur" />
-							<jsp:param name="dataValueField" value="visaOperateur" />
-							<jsp:param name="dataTextField" value="{nom} {prenom} ({visaOperateur})" />
-							<jsp:param name="dataSource" value="selectionnerUtilisateur" />
-							<jsp:param name="onChange" value="utilisateur_onChange" />
-							<jsp:param name="autoSynchrone" value="false"/>
-						</jsp:include>
 					</div>
 				</td>
 			</tr>

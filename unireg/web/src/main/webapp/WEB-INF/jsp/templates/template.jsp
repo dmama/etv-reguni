@@ -18,7 +18,6 @@ function ouvrirAide(url) {
 		<link media="screen" href="<c:url value="/css/x/tabs.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/suggest.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/thickbox.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
@@ -47,6 +46,7 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/autocomplete.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/thickbox.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/for.js"/>"></script>
@@ -54,7 +54,6 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/rapport.js"/>"></script>	
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>	
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/suggest.js"/>"></script>	
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tab.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jtip.js"/>"></script>	
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>

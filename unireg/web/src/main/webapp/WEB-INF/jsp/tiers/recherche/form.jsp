@@ -36,12 +36,15 @@
 		<td><fmt:message key="label.localite.postale.suisse" /> / <fmt:message key="label.pays.etranger" />&nbsp;:</td>
 		<td>
 			<form:input path="localiteOuPays" id="localiteOuPays" />
-			<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-				<jsp:param name="inputId" value="localiteOuPays" />
-				<jsp:param name="dataValueField" value="nomComplet" />
-				<jsp:param name="dataTextField" value="{nomComplet} ({numero})" />
-				<jsp:param name="dataSource" value="selectionnerLocaliteOuPays" />
-			</jsp:include>
+			<script>
+				$(function() {
+					autocomplete_infra('localiteOuPays', '#localiteOuPays', function(item) {
+						if (!item) {
+							$('#localiteOuPays').val(null);
+						}
+					});
+				});
+			</script>
 		</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -51,23 +54,23 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.for"/></td>
 			<td>
-				<script type="text/javascript">
-				      function forAll_onChange(row) {
-				              document.forms[0].noOfsFor.value = (row ? row.numero : "");
-				      }
-				</script>
 				<form:input path="forAll" id="forAll" />
 				<br>
 				<form:errors path="forAll" cssClass="error"/>
 				<form:hidden path="noOfsFor" id="noOfsFor" />
-				<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-					<jsp:param name="inputId" value="forAll" />
-					<jsp:param name="dataValueField" value="nomComplet" />
-					<jsp:param name="dataTextField" value="{nomComplet} ({numero}) " />
-					<jsp:param name="dataSource" value="selectionnerCommuneOuPays" />
-					<jsp:param name="onChange" value="forAll_onChange" />
-					<jsp:param name="autoSynchrone" value="false" />
-				</jsp:include>
+				<script>
+					$(function() {
+						autocomplete_infra('communeOuPays', '#forAll', function(item) {
+							if (item) {
+								$('#noOfsFor').val(item.id1);
+							}
+							else {
+								$('#forAll').val(null);
+								$('#noOfsFor').val(null);
+							}						
+						});
+					});
+				</script>
 			</td>
 			<td><fmt:message key="label.for.principal.actif" />&nbsp;:</td>
 			<td><form:checkbox path="forPrincipalActif" />

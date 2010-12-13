@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.taglibs;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -259,31 +258,25 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final StringBuilder b = new StringBuilder();
 
 		// champ de saisie visible à l'utilisateur
-		b.append("<input id=\"").append(idInputNomCommune).append("\" name=\"").append(idInputNomCommune).append(
-				"\" type=\"text\" value=\"").append(defaultNomCommune).append("\" size=\"25\" />\n");
+		b.append("<input id=\"").append(idInputNomCommune).append("\" name=\"").append(idInputNomCommune).append("\" type=\"text\" value=\"").append(defaultNomCommune).append("\" size=\"25\" />\n");
 
 		// champ contenant le numéro Ofs invisible à l'utilisateur
 		b.append("<input id=\"").append(idInputNoOfs).append("\" name=\"").append(nameInputNoOfs).append("\" type=\"hidden\" value=\"").append(defaultNoOfsCommune).append("\"/>\n");
 
-		// code javascript permettant la mise-à-jour du numéro Ofs à partir recherche de la commune
-		b.append("<script type=\"text/javascript\">\n");
-		b.append("function ").append(nameMethodOnChange).append("(row) {\n");
-		b.append("    document.getElementById('").append(idInputNoOfs).append("').value = (row ? row.noTechnique : \"\");\n");
-		b.append("}\n");
-		b.append("</script>\n");
-
-		// système de recherche ajax de la commune
-		b.append("<div id=\"").append(idDivAutoComplete).append("\" class=\"autocompleteContainer\"></div>\n");
-		b.append("<script type=\"text/javascript\">\n");
-
-		b.append("    var ").append(idDivAutoComplete).append(" = new AutoComplete(\"").append(idInputNomCommune).append("\", \"").append(idDivAutoComplete).append("\");\n");
-		b.append("    var item = ").append(idDivAutoComplete).append(";\n");
-		b.append("    item.setDataTextField(\"{nomMinuscule} ({noOFS})\");\n");
-		b.append("    item.setDataValueField(\"nomMinuscule\");\n");
-		b.append("    item.setDataSource(\"selectionnerCommuneVD\");\n");
-		b.append("    item.onChange = ").append(nameMethodOnChange).append(";\n");
-		b.append("    item.setAutoSynchrone(false);\n");
-		b.append("</script>\n");
+		// système de recherche ajax de l'OID
+		b.append("<script>\n");
+		b.append("    $(function() {\n");
+		b.append("        autocomplete_infra('communeVD', '#").append(idInputNomCommune).append("', function(item) {\n");
+		b.append("            if (item) {\n");
+		b.append("                $('#").append(idInputNoOfs).append("').val(item.id1);\n");
+		b.append("            }\n");
+		b.append("            else {\n");
+		b.append("                $('#").append(idInputNomCommune).append("').val(null);\n");
+		b.append("                $('#").append(idInputNoOfs).append("').val(null);\n");
+		b.append("            }\n");
+		b.append("        });\n");
+		b.append("    });\n");
+		b.append("</script>");
 
 		return b.toString();
 	}
@@ -308,26 +301,21 @@ public class JspTagBatchForm extends BodyTagSupport {
 		// champ contenant le numéro invisible à l'utilisateur
 		b.append("<input id=\"").append(idInputNoColAdm).append("\" name=\"").append(nameInputNoColAdm).append("\" type=\"hidden\" value=\"").append(defaultNoColAdm).append("\" />\n");
 
-		// code javascript permettant la mise-à-jour du numéro à partir recherche de l'OID
-		b.append("<script type=\"text/javascript\">\n");
-		b.append("function ").append(nameMethodOnChange).append("(row) {\n");
-		b.append("    document.getElementById('").append(idInputNoColAdm).append("').value = (row ? row.noColAdm : \"\");\n");
-		b.append("}\n");
-		b.append("</script>\n");
-
 		// système de recherche ajax de l'OID
-		b.append("<div id=\"").append(idDivAutoComplete).append("\" class=\"autocompleteContainer\"></div>\n");
-		b.append("<script type=\"text/javascript\">\n");
-
-		b.append("    var ").append(idDivAutoComplete).append(" = new AutoComplete(\"").append(idInputNomOID).append("\", \"").append(idDivAutoComplete).append("\");\n");
-		b.append("    var item = ").append(idDivAutoComplete).append(";\n");
-		b.append("    item.setDataTextField(\"{nomCourt} ({noColAdm})\");\n");
-		b.append("    item.setDataValueField(\"nomCourt\");\n");
-		b.append("    item.setDataSource(\"selectionnerOfficeImpotDistrict\");\n");
-		b.append("    item.onChange = ").append(nameMethodOnChange).append(";\n");
-		b.append("    item.setAutoSynchrone(false);\n");
-		b.append("</script>\n");
-
+		b.append("<script>\n");
+		b.append("    $(function() {\n");
+		b.append("        autocomplete_infra('officeImpot', '#").append(idInputNomOID).append("', function(item) {\n");
+		b.append("            if (item) {\n");
+		b.append("                $('#").append(idInputNoColAdm).append("').val(item.id1);\n");
+		b.append("            }\n");
+		b.append("            else {\n");
+		b.append("                $('#").append(idInputNomOID).append("').val(null);\n");
+		b.append("                $('#").append(idInputNoColAdm).append("').val(null);\n");
+		b.append("            }\n");
+		b.append("        });\n");
+		b.append("    });\n");
+		b.append("</script>");
+		
 		return b.toString();
 	}
 

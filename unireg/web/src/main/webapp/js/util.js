@@ -15,6 +15,14 @@ function trim(chaine)
     return chaine.replace(expreg,''); 
 } 
 
+function isEmptyString(str) {
+    return (!str || 0 === str.length);
+}
+
+function isBlankString(str) {
+    return (!str || /^\s*$/.test(str));
+}
+
 /*
 * Converti une chaine (dd.MM.yyyy) en date 
 */

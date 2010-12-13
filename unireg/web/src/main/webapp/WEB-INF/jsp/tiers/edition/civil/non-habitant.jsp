@@ -148,45 +148,38 @@
 	<tr
 		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.nationalite" />&nbsp;:</td>
-		<td width="50%"><form:hidden
-			path="tiers.numeroOfsNationalite" id="tiers_numeroOfsNationalite" />
-		<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="13" size="20" />
-			<script type="text/javascript">
-					function libelleOfsPaysOrigine_onChange(row) {
-						var item = document.getElementById("tiers_numeroOfsNationalite");
-						item.value = ( row ? row.noOFS : "");
-					}
+		<td width="50%">
+			<form:hidden path="tiers.numeroOfsNationalite" id="tiers_numeroOfsNationalite" />
+			<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="13" size="20" />
+			<script>
+				$(function() {
+					autocomplete_infra('pays', '#tiers_libelleOfsPaysOrigine', function(item) {
+						$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
+					});
+				});
 			</script>
-			<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-				<jsp:param name="inputId" value="tiers_libelleOfsPaysOrigine" />
-				<jsp:param name="dataValueField" value="nomMinuscule" />
-				<jsp:param name="dataTextField" value="{nomMinuscule} ({noOFS})" />
-				<jsp:param name="dataSource" value="selectionnerPays" />
-				<jsp:param name="onChange" value="libelleOfsPaysOrigine_onChange" />
-			</jsp:include>
 			<form:errors path="tiers.numeroOfsNationalite" cssClass="error" /></td>
 	</tr>
 	
 	<tr
 		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.commune.origine" />&nbsp;:</td>
-		<td width="50%"><form:hidden
-			path="tiers.numeroOfsCommuneOrigine" id="tiers_numeroOfsCommuneOrigine" />
-		<form:input path="libelleOfsCommuneOrigine" id="tiers_libelleOfsCommuneOrigine" cssErrorClass="input-with-errors" tabindex="14" size="20" />
-			<script type="text/javascript">
-					function libelleOfsCommuneOrigine_onChange(row) {
-						var item = document.getElementById("tiers_numeroOfsCommuneOrigine");
-						item.value = ( row ? row.noOFS : "");
-					}
+		<td width="50%">
+			<form:hidden path="tiers.numeroOfsCommuneOrigine" id="tiers_numeroOfsCommuneOrigine" />
+			<form:input path="libelleOfsCommuneOrigine" id="tiers_libelleOfsCommuneOrigine" cssErrorClass="input-with-errors" tabindex="14" size="20" />
+			<script>
+				$(function() {
+					autocomplete_infra('commune', '#tiers_libelleOfsCommuneOrigine', function(item) {
+						if (item) {
+							$('#tiers_numeroOfsCommuneOrigine').val(item.id1);
+						}
+						else {
+							$('#tiers_libelleOfsCommuneOrigine').val(null);
+							$('#tiers_numeroOfsCommuneOrigine').val(null);
+						}
+					});
+				});
 			</script>
-			<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-				<jsp:param name="inputId" value="tiers_libelleOfsCommuneOrigine" />
-				<jsp:param name="dataValueField" value="nomMinuscule" />
-				<jsp:param name="dataTextField" value="{nomMinuscule} ({noOFS})" />
-				<jsp:param name="dataSource" value="selectionnerCommuneSuisse" />
-				<jsp:param name="onChange" value="libelleOfsCommuneOrigine_onChange" />
-				<jsp:param name="autoSynchrone" value="false"/>
-			</jsp:include>
 			<form:errors path="tiers.numeroOfsCommuneOrigine" cssClass="error" /></td>
 	</tr>
 	

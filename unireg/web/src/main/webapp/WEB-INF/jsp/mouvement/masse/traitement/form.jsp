@@ -17,19 +17,19 @@
         <td width="25%">
             <form:input path="collAdmDestinataire" id="collAdmDestinataire" />
             <form:hidden path="noCollAdmDestinataire" id="noCollAdmDestinataire"  />
-            <script type="text/javascript">
-                function libCollAdmDestinataire_onChange(row) {
-                    document.forms["formRechercherMouvementsMasse"].noCollAdmDestinataire.value = (row ? row.noColAdm : "");
-                }
-            </script>
-            <jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-                <jsp:param name="inputId" value="collAdmDestinataire" />
-                <jsp:param name="dataValueField" value="nomCourt" />
-                <jsp:param name="dataTextField" value="{nomCourt}" />
-                <jsp:param name="dataSource" value="selectionnerCollectiviteAdministrative" />
-                <jsp:param name="onChange" value="libCollAdmDestinataire_onChange" />
-                <jsp:param name="autoSynchrone" value="false"/>
-            </jsp:include>
+			<script>
+				$(function() {
+					autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataire', function(item) {
+						if (item) {
+							$('#noCollAdmDestinataire').val(item.id1); // le numéro de collectivité
+						}
+						else {
+							$('#collAdmDestinataire').val(null);
+							$('#noCollAdmDestinataire').val(null);
+						}
+					});
+				});
+			</script>
         </td>
         <td width="25%"><fmt:message key="label.pour.archives"/>&nbsp;:</td>
         <td width="25%"><form:checkbox path="mouvementsPourArchives"/></td>

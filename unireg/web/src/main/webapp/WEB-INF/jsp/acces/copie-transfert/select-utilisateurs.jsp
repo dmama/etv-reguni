@@ -17,20 +17,19 @@
 							<form:input path="utilisateurReference" id="utilisateurReference" />
 							<form:errors path="utilisateurReference" cssClass="error"/>
 							<form:hidden path="numeroUtilisateurReference" id="numeroUtilisateurReference"  />
-							<script type="text/javascript">
-									function utilisateurReference_onChange(row) {	
-										var form = document.forms["formSelectUtilisateur"];
-										form.numeroUtilisateurReference.value = ( row ? row.individuNoTechnique : "");
-									}
+							<script>
+								$(function() {
+									autocomplete_security('user', '#utilisateurReference', function(item) {
+										if (item) {
+											$('#numeroUtilisateurReference').val(item.id2); // le numéro technique
+										}
+										else {
+											$('#utilisateurReference').val(null);
+											$('#numeroUtilisateurReference').val(null);
+										}
+									});
+								});
 							</script>
-							<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-								<jsp:param name="inputId" value="utilisateurReference" />
-								<jsp:param name="dataValueField" value="visaOperateur" />
-								<jsp:param name="dataTextField" value="{nom} {prenom} ({visaOperateur})" />
-								<jsp:param name="dataSource" value="selectionnerUtilisateur" />
-								<jsp:param name="onChange" value="utilisateurReference_onChange" />
-								<jsp:param name="autoSynchrone" value="false"/>
-							</jsp:include>
 						</div>
 					</td>
 				</tr>
@@ -41,20 +40,19 @@
 							<form:input path="utilisateurDestination" id="utilisateurDestination" />
 							<form:errors path="utilisateurDestination" cssClass="error"/>
 							<form:hidden path="numeroUtilisateurDestination" id="numeroUtilisateurDestination"  />
-							<script type="text/javascript">
-									function utilisateurDestination_onChange(row) {	
-										var form = document.forms["formSelectUtilisateur"];
-										form.numeroUtilisateurDestination.value = ( row ? row.individuNoTechnique : "");
-									}
+							<script>
+								$(function() {
+									autocomplete_security('user', '#utilisateurDestination', function(item) {
+										if (item) {
+											$('#numeroUtilisateurDestination').val(item.id2); // le numéro technique
+										}
+										else {
+											$('#utilisateurDestination').val(null);
+											$('#numeroUtilisateurDestination').val(null);
+										}
+									});
+								});
 							</script>
-							<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
-								<jsp:param name="inputId" value="utilisateurDestination" />
-								<jsp:param name="dataValueField" value="visaOperateur" />
-								<jsp:param name="dataTextField" value="{nom} {prenom} ({visaOperateur})" />
-								<jsp:param name="dataSource" value="selectionnerUtilisateur" />
-								<jsp:param name="onChange" value="utilisateurDestination_onChange" />
-								<jsp:param name="autoSynchrone" value="false"/>
-							</jsp:include>
 						</div>
 					</td>
 				</tr>

@@ -301,3 +301,17 @@ div.flash-error {
 	color: white;
 	background-color: Red;
 }
+
+/* autocomplete jQuery UI */
+.ui-autocomplete {
+	max-height: 300px;
+	overflow-y: auto;
+	/* IE 6 doesn't support max-height
+	 * we use height instead, but this forces the menu to always be this tall
+	 */
+	_height: 300px;
+}
+
+.ui-autocomplete-loading {
+	background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat;
+}
