@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.util.HtmlUtils;
 
 class Analyzer {
 
@@ -137,6 +138,10 @@ class Analyzer {
 				is = u.openStream();
 				os = new FileOutputStream(imagename, false);
 				FileCopyUtils.copy(is, os);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				return HtmlUtils.htmlEscape(e.getMessage());
 			}
 			finally {
 				if (is != null) {

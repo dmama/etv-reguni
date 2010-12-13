@@ -13,18 +13,24 @@ import ch.vd.registre.base.utils.Assert;
  * Statistiques d'un appel au web-service.
  */
 class Call {
+	private String user;
 	private String method;
 	private long milliseconds;
 	private int tiersCount;
 	private HourMinutes timestamp;
 	private List<String> parts;
 
-	Call(String method, long milliseconds, int tiersCount, HourMinutes timestamp, List<String> parts) {
+	Call(String user, String method, long milliseconds, int tiersCount, HourMinutes timestamp, List<String> parts) {
+		this.user = user;
 		this.method = method;
 		this.milliseconds = milliseconds;
 		this.tiersCount = tiersCount;
 		this.timestamp = timestamp;
 		this.parts = parts;
+	}
+
+	public String getUser() {
+		return user;
 	}
 
 	public String getMethod() {
@@ -65,8 +71,20 @@ class Call {
 			next = right;
 		}
 
-		// on saute le groupe [] suivant
-		next = line.indexOf(']', next + 1);
+		// on récupère le user
+		String user;
+		{
+			int left = line.indexOf('[', next + 1);
+			int right = line.indexOf(']', next + 1);
+			user = line.substring(left + 1, right);
+			next = right;
+		}
+		if (user.equals("aci-com")) {
+			user = "acicom";
+		}
+		if (user.equals("emp-aci")) {
+			user = "empaci";
+		}
 
 		// on récupère les millisecondes
 		final String milliAsString;
@@ -90,7 +108,7 @@ class Call {
 		final long milliseconds = Long.parseLong(milliAsString);
 		final List<String> parts = extractParts(line);
 
-		return new Call(method, milliseconds, tiersCount, timestamp, parts);
+		return new Call(user, method, milliseconds, tiersCount, timestamp, parts);
 	}
 
 	private static final Pattern TIERS_NUMBERS = Pattern.compile(".*tiersNumbers=\\[([0-9, ]*)\\].*");

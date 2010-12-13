@@ -1,38 +1,62 @@
 package ch.vd.uniregctb.webservices.tiers2.stats;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import ch.vd.registre.base.utils.Assert;
 
-/**
- * Statistiques des temps de réponse par période horaire (0-1h, 1-2h, 2-3h, ...)
- */
-class LoadData implements Comparable<LoadData> {
+class LoadData {
 
-	private final Periode periode;
-	private long count;
+	private Set<String> users = new HashSet<String>();
+	private List<LoadPoint> list = new ArrayList<LoadPoint>();
+	private int lastPeriodeIndex = 0;
 
-	LoadData(Periode periode) {
-		Assert.notNull(periode);
-		this.periode = periode;
+	public LoadData() {
+		for (Periode periode : Periode.DEFAULT_PERIODES) {
+			list.add(new LoadPoint(periode));
+		}
 	}
 
-	public void add() {
-		count++;
+	public void addCall(Call call) {
+
+		final String user = call.getUser();
+		users.add(user);
+
+		final HourMinutes timestamp = call.getTimestamp();
+
+		// optim : on commence à la position de la dernière période trouvée
+		boolean found = false;
+		for (int i = lastPeriodeIndex, listSize = list.size(); i < listSize; i++) {
+			final LoadPoint point = list.get(i);
+			if (point.isInPeriode(timestamp)) {
+				point.add(user);
+				lastPeriodeIndex = i;
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			// si on a pas trouvé, on recommence au début (ne devrait pas arriver, si les logs sont ordonnés de manière croissante dans le fichier)
+			for (int i = 0; i < lastPeriodeIndex; i++) {
+				final LoadPoint point = list.get(i);
+				if (point.isInPeriode(timestamp)) {
+					point.add(user);
+					lastPeriodeIndex = i;
+					found = true;
+					break;
+				}
+			}
+		}
+		Assert.isTrue(found);
 	}
 
-	public long getCount() {
-		return count;
+	public Set<String> getUsers() {
+		return users;
 	}
 
-	public boolean isInPeriode(HourMinutes timestamp) {
-		return periode.isInPeriode(timestamp);
-	}
-
-	public int compareTo(LoadData o) {
-		return this.periode.compareTo(o.periode);
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s, %d calls", periode, count);
+	public List<LoadPoint> getList() {
+		return list;
 	}
 }

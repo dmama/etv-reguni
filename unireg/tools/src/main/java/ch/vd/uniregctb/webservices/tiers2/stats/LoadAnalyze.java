@@ -2,59 +2,31 @@ package ch.vd.uniregctb.webservices.tiers2.stats;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.utils.Assert;
+import org.apache.commons.lang.mutable.MutableLong;
 
 /**
  * Analyse qui calcul et affiche l'évolution de la charge heure par heure (0-1h, 1-2h, 2-3h, ...).
  */
 class LoadAnalyze extends Analyze {
 
-	private Map<String, List<LoadData>> results = new HashMap<String, List<LoadData>>();
-
-	private int lastPeriodeIndex = 0;
+	private Map<String, LoadData> results = new HashMap<String, LoadData>();
 
 	public void addCall(Call call) {
 
 		final String method = call.getMethod();
-		final HourMinutes timestamp = call.getTimestamp();
 
-		List<LoadData> list = results.get(method);
-		if (list == null) {
-			list = new ArrayList<LoadData>();
-			for (Periode periode : Periode.DEFAULT_PERIODES) {
-				list.add(new LoadData(periode));
-			}
-			results.put(method, list);
+		LoadData data = results.get(method);
+		if (data == null) {
+			data = new LoadData();
+			results.put(method, data);
 		}
 
-		// optim : on commence à la position de la dernière période trouvée
-		boolean found = false;
-		for (int i = lastPeriodeIndex, listSize = list.size(); i < listSize; i++) {
-			final LoadData data = list.get(i);
-			if (data.isInPeriode(timestamp)) {
-				data.add();
-				lastPeriodeIndex = i;
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			// si on a pas trouvé, on recommence au début (ne devrait pas arriver, si les logs sont ordonnés de manière croissante dans le fichier)
-			for (int i = 0; i < lastPeriodeIndex; i++) {
-				final LoadData data = list.get(i);
-				if (data.isInPeriode(timestamp)) {
-					data.add();
-					lastPeriodeIndex = i;
-					found = true;
-					break;
-				}
-			}
-		}
-		Assert.isTrue(found);
+		data.addCall(call);
 	}
 
 	/**
@@ -63,8 +35,9 @@ class LoadAnalyze extends Analyze {
 	@SuppressWarnings({"JavaDoc"})
 	Chart buildGoogleChart(String method) {
 
-		final List<LoadData> data = results.get(method);
-		if (data == null) {
+		final LoadData data = results.get(method);
+		final List<LoadPoint> list = data.getList();
+		if (list == null) {
 			return null;
 		}
 
@@ -78,27 +51,66 @@ class LoadAnalyze extends Analyze {
 			}
 		}
 
-		//		final String values = "50,30,10,60,65,190";
-		StringBuilder values = new StringBuilder();
-		long max = 0;
-		long total = 0;
-		for (int i = 0, timeSize = data.size(); i < timeSize; i++) {
-			final LoadData range = data.get(i);
-			values.append(range.getCount());
-			if (i < timeSize - 1) {
-				values.append(',');
+		// On construit les différents lignes (total, empaci, sipf, ...) de valeurs
+		final Map<String, ChartValues> valuesPerUser = new HashMap<String, ChartValues>();
+		for (String user : data.getUsers()) {
+			valuesPerUser.put(user, new ChartValues(list.size()));
+		}
+		final ChartValues totalValues = new ChartValues(list.size());
+
+		for (int i = 0, timeSize = list.size(); i < timeSize; i++) {
+			final LoadPoint point = list.get(i);
+			// total
+			totalValues.addValue(point.getTotalCount());
+			// per user
+			for (String user : data.getUsers()) {
+				final MutableLong count = point.getCountPerUser().get(user);
+				final ChartValues values = valuesPerUser.get(user);
+				if (count == null) {
+					values.addValue(0L);
+				}
+				else {
+					values.addValue(count.longValue());
+				}
 			}
-			max = Math.max(max, range.getCount());
-			total += range.getCount();
 		}
 
+		final Long max = totalValues.getMax();
 		final String valuesRange = "0," + max;
+		final String totalLabel = "total%20(" + totalValues.getTotal() + ")";
 
-		final String callLabel = "calls%20(total:%20" + total + ")";
+		final StringBuilder allValues = new StringBuilder();
+		final StringBuilder allLabels = new StringBuilder();
+		final StringBuilder allColors = new StringBuilder();
+		final StringBuilder linesWidth = new StringBuilder();
+
+		allValues.append("s:");
+		allValues.append(totalValues.toSimpleEncoding(max));
+		allLabels.append(totalLabel);
+		allColors.append("000000");
+		linesWidth.append("2");
+
+		// Trie par ordre décroissant du nombre d'appels les données d'appels par méthode
+		final List<Map.Entry<String, ChartValues>> entries = new ArrayList<Map.Entry<String, ChartValues>>(valuesPerUser.entrySet());
+		Collections.sort(entries, new Comparator<Map.Entry<String, ChartValues>>() {
+			public int compare(Map.Entry<String, ChartValues> o1, Map.Entry<String, ChartValues> o2) {
+				return o2.getValue().getTotal().compareTo(o1.getValue().getTotal());
+			}
+		});
+
+		for (Map.Entry<String, ChartValues> entry : entries) {
+			allValues.append(',').append(entry.getValue().toSimpleEncoding(max));
+			final String label = entry.getKey() + "%20(" + entry.getValue().getTotal() + ")";
+			allLabels.append('|').append(label);
+			allColors.append(',').append(Colors.forUser(entry.getKey()));
+			linesWidth.append("|1");
+		}
+
 		final String url =
 				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x&chxtc=1,4")
-						.append("&chs=1000x200").append("&cht=lc").append("&chco=3D7930").append("&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chdl=").append(callLabel)
-						.append("&chg=-1.3,-1,1,1").append("&chls=1").append("&chtt=").append(method).append("%20-%20Load%20(calls/quarter%20hour)").toString();
+						.append("&chs=1000x200").append("&cht=lc").append("&chco=").append(allColors).append("&chds=").append(valuesRange).append("&chd=").append(allValues).append("&chdl=")
+						.append(allLabels).append("&chg=-1.3,-1,1,1").append("&chls=").append(linesWidth).append("&chtt=").append(method).append("%20-%20Load%20(calls/quarter%20hour)")
+						.toString();
 		return new Chart(url, 1000, 200);
 	}
 
@@ -116,8 +128,8 @@ class LoadAnalyze extends Analyze {
 		for (String method : methods) {
 			final StringBuilder line = new StringBuilder();
 			line.append(method).append(";");
-			final List<LoadData> data = results.get(method);
-			for (LoadData t : data) {
+			final LoadData data = results.get(method);
+			for (LoadPoint t : data.getList()) {
 				line.append(t).append(';');
 			}
 			System.out.println(line);
