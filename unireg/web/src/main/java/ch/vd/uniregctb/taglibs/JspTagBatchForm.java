@@ -82,7 +82,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 					b.append("<tr>");
 				}
 				b.append("<td nowrap0=\"nowrap\" width=\"25%\" align=\"right\">").append(StringEscapeUtils.escapeHtml(p.getDescription())).append("</td>");
-				b.append("<td nowrap0=\"nowrap\" width=\"25%\">").append(renderParam(job, p)).append("</td>");
+				b.append("<td nowrap0=\"nowrap\" width=\"25%\">").append(renderParam(job, p, request)).append("</td>");
 				displayedCount++;
 			}
 			if (displayedCount == 0) {
@@ -106,13 +106,13 @@ public class JspTagBatchForm extends BodyTagSupport {
 		return b.toString();
 	}
 
-	private static String renderParam(GestionJob job, JobParam param) {
+	private static String renderParam(GestionJob job, JobParam param, HttpServletRequest request) {
 
 		if (param.getType() instanceof JobParamEnum) {
 			return renderEnumParam(job, param);
 		}
 		if (param.getType() instanceof JobParamRegDate) {
-			return renderRegDateParam(job, param);
+			return renderRegDateParam(job, param, request);
 		}
 		else if (param.getType() instanceof JobParamFile) {
 			return renderFile(job, param);
@@ -205,7 +205,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		return b.toString();
 	}
 
-	private static String renderRegDateParam(GestionJob job, JobParam param) {
+	private static String renderRegDateParam(GestionJob job, JobParam param, HttpServletRequest request) {
 
 		final RegDate defaultValue = (RegDate) job.getJobDefinition().getDefaultWebValue(param.getName());
 
@@ -219,12 +219,21 @@ public class JspTagBatchForm extends BodyTagSupport {
 		if (defaultValue != null) {
 			b.append(" value=\"").append(RegDateHelper.dateToDisplayString(defaultValue)).append("\"");
 		}
-		b.append(" id=\"").append(id).append("\" size=\"10\" maxlength =\"10\" class=\"date\" />");
+		b.append(" id=\"").append(id).append("\" size=\"10\" maxlength =\"10\" class=\"date\" />\n");
 
 		// calendar
-		b.append("<a href=\"#\" name=\"").append(anchor).append("\" id=\"").append(anchor).append(
-				"\" tabindex=\"9999\" class=\"calendar\" onclick=\"calendar(document.forms['").append(job.getName()).append("']['").append(name).append("'], '")
-				.append(anchor).append("');\">&nbsp;</a>");
+		b.append("<script>\n");
+		b.append("    $(function() {\n");
+		b.append("        $('#").append(id).append("').datepicker({\n");
+		b.append("            showOn: \"button\",\n");
+		b.append("            yearRange: '1900:+10',\n");
+		b.append("            buttonImage: \"").append(request.getContextPath()).append("/css/x/calendar_off.gif\",\n");
+		b.append("            buttonImageOnly: true,\n");
+		b.append("            changeMonth: true,\n");
+		b.append("            changeYear: true\n");
+		b.append("        });\n");
+		b.append("    });\n");
+		b.append("</script>\n");
 
 		return b.toString();
 	}
@@ -288,7 +297,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final String defaultNoColAdm = (defaultOID == null ? "" : String.valueOf(defaultOID.getNoColAdm()));
 
 		final String idInputNomOID = jobName + "NomOID";
-		final String nameInputNoColAdm = getBatchParamNameInForm(param); 
+		final String nameInputNoColAdm = getBatchParamNameInForm(param);
 		final String idInputNoColAdm = getBatchParamId(job, param);
 		final String idDivAutoComplete = idInputNomOID + "_autoComplete";
 		final String nameMethodOnChange = idInputNomOID + "_onChange";
