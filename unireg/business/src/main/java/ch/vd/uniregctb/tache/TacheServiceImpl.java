@@ -571,8 +571,10 @@ public class TacheServiceImpl implements TacheService {
 		for (DeclarationImpotOrdinaire declaration : declarations) {
 			final List<PeriodeImposition> ps = getIntersectingRangeAt(periodes, declaration);
 			if (ps == null) {
-				// il n'y a pas de période correspondante
-				deleteActions.add(new DeleteDI(declaration));
+				if (!isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
+					// il n'y a pas de période correspondante
+					deleteActions.add(new DeleteDI(declaration));
+				}
 			}
 			else {
 				Assert.isFalse(ps.isEmpty());
@@ -620,6 +622,10 @@ public class TacheServiceImpl implements TacheService {
 				// la déclaration est déjà annulée
 				annuleActions.add(new AnnuleTache(annulation));
 			}
+			else if (isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
+				// la tâche est invalide
+				annuleActions.add(new AnnuleTache(annulation));
+			}
 			else {
 				final PeriodeImposition periode = getMatchingRangeAt(periodes, declaration);
 				if (periode == null) {
@@ -649,6 +655,24 @@ public class TacheServiceImpl implements TacheService {
 			actions.addAll(annuleActions);
 			return actions;
 		}
+	}
+
+	/**
+	 * @param updateActions la liste des actions de mise-à-jour
+	 * @param declaration   une déclaration d'impôt
+	 * @return <b>vrai</b> si la déclaration spécifiée est référencée dans la liste d'actions de mise-à-jour; <b>faux</b> si ce n'est pas le cas.
+	 */
+	private boolean isDeclarationToBeUpdated(List<UpdateDI> updateActions, DeclarationImpotOrdinaire declaration) {
+		boolean declarationUpdated = false;
+		if (!updateActions.isEmpty()) {
+			for (UpdateDI updateAction : updateActions) {
+				if (updateAction.declaration.getId().equals(declaration.getId())) {
+					declarationUpdated = true;
+					break;
+				}
+			}
+		}
+		return declarationUpdated;
 	}
 
 	/**

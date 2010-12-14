@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tache;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -683,7 +684,7 @@ public class TacheServiceTest extends BusinessTest {
 				final ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(pp, date(2004, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HS, MockCommune.VillarsSousYens);
 
 				tacheService.genereTacheDepuisFermetureForPrincipal(pp, forFiscalPrincipal);
-				
+
 				return pp.getNumero();
 			}
 		});
@@ -929,7 +930,7 @@ public class TacheServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(raoul, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
 				addEtatDeclaration(di, date(2009, 1, 15), TypeEtatDeclaration.EMISE);
 				addEtatDeclaration(di, date(2009, 2, 21), TypeEtatDeclaration.RETOURNEE);
-				
+
 				return null;
 			}
 		});
@@ -974,7 +975,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheAnnulationDeclarationImpot annulDI = (TacheAnnulationDeclarationImpot) tache;
 				assertSame(oidOrbe, annulDI.getCollectiviteAdministrativeAssignee());
-				
+
 				return null;
 			}
 		});
@@ -1682,7 +1683,7 @@ public class TacheServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-1112] Vérifie qu'il y a le nombre correct d'annulation de DIs et d'émission de DIs générées lors du décès d'un des composants d'un ménage commun pour une période passée (= événement de
 	 * décès reçu en retard).
-	 * <p/>	
+	 * <p/>
 	 */
 	@Test
 	public void testGenerateTacheDecesCouplePeriodePassee() throws Exception {
@@ -1818,7 +1819,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheAnnulationDeclarationImpot));
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheControleDossier));
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheTransmissionDossier));
-			
+
 		}
 	}
 
@@ -2117,7 +2118,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 				assertNotNull(colAdm);
-				
+
 				Contribuable raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
@@ -2262,7 +2263,7 @@ public class TacheServiceTest extends BusinessTest {
 		List<Tache> taches = tacheDAO.find(criterion);
 		assertNotNull(taches);
 		assertEquals(nombreResultats, taches.size());
-		
+
 
 	}
 
@@ -2524,7 +2525,7 @@ public class TacheServiceTest extends BusinessTest {
 				lui.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
 				final PersonnePhysique elle = addNonHabitant("Géraldine", "Talon", date(1966, 4, 12), Sexe.FEMININ);
 				elle.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				
+
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 5, 1), null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, date(1995, 1, 10), MotifFor.INDETERMINE, MockPays.France);
@@ -2644,7 +2645,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-2439] Vérifie qu'aucune tâche d'envoi de DIs n'est émise lors du divorce d'un ménage commun de sourciers purs. 
+	 * [UNIREG-2439] Vérifie qu'aucune tâche d'envoi de DIs n'est émise lors du divorce d'un ménage commun de sourciers purs.
 	 */
 	@Test
 	public void testDivorceMenageCommunSourcePur() throws Exception {
@@ -3521,6 +3522,151 @@ public class TacheServiceTest extends BusinessTest {
 						cedi.getNumero(), null, dis.get(0));
 				assertDI(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						cedi.getNumero(), null, dis.get(1));
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [UNIREG-3028] Vérifie que les tâches d'annulation sur une déclaration d'impôt est bien annulée lorsqu'un nouveau for est créée sur un contribuable et que la nouvelle période d'imposition est
+	 * partielle (cas du contribuable n°100.104.57).
+	 */
+	@Test
+	public void testDetermineSynchronizeActionsAnnulationForIndigentEtRemplacementForOrdinaire() throws Exception {
+
+		final int anneeCourante = RegDate.get().year();
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		class Ids {
+			long ctb;
+			long ffp1;
+			long ffp2;
+			List<Long> dis = new ArrayList<Long>();
+		}
+		final Ids ids = new Ids();
+
+		//
+		// Etape 1 : contribuable hors-canton avec une activité indépendente dans le canton
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Bashkim", "Muji", date(1983, 3, 24), Sexe.MASCULIN);
+
+				final ForFiscalPrincipal ffp1 = addForPrincipal(pp, date(2004, 3, 1), MotifFor.INDETERMINE, date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
+				ffp1.setModeImposition(ModeImposition.INDIGENT);
+				final ForFiscalPrincipal ffp2 = addForPrincipal(pp, date(2009, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
+
+				for (int annee = 2004; annee < anneeCourante; ++annee) {
+					final PeriodeFiscale periode = addPeriodeFiscale(annee);
+					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+					final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+					addEtatDeclaration(di1, date(annee - 1, 1, 15), TypeEtatDeclaration.EMISE);
+					addEtatDeclaration(di1, date(annee - 1, 4, 19), TypeEtatDeclaration.RETOURNEE);
+					ids.dis.add(di1.getId());
+				}
+
+				ids.ctb = pp.getId();
+				ids.ffp1 = ffp1.getId();
+				ids.ffp2 = ffp2.getId();
+				return null;
+			}
+		});
+
+		// On vérifie qu'aucune tâche n'est générée (le contribuable est dans un état correct) :
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEmpty(tacheDAO.find(ids.ctb));
+				return null;
+			}
+		});
+
+		//
+		// Etape 2 : annulation du dernier for principal
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final ForFiscal ffp2 = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp2);
+				assertNotNull(ffp2);
+				tiersService.annuleForFiscal(ffp2, false);
+				return null;
+			}
+		});
+
+		// On vérifie que le contribuable est toujours assujetti et qu'aucune nouvelle tâche n'a été créée
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEmpty(tacheDAO.find(ids.ctb));
+				return null;
+			}
+		});
+
+		//
+		// Etape 3 : annulation du for principal
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final ForFiscal ffp1 = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp1);
+				assertNotNull(ffp1);
+				tiersService.annuleForFiscal(ffp1, false);
+				return null;
+			}
+		});
+
+		// On vérifie que le contribuable n'est plus assujetti et que des tâches d'annulation des déclarations existantes sont générées
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<Tache> taches = tacheDAO.find(ids.ctb);
+				assertEquals(anneeCourante - 2004, taches.size());
+				for (int i = 0; i < anneeCourante - 2004 - 1; ++i) {
+					assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.dis.get(i), false, (TacheAnnulationDeclarationImpot) taches.get(i));
+				}
+				return null;
+			}
+		});
+
+		//
+		// Etape 4 : ajout d'un for principal vaudois ordinaire en remplacement des fors annulés
+		//
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+				assertNotNull(pp);
+				addForPrincipal(pp, date(2004, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+				return null;
+			}
+		});
+
+		// On vérifie que :
+		//  - les tâches d'annulation introduites à l'étape 2 sont annulées (le contribuable est de nouveau assujetti)
+		//  - le type de contribuable des déclarations pré-existantes est mis-à-jour (car les types de documents sont compatibles)
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<Tache> taches = tacheDAO.find(ids.ctb);
+				assertEquals(anneeCourante - 2004, taches.size());
+				for (int i = 0; i < anneeCourante - 2004 - 1; ++i) {
+					assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.dis.get(i), true, (TacheAnnulationDeclarationImpot) taches.get(i));
+				}
+
+				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
+				assertEquals(anneeCourante - 2004, dis.size());
+				Collections.sort(dis, new DateRangeComparator<DeclarationImpotOrdinaire>());
+				assertDI(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+						dis.get(0));
+
+				for (int annee = 2005; annee < anneeCourante - 1; ++annee) {
+					assertDI(date(annee, 1, 1), date(annee, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+							dis.get(annee - 2004));
+				}
 				return null;
 			}
 		});
