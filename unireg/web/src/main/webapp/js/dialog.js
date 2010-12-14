@@ -36,14 +36,7 @@ function confirm_trash_db() {
 function open_tiers_picker(button, on_tiers_selection) {
 
 	// on récupère ou on crée à la demande le div de la boîte de dialogue
-	var dialog = $('#tiers-picker-dialog');
-	if (!dialog.length) {
-		dialog = $('<div id="tiers-picker-dialog" style="display:hidden"></div>');
-		dialog.appendTo('body');
-	}
-	else {
-		dialog.attr('innerHTML', ''); // on vide la boîte de dialogue de son contenu précédant
-	}
+	var dialog = create_dialog_div('tiers-picker-dialog');
 
 	// on définit la méthode appelée lorsque un tiers a été choisi
 	button.select_tiers_id = function(link) {
@@ -104,16 +97,9 @@ function open_tiers_picker(button, on_tiers_selection) {
  */
 function open_consulter_log(nature, id) {
 
-	// on récupère ou on crée à la demande le div de la boîte de dialogue
-	var dialog = $('#consulter-log-dialog');
-	if (!dialog.length) {
-		dialog = $('<div id="consulter-log-dialog" style="display:hidden"><img src="'+ getContextPath() + '/images/loading.gif"/></div>');
-		dialog.appendTo('body');
-	}
-	else {
-		dialog.attr('innerHTML', getContextPath() + '/images/loading.gif'); // on vide la boîte de dialogue de son contenu précédant
-	}
+	var dialog = create_dialog_div('consulter-log-dialog');
 
+	// charge le contenu de la boîte de dialogue
 	dialog.load('../common/consult-log.do?nature=' + nature + '&id=' + id);
 
 	dialog.dialog({
@@ -131,4 +117,19 @@ function open_consulter_log(nature, id) {
 
 	//prevent the browser to follow the link
 	return false;
+}
+
+/**
+ * Récupère ou crée à la demande un élément div pour contenir une boîte de dialogue
+ */
+function create_dialog_div(id) {
+	var dialog = $('#' + id);
+	if (!dialog.length) {
+		dialog = $('<div id="' + id + '" style="display:hidden"><img src="'+ getContextPath() + '/images/loading.gif"/></div>');
+		dialog.appendTo('body');
+	}
+	else {
+		dialog.attr('innerHTML', '<img src="'+ getContextPath() + '/images/loading.gif"/>'); // on vide la boîte de dialogue de son contenu précédant
+	}
+	return dialog;
 }

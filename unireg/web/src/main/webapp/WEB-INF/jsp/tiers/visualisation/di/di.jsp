@@ -1,20 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <unireg:nextRowClass reset="1"/>
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
-	<tiles:put name="head"></tiles:put>
-
-	<tiles:put name="title"></tiles:put>
+<tiles:insert template="/WEB-INF/jsp/templates/templateDialog.jsp">
 	<tiles:put name="body">
 	
-<!-- Debut Contribuable -->
+	<!-- Debut Contribuable -->
 	<jsp:include page="../../../general/contribuable.jsp">
 		<jsp:param name="page" value="edit"/>
 		<jsp:param name="path" value="contribuable"/>
 	</jsp:include>
-<!-- Fin Contribuable -->
+	<!-- Fin Contribuable -->
 
-<!-- Debut DI -->
+	<!-- Debut DI -->
 	<fieldset class="information">
 	<legend><span><fmt:message key="label.caracteristiques.di" /></span></legend>
 		<table>
@@ -44,28 +41,17 @@
 			</tr>
 		</table>
 	</fieldset>
+	<!-- Fin DI -->
 
-<!-- Fin DI -->
-
-<!-- Debut delais documents -->
-
+	<!-- Debut delais documents -->
 	<jsp:include page="../../common/delai/delais.jsp">
 		<jsp:param name="page" value="visu"/>
 	</jsp:include>
+	<!-- Fin Delais documents -->
 
-<!-- Fin Delais documents -->
-
-<!-- Debut Etats declaration -->
-  
+	<!-- Debut Etats declaration -->
 	<jsp:include page="../../common/etat/etats.jsp" />
+	<!-- Fin Etats declaration -->
 
-<!-- Fin Etats declaration -->
-<!-- Debut Boutons -->
-	<table>
-		<tr>
-			<td><input type="button" id="annuler" value="<fmt:message key="label.bouton.fermer" />" onclick="self.parent.tb_remove()"></td>
-		</tr>
-	</table>
-<!-- Fin Boutons -->
-		</tiles:put>
+	</tiles:put>
 </tiles:insert>

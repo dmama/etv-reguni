@@ -47,7 +47,28 @@
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
 				<c:if test="${!di.annule}">
-					<a href="di.do?idDi=<c:out value="${di.id}" />&height=650&width=650&TB_iframe=true&modal=true" class="thickbox detail" title="DI">&nbsp;</a>
+					<a href="#" class="detail" title="DI" onclick="return open_details_di(<c:out value="${di.id}"/>);">&nbsp;</a>
+					<script>
+					function open_details_di(id) {
+						var dialog = create_dialog_div('details-di-dialog');
+
+						// charge le contenu de la boîte de dialogue
+						dialog.load('di.do?idDi=' + id);
+
+						dialog.dialog({
+							title: "Détails de la déclaration d'impôt",
+							height: 650,
+							width: 650,
+							resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
+							modal: true,
+							buttons: {
+								Ok: function() {
+									dialog.dialog("close");
+								}
+							}
+						});
+					}
+					</script>
 				</c:if>
 				<unireg:consulterLog entityNature="DI" entityId="${di.id}"/>
 			</c:if>

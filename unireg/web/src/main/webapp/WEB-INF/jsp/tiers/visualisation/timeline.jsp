@@ -3,7 +3,7 @@
 <%@ taglib uri="http://www.unireg.com/uniregTagLib" prefix="unireg" %>
 
 <c:if test="${command.forPrint}">
-	<c:set var="templateUrl" value="/WEB-INF/jsp/templates/templateIFrame.jsp" />
+	<c:set var="templateUrl" value="/WEB-INF/jsp/templates/templateDialog.jsp" />
 </c:if>
 <c:if test="${!command.forPrint}">
 	<c:set var="templateUrl" value="/WEB-INF/jsp/templates/template.jsp" />
