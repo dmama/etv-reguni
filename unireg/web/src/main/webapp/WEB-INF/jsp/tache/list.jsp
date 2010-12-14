@@ -94,7 +94,7 @@
 				<c:if test="${tache.annulee}"></strike></c:if>
 			</display:column>
 			<display:column>
-				<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=Tache&id=${tache.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+				<unireg:consulterLog entityNature="Tache" entityId="${tache.id}"/>
 			</display:column>
 			<!-- Fin -->
 			

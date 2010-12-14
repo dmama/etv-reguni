@@ -59,7 +59,7 @@
 				<c:if test="${nouveauDossier.annule}"></strike></c:if>
 			</display:column>
 			<display:column>
-				<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=Tache&id=${nouveauDossier.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+				<unireg:consulterLog entityNature="Tache" entityId="${nouveauDossier.id}"/>
 			</display:column>
 		</display:table>
 		

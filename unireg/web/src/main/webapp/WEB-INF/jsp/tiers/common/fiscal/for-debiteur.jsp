@@ -31,7 +31,7 @@
 	</display:column>
 	<display:column style="action">
 		<c:if test="${page == 'visu' }">
-			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=ForFiscal&id=${forFiscal.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+			<unireg:consulterLog entityNature="ForFiscal" entityId="${forFiscal.id}"/>
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">

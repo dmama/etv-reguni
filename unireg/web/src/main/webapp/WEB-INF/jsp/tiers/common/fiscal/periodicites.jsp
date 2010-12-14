@@ -29,7 +29,7 @@
 		<fmt:message key="option.periodicite.statut.${periodicite.active}" />		
 	</display:column>
 	<display:column style="action">
-			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=periodicite&id=${periodicite.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+			<unireg:consulterLog entityNature="periodicite" entityId="${periodicite.id}"/>
 	</display:column>
 
 

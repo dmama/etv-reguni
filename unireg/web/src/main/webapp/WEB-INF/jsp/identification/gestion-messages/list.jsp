@@ -112,7 +112,7 @@
 				</authz:authorize>
 				<display:column style="action">
                     <c:if test="${message.id != null}">
-                             <unireg:raccourciConsulter link="../../common/consult-log.do?height=200&width=800&nature=identification&id=${message.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+                             <unireg:consulterLog nature="identification" entityId="${message.id}"/>
                     </c:if>
                </display:column>
 			</display:table>

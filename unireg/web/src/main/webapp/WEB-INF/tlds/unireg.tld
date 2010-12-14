@@ -460,45 +460,21 @@
 	</tag>
 
 	<tag>
-		<name>raccourciConsulter</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Consulter</tag-class>
+		<name>consulterLog</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagConsulterLog</tag-class>
 		<body-content>JSP</body-content>
 		<description>Affiche une icône de consultation</description>
 		<attribute>
-			<name>link</name>
-			<required>false</required>
+			<name>entityNature</name>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Valeur du lien</description>
+			<description>Nature de l'entité</description>
 		</attribute>
 		<attribute>
-			<name>onClick</name>
-			<required>false</required>
+			<name>entityId</name>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
-		</attribute>
-		<attribute>
-			<name>display</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Valeur à afficher dans le lien associé à l'icône</description>
-		</attribute>
-		<attribute>
-			<name>tooltip</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Valeur à afficher dans le tooltip associé au lien</description>
-		</attribute>
-		<attribute>
-			<name>id</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>id à associer au lien</description>
-		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+			<description>Identifiant de l'entité</description>
 		</attribute>
 	</tag>
 	<tag>

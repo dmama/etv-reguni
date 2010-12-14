@@ -57,7 +57,7 @@
 
                 <display:column style="action">
                     <a href="../tiers/mouvement.do?height=360&width=900&idMvt=${mvt.id}&TB_iframe=true&modal=true" class="detail thickbox" title="Détail d'un mouvement">&nbsp;</a>
-                    <unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=MouvementDossier&id=${mvt.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>			
+                    <unireg:consulterLog entityNature="MouvementDossier" entityId="${mvt.id}"/>
                 </display:column>
 
 			</display:table>

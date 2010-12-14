@@ -28,7 +28,7 @@
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
-				<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=RapportEntreTiers&id=${contribuableAssocie.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${contribuableAssocie.id}"/>
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!contribuableAssocie.annule}">

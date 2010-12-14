@@ -287,10 +287,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		s.append("\t<td width=\"25%\">").append(message("label.numero.tiers")).append("&nbsp;:</td>\n");
 		s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.numeroCTBToDisplay(numero));
 		if (showLinks) {
-			final JspTagRaccourci consulter = new JspTagRaccourci.Consulter();
-			consulter.setLink("../common/consult-log.do?height=200&width=800&nature=Tiers&id=" + numero + "&TB_iframe=true&modal=true");
-			consulter.setThickbox(true);
-			consulter.setTooltip("Edition des logs");
+			final JspTagConsulterLog consulter = new JspTagConsulterLog();
+			consulter.setEntityNature("Tiers");
+			consulter.setEntityId(String.valueOf(numero));
 			s.append(consulter.buildHtml());
 		}
 		s.append("</td>\n");

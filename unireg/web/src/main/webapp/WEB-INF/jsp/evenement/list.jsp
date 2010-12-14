@@ -61,7 +61,7 @@
 			</display:column>
 			<display:column style="action">
 				<c:if test="${row.id != null}">
-					<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=Evenement&id=${row.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+					<unireg:consulterLog entityNature="Evenement" entityId="${row.id}"/>
 				</c:if>
 		</display:column>
 			

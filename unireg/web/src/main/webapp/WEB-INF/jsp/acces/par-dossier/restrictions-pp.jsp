@@ -52,7 +52,7 @@
 							<c:if test="${restriction.lectureSeule}">checked </c:if> disabled="disabled" />
 				</display:column>
 				<display:column style="action">
-					<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=DroitAcces&id=${restriction.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+					<unireg:consulterLog entityNature="DroitAcces" entityId="${restriction.id}"/>
 					<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
 						<c:if test="${!restriction.annule}">
 							<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerRestriction(${restriction.id});" tooltip="Annulation de la restriction"/>

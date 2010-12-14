@@ -44,7 +44,7 @@
 					<display:column style="action">
 						<c:if test="${page == 'visu' }">
 							<c:if test="${adresseCivile.id != null}">
-								<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=AdresseTiers&id=${adresseCivile.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+								<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivile.id}"/>
 							</c:if>
 						</c:if>
 					</display:column>
@@ -71,7 +71,7 @@
 					<display:column style="action">
 						<c:if test="${page == 'visu' }">
 							<c:if test="${adresseCivile.id != null}">
-								<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=AdresseTiers&id=${adresseCivile.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+								<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivile.id}"/>
 							</c:if>
 						</c:if>
 					</display:column>
@@ -121,7 +121,7 @@
 					<display:column style="action">
 						<c:if test="${page == 'visu' }">
 							<c:if test="${adresseCivileConjoint.id != null}">
-								<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=AdresseTiers&id=${adresseCivileConjoint.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+								<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivileConjoint.id}"/>
 							</c:if>
 						</c:if>
 					</display:column>
@@ -149,7 +149,7 @@
 						<display:column style="action">
 							<c:if test="${page == 'visu' }">
 								<c:if test="${adresseCivileConjoint.id != null}">
-									<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=AdresseTiers&id=${adresseCivileConjoint.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+									<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivileConjoint.id}"/>
 								</c:if>
 							</c:if>
 						</display:column>

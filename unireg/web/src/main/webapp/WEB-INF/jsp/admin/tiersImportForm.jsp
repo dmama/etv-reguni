@@ -2,7 +2,6 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="contextPath" scope="request" value="${pageContext.request.contextPath}" />
 
-<script type="text/javascript" language="Javascript" src="<c:url value="/js/dialog.js"/>"></script>
 <script>
 
 function submit(url, methodType, delegateName){

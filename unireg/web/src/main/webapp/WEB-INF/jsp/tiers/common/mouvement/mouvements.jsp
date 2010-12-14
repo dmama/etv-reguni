@@ -44,7 +44,7 @@
 	<display:column style="action">
 		<c:if test="${page == 'visu' }">
 			<a href="mouvement.do?height=360&width=900&idMvt=${mouvement.id}&TB_iframe=true&modal=true" class="detail thickbox" title="Détail d'un mouvement">&nbsp;</a>
-			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=MouvementDossier&id=${mouvement.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>			
+			<unireg:consulterLog entityNature="MouvementDossier" entityId="${mouvement.id}"/>
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${mouvement.annulable}">

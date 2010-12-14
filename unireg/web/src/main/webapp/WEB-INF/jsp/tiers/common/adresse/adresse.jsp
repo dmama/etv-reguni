@@ -50,7 +50,7 @@
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
 				<c:if test="${adresse.id != null}">
-					<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=AdresseTiers&id=${adresse.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+					<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresse.id}"/>
 				</c:if>
 			</c:if>
 			<c:if test="${page == 'edit' }">
@@ -89,7 +89,7 @@
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
 				<c:if test="${adresse.id != null}">
-					<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=AdresseTiers&id=${adresse.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+					<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresse.id}"/>
 				</c:if>
 			</c:if>
 			<c:if test="${page == 'edit' }">

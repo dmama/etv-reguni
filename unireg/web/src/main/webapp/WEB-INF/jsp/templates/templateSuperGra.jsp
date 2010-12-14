@@ -48,7 +48,7 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers-picker.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/dialog.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/quicksearch.js"/>"></script>
 

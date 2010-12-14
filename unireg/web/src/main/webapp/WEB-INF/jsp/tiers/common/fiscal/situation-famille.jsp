@@ -44,7 +44,7 @@
 	</display:column>
 	<display:column style="action">
 		<c:if test="${(page == 'visu') && (situationFamille.id != null) }">
-			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=SituationFamille&id=${situationFamille.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+			<unireg:consulterLog entityNature="SituationFamille" entityId="${situationFamille.id}"/>
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!situationFamille.annule && situationFamille.editable}">

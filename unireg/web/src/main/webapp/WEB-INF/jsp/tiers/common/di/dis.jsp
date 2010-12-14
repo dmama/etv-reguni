@@ -49,7 +49,7 @@
 				<c:if test="${!di.annule}">
 					<a href="di.do?idDi=<c:out value="${di.id}" />&height=650&width=650&TB_iframe=true&modal=true" class="thickbox detail" title="DI">&nbsp;</a>
 				</c:if>
-				<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=DI&id=${di.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+				<unireg:consulterLog entityNature="DI" entityId="${di.id}"/>
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!di.annule}">
