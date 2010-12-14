@@ -100,7 +100,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 
 		int size = list.size();
 		if (size > 0) {
-			StringBuilder b = new StringBuilder("Numéro de l'office d'impôt" + COMMA + "Commune" + COMMA + "Type de contribuable" + COMMA
+			StringBuilder b = new StringBuilder("Numéro de l'office d'impôt" + COMMA + "Commune" + COMMA + "numéro OFS de la Commune" + COMMA+ "Type de contribuable" + COMMA
 					+ "Nombre\n");
 
 			final GentilIterator<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> iter = new GentilIterator<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>(
@@ -113,7 +113,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 				final StatistiquesCtbs.Key key = entry.getKey();
 				b.append(key.oid).append(COMMA);
 				b.append(description(key.commune)).append(COMMA);
-				b.append(description(key.typeCtb)).append(COMMA);
+				b.append(descriptionOFS(key.commune)).append(COMMA);
 				b.append(entry.getValue().nombre);
 				b.append('\n');
 			}
@@ -130,6 +130,16 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 			return commune.getNomMinuscule();
 		}
 	}
+
+	private Object descriptionOFS(Commune commune) {
+		if (commune == null) {
+			return "<inconnu>";
+		}
+		else {
+			return commune.getNoOFS();
+		}
+	}
+
 
 	private String description(StatistiquesCtbs.TypeContribuable typeCtb) {
 		if (typeCtb == null) {
