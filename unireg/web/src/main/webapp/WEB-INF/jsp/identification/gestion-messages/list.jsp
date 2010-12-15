@@ -112,7 +112,7 @@
 				</authz:authorize>
 				<display:column style="action">
                     <c:if test="${message.id != null}">
-                             <unireg:consulterLog nature="identification" entityId="${message.id}"/>
+						 <unireg:consulterLog entityNature="identification" entityId="${message.id}"/>
                     </c:if>
                </display:column>
 			</display:table>
