@@ -2,7 +2,9 @@ package ch.vd.uniregctb.delai;
 
 import java.sql.Timestamp;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 
 public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 
@@ -22,6 +24,12 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 
 	private Long idDeclaration;
 
+	private Long tiersId;
+
+	private int declarationPeriode;
+
+	private DateRange declarationRange;
+
 	private String logModifUser;
 
 	private Timestamp logModifDate;
@@ -29,6 +37,20 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 	private boolean annule;
 
 	private boolean first;
+
+	public DelaiDeclarationView() {
+	}
+	
+	public DelaiDeclarationView(DelaiDeclaration delai) {
+		this.id = delai.getId();
+		this.annule = delai.isAnnule();
+		this.confirmationEcrite = delai.getConfirmationEcrite();
+		this.dateDemande = delai.getDateDemande();
+		this.dateTraitement = delai.getDateTraitement();
+		this.delaiAccordeAu = delai.getDelaiAccordeAu();
+		this.logModifDate = delai.getLogModifDate();
+		this.logModifUser = delai.getLogModifUser();
+	}
 
 	public Long getId() {
 		return id;
@@ -76,6 +98,30 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 
 	public void setIdDeclaration(Long idDeclaration) {
 		this.idDeclaration = idDeclaration;
+	}
+
+	public Long getTiersId() {
+		return tiersId;
+	}
+
+	public void setTiersId(Long tiersId) {
+		this.tiersId = tiersId;
+	}
+
+	public int getDeclarationPeriode() {
+		return declarationPeriode;
+	}
+
+	public void setDeclarationPeriode(int declarationPeriode) {
+		this.declarationPeriode = declarationPeriode;
+	}
+
+	public DateRange getDeclarationRange() {
+		return declarationRange;
+	}
+
+	public void setDeclarationRange(DateRange declarationRange) {
+		this.declarationRange = declarationRange;
 	}
 
 	public boolean isAnnule() {

@@ -609,21 +609,8 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private void setDelais(ListeRecapDetailView lrEditView, DeclarationImpotSource lr) {
 		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView();
-			delaiView.setId(delai.getId());
-			delaiView.setAnnule(delai.isAnnule());
-			delaiView.setConfirmationEcrite(delai.getConfirmationEcrite());
-			delaiView.setDateDemande(delai.getDateDemande());
-			delaiView.setDateTraitement(delai.getDateTraitement());
-			delaiView.setDelaiAccordeAu(delai.getDelaiAccordeAu());
-			delaiView.setLogModifDate(delai.getLogModifDate());
-			delaiView.setLogModifUser(delai.getLogModifUser());
-			if (lr.getPremierDelai().equals(delai.getDelaiAccordeAu())) {
-				delaiView.setFirst(true);
-			}
-			else {
-				delaiView.setFirst(false);
-			}
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
+			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}
 		Collections.sort(delaisView);

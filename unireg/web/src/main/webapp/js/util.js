@@ -28,19 +28,22 @@ function isBlankString(str) {
 */
 function getDate(strDate, format){	
 	if (format == 'dd.MM.yyyy') {  
-		day = strDate.substring(0,2);
-		month = strDate.substring(3,5);
-		year = strDate.substring(6,10);
+		day = parseInt(strDate.substring(0,2));
+		month = parseInt(strDate.substring(3,5));
+		year = parseInt(strDate.substring(6,10));
 	}
-	if (format == 'yyyy.MM.dd') {  
-		year = strDate.substring(0,4);
-		month = strDate.substring(5,7);
-		day = strDate.substring(8,10);
+	else if (format == 'yyyy.MM.dd') {
+		year = parseInt(strDate.substring(0,4));
+		month = parseInt(strDate.substring(5,7));
+		day = parseInt(strDate.substring(8,10));
+	}
+	else {
+		alert("Type de format inconnu !");
 	}
 	d = new Date();
-	d.setDate(day);
-	d.setMonth(month);
-	d.setFullYear(year); 
+	d.setDate(day); // 1..31
+	d.setMonth(month - 1); // 0..11
+	d.setFullYear(year); // 4 digits
 	return d;  
 }
 

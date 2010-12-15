@@ -602,23 +602,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private void setDelais(DeclarationImpotDetailView diEditView, DeclarationImpotOrdinaire di) {
 		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
 		for (DelaiDeclaration delai : di.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView();
-			delaiView.setId(delai.getId());
-			delaiView.setAnnule(delai.isAnnule());
-			delaiView.setConfirmationEcrite(delai.getConfirmationEcrite());
-			delaiView.setDateDemande(delai.getDateDemande());
-			delaiView.setDateTraitement(delai.getDateTraitement());
-			delaiView.setDelaiAccordeAu(delai.getDelaiAccordeAu());
-			delaiView.setLogModifDate(delai.getLogModifDate());
-			delaiView.setLogModifUser(delai.getLogModifUser());
-			if (di.getPremierDelai() != null) {
-				if (di.getPremierDelai().equals(delai.getDelaiAccordeAu())) {
-					delaiView.setFirst(true);
-				}
-				else {
-					delaiView.setFirst(false);
-				}
-			}
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
+			delaiView.setFirst(di.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}
 		Collections.sort(delaisView);
@@ -892,6 +877,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		if (di == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
+		delaiView.setTiersId(di.getTiers().getId());
+		delaiView.setDeclarationPeriode(di.getPeriode().getAnnee());
+		delaiView.setDeclarationRange(new DateRangeHelper.Range(di.getDateDebut(), di.getDateFin()));
 		delaiView.setDateExpedition(di.getDateExpedition());
 		delaiView.setOldDelaiAccorde(di.getDelaiAccordeAu());
 		delaiView.setAnnule(false);

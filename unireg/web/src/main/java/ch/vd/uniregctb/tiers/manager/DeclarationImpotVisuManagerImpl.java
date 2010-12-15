@@ -62,21 +62,8 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 		diView.setTypeDeclarationImpot(di.getTypeDeclaration());
 		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
 		for (DelaiDeclaration delai : di.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView();
-			delaiView.setId(delai.getId());
-			delaiView.setAnnule(delai.isAnnule());
-			delaiView.setConfirmationEcrite(delai.getConfirmationEcrite());
-			delaiView.setDateDemande(delai.getDateDemande());
-			delaiView.setDateTraitement(delai.getDateTraitement());
-			delaiView.setDelaiAccordeAu(delai.getDelaiAccordeAu());
-			delaiView.setLogModifDate(delai.getLogModifDate());
-			delaiView.setLogModifUser(delai.getLogModifUser());
-			if (di.getPremierDelai() != null && di.getPremierDelai().equals(delai.getDelaiAccordeAu())) {
-				delaiView.setFirst(true);
-			}
-			else {
-				delaiView.setFirst(false);
-			}
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
+			delaiView.setFirst(di.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}
 		Collections.sort(delaisView);

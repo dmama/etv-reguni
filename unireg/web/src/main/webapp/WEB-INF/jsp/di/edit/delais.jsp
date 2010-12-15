@@ -7,8 +7,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<a href="delai.do?idDI=${command.id}&height=120&width=650&index=&TB_iframe=true&modal=true" 
-					class="add thickbox" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
+					<a href="delai.do?idDI=${command.id}&index=" class="add" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
 				</td>
 			</tr>
 		</table>
