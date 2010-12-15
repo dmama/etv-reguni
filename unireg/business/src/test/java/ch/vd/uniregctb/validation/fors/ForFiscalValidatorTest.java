@@ -3,8 +3,8 @@ package ch.vd.uniregctb.validation.fors;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -47,8 +47,10 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 
-			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune à laquelle il est assigné [%s]",
-										ffp, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(commune.getDateDebutValidite(), commune.getDateFinValidite())));
+			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
+			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
+			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune à laquelle il est assigné (%s - %s)",
+										ffp, debutValiditeCommune, finValiditeCommune);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -68,8 +70,10 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 
-			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune à laquelle il est assigné [%s]",
-										ffp, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(commune.getDateDebutValidite(), commune.getDateFinValidite())));
+			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
+			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
+			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune à laquelle il est assigné (%s - %s)",
+										ffp, debutValiditeCommune, finValiditeCommune);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
