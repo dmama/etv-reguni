@@ -21,6 +21,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -102,6 +103,12 @@ public class AcomptesProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		final int anneeReference = 2010;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
 
 		// mise en place
 		doInNewTransaction(new TransactionCallback() {

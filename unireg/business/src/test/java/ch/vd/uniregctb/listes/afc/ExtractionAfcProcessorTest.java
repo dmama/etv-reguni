@@ -435,6 +435,12 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 	@Test
 	public void testRevenuHorsCanton() throws Exception {
 
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
 		// mise en place
 		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
@@ -460,6 +466,12 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 	@Test
 	public void testFortuneHorsCanton() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
 
 		// mise en place
 		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
@@ -488,6 +500,12 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 	@Test
 	public void testRevenuHorsSuisse() throws Exception {
 
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
 		// mise en place
 		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
@@ -514,6 +532,12 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 	@Test
 	public void testFortuneHorsSuisse() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
 
 		// mise en place
 		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
