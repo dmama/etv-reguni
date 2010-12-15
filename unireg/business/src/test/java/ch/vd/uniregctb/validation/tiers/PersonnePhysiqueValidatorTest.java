@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -9,6 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
@@ -160,7 +164,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final PersonnePhysique hab = createHabitantWithFors();
 		// debugValidationResults(hab.validate());
-		assertEquals(0, validate(hab).errorsCount());
+		assertValidation(null, null, validate(hab));
 	}
 
 	@Test
@@ -244,7 +248,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
-			forFiscal.setNumeroOfsAutoriteFiscale(1234);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockPays.Allemagne.getNoOFS());
 			hab.addForFiscal(forFiscal);
 		}
 		// 2007, 3, 1 -> 2007, 3, 1 (1 jour)
@@ -256,7 +260,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bern.getNoOFSEtendu());
 			hab.addForFiscal(forFiscal);
 		}
 		// 2007, 3, 2 -> Ouvert
@@ -267,7 +271,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bern.getNoOFSEtendu());
 			hab.addForFiscal(forFiscal);
 		}
 
@@ -278,13 +282,16 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setDateFin(RegDate.get(2007, 4, 1));
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
-			forFiscal.setNumeroOfsAutoriteFiscale(1234);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockPays.Allemagne.getNoOFS());
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			hab.addForFiscal(forFiscal);
 		}
 
 		// debugValidationResults(hab.validate());
-		assertEquals(2, validate(hab).errorsCount());
+		final List<String> erreurs = new ArrayList<String>();
+		erreurs.add(String.format("Le for principal qui commence le 22.01.2007 chevauche le for précédent"));
+		erreurs.add(String.format("Le for principal qui commence le 01.03.2007 chevauche le for précédent"));
+		assertValidation(erreurs, null, validate(hab));
 	}
 
 	/**
@@ -303,7 +310,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
 			forFiscal.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 			hab.addForFiscal(forFiscal);
@@ -316,14 +323,14 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(564);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 			forFiscal.setMotifFermeture(MotifFor.DEPART_HC);
 			hab.addForFiscal(forFiscal);
 		}
 
 		// //debugValidationResults(hab.validate());
-		assertEquals(1, validate(hab).errorsCount());
+		assertValidation(Arrays.asList("Le for principal qui commence le 12.08.2005 chevauche le for précédent"), null, validate(hab));
 	}
 
 	/**
@@ -346,7 +353,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5601); // Chexbres
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Croy.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 			hab.addForFiscal(forFiscal);
@@ -359,7 +366,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5890); // Vevey
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 			forFiscal.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 			hab.addForFiscal(forFiscal);
@@ -372,7 +379,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5889); // La Tour-de-Peilz
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 			forFiscal.setMotifFermeture(null);
 			hab.addForFiscal(forFiscal);
@@ -385,7 +392,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5889); // La Tour-de-Peilz
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 			forFiscal.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 			hab.addForFiscal(forFiscal);
@@ -398,13 +405,13 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5886); // Montreux
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 			forFiscal.setMotifFermeture(null);
 			hab.addForFiscal(forFiscal);
 		}
 
-		assertEquals(1, validate(hab).errorsCount());
+		assertValidation(Arrays.asList("Le for principal qui commence le 03.10.2006 chevauche le for précédent"), null, validate(hab));
 	}
 
 	/**
@@ -423,7 +430,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
 			forFiscal.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 			hab.addForFiscal(forFiscal);
@@ -433,7 +440,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscalSecondaire = new ForFiscalSecondaire();
 			forFiscalSecondaire.setMotifRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE);
 			forFiscalSecondaire.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscalSecondaire.setNumeroOfsAutoriteFiscale(1237);
+			forFiscalSecondaire.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFSEtendu());
 			forFiscalSecondaire.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
 			forFiscalSecondaire.setMotifFermeture(MotifFor.FIN_EXPLOITATION);
 			hab.addForFiscal(forFiscalSecondaire);
@@ -442,12 +449,12 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		// Validation OK
 		forFiscalSecondaire.setDateDebut(RegDate.get(2002, 6, 1));
 		forFiscalSecondaire.setDateFin(RegDate.get(2005, 12, 31));
-		assertEquals(0, validate(hab).errorsCount());
+		assertValidation(null, null, validate(hab));
 
 		// Validation KO
 		forFiscalSecondaire.setDateDebut(RegDate.get(1990, 6, 1));
 		forFiscalSecondaire.setDateFin(RegDate.get(2005, 12, 31));
-		assertEquals(1, validate(hab).errorsCount());
+		assertValidation(Arrays.asList("Il n'y a pas de for principal pour accompagner le for secondaire qui commence le 01.06.1990 et se termine le 31.12.2005"), null, validate(hab));
 	}
 
 	@Test
@@ -611,7 +618,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setDateDebut(RegDate.get(2004, 3, 1));
 			forFiscal.setDateFin(RegDate.get(2006, 2, 28));
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(1235);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
 			fors.add(forFiscal);
 		}
 		{
@@ -619,7 +626,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setMotifRattachement(MotifRattachement.ACTIVITE_LUCRATIVE_CAS);
 			forFiscal.setDateDebut(RegDate.get(2006, 6, 1));
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(1236);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
 			fors.add(forFiscal);
 		}
@@ -628,7 +635,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setMotifRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE);
 			forFiscal.setDateDebut(RegDate.get(2002, 6, 1));
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(1237);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
 			fors.add(forFiscal);
 		}
@@ -643,7 +650,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
 			forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
 			forFiscal.setMotifFermeture(MotifFor.DEPART_HS);
 
@@ -659,7 +666,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(1563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
 			fors.add(forFiscal);
 		}
 		// 2005, 8, 12 - 2007, 2, 28
@@ -671,7 +678,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
-			forFiscal.setNumeroOfsAutoriteFiscale(1234);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockPays.Allemagne.getNoOFS());
 			forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HS);
 			fors.add(forFiscal);
 		}
@@ -684,7 +691,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bern.getNoOFSEtendu());
 			fors.add(forFiscal);
 		}
 		// 2007, 3, 2 -> Ouvert
@@ -695,7 +702,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			forFiscal.setNumeroOfsAutoriteFiscale(563);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bale.getNoOFSEtendu());
 			fors.add(forFiscal);
 		}
 		hab.setForsFiscaux(fors);

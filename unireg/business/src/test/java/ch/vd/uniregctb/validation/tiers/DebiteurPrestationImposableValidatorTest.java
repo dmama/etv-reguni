@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -30,7 +33,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2004, 8, 11));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5601); // Chexbres
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -39,7 +42,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2006, 10, 1));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5890); // Vevey
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFSEtendu());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{ // ce for intermédiaire est ouvert => il doit entrer en conflit avec le for suivant
@@ -48,7 +51,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5889); // La Tour-de-Peilz
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -57,7 +60,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2007, 3, 30));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5889); // La Tour-de-Peilz
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -66,11 +69,11 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(5886); // Montreux
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFSEtendu());
 			debiteur.addForFiscal(forFiscal);
 		}
 
-		Assert.assertEquals(1, validate(debiteur).errorsCount());
+		assertValidation(Arrays.asList("Le for DPI qui commence le 03.10.2006 et se termine le 30.03.2007 chevauche le for précédent"), null, validate(debiteur));
 	}
 
 	@Test

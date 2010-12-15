@@ -48,6 +48,10 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Nyon = new MockCommune(5724, "Nyon", VAUD, MockOfficeImpot.OID_NYON);
 	public static final MockCommune Aigle = new MockCommune(5401, "Aigle", VAUD, MockOfficeImpot.OID_AIGLE);
 
+	// quelques communes non-éternelles
+	public static final MockCommune Malapalud = new MockCommune(5526, "Malapalud", VAUD, MockOfficeImpot.OID_ECHALLENS, null, RegDate.get(2008, 12, 31));
+	public static final MockCommune ValDeTravers = new MockCommune(6512, "Val-de-Travers", NEUCHATEL, null, RegDate.get(2009, 1, 1), null);
+
 	// commune avec fractions de commmunes
 	public static final MockCommune LAbbaye = new CommuneFractionnee(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);
 	public static final MockCommune LeChenit = new CommuneFractionnee(5872, "Le Chenit", VAUD, MockOfficeImpot.OID_LA_VALLEE);
@@ -120,7 +124,6 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private String nomMinusculeOFS;
 	private String cantonID;
 	private RegDate dateDebutValidite;
-	private RegDate dateDebValidite;
 	private RegDate dateFinValidite;
 	private String noACI;
 	private String noCantonal;
@@ -128,6 +131,12 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private final String sigleCanton;
 	private boolean valide;
 	private final OfficeImpot officeImpot;
+
+	private MockCommune(int noOFS, String nomMinuscule, String sigleCanton, OfficeImpot oid, RegDate dateDebutValidite, RegDate dateFinValidite) {
+		this(noOFS, nomMinuscule, sigleCanton, oid);
+		this.dateDebutValidite = dateDebutValidite;
+		this.dateFinValidite = dateFinValidite;
+	}
 
 	private MockCommune(int noOFS, String nomMinuscule, String sigleCanton, OfficeImpot oid) {
 		super(noOFS, null, nomMinuscule);
@@ -151,10 +160,6 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
-	}
-
-	public RegDate getDateDebValidite() {
-		return dateDebValidite;
 	}
 
 	public RegDate getDateFinValidite() {

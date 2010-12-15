@@ -52,4 +52,7 @@
     ajouter toutes les collectivités administratives (oids) et devoir modifier tous les tests -->
     <bean id="tacheService" class="ch.vd.uniregctb.tache.MockTacheService"/>
 
+	<!-- Validateur de test qui permet de tester la classe abstraite ForFiscalValitator -->
+	<bean id="concreteTestForFiscalValidator" class="ch.vd.uniregctb.validation.fors.ConcreteForFiscalValidator" parent="forFiscalValidator"/>
+
 </beans>

@@ -1,8 +1,13 @@
 package ch.vd.uniregctb.validation.fors;
 
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
@@ -11,6 +16,12 @@ import ch.vd.uniregctb.validation.EntityValidatorImpl;
  * Classe de base pour les validateurs de fors fiscaux
  */
 public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityValidatorImpl<T> {
+
+	private ServiceInfrastructureService serviceInfra;
+
+	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
+		this.serviceInfra = serviceInfra;
+	}
 
 	public ValidationResults validate(T ff) {
 
@@ -42,13 +53,31 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 			results.addError(String.format("Le for %s possède une date de début qui est après la date de fin: début = %s fin = %s", ff, RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin)));
 		}
 
-		// si c'est un for vaudois, il ne doit pas être sur une commune faîtière de fractions de commune
 		if (numeroOfsAutoriteFiscale != null) {
-			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				if (numeroOfsAutoriteFiscale == 5871 || numeroOfsAutoriteFiscale == 5872 || numeroOfsAutoriteFiscale == 5873) {
-					final String message = String.format("Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici OFS %d), une fraction est attendue dans ce cas",
-														ff, numeroOfsAutoriteFiscale);
-					results.addError(message);
+
+			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
+				try {
+					final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, dateDebut);
+					if (commune == null) {
+						results.addError(String.format("La commune du for fiscal %s (%d) est inconnue dans l'infrastructure à la date de début du for", ff, ff.getNumeroOfsAutoriteFiscale()));
+					}
+					else if (!commune.isPrincipale()) {
+						// vérification que la commune est bien valide sur toute la période
+						final DateRange validiteCommune = new DateRangeHelper.Range(commune.getDateDebutValidite(), commune.getDateFinValidite());
+						if (!DateRangeHelper.within(ff, validiteCommune)) {
+							results.addError(String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune à laquelle il est assigné [%s]",
+									ff, DateRangeHelper.toDisplayString(validiteCommune)));
+						}
+					}
+					else {
+						// commune faîtière de fractions...
+						final String message = String.format("Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas",
+								ff, commune.getNomMinuscule(), numeroOfsAutoriteFiscale);
+						results.addError(message);
+					}
+				}
+				catch (InfrastructureException e) {
+					results.addError("Impossible de vérifier la validité de la commune du for", e);
 				}
 			}
 		}

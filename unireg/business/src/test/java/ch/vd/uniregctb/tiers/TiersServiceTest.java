@@ -3997,8 +3997,8 @@ public class TiersServiceTest extends BusinessTest {
 			Assert.fail("L'appel aurait dû sauter car la commune est une commune faîtière de fractions de communes");
 		}
 		catch (ValidationException e) {
-			final String message = String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici OFS %d), une fraction est attendue dans ce cas\n",
-												f, MockCommune.LeLieu.getNoOFSEtendu());
+			final String message = String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
+												f, MockCommune.LeLieu.getNomMinuscule(), MockCommune.LeLieu.getNoOFSEtendu());
 			Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(message));
 		}
 	}

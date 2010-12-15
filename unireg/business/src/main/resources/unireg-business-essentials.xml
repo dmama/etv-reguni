@@ -203,7 +203,9 @@
 	<bean id="menageCommunValidator" class="ch.vd.uniregctb.validation.tiers.MenageCommunValidator" parent="contribuableValidator"/>
 	<bean id="personnePhysiqueValidator" class="ch.vd.uniregctb.validation.tiers.PersonnePhysiqueValidator" parent="contribuableValidator"/>
 
-	<bean id="forFiscalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalValidator" abstract="true" parent="entityValidator"/>
+	<bean id="forFiscalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalValidator" abstract="true" parent="entityValidator">
+		<property name="serviceInfra" ref="serviceInfrastructureService"/>
+	</bean>
 	<bean id="forFiscalRevenuFortuneValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalRevenuFortuneValidator" abstract="true" parent="forFiscalValidator"/>
 	<bean id="forFiscalAutreImpotValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalAutreImpotValidator" parent="forFiscalValidator"/>
 	<bean id="forDebiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.fors.ForDebiteurPrestationImposableValidator" parent="forFiscalValidator"/>
