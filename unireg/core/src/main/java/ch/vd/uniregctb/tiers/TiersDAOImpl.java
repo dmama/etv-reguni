@@ -76,14 +76,33 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     }
 
 	@SuppressWarnings({"unchecked"})
-	public List<Tiers> getFirst(final int count) {
-		return getHibernateTemplate().executeFind(new HibernateCallback() {
+	public Map<Class, List<Tiers>> getFirstGroupedByClass(final int count) {
+		return (Map<Class, List<Tiers>>) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery("from Tiers");
-				query.setMaxResults(count);
-				return query.list();
+				final Map<Class, List<Tiers>> map = new HashMap<Class, List<Tiers>>();
+				final List<?> types = session.createQuery("select distinct t.class from Tiers t").list();
+				for (Object type : types) {
+					final String classname = (String) type;
+					final Query query = session.createQuery("from Tiers t where t.class = " + classname);
+					query.setMaxResults(count);
+					List<Tiers> tiers = query.list();
+					final Class<?> clazz = getTiersClass(classname);
+					map.put(clazz, tiers);
+				}
+				return map;
 			}
 		});
+	}
+
+	private static Class<?> getTiersClass(String simpleClassname) {
+		final Class<?> clazz;
+		try {
+			clazz = Class.forName("ch.vd.uniregctb.tiers." + simpleClassname);
+		}
+		catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		return clazz;
 	}
 
 	private interface TiersIdGetter<T extends HibernateEntity> {

@@ -898,7 +898,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			return map.get(id);
 		}
 
-		public List<Tiers> getFirst(int count) {
+		public Map<Class, List<Tiers>> getFirstGroupedByClass(int count) {
 			throw new NotImplementedException();
 		}
 

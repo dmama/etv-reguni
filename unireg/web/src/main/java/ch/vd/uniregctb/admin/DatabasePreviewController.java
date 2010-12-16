@@ -4,7 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -35,7 +37,7 @@ public class DatabasePreviewController extends AbstractSimpleFormController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		final DatabasePreview bean = (DatabasePreview) super.formBackingObject(request);
-		final List<InfoTiers> infoTiers = buildInfoTiers();
+		Map<Class,List<InfoTiers>> infoTiers = buildInfoTiers();
 		bean.setInfoTiers(infoTiers);
 		return bean;
 	}
@@ -54,35 +56,44 @@ public class DatabasePreviewController extends AbstractSimpleFormController {
 	 *
 	 * @return une liste contenant des informaitons de tiers
 	 */
-	private List<InfoTiers> buildInfoTiers() {
+	private Map<Class, List<InfoTiers>> buildInfoTiers() {
 
-		final List<InfoTiers> infoTiers = new ArrayList<InfoTiers>();
+		final Map<Class, List<InfoTiers>> infoMap = new HashMap<Class, List<InfoTiers>>();
 
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final List<Tiers> list = tiersDao.getFirst(100);
-				for (Tiers t : list) {
+				final Map<Class,List<Tiers>> map = tiersDao.getFirstGroupedByClass(100);
+				for (Map.Entry<Class, List<Tiers>> entry : map.entrySet()) {
+					for (Tiers t : entry.getValue()) {
 
-					final Long numero = t.getNumero();
-					final NatureTiers type = t.getNatureTiers();
-					List<String> nomsPrenoms;
-					try {
-						nomsPrenoms = adresseService.getNomCourrier(t, null, false);
-					}
-					catch (Exception e) {
-						nomsPrenoms = Arrays.asList("Exception: " + e.getMessage());
-					}
+						final Long numero = t.getNumero();
+						final NatureTiers type = t.getNatureTiers();
+						List<String> nomsPrenoms;
+						try {
+							nomsPrenoms = adresseService.getNomCourrier(t, null, false);
+						}
+						catch (Exception e) {
+							nomsPrenoms = Arrays.asList("Exception: " + e.getMessage());
+						}
 
-					InfoTiers info = new InfoTiers(numero, type, nomsPrenoms);
-					infoTiers.add(info);
+						final InfoTiers info = new InfoTiers(numero, type, nomsPrenoms);
+
+						List<InfoTiers> infoTiers = infoMap.get(entry.getKey());
+						if (infoTiers == null) {
+							infoTiers = new ArrayList<InfoTiers>();
+							infoMap.put(entry.getKey(), infoTiers);
+						}
+
+						infoTiers.add(info);
+					}
 				}
 				return null;
 			}
 		});
 
-		return infoTiers;
+		return infoMap;
 	}
 
 	public void setTiersDao(TiersDAO tiersDao) {

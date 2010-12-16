@@ -1,19 +1,28 @@
 package ch.vd.uniregctb.webservices.tiers2.impl.pm;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.hqlbuilder.AbstractCriteria;
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
-import ch.vd.uniregctb.tiers.*;
-import org.hibernate.FlushMode;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-
 import javax.persistence.NonUniqueResultException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.hibernate.FlushMode;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.hqlbuilder.AbstractCriteria;
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
  * Implémentation particulière du Tiers DAO qui permet d'exposer les tiers du Tiers DAO normal fusionnés avec les personnes morales du web-service PM.
@@ -122,7 +131,7 @@ public class TiersDAOWithPM implements TiersDAO {
 		throw new NotImplementedException();
 	}
 
-	public List<Tiers> getFirst(int count) {
+	public Map<Class, List<Tiers>> getFirstGroupedByClass(int count) {
 		throw new NotImplementedException();
 	}
 
