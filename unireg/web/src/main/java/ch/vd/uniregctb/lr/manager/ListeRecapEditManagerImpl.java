@@ -290,6 +290,24 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		return nvelleDate;
 	}
 
+	public DelaiDeclarationView creerDelai(Long idLr) {
+		DelaiDeclarationView  delaiView = new DelaiDeclarationView();
+		delaiView.setIdDeclaration(idLr);
+		DeclarationImpotSource lr = lrDAO.get(idLr);
+		if (lr == null) {
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.lr.inexistante" , null,  WebContextUtils.getDefaultLocale()));
+		}
+		delaiView.setTiersId(lr.getTiers().getId());
+		delaiView.setDeclarationPeriode(lr.getPeriode().getAnnee());
+		delaiView.setDeclarationRange(new DateRangeHelper.Range(lr.getDateDebut(), lr.getDateFin()));
+		delaiView.setDateExpedition(lr.getDateExpedition());
+		delaiView.setOldDelaiAccorde(lr.getDelaiAccordeAu());
+		delaiView.setAnnule(false);
+		delaiView.setDateDemande(RegDate.get());
+
+		return delaiView;
+	}
+
 	/**
 	 * Cree une nouvelle LR
 	 *
@@ -584,12 +602,14 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param lrEditView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void saveDelai (Long idLr, DelaiDeclaration delai) {
-
+	public void saveDelai(DelaiDeclarationView view) {
+		DeclarationImpotSource lr = lrDAO.get(view.getIdDeclaration());
+		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
-		delai.setAnnule(false);
-
-		final DeclarationImpotSource lr = lrDAO.get(idLr);
+		delai.setAnnule(view.isAnnule());
+		delai.setConfirmationEcrite(view.getConfirmationEcrite());
+		delai.setDateDemande(view.getDateDemande());
+		delai.setDelaiAccordeAu(view.getDelaiAccordeAu());
 		lr.addDelai(delai);
 	}
 

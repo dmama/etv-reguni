@@ -16,14 +16,6 @@ function retourVisuFromDI(numero) {
 
 
 /*
-* Ajouter un delai
-*/
-function ajouterDelai() {
-	var formAddDelai = document.getElementById('formAddDelai');
-	formAddDelai.submit(); 	
-}
-
-/*
 * Recharge la page avec un autre type de document
 */
 function changeTypeDocument(idDI, typeDocument)

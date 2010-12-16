@@ -5,18 +5,18 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.delai.DelaiDeclarationView;
 
 public class ListeRecapEditDelaiValidator implements Validator {
 
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
-		return DelaiDeclaration.class.equals(clazz) ;
+		return DelaiDeclarationView.class.equals(clazz);
 	}
 
 	public void validate(Object obj, Errors errors) {
-		Assert.isTrue(obj instanceof DelaiDeclaration);
-		DelaiDeclaration delai = (DelaiDeclaration) obj;
+		Assert.isTrue(obj instanceof DelaiDeclarationView);
+		DelaiDeclarationView delai = (DelaiDeclarationView) obj;
 		if (delai.getDelaiAccordeAu() == null) {
 			ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
 		}

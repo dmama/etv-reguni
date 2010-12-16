@@ -3,7 +3,7 @@ package ch.vd.uniregctb.lr.manager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.delai.DelaiDeclarationView;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
@@ -41,6 +41,9 @@ public interface ListeRecapEditManager {
 	@Transactional(readOnly = true)
 	ListeRecapListView findByNumero(Long numero) ;
 
+	@Transactional(readOnly = true)
+	DelaiDeclarationView creerDelai(Long idLr);
+
 	/**
 	 * Cree une nouvelle LR
 	 *
@@ -71,7 +74,7 @@ public interface ListeRecapEditManager {
 	 * Persiste en base et indexe le tiers modifie
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void saveDelai(Long idLr, DelaiDeclaration delai);
+	void saveDelai(DelaiDeclarationView delai);
 
 	/**
 	 * Contrôle la présence de la LR
