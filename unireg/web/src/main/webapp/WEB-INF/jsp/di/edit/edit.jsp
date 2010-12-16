@@ -53,7 +53,42 @@
 				<!-- Duplicata DI -->
 				
 				<c:if test="${command.allowedDuplic}">
-					<a href="impression.do?id=${command.id}&height=410&width=500&TB_iframe=true&modal=true" class="thickbox"><input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />"></a>
+					<input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di(${command.id});">
+					<script>
+					function open_imprime_di(id) {
+						var dialog = create_dialog_div('imprime-di-dialog');
+
+						// charge le contenu de la boîte de dialogue
+						dialog.load('impression.do?id=' + id);
+
+						dialog.dialog({
+							title: "Impression d'un duplicata",
+							height: 350,
+							width: 500,
+							resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
+							modal: true,
+							buttons: {
+								"Imprimer": function() {
+									// les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
+									var buttons = $('.ui-button');
+									buttons.each(function() {
+										if ($(this).text() == 'Imprimer') {
+											$(this).addClass('ui-state-disabled');
+											$(this).attr('disabled', true);
+										}
+									});
+									var form = dialog.find('#formImpression');
+									form.attr('action', 'impression.do?action=duplicataDI');
+									form.submit();
+								},
+								"Fermer": function() {
+									dialog.dialog("close");
+								}
+							}
+						});
+					}
+					</script>
+
 				</c:if>
 				<!-- Impression de chemise de taxation d'office -->
 				<c:if test="${command.allowedSommation}"> 

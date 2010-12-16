@@ -1,38 +1,31 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="index" value="${param.index}" />
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
-	<tiles:put name="head"></tiles:put>
+<tiles:insert template="/WEB-INF/jsp/templates/templateDialog.jsp">
 
-	<tiles:put name="title"></tiles:put>
 	<tiles:put name="body">
 		<form:form name="formImpression" id="formImpression">
-		<fieldset><legend><span><fmt:message key="label.impression.di" /></span></legend>
+
+		<fieldset><legend><span>Veuillez choisir le type et le nombre de documents à imprimer</span></legend>
 		<unireg:nextRowClass reset="0"/>
-		<table border="0">
+		<table id="modeleDocumentTable" border="0" cellspacing="0">
 
 			<c:forEach items="${command.modelesDocumentView}" var="modele" varStatus="statusModele">
-				<tr class="<unireg:nextRowClass/>" >
-					<td width="50%">	
-						<form:radiobutton path="selectedTypeDocument" value="${modele.typeDocument}" onclick="javascript:changeTypeDocument(${command.idDI}, '${modele.typeDocument}');" />
-						<b><fmt:message key="option.type.document.${modele.typeDocument}"/>&nbsp;:</b>
-					</td>
-					<td width="50%">
-						&nbsp;
+				<c:set var="rowClass"><unireg:nextRowClass/></c:set>
+				<tr class="${rowClass}">
+					<td colspan="3" style="padding:4px">
+						<form:radiobutton id="radio-${modele.typeDocument}" path="selectedTypeDocument" value="${modele.typeDocument}" onclick="refresh_input('${modele.typeDocument}')"/>
+						<b><label for="radio-${modele.typeDocument}"><fmt:message key="option.type.document.${modele.typeDocument}"/>&nbsp;:</label></b>
 					</td>
 				</tr>
 
 				<c:forEach items="${modele.modelesFeuilles}" var="feuille" varStatus="statusFeuille">
-				<tr class="<unireg:nextRowClass/>" >
-					<td width="50%">${feuille.intituleFeuille}&nbsp;:</td>
-					<td width="50%">	
-					<c:if test="${command.selectedTypeDocument != modele.typeDocument}">
-						<form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nbreIntituleFeuille" size="2" disabled="true"/>
-					</c:if>
-					<c:if test="${command.selectedTypeDocument == modele.typeDocument}">
-						<form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nbreIntituleFeuille" size="2" maxlength="1" />
-					</c:if>
-					
+				<tr class="${rowClass}">
+					<td width="10%">&nbsp;</td>
+					<td width="45%">${feuille.intituleFeuille}&nbsp;:</td>
+					<td width="45%" style="padding-bottom:4px">
+						<form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nbreIntituleFeuille"
+							cssClass="document-type-${modele.typeDocument}" size="2" maxlength="1"/>
 					</td>
 				</tr>
 				</c:forEach>
@@ -41,16 +34,22 @@
 
 		</table>
 		</fieldset>
-		<table border="0">
-			<tr>
-				<td colspan="2" align="center">
-					<input type="button" id="imprimer" value="<fmt:message key="label.bouton.imprimer" />" onclick="javascript:duplicataDI();">
-					<input type="button" id="effacer" value="<fmt:message key="label.bouton.effacer" />" onclick="javascript:effacerImpressionDI(${command.idDI});">
-					<input type="button" id="annuler" value="<fmt:message key="label.bouton.fermer" />" onclick="self.parent.tb_remove()">
-				</td>
-			</tr>
-			
-		</table>
+
+		<script>
+			function refresh_input(typeDocument) {
+				$('input:text', '#modeleDocumentTable').each(function(index) {
+					if ($(this).hasClass('document-type-' + typeDocument)) {
+						$(this).removeAttr('disabled');
+					}
+					else {
+						$(this).attr('disabled', 'disabled');
+					}
+				});
+			}
+			refresh_input('${command.selectedTypeDocument}');
+
+		</script>
+
 		</form:form>
 
 	</tiles:put>
