@@ -10,6 +10,7 @@ a.selectionner,
 a.correction,
 a.notes,
 a.replay,
+a.pdf,
 a.calendar {
 	background-position: left top;
 	background-repeat: no-repeat;
@@ -31,6 +32,7 @@ a.selectionner:hover,
 a.correction:hover,
 a.notes:hover,
 a.replay:hover,
+a.pdf:hover,
 a.calendar:hover {
 	background-repeat: no-repeat;
 	z-index: 500;
@@ -49,6 +51,7 @@ a.selectionner:hover span,
 a.correction:hover span,
 a.notes:hover span,
 a.replay:hover span,
+a.pdf:hover span,
 a.calendar:hover span {
 	display: block;
 	position: absolute;
@@ -73,6 +76,7 @@ span.selectionner,
 span.edit,
 span.notes,
 span.replay,
+span.pdf,
 span.calendar {
 	display: none;
 }

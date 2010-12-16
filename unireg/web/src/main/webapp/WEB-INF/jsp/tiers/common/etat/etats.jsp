@@ -16,8 +16,8 @@
 			<c:if test="${etat.annule}"></strike></c:if>
 			<c:if test="${!etat.annule && etat.etat == 'SOMMEE'}">
 				&nbsp;
-				<a href="../declaration/copie-sommation.do?idEtat=${etat.id}" class="pdf" id="copie-sommation-${etat.id}" onClick="Page_ImprimerCopieSommation(${etat.id})"><img src="${pageContext.request.contextPath}/images/pdf_icon.png" style="align: top;"/></a>
-				<img src="${pageContext.request.contextPath}/images/pdf_grayed_icon.png" id="disabled-copie-sommation-${etat.id}" style="display: none; align: top;"/>
+				<a href="../declaration/copie-sommation.do?idEtat=${etat.id}" class="pdf" id="copie-sommation-${etat.id}" onClick="Page_ImprimerCopieSommation(${etat.id})">&nbsp;</a>
+				<span class="pdf-grayed" id="disabled-copie-sommation-${etat.id}" style="display: none;">&nbsp;</span>
 			</c:if>
 		</display:column>
 		<display:column style="action">

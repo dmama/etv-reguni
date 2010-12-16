@@ -35,6 +35,8 @@ a.selectionner,
 a.correction,
 a.notes,
 a.replay,
+a.pdf,
+span.pdf-grayed,
 a.key,
 a.calendar {
 	background-position: left top;
@@ -62,6 +64,8 @@ a.selectionner:hover,
 a.correction:hover,
 a.notes:hover,
 a.replay:hover,
+a.pdf:hover,
+span.pdf-grayed:hover
 a.key:hover,
 a.calendar:hover {
 	width: 16px;
