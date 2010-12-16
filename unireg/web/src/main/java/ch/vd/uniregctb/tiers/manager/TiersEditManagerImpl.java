@@ -470,9 +470,13 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			final PeriodiciteView periodicite = tiersView.getPeriodicite();
 			if (periodicite != null) {
 				//Calcul de la date de début de validité de la nouvelle périodicité
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiFromView.getId());
 
-				RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
+				if(dpiFromView.getId()!=null){
+					 dpiFromView  = (DebiteurPrestationImposable) tiersDAO.get(dpiFromView.getId());
+				}
+
+
+				RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpiFromView);
 				PeriodeDecompte periodeDecompte = null;
 
 				final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
@@ -480,7 +484,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 					periodeDecompte = periodicite.getPeriodeDecompte();
 				}
 				//L'appel de addperiodicite permet de sauver le tiers et la periodicite
-				final Periodicite periodiciteAjoutee = tiersService.addPeriodicite(dpi, periodiciteDecompte, periodeDecompte, debutValidite, null);
+				final Periodicite periodiciteAjoutee = tiersService.addPeriodicite(dpiFromView, periodiciteDecompte, periodeDecompte, debutValidite, null);
 				//permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
 				Assert.notNull(periodiciteAjoutee.getId());
 				dpiFromView = periodiciteAjoutee.getDebiteur();
