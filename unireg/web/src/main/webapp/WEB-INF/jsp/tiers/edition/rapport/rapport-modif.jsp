@@ -1,10 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="index" value="${param.index}" />
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
-	<tiles:put name="head"></tiles:put>
 
-	<tiles:put name="title"></tiles:put>
+<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+
+	<tiles:put name="title">
+		<fmt:message key="title.edition.rapport">
+			<fmt:param><unireg:numCTB numero="${command.numeroCourant}"/></fmt:param>
+			<fmt:param><unireg:numCTB numero="${command.numero}"/></fmt:param>
+		</fmt:message>
+	</tiles:put>
+
 	<tiles:put name="body">
 		<form:form name="formModifRapport" id="formModifRapport">
 		<fieldset><legend><span><fmt:message key="label.rapport.tiers" /></span></legend>
@@ -13,7 +19,7 @@
 		<table border="0">
 			<unireg:nextRowClass reset="0"/>
 			<tr class="<unireg:nextRowClass/>" >
-				<td width="25%"><fmt:message key="label.rapport.tiers"/>&nbsp;:</td>
+				<td width="25%"><fmt:message key="label.type.rapport"/>&nbsp;:</td>
 				<td width="25%">
 					<fmt:message key="option.rapport.entre.tiers.${command.sensRapportEntreTiers}.${command.typeRapportEntreTiers}" />
 				</td>
@@ -22,7 +28,6 @@
 					<fmt:formatDate value="${command.dateDebut}" pattern="dd.MM.yyyy"/>
 				</td>
 			</tr>
-			<unireg:nextRowClass reset="0"/>
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.numero.tiers"/>&nbsp;:</td>
 				<td width="25%">
@@ -38,7 +43,6 @@
 					</c:if>
 				</td>
 			</tr>
-			<unireg:nextRowClass reset="0"/>
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.date.fin"/>&nbsp;:</td>
 				<td width="75%" colspan="3">
@@ -88,10 +92,14 @@
 		<tr>
 			<td width="25%">&nbsp;</td>
 			<c:if test="${command.allowed}">
-			<td width="25%"><input type="submit" id="maj" value="<fmt:message key="label.bouton.mettre.a.jour" />"></td>
+				<td width="25%"><input type="submit" id="maj" value="<fmt:message key="label.bouton.mettre.a.jour" />"></td>
 			</c:if>
-			<c:if test="${!command.allowed}"><td width="25%">&nbsp;</td></c:if>
-			<td width="25%"><input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()"></td>
+			<c:if test="${!command.allowed}">
+				<td width="25%">&nbsp;</td>
+			</c:if>
+			<td width="25%">
+				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler"/>" onclick="document.location.href='<c:url value="${command.viewRetour}"/>'" />
+			</td>
 			<td width="25%">&nbsp;</td>
 		</tr>
 	</table>

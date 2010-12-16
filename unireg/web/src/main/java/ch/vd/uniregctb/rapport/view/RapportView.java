@@ -42,6 +42,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	private TypeRapportEntreTiersWeb typeRapportEntreTiers;
 
+	/**
+	 * Le numéro du tiers courant
+	 */
+	private Long numeroCourant;
+
+	/**
+	 * Le numéro du tiers lié
+	 */
 	private Long numero;
 
 	/**
@@ -73,6 +81,8 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	private Long autoriteTutelaireId;
 
 	private String nomAutoriteTutelaire;
+
+	private String viewRetour;
 
 	// ---------------------------------------------------
 
@@ -142,6 +152,17 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public void setDateFin(Date dateFin) {
 		this.dateFin = RegDate.get(dateFin);
+	}
+
+	/**
+	 * @return Le numéro du tiers courant
+	 */
+	public Long getNumeroCourant() {
+		return numeroCourant;
+	}
+
+	public void setNumeroCourant(Long numeroCourant) {
+		this.numeroCourant = numeroCourant;
 	}
 
 	/**
@@ -280,5 +301,13 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public void setNomAutoriteTutelaire(String nomAutoriteTutelaire) {
 		this.nomAutoriteTutelaire = nomAutoriteTutelaire;
+	}
+
+	public String getViewRetour() {
+		return viewRetour;
+	}
+
+	public void setViewRetour(String viewRetour) {
+		this.viewRetour = viewRetour;
 	}
 }

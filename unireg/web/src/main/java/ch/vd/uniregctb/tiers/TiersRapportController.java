@@ -18,6 +18,7 @@ public class TiersRapportController extends AbstractRapportPrestationController 
 
 	private final static String ID_RAPPORT_PARAMETER_NAME = "idRapport";
 	private final static String SENS_RAPPORT_PARAMETER_NAME = "sens";
+	private final static String VIEW_RETOUR_PARAMETER_NAME = "viewRetour";
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -25,6 +26,7 @@ public class TiersRapportController extends AbstractRapportPrestationController 
 
 		final String idRapport = request.getParameter(ID_RAPPORT_PARAMETER_NAME);
 		final String sensRapport = request.getParameter(SENS_RAPPORT_PARAMETER_NAME);
+		final String viewRetour = request.getParameter(VIEW_RETOUR_PARAMETER_NAME);
 
 		if (StringUtils.isNotBlank(idRapport)) {
 			final Long id = Long.parseLong(idRapport);
@@ -33,6 +35,7 @@ public class TiersRapportController extends AbstractRapportPrestationController 
 			rapportView = rapportEditManager.get(id, sens);
 			checkAccesDossierEnLecture(rapportView.getNumero());
 		}
+		rapportView.setViewRetour(viewRetour);
 		return rapportView;
 	}
 
@@ -48,14 +51,13 @@ public class TiersRapportController extends AbstractRapportPrestationController 
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
 		RapportView rapportView = (RapportView) command;
 
 		checkAccesDossierEnEcriture(rapportView.getNumero());
 
 		rapportEditManager.save(rapportView);
 
-		return mav;
+		return new ModelAndView("redirect:" + rapportView.getViewRetour());
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

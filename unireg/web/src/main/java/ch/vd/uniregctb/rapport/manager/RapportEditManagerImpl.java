@@ -118,6 +118,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		final List<String> nomTiersLie = adresseService.getNomCourrier(tiersLie, null, false);
 		final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
 
+		rapportView.setNumeroCourant(numeroTiersCourant);
 		rapportView.setNumero(numeroTiersLie);
 		rapportView.setNomCourrier(nomTiersLie);
 		rapportView.setId(rapportEntreTiers.getId());
