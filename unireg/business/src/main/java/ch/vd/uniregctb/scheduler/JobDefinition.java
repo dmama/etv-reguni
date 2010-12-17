@@ -660,7 +660,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	protected RegDate getDateTraitement(Map<String, Object> params) {
 
 		RegDate dateTraitement = RegDate.get();
-		if (isTesting()) {
+		if (isTesting() && getParameterDefinition(DATE_TRAITEMENT) != null) {
 			final RegDate date = getRegDateValue(params, DATE_TRAITEMENT);
 			if (date != null) {
 				dateTraitement = date;
