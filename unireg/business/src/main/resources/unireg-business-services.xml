@@ -49,8 +49,9 @@
 		<property name="schedulerName" value="schedulerQuartz" />
 	</bean>
 	
-	<bean id="batchScheduler" class="ch.vd.uniregctb.scheduler.BatchScheduler">
+	<bean id="batchScheduler" class="ch.vd.uniregctb.scheduler.BatchSchedulerImpl">
 		<property name="scheduler" ref="scheduler" />
+		<property name="timeoutOnStopAll" value="5" />		<!-- minutes d'attente max dans l'appel à stopAllRunningJobs() -->
 	</bean>
 
 	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">

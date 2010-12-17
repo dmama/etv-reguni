@@ -1,12 +1,5 @@
 package ch.vd.uniregctb.webservices.batch;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.activation.DataHandler;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -14,6 +7,12 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.mail.util.ByteArrayDataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -165,8 +164,8 @@ public class BatchWebServiceImpl implements BatchWebService {
 
 		setAuthentication();
 
-		final HashMap<String, JobDefinition> values = batchScheduler.getJobs();
-		JobDefinition jobDefinition = values.get(arg.name);
+		final Map<String, JobDefinition> values = batchScheduler.getJobs();
+		final JobDefinition jobDefinition = values.get(arg.name);
 		if (jobDefinition == null) {
 			return null;
 		}

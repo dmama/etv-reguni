@@ -126,7 +126,11 @@
 		<!-- permet de redéployer unireg dans Tomcat sans obtenir une erreur de lecture sur ehcache.xml -->
 		<!-- voir http://ehcache.sourceforge.net/documentation/shutdown.html -->
 		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
-	</listener>	
+	</listener>
+	<listener>
+		<!-- permet d'arrêter proprement les jobs qui tournent au moment de l'arrêt propre de la webapp -->
+ 		<listener-class>ch.vd.uniregctb.servlet.JobMonitoringServletListener</listener-class>
+	</listener>
 
 	<!-- Les filters de notre application -->
 	<filter>
