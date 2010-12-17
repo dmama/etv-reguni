@@ -145,7 +145,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'un rapport
 	@Test
 	public void testTiersEditRapport() throws Exception {
-		assertPage("/tiers/rapport.do?idRapport=1&sens=SUJET", "");
+		assertPage("/tiers/rapport.do?idRapport=1&sens=SUJET", "Edition du rapport entre le tiers n°123.000.01 et le tiers n°860.062.02");
 	}
 
 	@Test
