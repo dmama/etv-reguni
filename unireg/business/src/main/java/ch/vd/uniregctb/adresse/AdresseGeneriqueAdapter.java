@@ -21,7 +21,9 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	private final RegDate dateFin;
 	private AdresseGenerique target;
 	private Source source;
-	private Boolean isDefault;
+	private boolean isDefault;
+	private boolean isAnnule;
+
 
 	/**
 	 * @param adresse   l'adresse générique à adapter
@@ -45,6 +47,7 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 		else {
 			this.isDefault = isDefault;
 		}
+		this.isAnnule = adresse.isAnnule();
 		optimize();
 		if (!adresse.isAnnule()) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
@@ -69,6 +72,7 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 		else {
 			this.isDefault = isDefault;
 		}
+		this.isAnnule = adresse.isAnnule();
 		optimize();
 		if (!adresse.isAnnule()) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
@@ -98,6 +102,44 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 		}
 		else {
 			this.isDefault = isDefault;
+		}
+		this.isAnnule = adresse.isAnnule();
+		optimize();
+		if (!adresse.isAnnule()) {
+			DateRangeHelper.assertValidRange(dateDebut, dateFin);
+		}
+	}
+
+	/**
+	 * @param adresse   l'adresse générique à adapter
+	 * @param debut     (option) une nouvelle adresse de début
+	 * @param fin       (option) une nouvelle adresse de fin
+	 * @param source    la source de l'adresse à publier
+	 * @param isDefault vrai si l'adresse représente une adresse par défaut
+	 * @param isAnnule  vrai si l'adresse représente une adresse annulée
+	 */
+	public AdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Source source, Boolean isDefault, Boolean isAnnule) {
+		Assert.notNull(adresse);
+		this.target = adresse;
+		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
+		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
+		if (source == null) {
+			this.source = adresse.getSource();
+		}
+		else {
+			this.source = source;
+		}
+		if (isDefault == null) {
+			this.isDefault = adresse.isDefault();
+		}
+		else {
+			this.isDefault = isDefault;
+		}
+		if (isAnnule == null) {
+			this.isAnnule = adresse.isAnnule();
+		}
+		else {
+			this.isAnnule = isAnnule;
 		}
 		optimize();
 		if (!adresse.isAnnule()) {
@@ -219,7 +261,7 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	public boolean isAnnule() {
-		return target.isAnnule();
+		return isAnnule;
 	}
 
 	@Override

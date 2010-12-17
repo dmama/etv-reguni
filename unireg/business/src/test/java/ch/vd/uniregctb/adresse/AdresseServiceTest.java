@@ -1069,6 +1069,89 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
+	 * Cas général d'une adresse civile unique surchargée <b>annulée</b> par une adresse fiscale, mais pointant sur l'adresse d'un autre tiers.
+	 * <p/>
+	 * <pre>
+	 *                                             +--------------------------------------------------------------------------
+	 * Adresses civiles:                           | Lausanne
+	 *                                             +--------------------------------------------------------------------------
+	 *                                             ¦- 2000.01.01
+	 *                                             ¦
+	 *                                             +--------------------------------------------------------------------------
+	 * Adresses civiles autre tiers (annulée):     | Bex
+	 *                                             +--------------------------------------------------------------------------
+	 *                                             ¦- 2000.01.01
+	 *                                             ¦
+	 *                                             ¦                            +----------------------------+
+	 * Adresses fiscales:                          ¦                            | Bex                        |
+	 *                                             ¦                            +----------------------------+
+	 *                                             ¦                            ¦- 2000.03.20    2001.12.31 -¦
+	 *                                             ¦
+	 *                                             +--------------------------------------------------------------------------
+	 * Adresses résultantes:                       | Lausanne
+	 *                                             +--------------------------------------------------------------------------
+	 *                                             ¦- 2000.01.01
+	 *                                             ¦                            +----------------------------+
+	 *                                             ¦                            | Bex (adresse annulée)      |
+	 *                                             ¦                            +----------------------------+
+	 *                                             ¦                            ¦- 2000.03.20    2001.12.31 -¦
+	 * </pre>
+	 */
+	@Test
+	public void testGetAdressesFiscalesHistoSurchargeAutreTiersAnnule() throws Exception {
+		final long noIndividu = 1;
+		final long noAutreIndividu = 2;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
+
+				MockIndividu pierre = addIndividu(noAutreIndividu, date(1953, 11, 2), "Dubois", "Pierre", true);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+			}
+		});
+
+		final Long id = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// Crée l'autre habitant
+				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
+
+				// Crée un habitant avec un adresse fiscale 'courrier' surchargée <b>annulée</b> pointant vers l'adresse 'courrier' d'un autre habitant
+				PersonnePhysique habitant = addHabitant(noIndividu);
+				{
+					AdresseAutreTiers adresse = new AdresseAutreTiers();
+					adresse.setDateDebut(date(2000, 3, 20));
+					adresse.setDateFin(date(2001, 12, 31));
+					adresse.setUsage(TypeAdresseTiers.COURRIER);
+					adresse.setType(TypeAdresseTiers.COURRIER);
+					adresse.setAutreTiersId(autreHabitant.getId());
+					adresse.setAnnule(true);
+					habitant.addAdresseTiers(adresse);
+				}
+				return habitant.getId();
+			}
+		});
+
+		final PersonnePhysique habitant = (PersonnePhysique) tiersDAO.get(id);
+		assertNotNull(habitant);
+
+		// Vérification des adresses
+		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(habitant, false);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.courrier.size());
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adresses.courrier.get(0));
+
+		final AdresseGenerique courrier1 = adresses.courrier.get(1);
+		assertTrue(courrier1.isAnnule());
+		assertAdresse(date(2000, 3, 20), date(2001, 12, 31), "Bex", Source.FISCALE, false, courrier1);
+	}
+
+	/**
 	 * Cas particulier d'une adresse civile unique surchargée plusieurs fois par des adresses fiscales.
 	 *
 	 * <pre>

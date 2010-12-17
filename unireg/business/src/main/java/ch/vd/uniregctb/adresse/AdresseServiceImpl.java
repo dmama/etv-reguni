@@ -1915,7 +1915,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final int nextDepth = oneLevelDeeper(callDepth, tiers, autreTiers, adresseSurchargee);
 			final AdresseGenerique autreAdresse = getAdresseFiscale(autreTiers, type, adresseSurchargee.getDateDebut(), nextDepth, strict);
 			if (autreAdresse != null) {
-				surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, AdresseGenerique.Source.FISCALE, false);
+				surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, AdresseGenerique.Source.FISCALE, false, a.isAnnule());
 			}
 		}
 		else {
