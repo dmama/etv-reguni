@@ -127,12 +127,15 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 	}
 
 	public long getTotalPing() {
+		final long value = getTotalPingMicroseconds();
+		return value / 1000L;
+	}
+
+	private long getTotalPingMicroseconds() {
 		if (counter == null) {
 			return 0;
 		}
-
-		final long value = counter.getAvgResponseTime().longValue();
-		return value / 1000L;
+		return counter.getAvgResponseTime().longValue();
 	}
 
 	public long getTotalTime() {
@@ -141,8 +144,8 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 		}
 
 		final long numInvocations = counter.getNumInvocations().longValue();
-		final long totalPing = getTotalPing();
-		return numInvocations * totalPing;
+		final long totalPingMicroseconds = getTotalPingMicroseconds();
+		return numInvocations * totalPingMicroseconds / 1000L;
 	}
 
 	public long getTotalCount() {
