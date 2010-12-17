@@ -82,6 +82,7 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="hostPersonneMoraleService" ref="hostPersonneMoraleService" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="adresseManager" ref="adresseManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />

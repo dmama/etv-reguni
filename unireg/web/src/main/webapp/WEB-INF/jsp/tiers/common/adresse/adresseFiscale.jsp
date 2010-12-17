@@ -61,7 +61,7 @@
 						<c:if test="${adresse.dateFin == null}">
 							<unireg:raccourciModifier link="adresse-close.do?idAdresse=${adresse.id}" tooltip="Fermeture de l'adresse"/>
 						</c:if>
-						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresse.id});" tooltip="Annulation de l'adresse"/>
+						<unireg:raccourciAnnuler onClick="annulerAdresse(${adresse.id});" tooltip="Annulation de l'adresse"/>
 					</c:if>
 				</c:if>
 			</c:if>
@@ -77,7 +77,7 @@
 		
 	<fmt:message key="error.adresse.fiscale.source.erreur" /><br/>
 	
-	<display:table name="command.adressesEnErreur" id="adresseEnErreur" pagesize="10" class="display">
+	<display:table name="command.adressesEnErreur" id="adresseEnErreur" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="error">
 			<fmt:message key="option.usage.${adresseEnErreur.usage}" />
 		</display:column>
@@ -89,8 +89,8 @@
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
-				<c:if test="${adresse.id != null}">
-					<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresse.id}"/>
+				<c:if test="${adresseEnErreur.id != null}">
+					<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseEnErreur.id}"/>
 				</c:if>
 			</c:if>
 			<c:if test="${page == 'edit' }">
@@ -99,8 +99,8 @@
 						((adresseEnErreur.usage == 'POURSUITE') && (command.allowedOnglet.ADR_P)) ||
 						((adresseEnErreur.usage == 'REPRESENTATION') && (command.allowedOnglet.ADR_B)) ||
 						((adresse.usage == 'DOMICILE') && (command.allowedOnglet.ADR_D))}">
-						<unireg:raccourciModifier link="adresse.do?height=530&width=850&idAdresse=${adresseEnErreur.id}&numero=${command.tiers.numero}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition d'adresse"/>
-						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresseEnErreur.id});" tooltip="Annulation de l'adresse"/>
+						<unireg:raccourciModifier link="../adresses/adresse-close.do?idAdresse=${adresseEnErreur.id}" tooltip="Fermeture de l'adresse"/>
+						<unireg:raccourciAnnuler onClick="annulerAdresse(${adresseEnErreur.id});" tooltip="Annulation de l'adresse"/>
 					</c:if>
 				</c:if>
 			</c:if>

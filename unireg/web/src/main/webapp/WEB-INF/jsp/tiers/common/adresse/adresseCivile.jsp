@@ -52,35 +52,6 @@
 					<display:setProperty name="paging.banner.one_item_found" value=""/>
 			</display:table>
 
-			<c:if test="${command.adressesEnErreur != null}">
-				<span class="error"><fmt:message key="error.adresse.fiscale.entete" /></span><br/>
-				<span class="error">=&gt;&nbsp;${command.adressesEnErreurMessage}</span><br/><br/>
-
-				<fmt:message key="error.adresse.fiscale.source.erreur" /><br/>
-
-				<display:table name="command.adressesEnErreur" id="adresseEnErreur" pagesize="10" class="display">
-					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="error">
-						<fmt:message key="option.usage.${adresseEnErreur.usage}" />
-					</display:column>
-					<display:column property="dateDebut" sortable ="true" titleKey="label.date.debut"  format="{0,date,dd.MM.yyyy}" class="error" />
-					<display:column property="dateFin" sortable ="true" titleKey="label.date.fin"  format="{0,date,dd.MM.yyyy}" class="error" />
-					<display:column sortable ="true" titleKey="label.adresse.source" class="error">
-						<fmt:message key="option.source.${adresseEnErreur.source}" />
-						<c:if test="${adresseEnErreur.default}">(<fmt:message key="option.source.default.tag" />)</c:if>
-					</display:column>
-					<display:column style="action">
-						<c:if test="${page == 'visu' }">
-							<c:if test="${adresseCivile.id != null}">
-								<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivile.id}"/>
-							</c:if>
-						</c:if>
-					</display:column>
-					<display:setProperty name="paging.banner.all_items_found" value=""/>
-					<display:setProperty name="paging.banner.one_item_found" value=""/>
-				</display:table><br/>
-
-				<fmt:message key="error.adresse.fiscale.correction" />
-			</c:if>	
 		</c:when>
 		<c:when test="${membre == 'conjoint'}">
 			<display:table name="${command.historiqueAdressesCivilesConjoint}" id="adresseCivileConjoint" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator">
@@ -129,36 +100,6 @@
 					<display:setProperty name="paging.banner.one_item_found" value=""/>
 				</display:table>
 
-
-				<c:if test="${command.adressesEnErreur != null}">
-					<span class="error"><fmt:message key="error.adresse.fiscale.entete" /></span><br/>
-					<span class="error">=&gt;&nbsp;${command.adressesEnErreurMessage}</span><br/><br/>
-
-					<fmt:message key="error.adresse.fiscale.source.erreur" /><br/>
-
-					<display:table name="command.adressesEnErreur" id="adresseEnErreur" pagesize="10" class="display">
-						<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="error">
-							<fmt:message key="option.usage.${adresseEnErreur.usage}" />
-						</display:column>
-						<display:column property="dateDebut" sortable ="true" titleKey="label.date.debut"  format="{0,date,dd.MM.yyyy}" class="error" />
-						<display:column property="dateFin" sortable ="true" titleKey="label.date.fin"  format="{0,date,dd.MM.yyyy}" class="error" />
-						<display:column sortable ="true" titleKey="label.adresse.source" class="error">
-							<fmt:message key="option.source.${adresseEnErreur.source}" />
-							<c:if test="${adresseEnErreur.default}">(<fmt:message key="option.source.default.tag" />)</c:if>
-						</display:column>
-						<display:column style="action">
-							<c:if test="${page == 'visu' }">
-								<c:if test="${adresseCivileConjoint.id != null}">
-									<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivileConjoint.id}"/>
-								</c:if>
-							</c:if>
-						</display:column>
-						<display:setProperty name="paging.banner.all_items_found" value=""/>
-						<display:setProperty name="paging.banner.one_item_found" value=""/>
-					</display:table><br/>
-
-					<fmt:message key="error.adresse.fiscale.correction" />
-				</c:if>	
 		</c:when>
 	</c:choose>	
 </c:if>

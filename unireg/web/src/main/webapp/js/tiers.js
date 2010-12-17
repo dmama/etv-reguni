@@ -370,3 +370,12 @@ function isBlank(s) {
 function isNotBlank(s) {
 	return !isBlank(s);
 };
+
+function annulerAdresse(idAdresse) {
+	if (confirm('Voulez-vous vraiment annuler cette adresse surchargée ?')) {
+		var form = $('<form method="POST" action="' + getContextPath() + '/adresses/edit.do">' +
+			'<input type="hidden" name="__TARGET__" value="annulerAdresse"/>' +
+			'<input type="hidden" name="__EVENT_ARGUMENT__" value="' + idAdresse + '"/></form>');
+		form.submit();
+ 	}
+}

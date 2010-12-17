@@ -21,10 +21,9 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
-import ch.vd.uniregctb.adresse.AdresseDataException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdressesFiscales;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -64,7 +63,6 @@ import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -155,7 +153,21 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			}
 
-			tiersVisuView.setHistoriqueAdresses(getAdressesHistoriques(tiers, true));
+			resolveAdressesHisto(tiers, new AdressesResolverCallback() {
+				public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
+					return service.getAdressesFiscalHisto(tiers, false);
+				}
+
+				public void setAdressesView(List<AdresseView> adresses) {
+					List<AdresseView> adressesResultat = removeAdresseFromCivil(adresses);
+					tiersVisuView.setHistoriqueAdresses(adressesResultat);
+				}
+
+				public void onException(String message, List<AdresseView> adressesEnErreur) {
+					tiersVisuView.setAdressesEnErreurMessage(message);
+					tiersVisuView.setAdressesEnErreur(adressesEnErreur);
+				}
+			});
 
 			//Les entreprises et les etablissement ne sont pas pris en charge par l'adresseService
 			if (NatureTiers.Entreprise != tiersVisuView.getNatureTiers() &&
@@ -213,44 +225,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		allowedModif.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
 
 		return allowedModif;
-	}
-
-
-	/**
-	 * Recuperation des adresses historiques
-	 *
-	 * @param tiers
-	 * @param adresseActive
-	 * @return List<AdresseView>
-	 * @throws AdressesResolutionException
-	 */
-	private List<AdresseView> getAdressesHistoriques(Tiers tiers, boolean adresseHisto) throws AdresseException, InfrastructureException {
-
-		List<AdresseView> adresses = new ArrayList<AdresseView>();
-
-		if (adresseHisto) {
-			final AdressesFiscalesHisto adressesFiscalHisto = adresseService.getAdressesFiscalHisto(tiers, false);
-			if (adressesFiscalHisto != null) {
-				// rempli tous les types d'adresse
-				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-					fillAdressesView(adresses, adressesFiscalHisto, type, tiers);
-				}
-			}
-		}
-		else {
-			final AdressesFiscales adressesFiscales = adresseService.getAdressesFiscales(tiers, null, false);
-			if (adressesFiscales != null) {
-				// rempli tous les types d'adresse
-				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-					fillAdressesView(adresses, adressesFiscales, type, tiers);
-				}
-			}
-		}
-
-		Collections.sort(adresses, new AdresseViewComparator());
-
-		List<AdresseView> adressesResultat = removeAdresseFromCivil(adresses);
-		return adressesResultat;
 	}
 
 

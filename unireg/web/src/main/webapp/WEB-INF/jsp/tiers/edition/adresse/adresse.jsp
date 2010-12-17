@@ -22,13 +22,5 @@
 	</jsp:include>
 	
 </fieldset>
-<script type="text/javascript" language="Javascript1.3">
-function annulerAdresse(idAdresse) {
-	if(confirm('Voulez-vous vraiment annuler cette adresse surchargée ?')) {
-		var form = F$("theForm");
-		form.doPostBack("annulerAdresse", idAdresse);
- 	}
-}	
-</script>
 <!-- Fin Adresse -->
 		

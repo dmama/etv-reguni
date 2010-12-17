@@ -30,7 +30,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdresseTiersDAO;
-import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -377,7 +376,14 @@ public class TiersManager implements MessageSourceAware {
 				final Tiers tiersSujet = tiersDAO.get(rapportEntreTiers.getSujetId());
 				rapportView.setNumero(tiersSujet.getNumero());
 
-				final List<String> nomSujet = adresseService.getNomCourrier(tiersSujet, null, false);
+				List<String> nomSujet;
+				try {
+					nomSujet = adresseService.getNomCourrier(tiersSujet, null, false);
+				}
+				catch (AdresseException e) {
+					nomSujet = new ArrayList<String>();
+					nomSujet.add(e.getMessage());
+				}
 				rapportView.setNomCourrier(nomSujet);
 
 				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
@@ -404,7 +410,14 @@ public class TiersManager implements MessageSourceAware {
 				final Tiers tiersObjet = tiersDAO.get(rapportEntreTiers.getObjetId());
 				rapportView.setNumero(tiersObjet.getNumero());
 
-				final List<String> nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);
+				List<String> nomObjet;
+				try {
+					nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);
+				}
+				catch (AdresseException e) {
+					nomObjet = new ArrayList<String>();
+					nomObjet.add(e.getMessage());
+				}
 				if (nomObjet != null && nomObjet.size() != 0) {
 					rapportView.setNomCourrier(nomObjet);
 				}
@@ -1661,16 +1674,26 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setTiersGeneral(tiersGeneralView);
 	}
 
+
+	protected static interface AdressesResolverCallback {
+		AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException;
+		void setAdressesView(List<AdresseView> adresses);
+		void onException(String message, List<AdresseView> adressesEnErreur);
+	}
+
 	/**
-	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et
-	 * place.
+	 * [UNIREG-3153] Résoud les adresses fiscales et met-à-disposition la liste des vues sur ces adresses. Cette méthode gère gracieusement les exceptions dans la résolution des adresses.
+	 *
+	 * @param tiers    un tiers
+	 * @param callback un méthode de callback qui met-à-disposition les adresses et qui reçoit les vues des adresses en retour (ou le cas échéant, les messages d'erreur).
+	 * @throws InfrastructureException en cas de problème sur le service infrastructure
 	 */
-	protected void setAdressesActives(TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
+	protected void resolveAdressesHisto(Tiers tiers, AdressesResolverCallback callback) throws InfrastructureException {
 
 		try {
 			List<AdresseView> adresses = new ArrayList<AdresseView>();
 
-			final AdressesFiscalesHisto adressesFiscalesHisto = getAdresseService().getAdressesFiscalHisto(tiers, false);
+			final AdressesFiscalesHisto adressesFiscalesHisto = callback.getAdresses(adresseService);
 			if (adressesFiscalesHisto != null) {
 				// rempli tous les types d'adresse
 				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
@@ -1679,12 +1702,11 @@ public class TiersManager implements MessageSourceAware {
 				Collections.sort(adresses, new AdresseViewComparator());
 			}
 
-			adresses = removeAdresseFromCivil(adresses);
-			//[UNIREG2717] les adresses fiscales retournées doivent aussi contenir les adresses fermées afin que celles ci puissent être annulées
-			adresses = removeAdresseAnnulee(adresses);
-			tiersEditView.setAdressesActives(adresses);
+			callback.setAdressesView(adresses);
 		}
 		catch (AdresseException exception) {
+
+			List<AdresseView> adresses = new ArrayList<AdresseView>();
 
 			if (exception instanceof AdressesResolutionException) {
 				final AdressesResolutionException are = (AdressesResolutionException) exception;
@@ -1692,77 +1714,64 @@ public class TiersManager implements MessageSourceAware {
 				 * En cas d'erreur dans la résolution des adresses, on récupère les adresses qui ont provoqué l'erreur et on affiche un écran
 				 * spécial pour permettre à l'utilisateur de résoudre le problème
 				 */
-				List<AdresseView> adresses = new ArrayList<AdresseView>();
 				for (AdresseTiers a : are.getAdresse()) {
-					AdresseView view = getAdresseManager().getAdresseView(a.getId());
+					AdresseView view = adresseManager.getAdresseView(a.getId());
 					view.setUsage(a.getUsage());
 					view.setSource(Source.FISCALE);
 					adresses.add(view);
 				}
-				tiersEditView.setAdressesEnErreur(adresses);
 			}
 
 			// Dans tous les cas, on affiche le message d'erreur
-			tiersEditView.setAdressesEnErreurMessage(exception.getMessage());
+			callback.onException(exception.getMessage(), adresses);
 		}
+	}
+
+	/**
+	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et
+	 * place.
+	 */
+	protected void setAdressesActives(final TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
+
+		resolveAdressesHisto(tiers, new AdressesResolverCallback() {
+			public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
+				return service.getAdressesFiscalHisto(tiers, false);
+			}
+
+			public void setAdressesView(List<AdresseView> adresses) {
+				adresses = removeAdresseFromCivil(adresses);
+				//[UNIREG2717] les adresses fiscales retournées doivent aussi contenir les adresses fermées afin que celles ci puissent être annulées
+				adresses = removeAdresseAnnulee(adresses);
+				tiersEditView.setAdressesActives(adresses);
+			}
+
+			public void onException(String message, List<AdresseView> adressesEnErreur) {
+				tiersEditView.setAdressesEnErreurMessage(message);
+				tiersEditView.setAdressesEnErreur(adressesEnErreur);
+			}
+		});
 	}
 
 	/**
 	 * Renseigne la liste des adresses fiscales Non calculees modifiables sur le form backing object.
 	 */
-	protected void setAdressesFiscalesModifiables(TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
+	protected void setAdressesFiscalesModifiables(final TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
 
-		try {
-			List<AdresseView> adresses = new ArrayList<AdresseView>();
-			AdressesFiscalesHisto adressesFiscalHisto = getAdresseService().getAdressesTiers(tiers);
-
-
-				if (adressesFiscalHisto != null) {
-				// rempli tous les types d'adresse
-				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-					fillAdressesView(adresses, adressesFiscalHisto, type, tiers);
-				}
+		resolveAdressesHisto(tiers, new AdressesResolverCallback() {
+			public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
+				return service.getAdressesTiers(tiers);
 			}
 
-			Collections.sort(adresses, new AdresseViewComparator());
-		
-
-			adresses = removeAdresseAnnulee(adresses);
-			tiersEditView.setAdressesFiscalesModifiables(adresses);
-		}
-		catch (AdresseException exception) {
-
-			if (exception instanceof AdressesResolutionException) {
-				final AdressesResolutionException are = (AdressesResolutionException) exception;
-				/*
-				 * En cas d'erreur dans la résolution des adresses, on récupère les adresses qui ont provoqué l'erreur et on affiche un écran
-				 * spécial pour permettre à l'utilisateur de résoudre le problème
-				 */
-				List<AdresseView> adresses = new ArrayList<AdresseView>();
-				for (AdresseTiers a : are.getAdresse()) {
-					AdresseView view = getAdresseManager().getAdresseView(a.getId());
-					view.setUsage(a.getUsage());
-					view.setSource(Source.FISCALE);
-					adresses.add(view);
-				}
-				tiersEditView.setAdressesEnErreur(adresses);
+			public void setAdressesView(List<AdresseView> adresses) {
+				adresses = removeAdresseAnnulee(adresses);
+				tiersEditView.setAdressesFiscalesModifiables(adresses);
 			}
 
-			// Dans tous les cas, on affiche le message d'erreur
-			tiersEditView.setAdressesEnErreurMessage(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Remplir la collection des adressesView avec l'adresse fiscale du type spécifié.
-	 */
-	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscales adressesFiscales, TypeAdresseTiers type,
-	                                Tiers tiers) {
-		AdresseGenerique adresse = adressesFiscales.ofType(type);
-		if (adresse != null) {
-			AdresseView adresseView = createAdresseView(adresse, type, tiers);
-			adressesView.add(adresseView);
-		}
+			public void onException(String message, List<AdresseView> adressesEnErreur) {
+				tiersEditView.setAdressesEnErreurMessage(message);
+				tiersEditView.setAdressesEnErreur(adressesEnErreur);
+			}
+		});
 	}
 
 	/**

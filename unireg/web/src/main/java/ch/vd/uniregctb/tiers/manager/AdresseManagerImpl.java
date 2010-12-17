@@ -315,6 +315,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		AdresseView adresseView = new AdresseView();
 		adresseView.setNumCTB(adresse.getTiers().getNumero());
 		adresseView.setId(adresse.getId());
+		adresseView.setAnnule(adresse.isAnnule());
 		if (adresse instanceof AdresseSupplementaire) {
 
 			// TODO (FDE) supprimer tout ce code copié-collé et utiliser un AdresseSupplementaireAdapter (voir aussi createAdresseView sur TiersEditManagerImpl)
