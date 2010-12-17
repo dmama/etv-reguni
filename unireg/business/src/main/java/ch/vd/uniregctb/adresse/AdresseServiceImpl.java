@@ -1912,10 +1912,22 @@ public class AdresseServiceImpl implements AdresseService {
 			final TypeAdresseFiscale type = TypeAdresseFiscale.fromCore(a.getType());
 			Assert.notNull(autreTiers);
 
-			final int nextDepth = oneLevelDeeper(callDepth, tiers, autreTiers, adresseSurchargee);
-			final AdresseGenerique autreAdresse = getAdresseFiscale(autreTiers, type, adresseSurchargee.getDateDebut(), nextDepth, strict);
-			if (autreAdresse != null) {
-				surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, AdresseGenerique.Source.FISCALE, false, a.isAnnule());
+			try {
+				final int nextDepth = oneLevelDeeper(callDepth, tiers, autreTiers, adresseSurchargee);
+				final AdresseGenerique autreAdresse = getAdresseFiscale(autreTiers, type, adresseSurchargee.getDateDebut(), nextDepth, strict);
+				if (autreAdresse != null) {
+					surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, Source.FISCALE, false, a.isAnnule());
+				}
+			}
+			catch (AdressesResolutionException e) {
+				if (adresseSurchargee.isAnnule()) {
+					// [UNIREG-3154] si l'adresse en question est annulée, on peut ignorer l'exception et retourner un stub d'adresse avec le minimum d'information
+					// cela permet de ne pas lever d'exception pour une adresse annulée et de pouvoir quand même afficher la liste complète des adresses fiscales
+					surcharge = new AdresseAutreTiersAnnuleeResolutionExceptionStub(a);
+				}
+				else {
+					throw e;
+				}
 			}
 		}
 		else {
@@ -2297,7 +2309,6 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	public AdressesFiscalesHisto getAdressesTiers(Tiers tiers) throws AdresseException {
 
-
 		final AdressesFiscalesHisto adressesFiscalesHisto = new AdressesFiscalesHisto();
 		adressesFiscalesHisto.courrier = new ArrayList<AdresseGenerique>();
 		adressesFiscalesHisto.domicile = new ArrayList<AdresseGenerique>();
@@ -2307,20 +2318,16 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final Set<AdresseTiers> adresses = tiers.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {
-			if(!adresse.isAnnule()){
-				final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresse, 0, false);
-				adressesFiscalesHisto.add(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
-				
-			}
-
+			final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresse, 0, false);
+			adressesFiscalesHisto.add(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
 		}
 
-		Collections.sort(	adressesFiscalesHisto.courrier, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(	adressesFiscalesHisto.domicile, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(	adressesFiscalesHisto.representation, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(	adressesFiscalesHisto.poursuite, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(	adressesFiscalesHisto.poursuiteAutreTiers, new DateRangeComparator<AdresseGenerique>());
-	
+		Collections.sort(adressesFiscalesHisto.courrier, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(adressesFiscalesHisto.domicile, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(adressesFiscalesHisto.representation, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(adressesFiscalesHisto.poursuite, new DateRangeComparator<AdresseGenerique>());
+		Collections.sort(adressesFiscalesHisto.poursuiteAutreTiers, new DateRangeComparator<AdresseGenerique>());
+
 		return adressesFiscalesHisto;
 	}
 
@@ -2328,11 +2335,13 @@ public class AdresseServiceImpl implements AdresseService {
 
 		if (callDepth >= MAX_CALL_DEPTH) {
 			AdressesResolutionException exception = new AdressesResolutionException(
-					"Cycle infini détecté dans la résolution des adresses ! " + "Veuillez vérifier les adresses des tiers n°"
+					"Cycle infini détecté dans la résolution des adresses ! " + "Veuillez vérifier les adresses (et les rapports-entre-tiers) des tiers n°"
 							+ tiers.getNumero() + " et n°" + autreTiers.getNumero() + ".");
 			exception.addTiers(tiers);
 			exception.addTiers(autreTiers);
-			exception.addAdresse(adresseSurchargee);
+			if (adresseSurchargee != null) {
+				exception.addAdresse(adresseSurchargee);
+			}
 			throw exception;
 		}
 

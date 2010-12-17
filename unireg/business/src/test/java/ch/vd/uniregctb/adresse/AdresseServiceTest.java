@@ -977,52 +977,42 @@ public class AdresseServiceTest extends BusinessTest {
 		final long noIndividu = 1;
 		final long noAutreIndividu = 2;
 
-		/*
-		 * Crée les données du mock service civil
-		 */
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
-
-				// adresses courriers
-				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null,
-						date(2000, 1, 1), null);
-
-				// adresses principales/poursuite
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1,
-						1), null);
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
 
 				MockIndividu pierre = addIndividu(noAutreIndividu, date(1953, 11, 2), "Dubois", "Pierre", true);
-
-				// adresses courriers
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
-
-				// adresses principales/poursuite
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 			}
 		});
 
-		// Crée l'autre habitant
-		PersonnePhysique autreHabitant = new PersonnePhysique(true);
-		autreHabitant.setNumeroIndividu(noAutreIndividu);
-		autreHabitant = (PersonnePhysique) tiersDAO.save(autreHabitant);
+		final Long id = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// Crée l'autre habitant
+				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
 
-		// Crée un habitant avec un adresse fiscale 'courrier' surchargée pointant vers l'adresse 'courrier' d'un autre habitant
-		PersonnePhysique habitant = new PersonnePhysique(true);
-		habitant.setNumeroIndividu(noIndividu);
-		{
-			AdresseAutreTiers adresse = new AdresseAutreTiers();
-			adresse.setDateDebut(date(2000, 3, 20));
-			adresse.setDateFin(date(2001, 12, 31));
-			adresse.setUsage(TypeAdresseTiers.COURRIER);
-			adresse.setType(TypeAdresseTiers.COURRIER);
-			adresse.setAutreTiersId(autreHabitant.getId());
-			habitant.addAdresseTiers(adresse);
-		}
+				// Crée un habitant avec un adresse fiscale 'courrier' surchargée pointant vers l'adresse 'courrier' d'un autre habitant
+				PersonnePhysique habitant = addHabitant(noIndividu);
+				{
+					AdresseAutreTiers adresse = new AdresseAutreTiers();
+					adresse.setDateDebut(date(2000, 3, 20));
+					adresse.setDateFin(date(2001, 12, 31));
+					adresse.setUsage(TypeAdresseTiers.COURRIER);
+					adresse.setType(TypeAdresseTiers.COURRIER);
+					adresse.setAutreTiersId(autreHabitant.getId());
+					habitant.addAdresseTiers(adresse);
+				}
+				return habitant.getId();
+			}
+		});
 
-		tiersDAO.save(habitant);
-		hibernateTemplate.flush();
+		final PersonnePhysique habitant = (PersonnePhysique) tiersDAO.get(id);
+		assertNotNull(habitant);
 
 		// Vérification des adresses
 		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(habitant, false);
@@ -2806,6 +2796,79 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * [UNIREG-3154] Cas d'une adresse "autre tiers" pointant du tuteur vers la pupille et générant ainsi une récursion infinie <b>mais</b> annulée.
+	 */
+	@Test
+	public void testGetAdressesFiscalesDetectionRecursionInfinieAdresseAnnulee() throws Exception {
+		final long noPupille = 2;
+		final long noTuteur = 5;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// la pupille
+				MockIndividu paul = addIndividu(noPupille, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+
+				// le tuteur
+				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
+				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1985, 4, 1), null);
+				addAdresse(jean, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1985, 4, 1), null);
+			}
+		});
+
+		final long numeroContribuableTuteur = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// Crée le pupille et le tuteur
+				PersonnePhysique pupille = new PersonnePhysique(true);
+				pupille.setNumeroIndividu(noPupille);
+				pupille = (PersonnePhysique) tiersDAO.save(pupille);
+
+				PersonnePhysique tuteur = new PersonnePhysique(true);
+				tuteur.setNumeroIndividu(noTuteur);
+
+				// Crée une adresse <b>annulée</b> qui provoque une récursion infinie
+				AdresseAutreTiers adresse = new AdresseAutreTiers();
+				adresse.setDateDebut(date(2000, 1, 1));
+				adresse.setDateFin(null);
+				adresse.setUsage(TypeAdresseTiers.REPRESENTATION);
+				adresse.setAutreTiersId(pupille.getId());
+				adresse.setType(TypeAdresseTiers.COURRIER);
+				adresse.setAnnule(true);
+				tuteur.addAdresseTiers(adresse);
+				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+
+				// Crée la tutelle proprement dites
+				RapportEntreTiers rapport = new Tutelle();
+				rapport.setDateDebut(date(2000, 1, 1));
+				rapport.setDateFin(null);
+				rapport.setObjet(tuteur);
+				rapport.setSujet(pupille);
+				tiersDAO.save(rapport);
+
+				return tuteur.getNumero();
+			}
+		});
+
+		// Vérification de la détection du cycle : le cycle est bien détecté mais comme l'adresse fautive est annulée les adresses doivent être quand même résolues
+		{
+			final Tiers tuteur = tiersService.getTiers(numeroContribuableTuteur);
+			assertNotNull(tuteur);
+
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(tuteur, false);
+			assertNotNull(adresses);
+
+			final List<AdresseGenerique> representation = adresses.representation;
+			assertEquals(2, representation.size());
+			assertAdresse(date(1985, 4, 1), null, "Cossonay-Ville", Source.CIVILE, false, representation.get(0));
+			final AdresseGenerique adresseAutreTiers = representation.get(1);
+			assertTrue(adresseAutreTiers.isAnnule());
+			assertAdresse(date(2000, 1, 1), null, "Cossonay-Ville", Source.FISCALE, false, adresseAutreTiers);
+		}
+	}
 	/**
 	 * Cas d'une adresse tiers "adresse civile" pointant vers l'adresse principale (et qui ne doit pas générer de récursion infinie).
 	 *
