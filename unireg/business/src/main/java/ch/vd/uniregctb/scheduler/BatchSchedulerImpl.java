@@ -1,5 +1,15 @@
 package ch.vd.uniregctb.scheduler;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
+import javax.management.ReflectionException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.acegisecurity.Authentication;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
@@ -23,12 +34,13 @@ import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 /**
  * Classe utilitaire pour gérer les batchs.
  */
-public class BatchSchedulerImpl implements BatchScheduler, InitializingBean {
+public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, DynamicMBean {
 
 	private static final Logger LOGGER = Logger.getLogger(BatchSchedulerImpl.class);
 
@@ -295,7 +307,9 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean {
 	/**
 	 * Demande à tous les jobs encore en cours de s'arrêter et leur laisse 5 minutes (max) pour ce faire
 	 */
-	public void stopAllRunningJobs() {
+	public boolean stopAllRunningJobs() {
+
+		boolean tousMorts = true;
 
 		// demande d'arrêt pour tous ceux qui tournent encore
 		final List<JobDefinition> arretDemande = new LinkedList<JobDefinition>();
@@ -343,11 +357,131 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean {
 						b.append("\t").append(job.getName()).append("\n");
 					}
 					LOGGER.warn(b.toString());
+
+					tousMorts = false;
 				}
 
 				// on sort, tout est fini, on a fait ce qu'on a pu
 				break;
 			}
 		}
+
+		return tousMorts;
+	}
+
+	private static String buildStatusString(JobDefinition job) {
+		final StringBuilder b = new StringBuilder();
+		b.append(job.getStatut());
+		if (job.isRunning()) {
+			b.append(", running since ").append(job.getLastStart());
+			final Integer percentProgression = job.getPercentProgression();
+			if (percentProgression != null) {
+				b.append(" (").append(percentProgression).append("% completion)");
+			}
+			final String runningMessage = job.getRunningMessage();
+			if (StringUtils.isNotBlank(runningMessage)) {
+				b.append(": ").append(runningMessage);
+			}
+		}
+		else if (job.getLastEnd() != null) {
+			b.append(", ended on ").append(job.getLastEnd());
+		}
+		else {
+			b.append(", not yet run");
+		}
+		return b.toString();
+	}
+
+	public Object getAttribute(String attribute) throws AttributeNotFoundException, MBeanException, ReflectionException {
+		final JobDefinition def = jobs.get(attribute);
+		if (def == null) {
+			throw new AttributeNotFoundException();
+		}
+		else {
+			return buildStatusString(def);
+		}
+	}
+
+	public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
+		throw new NotImplementedException();
+	}
+
+	public AttributeList getAttributes(String[] attributes) {
+		final AttributeList list = new AttributeList(attributes.length);
+		for (String attribute : attributes) {
+			final JobDefinition def = jobs.get(attribute);
+			if (def != null) {
+				list.add(new Attribute(attribute, buildStatusString(def)));
+			}
+			else {
+				list.add(new Attribute(attribute, "Unknown attribute"));
+			}
+		}
+		return list;
+	}
+
+	public AttributeList setAttributes(AttributeList attributes) {
+		throw new NotImplementedException();
+	}
+
+	public Object invoke(String actionName, Object[] params, String[] signature) throws MBeanException, ReflectionException {
+		try {
+			if (actionName.startsWith("stop")) {
+				final String target = actionName.substring(4);
+				if ("ALL".equals(target)) {
+					if (!stopAllRunningJobs()) {
+						throw new MBeanException(new Exception("Some jobs could not be stopped!"));
+					}
+				}
+				else {
+					final JobDefinition job = jobs.get(target);
+					if (job.isRunning()) {
+						stopJob(target);
+					}
+					else {
+						throw new MBeanException(new Exception("Job is not running!"));
+					}
+				}
+				return null;
+			}
+			else {
+				throw new NoSuchMethodException(actionName);
+			}
+		}
+		catch (SchedulerException e) {
+			throw new MBeanException(e);
+		}
+		catch (NoSuchMethodException e) {
+			throw new ReflectionException(e);
+		}
+	}
+
+	public MBeanInfo getMBeanInfo() {
+
+		final List<JobDefinition> shownJobs = new ArrayList<JobDefinition>(jobs.size());
+		for (JobDefinition job : jobs.values()) {
+			if (job.isVisible()) {
+				shownJobs.add(job);
+			}
+		}
+
+		// on trie la liste pour ne jamais changer l'ordre d'apparition des éléments
+		Collections.sort(shownJobs);
+
+		final MBeanAttributeInfo[] attrs = new MBeanAttributeInfo[shownJobs.size()];
+		final MBeanOperationInfo[] operations = new MBeanOperationInfo[shownJobs.size() + 1];
+
+		// opération pour demander l'interruption de tous les jobs en cours
+		operations[0] = new MBeanOperationInfo("stopALL", "Causes interruption of all running jobs", null, "void", MBeanOperationInfo.ACTION);
+
+		// pour chacun des batches, on expose un attribut virtuel qui expose l'avancement du job
+		// ainsi qu'une méthode pour demander l'interruption du batch
+		for (int i = 0 ; i < attrs.length ; ++ i) {
+			final JobDefinition job = shownJobs.get(i);
+			attrs[i] = new MBeanAttributeInfo(job.getName(), "job", job.getDescription(), true, false, false);
+			operations[i+1] = new MBeanOperationInfo(String.format("stop%s", job.getName()), String.format("Interrupts job %s", job.getName()), null, "void", MBeanOperationInfo.ACTION);
+		}
+
+		return new MBeanInfo(getClass().getName(), "Batch scheduler", attrs, null, operations, null);
 	}
 }

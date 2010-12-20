@@ -31,6 +31,7 @@
 			<map>
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />

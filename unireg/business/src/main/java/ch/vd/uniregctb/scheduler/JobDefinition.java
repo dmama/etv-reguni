@@ -24,7 +24,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
  * Classe regroupant les informations d'affichage du job quartz
  *
  */
-public abstract class JobDefinition implements InitializingBean, Comparable<Object> {
+public abstract class JobDefinition implements InitializingBean, Comparable<JobDefinition> {
 
 	private final Logger LOGGER = Logger.getLogger(JobDefinition.class);
 
@@ -313,10 +313,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		return sortOrder;
 	}
 
-	public int compareTo(Object arg) {
-
-		JobDefinition other = (JobDefinition) arg;
-		return getSortOrder() - other.getSortOrder();
+	public int compareTo(JobDefinition arg) {
+		return getSortOrder() - arg.getSortOrder();
 	}
 
 	@Override

@@ -83,6 +83,7 @@ public interface BatchScheduler {
 
 	/**
 	 * Demande à tous les jobs en cours de s'arrêter
+	 * @return <code>true</code> si tous les jobs ont pu être arrêtés, <code>false</code> si certains n'ont pas voulu/pu s'arrêter
 	 */
-	void stopAllRunningJobs();
+	boolean stopAllRunningJobs();
 }
