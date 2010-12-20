@@ -231,7 +231,7 @@ public class QueryConstructor {
 			fullQuery.add(query, mustNot);
 			// restriction des I107
 			query = new BooleanQuery();
-			query.add(LuceneEngine.getTermsExact(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON), must);
+			query.add(new TermQuery(new Term(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON)), must);
 			fullQuery.add(query, must);
 		}
 	}
