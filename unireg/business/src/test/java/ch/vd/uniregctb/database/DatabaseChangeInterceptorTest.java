@@ -1,18 +1,13 @@
 package ch.vd.uniregctb.database;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.data.DataEventListener;
-import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.data.MockDataEventService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -42,36 +37,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class DatabaseChangeInterceptorTest extends BusinessTest {
 
-	private static class EventService implements DataEventService {
-
-		public final List<Long> changedTiers = new ArrayList<Long>();
-
-		public void register(DataEventListener listener) {
-			throw new NotImplementedException();
-		}
-
-		public void clear() {
-			changedTiers.clear();
-		}
-
-		public void onTiersChange(long id) {
-			changedTiers.add(id);
-		}
-
-		public void onIndividuChange(long id) {
-		}
-
-		public void onDroitAccessChange(long ppId) {
-		}
-
-		public void onLoadDatabase() {
-		}
-
-		public void onTruncateDatabase() {
-		}
-	}
-
-	private EventService eventService;
+	private MockDataEventService eventService;
 	private DatabaseChangeInterceptor interceptor;
 	private ModificationInterceptor modificationInterceptor;
 
@@ -79,7 +45,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		eventService = new EventService();
+		eventService = new MockDataEventService();
 
 		interceptor = new DatabaseChangeInterceptor();
 		interceptor.setDataEventService(eventService);
