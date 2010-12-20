@@ -3,15 +3,28 @@ package ch.vd.uniregctb.jms;
 import javax.jms.JMSException;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /**
- * Classe qui se comporte exactement comme un {@link org.springframework.jms.listener.DefaultMessageListenerContainer}
- * en offrant la possibilité d'exporter quelques valeurs d'attributs par JMX (et surtout qui loggue les démarrages et les arrêts)
+ * Classe qui se comporte comme un {@link org.springframework.jms.listener.DefaultMessageListenerContainer} en offrant :
+ * <ul>
+ * <li>la possibilité d'exporter quelques valeurs d'attributs par JMX</li>
+ * <li>permet de démarrer et arrêter l'écoute de la queue par JMX</li>
+ * <li>attend que le context Spring soit entièrement (= tous les beans) initialisé pour commencer à écouter la queue</li>
+ * </ul>
  */
-public class JmxAwareDefaultMessageListenerContainer extends DefaultMessageListenerContainer implements MessageListenerContainerJmxInterface {
+public class JmxAwareDefaultMessageListenerContainer extends DefaultMessageListenerContainer implements MessageListenerContainerJmxInterface, ApplicationListener {
 
 	private static final Logger LOGGER = Logger.getLogger(JmxAwareDefaultMessageListenerContainer.class);
+
+	private boolean wantAutoStartup = true;
+
+	public JmxAwareDefaultMessageListenerContainer() {
+		super.setAutoStartup(false); // on va gérer ça à la main lorsque le context est entièrement initialisé
+	}
 
 	@Override
 	public void doStart() throws JMSException {
@@ -42,5 +55,16 @@ public class JmxAwareDefaultMessageListenerContainer extends DefaultMessageListe
 	public int getReceivedMessages() {
 		final MonitorableMessageListener listener = (MonitorableMessageListener) getMessageListener();
 		return listener.getNombreMessagesRecus();
+	}
+
+	@Override
+	public void setAutoStartup(boolean autoStartup) {
+		this.wantAutoStartup = autoStartup;
+	}
+
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (wantAutoStartup && !isRunning() && event instanceof ContextRefreshedEvent) {
+			start();
+		}
 	}
 }
