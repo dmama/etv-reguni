@@ -47,6 +47,7 @@
 		<property name="beans">
 			<map>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivils" value-ref="evtCivilListenerContainer"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventListenerContainer"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueListernerContainer"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExternelistenerContainer"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCedi" value-ref="evenementCediListenerContainer"/>
