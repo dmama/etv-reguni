@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -24,6 +25,8 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -617,6 +620,49 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison(" ");
 		globalTiersSearcher.search(criteria);
+	}
+
+	/**
+	 * [UNIREG-3157] Vérifie que la recherche avec le mode de visualisation limitée fonctionne correctement.
+	 */
+	@Test
+	public void testRechercheVisualisationLimitee()  throws Exception {
+
+		class Ids {
+			Long ramon;
+			Long julien;
+		}
+		final Ids ids = new Ids();
+
+		// Crée deux ctbs, dont un est un débiteur inactif
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique ramon = addNonHabitant("Ramon", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
+				ramon.setDebiteurInactif(true);
+				addForPrincipal(ramon, date(1980,1,1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
+				addForSecondaire(ramon, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				ids.ramon = ramon.getId();
+
+				final PersonnePhysique julien = addNonHabitant("Julien", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
+				addForPrincipal(julien, date(1980,1,1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
+				addForSecondaire(julien, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				ids.julien = julien.getId();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// Effectue une recherche avec un type de visualisation limité : seuls les débiteur actifs doivent être retournés
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);
+		criteria.setNomRaison("Zarrate");
+
+		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+		assertNotNull(list);
+		assertEquals(1, list.size());
+		assertEquals("Julien Zarrate", list.get(0).getNom1());
 	}
 
 	/**
