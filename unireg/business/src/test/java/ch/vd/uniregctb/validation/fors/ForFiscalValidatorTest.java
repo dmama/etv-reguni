@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -78,6 +79,59 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 		}
 		{
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2009, 1, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(0, vr.errorsCount());
+		}
+	}
+
+	@Test
+	public void testCommuneVaudoiseOuHorsCanton() throws Exception {
+		{
+			final Commune commune = MockCommune.Lausanne;
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.errorsCount());
+
+			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomMinuscule(), commune.getNoOFSEtendu(), ffp);
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+		{
+			final Commune commune = MockCommune.Neuchatel;
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.errorsCount());
+
+			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomMinuscule(), commune.getNoOFSEtendu(), ffp);
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+	}
+
+	@Test
+	public void testPaysHS() throws Exception {
+		{
+			final Commune commune = MockCommune.Lausanne;
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.errorsCount());
+
+			final String expectedMsg = String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure", ffp, ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, MockPays.Suisse.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.errorsCount());
+
+			final String expectedMsg = String.format("Le for %s devrait être vaudois ou hors-canton", ffp);
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, MockPays.France.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.errorsCount());

@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -77,9 +78,31 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 								ff, commune.getNomMinuscule(), numeroOfsAutoriteFiscale);
 						results.addError(message);
 					}
+
+					// ajouté le test de la cohérence de la commune avec le type d'autorité fiscale
+					if (commune != null && commune.isVaudoise() && typeAutoriteFiscale != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						results.addError(String.format("Incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d) sur le for %s", typeAutoriteFiscale, commune.getNomMinuscule(), commune.getNoOFSEtendu(), ff));
+					}
+					else if (commune != null && !commune.isVaudoise() && typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						results.addError(String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", typeAutoriteFiscale, commune.getNomMinuscule(), commune.getNoOFSEtendu(), ff));
+					}
 				}
 				catch (InfrastructureException e) {
-					results.addError("Impossible de vérifier la validité de la commune du for", e);
+					results.addError(String.format("Impossible de vérifier la validité de la commune du for %s", ff), e);
+				}
+			}
+			else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
+				try {
+					final Pays pays = serviceInfra.getPays(numeroOfsAutoriteFiscale);
+					if (pays == null) {
+						results.addError(String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure", ff, ff.getNumeroOfsAutoriteFiscale()));
+					}
+					else if (pays.isSuisse()) {
+						results.addError(String.format("Le for %s devrait être vaudois ou hors-canton", ff));
+					}
+				}
+				catch (InfrastructureException e) {
+					results.addError(String.format("Impossible de vérifier la validité du pays du for %s", ff), e);
 				}
 			}
 		}

@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.TestData;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -108,7 +109,7 @@ public class TiersListControllerTest extends WebTest {
 		// Recherche tous les fors y compris les inactifs
 		{
 			HashMap<String, String> params = new HashMap<String, String>();
-			params.put("noOfsFor", "5652");
+			params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFSEtendu()));
 			List<TiersIndexedDataView> list = getTiersList(params);
 			assertEquals(3, list.size());
 		}
@@ -121,7 +122,7 @@ public class TiersListControllerTest extends WebTest {
 
 		// Recherche seulement les fors actifs
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("noOfsFor", "5652");
+		params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFSEtendu()));
 		params.put("forPrincipalActif", "true");
 		List<TiersIndexedDataView> list = getTiersList(params);
 		assertEquals(1, list.size());

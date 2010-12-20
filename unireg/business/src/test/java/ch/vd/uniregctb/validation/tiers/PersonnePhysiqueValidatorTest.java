@@ -223,7 +223,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 		forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 		forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
-		forFiscal.setNumeroOfsAutoriteFiscale(1234);
+		forFiscal.setNumeroOfsAutoriteFiscale(MockPays.Albanie.getNoOFS());
 		hab.addForFiscal(forFiscal);
 		assertEquals(1, validate(hab).errorsCount());
 		assertEquals(0, validate(hab).warningsCount());
