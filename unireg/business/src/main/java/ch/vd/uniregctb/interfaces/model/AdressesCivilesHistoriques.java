@@ -6,9 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -152,37 +150,5 @@ public class AdressesCivilesHistoriques {
 				}
 			}
 		}
-	}
-
-	/**
-	 * @return la première date définie dans l'historique des adresses courriers ou principales, ou <b>lateDate</b> si aucune adresse n'est définie.
-	 */
-	public RegDate getVeryFirstDate() {
-		RegDate first = RegDate.getLateDate();
-		if (principales != null && principales.size() > 0) {
-			Adresse a = principales.get(0);
-			first = RegDateHelper.minimum(first, a.getDateDebut(), NullDateBehavior.EARLIEST);
-		}
-		if (courriers != null && courriers.size() > 0) {
-			Adresse a = courriers.get(0);
-			first = RegDateHelper.minimum(first, a.getDateDebut(), NullDateBehavior.EARLIEST);
-		}
-		return first;
-	}
-
-	/**
-	 * @return la dernière date définie dans l'historique des adresses courriers ou principales, ou <b>earlyDate</b> si aucune adresse n'est définie.
-	 */
-	public RegDate getVeryLastDate() {
-		RegDate last = RegDate.getEarlyDate();
-		if (principales != null && principales.size() > 0) {
-			Adresse a = principales.get(principales.size() - 1);
-			last = RegDateHelper.maximum(last, a.getDateFin(), NullDateBehavior.LATEST);
-		}
-		if (courriers != null && courriers.size() > 0) {
-			Adresse a = courriers.get(courriers.size() - 1);
-			last = RegDateHelper.maximum(last, a.getDateFin(), NullDateBehavior.LATEST);
-		}
-		return last;
 	}
 }

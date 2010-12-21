@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -52,7 +53,15 @@ public class TiersImportControllerTest extends WebTest {
 
 		servicePM.setUp(new DefaultMockServicePM());
 
-		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+			@Override
+			protected void init() {
+				super.init();
+				for (int i = 23; i < 100; ++i) {
+					addColAdm(new MockCollectiviteAdministrative(i, null, "Coll n°" + i, null, null, "Coll n°" + i));
+				}
+			}
+		});
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -75,8 +84,6 @@ public class TiersImportControllerTest extends WebTest {
 				addAdresse(individu3, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
 				addAdresse(individu4, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
 				addAdresse(individu5, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
-
-
 			}
 		});
 
@@ -133,9 +140,9 @@ public class TiersImportControllerTest extends WebTest {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				int nbTiers = tiersDAO.getCount(Tiers.class);
-				assertEquals(24, nbTiers);
+				assertEquals(119, nbTiers);
 				int nbInIndex = globalTiersSearcher.getExactDocCount();
-				assertEquals(21, nbInIndex); // => les individus 325631 et 325740 n'existent pas
+				assertEquals(116, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
 
 				return null;
 			}

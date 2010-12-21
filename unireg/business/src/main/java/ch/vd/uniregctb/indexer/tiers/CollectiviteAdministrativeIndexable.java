@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -36,7 +35,9 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 		catch (InfrastructureException e) {
 			throw new RuntimeException(e);
 		}
-		Assert.notNull(collectiviteCivile);
+		if (collectiviteCivile == null) {
+			throw new IllegalArgumentException("Impossible de récupérer la collectivité administrative avec le numéro " + noColAdm);
+		}
 
 		data.setNom1(collectiviteCivile.getNomComplet1());
 		data.setNomRaison(collectiviteCivile.getNomComplet1());

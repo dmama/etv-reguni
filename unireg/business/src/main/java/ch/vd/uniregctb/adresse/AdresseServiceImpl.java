@@ -1846,8 +1846,11 @@ public class AdresseServiceImpl implements AdresseService {
 			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
 			Assert.notNull(collectiviteCivil);
 
-			adresses.principales.add(collectiviteCivil.getAdresse());
-			adresses.courriers.add(collectiviteCivil.getAdresse());
+			final Adresse adresse = collectiviteCivil.getAdresse();
+			if (adresse != null) {
+				adresses.principales.add(adresse);
+				adresses.courriers.add(adresse);
+			}
 		}
 		catch (InfrastructureException e) {
 			throw new RuntimeException("Erreur dans la récupération des adresses", e);
