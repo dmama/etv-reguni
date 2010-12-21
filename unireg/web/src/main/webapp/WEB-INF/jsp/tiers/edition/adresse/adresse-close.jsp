@@ -5,10 +5,14 @@
 <!-- Debut Adresse -->
 <form:form name="formAddAdresse" id="formAddAdresse">
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
-	<tiles:put name="head"></tiles:put>
-	<tiles:put name="title"></tiles:put>
+
+  	<tiles:put name="title">
+  		<fmt:message key="title.fermeture.adresse">
+  			<fmt:param><unireg:numCTB numero="${command.numCTB}"/></fmt:param>
+  		</fmt:message>
+  	</tiles:put>
+
 	<tiles:put name="body">
-		<div id="adresses" class="adresses">
 		<fieldset>
 			<legend><span><fmt:message key="label.adresse.fermeture" /></span></legend>
 			<table>
@@ -71,18 +75,14 @@
 				</tr>
 			</table>
 		</fieldset>
-	</table>
-<!-- Fin Boutons -->
-<table border="0">
-		<tr>
-			<td width="25%"><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='edit.do?id=' + ${command.numCTB}" /></td>
-			<td width="25%">&nbsp;</td>
-			<td width="25%"><input type="submit" id="fermerAdresse" value="<fmt:message key="label.bouton.mettre.a.jour" />"></td>
-			<td width="25%">&nbsp;</td>
-
-		</tr>
-		<!-- Debut Boutons -->
-	</table>
+		<table border="0">
+			<tr>
+				<td width="25%">&nbsp;</td>
+				<td width="25%"><input type="submit" id="fermerAdresse" value="<fmt:message key="label.bouton.mettre.a.jour" />"></td>
+				<td width="25%">&nbsp;</td>
+				<td width="25%"><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='edit.do?id=' + ${command.numCTB}" /></td>
+			</tr>
+		</table>
 	</tiles:put>
 </tiles:insert>
 
