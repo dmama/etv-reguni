@@ -387,7 +387,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 			b.append(", ended on ").append(job.getLastEnd());
 		}
 		else {
-			b.append(", not yet run");
+			b.append(", never run yet");
 		}
 		return b.toString();
 	}
@@ -437,6 +437,9 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 					final JobDefinition job = jobs.get(target);
 					if (job.isRunning()) {
 						stopJob(target);
+						if (job.isRunning()) {
+							throw new MBeanException(new Exception("Job is still running!"));
+						}
 					}
 					else {
 						throw new MBeanException(new Exception("Job is not running!"));
