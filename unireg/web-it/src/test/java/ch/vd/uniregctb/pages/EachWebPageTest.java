@@ -156,7 +156,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'un rapport
 	@Test
 	public void testTiersEditSituationFamille() throws Exception {
-		assertPage("/fiscal/situation-famille.do?numero=86006202", "");
+		assertPage("/fiscal/situation-famille.do?numero=86006202", "Ajout d'une situation de famille du tiers 860.062.02");
 	}
 
 	@Test

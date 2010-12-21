@@ -2,17 +2,23 @@ package ch.vd.uniregctb.tiers.manager;
 
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleDAO;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -59,10 +65,11 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 		}
 
 		final SituationFamilleView situationFamilleView = new SituationFamilleView();
+		situationFamilleView.setNumeroCtb(numeroCtb);
+
 		if ((contribuable instanceof PersonnePhysique || contribuable instanceof MenageCommun) && SecurityProvider.isGranted(Role.SIT_FAM)
 				&& SecurityProvider.getDroitAcces(contribuable) != null && isSituationFamilleActive(contribuable)) {
 
-			situationFamilleView.setNumeroCtb(numeroCtb);
 			situationFamilleView.setEditable(true);
 			if (contribuable instanceof MenageCommun) {
 				situationFamilleView.setNatureSituationFamille(SITUATION_FAMILLE_MENAGE_COMMUN);

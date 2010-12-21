@@ -1,9 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
+<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head"></tiles:put>
 
-	<tiles:put name="title"></tiles:put>
+  	<tiles:put name="title">
+  		<fmt:message key="title.ajout.situation.famille">
+  			<fmt:param><unireg:numCTB numero="${command.numeroCtb}"/></fmt:param>
+  		</fmt:message>
+  	</tiles:put>
+
 	<tiles:put name="body">
 		<form:form name="formSituationFamille" id="formSituationFamille">
 		<fieldset><legend><span><fmt:message key="label.situation.famille.fiscale" /></span></legend>		
@@ -77,7 +82,7 @@
 					<td width="25%"><fmt:message key="error.situationfamille.creation.interdit" /></td>
 				</c:otherwise>
 			</c:choose>
-			<td width="25%"><input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()"></td>
+			<td width="25%"><input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='edit.do?id=${command.numeroCtb}'"/></td>
 			<td width="25%">&nbsp;</td>
 		</tr>
 	</table>

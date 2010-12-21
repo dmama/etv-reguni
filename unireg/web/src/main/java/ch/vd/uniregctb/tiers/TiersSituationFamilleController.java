@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -74,13 +73,12 @@ public class TiersSituationFamilleController extends AbstractTiersController {
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
 		SituationFamilleView situationFamilleView = (SituationFamilleView) command;
 		checkAccesDossierEnEcriture(situationFamilleView.getNumeroCtb());
 
 		situationFamilleManager.save(situationFamilleView);
 
-		return mav;
+		return new ModelAndView("redirect:edit.do?id=" + situationFamilleView.getNumeroCtb());
 	}
 
 }
