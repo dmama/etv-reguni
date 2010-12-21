@@ -81,6 +81,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="batchScheduler" ref="batchScheduler" />
 		<property name="successView" value="tiersImport.do" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<!-- Gestion des documents -->
