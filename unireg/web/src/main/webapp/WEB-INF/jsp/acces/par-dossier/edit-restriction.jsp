@@ -1,9 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
+<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head"></tiles:put>
 
-	<tiles:put name="title"></tiles:put>
+	<tiles:put name="title">
+		<fmt:message key="title.ajout.droit.acces">
+			<fmt:param><unireg:numCTB numero="${command.numero}"/></fmt:param>
+		</fmt:message>
+	</tiles:put>
+
 	<tiles:put name="fichierAide">
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-dossier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
@@ -58,10 +63,10 @@
 			</td>
 			<td width="25%">
 				<c:if test="${!command.ajoutEffectue}">
-					<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()">
+					<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='restrictions-pp.do?numero=${command.numero}'">
 				</c:if>
 				<c:if test="${command.ajoutEffectue}">
-					<input type="button" id="retour" value="<fmt:message key="label.bouton.retour" />" onclick="top.location.reload(true);">
+					<input type="button" id="retour" value="<fmt:message key="label.bouton.retour" />" onclick="document.location.href='restrictions-pp.do?numero=${command.numero}'">
 				</c:if>
 			</td>
 			<td width="25%">&nbsp;</td>

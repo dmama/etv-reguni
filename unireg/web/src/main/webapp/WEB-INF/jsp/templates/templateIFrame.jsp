@@ -37,6 +37,7 @@
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/dialog.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/autocomplete.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/thickbox.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>
 		<tiles:getAsString name='head' ignore='true'/>

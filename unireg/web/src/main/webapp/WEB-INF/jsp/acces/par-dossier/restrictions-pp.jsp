@@ -23,8 +23,7 @@
 			<table border="0">
 			<tr>
 				<td>
-					<a href="edit-acces-pp.do?numero=${command.dossier.numero}&height=150&width=650&index=&TB_iframe=true&modal=true" 
-					class="add thickbox" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
+					<a href="edit-acces-pp.do?numero=${command.dossier.numero}" class="add" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter"/></a>
 				</td>
 			</tr>
 			</table>
@@ -51,7 +50,7 @@
 					<input type="checkbox" name="lectureSeule" value="True"   
 							<c:if test="${restriction.lectureSeule}">checked </c:if> disabled="disabled" />
 				</display:column>
-				<display:column style="action">
+				<display:column style="white-space:nowrap">
 					<unireg:consulterLog entityNature="DroitAcces" entityId="${restriction.id}"/>
 					<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
 						<c:if test="${!restriction.annule}">
