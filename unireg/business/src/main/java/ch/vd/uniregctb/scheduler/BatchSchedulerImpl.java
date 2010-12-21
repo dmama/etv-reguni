@@ -13,6 +13,7 @@ import javax.management.ReflectionException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -371,7 +372,9 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 
 	private static String buildStatusString(JobDefinition job) {
 		final StringBuilder b = new StringBuilder();
-		b.append(job.getStatut());
+		if (job.getLastStart() != null) {
+			b.append(job.getStatut());
+		}
 		if (job.isRunning()) {
 			b.append(", running since ").append(job.getLastStart());
 			final Integer percentProgression = job.getPercentProgression();
@@ -387,7 +390,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 			b.append(", ended on ").append(job.getLastEnd());
 		}
 		else {
-			b.append(", never run yet");
+			b.append("never run yet");
 		}
 		return b.toString();
 	}
@@ -427,10 +430,14 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	public Object invoke(String actionName, Object[] params, String[] signature) throws MBeanException, ReflectionException {
 		try {
 			if (actionName.startsWith("stop")) {
+				final String msg;
 				final String target = actionName.substring(4);
 				if ("ALL".equals(target)) {
 					if (!stopAllRunningJobs()) {
-						throw new MBeanException(new Exception("Some jobs could not be stopped!"));
+						msg = "Some jobs could not be stopped!";
+					}
+					else {
+						msg = "Any running job is now stopped";
 					}
 				}
 				else {
@@ -438,14 +445,17 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 					if (job.isRunning()) {
 						stopJob(target);
 						if (job.isRunning()) {
-							throw new MBeanException(new Exception("Job is still running!"));
+							msg = "Job is still running!";
+						}
+						else {
+							msg = "Job was stopped successfully";
 						}
 					}
 					else {
-						throw new MBeanException(new Exception("Job is not running!"));
+						msg = "Job is not even running!";
 					}
 				}
-				return null;
+				return msg;
 			}
 			else {
 				throw new NoSuchMethodException(actionName);
@@ -468,21 +478,27 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 			}
 		}
 
-		// on trie la liste pour ne jamais changer l'ordre d'apparition des éléments
-		Collections.sort(shownJobs);
+		// on trie la liste par ordre alphabetique du nom du batch
+		// (car jconsole montre les attributs par ordre alphabétique quel que soit l'ordre d'apparition
+		// dans le tableau fourni ici)
+		Collections.sort(shownJobs, new Comparator<JobDefinition>() {
+			public int compare(JobDefinition o1, JobDefinition o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
 
 		final MBeanAttributeInfo[] attrs = new MBeanAttributeInfo[shownJobs.size()];
 		final MBeanOperationInfo[] operations = new MBeanOperationInfo[shownJobs.size() + 1];
 
 		// opération pour demander l'interruption de tous les jobs en cours
-		operations[0] = new MBeanOperationInfo("stopALL", "Causes interruption of all running jobs", null, "void", MBeanOperationInfo.ACTION);
+		operations[0] = new MBeanOperationInfo("stopALL", "Causes interruption of all running jobs", null, "String", MBeanOperationInfo.ACTION);
 
 		// pour chacun des batches, on expose un attribut virtuel qui expose l'avancement du job
 		// ainsi qu'une méthode pour demander l'interruption du batch
 		for (int i = 0 ; i < attrs.length ; ++ i) {
 			final JobDefinition job = shownJobs.get(i);
 			attrs[i] = new MBeanAttributeInfo(job.getName(), "job", job.getDescription(), true, false, false);
-			operations[i+1] = new MBeanOperationInfo(String.format("stop%s", job.getName()), String.format("Interrupts job %s", job.getName()), null, "void", MBeanOperationInfo.ACTION);
+			operations[i+1] = new MBeanOperationInfo(String.format("stop%s", job.getName()), String.format("Interrupts job %s", job.getName()), null, "String", MBeanOperationInfo.ACTION);
 		}
 
 		return new MBeanInfo(getClass().getName(), "Batch scheduler", attrs, null, operations, null);
