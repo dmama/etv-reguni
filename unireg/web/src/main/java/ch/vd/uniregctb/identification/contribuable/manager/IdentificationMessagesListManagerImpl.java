@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.identification.contribuable.IdentifiantUtilisateur;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
@@ -226,8 +227,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		}
 
 		if(identification.getTraitementUser()!=null){
-			List<String> noms = identCtbService.getNomUtilisateurFromVisaUser(identification.getTraitementUser());
-			identificationMessagesResultView.setTraitementUser(noms.get(1));
+			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(identification.getTraitementUser());
+			identificationMessagesResultView.setTraitementUser(identifiantUtilisateur.getNomComplet());
 		}
 
 		if(identification.getTraitementDate()!=null){

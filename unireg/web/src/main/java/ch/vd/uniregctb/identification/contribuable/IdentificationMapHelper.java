@@ -187,15 +187,15 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		Iterator<String> itUser = listVisaUser.iterator();
 		while (itUser.hasNext()) {
 			String visaUser = itUser.next();
-			List<String> resultatsNoms = identCtbService.getNomUtilisateurFromVisaUser(visaUser);
-			visaUser = resultatsNoms.get(0);
-			String nom = resultatsNoms.get(1);
+			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(visaUser);
+			visaUser = identifiantUtilisateur.getVisa();
+			String nom = identifiantUtilisateur.getNomComplet();
 			if (mapUser.get(visaUser) == null) {
 				mapUser.put(visaUser, nom);
 			}
 
 		}
-		//Ajout du user de traitement automatique
+		//Ajout du user de traitement automatique ignoré dans la requete
 		mapUser.put("Traitement automatique","Traitement automatique");
 		return mapUser;
 	}

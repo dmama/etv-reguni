@@ -952,8 +952,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
-	public List<String> getNomUtilisateurFromVisaUser(String visaUser) {
-		List<String> noms = new ArrayList<String>();
+	public IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser) {
+
 		String nom = visaUser;
 		//user de l'identification automatique
 		if (visaUser.contains("JMS-EvtIdentCtb")) {
@@ -968,9 +968,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				nom = operateur.getPrenom() + " " + operateur.getNom();
 			}
 		}
-		noms.add(visaUser);
-		noms.add(nom);
-		return noms;
+
+		return new IdentifiantUtilisateur(visaUser,nom);
 	}
 
 	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception {

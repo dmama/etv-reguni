@@ -101,10 +101,11 @@ public interface IdentificationContribuableService {
 	/**Retourne le nom d'un utilisateur traitant en fonction de sa nature
 	 *
 	 *
+	 *
 	 * @param visaUser
-	 * @return
+	 * @return  le nom et le visa utilisateur modifié si besoin
 	 */
-	public List<String> getNomUtilisateurFromVisaUser(String visaUser);
+	public IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser);
 
 	/**Retente une identification automatique sur les messages present en base
 	 *
