@@ -97,6 +97,15 @@ public interface IdentificationContribuableService {
 	 */
 	public String getNomCantonFromEmetteurId(String emetteurId) throws InfrastructureException;
 
+
+	/**Retourne le nom d'un utilisateur traitant en fonction de sa nature
+	 *
+	 *
+	 * @param visaUser
+	 * @return
+	 */
+	public List<String> getNomUtilisateurFromVisaUser(String visaUser);
+
 	/**Retente une identification automatique sur les messages present en base
 	 *
 	 * @param message

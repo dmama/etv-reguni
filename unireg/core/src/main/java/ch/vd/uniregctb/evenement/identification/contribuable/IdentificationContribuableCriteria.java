@@ -30,6 +30,8 @@ public class IdentificationContribuableCriteria {
 
 	private RegDate dateNaissance;
 
+	private String traitementUser;
+
 	public String getTypeMessage() {
 		return typeMessage;
 	}
@@ -124,5 +126,13 @@ public class IdentificationContribuableCriteria {
 
 	public void setNAVS11(String NAVS11) {
 		this.NAVS11 = NAVS11;
+	}
+
+	public String getTraitementUser() {
+		return traitementUser;
+	}
+
+	public void setTraitementUser(String traitementUser) {
+		this.traitementUser = traitementUser;
 	}
 }

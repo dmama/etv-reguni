@@ -66,7 +66,7 @@
 				<display:column sortable ="true" titleKey="label.date.message" sortName="demande.date">
 						<fmt:formatDate value="${message.dateMessage}" pattern="dd.MM.yyyy"/>
 				</display:column>
-				<display:column titleKey="label.etat.message">
+				<display:column titleKey="label.etat.message" style="nowrap">
 						<fmt:message key="option.etat.message.${message.etatMessage}"  />
 				</display:column>
 				<display:column sortable ="true" titleKey="label.nom" sortName="demande.personne.nom">
@@ -91,6 +91,17 @@
 				<display:column sortable ="true" titleKey="label.navs13" sortName="demande.personne.NAVS13">
 						<c:out value="${message.navs13}" />
 				</display:column>
+				<c:if test="${message.traitementUser != null }">
+					<display:column sortable ="true" titleKey="label.identification.traitement.user">
+						<c:out value="${message.traitementUser}"  />
+					</display:column>
+				</c:if>
+			    <c:if test="${message.traitementDate != null }">
+					<display:column sortable ="true" titleKey="label.identification.traitement.date">
+							<fmt:formatDate value="${message.traitementDate}" pattern="dd.MM.yyyy"/>
+					</display:column>
+				</c:if>
+
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO">
 				<display:column>
 				 <c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||

@@ -156,6 +156,7 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="messageHandler" ref="identCtbMessageHandler" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<aop:scoped-proxy/>
 	</bean>
 

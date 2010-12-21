@@ -224,6 +224,15 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		if (identification.getUtilisateurTraitant() != null) {
 			identificationMessagesResultView.setUtilisateurTraitant(identification.getUtilisateurTraitant());
 		}
+
+		if(identification.getTraitementUser()!=null){
+			List<String> noms = identCtbService.getNomUtilisateurFromVisaUser(identification.getTraitementUser());
+			identificationMessagesResultView.setTraitementUser(noms.get(1));
+		}
+
+		if(identification.getTraitementDate()!=null){
+			identificationMessagesResultView.setTraitementDate(identification.getTraitementDate());
+		}
 		identificationMessagesResultView.setEtatMessage(identification.getEtat());
 		if (identification.getDemande() != null) {
 			identificationMessagesResultView.setDateMessage(identification.getDemande().getDate());

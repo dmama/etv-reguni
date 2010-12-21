@@ -12,18 +12,22 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.ApplicationConfig;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
 public class IdentificationMapHelper extends CommonMapHelper {
 
 	private IdentCtbDAO identCtbDAO;
 
 	private IdentificationContribuableService identCtbService;
+
 
 	private Map<PrioriteEmetteur, String> mapPrioriteEmetteur;
 
@@ -32,6 +36,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	private Map<ErreurMessage, String> mapErreurMessage;
 
 	private Map<String, String> mapEmetteur;
+
+	private Map<String, String> mapUser;
 
 	private Map<Etat, String> mapEtatMessage;
 
@@ -159,6 +165,39 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		}
 
 		return mapTypeMessage;
+	}
+
+	/**
+	 * Initialise la map des utilisateurs traitants
+	 *
+	 * @return une map
+	 */
+
+	public Map<String, String> initMapUser() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		mapUser = new HashMap<String, String>();
+		final List<String> listVisaUser = (List<String>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return identCtbDAO.getTraitementUser();
+			}
+		});
+
+		Iterator<String> itUser = listVisaUser.iterator();
+		while (itUser.hasNext()) {
+			String visaUser = itUser.next();
+			List<String> resultatsNoms = identCtbService.getNomUtilisateurFromVisaUser(visaUser);
+			visaUser = resultatsNoms.get(0);
+			String nom = resultatsNoms.get(1);
+			if (mapUser.get(visaUser) == null) {
+				mapUser.put(visaUser, nom);
+			}
+
+		}
+		//Ajout du user de traitement automatique
+		mapUser.put("Traitement automatique","Traitement automatique");
+		return mapUser;
 	}
 
 	/**

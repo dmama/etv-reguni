@@ -20,6 +20,8 @@ public class IdentificationMessagesResultView implements Annulable{
 	private RegDate dateNaissance;
 	private String navs13;
 	private String navs11;
+	private String traitementUser;
+	private Date traitementDate;
 	private boolean annule;
 	private long numeroContribuable;
 
@@ -110,5 +112,21 @@ public class IdentificationMessagesResultView implements Annulable{
 
 	public void setNavs11(String navs11) {
 		this.navs11 = navs11;
+	}
+
+	public String getTraitementUser() {
+		return traitementUser;
+	}
+
+	public void setTraitementUser(String traitementUser) {
+		this.traitementUser = traitementUser;
+	}
+
+	public Date getTraitementDate() {
+		return traitementDate;
+	}
+
+	public void setTraitementDate(Date traitementDate) {
+		this.traitementDate = traitementDate;
 	}
 }

@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import java.util.Date;
+
 import org.hibernate.annotations.Type;
 
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -150,6 +152,12 @@ public class IdentificationContribuable extends HibernateEntity {
 
 	private String utilisateurTraitant;
 
+
+	private String traitementUser;
+
+
+	private Date traitementDate;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
@@ -220,5 +228,21 @@ public class IdentificationContribuable extends HibernateEntity {
 		this.utilisateurTraitant = utilisateurTraitant;
 	}
 
+	 @Column(name = "TRAITEMENT_USER", length = 65,nullable = true)
+	public String getTraitementUser() {
+		return traitementUser;
+	}
 
+	public void setTraitementUser(String traitementUser) {
+		this.traitementUser = traitementUser;
+	}
+
+	@Column(name = "TRAITEMENT_DATE")
+	public Date getTraitementDate() {
+		return traitementDate;
+	}
+
+	public void setTraitementDate(Date traitementDate) {
+		this.traitementDate = traitementDate;
+	}
 }

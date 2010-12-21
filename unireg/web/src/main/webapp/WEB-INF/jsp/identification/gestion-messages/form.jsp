@@ -141,8 +141,15 @@
 								<form:options items="${etatsMessage}" />
 							</form:select>
 						</td>
-						<td width="25%">&nbsp;</td>
-						<td width="25%">&nbsp;</td>
+						<td width="25%">
+							<fmt:message key="label.identification.traitement.user" />&nbsp;:
+						</td>
+						<td width="25%">
+							<form:select path="traitementUser">
+								<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+								<form:options items="${traitementUsers}" />
+							</form:select>
+						</td>
 					</tr>	
 			</c:otherwise>
 		</c:choose>

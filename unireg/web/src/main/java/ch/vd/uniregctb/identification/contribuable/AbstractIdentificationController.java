@@ -84,7 +84,7 @@ public  class AbstractIdentificationController extends AbstractSimpleFormControl
 			data.put(TYPE_MESSAGE_MAP_NAME, identificationMapHelper.initMapTypeMessage());
 			data.put(PRIORITE_EMETTEUR_MAP_NAME, identificationMapHelper.initMapPrioriteEmetteur());
 			data.put(ERREUR_MESSAGE_MAP_NAME, identificationMapHelper.initErreurMessage());
-
+			data.put(TRAITEMENT_USER_MAP_NAME,identificationMapHelper.initMapUser());
 			return data;
 		}
 		protected boolean areUsed(String parametreEtat,String parametrePeriode,String parametreTypeMessage ){
@@ -141,6 +141,11 @@ public  class AbstractIdentificationController extends AbstractSimpleFormControl
 		 * Le nom de l'attribut utilise pour la liste des priorités
 		 */
 		public static final String PRIORITE_EMETTEUR_MAP_NAME = "priorites";
+
+	/**
+		 * Le nom de l'attribut utilise pour la liste des priorités
+		 */
+		public static final String TRAITEMENT_USER_MAP_NAME = "traitementUsers";
 
 
 		/**

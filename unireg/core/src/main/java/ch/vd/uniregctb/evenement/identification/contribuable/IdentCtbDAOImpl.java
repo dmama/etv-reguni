@@ -63,7 +63,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			queryOrder = queryOrder + " desc";
 		}
 
-		final String query = " select identificationContribuable from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='"+typeDemande.name()+"'" + queryWhere + queryOrder;
+		final String query = " select identificationContribuable from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='" + typeDemande.name() + "'" + queryWhere + queryOrder;
 
 		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
 		final int maxResult = paramPagination.getTaillePage();
@@ -75,10 +75,10 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 				Object[] values = criteria.toArray();
 				if (values != null) {
 					for (int i = 0; i < values.length; i++) {
-						if(values[i] instanceof Date){
-							queryObject.setTimestamp(i, (Date)values[i]);
+						if (values[i] instanceof Date) {
+							queryObject.setTimestamp(i, (Date) values[i]);
 						}
-						else{
+						else {
 							queryObject.setParameter(i, values[i]);
 						}
 
@@ -109,7 +109,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 
 
-		String query = " select count(*) from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='"+typeDemande.name()+"'" + queryWhere;
+		String query = " select count(*) from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='" + typeDemande.name() + "'" + queryWhere;
 		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
 		return count;
 	}
@@ -133,6 +133,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	@SuppressWarnings("unchecked")
 	public List<String> getEmetteursId() {
 		String query = " select distinct identificationContribuable.demande.emetteurId from IdentificationContribuable identificationContribuable";
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<String> getTraitementUser() {
+		String query = " select distinct identificationContribuable.traitementUser " +
+				"from IdentificationContribuable identificationContribuable where identificationContribuable.traitementUser is not null " +
+				"and identificationContribuable.traitementUser not like '%JMS-EvtIdentCtb%' ";
 		return getHibernateTemplate().find(query);
 	}
 
@@ -162,6 +169,20 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		if ((periodeFiscale != null) && (periodeFiscale.intValue() != -1)) {
 			queryWhere += " and identificationContribuable.demande.periodeFiscale = ? ";
 			criteria.add(periodeFiscale);
+		}
+
+		String visaUser = identificationContribuableCriteria.getTraitementUser();
+		if ((visaUser != null) && (!TOUS.equals(visaUser))) {
+			if("Traitement automatique".equals(visaUser)){
+				visaUser = "%JMS-EvtIdentCtb%";
+				queryWhere += " and identificationContribuable.traitementUser like ? ";
+
+			}
+			else{
+				queryWhere += " and identificationContribuable.traitementUser = ? ";
+			}
+
+			criteria.add(visaUser);
 		}
 
 		String emetteurId = identificationContribuableCriteria.getEmetteurId();
@@ -200,10 +221,10 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			Calendar calendar = Calendar.getInstance();
 			// Initialisé à la date de fin.
 			calendar.setTime(dateMessageFin);
-			calendar.add(Calendar.HOUR,23);
-			calendar.add(Calendar.MINUTE,59);
+			calendar.add(Calendar.HOUR, 23);
+			calendar.add(Calendar.MINUTE, 59);
 			dateMessageFin = calendar.getTime();
-			
+
 			criteria.add(dateMessageFin);
 		}
 

@@ -18,11 +18,13 @@ import org.springframework.util.Assert;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdressesFiscales;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
@@ -44,6 +46,7 @@ import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -67,10 +70,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private AdresseService adresseService;
 	private ServiceInfrastructureService infraService;
 	private IdentificationContribuableMessageHandler messageHandler;
-		private PlatformTransactionManager transactionManager;
+	private PlatformTransactionManager transactionManager;
 	private static String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
+	private ServiceSecuriteService serviceSecuriteService;
 
-		public PlatformTransactionManager getTransactionManager() {
+	public PlatformTransactionManager getTransactionManager() {
 		return transactionManager;
 	}
 
@@ -104,6 +108,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	public void setMessageHandler(IdentificationContribuableMessageHandler handler) {
 		this.messageHandler = handler;
+	}
+
+	public void setServiceSecuriteService(ServiceSecuriteService serviceSecuriteService) {
+		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
 	@SuppressWarnings({
@@ -225,6 +233,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		message.setNbContribuablesTrouves(1);
 		message.setReponse(reponse);
 		message.setEtat(etat);
+		message.setTraitementDate(DateHelper.getCurrentDate());
+		String user = AuthenticationHelper.getCurrentPrincipal();
+		message.setTraitementUser(user);
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat
@@ -370,6 +381,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		message.setNbContribuablesTrouves(0);
 		message.setReponse(reponse);
 		message.setEtat(etat);
+		message.setTraitementDate(DateHelper.getCurrentDate());
+		String user = AuthenticationHelper.getCurrentPrincipal();
+		message.setTraitementUser(user);
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat + "]. Aucun contribuable trouvé.");
@@ -938,6 +952,27 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
+	public List<String> getNomUtilisateurFromVisaUser(String visaUser) {
+		List<String> noms = new ArrayList<String>();
+		String nom = visaUser;
+		//user de l'identification automatique
+		if (visaUser.contains("JMS-EvtIdentCtb")) {
+			visaUser = "Traitement automatique";
+			nom = visaUser;
+
+		}
+		else {
+			Operateur operateur = serviceSecuriteService.getOperateur(visaUser);
+
+			if (operateur != null) {
+				nom = operateur.getPrenom() + " " + operateur.getNom();
+			}
+		}
+		noms.add(visaUser);
+		noms.add(nom);
+		return noms;
+	}
+
 	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception {
 		// Ensuite : effectuer l'identification
 
@@ -964,7 +999,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	public IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this,identCtbDAO,transactionManager);
-		return processor.run(dateTraitement,nbThreads,status);
+		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this, identCtbDAO, transactionManager);
+		return processor.run(dateTraitement, nbThreads, status);
 	}
 }
