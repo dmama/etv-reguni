@@ -356,8 +356,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			modifInterceptor.setCompleteOnly(true); // pour éviter d'écraser les dates de création/modification originales
 			try {
 
-				BatchTransactionTemplate<Long, MigrationResults> template =
-						new BatchTransactionTemplate<Long, MigrationResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+				final BatchTransactionTemplate<Long, MigrationResults> template = new BatchTransactionTemplate<Long, MigrationResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
 				template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, MigrationResults>() {
 
 					@Override
@@ -387,7 +386,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		}
 	}
 
-	private void migrateQuittancesLR(List<Long> ids) throws XmlException {
+	private void migrateQuittancesLR(List<Long> ids) throws XmlException, EvenementExterneException {
 
 		for (Long id : ids) {
 			final QuittanceLR quittance = (QuittanceLR) evenementExterneDAO.get(id);

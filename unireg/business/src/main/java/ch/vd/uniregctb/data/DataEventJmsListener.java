@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.data;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -14,6 +15,7 @@ import ch.vd.fiscalite.registre.databaseEvent.DataType;
 import ch.vd.fiscalite.registre.databaseEvent.DataType.Enum;
 import ch.vd.fiscalite.registre.databaseEvent.DatabaseLoadEventDocument;
 import ch.vd.fiscalite.registre.databaseEvent.DatabaseTruncateEventDocument;
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -46,41 +48,43 @@ public class DataEventJmsListener extends EsbMessageListener implements Monitora
 		final XmlObject doc = XmlObject.Factory.parse(msg.getBodyAsString());
 
 		// Valide le bousin
-		XmlOptions validateOptions = new XmlOptions();
-		ArrayList<XmlError> errorList = new ArrayList<XmlError>();
+		final XmlOptions validateOptions = new XmlOptions();
+		final List<XmlError> errorList = new ArrayList<XmlError>();
 		validateOptions.setErrorListener(errorList);
 		if (!doc.validate(validateOptions)) {
-			StringBuilder builder = new StringBuilder();
+			final StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
 				builder.append("\n");
 				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
 				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
 			}
-			throw new RuntimeException(builder.toString());
+			getEsbTemplate().sendError(msg, builder.toString(), null, ErrorType.TECHNICAL, "");
 		}
+		else {
 
-		// Handle le message
-		AuthenticationHelper.pushPrincipal("JMS-DbEvent(" + msg.getMessageId() + ")");
-		try {
+			// Traite le message
+			AuthenticationHelper.pushPrincipal("JMS-DbEvent(" + msg.getMessageId() + ")");
+			try {
 
-			if (doc instanceof DataChangeEventDocument) {
-				onDataChange((DataChangeEventDocument) doc);
+				if (doc instanceof DataChangeEventDocument) {
+					onDataChange((DataChangeEventDocument) doc);
+				}
+				else if (doc instanceof DatabaseLoadEventDocument) {
+					onDatabaseLoad();
+				}
+				else if (doc instanceof DatabaseTruncateEventDocument) {
+					onDatabaseTruncate();
+				}
+				else {
+					LOGGER.error("Type de message inconnu : " + doc.getClass().getName());
+				}
 			}
-			else if (doc instanceof DatabaseLoadEventDocument) {
-				onDatabaseLoad();
+			catch (Exception e) {
+				LOGGER.error("Erreur lors de la réception du message n°" + msg.getMessageId(), e);
 			}
-			else if (doc instanceof DatabaseTruncateEventDocument) {
-				onDatabaseTruncate();
+			finally {
+				AuthenticationHelper.popPrincipal();
 			}
-			else {
-				LOGGER.error("Type de message inconnu : " + doc.getClass().getName());
-			}
-		}
-		catch (Exception e) {
-			LOGGER.error("Erreur lors de la réception du message n°" + msg.getMessageId(), e);
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
 		}
 	}
 

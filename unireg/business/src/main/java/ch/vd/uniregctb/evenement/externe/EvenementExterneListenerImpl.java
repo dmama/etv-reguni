@@ -17,6 +17,7 @@ import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -63,6 +64,15 @@ public class EvenementExterneListenerImpl extends EsbMessageListener implements 
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
+		catch (XmlException e) {
+			// problème de validation de l'XML reçu
+			LOGGER.error(e.getMessage(), e);
+			getEsbTemplate().sendError(esbMessage, e.getMessage(), e, ErrorType.TECHNICAL, "");
+		}
+		catch (EvenementExterneException e) {
+			LOGGER.error(e.getMessage(), e);
+			getEsbTemplate().sendError(esbMessage, e.getMessage(), e, ErrorType.BUSINESS, "");
+		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
 			throw e;
@@ -80,23 +90,22 @@ public class EvenementExterneListenerImpl extends EsbMessageListener implements 
 	 * @param businessId l'identifiant métier du message
 	 * @throws Exception en cas d'erreur
 	 */
-	protected void onMessage(String message, String businessId) throws Exception {
+	protected void onMessage(String message, String businessId) throws XmlException, EvenementExterneException {
 
 		final EvenementExterne event = string2event(message, businessId);
-		if(event!=null){
+		if (event != null) {
 			handler.onEvent(event);
 		}
 		else{
 			LOGGER.info("Message ignoré: Evenement de type LC n°" + businessId);
 		}
-
 	}
 
-	public static EvenementExterne string2event(String message, String businessId) throws XmlException {
+	protected static EvenementExterne string2event(String message, String businessId) throws XmlException, EvenementExterneException {
 
 		final XmlObject evt = XmlObject.Factory.parse(message);
 		if (evt == null) {
-			throw new RuntimeException("Unexcepted error");
+			throw new RuntimeException("Unexpected error");
 		}
 
 		// Valide le message
@@ -121,7 +130,7 @@ public class EvenementExterneListenerImpl extends EsbMessageListener implements 
 			final EvtQuittanceListeDocument.EvtQuittanceListe evtQuittanceListe = documentEvenement.getEvtQuittanceListe();
 			if (isEvenementLR(evtQuittanceListe)) {
 
-				QuittanceLR q = new QuittanceLR();
+				final QuittanceLR q = new QuittanceLR();
 				q.setMessage(message);
 				q.setBusinessId(businessId);
 				q.setDateEvenement(cal2date(evtQuittanceListe.getTimestampEvtQuittance()));
@@ -141,14 +150,14 @@ public class EvenementExterneListenerImpl extends EsbMessageListener implements 
 			}
 		}
 		else {
-			throw new IllegalArgumentException("Type d'événement inconnu = " + evt.getClass());
+			throw new EvenementExterneException("Type d'événement inconnu = " + evt.getClass());
 		}
 
 		return event;
 	}
 
 	private static boolean isEvenementLR(EvtQuittanceListeDocument.EvtQuittanceListe evtQuittanceListe) {
-		ListeType.Enum listeType = evtQuittanceListe.getIdentificationListe().getTypeListe();
+		final ListeType.Enum listeType = evtQuittanceListe.getIdentificationListe().getTypeListe();
 		return ListeType.LR.equals(listeType);
 	}
 

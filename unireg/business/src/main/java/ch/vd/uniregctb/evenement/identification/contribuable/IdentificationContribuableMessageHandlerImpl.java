@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageListener;
@@ -71,39 +73,41 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		}
 
 		// Parse le message sous forme XML
-		IdentificationCTBDocument doc = IdentificationCTBDocument.Factory.parse(msg.getBodyAsString());
+		final IdentificationCTBDocument doc = IdentificationCTBDocument.Factory.parse(msg.getBodyAsString());
 
 		// Valide le bousin
-		XmlOptions validateOptions = new XmlOptions();
-		ArrayList<XmlError> errorList = new ArrayList<XmlError>();
+		final XmlOptions validateOptions = new XmlOptions();
+		final List<XmlError> errorList = new ArrayList<XmlError>();
 		validateOptions.setErrorListener(errorList);
 		if (!doc.validate(validateOptions)) {
-			StringBuilder builder = new StringBuilder();
+			final StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
 				builder.append("\n");
 				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
 				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
 			}
-			throw new RuntimeException(builder.toString());
+			getEsbTemplate().sendError(msg, builder.toString(), null, ErrorType.TECHNICAL, "");
 		}
+		else {
 
-		// Handle le message
-		final IdentificationContribuable message = XmlEntityAdapter.xml2entity(doc.getIdentificationCTB());
-		final EsbHeader header = new EsbHeader();
-		header.setBusinessUser(msg.getBusinessUser());
-		header.setBusinessId(msg.getBusinessId());
-		header.setReplyTo(msg.getServiceReplyTo());
-		message.setHeader(header);
+			// Traitement du message
+			final IdentificationContribuable message = XmlEntityAdapter.xml2entity(doc.getIdentificationCTB());
+			final EsbHeader header = new EsbHeader();
+			header.setBusinessUser(msg.getBusinessUser());
+			header.setBusinessId(msg.getBusinessId());
+			header.setReplyTo(msg.getServiceReplyTo());
+			message.setHeader(header);
 
-		Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
+			Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
 
-		AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ")");
-		try {
-			demandeHandler.handleDemande(message);
-			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'authentification
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
+			AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ")");
+			try {
+				demandeHandler.handleDemande(message);
+				hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'authentification
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
 		}
 	}
 
