@@ -58,7 +58,10 @@ public class DataEventJmsListener extends EsbMessageListener implements Monitora
 				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
 				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
 			}
-			getEsbTemplate().sendError(msg, builder.toString(), null, ErrorType.TECHNICAL, "");
+
+			final String errorMsg = builder.toString();
+			LOGGER.error(errorMsg);
+			getEsbTemplate().sendError(msg, errorMsg, null, ErrorType.TECHNICAL, "");
 		}
 		else {
 

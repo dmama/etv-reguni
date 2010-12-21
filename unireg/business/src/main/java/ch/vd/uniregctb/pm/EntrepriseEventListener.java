@@ -61,7 +61,10 @@ public class EntrepriseEventListener extends EsbMessageListener implements Monit
 				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
 				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
 			}
-			getEsbTemplate().sendError(msg, builder.toString(), null, ErrorType.TECHNICAL, "");
+
+			final String errorMessage = builder.toString();
+			LOGGER.error(errorMessage);
+			getEsbTemplate().sendError(msg, errorMessage, null, ErrorType.TECHNICAL, "");
 		}
 		else {
 
