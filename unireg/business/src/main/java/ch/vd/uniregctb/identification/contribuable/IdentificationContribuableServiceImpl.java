@@ -233,7 +233,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		message.setNbContribuablesTrouves(1);
 		message.setReponse(reponse);
 		message.setEtat(etat);
-		message.setTraitementDate(DateHelper.getCurrentDate());
+		message.setDateTraitement(DateHelper.getCurrentDate());
 		String user = AuthenticationHelper.getCurrentPrincipal();
 		message.setTraitementUser(user);
 
@@ -381,7 +381,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		message.setNbContribuablesTrouves(0);
 		message.setReponse(reponse);
 		message.setEtat(etat);
-		message.setTraitementDate(DateHelper.getCurrentDate());
+		message.setDateTraitement(DateHelper.getCurrentDate());
 		String user = AuthenticationHelper.getCurrentPrincipal();
 		message.setTraitementUser(user);
 

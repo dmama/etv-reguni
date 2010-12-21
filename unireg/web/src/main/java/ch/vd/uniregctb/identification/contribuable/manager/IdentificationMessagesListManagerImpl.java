@@ -231,8 +231,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 			identificationMessagesResultView.setTraitementUser(identifiantUtilisateur.getNomComplet());
 		}
 
-		if(identification.getTraitementDate()!=null){
-			identificationMessagesResultView.setTraitementDate(identification.getTraitementDate());
+		if(identification.getDateTraitement()!=null){
+			identificationMessagesResultView.setTraitementDate(identification.getDateTraitement());
 		}
 		identificationMessagesResultView.setEtatMessage(identification.getEtat());
 		if (identification.getDemande() != null) {

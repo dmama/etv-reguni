@@ -156,7 +156,7 @@ public class IdentificationContribuable extends HibernateEntity {
 	private String traitementUser;
 
 
-	private Date traitementDate;
+	private Date dateTraitement;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -237,12 +237,12 @@ public class IdentificationContribuable extends HibernateEntity {
 		this.traitementUser = traitementUser;
 	}
 
-	@Column(name = "TRAITEMENT_DATE")
-	public Date getTraitementDate() {
-		return traitementDate;
+	@Column(name = "DATE_TRAITEMENT")
+	public Date getDateTraitement() {
+		return dateTraitement;
 	}
 
-	public void setTraitementDate(Date traitementDate) {
-		this.traitementDate = traitementDate;
+	public void setDateTraitement(Date dateTraitement) {
+		this.dateTraitement = dateTraitement;
 	}
 }
