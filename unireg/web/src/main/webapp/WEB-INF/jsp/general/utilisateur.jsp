@@ -10,6 +10,7 @@
 <fieldset class="information">
 	<legend><span><fmt:message key="${titleKey}" /></span></legend>
 	<table CELLSPACING=0 CELLPADDING=5>
+		<unireg:nextRowClass reset="0"/>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.visa.operateur" />&nbsp;:</td>
 			<td width="75%">${utilisateur.visaOperateur}</td>
