@@ -6,7 +6,8 @@ public class ModeleDocumentView {
 	
 	private Long idPeriode;
 	private Long idModele;
-	
+	private Integer anneePeriodeFiscale;
+
 	private TypeDocument typeDocument;
 
 	public Long getIdPeriode() {
@@ -32,7 +33,12 @@ public class ModeleDocumentView {
 	public void setTypeDocument(TypeDocument typeDocument) {
 		this.typeDocument = typeDocument;
 	}
-	
-	
 
+	public Integer getAnneePeriodeFiscale() {
+		return anneePeriodeFiscale;
+	}
+
+	public void setAnneePeriodeFiscale(Integer anneePeriodeFiscale) {
+		this.anneePeriodeFiscale = anneePeriodeFiscale;
+	}
 }

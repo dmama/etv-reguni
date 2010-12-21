@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.param;
 
-import static ch.vd.uniregctb.param.Commun.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,6 +9,12 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
+
+import static ch.vd.uniregctb.param.Commun.getFeuilleIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
+import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
 
 public class ParamModeleFeuilleDocumentEditController extends AbstractSimpleFormController {
 
@@ -32,11 +36,7 @@ public class ParamModeleFeuilleDocumentEditController extends AbstractSimpleForm
 		verifieLesDroits();
 		ModeleFeuilleDocumentView mfdv = (ModeleFeuilleDocumentView) command;
 		manager.saveModeleFeuilleDocumentViewEdit(mfdv);
-		return getModelAndViewToPeriode(
-				getPeriodeIdFromRequest(request), 
-				getModeleIdFromRequest(request),
-				true
-		);
+		return getModelAndViewToPeriode(getPeriodeIdFromRequest(request), getModeleIdFromRequest(request));
 	}
 
 

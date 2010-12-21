@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.param;
 
-import java.util.HashMap;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -79,49 +77,14 @@ class Commun {
 		return paramValue;
 	}
 
-	static ModelAndView getModelAndViewToPeriode (Long idPeriode, boolean redirectToParentWindow) {
-		if (redirectToParentWindow) {
-			HashMap<String, Object> model = new HashMap<String, Object>(1);
-			model.put(PARAMETER_PERIODE_ID, idPeriode);
-			return new ModelAndView(
-					"param/refresh-parent-periode",
-					model
-				);
-		} else {
-			return new ModelAndView(
-				new RedirectView(
-					String.format(
-						"periode.do?%s=%s",
-						PARAMETER_PERIODE_ID,
-						idPeriode
-					)
-				)
-			);
-		}
+	static ModelAndView getModelAndViewToPeriode(Long idPeriode) {
+		final String url = String.format("periode.do?%s=%s", PARAMETER_PERIODE_ID, idPeriode);
+		return new ModelAndView(new RedirectView(url));
 	}
 
-	static ModelAndView getModelAndViewToPeriode (Long periodeId, Long modeleId, boolean redirectToParentWindow) {
-		if (redirectToParentWindow) {
-			HashMap<String, Object> model = new HashMap<String, Object>(2);
-			model.put(PARAMETER_PERIODE_ID, periodeId);
-			model.put(PARAMETER_MODELE_ID, modeleId);
-			return new ModelAndView(
-					"param/refresh-parent-periode",
-					model
-				);
-		} else {
-			return new ModelAndView(
-					new RedirectView(
-						String.format(
-							"periode.do?%s=%s&%s=%s",
-							PARAMETER_PERIODE_ID,
-							periodeId,
-							PARAMETER_MODELE_ID,
-							modeleId
-						)
-					)
-				);
-		}
+	static ModelAndView getModelAndViewToPeriode(Long periodeId, Long modeleId) {
+		final String url = String.format("periode.do?%s=%s&%s=%s", PARAMETER_PERIODE_ID, periodeId, PARAMETER_MODELE_ID, modeleId);
+		return new ModelAndView(new RedirectView(url));
 	}
 
 	static ModelAndView getModelAndViewToPeriode () {

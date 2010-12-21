@@ -1,16 +1,10 @@
 package ch.vd.uniregctb.param;
 
-import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
-import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
-import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
-import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,6 +12,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
+
+import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
+import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
 
 
 public class ParamModeleDocumentSupprController extends AbstractController {
@@ -37,7 +36,7 @@ public class ParamModeleDocumentSupprController extends AbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		verifieLesDroits();
 		
-		ModelAndView mav = getModelAndViewToPeriode(getPeriodeIdFromRequest(request), false);
+		ModelAndView mav = getModelAndViewToPeriode(getPeriodeIdFromRequest(request));
 		
 		try {
 			manager.deleteModeleDocument(getModeleIdFromRequest(request));

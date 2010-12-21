@@ -3,6 +3,22 @@
 <table>
 	<tr>
 		<th>
+			<fmt:message key="title.param.periode.fiscale"/>
+		</th>
+		<td>
+			<c:out value="${command.periodeAnnee}"/>
+		<td>
+	</tr>
+	<tr>
+		<th>
+			<fmt:message key="label.param.modele"/>
+		</th>
+		<td>
+			<fmt:message key="option.type.document.${command.modeleDocumentTypeDocument}" />
+		<td>
+	</tr>
+	<tr>
+		<th>
 			<fmt:message key="title.param.num.form"/>
 		</th>
 		<td>

@@ -92,10 +92,7 @@
 			<fmt:message key="label.param.periode.arg" var="titleParametres">
 				<fmt:param value="${periodeSelectionnee.annee}" />
 			</fmt:message> 
-			<a 	href="parametres-pf-edit.do?pf=${periodeSelectionnee.id}&height=200&width=800&TB_iframe=true&modal=true" 
-				class="edit thickbox" 
-				title="${titleParametres}">&nbsp;<fmt:message key="label.param.edit"/>
-			&nbsp;</a>	
+			<a href="parametres-pf-edit.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}">&nbsp;<fmt:message key="label.param.edit"/>&nbsp;</a>
 		<table>
 			<tr>
 				<th></th>
@@ -181,9 +178,7 @@
 			</div>
 
 		<div class="button-add">
-			<a href="modele-add.do?pf=${periodeSelectionnee.id}&TB_iframe=true&modal=true" 
-				class="add thickbox" 
-				title="${titleParametres}">&nbsp;<fmt:message key="label.param.add"/></a>
+			<a href="modele-add.do?pf=${periodeSelectionnee.id}" class="add" title="${titleParametres}">&nbsp;<fmt:message key="label.param.add"/></a>
 		</div>
 		<table>
 			<tr>
@@ -217,9 +212,8 @@
 						<fmt:param value="${periodeSelectionnee.annee}" />
 						<fmt:param value="${libTypeDocument}" />
 				</fmt:message>
-				<a href="feuille-add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&TB_iframe=true&modal=true" 
-					class="add thickbox"
-					title="${periodeEtModele}">&nbsp;<fmt:message key="label.param.add"/></a></td>
+				<a href="feuille-add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}" class="add" title="${periodeEtModele}">&nbsp;<fmt:message key="label.param.add"/></a>
+				</td>
 				<td width="25%">&nbsp;</td>
 				<td width="25%">&nbsp;</td>
 				<td width="25%">&nbsp;</td>
@@ -245,8 +239,7 @@
 						</c:if>&nbsp; 
 					</td>
 					<td class="colonneFeuilleAction" class="colonneAction">
-						<unireg:raccourciModifier link="feuille-edit.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}&TB_iframe=true&modal=true"
-												  tooltip="${periodeEtModele}" thickbox="true"/>
+						<unireg:raccourciModifier link="feuille-edit.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}" tooltip="${periodeEtModele}"/>
 						<unireg:raccourciAnnuler link="feuille-suppr.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}"/>
 					</td>
 				</tr>

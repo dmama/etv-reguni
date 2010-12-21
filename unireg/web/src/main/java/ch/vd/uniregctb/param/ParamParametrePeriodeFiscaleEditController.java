@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.param;
 
-import static ch.vd.uniregctb.param.Commun.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,6 +9,10 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView;
+
+import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
+import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
 
 public class ParamParametrePeriodeFiscaleEditController extends AbstractSimpleFormController {
 
@@ -32,10 +34,11 @@ public class ParamParametrePeriodeFiscaleEditController extends AbstractSimpleFo
 		ParametrePeriodeFiscaleView ppfv = (ParametrePeriodeFiscaleView) command;
 		manager.saveParametrePeriodeFiscaleView(ppfv);
 
-		return getModelAndViewToPeriode(ppfv.getIdPeriodeFiscale(),true);
+		return getModelAndViewToPeriode(ppfv.getIdPeriodeFiscale());
 	}
 
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setManager(ParamPeriodeManager manager) {
 		this.manager = manager;
 	}

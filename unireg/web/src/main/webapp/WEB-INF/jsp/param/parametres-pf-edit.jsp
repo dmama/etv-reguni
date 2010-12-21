@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="index" value="${param.index}" />
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
+<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head">
 		<style>
 			span.bouton {
@@ -11,7 +11,12 @@
 		</style>
 	</tiles:put>
 
-	<tiles:put name="title"></tiles:put>
+	<tiles:put name="title">
+		<fmt:message key="title.edit.param.periode.fiscale">
+			<fmt:param>${command.anneePeriodeFiscale}</fmt:param>
+		</fmt:message>
+	</tiles:put>
+
 	<tiles:put name="body">
 	<form:form name="form" id="formTermes">
 		<fieldset>
@@ -133,7 +138,7 @@
 				<input type="submit" id="maj" value="<fmt:message key="label.bouton.mettre.a.jour" />">
 			</span>
 			<span class="bouton">
-				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()">
+				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='periode.do?pf=${command.idPeriodeFiscale}'">
 			</span>
 		</div>
 	</form:form>	

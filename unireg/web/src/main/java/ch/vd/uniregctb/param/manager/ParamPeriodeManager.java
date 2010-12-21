@@ -113,6 +113,7 @@ public interface ParamPeriodeManager {
 	 * @param idPeriode L'id de la {@link PeriodeFiscale} parente
 	 * 
 	 */	
+	@Transactional(readOnly = true)
 	ModeleDocumentView createModeleDocumentViewAdd (Long idPeriode);
 	
 	/**

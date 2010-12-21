@@ -156,7 +156,9 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	public ModeleDocumentView createModeleDocumentViewAdd(Long idPeriode) {
 		ModeleDocumentView mdv = new ModeleDocumentView();
+		PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
 		mdv.setIdPeriode(idPeriode);
+		mdv.setAnneePeriodeFiscale(pf.getAnnee());
 		return mdv;
 	}
 
