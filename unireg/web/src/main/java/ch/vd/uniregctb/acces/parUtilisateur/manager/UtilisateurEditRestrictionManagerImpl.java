@@ -6,15 +6,12 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -79,40 +76,16 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	@Transactional(readOnly = true)
 	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws InfrastructureException, AdresseException {
 
-		UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
-		UtilisateurEditRestrictionView utilisateurEditRestrictionView = new UtilisateurEditRestrictionView();
+		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
+		final UtilisateurEditRestrictionView utilisateurEditRestrictionView = new UtilisateurEditRestrictionView();
 		utilisateurEditRestrictionView.setUtilisateur(utilisateurView);
-		List<DroitAccesUtilisateurView> droitsAccesView = new ArrayList<DroitAccesUtilisateurView>();
-		List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noIndividuOperateur);
+		final List<DroitAccesUtilisateurView> views = new ArrayList<DroitAccesUtilisateurView>();
+		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noIndividuOperateur);
 		for (DroitAcces droitAcces : restrictions) {
-			DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView();
-			droitAccesView.setId(droitAcces.getId());
-			droitAccesView.setAnnule(droitAcces.isAnnule());
-			droitAccesView.setType(droitAcces.getType());
-			droitAccesView.setNumeroCTB(droitAcces.getTiers().getNumero());
-			PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(droitAcces.getTiers().getNumero());
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(pp, null, TypeAdresseFiscale.COURRIER, false);
-			if (adresseEnvoiDetaillee != null) {
-				List<String> noms = adresseEnvoiDetaillee.getNomPrenom();
-				if ((noms != null) & (noms.get(0) != null)) {
-					droitAccesView.setPrenomNom(noms.get(0));
-				}
-				droitAccesView.setLocalite(adresseEnvoiDetaillee.getNpaEtLocalite());
-			}
-			RegDate dateNaissance = tiersService.getDateNaissance(pp);
-			droitAccesView.setDateNaissance(dateNaissance);
-			droitAccesView.setNiveau(droitAcces.getNiveau());
-			droitAccesView.setDateDebut(droitAcces.getDateDebut());
-			droitAccesView.setDateFin(droitAcces.getDateFin());
-			if (droitAcces.getNiveau() == Niveau.LECTURE) {
-				droitAccesView.setLectureSeule(true);
-			}
-			else if (droitAcces.getNiveau() == Niveau.ECRITURE) {
-				droitAccesView.setLectureSeule(false);
-			}
-			droitsAccesView.add(droitAccesView);
+			final DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
+			views.add(droitAccesView);
 		}
-		utilisateurEditRestrictionView.setRestrictions(droitsAccesView);
+		utilisateurEditRestrictionView.setRestrictions(views);
 		return utilisateurEditRestrictionView;
 	}
 

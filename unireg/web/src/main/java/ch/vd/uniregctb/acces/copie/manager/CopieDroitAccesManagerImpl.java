@@ -5,23 +5,18 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Niveau;
 
 public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 
@@ -60,43 +55,19 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 */
 	@Transactional(readOnly = true)
 	public ConfirmCopieView get(long noOperateurReference, long noOperateurDestination) throws AdresseException {
-		ConfirmCopieView confirmCopieView = new ConfirmCopieView();
-		UtilisateurView utilisateurReferenceView = utilisateurManager.get(noOperateurReference);
+		final ConfirmCopieView confirmCopieView = new ConfirmCopieView();
+		final UtilisateurView utilisateurReferenceView = utilisateurManager.get(noOperateurReference);
 		confirmCopieView.setUtilisateurReferenceView(utilisateurReferenceView);
-		UtilisateurView utilisateurDestinationView = utilisateurManager.get(noOperateurDestination);
+		final UtilisateurView utilisateurDestinationView = utilisateurManager.get(noOperateurDestination);
 		confirmCopieView.setUtilisateurDestinationView(utilisateurDestinationView);
-		List<DroitAccesUtilisateurView> droitsAccesView = new ArrayList<DroitAccesUtilisateurView>();
-		List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noOperateurReference);
-		for (DroitAcces droitAcces : restrictions) {
-			DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView();
-			droitAccesView.setId(droitAcces.getId());
-			droitAccesView.setAnnule(droitAcces.isAnnule());
-			droitAccesView.setType(droitAcces.getType());
-			droitAccesView.setNumeroCTB(droitAcces.getTiers().getNumero());
-			PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(droitAcces.getTiers().getNumero());
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(pp, null, TypeAdresseFiscale.COURRIER, false);
-			if (adresseEnvoiDetaillee != null) {
-				List<String> noms = adresseEnvoiDetaillee.getNomPrenom();
-				if ((noms != null) & (noms.get(0) != null)) {
-					droitAccesView.setPrenomNom(noms.get(0));
-				}
-				droitAccesView.setLocalite(adresseEnvoiDetaillee.getNpaEtLocalite());
-			}
-			RegDate dateNaissance = tiersService.getDateNaissance(pp);
-			droitAccesView.setDateNaissance(dateNaissance);
-			droitAccesView.setNiveau(droitAcces.getNiveau());
-			droitAccesView.setDateDebut(droitAcces.getDateDebut());
-			droitAccesView.setDateFin(droitAcces.getDateFin());
-			if (droitAcces.getNiveau() == Niveau.LECTURE) {
-				droitAccesView.setLectureSeule(true);
-			}
-			else if (droitAcces.getNiveau() == Niveau.ECRITURE) {
-				droitAccesView.setLectureSeule(false);
-			}
-			droitsAccesView.add(droitAccesView);
-		}
-		confirmCopieView.setDroitsAccesView(droitsAccesView);
 
+		final List<DroitAccesUtilisateurView> views = new ArrayList<DroitAccesUtilisateurView>();
+		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noOperateurReference);
+		for (DroitAcces droitAcces : restrictions) {
+			final DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
+			views.add(droitAccesView);
+		}
+		confirmCopieView.setDroitsAccesView(views);
 		return confirmCopieView;
 	}
 
