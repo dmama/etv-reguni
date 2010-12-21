@@ -17,6 +17,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,6 +51,7 @@ import static org.junit.Assert.fail;
 		"classpath:ch/vd/uniregctb/dao/jdbc/jdbctiersdaotestapp-datasource.xml", // <-- version spéciale qui se connecte à la base de données d'intégration
 		CoreTestingConstants.UNIREG_CORE_UT_PROPERTIES
 })
+@Ignore(value = "Schéma de base incompatible en intégration")
 public class JdbcTiersDaoItTest extends AbstractSpringTest {
 
 	private static final Logger LOGGER = Logger.getLogger(JdbcTiersDaoItTest.class);
