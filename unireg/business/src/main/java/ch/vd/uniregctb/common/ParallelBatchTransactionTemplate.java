@@ -110,6 +110,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		// Transmet les éléments à processer
 		final int size = elements.size();
 		for (int i = 0; i < size; ++i) {
+			percent = (i - queue.size()) * 100 / size;
 			final List<E> element = elements.get(i);
 			while (!queue.offer(element, 2, TimeUnit.SECONDS) && !interrupted(threads)) { // on ne bloque pas complétement de manière à détecter si les threads sont morts
 				assertThreadsAlives(threads);
@@ -117,7 +118,6 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 			if (interrupted(threads)) {
 				break;
 			}
-			percent = ((i - queue.size()) * 100 / size);
 		}
 
 		// Attend la fin du processing
