@@ -8451,7 +8451,7 @@
     <column>NO_MENAGE_COMMUN</column>
     <column>WORK_USER</column>
     <column>DEMANDE_TYPE</column>
-    <column>TRAITEMENT_DATE</column>
+    <column>DATE_TRAITEMENT</column>
     <column>TRAITEMENT_USER</column>
     <row>
       <value>1</value>
