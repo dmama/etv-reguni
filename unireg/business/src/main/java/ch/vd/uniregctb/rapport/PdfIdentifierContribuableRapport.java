@@ -139,7 +139,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 				final T info = iter.next();
 				b.append(escapeChars(info.businessID)).append(COMMA);
 				b.append(escapeChars(info.prenom)).append(COMMA);
-				b.append(escapeChars(info.nom)).append(COMMA);
+				b.append(escapeChars(info.nom));
 				b.append("\n");
 			}
 
