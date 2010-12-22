@@ -120,12 +120,7 @@
                     </td>
                     <td width="25%">
                         <div class="navigation-action">
-                            <c:if test="${command.apresReception}">
-                                <input type="button" id="closeButton" value="Fermer" onclick="top.location.reload(true);"/>
-                            </c:if>
-                            <c:if test="${!command.apresReception}">
-                                <unireg:closeOverlayButton text="Retour"/>
-                            </c:if>
+							<input type="button" id="closeButton" value="Retour" onclick="document.location.href='receptionner-bordereaux.do'"/>
                         </div>
                     </td>
                     <td width="25%">&nbsp;</td>

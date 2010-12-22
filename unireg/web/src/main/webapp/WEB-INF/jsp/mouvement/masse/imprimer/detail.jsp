@@ -73,21 +73,6 @@
                     }
                 }
 
-                function termineImpressionBordereau() {
-                    var closeButton = document.getElementById('closeButton');
-
-                    // Retour est la valeur par défaut quand on arrive sur la page, avant impression
-                    if (closeButton.value == 'Retour') {
-                        // pas besoin de rafraîchissement de la page en dessous
-                        self.parent.tb_remove();
-                    }
-                    else {
-                        // sinon, on a changé la valeur, et il faut rafraîchir la page en dessous
-                        top.location.reload(true);
-                    }
-                    return true;
-                }
-
             </script>
 
             <display:table name="command.mouvements" id="mvt" pagesize="1000" requestURI="/mouvement/detail-bordereau.do" class="display_table" sort="list">
@@ -130,7 +115,7 @@
                     </td>
                     <td width="25%">
                         <div class="navigation-action">
-                            <input type="button" id="closeButton" value="Retour" onclick="return termineImpressionBordereau();"/>
+                            <input type="button" id="closeButton" value="Retour" onclick="document.location.href='imprimer-bordereaux.do'"/>
                         </div>
                     </td>
                     <td width="25%">&nbsp;</td>

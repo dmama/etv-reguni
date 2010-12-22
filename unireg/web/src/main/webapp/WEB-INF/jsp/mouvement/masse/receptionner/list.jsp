@@ -31,7 +31,7 @@
             </display:column>
 
             <display:column style="action">
-                <a href="detail-reception-bordereau.do?height=600&width=900&id=${bordereau.id}&TB_iframe=true&modal=true" class="detail thickbox" title="Détail d'un bordereau">&nbsp;</a>
+                <a href="detail-reception-bordereau.do?id=${bordereau.id}" class="detail" title="Détail d'un bordereau">&nbsp;</a>
             </display:column>
 
         </display:table>

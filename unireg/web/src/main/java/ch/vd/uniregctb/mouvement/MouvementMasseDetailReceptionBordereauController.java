@@ -32,6 +32,7 @@ public class MouvementMasseDetailReceptionBordereauController extends AbstractMo
 			getMouvementManager().receptionnerMouvementsEnvoi(view.getSelection());
 			getMouvementManager().refreshView(view);
 			view.setApresReception(true);
+			return new ModelAndView("redirect:detail-reception-bordereau.do?id=" + view.getId());
 		}
 		return showForm(request, response, errors);
 	}
