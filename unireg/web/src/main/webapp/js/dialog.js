@@ -120,6 +120,35 @@ function open_consulter_log(nature, id) {
 }
 
 /**
+ * Ouvre une boîte de dialog modale qui affiche les détails d'un mouvement de dossier
+ *
+ * @param id l'id du mouvement de dossier
+ */
+function open_details_mouvement(id) {
+
+	var dialog = create_dialog_div('details-mouvement-dialog');
+
+	// charge le contenu de la boîte de dialogue
+	dialog.load(getContextPath() + '/tiers/mouvement.do?idMvt=' + id);
+
+	dialog.dialog({
+		title: 'Détails du mouvement de dossier',
+		height: 440,
+		width: 900,
+		resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
+		modal: true,
+		buttons: {
+			Ok: function() {
+				dialog.dialog("close");
+			}
+		}
+	});
+
+	//prevent the browser to follow the link
+	return false;
+}
+
+/**
  * Récupère ou crée à la demande un élément div pour contenir une boîte de dialogue
  */
 function create_dialog_div(id) {

@@ -133,7 +133,7 @@
 				</display:column>
 
                 <display:column style="action">
-                    <a href="../tiers/mouvement.do?height=360&width=900&idMvt=${mvt.id}&TB_iframe=true&modal=true" class="detail thickbox" title="Détail d'un mouvement">&nbsp;</a>
+                    <a href="#" class="detail" title="Détail d'un mouvement" onclick="return open_details_mouvement(${mvt.id});">&nbsp;</a>
                     <unireg:consulterLog entityNature="MouvementDossier" entityId="${mvt.id}"/>
                     <c:if test="${mvt.etatMouvement == 'A_TRAITER'}">
                         <unireg:raccourciAnnuler onClick="annulerMouvementDossierMasse(${mvt.id});" tooltip="Annuler un mouvement"/>

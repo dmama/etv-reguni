@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <unireg:nextRowClass reset="1"/>
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
-	<tiles:put name="head"></tiles:put>
+<tiles:insert template="/WEB-INF/jsp/templates/templateDialog.jsp">
 
 	<tiles:put name="title"></tiles:put>
 	<tiles:put name="body">
@@ -56,12 +55,5 @@
 
 <!-- Fin Uilisateur  -->
 
-<!-- Debut Boutons -->
-	<table>
-		<tr>
-			<td><input type="button" id="annuler" value="<fmt:message key="label.bouton.fermer" />" onclick="self.parent.tb_remove()"></td>
-		</tr>
-	</table>
-<!-- Fin Boutons -->
-		</tiles:put>
+	</tiles:put>
 </tiles:insert>
