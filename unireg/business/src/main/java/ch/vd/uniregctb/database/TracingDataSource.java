@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.dbutils.WrappingDataSource;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.stats.StatsService;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class TracingDataSource implements DataSource, InitializingBean, DisposableBean {
+public class TracingDataSource implements DataSource, InitializingBean, DisposableBean, WrappingDataSource {
 
 	protected final Log LOGGER = LogFactory.getLog(TracingDataSource.class);
 
@@ -34,6 +35,19 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	 */
 	public void setTarget(DataSource target) {
 		this.target = target;
+	}
+
+	public DataSource getTarget() {
+		return target;
+	}
+
+	public DataSource getUltimateTarget() {
+		if (target != null && target instanceof WrappingDataSource) {
+			return ((WrappingDataSource) target).getUltimateTarget();
+		}
+		else {
+			return target;
+		}
 	}
 
 	/**

@@ -59,7 +59,7 @@
 		<dependency>
 			<artifactId>shared-jmx</artifactId>
 			<groupId>ch.vd.registre</groupId>
-			<version>1.2-java1.5-0</version>
+			<version>1.2-java1.5-1</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.editique</groupId>
