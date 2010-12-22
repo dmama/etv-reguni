@@ -80,6 +80,27 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return list;
 	}
 
+	public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Recherche des tiers correspondant aux mots-clés =" + criteria);
+		}
+
+		if (criteria.isEmpty()) {
+			return new TopList<TiersIndexedData>();
+		}
+
+		final QueryConstructor contructor = new QueryConstructor(criteria);
+		final Query query = contructor.constructQuery();
+
+		// on effectue la recherche
+		final TopList<TiersIndexedData> list = new TopList<TiersIndexedData>();
+		final TopCallback callback = new TopCallback(list);
+		globalIndex.search(query, max, callback);
+
+		return list;
+	}
+
 	public TopList<TiersIndexedData> searchTop(String keywords, int max) throws IndexerException {
 
 		final int tokenMinLength = 3;

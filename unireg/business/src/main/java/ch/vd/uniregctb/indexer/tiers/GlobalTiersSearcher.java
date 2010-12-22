@@ -25,6 +25,16 @@ public interface GlobalTiersSearcher {
 	public List<TiersIndexedData> search(TiersCriteria criteria) throws IndexerException;
 
 	/**
+	 * Recherche et retourne les tiers qui correspondent le mieux aux critères spécifiés
+	 *
+	 * @param criteria les critères de recherche
+	 * @param max      le nombre maximum de résultats à retourner
+	 * @return une liste de données de tiers
+	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
+	 */
+	public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException;
+
+	/**
 	 * Recherche et retourne les tiers qui correspondent le mieux aux mot-clés spécifiés.
 	 *
 	 * @param keywords les mots-clés de recherche

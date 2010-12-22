@@ -53,7 +53,8 @@ function open_tiers_picker(button, on_tiers_selection) {
 		// Note: le code de cette fonction réfère à des éléments du DOM qui sont dans la boîte de dialogue. En dehors de ce call-back, cela ne fonctionne pas.
 		var query = $('#tiers-picker-query');
 		var last = "";
-		// on installe la fonction qui sera appelée à chaque frappe de touche
+
+		// on installe la fonction qui sera appelée à chaque frappe de touche pour la recherche simple
 		query.keyup(function() {
 			var current = query.val();
 			if (last != current) { // on ne rafraîchit que si le texte a vraiment changé
@@ -62,13 +63,37 @@ function open_tiers_picker(button, on_tiers_selection) {
 				clearTimeout($.data(this, "tiers-picker-timer"));
 				// on retarde l'appel javascript de 200ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
 				var timer = setTimeout(function() {
-					XT.doAjaxAction('updateTiersPickerSearch', document.getElementById('tiers-picker-query'), {
+					XT.doAjaxAction('tiersPickerQuickSearch', document.getElementById('tiers-picker-query'), {
 						'query' : current,
 						'buttonId' : button.id
 					});
 			    }, 200); // 200 ms
 			    $.data(this, "tiers-picker-timer", timer);
 			}
+		});
+
+		// on installe la fonction qui sera appelée lors de la demande de recherche avancée
+		var fullSearch = $('#fullSearch').button();
+		fullSearch.click(function() {
+			XT.doAjaxAction('tiersPickerFullSearch', document.getElementById('tiers-picker-query'), {
+				'id' : $('#tiers-picker-id').val(),
+				'nomraison' : $('#tiers-picker-nomraison').val(),
+				'localite' : $('#tiers-picker-localite').val(),
+				'datenaissance' : $('#tiers-picker-datenaissance').val(),
+				'noavs' : $('#tiers-picker-noavs').val(),
+				'buttonId' : button.id
+			});
+		});
+
+		// la fonction pour tout effacer, y compris les résultat de la recherche
+		var fullSearch = $('#clearAll').button();
+		fullSearch.click(function() {
+			$('#tiers-picker-id').val(null);
+			$('#tiers-picker-nomraison').val(null);
+			$('#tiers-picker-localite').val(null);
+			$('#tiers-picker-datenaissance').val(null);
+			$('#tiers-picker-noavs').val(null);
+			$('#tiers-picker-results').attr('innerHTML', '');
 		});
 	});
 
