@@ -6,14 +6,11 @@ import java.util.List;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
-import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
-import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 
 /**
@@ -49,10 +46,10 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(new float[] {70f, 30f}, new TableSimpleCallback() {
+			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de messages identifiés :", String.valueOf(results.identifies.size()));
 					table.addLigne("Nombre de messages non identifiés :", String.valueOf(results.nonIdentifies.size()));
@@ -66,13 +63,20 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		// Messages identifiés
 		{
 			final String filename = "messages_identifies.csv";
-			final String contenu = getCsvMessageIdentifes(results.identifies, filename, status);
+			final String contenu = getCsvMessagesIdentifies(results.identifies, filename, status);
 			final String titre = "Liste des messages identifiés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, results.identifies.size(), titre, listVide, filename, contenu);
 		}
 
-		
+		// Messages non-identifiés
+		{
+			final String filename = "messages_non_identifies.csv";
+			final String contenu = getCsvMessagesNonIdentifies(results.nonIdentifies, filename, status);
+			final String titre = "Liste des messages non-identifiés";
+			final String listVide = "(aucun)";
+			addListeDetaillee(writer, results.nonIdentifies.size(), titre, listVide, filename, contenu);
+		}
 
 		// erreurs
 		{
@@ -87,7 +91,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private <T extends IdentifierContribuableResults.Identifie> String getCsvMessageIdentifes(List<T> liste, String filename, StatusManager status) {
+	private <T extends IdentifierContribuableResults.Identifie> String getCsvMessagesIdentifies(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
 		if (liste != null && liste.size() > 0) {
 
@@ -98,21 +102,19 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 			while (iter.hasNext()) {
 
 				if (iter.isAtNewPercent()) {
-				    status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
 				}
 
 				final T info = iter.next();
-				b.append(info.businessID).append(COMMA);
-				b.append(info.prenom).append(COMMA);
-				b.append(info.nom).append(COMMA);
+				b.append(escapeChars(info.businessID)).append(COMMA);
+				b.append(escapeChars(info.prenom)).append(COMMA);
+				b.append(escapeChars(info.nom)).append(COMMA);
 				b.append(info.noCtb).append(COMMA);
-				if (info.noCtbMenage!= null) {
-					b.append(info.noCtbMenage).append("\n");
+				if (info.noCtbMenage != null) {
+					b.append(info.noCtbMenage);
 				}
-				else{
-					b.append("\n");
-				}
-			
+				b.append("\n");
+
 			}
 
 			contenu = b.toString();
@@ -120,7 +122,33 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		return contenu;
 	}
 
-		/**
+	private <T extends IdentifierContribuableResults.NonIdentifie> String getCsvMessagesNonIdentifies(List<T> liste, String filename, StatusManager status) {
+		String contenu = null;
+		if (liste != null && liste.size() > 0) {
+
+			final StringBuilder b = new StringBuilder(liste.size() * 100);
+			b.append("Business-ID Message").append(COMMA).append("PRENOMS").append(COMMA).append("NOM").append("\n");
+
+			final GentilIterator<T> iter = new GentilIterator<T>(liste);
+			while (iter.hasNext()) {
+
+				if (iter.isAtNewPercent()) {
+					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+				}
+
+				final T info = iter.next();
+				b.append(escapeChars(info.businessID)).append(COMMA);
+				b.append(escapeChars(info.prenom)).append(COMMA);
+				b.append(escapeChars(info.nom)).append(COMMA);
+				b.append("\n");
+			}
+
+			contenu = b.toString();
+		}
+		return contenu;
+	}
+
+	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
 	protected static <T extends IdentifierContribuableResults.Erreur> String asCsvFile(List<T> list, String filename, StatusManager status) {
