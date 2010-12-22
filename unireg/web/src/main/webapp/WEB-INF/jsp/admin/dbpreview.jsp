@@ -23,7 +23,7 @@
 			});
 		</script>
 
-		<p>Les tiers suivants sont présents dans la base de données (affichage limité aux 100 premiers de chaque catégorie) :</p>
+		<p>Les tiers suivants sont présents dans la base de données (affichage limité aux 50 premiers de chaque catégorie) :</p>
 
 		<div id="jtabs">
 			<ul>

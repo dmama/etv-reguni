@@ -151,7 +151,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(source);
 
-		fillDestinataire(adresseEnvoi, envoi.destinataire, date);
+		fillDestinataire(adresseEnvoi, envoi.destinataire, date, true);
 		fillDestination(adresseEnvoi, adresseDestination, envoi.destination, envoi.avecPourAdresse, date);
 
 		return adresseEnvoi;
@@ -359,15 +359,18 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Remplis les lignes correspondant à l'identification de la personne destinataire.
 	 *
-	 * @param adresse l'adresse d'envoi détaillée à remplir
-	 * @param tiers   le tiers destinataire
-	 * @param date    la date de validité de l'adresse
+	 * @param adresse              l'adresse d'envoi détaillée à remplir
+	 * @param tiers                le tiers destinataire
+	 * @param date                 la date de validité de l'adresse
+	 * @param fillFormulePolitesse s'il faut remplir la formule de politesse ou non
 	 */
-	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date) {
+	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date, boolean fillFormulePolitesse) {
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique personne = (PersonnePhysique) tiers;
-			adresse.addFormulePolitesse(getFormulePolitesse(personne, date));
+			if (fillFormulePolitesse) {
+				adresse.addFormulePolitesse(getFormulePolitesse(personne, date));
+			}
 			adresse.addNomPrenom(getNomPrenom(personne, date));
 		}
 		else if (tiers instanceof MenageCommun) {
@@ -377,7 +380,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			if (principal != null) {
-				adresse.addFormulePolitesse(getFormulePolitesse(ensemble, date));
+				if (fillFormulePolitesse) {
+					adresse.addFormulePolitesse(getFormulePolitesse(ensemble, date));
+				}
 				adresse.addNomPrenom(getNomPrenom(principal, date));
 			}
 
@@ -2252,7 +2257,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
-		final AdresseEnvoiDetaillee adresse = getAdresseEnvoi(tiers, date, TypeAdresseFiscale.COURRIER, strict);
+		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null);
+		fillDestinataire(adresse, tiers, date, false);
 
 		List<String> list = adresse.getNomPrenom();
 

@@ -3671,8 +3671,8 @@ public class TiersServiceImpl implements TiersService {
 		// si le débiteur a un tiers référent, c'est là qu'il faut chercher
 		// sinon, les champs nom1 et nom2 dans le débiteur lui-même sont utilisés
 		final List<String> raisonSociale;
-		if (debiteur.getContribuableId() != null) {
-			final Contribuable referent = getContribuable(debiteur);
+		final Contribuable referent = getContribuable(debiteur);
+		if (referent != null) {
 			if (referent instanceof PersonnePhysique) {
 				raisonSociale = Arrays.asList(getNomPrenom((PersonnePhysique) referent));
 			}

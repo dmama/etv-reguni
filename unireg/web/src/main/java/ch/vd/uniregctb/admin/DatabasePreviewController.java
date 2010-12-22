@@ -26,10 +26,12 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
- * Ce contrôleur permet d'afficher les 100 premiers tiers de la base de données.
+ * Ce contrôleur permet d'afficher les {@link DatabasePreviewController#TIERS_COUNT} premiers tiers de la base de données.
  */
 public class DatabasePreviewController extends AbstractSimpleFormController {
 
+	private static final int TIERS_COUNT = 50;
+	
 	private TiersDAO tiersDao;
 	private AdresseService adresseService;
 	private PlatformTransactionManager transactionManager;
@@ -64,7 +66,7 @@ public class DatabasePreviewController extends AbstractSimpleFormController {
 		template.setReadOnly(true);
 		template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final Map<Class,List<Tiers>> map = tiersDao.getFirstGroupedByClass(100);
+				final Map<Class,List<Tiers>> map = tiersDao.getFirstGroupedByClass(TIERS_COUNT);
 				for (Map.Entry<Class, List<Tiers>> entry : map.entrySet()) {
 					for (Tiers t : entry.getValue()) {
 
@@ -96,6 +98,7 @@ public class DatabasePreviewController extends AbstractSimpleFormController {
 		return infoMap;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersDao(TiersDAO tiersDao) {
 		this.tiersDao = tiersDao;
 	}
