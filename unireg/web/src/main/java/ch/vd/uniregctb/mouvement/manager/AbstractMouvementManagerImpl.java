@@ -44,6 +44,7 @@ import ch.vd.uniregctb.mouvement.view.ContribuableView;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -316,7 +317,13 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	private InfoCollaborateur getInfosCollaborateur(long noIndividu) {
 
-		final String nomUtilisateur = hostCivilService.getNomUtilisateur(noIndividu);
+		String nomUtilisateur;
+		try {
+			nomUtilisateur = hostCivilService.getNomUtilisateur(noIndividu);
+		}
+		catch (IndividuNotFoundException e) {
+			nomUtilisateur = e.getMessage();
+		}
 
 		final Operateur operateur = serviceSecuriteService.getOperateur(noIndividu);
 		final String visaOperateur;

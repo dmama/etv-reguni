@@ -20,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -212,7 +213,10 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 
 		final String nomUtilisateur;
 		if (numeroIndividu != null) {
-			final Individu indSource = getServiceCivilService().getIndividu(numeroIndividu, null);
+			final Individu indSource = serviceCivilService.getIndividu(numeroIndividu, null);
+			if (indSource == null) {
+				throw new IndividuNotFoundException(numeroIndividu);
+			}
 			final String nom = indSource.getDernierHistoriqueIndividu().getNom();
 			final String prenom = indSource.getDernierHistoriqueIndividu().getPrenom();
 			final boolean blankNom = StringUtils.isBlank(nom);
