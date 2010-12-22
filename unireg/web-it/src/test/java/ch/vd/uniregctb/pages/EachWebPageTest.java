@@ -548,7 +548,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition de droit d'accès par dossier
 	@Test
 	public void testAccesEdit() throws Exception {
-		assertPage("/acces/edit-acces-pp.do?numero=12300002", "");
+		assertPage("/acces/edit-acces-pp.do?numero=12300002", "Création d'un droit d'accès sur la personne physique n°123.000.02");
 	}
 
 	// Page de sélection d'un utilisateur
