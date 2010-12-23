@@ -95,6 +95,7 @@ import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
 /**
@@ -116,6 +117,7 @@ public class TiersServiceImpl implements TiersService {
 	private RemarqueDAO remarqueDAO;
 	private ServicePersonneMoraleService servicePM;
 	private ValidationService validationService;
+	private ValidationInterceptor validationInterceptor;
 
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
@@ -185,6 +187,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
+	}
+
+	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
+		this.validationInterceptor = validationInterceptor;
 	}
 
 	/**
@@ -1219,26 +1225,19 @@ public class TiersServiceImpl implements TiersService {
 		rapport.setObjet(objet);
 		rapport.setSujet(sujet);
 
-		final boolean annule = rapport.isAnnule();
-
-		if (annule) {
+		// [UNIREG-3011][UNIREG-3168] Désactivation de la validation causée par le flush
+		// du save car nous sommes parfois ici dans une situation intermédiaire invalide
+		final boolean validationEnabled = validationInterceptor.isEnabled();
+		validationInterceptor.setEnabled(false);
+		try {
 			rapport = tiersDAO.save(rapport);
-		}
-		else {
-			// [UNIREG-3011] si le rapport n'est pas annulé, on l'annule temporairement pour que le validator n'en tienne pas
-			// compte ici, *mais* uniquement lorsque le rapport aura été ajouté aux collections rapportSujets/rapportsObjects.
-			rapport.setAnnulationDate(DateHelper.getCurrentDate());
-			rapport = tiersDAO.save(rapport); // va déclencher le validator
-		}
 
-		/* ajoute le rapport dans les collections qui vont bien comme le ferait Hibernate au load */
-		objet.addRapportObjet(rapport);
-		sujet.addRapportSujet(rapport);
-
-		if (!annule) {
-			// [UNIREG-3011] si le rapport n'était pas annulé initialement, on restaure son état initial maintenant
-			// qu'il est correctement renseigné dans les collections rapportSujets/rapportsObjets.
-			rapport.setAnnulationDate(null);
+			/* ajoute le rapport dans les collections qui vont bien comme le ferait Hibernate au load */
+			objet.addRapportObjet(rapport);
+			sujet.addRapportSujet(rapport);
+		}
+		finally {
+			validationInterceptor.setEnabled(validationEnabled);
 		}
 
 		return rapport;

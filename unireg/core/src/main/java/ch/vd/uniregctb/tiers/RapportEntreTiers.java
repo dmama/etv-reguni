@@ -267,13 +267,18 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	}
 
 	public boolean equalsTo(RapportEntreTiers rapportEntreTiers) {
-		EqualsBuilder equalsBuilder = new EqualsBuilder();
+
+		// [UNIREG-3168] dès qu'au moins un des deux rapports est annulé, on ne peut plus avoir d'égalité
+		if (isAnnule() || rapportEntreTiers.isAnnule()) {
+			return false;
+		}
+
+		final EqualsBuilder equalsBuilder = new EqualsBuilder();
 		equalsBuilder.append(this.sujetId, rapportEntreTiers.sujetId);
 		equalsBuilder.append(this.getDateDebut(), rapportEntreTiers.getDateDebut());
 		equalsBuilder.append(this.getDateFin(), rapportEntreTiers.getDateFin());
 		equalsBuilder.append(this.objetId, rapportEntreTiers.objetId);
 		equalsBuilder.append(this.getType(), rapportEntreTiers.getType());
-		equalsBuilder.append(this.isAnnule(), rapportEntreTiers.isAnnule());
 		return equalsBuilder.isEquals();
 	}
 

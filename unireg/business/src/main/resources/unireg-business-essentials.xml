@@ -63,6 +63,7 @@
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="validationService" ref="validationService" />
+		<property name="validationInterceptor" ref="validationInterceptor" />
 	</bean>
 
 	<bean id="metierService" class="ch.vd.uniregctb.metier.MetierServiceImpl">

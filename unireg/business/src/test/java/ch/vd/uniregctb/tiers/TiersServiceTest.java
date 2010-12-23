@@ -17,6 +17,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -51,6 +52,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -4185,6 +4187,69 @@ public class TiersServiceTest extends BusinessTest {
 				assertTrue(foundExOpen);
 				assertTrue(foundAlreadyClosed);
 
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [UNIREG-3168] problème à la création d'un couple qui reprend exactement les mêmes
+	 * éléments qu'un couple annulé
+	 */
+	@Test
+	@NotTransactional
+	public void testAjoutNouveauRapportMenageIdentiqueARapportAnnule() throws Exception {
+		final RegDate dateMariage = RegDate.get(2000, 5, 2);
+
+		class Ids {
+			long idpp;
+			long idmc;
+		}
+
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1974, 8, 3), Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+
+				final Ids ids = new Ids();
+				ids.idpp = pp.getNumero();
+				ids.idmc = couple.getMenage().getNumero();
+				return ids;
+			}
+		});
+
+		// pour l'instant, le rapport existant n'est pas annulé -> on ne doit pas être capable d'en ajouter un entre les même personnes aux mêmes dates
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
+
+					final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
+					tiersService.addRapport(candidat, pp, mc);
+					Assert.fail("Aurait dû être refusé au prétexte que le rapport existe déjà...");
+					return null;
+				}
+			});
+		}
+		catch (IllegalArgumentException e) {
+			final String expectedMessage = String.format(
+					"Impossible d'ajouter le rapport-objet de type %s pour la période %s sur le tiers n°%d car il existe déjà.",
+					TypeRapportEntreTiers.APPARTENANCE_MENAGE, DateRangeHelper.toString(new DateRangeHelper.Range(dateMariage, null)), ids.idmc);
+			Assert.assertEquals(expectedMessage, e.getMessage());
+		}
+
+		// mais si on l'annule, alors tout doit bien se passer
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
+				final AppartenanceMenage am = (AppartenanceMenage) mc.getRapportObjetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				Assert.assertNotNull(am);
+				am.setAnnule(true);
+
+				final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
+				tiersService.addRapport(candidat, pp, mc);
 				return null;
 			}
 		});
