@@ -58,7 +58,8 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testFindLRsManquantesWithDifferentesPeriodicites() throws Exception {
+	public void testFindLRsManquantesWithDifferentesPeriodicites1() throws Exception {
+
 		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -68,7 +69,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2010, 1, 1), date(2010, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
 				addForDebiteur(dpi, date(2008, 1, 1), null, MockCommune.Bex);
-
 				return dpi.getNumero();
 			}
 		});
@@ -77,7 +77,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final RegDate dateFinPeriode = RegDate.get();
+				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
 				final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
 				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 				Assert.assertEquals(6, lrManquantes.size());
@@ -86,6 +86,10 @@ public class ListeRecapServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testFindLRsManquantesWithDifferentesPeriodicites2() throws Exception {
 
 		final long dpiId2 = (Long) doInNewTransaction(new TxCallback() {
 			@Override
@@ -96,8 +100,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
 				addForDebiteur(dpi, date(2008, 1, 1), null, MockCommune.Bex);
-
-
 				return dpi.getNumero();
 			}
 		});
@@ -106,7 +108,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);
-				final RegDate dateFinPeriode = RegDate.get();
+				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
 				final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
 				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 				Assert.assertEquals(6, lrManquantes.size());
@@ -115,6 +117,10 @@ public class ListeRecapServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testFindLRsManquantesWithDifferentesPeriodicites3() throws Exception {
 
 		final long dpiId3 = (Long) doInNewTransaction(new TxCallback() {
 			@Override
@@ -131,8 +137,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 				addLR(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDeclaration.RETOURNEE);
 				addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
 				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
-
-
 				return dpi.getNumero();
 			}
 		});
@@ -141,7 +145,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId3);
-				final RegDate dateFinPeriode = RegDate.get();
+				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
 				final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
 				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 				Assert.assertEquals(3, lrManquantes.size());
@@ -150,6 +154,11 @@ public class ListeRecapServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testFindLRsManquantesWithDifferentesPeriodicites4() throws Exception {
+
 		final long dpiId4 = (Long) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -159,8 +168,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.A, date(2011, 1, 1), null);
 				addForDebiteur(dpi, date(2008, 1, 1), null, MockCommune.Bex);
-
-
 				return dpi.getNumero();
 			}
 		});
@@ -178,8 +185,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 				return null;
 			}
 		});
-
-
 	}
 
 	@Test
