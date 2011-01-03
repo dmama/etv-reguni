@@ -20,6 +20,10 @@
 
 	<bean 	id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />
 
+	<bean id="tiersVignetteController" class="ch.vd.uniregctb.tiers.TiersVignetteController" >
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersVignetteView" />
+	</bean>
+
 	<bean 	id="tiersListController"
 			class="ch.vd.uniregctb.tiers.TiersListController"
 			parent="abstractTiersListController">

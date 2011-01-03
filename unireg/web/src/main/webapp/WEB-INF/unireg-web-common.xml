@@ -157,6 +157,7 @@
 				<entry key="/param/feuille-edit.do" value-ref="paramModeleFeuilleDocumentEditController" />
 				
 				<!-- Tiers - display -->
+				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController" />
 				<entry key="/tiers/list.do" value-ref="tiersListController" />
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
