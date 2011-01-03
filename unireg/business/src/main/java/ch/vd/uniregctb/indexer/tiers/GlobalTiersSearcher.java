@@ -6,6 +6,7 @@ import java.util.Set;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersFilter;
 
 /**
  * Classe principale de recherche de tiers suivant certains criteres
@@ -38,11 +39,12 @@ public interface GlobalTiersSearcher {
 	 * Recherche et retourne les tiers qui correspondent le mieux aux mot-clés spécifiés.
 	 *
 	 * @param keywords les mots-clés de recherche
-	 * @param max      le nombre maximum de résultats à retourner
-	 * @return une liste de données de tiers
+	 * @param filter   un filtre (optionnel) pour filtrer certaines catégories de tiers
+	 * @param max      le nombre maximum de résultats à retourner  @return une liste de données de tiers
 	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
+	 * @return une liste de données de tiers
 	 */
-	public TopList<TiersIndexedData> searchTop(String keywords, int max) throws IndexerException;
+	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException;
 
 	/**
 	 * Vérifie si un tiers est indexé ou non.

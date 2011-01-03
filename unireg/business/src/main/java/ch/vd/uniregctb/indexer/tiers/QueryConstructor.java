@@ -15,6 +15,7 @@ import ch.vd.uniregctb.indexer.LuceneEngine;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
+import ch.vd.uniregctb.tiers.TiersFilter;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class QueryConstructor {
@@ -42,12 +43,12 @@ public class QueryConstructor {
 		this.tokenMinLength = tokenMinLength;
 	}
 
-	private void addTypeTiers(BooleanQuery fullQuery) throws IndexerException {
+	public static void addTypeTiers(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
 
 		// Type de tiers
-		if ((criteria.getTypeTiers() != null) && (criteria.getTypeTiers() != TypeTiers.TIERS)) {
+		if (filter.getTypeTiers() != null && filter.getTypeTiers() != TypeTiers.TIERS) {
 			BooleanQuery query = new BooleanQuery();
-			TiersCriteria.TypeTiers typeTiers = criteria.getTypeTiers();
+			TiersCriteria.TypeTiers typeTiers = filter.getTypeTiers();
 			switch (typeTiers) {
 			case DEBITEUR_PRESTATION_IMPOSABLE:
 				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
@@ -218,8 +219,8 @@ public class QueryConstructor {
 		}
 	}
 
-	private void addLimitation(BooleanQuery fullQuery) {
-		if (criteria.getTypeVisualisation() == TypeVisualisation.LIMITEE) {
+	public static void addLimitation(BooleanQuery fullQuery, TiersFilter filter) {
+		if (filter.getTypeVisualisation() == TypeVisualisation.LIMITEE) {
 			BooleanQuery query = new BooleanQuery();
 			// restriction des DPI
 			query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
@@ -236,25 +237,25 @@ public class QueryConstructor {
 		}
 	}
 
-	private void addAnnule(BooleanQuery fullQuery) throws IndexerException {
+	public static void addAnnule(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
 
-		if (!criteria.isInclureTiersAnnules()) {
+		if (!filter.isInclureTiersAnnules()) {
 			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.NON));
 			fullQuery.add(q, must);
 		}
 	}
 
-	private void addActif(BooleanQuery fullQuery) throws IndexerException {
+	public static void addActif(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
 
-		if (criteria.isTiersAnnulesSeulement()) {
+		if (filter.isTiersAnnulesSeulement()) {
 			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.OUI));
 			fullQuery.add(q, must);
 		}
 	}
 
-	private void addDebiteurInactif(BooleanQuery fullQuery) throws IndexerException {
+	public static void addDebiteurInactif(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
 
-		if (!criteria.isInclureI107()) {
+		if (!filter.isInclureI107()) {
 			final Query q = new TermQuery(new Term(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON));
 			fullQuery.add(q, must);
 		}
@@ -284,10 +285,10 @@ public class QueryConstructor {
 		}
 	}
 
-	private void addTiersActif(BooleanQuery fullQuery) throws IndexerException {
+	public static void addTiersActif(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
 
-		if (criteria.isTiersActif() != null) {
-			final String value = (criteria.isTiersActif() ? Constants.OUI : Constants.NON);
+		if (filter.isTiersActif() != null) {
+			final String value = (filter.isTiersActif() ? Constants.OUI : Constants.NON);
 			final Query q = new TermQuery(new Term(TiersIndexableData.TIERS_ACTIF, value));
 			fullQuery.add(q, must);
 		}
@@ -297,7 +298,7 @@ public class QueryConstructor {
 
 		BooleanQuery fullQuery = new BooleanQuery();
 
-		addTypeTiers(fullQuery);
+		addTypeTiers(fullQuery, criteria);
 
 		if (criteria.getNumero() != null) {
 			// Si on a un NUMERO CTB, on ne recherche que sur celui-ci
@@ -312,16 +313,16 @@ public class QueryConstructor {
 			addNumeroAVS(fullQuery);
 			addDateNaissance(fullQuery);
 			addNatureJuridique(fullQuery);
-			addAnnule(fullQuery);
-			addActif(fullQuery);
-			addDebiteurInactif(fullQuery);
+			addAnnule(fullQuery, criteria);
+			addActif(fullQuery, criteria);
+			addDebiteurInactif(fullQuery, criteria);
 			addModeImposition(fullQuery);
 			addNumeroSymic(fullQuery);
 			addCategorieDebiteurIs(fullQuery);
-			addTiersActif(fullQuery);
+			addTiersActif(fullQuery, criteria);
 		}
 
-		addLimitation(fullQuery);
+		addLimitation(fullQuery, criteria);
 
 		BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {

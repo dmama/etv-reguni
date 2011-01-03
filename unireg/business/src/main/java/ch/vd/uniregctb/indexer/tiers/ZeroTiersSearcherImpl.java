@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersFilter;
 
 public class ZeroTiersSearcherImpl implements GlobalTiersSearcher {
 
@@ -18,7 +19,7 @@ public class ZeroTiersSearcherImpl implements GlobalTiersSearcher {
 		return new TopList<TiersIndexedData>();
 	}
 
-	public TopList<TiersIndexedData> searchTop(String keywords, int max) throws IndexerException {
+	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException {
 		return new TopList<TiersIndexedData>();
 	}
 

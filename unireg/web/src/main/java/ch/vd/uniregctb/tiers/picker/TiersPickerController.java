@@ -2,8 +2,10 @@ package ch.vd.uniregctb.tiers.picker;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springmodules.xt.ajax.AjaxActionEvent;
 import org.springmodules.xt.ajax.AjaxEvent;
 import org.springmodules.xt.ajax.AjaxHandler;
@@ -32,13 +34,14 @@ public class TiersPickerController extends CommonSimpleFormController implements
 
 	public AjaxResponse handle(AjaxEvent event) {
 
+		final TiersPickerFilter filter = extractFilter(event);
 		final String buttonId = event.getParameters().get("buttonId");
 		final List<Component> components;
 
 		if ("tiersPickerQuickSearch".equals(event.getEventId())) {
 
 			final String query = event.getParameters().get("query");
-			components = quickSearch(buttonId, query);
+			components = quickSearch(buttonId, query, filter);
 		}
 		else if ("tiersPickerFullSearch".equals(event.getEventId())) {
 
@@ -48,7 +51,7 @@ public class TiersPickerController extends CommonSimpleFormController implements
 			final String datenaissance = event.getParameters().get("datenaissance");
 			final String noavs = event.getParameters().get("noavs");
 
-			components = fullSearch(buttonId, id, nomraison, localite, datenaissance, noavs);
+			components = fullSearch(buttonId, id, nomraison, localite, datenaissance, noavs, filter);
 		}
 		else {
 			throw new IllegalArgumentException("Type d'action ajax inconnue = [" + event.getEventId() + "]");
@@ -56,10 +59,32 @@ public class TiersPickerController extends CommonSimpleFormController implements
 
 		final AjaxResponse response = new AjaxResponseImpl();
 		response.addAction(new ReplaceContentAction("tiers-picker-results", components));
+
+		if (filter != null) {
+			response.addAction(new ReplaceContentAction("tiers-picker-filter-description", Arrays.<Component>asList(new SimpleText("Note: " + filter.getDescription()))));
+		}
+
 		return response;
 	}
 
-	private List<Component> quickSearch(String buttonId, String query) {
+	/**
+	 * Extrait un éventuel filtre sur les critères de recherche des paramètres de la requête.
+	 *
+	 * @param event l'événement ajax
+	 * @return un filtre ou <b>null</b> si aucun filtre n'est spécifié.
+	 */
+	private TiersPickerFilter extractFilter(AjaxEvent event) {
+		TiersPickerFilter filter = null;
+		final String filterBean = event.getParameters().get("filterBean");
+		if (StringUtils.isNotBlank(filterBean)) {
+			final TiersPickerFilterFactory filterFactory = (TiersPickerFilterFactory) getApplicationContext().getBean(filterBean);
+			final String filterParams = event.getParameters().get("filterParams");
+			filter = filterFactory.parse(filterParams);
+		}
+		return filter;
+	}
+
+	private List<Component> quickSearch(String buttonId, String query, TiersPickerFilter filter) {
 
 		final List<Component> components = new ArrayList<Component>();
 
@@ -68,7 +93,7 @@ public class TiersPickerController extends CommonSimpleFormController implements
 		}
 		else {
 			try {
-				final TopList<TiersIndexedData> list = searcher.searchTop(query, 50);
+				final TopList<TiersIndexedData> list = searcher.searchTop(query, filter, 50);
 				if (list != null && !list.isEmpty()) {
 					components.add(new SimpleText(buildSummary(list)));
 					components.add(new TiersPickerResultsTable(list, buttonId));
@@ -85,7 +110,7 @@ public class TiersPickerController extends CommonSimpleFormController implements
 		return components;
 	}
 
-	private List<Component> fullSearch(String buttonId, String id, String nomraison, String localite, String datenaissance, String noavs) {
+	private List<Component> fullSearch(String buttonId, String id, String nomraison, String localite, String datenaissance, String noavs, TiersPickerFilter filter) {
 
 		final List<Component> components = new ArrayList<Component>();
 
@@ -95,6 +120,16 @@ public class TiersPickerController extends CommonSimpleFormController implements
 		else {
 			try {
 				TiersCriteria criteria = new TiersCriteria();
+
+				if (filter != null) {
+					criteria.setTypeVisualisation(filter.getTypeVisualisation());
+					criteria.setTypeTiers(filter.getTypeTiers());
+					criteria.setInclureI107(filter.isInclureI107());
+					criteria.setInclureTiersAnnules(filter.isInclureTiersAnnules());
+					criteria.setTiersAnnulesSeulement(filter.isTiersAnnulesSeulement());
+					criteria.setTiersActif(filter.isTiersActif());
+				}
+
 				criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.CONTIENT);
 				criteria.setTypeRechercheDuPaysLocalite(TiersCriteria.TypeRechercheLocalitePays.ALL);
 				if (!isLessThan3Chars(id)) {

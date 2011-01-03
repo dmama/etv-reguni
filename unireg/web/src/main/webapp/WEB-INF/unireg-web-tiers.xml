@@ -217,4 +217,6 @@
 		<property name="searcher" ref="globalTiersSearcher" />
 	</bean>
 
+	<bean id="tiersPickerFilterFactory" class="ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactoryImpl"/>
+
 </beans>

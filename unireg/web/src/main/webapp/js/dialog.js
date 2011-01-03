@@ -34,6 +34,23 @@ function confirm_trash_db() {
  * @param on_tiers_selection  fonction de callback appelée avec le numéro de tiers sélectionné par l'utilisateur
  */
 function open_tiers_picker(button, on_tiers_selection) {
+	return open_tiers_picker_with_filter(button, null, null, on_tiers_selection);
+}
+
+/**
+ * Ouvre une boîte de dialogue modale qui permet de rechercher et de sélectionner un tiers, le tout avec un filtre sur les résultats.
+ * <p>
+ * Exemple d'utilisation:
+ * <pre>
+ *     <button onclick="return open_tiers_picker_with_filter(this, 'tiersPickerFilterFactory', 'typeTiers:PERSONNE_PHYSIQUE', function(id) {alert('le tiers n°' + id + ' a été sélectionné');});">...</button>
+ * </pre>
+ *
+ * @param button              le button html sur lequel l'utilisateur a cliqué
+ * @param filter_bean		  le nom d'un bean spring qui implément l'interface TiersPickerFilterFactory
+ * @param filter_params		  les paramètres du filter spécifié dans <i>filter_bean</i>
+ * @param on_tiers_selection  fonction de callback appelée avec le numéro de tiers sélectionné par l'utilisateur
+ */
+function open_tiers_picker_with_filter(button, filter_bean, filter_params, on_tiers_selection) {
 
 	// on récupère ou on crée à la demande le div de la boîte de dialogue
 	var dialog = create_dialog_div('tiers-picker-dialog');
@@ -63,10 +80,15 @@ function open_tiers_picker(button, on_tiers_selection) {
 				clearTimeout($.data(this, "tiers-picker-timer"));
 				// on retarde l'appel javascript de 200ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
 				var timer = setTimeout(function() {
-					XT.doAjaxAction('tiersPickerQuickSearch', document.getElementById('tiers-picker-query'), {
+					var params = {
 						'query' : current,
 						'buttonId' : button.id
-					});
+					};
+					if (filter_bean) {
+						params['filterBean'] = filter_bean;
+						params['filterParams'] = filter_params;
+					}
+					XT.doAjaxAction('tiersPickerQuickSearch', document.getElementById('tiers-picker-query'), params);
 			    }, 200); // 200 ms
 			    $.data(this, "tiers-picker-timer", timer);
 			}
@@ -75,14 +97,19 @@ function open_tiers_picker(button, on_tiers_selection) {
 		// on installe la fonction qui sera appelée lors de la demande de recherche avancée
 		var fullSearch = $('#fullSearch').button();
 		fullSearch.click(function() {
-			XT.doAjaxAction('tiersPickerFullSearch', document.getElementById('tiers-picker-query'), {
+			var params = {
 				'id' : $('#tiers-picker-id').val(),
 				'nomraison' : $('#tiers-picker-nomraison').val(),
 				'localite' : $('#tiers-picker-localite').val(),
 				'datenaissance' : $('#tiers-picker-datenaissance').val(),
 				'noavs' : $('#tiers-picker-noavs').val(),
 				'buttonId' : button.id
-			});
+			};
+			if (filter_bean) {
+				params['filterBean'] = filter_bean;
+				params['filterParams'] = filter_params;
+			}
+			XT.doAjaxAction('tiersPickerFullSearch', document.getElementById('tiers-picker-query'), params);
 		});
 
 		// la fonction pour tout effacer, y compris les résultat de la recherche

@@ -757,8 +757,6 @@ div.progress-bar-text {
 /*
  * Tiers picker
  */
-
-
 #tiers-picker input.text {
 	width:100%;
 	padding: .4em;
@@ -767,6 +765,17 @@ div.progress-bar-text {
 #tiers-picker-dialog a {
 	color: #336CA6;
 	text-decoration: none;
+}
+
+#tiers-picker-filter-description {
+	margin-left: 1em;
+	margin-bottom: 2py;
+	font-style: italic;
+	font-size: 8pt;
+}
+
+#tiers-picker-fulltab {
+	background-color: WhiteSmoke;
 }
 
 /*******************************************************************

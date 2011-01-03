@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 /**
  * Critères de recherche pour les tiers.
  */
-public class TiersCriteria implements Serializable {
+public class TiersCriteria implements Serializable, TiersFilter {
 
 	private static final long serialVersionUID = 4798896788504617011L;
 

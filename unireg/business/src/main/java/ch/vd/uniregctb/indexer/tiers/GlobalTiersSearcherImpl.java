@@ -29,6 +29,7 @@ import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersFilter;
 
 /**
  * Classe principale de recherche de tiers suivant certains criteres
@@ -101,7 +102,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return list;
 	}
 
-	public TopList<TiersIndexedData> searchTop(String keywords, int max) throws IndexerException {
+	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException {
 
 		final int tokenMinLength = 3;
 
@@ -117,6 +118,16 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 		// critère sur le numéro de contribuable
 		final BooleanQuery query = new BooleanQuery();
+
+		if (filter != null) {
+			QueryConstructor.addTypeTiers(query, filter);
+			QueryConstructor.addLimitation(query, filter);
+			QueryConstructor.addAnnule(query, filter);
+			QueryConstructor.addActif(query, filter);
+			QueryConstructor.addDebiteurInactif(query, filter);
+			QueryConstructor.addTiersActif(query, filter);
+		}
+
 		query.add(LuceneEngine.getAnyTermsExact(TiersIndexableData.NUMEROS, keywords), BooleanClause.Occur.SHOULD);
 
 		// critère sur le différents noms

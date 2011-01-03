@@ -7,6 +7,8 @@
 
 		<div id="tiers-picker">
 
+			<div id="tiers-picker-filter-description"></div>
+
 			<div id="tiers-picker-quicktab">
 				<%-- voir la méthode open_tiers_picker() dans dialog.js --%>
 				<table><tr>
@@ -63,7 +65,7 @@
 			</div>
 
 			<div id="tiers-picker-results"><%-- cette DIV est mise-à-jour par Ajax --%></div>
-			
+
 			<script>
 		    $(function() {
 				// fallback autofocus pour les browsers qui ne le supportent pas
