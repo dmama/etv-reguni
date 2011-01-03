@@ -239,6 +239,10 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereDemenagementVDDepuisOuvertureForPrincipal() throws Exception {
 
+		final int periodeCourante = RegDate.get().year();
+		final int periodeEchue = periodeCourante - 2;
+
+		// déménagement dans la période fiscale courante => pas de tâche de contrôle de dossier
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab = new PersonnePhysique(true);
@@ -246,13 +250,13 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(2009, 6, 11), 5586,
+				ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(periodeCourante, 6, 11), 5586,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				forFiscalPrincipalDepart.setMotifOuverture(MotifFor.ARRIVEE_HC);
 				forFiscalPrincipalDepart.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 				hab.addForFiscal(forFiscalPrincipalDepart);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2009, 6, 12), null, 5652,
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(periodeCourante, 6, 12), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				forFiscalPrincipal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				hab.addForFiscal(forFiscalPrincipal);
@@ -265,6 +269,7 @@ public class TacheServiceTest extends BusinessTest {
 		TacheCriteria criterion = new TacheCriteria();
 		verifierTacheControleDossier(criterion, 0);
 
+		// déménagement dans la période fiscale échue => il doit y avoir une tâche de contrôle de dossier
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab2 = new PersonnePhysique(true);
@@ -272,13 +277,13 @@ public class TacheServiceTest extends BusinessTest {
 				hab2.setNumeroIndividu(333904L);
 				hab2 = (PersonnePhysique) hibernateTemplate.merge(hab2);
 
-				ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2008, 6, 11), 5586,
+				ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(periodeEchue, 6, 11), 5586,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				forFiscalPrincipalDepart2.setMotifOuverture(MotifFor.ARRIVEE_HC);
 				forFiscalPrincipalDepart2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 				hab2.addForFiscal(forFiscalPrincipalDepart2);
 
-				ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), null, 5652,
+				ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(periodeEchue, 6, 12), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				forFiscalPrincipal2.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				hab2.addForFiscal(forFiscalPrincipal2);
@@ -290,7 +295,6 @@ public class TacheServiceTest extends BusinessTest {
 
 		TacheCriteria criterion2 = new TacheCriteria();
 		verifierTacheControleDossier(criterion2, 1);
-
 	}
 
 	@Test
@@ -413,6 +417,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
 		final RegDate dateDeces = date(2008, 12, 5);
+		final int anneeCourante = RegDate.get().year();
 
 		// Evénement de décès
 		doInNewTransaction(new TxCallback() {
@@ -426,20 +431,17 @@ public class TacheServiceTest extends BusinessTest {
 
 		final List<Tache> taches = tacheDAO.getAll();
 		assertNotNull(taches);
-		assertEquals(2, taches.size());     // tâche de transmission de dossier + tâche d'annulation de la DI 2009
-
-		// [UNIREG-1305]
-		 TacheEnvoiDeclarationImpot tacheEnvoi = null;
+		assertEquals(2 + anneeCourante - 2010, taches.size()); // tâche de transmission de dossier + tâche d'annulation de la DI 2009
+															   // + les tâches d'envoi de DIs pour [2010..année courante[ qui doivent être annulées suite au décès
 
 		TacheTransmissionDossier tacheTransmission = null;
 		TacheAnnulationDeclarationImpot tacheAnnulationDeclaration = null;
 		for (Tache t : taches) {
-			// [UNIREG-1305]
-			//			if (t instanceof TacheEnvoiDeclarationImpot) {
-			//				tacheEnvoi = (TacheEnvoiDeclarationImpot) t;
-			//				continue;
-			//			}
-			if (t instanceof TacheTransmissionDossier) {
+			if (t instanceof TacheEnvoiDeclarationImpot) {
+				final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) t;
+				assertTrue(tacheEnvoi.isAnnule());
+			}
+			else if (t instanceof TacheTransmissionDossier) {
 				if (tacheTransmission != null) {
 					fail("Trouvé plusieurs tâches de transmission de dossier");
 				}
