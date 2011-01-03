@@ -100,7 +100,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
 				// et enfin le contribuable
 				final PersonnePhysique ralf = addNonHabitant(CTB_ID, "Ralf", "Leboet", date(1960, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(ralf, date(2008, 1, 1), MotifFor.ARRIVEE_HC, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
+				addForPrincipal(ralf, date(2008, 1, 1), MotifFor.ARRIVEE_HC, date(2010, 6, 30), MotifFor.DEPART_HC, MockCommune.Aubonne);
 				addDeclarationImpot(ralf, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
 				
 				return null;
