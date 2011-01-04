@@ -214,7 +214,6 @@
 				<!-- Couple -->
 				<entry key="/couple/list-pp.do" value-ref="personnePhysiqueListController" />
 				<entry key="/couple/recap.do" value-ref="coupleRecapController" />
-				<entry key="/couple/list-ctb.do" value-ref="contribuableListController"/>
 				<!-- Annulation Couple -->
 				<entry key="/annulation/couple/list.do" value-ref="annulationCoupleListController" />
 				<entry key="/annulation/couple/recap.do" value-ref="annulationCoupleRecapController" />

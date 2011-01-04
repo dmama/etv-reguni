@@ -106,8 +106,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				viewTiers1.setNumero(ids.arnold);
 				TiersGeneralView viewTiers2 = new TiersGeneralView();
 				viewTiers2.setNumero(ids.janine);
-				TiersGeneralView viewMC = new TiersGeneralView();
-				viewMC.setNumero(ids.menage);
 
 				CoupleRecapView view = new CoupleRecapView();
 
@@ -116,10 +114,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				view.setNouveauCtb(false);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);
-				view.setTroisiemeTiers(viewMC);
+				view.setNumeroTroisiemeTiers(ids.menage);
 				view.setTypeUnion(TypeUnion.COUPLE);
 
-				tiersService.getTiers(viewMC.getNumero());
 				mngr.save(view);
 				return null;
 			}
@@ -192,8 +189,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				viewTiers1.setNumero(ids.arnold);
 				TiersGeneralView viewTiers2 = new TiersGeneralView();
 				viewTiers2.setNumero(ids.janine);
-				TiersGeneralView viewMC = new TiersGeneralView();
-				viewMC.setNumero(ids.menage);
 
 				CoupleRecapView view = new CoupleRecapView();
 
@@ -202,10 +197,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				view.setNouveauCtb(false);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);
-				view.setTroisiemeTiers(viewMC);
+				view.setNumeroTroisiemeTiers(ids.menage);
 				view.setTypeUnion(TypeUnion.COUPLE);
 
-				tiersService.getTiers(viewMC.getNumero());
 				mngr.save(view);
 				return null;
 			}
@@ -281,8 +275,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				viewTiers1.setNumero(ids.arnold);
 				final TiersGeneralView viewTiers2 = new TiersGeneralView();
 				viewTiers2.setNumero(ids.janine);
-				final TiersGeneralView viewMC = new TiersGeneralView();
-				viewMC.setNumero(ids.menage);
 
 				final CoupleRecapView view = new CoupleRecapView();
 				view.setDateCoupleExistant(RegDate.get());
@@ -290,10 +282,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				view.setNouveauCtb(false);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);
-				view.setTroisiemeTiers(viewMC);
+				view.setNumeroTroisiemeTiers(ids.menage);
 				view.setTypeUnion(TypeUnion.COUPLE);
 
-				tiersService.getTiers(viewMC.getNumero());
 				mngr.save(view);
 				return null;
 			}
@@ -390,8 +381,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 					viewTiers1.setNumero(ids.arnold);
 					TiersGeneralView viewTiers2 = new TiersGeneralView();
 					viewTiers2.setNumero(ids.janine);
-					TiersGeneralView viewMC = new TiersGeneralView();
-					viewMC.setNumero(ids.menage);
 
 					CoupleRecapView view = new CoupleRecapView();
 
@@ -400,10 +389,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 					view.setNouveauCtb(false);
 					view.setPremierePersonne(viewTiers1);
 					view.setSecondePersonne(viewTiers2);
-					view.setTroisiemeTiers(viewMC);
+					view.setNumeroTroisiemeTiers(ids.menage);
 					view.setTypeUnion(TypeUnion.COUPLE);
 
-					tiersService.getTiers(viewMC.getNumero());
 					mngr.save(view);
 					return null;
 				}

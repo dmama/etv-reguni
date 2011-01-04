@@ -7,15 +7,10 @@
 		<c:set var="ligneForme" value="${ligneForme + 1}" scope="request" />
 		<tr class="<c:if test="${(ligneForme % 2) == 0 }">even</c:if><c:if test="${ligneForme % 2 == 1}">odd</c:if>">
 			<td colspan="2">
-				<form:radiobutton path="nouveauCtb" id="nouveauCtb" value="true" onclick="nouveauCtbHandle()"/>
+				<!-- nouveau contribuable -->
+				<form:radiobutton path="nouveauCtb" id="nouveauCtb" value="true" onclick="refresh_panels();"/>
 				<label for="nouveauCtb"><fmt:message key="label.couple.nouveau.contribuable" /></label>
-				<script type="text/javascript" language="Javascript">
-					function nouveauCtbHandle() {
-						togglePanels('nouveauCtb', 'ctbExistantPanel', 'nouveauCtbPanel');
-					}
-					Element.addObserver(window, "load" , nouveauCtbHandle);
-				</script>
-				<div id="nouveauCtbPanel" style="display: none;">
+				<div id="nouveauCtbPanel" style="display:none;">
 					<table>
 						<tr class="<c:if test="${(ligneForme % 2) == 0 }">even</c:if><c:if test="${ligneForme % 2 == 1}">odd</c:if>">
 							<td width="10%">&nbsp;</td>
@@ -35,100 +30,37 @@
 		<c:set var="ligneForme" value="${ligneForme + 1}" scope="request" />
 		<tr class="<c:if test="${(ligneForme % 2) == 0 }">even</c:if><c:if test="${ligneForme % 2 == 1}">odd</c:if>">
 			<td colspan="2">
-				<form:radiobutton path="nouveauCtb" id="ctbExistant" value="false" onclick="ctbExistantHandle()" />
-				
-				<c:url var="ctbURL" value="/couple/list-ctb.do?TB_iframe=true&modal=true&height=350&width=800">
-					<c:if test="${not empty command.premierePersonne}">
-						<c:param name="numeroPP1" value="${command.premierePersonne.numero}" />
-					</c:if>
-					<c:if test="${not empty command.secondePersonne}">
-						<c:param name="numeroPP2" value="${command.secondePersonne.numero}" />
-					</c:if>
-				</c:url>
-				
+				<!-- contribuable existant -->
+				<form:radiobutton path="nouveauCtb" id="ctbExistant" value="false" onclick="refresh_panels();" />
 				<label for="ctbExistant"><fmt:message key="label.couple.contribuable.existant" /></label>
-				<script type="text/javascript" language="Javascript">
-					function ctbExistantHandle() {
-						togglePanels('ctbExistant', 'nouveauCtbPanel', 'ctbExistantPanel');
-						if (!ctbInitialized) {
-							rechercheCtb();
-						}
-					}
-					function rechercheCtb() {
-						tb_show("", "<c:out value="${ctbURL}" />");
-						ctbInitialized=true;
-					}
-					var ctbInitialized=<c:out value="${not command.nouveauCtb}"/>;
-				</script>
-				<div id="ctbExistantPanel" style="display: none;">
+
+				<div id="ctbExistantPanel" style="display:none;">
+
 					<table>
-						<c:set var="contribuableHasErrors" value="${false}"/>
-						<spring:hasBindErrors name="command">
-							<spring:bind path="command.troisiemeTiers">
-								<c:if test="${errors.fieldErrorCount > 0}">
-									<tr>
-										<td colspan="2">
-											<form:errors path="troisiemeTiers" cssClass="error"/>
-											<c:set var="contribuableHasErrors" value="${true}"/>
-										</td>
-									</tr>
-								</c:if>
-							</spring:bind>
-						</spring:hasBindErrors>
-						
-						<c:if test="${not empty command.troisiemeTiers}">
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="10%">&nbsp;</td>
-								<td>
-									<table>
-										<tr>
-											<td width="150px"><fmt:message key="label.date.debut" />&nbsp;:</td>
-											<td>
-												<c:choose>
-													<c:when test="${not empty command.troisiemeTiers and command.troisiemeTiers.natureTiers == 'MenageCommun'}">
-														<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-															<jsp:param name="path" value="dateCoupleExistant" />
-															<jsp:param name="id" value="dateCoupleExistant" />
-														</jsp:include>
-														<font color="#FF0000">*</font>
-													</c:when>
-													<c:otherwise>
-														<unireg:regdate regdate="${command.dateCoupleExistant}" />
-													</c:otherwise>
-												</c:choose>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-						</c:if>
-						
 						<tr>
 							<td width="10%">&nbsp;</td>
+							<td width="150px"><fmt:message key="label.date.debut"/>&nbsp;:</td>
 							<td>
-								<a id="searchLink" href="javascript:;" class="replay" onclick="rechercheCtb();return false">&nbsp;<fmt:message key="label.couple.contribuable.chercher"/></a>
+								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+									<jsp:param name="path" value="dateCoupleExistant" />
+									<jsp:param name="id" value="dateCoupleExistant" />
+								</jsp:include>
+								<font color="#FF0000">*</font>
 							</td>
+							<td rowspan="2" valign="top"><div id="vignetteTroisiemeTiers"/></td>
 						</tr>
-						<tr class="<c:if test="${(ligneForme % 2) == 0 }">even</c:if><c:if test="${ligneForme % 2 == 1}">odd</c:if>" >
-							<td width="10%">&nbsp;</td>
-							<td>
-								<c:choose>
-									<c:when test="${not empty command.troisiemeTiers}">
-										<jsp:include page="../../../general/contribuable.jsp">
-											<jsp:param name="page" value="couple" />
-											<jsp:param name="path" value="troisiemeTiers" />
-											<jsp:param name="className" value="coupleContribuableOuvert"/>
-										</jsp:include>
-									</c:when>
-									<c:otherwise>
-										<c:if test="${not contribuableHasErrors}">
-											<fmt:message key="label.couple.aucun.contribuable" />
-										</c:if>
-									</c:otherwise>
-								</c:choose>
+						<tr>
+							<td>&nbsp;</td>
+							<td valign="top"><fmt:message key="label.numero.contribuable"/>&nbsp;:</td>
+							<td valign="top">
+								<form:input path="numeroTroisiemeTiers" id="numeroTroisiemeTiers"/>
+								<button id="button_numeroTroisiemeTiers" onclick="return search_troisieme(this);">...</button>
+								<form:errors path="numeroTroisiemeTiers" cssClass="error"/>
 							</td>
+							<td/>
 						</tr>
 					</table>
+
 				</div>
 			</td>
 		</tr>
@@ -140,6 +72,55 @@
 			</td>
 		</tr>
 	</table>
-	
+
+	<script>
+
+		$(function() {
+			refresh_panels();
+
+			var troisiemeTiers = $('#numeroTroisiemeTiers');
+
+			// function pour mettre-à-jour la vignette lors de tout changement du numéro du tiers remplaçant
+			troisiemeTiers.change(function() {
+				var id = $(this).val();
+				id = id.replace(/[^0-9]*/g, ''); // remove non-numeric chars
+				refresh_troisieme(id);
+			});
+
+			// on force l'affichage de la vignette si le numéro du troisième tiers est renseigné lors du chargement de la page
+			if (troisiemeTiers.val()) {
+				troisiemeTiers.change();
+			}
+		});
+
+		function refresh_panels() {
+			if ($('#nouveauCtb').attr('checked')) {
+				$('#nouveauCtbPanel').show();
+				$('#ctbExistantPanel').hide();
+			}
+			else {
+				$('#nouveauCtbPanel').hide();
+				$('#ctbExistantPanel').show();
+			}
+		}
+
+		function search_troisieme(button) {
+			return open_tiers_picker_with_filter(button, 'coupleRecapPickerFilterFactory', null, function(id) {
+				$('#numeroTroisiemeTiers').val(id);
+				refresh_troisieme(id);
+			});
+		}
+
+		function refresh_troisieme(id) {
+			if (id) {
+				$('#vignetteTroisiemeTiers').load(getContextPath() + '/tiers/vignette.do?numero=' + id + '&titre=Contribuable%20existant&showAvatar=true');
+			}
+			else {
+				$('#vignetteTroisiemeTiers').attr('innerHTML', '');
+			}
+			return false;
+		}
+	</script>
+
 </fieldset>
 <!-- Fin Rapport Menage Commun -->

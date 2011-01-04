@@ -24,7 +24,7 @@ public class CoupleRecapView {
 	/**
 	 * Indique quel est le contribuable ouvert existant à utiliser comme ménage commun. 
 	 */
-	private TiersGeneralView troisiemeTiers;
+	private Long numeroTroisiemeTiers;
 	
 	private TypeUnion typeUnion = TypeUnion.COUPLE;
 	
@@ -48,12 +48,12 @@ public class CoupleRecapView {
 		this.secondePersonne = secondePersonne;
 	}
 
-	public TiersGeneralView getTroisiemeTiers() {
-		return troisiemeTiers;
+	public Long getNumeroTroisiemeTiers() {
+		return numeroTroisiemeTiers;
 	}
 
-	public void setTroisiemeTiers(TiersGeneralView troisiemeTiers) {
-		this.troisiemeTiers = troisiemeTiers;
+	public void setNumeroTroisiemeTiers(Long numeroTroisiemeTiers) {
+		this.numeroTroisiemeTiers = numeroTroisiemeTiers;
 	}
 
 	public Date getDateDebut() {

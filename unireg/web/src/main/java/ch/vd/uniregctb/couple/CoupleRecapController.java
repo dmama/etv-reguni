@@ -1,16 +1,21 @@
 package ch.vd.uniregctb.couple;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -36,17 +41,20 @@ public class CoupleRecapController extends AbstractSimpleFormController {
 
 	private CoupleRecapManager coupleRecapManager;
 
-	public CoupleRecapManager getCoupleRecapManager() {
-		return coupleRecapManager;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCoupleRecapManager(CoupleRecapManager coupleRecapManager) {
 		this.coupleRecapManager = coupleRecapManager;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
+	@Override
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
+		super.initBinder(request, binder);
+		final Locale locale = request.getLocale();
+		final NumberFormat numberFormat = NumberFormat.getInstance(locale);
+		numberFormat.setGroupingUsed(false); // pour éviter d'afficher des virgules dans le numéro de contribuable
+		binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, numberFormat, true));
+	}
+
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
@@ -120,32 +128,6 @@ public class CoupleRecapController extends AbstractSimpleFormController {
 		return data;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse,
-	 *      org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBindAndValidate(javax.servlet.http.HttpServletRequest,
-	 *      java.lang.Object, org.springframework.validation.BindException)
-	 */
-	@Override
-	protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors) throws Exception {
-		super.onBindAndValidate(request, command, errors);
-	}
-
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 		throws Exception {
@@ -156,10 +138,20 @@ public class CoupleRecapController extends AbstractSimpleFormController {
 			checkAccesDossierEnEcriture(coupleRecapView.getSecondePersonne().getNumero());
 		}
 
-		ContribuableListController.effaceCriteresRecherche(request);
+		effaceCriteresRecherche(request);
 
 		MenageCommun menageCommun = coupleRecapManager.save(coupleRecapView);
 		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + menageCommun.getNumero(), true));
 	}
 
+	public static final String CTB_CRITERIA_NAME = "ctbCriteria";
+
+	/**
+	 * Appelé depuis d'autres controlleurs pour effacer les critères de recherche utilisés
+	 * lors de la recherche d'un contribuable non-habitant pour la constitution d'un couple
+	 */
+	public static void effaceCriteresRecherche(HttpServletRequest request) {
+		HttpSession session = request.getSession(true);
+		session.removeAttribute(CTB_CRITERIA_NAME);
+	}
 }

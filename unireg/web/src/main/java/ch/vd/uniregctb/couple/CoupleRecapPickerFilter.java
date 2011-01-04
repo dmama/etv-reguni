@@ -1,0 +1,95 @@
+package ch.vd.uniregctb.couple;
+
+import java.util.List;
+
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.picker.TiersPickerFilterWithPostFiltering;
+
+/**
+ * Filtre spécialisé pour l'écran de recherche d'un troisième tiers dans la constitution d'un couple.
+ */
+public class CoupleRecapPickerFilter implements TiersPickerFilterWithPostFiltering {
+
+	private final TiersDAO tiersDAO;
+
+	public CoupleRecapPickerFilter(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
+	public String getDescription() {
+		return "recherche limitée aux non-habitants avec for principal ouvert sans situation de famille active ni code sexe renseigné et aux ménages communs sans aucun lien d'appartenance ménage";
+	}
+
+	public TiersCriteria.TypeVisualisation getTypeVisualisation() {
+		return TiersCriteria.TypeVisualisation.COMPLETE;
+	}
+
+	public TiersCriteria.TypeTiers getTypeTiers() {
+		return TiersCriteria.TypeTiers.NON_HABITANT_OU_MENAGE_COMMUN;
+	}
+
+	public boolean isInclureI107() {
+		return false;
+	}
+
+	public boolean isInclureTiersAnnules() {
+		return false;
+	}
+
+	public boolean isTiersAnnulesSeulement() {
+		return false;
+	}
+
+	public Boolean isTiersActif() {
+		return null;
+	}
+
+	public void postFilter(List<TiersIndexedData> list) {
+		for (int i = list.size() - 1; i >= 0; i--) {
+			final TiersIndexedData tiersIndexedData = list.get(i);
+			final Tiers contribuable = tiersDAO.get(tiersIndexedData.getNumero());
+
+			final boolean valide = isValideCommeTroisiemeTiers(contribuable);
+			if (!valide) {
+				list.remove(i);
+			}
+		}
+	}
+
+	/**
+	 * @param tiers un tiers
+	 * @return <b>vrai</b> si le tiers spécifié est valide pour être utilisé comme tiers ménage-commun lors de la création d'un couple.
+	 */
+	public static boolean isValideCommeTroisiemeTiers(Tiers tiers) {
+		final boolean valide;
+		if (tiers instanceof PersonnePhysique) {
+			final PersonnePhysique pp = (PersonnePhysique) tiers;
+			// seulement les non-habitants ouverts et indéterminés doivent être affichés
+			valide = (!pp.isHabitantVD() && pp.getSexe() == null && pp.getSituationFamilleActive() == null && pp.getForFiscalPrincipalAt(null) != null);
+		}
+		else if (tiers instanceof MenageCommun) {
+			final MenageCommun menage = (MenageCommun) tiers;
+
+			// [UNIREG-1212], [UNIREG-1881] Seuls les ménages communs ne possédant aucun lien d'appartenance ménage non-annulé sont considérés valides
+			boolean rapportNonAnnuleTrouve = false;
+			for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
+				if (!rapport.isAnnule()) {
+					rapportNonAnnuleTrouve = true;
+					break;
+				}
+			}
+
+			valide = !rapportNonAnnuleTrouve;
+		}
+		else {
+			valide = false;
+		}
+		return valide;
+	}
+}

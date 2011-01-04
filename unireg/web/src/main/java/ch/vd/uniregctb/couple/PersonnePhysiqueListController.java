@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.couple;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -63,7 +62,7 @@ public class PersonnePhysiqueListController extends  AbstractTiersListController
 				removeModuleFromSession(request, PP_CRITERIA_NAME);
 			}
 			else {
-				ContribuableListController.effaceCriteresRecherche(request);
+				CoupleRecapController.effaceCriteresRecherche(request);
 			}
 		}
 		else if (SECOND_TIER.equals(coupleListView.getPage())) {
@@ -92,8 +91,7 @@ public class PersonnePhysiqueListController extends  AbstractTiersListController
 
 		HttpSession session = request.getSession();
 		CoupleListView bean = (CoupleListView) session.getAttribute(PP_CRITERIA_NAME);
-		ModelAndView mav = showFormForList(request, response, errors, model, PP_CRITERIA_NAME, PP_LIST_ATTRIBUTE_NAME, bean, true);
-		return mav;
+		return showFormForList(request, response, errors, model, PP_CRITERIA_NAME, PP_LIST_ATTRIBUTE_NAME, bean, true);
 	}
 
 

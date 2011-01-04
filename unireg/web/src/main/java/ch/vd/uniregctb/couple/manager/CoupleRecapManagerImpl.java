@@ -128,7 +128,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 		}
 		coupleRecapView.setNouveauCtb(contribuableCouple == null);
 		if (contribuableCouple != null) {
-			coupleRecapView.setTroisiemeTiers(tiersGeneralManager.getTiers(contribuableCouple, true));
+			coupleRecapView.setNumeroTroisiemeTiers(contribuableCouple.getNumero());
 		}
 
 		if (premierPP != null && secondPP != null) {
@@ -242,9 +242,9 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 		switch (coupleRecapView.getTypeUnion()) {
 			case SEUL:
 			case COUPLE:
-				if (coupleRecapView.getTroisiemeTiers() != null) {
+				if (coupleRecapView.getNumeroTroisiemeTiers() != null) {
 					{
-						final Tiers tiers = tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
+						final Tiers tiers = tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
 						if (tiers instanceof PersonnePhysique) {
 							// changement de type de NonHabitant à MenageCommun
 							final PersonnePhysique pp = (PersonnePhysique) tiers;
@@ -278,7 +278,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 					}
 
 					// rattachement des tiers au ménage
-					final MenageCommun menage = (MenageCommun) tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
+					final MenageCommun menage = (MenageCommun) tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
 					return metierService.rattachToMenage(menage, premierPP, secondPP, date, coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil(), false, null);
 				}
 				else {

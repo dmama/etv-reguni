@@ -22,15 +22,10 @@
 		<property name="validator" ref="coupleRecapValidator" />
 	</bean>
 	
-	<bean id="contribuableListController" class="ch.vd.uniregctb.couple.ContribuableListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/edition/couple/ctb/list" />
-		<property name="successView" value="list-ctb.do" />
-		<property name="validator" ref="tiersCriteriaValidator" />
+	<bean id="coupleRecapPickerFilterFactory" class="ch.vd.uniregctb.couple.CoupleRecapPickerFilterFactory">
+		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
-	
+
 	<bean id="coupleRecapManager" class="ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl" parent="tiersManager">
 		<property name="metierService" ref="metierService" />
 		<property name="coupleHelper" ref="coupleHelper" />

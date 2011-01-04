@@ -14,6 +14,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.couple.CoupleHelper;
 import ch.vd.uniregctb.couple.CoupleHelper.Couple;
+import ch.vd.uniregctb.couple.CoupleRecapPickerFilter;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
 import ch.vd.uniregctb.metier.MetierService;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.utils.ValidateHelper;
@@ -38,24 +40,12 @@ public class CoupleRecapValidator implements Validator {
 	private CoupleHelper coupleHelper;
 	private SituationFamilleService situationFamilleService;
 
-	public MetierService getMetierService() {
-		return metierService;
-	}
-
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
 	}
 
-	public TiersService getTiersService() {
-		return tiersService;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public CoupleHelper getCoupleHelper() {
-		return coupleHelper;
 	}
 
 	public void setCoupleHelper(CoupleHelper coupleHelper) {
@@ -77,10 +67,20 @@ public class CoupleRecapValidator implements Validator {
 		final RegDate dateDebut;
 		final String dateDebutField;
 		if ((typeUnion == TypeUnion.COUPLE || typeUnion == TypeUnion.SEUL) && !coupleRecapView.isNouveauCtb()) {
-			if (coupleRecapView.getTroisiemeTiers() == null) {
-				errors.rejectValue("troisiemeTiers", "error.aucun.contribuable.existant");
+			if (coupleRecapView.getNumeroTroisiemeTiers() == null) {
+				errors.rejectValue("numeroTroisiemeTiers", "error.aucun.contribuable.existant");
 				return;
 			}
+			final Tiers troisieme = tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
+			if (troisieme == null) {
+				errors.rejectValue("numeroTroisiemeTiers", "error.tiers.inexistant");
+			}
+			else {
+				if (!CoupleRecapPickerFilter.isValideCommeTroisiemeTiers(troisieme)) {
+					errors.rejectValue("numeroTroisiemeTiers", "error.troisieme.tiers.non.valide");
+				}
+			}
+
 			dateDebut = coupleRecapView.getDateCoupleExistant();
 			dateDebutField = "dateCoupleExistant";
 		}
@@ -170,10 +170,7 @@ public class CoupleRecapValidator implements Validator {
 	}
 
 	private boolean estPretPourMariage(ch.vd.uniregctb.type.EtatCivil etatCivil) {
-		if (etatCivil == null) {
-			return true;
-		}
-		return ch.vd.uniregctb.type.EtatCivil.SEPARE != etatCivil;
+		return etatCivil == null || ch.vd.uniregctb.type.EtatCivil.SEPARE != etatCivil;
 	}
 
 	private void checkFors(PersonnePhysique pp, String field, RegDate date, Errors errors) {
@@ -186,13 +183,7 @@ public class CoupleRecapValidator implements Validator {
 		}
 	}
 	
-	public SituationFamilleService getSituationFamilleService() {
-		return situationFamilleService;
-	}
-
-	public void setSituationFamilleService(
-			SituationFamilleService situationFamilleService) {
+	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
 	}
-	
 }
