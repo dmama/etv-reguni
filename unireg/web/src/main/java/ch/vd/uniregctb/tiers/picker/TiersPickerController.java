@@ -26,10 +26,16 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 public class TiersPickerController extends CommonSimpleFormController implements AjaxHandler {
 
 	private GlobalTiersSearcher searcher;
+	private TiersPickerManager manager;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSearcher(GlobalTiersSearcher searcher) {
 		this.searcher = searcher;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setManager(TiersPickerManager manager) {
+		this.manager = manager;
 	}
 
 	public AjaxResponse handle(AjaxEvent event) {
@@ -94,6 +100,8 @@ public class TiersPickerController extends CommonSimpleFormController implements
 		else {
 			try {
 				final TopList<TiersIndexedData> list = searcher.searchTop(query, filter, 50);
+				postFilter(filter, list);
+
 				if (list != null && !list.isEmpty()) {
 					components.add(new SimpleText(buildSummary(list)));
 					components.add(new TiersPickerResultsTable(list, buttonId));
@@ -108,6 +116,12 @@ public class TiersPickerController extends CommonSimpleFormController implements
 		}
 
 		return components;
+	}
+
+	private void postFilter(TiersPickerFilter filter, TopList<TiersIndexedData> list) {
+		if (filter instanceof TiersPickerFilterWithPostFiltering) {
+			manager.postFilter((TiersPickerFilterWithPostFiltering) filter, list);
+		}
 	}
 
 	private List<Component> fullSearch(String buttonId, String id, String nomraison, String localite, String datenaissance, String noavs, TiersPickerFilter filter) {
@@ -147,7 +161,10 @@ public class TiersPickerController extends CommonSimpleFormController implements
 				if (!isLessThan3Chars(noavs)) {
 					criteria.setNumeroAVS(noavs);
 				}
+
 				final TopList<TiersIndexedData> list = searcher.searchTop(criteria, 50);
+				postFilter(filter, list);
+
 				if (list != null && !list.isEmpty()) {
 					components.add(new SimpleText(buildSummary(list)));
 					components.add(new TiersPickerResultsTable(list, buttonId));

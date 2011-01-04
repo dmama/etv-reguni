@@ -10,7 +10,7 @@ public class TiersPickerFilterFactoryImpl implements TiersPickerFilterFactory {
 
 	public TiersPickerFilter parse(String paramsString) {
 		final Map<String, String> params = mapParams(paramsString);
-		return new TiersPickerFilter(params);
+		return new BasicTiersPickerFilter(params);
 	}
 
 	/**

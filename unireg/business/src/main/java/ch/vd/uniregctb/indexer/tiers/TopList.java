@@ -25,4 +25,25 @@ public class TopList<T> extends ArrayList<T> {
 	public void setTotalHits(int totalHits) {
 		this.totalHits = totalHits;
 	}
+
+	@Override
+	public T remove(int index) {
+		totalHits--;
+		return super.remove(index);
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		final boolean removed = super.remove(o);
+		if (removed) {
+			totalHits--;
+		}
+		return removed;
+	}
+
+	@Override
+	protected void removeRange(int fromIndex, int toIndex) {
+		super.removeRange(fromIndex, toIndex);
+		totalHits -= (toIndex - fromIndex);
+	}
 }
