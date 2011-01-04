@@ -15,19 +15,6 @@
 	<bean id="tiersActivationListManager" class="ch.vd.uniregctb.activation.manager.TiersActivationListManagerImpl">
 	</bean>
 
-	<bean id="tiersRemplacementListController" class="ch.vd.uniregctb.activation.TiersRemplacementListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.activation.view.TiersRemplacementListView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="activation/annulation/list" />
-		<property name="successView" value="list.do" />
-		<property name="tiersRemplacementListManager" ref="tiersRemplacementListManager" />
-		<property name="validator" ref="tiersCriteriaValidator" />
-	</bean>
-
-	<bean id="tiersRemplacementListManager" class="ch.vd.uniregctb.activation.manager.TiersRemplacementListManagerImpl">
-	</bean>
-
 	<bean id="tiersAnnulationRecapController" class="ch.vd.uniregctb.activation.TiersAnnulationRecapController" parent="abstractSimpleFormController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.activation.view.TiersAnnulationRecapView" />
@@ -39,12 +26,12 @@
 	</bean>
 	
 	<bean id="tiersAnnulationRecapManager" class="ch.vd.uniregctb.activation.manager.TiersAnnulationRecapManagerImpl">
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="activationService" ref="activationService" />
 	</bean>
 	
 	<bean id="tiersAnnulationRecapValidator" class="ch.vd.uniregctb.activation.validator.TiersAnnulationRecapValidator" >
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 	
 	<bean id="tiersReactivationRecapController" class="ch.vd.uniregctb.activation.TiersReactivationRecapController" parent="abstractSimpleFormController">

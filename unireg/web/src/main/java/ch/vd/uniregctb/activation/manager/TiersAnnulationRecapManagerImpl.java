@@ -7,8 +7,6 @@ import ch.vd.uniregctb.activation.ActivationService;
 import ch.vd.uniregctb.activation.ActivationServiceException;
 import ch.vd.uniregctb.activation.view.TiersAnnulationRecapView;
 import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -16,20 +14,14 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 
 	public static final Logger LOGGER = Logger.getLogger(TiersAnnulationRecapManagerImpl.class);
 
-	private TiersGeneralManager tiersGeneralManager;
-
 	private TiersService tiersService;
-
 	private ActivationService activationService;
-
-	public void setTiersGeneralManager(TiersGeneralManager tiersGeneralManager) {
-		this.tiersGeneralManager = tiersGeneralManager;
-	}
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setActivationService(ActivationService activationService) {
 		this.activationService = activationService;
 	}
@@ -46,10 +38,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 		final TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
 		final Tiers tiers = tiersService.getTiers(numeroTiers);
 		tiersAnnulationRecapView.setTypeTiers(tiers.getType());
-
-		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
-		tiersAnnulationRecapView.setTiers(tiersGeneralView);
-		tiersAnnulationRecapView.setNouveauTiers(true);
+		tiersAnnulationRecapView.setNumeroTiers(numeroTiers);
 
 		return tiersAnnulationRecapView;
 	}
@@ -67,14 +56,8 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 		final TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
 		final Tiers tiers = tiersService.getTiers(numeroTiers);
 		tiersAnnulationRecapView.setTypeTiers(tiers.getType());
-
-		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
-		tiersAnnulationRecapView.setTiers(tiersGeneralView);
-
-		final Tiers tiersRemplacant = tiersService.getTiers(numeroTiersRemplacant);
-		final TiersGeneralView tiersRemplacantGeneralView = tiersGeneralManager.getTiers(tiersRemplacant, true);
-		tiersAnnulationRecapView.setTiersRemplacant(tiersRemplacantGeneralView);
-		tiersAnnulationRecapView.setNouveauTiers(false);
+		tiersAnnulationRecapView.setNumeroTiers(numeroTiers);
+		tiersAnnulationRecapView.setNumeroTiersRemplacant(numeroTiersRemplacant);
 		return tiersAnnulationRecapView;
 	}
 
@@ -88,9 +71,9 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	public void save(TiersAnnulationRecapView tiersAnnulationRecapView) {
 
 		try {
-			final Tiers tiers = tiersService.getTiers(tiersAnnulationRecapView.getTiers().getNumero());
-			if (tiersAnnulationRecapView.getTiersRemplacant() != null) {
-				final Tiers tiersRemplacant = tiersService.getTiers(tiersAnnulationRecapView.getTiersRemplacant().getNumero());
+			final Tiers tiers = tiersService.getTiers(tiersAnnulationRecapView.getNumeroTiers());
+			if (tiersAnnulationRecapView.getNumeroTiersRemplacant() != null) {
+				final Tiers tiersRemplacant = tiersService.getTiers(tiersAnnulationRecapView.getNumeroTiersRemplacant());
 				activationService.remplaceTiers(tiers, tiersRemplacant, tiersAnnulationRecapView.getDateAnnulation());
 			}
 			else {

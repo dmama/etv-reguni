@@ -65,7 +65,7 @@ function open_tiers_picker_with_filter(button, filter_bean, filter_params, on_ti
 	};
 
 	// load remote content
-	var url = getContextPath() + "tiers/picker/tiers-picker.do";
+	var url = getContextPath() + "/tiers/picker/tiers-picker.do";
 	dialog.load(url, function() {
 		// Note: le code de cette fonction réfère à des éléments du DOM qui sont dans la boîte de dialogue. En dehors de ce call-back, cela ne fonctionne pas.
 		var query = $('#tiers-picker-query');

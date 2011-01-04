@@ -1,27 +1,14 @@
 package ch.vd.uniregctb.activation.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class TiersAnnulationRecapView {
 
-	private TiersGeneralView tiers;
+	private Long numeroTiers;
 	private TypeTiers typeTiers;
-
-	private TiersGeneralView tiersRemplacant;
-
+	private Long numeroTiersRemplacant;
 	private RegDate dateAnnulation;
-
-	private boolean nouveauTiers = true;
-
-	public TiersGeneralView getTiers() {
-		return tiers;
-	}
-
-	public void setTiers(TiersGeneralView tiers) {
-		this.tiers = tiers;
-	}
 
 	public TypeTiers getTypeTiers() {
 		return typeTiers;
@@ -31,12 +18,20 @@ public class TiersAnnulationRecapView {
 		this.typeTiers = typeTiers;
 	}
 
-	public TiersGeneralView getTiersRemplacant() {
-		return tiersRemplacant;
+	public Long getNumeroTiers() {
+		return numeroTiers;
 	}
 
-	public void setTiersRemplacant(TiersGeneralView tiersRemplacant) {
-		this.tiersRemplacant = tiersRemplacant;
+	public void setNumeroTiers(Long numeroTiers) {
+		this.numeroTiers = numeroTiers;
+	}
+
+	public Long getNumeroTiersRemplacant() {
+		return numeroTiersRemplacant;
+	}
+
+	public void setNumeroTiersRemplacant(Long numeroTiersRemplacant) {
+		this.numeroTiersRemplacant = numeroTiersRemplacant;
 	}
 
 	public RegDate getDateAnnulation() {
@@ -46,13 +41,4 @@ public class TiersAnnulationRecapView {
 	public void setDateAnnulation(RegDate dateAnnulation) {
 		this.dateAnnulation = dateAnnulation;
 	}
-
-	public boolean isNouveauTiers() {
-		return nouveauTiers;
-	}
-
-	public void setNouveauTiers(boolean nouveauTiers) {
-		this.nouveauTiers = nouveauTiers;
-	}
-
 }

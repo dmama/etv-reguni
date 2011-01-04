@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.activation;
 
-import java.util.Map;
-
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -24,6 +27,15 @@ public class TiersAnnulationRecapController extends AbstractSimpleFormController
 
 	public void setTiersAnnulationRecapManager(TiersAnnulationRecapManager tiersAnnulationRecapManager) {
 		this.tiersAnnulationRecapManager = tiersAnnulationRecapManager;
+	}
+
+	@Override
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
+		super.initBinder(request, binder);
+		final Locale locale = request.getLocale();
+		final NumberFormat numberFormat = NumberFormat.getInstance(locale);
+		numberFormat.setGroupingUsed(false); // pour éviter d'afficher des virgules dans le numéro de contribuable
+		binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, numberFormat, true));
 	}
 
 	/**
@@ -49,28 +61,6 @@ public class TiersAnnulationRecapController extends AbstractSimpleFormController
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse,
-	 *      org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBindAndValidate(javax.servlet.http.HttpServletRequest,
-	 *      java.lang.Object, org.springframework.validation.BindException)
-	 */
-	@Override
-	protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors) throws Exception {
-		super.onBindAndValidate(request, command, errors);
-	}
-
-
-	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
@@ -79,15 +69,15 @@ public class TiersAnnulationRecapController extends AbstractSimpleFormController
 		throws Exception {
 
 		TiersAnnulationRecapView tiersAnnulationRecapView = (TiersAnnulationRecapView) command;
-		checkAccesDossierEnEcriture(tiersAnnulationRecapView.getTiers().getNumero());
+		checkAccesDossierEnEcriture(tiersAnnulationRecapView.getNumeroTiers());
 
 		tiersAnnulationRecapManager.save(tiersAnnulationRecapView);
-		if (tiersAnnulationRecapView.getTiersRemplacant() == null) {
-			return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + tiersAnnulationRecapView.getTiers().getNumero(), true));
+		if (tiersAnnulationRecapView.getNumeroTiersRemplacant() == null) {
+			return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + tiersAnnulationRecapView.getNumeroTiers(), true));
 		}
 		else
 		{
-			return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + tiersAnnulationRecapView.getTiersRemplacant().getNumero(), true));
+			return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + tiersAnnulationRecapView.getNumeroTiersRemplacant(), true));
 		}
 
 	}

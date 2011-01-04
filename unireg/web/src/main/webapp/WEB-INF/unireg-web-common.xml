@@ -263,7 +263,6 @@
 				<entry key="/common/docs.do" value-ref="documentController" />
 				<!-- Annulation / Réactivation -->
 				<entry key="/activation/list.do" value-ref="tiersActivationListController" />
-				<entry key="/activation/remplacement/list.do" value-ref="tiersRemplacementListController" />
 				<entry key="/activation/annulation/recap.do" value-ref="tiersAnnulationRecapController" />
 				<entry key="/activation/reactivation/recap.do" value-ref="tiersReactivationRecapController" />
 				<!-- Identification CTB -->
