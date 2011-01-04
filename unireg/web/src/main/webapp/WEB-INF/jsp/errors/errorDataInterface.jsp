@@ -7,8 +7,7 @@
 	<tiles:put name="title" type="String">Problème de consistence des données du registre civil</tiles:put>
 	
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<h2>Unireg a détecté un problème de consistence des données dans le registre civil.</h2>
 		<hr>
 		<p>Le problème détecté est le suivant:</p>

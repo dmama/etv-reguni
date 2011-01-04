@@ -10,8 +10,7 @@
 	</tiles:put>
 
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Unireg a détecté une erreur dans les données fournies par le
 		registre
 		<c:if test="${exception.numeroCtb != null}">

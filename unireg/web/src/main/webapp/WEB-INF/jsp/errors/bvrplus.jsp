@@ -10,8 +10,7 @@
 	</tiles:put>
 
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Unireg n'a pas pu effectuer l'opération demandée car une erreur s'est produite lors de la communication avec le service SIPF/BVRPlus.</p>
 		<p>Cette erreur peut survenir si l'application SIPF ne répond pas, ou si un problème d'infrastructure empêche la communication entre Unireg et SIPF.</p>
 

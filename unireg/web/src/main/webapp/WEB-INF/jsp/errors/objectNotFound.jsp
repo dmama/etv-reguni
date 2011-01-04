@@ -9,8 +9,7 @@
 	<tiles:put name="connected" type="String">
 	</tiles:put>
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<pre><font color="red"><c:out value="${exception.message}" /></font><br></pre>
 		<br>
 		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:history.go(-1);" />

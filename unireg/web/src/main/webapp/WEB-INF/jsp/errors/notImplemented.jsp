@@ -9,8 +9,7 @@
 	<tiles:put name="connected" type="String">
 	</tiles:put>
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Cette fonctionnalité n'est pas encore implémentée. Elle sera livrée dans une prochaine version d'Unireg.</p>
 		
 		<br><hr><br>

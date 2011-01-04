@@ -632,8 +632,7 @@ var Modifier = {
 		var link = element;
 	    var href = link.href;
 		return ( href != null && href !== "" && href.indexOf("#") <0  &&
-	    		(link.target =='' || link.target =="_self") && link.onclick == null
-	    		&& link.className.indexOf("thickbox") < 0)
+	    		(link.target =='' || link.target =="_self") && link.onclick == null)
 	},
  
 	setIsModified : function( modified) {

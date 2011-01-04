@@ -10,8 +10,7 @@
 	</tiles:put>
 
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Un autre utilisateur a modifié le tiers dans la base de données
 		en même temps que vous.</p>
 		<p>Cette erreur survient lorsque un tiers est modifié par deux

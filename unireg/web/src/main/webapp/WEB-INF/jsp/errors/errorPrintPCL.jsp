@@ -9,8 +9,7 @@
 	<tiles:put name="connected" type="String">
 	</tiles:put>
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p><c:out value="${exception.message}"/></p>
 		<br>
 		<unireg:callstack exception="${exception}"

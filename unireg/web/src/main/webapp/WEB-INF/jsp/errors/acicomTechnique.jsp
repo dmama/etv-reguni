@@ -10,8 +10,7 @@
 	</tiles:put>
 
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Unireg n'a pas pu effectuer l'opération demandée car une erreur s'est produite lors de la communication avec le service de récupération de message ACICOM.</p>
 		<p>Cette erreur peut survenir si l'application ACICOM ne répond pas, ou si un problème d'infrastructure empêche la communication entre Unireg et ACICOM.</p>
 		<p><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:history.go(-1);" />

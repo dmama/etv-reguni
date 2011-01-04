@@ -19,7 +19,6 @@ function ouvrirAide(url) {
 		<link media="screen" href="<c:url value="/css/x/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/thickbox.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
 
@@ -38,8 +37,7 @@ function ouvrirAide(url) {
 		<link media="print" href="<c:url value="/css/print/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/thickbox.css"/>" rel="stylesheet" type="text/css">
-		
+
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/request.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/custom.js"/>"></script>
@@ -48,7 +46,6 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/dialog.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/autocomplete.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/thickbox.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/for.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/di.js"/>"></script>

@@ -10,8 +10,7 @@
 	</tiles:put>
 
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Unireg n'est pas en mesure de construire l'adresse du tiers
 		courant.</p>
 		<p>Cette erreur peut survenir en cas des données incohérentes dans

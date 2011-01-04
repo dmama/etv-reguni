@@ -365,12 +365,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>id à associer au lien</description>
 		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -408,12 +402,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>id à associer au lien</description>
 		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -450,12 +438,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>id à associer au lien</description>
-		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
 		</attribute>
 	</tag>
 
@@ -512,12 +494,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>id à associer au lien</description>
 		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -554,12 +530,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>id à associer au lien</description>
-		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
 		</attribute>
 	</tag>
 
@@ -598,12 +568,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>id à associer au lien</description>
 		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -641,12 +605,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>id à associer au lien</description>
 		</attribute>
-		<attribute>
-			<name>thickbox</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -674,18 +632,6 @@
 		</attribute>
 	</tag>
 
-	<tag>
-		<name>closeOverlayButton</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagCloseOverlayButton</tag-class>
-		<body-content>JSP</body-content>
-		<description>Permet d'afficher un bouton pour fermer l'overlay. Le bouton ne s'affiche que s'il est bien dans un overlay.</description>
-		<attribute>
-			<name>text</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>le texte du bouton ('Fermer' par défaut)</description>
-		</attribute>
-	</tag>
 	<tag>
 		<name>RetourButton</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagRetourButton</tag-class>

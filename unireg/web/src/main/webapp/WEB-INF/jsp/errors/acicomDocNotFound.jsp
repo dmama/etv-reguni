@@ -8,7 +8,6 @@
 	</tiles:put>
 
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
 
 		<p>Unireg n'a pu effectuer l'opération demandée: Le message  d'origine n'a pu être trouvé par le service de récupération de message ACICOM.</p>
 		<p><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:history.go(-1);" />

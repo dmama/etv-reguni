@@ -34,8 +34,6 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 
 	private String id;
 
-	private boolean thickbox;
-
 	/**
 	 * @see javax.servlet.jsp.tagext.BodyTagSupport#doStartTag()
 	 */
@@ -84,14 +82,6 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		this.link = link;
 	}
 
-	public boolean isThickbox() {
-		return thickbox;
-	}
-
-	public void setThickbox(boolean thickbox) {
-		this.thickbox = thickbox;
-	}
-
 	@Override
 	public String getId() {
 		return id;
@@ -108,9 +98,6 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		builder.append(getHRef());
 		builder.append("\" class=\"");
 		builder.append(getCssClass());
-		if (isThickbox()) {
-			builder.append(" thickbox");
-		}
 
 		final String onClick = getOnClick();
 		if (!estVide(onClick)) {

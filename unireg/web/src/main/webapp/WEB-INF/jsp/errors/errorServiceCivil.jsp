@@ -9,8 +9,7 @@
 	<tiles:put name="connected" type="String"></tiles:put>
 
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Une erreur est survenue lors de la connexion au registre civil.</p>
 		<p>Le registre civil peut être temporairement indisponible, ou un
 		autre problème prévient le registre de fonctionner correctement.</p>

@@ -9,8 +9,7 @@
 	<tiles:put name="connected" type="String">
 	</tiles:put>
 	<tiles:put name="body" type="String">
-		<unireg:closeOverlayButton/>
-		
+
 		<p>Une erreur inattendue a eu lieu.</p>
 		<br>
 		<unireg:callstack exception="${exception}"
