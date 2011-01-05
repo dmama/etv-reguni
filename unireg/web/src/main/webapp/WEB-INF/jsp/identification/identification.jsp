@@ -69,6 +69,31 @@
 					<unireg:raccourciIdentifier onClick="javascript:Page_Identifier(${personne.numero});" tooltip="Identifier" />
 				</display:column>
 			</display:table>
+
+			<script>
+				$(function() {
+					$(".civTip").tooltip({
+						items: "[name]",
+						content: function(response) {
+							var noCtb = $(this).attr("name");
+							var url = "<c:url value='/identification/tooltip/individu.do?noCtb='/>" + noCtb;
+							$.get(url, response);
+							return "Chargement...";
+						}
+					});
+
+					$(".adrTip").tooltip({
+						items: "[name]",
+						content: function(response) {
+							var noCtb = $(this).attr("name");
+							var url = "<c:url value='/identification/tooltip/adresse.do?noCtb='/>" + noCtb;
+							$.get(url, response);
+							return "Chargement...";
+						}
+					});
+				});
+			</script>
+
 		
 		<!-- Debut Boutons -->
 		<unireg:RetourButton link="edit.do?unlock=true" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>

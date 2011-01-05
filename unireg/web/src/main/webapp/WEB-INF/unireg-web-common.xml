@@ -25,8 +25,6 @@
 
 	<!--  xt-Spring configuration -->
 	
-    <bean id="ajaxToolTipHandler" class="ch.vd.uniregctb.web.xt.handler.ToolTipHandler" />
-    
     <bean id="ajaxTabulationHandler" class="ch.vd.uniregctb.web.xt.handler.TabulationHandler" />
     
     <bean id="ajaxMotifsForHandler" class="ch.vd.uniregctb.web.xt.handler.MotifsForHandler">
@@ -44,20 +42,12 @@
 		<property name="tacheService" ref="tacheService" />
     </bean>
     
-    <bean id="ajaxCivilDataHandler" class="ch.vd.uniregctb.web.xt.handler.CivilDataHandler" >
-		<property name="civilDataManager" ref="civilDataManager" />
-    </bean>
-    <bean id="ajaxAdresseDataHandler" class="ch.vd.uniregctb.web.xt.handler.AdresseDataHandler" >
-		<property name="adresseDataManager" ref="adresseDataManager" />
-		<property name="serviceInfra" ref="serviceInfrastructureService" />
-    </bean>
-    
     <bean id="dataAccessor" class="ch.vd.uniregctb.web.xt.handler.DataAccessor" />
     
 	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
         <property name="handlerMappings">
             <props>
-                <prop key="/**/*.do">ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler,tiersPickerController</prop>
+                <prop key="/**/*.do">ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,tiersPickerController</prop>
 				<prop key="/fiscal/for.do">tiersForController</prop>
 				<prop key="/tiers/*.do">ajaxRemarqueHandler</prop>
                 <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>
@@ -100,6 +90,13 @@
 
 				<!-- Mapping des beans de remoting -->
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
+
+				<!-- Tiers -->
+				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController"/>
+
+				<!-- Identification de contribuable -->
+				<entry key="/identification/tooltip/adresse.do" value-ref="identificationAdresseTooltipController"/>
+				<entry key="/identification/tooltip/individu.do" value-ref="identificationIndividuTooltipController"/>
 			</map>
 		</property>
 	</bean>
@@ -157,7 +154,6 @@
 				<entry key="/param/feuille-edit.do" value-ref="paramModeleFeuilleDocumentEditController" />
 				
 				<!-- Tiers - display -->
-				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController" />
 				<entry key="/tiers/list.do" value-ref="tiersListController" />
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />

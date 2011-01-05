@@ -1821,6 +1821,8 @@ public class TiersManager implements MessageSourceAware {
 
 
 	/**
+	 * <b>AAaaahh ! Horrible méthode qui duplique (mal) le code de l'adresse service ! A ne plus utiliser !!</b>
+	 * <p> 
 	 * Methode annexe de creation d'adresse view pour un type donne
 	 *
 	 * @param addGen
@@ -1828,7 +1830,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 * @throws InfrastructureException
 	 */
-	protected AdresseView createAdresseView(AdresseGenerique addGen, TypeAdresseTiers type, Tiers tiers) {
+	public AdresseView createAdresseView(AdresseGenerique addGen, TypeAdresseTiers type, Tiers tiers) {
 		AdresseView adresseView = new AdresseView();
 		adresseView.setDateDebut(addGen.getDateDebut());
 		adresseView.setDateFin(addGen.getDateFin());

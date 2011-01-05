@@ -250,7 +250,13 @@
 				</tr>
 			</c:forEach>
 		</table>
-			
+
+		<script>
+			$(function() {
+				activate_static_tooltips();
+			});
+		</script>
+
 	</tiles:put>
 	
 </tiles:insert>

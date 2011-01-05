@@ -17,7 +17,7 @@
 				<td width="70%">
 				<form:input path="tiers.nom1" id="tiers_nom1" cssErrorClass="input-with-errors" 
 				size ="35" tabindex="1" onfocus="true" maxlength="${lengthnom}" />
-					<span class="formInfo"><a href="<c:url value="/htm/nom1.htm?width=375"/>" class="jTip" id="tipNom1">?</a></span>
+					<span class="formInfo"><a href="#" title="<c:url value="/htm/nom1.htm?width=375"/>" class="jTip" id="tipNom1">?</a></span>
 				</td>
 			</tr>
 			<tr class="<unireg:nextRowClass/>" >
@@ -25,7 +25,7 @@
 				<td width="70%">
 				<form:input path="tiers.nom2" id="tiers_nom2" cssErrorClass="input-with-errors" 
 				size ="35" tabindex="2" onfocus="true" maxlength="${lengthnom}" />
-					<span class="formInfo"><a href="<c:url value="/htm/nom2.htm?width=375"/>" class="jTip" id="tipNom2">?</a></span>
+					<span class="formInfo"><a href="#" title="<c:url value="/htm/nom2.htm?width=375"/>" class="jTip" id="tipNom2">?</a></span>
 				</td>
 			</tr>
 		</c:if>
@@ -34,7 +34,7 @@
 			<td width="70%">
 			<form:input path="complement.personneContact" id="tiers_personneContact" cssErrorClass="input-with-errors"
 			size ="35" tabindex="3" onfocus="true" maxlength="${lengthpersonne}" />
-				<span class="formInfo"><a href="<c:url value="/htm/personneContact.htm?width=375"/>" class="jTip" id="tipPersonneContact">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/personneContact.htm?width=375"/>" class="jTip" id="tipPersonneContact">?</a></span>
 				<form:errors path="tiers.personneContact" cssClass="error"/>
 			</td>
 		</tr>
@@ -43,7 +43,7 @@
 			<td width="70%">
 				<form:input path="complement.complementNom" id="tiers_complementNom" cssErrorClass="input-with-errors"
 				size ="35" tabindex="4" maxlength="${lengthnom}" />
-				<span class="formInfo"><a href="<c:url value="/htm/complementNom.htm?width=375"/>" class="jTip" id="tipComplementNom">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/complementNom.htm?width=375"/>" class="jTip" id="tipComplementNom">?</a></span>
 				<form:errors path="tiers.complementNom" cssClass="error"/>
 			</td>
 		</tr>
@@ -52,7 +52,7 @@
 			<td width="70%">
 				<form:input path="complement.numeroTelephonePrive" tabindex="5" id="tiers_numeroTelephonePrive"
 				cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-				<span class="formInfo"><a href="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="telPrive">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="telPrive">?</a></span>
 				<form:errors path="tiers.numeroTelephonePrive" cssClass="error"/>
 			</td>
 		</tr>
@@ -61,7 +61,7 @@
 			<td width="70%">
 				<form:input path="complement.numeroTelephonePortable" tabindex="6" id="tiers_numeroTelephonePortable"
 				cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-				<span class="formInfo"><a href="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="telPortable">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="telPortable">?</a></span>
 				<form:errors path="tiers.numeroTelephonePortable" cssClass="error"/>
 			</td>
 		</tr>			
@@ -70,7 +70,7 @@
 			<td width="70%">
 				<form:input path="complement.numeroTelephoneProfessionnel" tabindex="7" id="tiers_numeroTelephoneProfessionnel"
 				cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-				<span class="formInfo"><a href="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="telProfessionnel">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="telProfessionnel">?</a></span>
 				<form:errors path="tiers.numeroTelephoneProfessionnel" cssClass="error"/>
 			</td>
 		</tr>
@@ -79,7 +79,7 @@
 			<td width="70%">
 				<form:input path="complement.numeroTelecopie" id="tiers_numeroTelecopie" tabindex="8"
 				cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-				<span class="formInfo"><a href="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="fax">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" class="jTip" id="fax">?</a></span>
 				<form:errors path="tiers.numeroTelecopie" cssClass="error"/>
 			</td>
 		</tr>
@@ -88,7 +88,7 @@
 			<td width="70%">
 				<form:input path="complement.adresseCourrierElectronique" tabindex="9" id="tiers_adresseCourrierElectronique"
 				cssErrorClass="input-with-errors" size ="35" maxlength="${lengthpersonne}" />
-				<span class="formInfo"><a href="<c:url value="/htm/email.htm?width=375"/>" class="jTip" id="email">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/email.htm?width=375"/>" class="jTip" id="email">?</a></span>
 				<form:errors path="tiers.adresseCourrierElectronique" cssClass="error"/>
 			</td>
 		</tr>
@@ -107,7 +107,7 @@
 			<td width="70%">
 				<form:input path="complement.numeroCompteBancaire" tabindex="10"  id="tiers_numeroCompteBancaire" cssErrorClass="input-with-errors"
 				size ="${lengthnumcompte}" maxlength="${lengthnumcompte}"/>
-				<span class="formInfo"><a href="<c:url value="/htm/iban.htm?width=375"/>" class="jTip" id="tipIban">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/iban.htm?width=375"/>" class="jTip" id="tipIban">?</a></span>
 				<form:errors path="tiers.numeroCompteBancaire" cssClass="error"/>
 			</td>
 		</tr>
@@ -116,7 +116,7 @@
 			<td width="70%">
 				<form:input path="complement.titulaireCompteBancaire" tabindex="11" id="tiers_titulaireCompteBancaire"
 				cssErrorClass="input-with-errors" size ="30" maxlength="${lengthpersonne}" />
-				<span class="formInfo"><a href="<c:url value="/htm/titulaireCompte.htm?width=375"/>" class="jTip" id="titulaireCompte">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/titulaireCompte.htm?width=375"/>" class="jTip" id="titulaireCompte">?</a></span>
 				<form:errors path="tiers.titulaireCompteBancaire" cssClass="error"/>
 			</td>
 		</tr>
@@ -126,11 +126,18 @@
 			<td width="70%">
 				<form:input path="complement.adresseBicSwift" tabindex="12"  id="tiers_adresseBicSwift" cssErrorClass="input-with-errors"
 				size ="26" maxlength="${lengthbic}" />
-				<span class="formInfo"><a href="<c:url value="/htm/bic.htm?width=375"/>" class="jTip" id="bic">?</a></span>
+				<span class="formInfo"><a href="#" title="<c:url value="/htm/bic.htm?width=375"/>" class="jTip" id="bic">?</a></span>
 				<form:errors path="tiers.adresseBicSwift" cssClass="error"/>
 			</td>
 		</tr>	
 	</table>
+
+	<script>
+		$(function() {
+			activate_ajax_tooltips();
+		});
+	</script>
+
 </fieldset>
 </c:if>
 <!-- Fin Complements -->

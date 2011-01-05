@@ -89,5 +89,26 @@
 		<property name="identCtbDAO" ref="identCtbDAO" />
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
+
+	<bean id="identificationAdresseTooltipDataManager" class="ch.vd.uniregctb.identification.contribuable.tooltip.adresse.IdentificationAdresseTooltipManagerImpl" >
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="identificationAdresseTooltipController" class="ch.vd.uniregctb.identification.contribuable.tooltip.adresse.IdentificationAdresseTooltipController" >
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.tooltip.adresse.IdentificationAdresseTooltipView" />
+		<property name="manager" ref="identificationAdresseTooltipDataManager" />
+	</bean>
+
+	<bean id="identificationIndividuTooltipDataManager" class="ch.vd.uniregctb.identification.contribuable.tooltip.individu.IdentificationIndividuTooltipManagerImpl" >
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+	<bean id="identificationIndividuTooltipController" class="ch.vd.uniregctb.identification.contribuable.tooltip.individu.IdentificationIndividuTooltipController" >
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.tooltip.individu.IdentificationIndividuTooltipView" />
+		<property name="civilService" ref="serviceCivilService" />
+		<property name="manager" ref="identificationIndividuTooltipDataManager" />
+	</bean>
+
 	
 </beans>

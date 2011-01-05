@@ -26,10 +26,16 @@
 
 <%-- Tooltips sur le format de la date --%>
 <c:if test="${id == 'dateNaissance'}">
-	<span class="formInfo"><a href="<c:url value="/htm/dateNaissance.htm?width=375"/>" class="jTip" id="dateNaissance2">?</a></span>
+	<span class="formInfo"><a href="#" title="<c:url value="/htm/dateNaissance.htm?width=375"/>" class="jTip" id="dateNaissance2">?</a></span>
 </c:if>
 <c:if test="${id == 'dateDeces'}">
-	<span class="formInfo"><a href="<c:url value="/htm/dateDeces.htm?width=375"/>" class="jTip" id="dateDeces2">?</a></span>
+	<span class="formInfo"><a href="#" title="<c:url value="/htm/dateDeces.htm?width=375"/>" class="jTip" id="dateDeces2">?</a></span>
 </c:if>
+
+<script>
+	$(function() {
+		activate_ajax_tooltips();
+	});
+</script>
 
 <form:errors path="${path}" cssClass="error"/>

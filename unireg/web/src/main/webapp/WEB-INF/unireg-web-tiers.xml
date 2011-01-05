@@ -18,7 +18,7 @@
 
 	<bean id="tiersCriteriaValidator" class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator" />
 
-	<bean 	id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />
+	<bean id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />
 
 	<bean id="tiersVignetteController" class="ch.vd.uniregctb.tiers.TiersVignetteController" >
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersVignetteView" />
@@ -95,13 +95,6 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="ibanValidator" ref="ibanValidator" />
 	</bean>
-
-	<bean id="civilDataManager" class="ch.vd.uniregctb.tiers.manager.CivilDataManagerImpl" parent="tiersManager">
-	</bean>
-	
-	<bean id="adresseDataManager" class="ch.vd.uniregctb.tiers.manager.AdresseDataManagerImpl" parent="tiersManager">
-		
-	</bean>  
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
 	</bean>

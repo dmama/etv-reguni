@@ -13,7 +13,7 @@
 			<form:input path="tiers.nom" tabindex="1" id="tiers_nom" cssErrorClass="input-with-errors" 
 			size="20" maxlength="${lengthnom}" />
 			<span class="formInfo">
-				<a href="<c:url value="/htm/nom.htm?width=375"/>" class="jTip" id="nom">?</a>
+				<a href="#" title="<c:url value="/htm/nom.htm?width=375"/>" class="jTip" id="nom">?</a>
 			</span>
 			<FONT COLOR="#FF0000">*</FONT>
 			<form:errors path="tiers.nom" cssClass="error" />
@@ -26,7 +26,7 @@
 			<form:input path="tiers.prenom" tabindex="2" id="tiers_prenom" cssErrorClass="input-with-errors" 
 			size="20" maxlength="${lengthnom}" />
 			<span class="formInfo">
-				<a href="<c:url value="/htm/prenom.htm?width=375"/>" class="jTip" id="prenom">?</a>
+				<a href="#" title="<c:url value="/htm/prenom.htm?width=375"/>" class="jTip" id="prenom">?</a>
 			</span>
 			<form:errors path="tiers.prenom" cssClass="error" />
 		</td>
@@ -38,7 +38,7 @@
 			<form:input path="tiers.numeroAssureSocial" id="tiers_numeroAssureSocial" tabindex="3"  
 			cssErrorClass="input-with-errors" size="20" maxlength="16" />
 			<span class="formInfo">
-				<a href="<c:url value="/htm/numeroAVS.htm?width=375"/>" class="jTip" id="numeroAVS">?</a>
+				<a href="#" title="<c:url value="/htm/numeroAVS.htm?width=375"/>" class="jTip" id="numeroAVS">?</a>
 			</span>
 			<form:errors path="tiers.numeroAssureSocial" cssClass="error" />
 		</td>
@@ -50,7 +50,7 @@
 			<form:input path="identificationPersonne.ancienNumAVS" id="tiers_ancienNumAVS" tabindex="4"  
 			cssErrorClass="input-with-errors" size="20" maxlength="14" />
 			<span class="formInfo">
-				<a href="<c:url value="/htm/ancienNumeroAVS.htm?width=375"/>" class="jTip" id="ancienNumeroAVS">?</a>
+				<a href="#" title="<c:url value="/htm/ancienNumeroAVS.htm?width=375"/>" class="jTip" id="ancienNumeroAVS">?</a>
 			</span>
 			<form:errors path="identificationPersonne.ancienNumAVS" cssClass="error" />
 		</td>
@@ -111,7 +111,7 @@
 			<form:input path="identificationPersonne.numRegistreEtranger" tabindex="11" id="tiers_numRegistreEtranger" 
 			cssErrorClass="input-with-errors" size="20" maxlength="13" />
 			<form:errors path="identificationPersonne.numRegistreEtranger" cssClass="error" />
-			<span class="formInfo"><a href="<c:url value="/htm/numRegistreEtranger.htm?width=375"/>" class="jTip" id="numRegistre">?</a></span>
+			<span class="formInfo"><a href="#" title="<c:url value="/htm/numRegistreEtranger.htm?width=375"/>" class="jTip" id="numRegistre">?</a></span>
 		</td>
 	</tr>
 	
@@ -184,6 +184,13 @@
 	</tr>
 	
 </table>
+
+<script>
+	$(function() {
+		activate_ajax_tooltips();
+	});
+</script>
+
 </fieldset>
 <form:hidden path="tiers.numero" id="numero" />
 
