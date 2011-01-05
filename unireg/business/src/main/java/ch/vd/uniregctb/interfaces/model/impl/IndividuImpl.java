@@ -35,7 +35,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private Collection<Individu> enfants;
 	private final EtatCivilList etatsCivils;
 	private Individu mere;
-	private Collection<Nationalite> nationalites;
+	private List<Nationalite> nationalites;
 	private Origine origine;
 	private Individu pere;
 	private Collection<Permis> permis;
@@ -221,7 +221,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return mere;
 	}
 
-	public Collection<Nationalite> getNationalites() {
+	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
 

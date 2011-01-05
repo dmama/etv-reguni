@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
@@ -122,7 +123,7 @@ public interface Individu extends EntiteCivile {
      *
      * @return la liste des nationalites de l'individu.
      */
-    Collection<Nationalite> getNationalites();
+    List<Nationalite> getNationalites();
 
     /**
      * Indique si l'individu est de sexe masculin.

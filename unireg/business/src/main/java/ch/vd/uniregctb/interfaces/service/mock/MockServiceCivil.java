@@ -399,7 +399,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		nationalite.setDateFinValidite(fin);
 		nationalite.setPays(pays);
 		nationalite.setNoSequence(noSequence);
-		Collection<Nationalite> nationalites = individu.getNationalites();
+		List<Nationalite> nationalites = individu.getNationalites();
 		if (nationalites == null) {
 			nationalites = new ArrayList<Nationalite>();
 			individu.setNationalites(nationalites);

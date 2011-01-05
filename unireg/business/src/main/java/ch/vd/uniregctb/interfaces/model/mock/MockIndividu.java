@@ -33,7 +33,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private EtatCivilList etatsCivils;
 	private Collection<HistoriqueIndividu> historiqueIndividu;
 	private Individu mere;
-	private Collection<Nationalite> nationalites;
+	private List<Nationalite> nationalites;
 	private long noTechnique;
 	private String nouveauNoAVS;
 	private String numeroRCE;
@@ -190,11 +190,11 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.mere = mere;
 	}
 
-	public Collection<Nationalite> getNationalites() {
+	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
 
-	public void setNationalites(Collection<Nationalite> nationalites) {
+	public void setNationalites(List<Nationalite> nationalites) {
 		this.nationalites = nationalites;
 	}
 
@@ -340,7 +340,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 	};
 
-	private static <T> Collection<T> buildLimitedCollectionBeforeYear(Collection<T> original, int annee, Limitator<T> limitator) {
+	private static <T> List<T> buildLimitedCollectionBeforeYear(Collection<T> original, int annee, Limitator<T> limitator) {
 		if (original == null) {
 			return null;
 		}
@@ -356,7 +356,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 					iter.remove();
 				}
 			}
-			return Collections.unmodifiableCollection(limited.size() == original.size() ? original : limited);
+			return Collections.unmodifiableList(limited.size() == original.size() ? new ArrayList<T>(original) : limited);
 		}
 	}
 
