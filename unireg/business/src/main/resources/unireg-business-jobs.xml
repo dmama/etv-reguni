@@ -360,8 +360,18 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
-	<bean id="migregCoquillesPMJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM">
+	<bean id="correctionEtatDIJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationJob">
 		<constructor-arg value="707" />
+		<constructor-arg value="Supprimer les doublons des états des déclarations" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="rapportService" ref="rapportService"/>
+		<property name="tacheSynchronizerInterceptor" ref="tacheSynchronizerInterceptor"/>
+		<property name="validationInterceptor" ref="validationInterceptor"/>
+	</bean>
+
+	<bean id="migregCoquillesPMJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM">
+		<constructor-arg value="708" />
 		<constructor-arg value="Migrer les coquilles vides des PMs"/>
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />

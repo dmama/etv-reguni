@@ -123,6 +123,7 @@
 		<value>ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport</value>
 		<value>ch.vd.uniregctb.document.ListeNoteRapport</value>
 		<value>ch.vd.uniregctb.document.MigrationCoquillesPMRapport</value>
+		<value>ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 	</util:list>
 

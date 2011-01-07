@@ -21,6 +21,7 @@ import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
+import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
 import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
 import ch.vd.uniregctb.document.DeterminationDIsRapport;
@@ -72,6 +73,7 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnIsntanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
+import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
@@ -389,4 +391,13 @@ public interface RapportService {
 	 * @return  le rapport
 	 */
 	ComparerForFiscalEtCommuneRapport generateRapport(ComparerForFiscalEtCommuneResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du job de suppression des doublons des états des déclarations
+	 *
+	 * @param results résultat du batch
+	 * @param status  status manager
+	 * @return le rapport
+	 */
+	CorrectionEtatDeclarationRapport generateRapport(CorrectionEtatDeclarationResults results, StatusManager status);
 }
