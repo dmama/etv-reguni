@@ -56,6 +56,7 @@ import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
@@ -68,6 +69,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private HibernateTemplate hibernateTemplate;
 	private TiersService tiersService;
 	private ValidationService validationService;
+	private ValidationInterceptor validationInterceptor;
 	private List<String> annotatedClass;
 	private Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new HashMap<EntityType, List<Class<? extends HibernateEntity>>>();
 
@@ -178,6 +180,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		this.validationService = validationService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
+		this.validationInterceptor = validationInterceptor;
+	}
+
 	@SuppressWarnings({"unchecked"})
 	public void afterPropertiesSet() throws Exception {
 		for (String classname : annotatedClass) {
@@ -249,7 +256,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			public Object doInHibernate(Session s) throws HibernateException, SQLException {
 
 				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(s);
+				final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
 				applyDeltas(session.getDeltas(), context);
 				refreshTiersState(session, context);
 
@@ -385,7 +392,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			public Object doInHibernate(Session s) throws HibernateException, SQLException {
 
 				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(s);
+				final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
 				applyDeltas(session.getDeltas(), context);
 				refreshTiersState(session, context);
 
@@ -591,8 +598,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(session);
+				final SuperGraContext context = new SuperGraContext(session, true, validationInterceptor);
 				applyDeltas(deltas, context);
+				context.finish();
 				return null; // la transaction est committé automatiquement par le template
 			}
 		});

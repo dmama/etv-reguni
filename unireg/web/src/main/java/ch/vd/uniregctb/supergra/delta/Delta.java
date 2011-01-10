@@ -29,7 +29,7 @@ public abstract class Delta {
 	@Override
 	public String toString() {
 		final String html = getHtml();
-		return html.replaceAll("<.*?>", ""); // on supprime toutes les balises
+		return HtmlUtils.htmlUnescape(html.replaceAll("<.*?>", "")); // on supprime toutes les balises
 	}
 
 	protected String attribute2html(String name) {

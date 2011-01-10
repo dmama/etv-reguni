@@ -28,6 +28,7 @@
 		<property name="annotatedClass" ref="hibernateAnnotatedClasses"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="validationService" ref="validationService"/>
+		<property name="validationInterceptor" ref="validationInterceptor"/>
 	</bean>
 
 </beans>

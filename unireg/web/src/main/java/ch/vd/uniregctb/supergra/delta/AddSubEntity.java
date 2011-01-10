@@ -47,9 +47,33 @@ public class AddSubEntity extends Delta {
 		this.id = id;
 	}
 
+	/**
+	 * @return La clé de l'entité parente sur laquelle on ajoute une sous-entité dans une collection
+	 */
 	@Override
 	public EntityKey getKey() {
 		return key;
+	}
+
+	/**
+	 * @return Le nom de la collection sur l'entité parente
+	 */
+	public String getCollName() {
+		return collName;
+	}
+
+	/**
+	 * @return La classe de la sous-entité à ajouter
+	 */
+	public Class getSubClass() {
+		return subClass;
+	}
+
+	/**
+	 * @return L'id de la sous-entité à ajouter
+	 */
+	public Long getId() {
+		return id;
 	}
 
 	/**
@@ -99,12 +123,14 @@ public class AddSubEntity extends Delta {
 			idSetter.invoke(subEntity, id);
 
 			// Renseigne le parent
+			boolean isRapport = false;
 			if (parentProp != null) { // les rapports-entre-tiers ne possèdent pas de parent
 				final PropertyDescriptor parentDescr = new PropertyDescriptor(parentProp.getName(), subClass);
 				final Method parentSetter = parentDescr.getWriteMethod();
 				parentSetter.invoke(subEntity, entity);
 			}
 			else if (subEntity instanceof RapportEntreTiers) {
+				isRapport = true;
 				// cas spécial des rapports entre tiers où le lien doit être fait à la main
 				final RapportEntreTiers r = (RapportEntreTiers) subEntity;
 				if (collName.equals("rapportsSujet")) {
@@ -116,7 +142,16 @@ public class AddSubEntity extends Delta {
 			}
 
 			// Ajoute l'entité à son parent
-			set.add(subEntity);
+			if (isRapport && context.isForCommit()) {
+				// [UNIREG-3160] lorsqu'on ajoute un rapport-entre-tiers dans le but de sauver les changements dans le base, on évite de l'ajouter à la collection du parent.
+				// Autrement hibernate se retrouve avec une entité transiente dans une collection (rapportsObjet ou rapportsSujet) qui n'est pas responsable des éléments (selon
+				// les annotations utilisées, les rapports-entre-tiers pointent vers leurs objet/sujet mais ils ne leur appartiennent pas) et il lève une TransientObjectException.
+				// A la place, on le met-de-côté pour être sauvé lorsque les liens vers les objet/sujet seront correctement établis.
+				context.scheduleForSave((RapportEntreTiers) subEntity);
+			}
+			else {
+				set.add(subEntity);
+			}
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
