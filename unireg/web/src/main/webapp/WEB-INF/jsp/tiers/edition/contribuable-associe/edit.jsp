@@ -21,17 +21,11 @@
 				<jsp:param name="path" value="contribuable" />
 			</jsp:include>
 			<!-- Debut Boutons -->
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:Page_RetourRecapContactIS(${command.debiteur.numero});" />
-			<unireg:RetourButton link="list.do?numeroDpi=${command.tiers.numero}"/>
+			<unireg:RetourButton link="list.do?numeroDpi=${command.debiteur.numero}"/>
 			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverContactIS(event || window.event);" />	
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">
-			function Page_RetourRecapContactIS(numeroDpi) {
-				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					document.location.href='list.do?numeroDpi=' + numeroDpi ;
-				}
-			}
 			function Page_sauverContactIS(event) {
 				if(!confirm('Voulez-vous vraiment confirmer ce contact impôt source ?')) {
 					return Event.stop(event);
