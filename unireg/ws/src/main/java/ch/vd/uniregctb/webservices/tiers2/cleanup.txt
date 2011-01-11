@@ -3,3 +3,4 @@
 - ne renseigner les dates de début/fin de validité que lorsque les fors fiscaux sont demandés (+ documentation)
 - nouveau motif de rattachement 'activité lucrative' (UNIREG-1780)
 - passer le champ date de naissance de TiersInfo au format Date
+- ajouté une code de catégorie sur les exceptions métier 'BusinessException' (UNIREG-3112)
