@@ -21,9 +21,16 @@
 	</bean>
 
 	<!-- Definition des DAOs -->
-	<bean id="tiersDAO" class="ch.vd.uniregctb.tiers.TiersDAOImpl" parent="hibernateDaoSupport">
+	<bean id="tiersDAO_raw" class="ch.vd.uniregctb.tiers.TiersDAOImpl" parent="hibernateDaoSupport">
 		<property name="dialect" ref="hibernateDialect" />
 	</bean>
+
+	<!-- temporaire pour les tests dynatrace -->
+	<bean id="tiersDAO" class="ch.vd.uniregctb.tiers.TiersDAOBooster">
+		<property name="target" ref="tiersDAO_raw" />
+		<property name="idsFilename" value="${ch.vd.appDir}/unireg-ws/config/ids_ctb_pieges.csv" />
+	</bean>
+
 	<bean id="forFiscalDAO" class="ch.vd.uniregctb.tiers.ForFiscalDAOImpl" parent="hibernateDaoSupport">
 	</bean>
 	<bean id="adresseTiersDAO" class="ch.vd.uniregctb.adresse.AdresseTiersDAOImpl" parent="hibernateDaoSupport">
