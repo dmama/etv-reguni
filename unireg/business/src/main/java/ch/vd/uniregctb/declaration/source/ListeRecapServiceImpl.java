@@ -446,7 +446,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(debiteurId);
 			List<Periodicite> listePeriodiciteACreer = construirePeriodiciteFromLR(debiteur);
 			if (listePeriodiciteACreer.isEmpty()) {
-				tiersService.addPeriodicite(debiteur, debiteur.getPeriodiciteDecompte(), debiteur.getPeriodeDecompte(), RegDate.get(debiteur.getLogCreationDate()), null);
+				tiersService.addPeriodicite(debiteur, debiteur.getPeriodiciteDecompteAvantMigration(), debiteur.getPeriodeDecompteAvantMigration(), RegDate.get(debiteur.getLogCreationDate()), null);
 			}
 			else {
 				for (Periodicite periodicite : listePeriodiciteACreer) {
@@ -472,7 +472,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				//Cette dernière est une propriété du tiers et non de la LR
 
 				if (PeriodiciteDecompte.UNIQUE == lr.getPeriodicite()) {
-					periodeDecompte = debiteur.getPeriodeDecompte();
+					periodeDecompte = debiteur.getPeriodeDecompteAvantMigration();
 				}
 
 				Periodicite periodicite = new Periodicite(lr.getPeriodicite(), periodeDecompte, lr.getDateDebut(), lr.getDateFin());

@@ -1500,7 +1500,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				dpi0.setDebiteurInactif(false);
 				dpi0.setLogModifDate(new Timestamp(1199142000000L));
 				dpi0.setModeCommunication(ModeCommunication.SITE_WEB);
-				dpi0.setPeriodiciteDecompte(PeriodiciteDecompte.MENSUEL);
+				dpi0.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
 				dpi0.setAdressesTiers(new HashSet());
 				dpi0.setDeclarations(new HashSet());
 				dpi0.setForsFiscaux(new HashSet());

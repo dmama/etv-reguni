@@ -1,13 +1,12 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.BusinessHelper;
@@ -64,8 +63,17 @@ public class Debiteur extends Tiers {
 
 		this.raisonSociale = BusinessHelper.getRaisonSociale(debiteur, date, context.adresseService);
 		this.categorie = EnumHelper.coreToWeb(debiteur.getCategorieImpotSource());
-		this.periodiciteDecompte = EnumHelper.coreToWeb(debiteur.getPeriodiciteAt(date).getPeriodiciteDecompte());
-		this.periodeDecompte = EnumHelper.coreToWeb(debiteur.getPeriodiciteAt(date).getPeriodeDecompte());
+
+		final ch.vd.uniregctb.declaration.Periodicite periodiciteAtDate = debiteur.getPeriodiciteAt(date);
+		if (periodiciteAtDate != null) {
+			this.periodeDecompte = EnumHelper.coreToWeb(periodiciteAtDate.getPeriodeDecompte());
+			this.periodiciteDecompte = EnumHelper.coreToWeb(periodiciteAtDate.getPeriodiciteDecompte());
+		}
+		else {
+			this.periodeDecompte = null;
+			this.periodiciteDecompte = null;
+		}
+
 		this.modeCommunication = EnumHelper.coreToWeb(debiteur.getModeCommunication());
 		this.sansRappel = DataHelper.coreToWeb(debiteur.getSansRappel());
 		this.sansListRecapitulative = DataHelper.coreToWeb(debiteur.getSansListeRecapitulative());

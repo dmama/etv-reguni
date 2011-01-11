@@ -25,6 +25,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -43,6 +44,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -405,13 +407,16 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("</tr>\n");
 
 				// Périodicité
-				if (dpi.getPeriodiciteDecompte() != null) {
+				final Periodicite periodicite = dpi.getPeriodiciteAt(RegDate.get());
+				if (periodicite != null) {
+					final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
+					final PeriodeDecompte periodeDecompte = periodicite.getPeriodeDecompte();
 					s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
 					s.append("\t<td width=\"25%\">").append(message("label.periodicite")).append("&nbsp;:</td>\n");
 					s.append("\t<td width=\"50%\">");
-					s.append(message("option.periodicite.decompte." + dpi.getPeriodiciteDecompte()));
-					if (dpi.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
-						s.append("&nbsp;(").append(message("option.periode.decompte." + dpi.getPeriodeDecompte())).append(")");
+					s.append(message("option.periodicite.decompte." + periodiciteDecompte.name()));
+					if (periodiciteDecompte == PeriodiciteDecompte.UNIQUE && periodeDecompte != null) {
+						s.append("&nbsp;(").append(message("option.periode.decompte." + periodeDecompte.name())).append(")");
 					}
 					s.append("</td>\n");
 					s.append("\t<td width=\"25%\">&nbsp;</td>\n");

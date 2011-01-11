@@ -948,7 +948,7 @@ public class TestData {
 		dpi0.setLogCreationDate(new Timestamp(1199142000000L));
 		dpi0.setLogModifDate(new Timestamp(1199142000000L));
 		dpi0.setModeCommunication(ModeCommunication.PAPIER);
-		dpi0.setPeriodiciteDecompte(PeriodiciteDecompte.TRIMESTRIEL);
+		dpi0.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi0.setAdressesTiers(new HashSet());
 		dpi0.setDeclarations(new HashSet());
 		dpi0.setForsFiscaux(new HashSet());
@@ -967,7 +967,7 @@ public class TestData {
 		dpi1.setLogCreationDate(new Timestamp(1199142000000L));
 		dpi1.setLogModifDate(new Timestamp(1199142000000L));
 		dpi1.setModeCommunication(ModeCommunication.PAPIER);
-		dpi1.setPeriodiciteDecompte(PeriodiciteDecompte.TRIMESTRIEL);
+		dpi1.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi1.setAdressesTiers(new HashSet());
 		dpi1.setDeclarations(new HashSet());
 		dpi1.setForsFiscaux(new HashSet());

@@ -836,8 +836,8 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				o.setNumeroTelephonePrive(numeroTelPrive);
 				o.setNumeroTelephoneProfessionnel(numeroTelProf);
 				o.setOfficeImpotId(oid);
-				o.setPeriodeDecompte(periodeDecompte);
-				o.setPeriodiciteDecompte(periodiciteDecompte);
+				o.setPeriodeDecompteAvantMigration(periodeDecompte);
+				o.setPeriodiciteDecompteAvantMigration(periodiciteDecompte);
 				o.setPersonneContact(personneContact);
 				o.setReindexOn(reindexOn);
 				o.setSansListeRecapitulative(sansListeRecap);

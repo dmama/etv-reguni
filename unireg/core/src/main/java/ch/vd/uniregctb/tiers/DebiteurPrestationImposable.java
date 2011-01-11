@@ -47,8 +47,8 @@ public class DebiteurPrestationImposable extends Tiers {
 	private String nom1;
 	private String nom2;
 	private CategorieImpotSource categorieImpotSource;
-	private PeriodiciteDecompte periodiciteDecompte;
-	private PeriodeDecompte periodeDecompte;
+	private PeriodiciteDecompte periodiciteDecompteAvantMigration;
+	private PeriodeDecompte periodeDecompteAvantMigration;
 	private ModeCommunication modeCommunication;
 	private Boolean sansRappel;
 	private Boolean sansListeRecapitulative;
@@ -85,22 +85,22 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	@Column(name = "PERIODICITE_DECOMPTE", length = LengthConstants.DPI_PERIODICITE)
 	@Type(type = "ch.vd.uniregctb.hibernate.PeriodiciteDecompteUserType")
-	public PeriodiciteDecompte getPeriodiciteDecompte() {
-		return periodiciteDecompte;
+	public PeriodiciteDecompte getPeriodiciteDecompteAvantMigration() {
+		return periodiciteDecompteAvantMigration;
 	}
 
-	public void setPeriodiciteDecompte(PeriodiciteDecompte thePeriodiciteDecompte) {
-		periodiciteDecompte = thePeriodiciteDecompte;
+	public void setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte thePeriodiciteDecompte) {
+		periodiciteDecompteAvantMigration = thePeriodiciteDecompte;
 	}
 
 	@Column(name = "PERIODE_DECOMPTE", length = LengthConstants.DPI_PERIODE_DECOMPTE)
 	@Type(type = "ch.vd.uniregctb.hibernate.PeriodeDecompteUserType")
-	public PeriodeDecompte getPeriodeDecompte() {
-		return periodeDecompte;
+	public PeriodeDecompte getPeriodeDecompteAvantMigration() {
+		return periodeDecompteAvantMigration;
 	}
 
-	public void setPeriodeDecompte(PeriodeDecompte thePeriodeDecompte) {
-		periodeDecompte = thePeriodeDecompte;
+	public void setPeriodeDecompteAvantMigration(PeriodeDecompte thePeriodeDecompte) {
+		periodeDecompteAvantMigration = thePeriodeDecompte;
 	}
 
 	@Column(name = "MODE_COM", length = LengthConstants.DPI_MODECOM)
@@ -287,7 +287,7 @@ public class DebiteurPrestationImposable extends Tiers {
 			//On retourne la periodicite presente sur le debiteur
 			//ce mecanisme est temporaire, il permet d'eviter les nullPointeurExceptiosn
 			//pour les tiers n'ayant pas encore d'historique de périodicités.
-			return new Periodicite(periodiciteDecompte, periodeDecompte, RegDate.get(getLogCreationDate()), null);
+			return new Periodicite(periodiciteDecompteAvantMigration, periodeDecompteAvantMigration, RegDate.get(getLogCreationDate()), null);
 		}
 		else {
 
@@ -358,17 +358,17 @@ public class DebiteurPrestationImposable extends Tiers {
 		}
 		else if (!nom2.equals(other.nom2))
 			return false;
-		if (periodeDecompte == null) {
-			if (other.periodeDecompte != null)
+		if (periodeDecompteAvantMigration == null) {
+			if (other.periodeDecompteAvantMigration != null)
 				return false;
 		}
-		else if (periodeDecompte != other.periodeDecompte)
+		else if (periodeDecompteAvantMigration != other.periodeDecompteAvantMigration)
 			return false;
-		if (periodiciteDecompte == null) {
-			if (other.periodiciteDecompte != null)
+		if (periodiciteDecompteAvantMigration == null) {
+			if (other.periodiciteDecompteAvantMigration != null)
 				return false;
 		}
-		else if (periodiciteDecompte != other.periodiciteDecompte)
+		else if (periodiciteDecompteAvantMigration != other.periodiciteDecompteAvantMigration)
 			return false;
 		if (sansListeRecapitulative == null) {
 			if (other.sansListeRecapitulative != null)

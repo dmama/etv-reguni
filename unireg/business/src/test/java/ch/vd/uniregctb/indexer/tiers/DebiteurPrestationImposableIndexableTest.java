@@ -256,7 +256,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 				dpi.setNumero(idDpi);
 				dpi.setPersonneContact("Jean-François Burnier");
-				dpi.setPeriodiciteDecompte(PeriodiciteDecompte.MENSUEL);
+				dpi.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
 				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009,1,1), null,  MockRue.Lausanne.AvenueDeBeaulieu);
@@ -316,7 +316,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 
 				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 				dpi.setPersonneContact("Jean-François Burnier");
-				dpi.setPeriodiciteDecompte(PeriodiciteDecompte.MENSUEL);
+				dpi.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
 				dpi.setCategorieImpotSource(CategorieImpotSource.PRESTATIONS_PREVOYANCE);
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
