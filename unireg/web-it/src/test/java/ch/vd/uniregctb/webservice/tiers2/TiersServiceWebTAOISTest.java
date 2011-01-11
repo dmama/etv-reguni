@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import ch.vd.uniregctb.webservices.tiers2.Adresse;
 import ch.vd.uniregctb.webservices.tiers2.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers2.BusinessException_Exception;
 import ch.vd.uniregctb.webservices.tiers2.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers2.Date;
 import ch.vd.uniregctb.webservices.tiers2.Debiteur;
@@ -50,6 +51,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
@@ -1013,6 +1015,24 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals(2009, info2009.getPeriodeFiscale());
 		assertEquals(4, info2009.getNbLRsTheorique());
 		assertEquals(0, info2009.getNbLRsEmises()); // aucune LR émise
+	}
+
+	@Test
+	public void testGetDebiteurInfoDebiteurInconnu() throws Exception {
+
+		GetDebiteurInfo params = new GetDebiteurInfo();
+		params.setLogin(login);
+		params.setNumeroDebiteur(1877222L); // débiteur inconnu
+		params.setPeriodeFiscale(2008);
+
+		// 2008
+		try {
+			service.getDebiteurInfo(params);
+			fail("Le débiteur est inconnu, la méthode aurait dû lever une exception");
+		}
+		catch (BusinessException_Exception e) {
+			assertEquals("Le tiers n°1877222 n'existe pas.", e.getMessage());
+		}
 	}
 
 	/**
