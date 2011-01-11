@@ -405,16 +405,18 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("</tr>\n");
 
 				// Périodicité
-				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.periodicite")).append("&nbsp;:</td>\n");
-				s.append("\t<td width=\"50%\">");
-				s.append(message("option.periodicite.decompte." + dpi.getPeriodiciteDecompte()));
-				if (dpi.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
-					s.append("&nbsp;(").append(message("option.periode.decompte." + dpi.getPeriodeDecompte())).append(")");
+				if (dpi.getPeriodiciteDecompte() != null) {
+					s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+					s.append("\t<td width=\"25%\">").append(message("label.periodicite")).append("&nbsp;:</td>\n");
+					s.append("\t<td width=\"50%\">");
+					s.append(message("option.periodicite.decompte." + dpi.getPeriodiciteDecompte()));
+					if (dpi.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
+						s.append("&nbsp;(").append(message("option.periode.decompte." + dpi.getPeriodeDecompte())).append(")");
+					}
+					s.append("</td>\n");
+					s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+					s.append("</tr>\n");
 				}
-				s.append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
-				s.append("</tr>\n");
 
 				// Mode de communication
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
@@ -427,7 +429,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
 				s.append("\t<td width=\"25%\">").append(message("label.personne.contact")).append("&nbsp;:</td>\n");
 				final String personneContact = dpi.getPersonneContact();
-				s.append("\t<td width=\"50%\">").append(personneContact == null ? "" : personneContact).append("</td>\n");
+				s.append("\t<td width=\"50%\">").append(HtmlUtils.htmlEscape(StringUtils.trimToEmpty(personneContact))).append("</td>\n");
 				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 
@@ -435,7 +437,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
 				s.append("\t<td width=\"25%\">").append(message("label.numero.telephone.fixe")).append("&nbsp;:</td>\n");
 				final String numeroTelephonePrive = dpi.getNumeroTelephonePrive();
-				s.append("\t<td width=\"50%\">").append(numeroTelephonePrive == null ? "" : numeroTelephonePrive).append("</td>\n");
+				s.append("\t<td width=\"50%\">").append(HtmlUtils.htmlEscape(StringUtils.trimToEmpty(numeroTelephonePrive))).append("</td>\n");
 				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 			}
