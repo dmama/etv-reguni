@@ -23,12 +23,12 @@ public abstract class ControllerUtils {
 	 */
 	public static void checkAccesDossierEnLecture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
 		if (tiersId != null) {
-			Niveau acces = SecurityProvider.getDroitAcces(tiersId);
+			final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
 			if (acces == null) {
 				final String message = String.format("L'opérateur [%s] s'est vu refusé l'accès en lecture sur le tiers n°%d",
 						AuthenticationHelper.getCurrentPrincipal(), tiersId);
 				LOGGER.warn(message);
-				throw new AccessDeniedException("Vous ne possédez pas les droits de visualisation sur ce contribuable");
+				throw new AccessDeniedException(String.format("Vous ne possédez pas les droits de visualisation sur le contribuable %s.", FormatNumeroHelper.numeroCTBToDisplay(tiersId)));
 			}
 		}
 	}
@@ -45,13 +45,13 @@ public abstract class ControllerUtils {
 	 */
 	public static void checkAccesDossierEnEcriture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
 		if (tiersId != null) {
-			Niveau acces = SecurityProvider.getDroitAcces(tiersId);
+			final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
 			if (acces == null || acces == Niveau.LECTURE) {
 				final String message = String.format(
 						"L'opérateur [%s] s'est vu refusé l'accès en écriture sur le tiers n°%d (acces autorisé=%s)", AuthenticationHelper
 								.getCurrentPrincipal(), tiersId, (acces == null ? "null" : acces.toString()));
 				LOGGER.warn(message);
-				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition sur ce contribuable");
+				throw new AccessDeniedException(String.format("Vous ne possédez pas les droits d'édition sur le contribuable %s.", FormatNumeroHelper.numeroCTBToDisplay(tiersId)));
 			}
 		}
 	}
