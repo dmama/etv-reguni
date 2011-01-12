@@ -16,7 +16,7 @@ public class WatchDogBvrPlusIntegrationTest extends TestCase {
 	public void testIntegration() throws Exception {
 
 		final BVRPlusClientImpl service = new BVRPlusClientImpl();
-		service.setServiceUrl("http://ssv0213v.etat-de-vaud.ch:64904/fiscalite/int-sipf/bvrplus/SipfBVRPlusImpl");
+		service.setServiceUrl("http://ssv0213v.etat-de-vaud.ch:50110/fiscalite/int-sipf/bvrplus/SipfBVRPlusImpl");
 
 		BvrDemande demande = new BvrDemande();
 		demande.setNdc("0");
