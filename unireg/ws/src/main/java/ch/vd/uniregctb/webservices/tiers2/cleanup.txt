@@ -4,3 +4,5 @@
 - nouveau motif de rattachement 'activité lucrative' (UNIREG-1780)
 - passer le champ date de naissance de TiersInfo au format Date
 - ajouté une code de catégorie sur les exceptions métier 'BusinessException' (UNIREG-3112)
+- voir pour ne plus exposer la date d'annulation sur les états des déclarations
+- supprimer les délais sur les déclarations
