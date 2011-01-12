@@ -753,6 +753,12 @@ div.progress-bar-text {
   	display: block;
 }
 
+/*
+ * Date picker
+ */
+.ui-datepicker-trigger {
+	margin-left: 2px;
+}
 
 /*
  * Tiers picker
