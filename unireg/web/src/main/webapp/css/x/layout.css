@@ -784,6 +784,40 @@ div.progress-bar-text {
 	background-color: WhiteSmoke;
 }
 
+/*
+ * Override de 2-3 trucs pour rendre les tabs jQuery plus dans le style Unireg
+ */
+.ui-tabs {
+	border: 0px;
+}
+
+.ui-tabs .ui-tabs-hide {
+	 display: none;
+}
+
+.ui-tabs-nav {
+	border: 0px;
+	background: none;
+	display: inline-block; /* autrement les tabs prennent toute la hauteur du menu de gauche dans Chrome ... */
+}
+
+.ui-tabs .ui-tabs-nav li {
+	font-weight: bold;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+	background-image: none;
+	background-color: #EFF3FE;
+}
+
+.ui-tabs .ui-tabs-panel {
+	border: 1px solid #AAA;
+	-moz-border-radius-topright: 4px;
+	-webkit-border-top-right-radius: 4px;
+	border-top-right-radius: 4px;
+	background: none;
+}
+
 /*******************************************************************
  * End of Global layout                                            *
  ******************************************************************/

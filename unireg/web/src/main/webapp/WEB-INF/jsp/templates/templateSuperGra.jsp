@@ -15,12 +15,12 @@ function ouvrirAide(url) {
 		<tiles:getAsString name='refresh' ignore='true'/>
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
+		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/layout.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/supergra.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="javascript">
 			function getContextPath() {
@@ -28,14 +28,7 @@ function ouvrirAide(url) {
 			}
 		</script>
 
-		<%-- Workaround du bug IE6 qui ne tient pas compte de la transparence dans les images PNG --%>
-		<!--[if IE 6]>
-		<style type="text/css">
-			.iepngfix {
-				behavior: url(<c:url value="/css/x/iepngfix.htc"/>);
-			}
-		</style>
-		<![endif]-->
+		<%@ include file="/WEB-INF/jsp/include/workaround.jsp" %>
 
 		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/layout.css"/>" rel="stylesheet" type="text/css">

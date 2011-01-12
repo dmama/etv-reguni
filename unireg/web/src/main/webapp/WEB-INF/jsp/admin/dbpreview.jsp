@@ -7,16 +7,6 @@
 	<tiles:put name="connected" type="String"></tiles:put>
 	<tiles:put name="body" type="String">
 
-
-		<style>
-			.ui-tabs .ui-tabs-hide {
-				 display: none;
-			}
-			.ui-tabs-nav {
-				display: inline-block; /* autrement les tabs prennent toute la hauteur du menu de gauche ... */
-			}
-		</style>
-
 		<script>
 			$(function() {
 				$("#jtabs").tabs();
