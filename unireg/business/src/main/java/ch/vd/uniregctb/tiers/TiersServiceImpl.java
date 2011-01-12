@@ -3287,7 +3287,7 @@ public class TiersServiceImpl implements TiersService {
 				ids = new HashSet<Long>(periodicites.size());
 				for (Periodicite p : periodicites) {
 					final Long id = p.getId();
-					Assert.notNull(id, "Les periodicites existants doivent être persistés.");
+					Assert.notNull(id, "Les périodicités existantes doivent être persistées.");
 					ids.add(id);
 				}
 			}

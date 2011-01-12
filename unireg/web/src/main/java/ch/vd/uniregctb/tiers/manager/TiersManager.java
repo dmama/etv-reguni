@@ -915,16 +915,14 @@ public class TiersManager implements MessageSourceAware {
 	protected void setPeriodiciteCourante(TiersView tiersView, DebiteurPrestationImposable dpi) {
 		Periodicite periodiciteCourante = dpi.getDernierePeriodicite();
 
-		if(periodiciteCourante==null){
-			//Periodicite par defaut a enregistrer dans la vue
+		if (periodiciteCourante == null) {
+			// Périodicité par défaut à enregistrer dans la vue
 			final RegDate debutPeriodicite = RegDate.get(RegDate.get().year(), 1, 1);
-			periodiciteCourante = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,PeriodeDecompte.M12, debutPeriodicite,null);
+			periodiciteCourante = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, PeriodeDecompte.M12, debutPeriodicite, null);
 
 		}
 
 		tiersView.setPeriodicite(readFromPeriodicite(periodiciteCourante));
-
-
 	}
 
 	/**
@@ -1199,74 +1197,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	protected ComplementView buildComplement(Tiers tiers) {
-
-		final ComplementView complement = new ComplementView();
-
-		if (tiers instanceof Entreprise) {
-
-			final PersonneMorale pm = servicePM.getPersonneMorale(tiers.getNumero(), PartPM.MANDATS);
-			if (pm != null) {
-				// numéros de téléphone
-				complement.setNumeroTelephonePrive(pm.getTelephoneContact());
-				complement.setNumeroTelecopie(pm.getTelecopieContact());
-				complement.setNumeroTelephonePortable(null);
-				complement.setNumeroTelephoneProfessionnel(null);
-
-				// comptes bancaires
-				complement.setTitulaireCompteBancaire(pm.getTitulaireCompte());
-
-				final List<CompteBancaire> comptes = pm.getComptesBancaires();
-				if (comptes != null && !comptes.isEmpty()) {
-					final CompteBancaire c = comptes.get(0);
-					complement.setNumeroCompteBancaire(c.getNumero());
-					complement.setNomInstitutionCompteBancaire(c.getNomInstitution());
-					complement.setAdresseBicSwift(null); // pas disponible
-				}
-			}
-
-			complement.setBlocageRemboursementAutomatique(tiers.getBlocageRemboursementAutomatique());
-		}
-		else {
-			// nom
-			complement.setPersonneContact(tiers.getPersonneContact());
-			complement.setComplementNom(tiers.getComplementNom());
-
-			// téléphone
-			complement.setNumeroTelecopie(tiers.getNumeroTelecopie());
-			complement.setNumeroTelephonePortable(tiers.getNumeroTelephonePortable());
-			complement.setNumeroTelephonePrive(tiers.getNumeroTelephonePrive());
-			complement.setNumeroTelephoneProfessionnel(tiers.getNumeroTelephoneProfessionnel());
-			complement.setAdresseCourrierElectronique(tiers.getAdresseCourrierElectronique());
-
-			// compte bancaire
-			complement.setNumeroCompteBancaire(tiers.getNumeroCompteBancaire());
-			complement.setTitulaireCompteBancaire(tiers.getTitulaireCompteBancaire());
-			complement.setAdresseBicSwift(tiers.getAdresseBicSwift());
-			complement.setIbanValidationMessage(verifierIban(tiers)); // [UNIREG-2582]
-
-			if (tiers instanceof PersonnePhysique) {
-				final PersonnePhysique pp =(PersonnePhysique) tiers;
-				complement.setAncienNumeroSourcier(pp.getAncienNumeroSourcier());
-			}
-			complement.setBlocageRemboursementAutomatique(tiers.getBlocageRemboursementAutomatique());
-		}
-
-		return complement;
-	}
-
-	/**
-	 * Permet renseigner la view sur le fait que l'iban du tiers associé est valide ou pas
-	 * @param tiers le tiers dont l'IBAN doit être vérifié
-	 * @return <code>null</code> si l'IBAN est valide, explication textuelle de l'erreur sinon
-	 */
-	private String verifierIban(Tiers tiers) {
-		if (tiers != null) {
-			final String iban = tiers.getNumeroCompteBancaire();
-			if (iban != null) {
-				return ibanValidator.getIbanValidationError(iban);
-			}
-		}
-		return null;
+		return new ComplementView(tiers, servicePM, ibanValidator);
 	}
 
 	public void setServicePM(ServicePersonneMoraleService servicePM) {

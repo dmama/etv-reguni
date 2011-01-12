@@ -194,11 +194,11 @@
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 	</bean>
 
-	<bean id="debiteursEditController" class="ch.vd.uniregctb.tiers.DebiteursEditController" parent="abstractTiersController">
+	<bean id="debiteurEditController" class="ch.vd.uniregctb.tiers.DebiteurEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="service" ref="tiersService" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.DebiteurEditView" />
 		<property name="formView" value="tiers/edition/debiteur/edit" />
+		<property name="service" ref="tiersService" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 	</bean>
 

@@ -97,6 +97,9 @@
 				<!-- Identification de contribuable -->
 				<entry key="/identification/tooltip/adresse.do" value-ref="identificationAdresseTooltipController"/>
 				<entry key="/identification/tooltip/individu.do" value-ref="identificationIndividuTooltipController"/>
+
+				<!-- Edition des débiteurs -->
+				<entry key="/debiteur/edit.do" value-ref="debiteurEditController" />
 			</map>
 		</property>
 	</bean>
@@ -176,7 +179,6 @@
 				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />
-				<entry key="/debiteurs/edit.do" value-ref="debiteursEditController" />
 				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
 				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
 

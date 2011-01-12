@@ -3,9 +3,9 @@
 <!-- Debut Fiscal -->
 	<c:choose>
 		<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
-			<jsp:include page="debiteur.jsp"/>
+			<jsp:include page="debiteur-old.jsp"/>
 			<c:if test="${command.numeroCtbAssocie == null}">
-		 		<jsp:include page="for-debiteur.jsp"/> 
+		 		<jsp:include page="for-debiteur.jsp"/>
 			</c:if>
 		</c:when>
 		<c:when test="${command.natureTiers != 'DebiteurPrestationImposable'}">

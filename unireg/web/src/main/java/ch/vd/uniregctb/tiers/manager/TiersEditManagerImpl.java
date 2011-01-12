@@ -30,6 +30,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.ComplementView;
+import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
@@ -112,45 +113,26 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 
 	/**
-	 * Charge les informations dans TiersView
+	 * Charge les informations dans un objet qui servira de view
 	 *
-	 * @param numero
-	 * @return un objet TiersView
+	 * @param numero numéro de tiers du débiteur recherché
+	 * @return un objet DebiteurEditView
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getDebiteursView(Long numero) throws AdresseException, InfrastructureException {
-		TiersEditView tiersEditView = new TiersEditView();
-		if ( numero == null) {
+	public DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, InfrastructureException {
+		if (numero == null) {
 			return null;
 		}
+
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
 			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		if (tiers != null){
-			tiersEditView.setTiers(tiers);
-			setTiersGeneralView(tiersEditView, tiers);
-			if(tiers instanceof Contribuable) {
-				Contribuable contribuable = (Contribuable) tiers;
-				tiersEditView.setDebiteurs(getDebiteurs(contribuable));
-			}
-			Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-			boolean allowed = setDroitEdition(tiers, allowedOnglet);
-
-			tiersEditView.setAllowedOnglet(allowedOnglet);
-			tiersEditView.setAllowed(allowed);
-
-			if(!allowed){
-				tiersEditView.setTiers(null);
-			}
-		}
-		else {
-			tiersEditView.setAllowed(true);
-		}
-		return tiersEditView;
+		Assert.isInstanceOf(DebiteurPrestationImposable.class, tiers);
+		return new DebiteurEditView((DebiteurPrestationImposable) tiers, ibanValidator);
 	}
 
 
@@ -394,7 +376,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	
 		debiteur.setModeCommunication(ModeCommunication.PAPIER);	
 		debiteur.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-		setPeriodiciteCourante(tiersView,debiteur);
+		setPeriodiciteCourante(tiersView, debiteur);
 		tiersView.setTiers(debiteur);
 		tiersView.setNumeroCtbAssocie(numeroCtbAssocie);
 		final Map<String, Boolean> allowedOnglet = initAllowedOnglet();
@@ -469,26 +451,12 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			//Test de la saisie d'une periodicite dans la vue
 			final PeriodiciteView periodicite = tiersView.getPeriodicite();
 			if (periodicite != null) {
-				//Calcul de la date de début de validité de la nouvelle périodicité
+				// L'appel de addperiodicite permet de sauver le tiers et la périodicité
+				final Periodicite periodiciteAjoutee = changePeriodicite(dpiFromView, periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte());
 
-				if(dpiFromView.getId()!=null){
-					 dpiFromView  = (DebiteurPrestationImposable) tiersDAO.get(dpiFromView.getId());
-				}
-
-
-				RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpiFromView);
-				PeriodeDecompte periodeDecompte = null;
-
-				final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
-				if (PeriodiciteDecompte.UNIQUE == periodiciteDecompte) {
-					periodeDecompte = periodicite.getPeriodeDecompte();
-				}
-				//L'appel de addperiodicite permet de sauver le tiers et la periodicite
-				final Periodicite periodiciteAjoutee = tiersService.addPeriodicite(dpiFromView, periodiciteDecompte, periodeDecompte, debutValidite, null);
-				//permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
+				// permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
 				Assert.notNull(periodiciteAjoutee.getId());
 				dpiFromView = periodiciteAjoutee.getDebiteur();
-
 			}
 
 			if (tiersView.getNumeroCtbAssocie() != null) { //ajout d'un débiteur IS au contribuable
@@ -540,32 +508,23 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(complement.getAdresseBicSwift()));
 	}
 
-	/**
-	 * Sauvegarde du tiers en base et mise a jour de l'indexeur
-	 *
-	 * @param tiersEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
 	public Tiers save(TiersEditView tiersEditView) {
-		Tiers tiersEnrichi = enrichiTiers(tiersEditView);
-		Tiers tiersSaved;
-		if (tiersEnrichi instanceof DebiteurPrestationImposable) {
-			/*
-			 * Un débiteur *appartient* à un contribuable. Pour que Hibernate mette en place les liens entre objets correctement, il est
-			 * nécessaire de sauver le contribuable et non le débiteur.
-			 *
-			 * si ajout d'un débiteur à un contribuable, il n'y a rien à faire ici, parce que le contribuable existe déjà
-			 * dans la session Hibernate et sera automatiquement sauvé lors de la fermeture de la transaction.
-			 * si modification d'un débiteur, la sauvegarde est faite dans enrichiTiers
-			 */
-			tiersSaved = tiersEnrichi;
-		}
-		else {
-			/*
-			 * Dans tous les autres cas, on sauve le (potentiellement) nouveau tiers
-			 */
-			tiersSaved = getTiersDAO().save((tiersEnrichi));
-		}
-		return tiersSaved;
+		final Tiers tiersEnrichi = enrichiTiers(tiersEditView);
+		return getTiersDAO().save(tiersEnrichi);
+	}
+
+	public void save(DebiteurEditView view) {
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getId());
+		dpi.setCategorieImpotSource(view.getCategorieImpotSource());
+		dpi.setModeCommunication(view.getModeCommunication());
+		dpi.setSansListeRecapitulative(view.getSansListeRecapitulative());
+		dpi.setSansRappel(view.getSansSommation());
+		changePeriodicite(dpi, view.getPeriodiciteCourante(), view.getPeriodeDecompte());
+	}
+
+	private Periodicite changePeriodicite(DebiteurPrestationImposable dpi, PeriodiciteDecompte nouvellePeriodicite, PeriodeDecompte nouvellePeriode) {
+		final PeriodeDecompte periodeDecompte = (nouvellePeriodicite == PeriodiciteDecompte.UNIQUE ? nouvellePeriode : null);
+		final RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
+		return tiersService.addPeriodicite(dpi, nouvellePeriodicite, periodeDecompte, debutValidite, null);
 	}
 }

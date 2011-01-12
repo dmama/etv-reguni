@@ -36,7 +36,7 @@
 						<jsp:include page="fiscal.jsp" />
 					</c:when>
 					<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
-						<jsp:include page="debiteur.jsp" />
+						<jsp:include page="debiteur-old.jsp" />
 					</c:when>
 				</c:choose>
 				</div>

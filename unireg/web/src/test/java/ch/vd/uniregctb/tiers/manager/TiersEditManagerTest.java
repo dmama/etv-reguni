@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -13,13 +16,19 @@ import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@SuppressWarnings({"JavaDoc"})
 public class TiersEditManagerTest extends WebTest {
 
 	private final static String DB_UNIT_FILE = "TiersEditManagerTest.xml";
@@ -117,6 +126,73 @@ public class TiersEditManagerTest extends WebTest {
 
 	}
 
+	/**
+	 * Cas jira UNIREG-3180
+	 */
+	@Test
+	@NotTransactional
+	public void testChangeModeCommunicationDebiteur() throws Exception {
+
+		final long dpiId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
+				return dpi.getNumero();
+			}
+		});
+
+		DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+		assertEquals(ModeCommunication.PAPIER, view.getModeCommunication());
+		{
+			view.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			tiersEditManager.save(view);
+			view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertEquals(ModeCommunication.ELECTRONIQUE, view.getModeCommunication());
+		}
+		{
+			view.setModeCommunication(ModeCommunication.SITE_WEB);
+			tiersEditManager.save(view);
+			view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertEquals(ModeCommunication.SITE_WEB, view.getModeCommunication());
+		}
+	}
+
+	/**
+	 * Cas jira UNIREG-3180
+	 */
+	@Test
+	@NotTransactional
+	public void testChangeCategorieImpotSource() throws Exception {
+
+		final long dpiId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
+				return dpi.getNumero();
+			}
+		});
+
+		DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+		assertEquals(CategorieImpotSource.REGULIERS, view.getCategorieImpotSource());
+		{
+			view.setCategorieImpotSource(CategorieImpotSource.ADMINISTRATEURS);
+			tiersEditManager.save(view);
+			view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertEquals(CategorieImpotSource.ADMINISTRATEURS, view.getCategorieImpotSource());
+		}
+		{
+			view.setCategorieImpotSource(CategorieImpotSource.LOI_TRAVAIL_AU_NOIR);
+			tiersEditManager.save(view);
+			view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertEquals(CategorieImpotSource.LOI_TRAVAIL_AU_NOIR, view.getCategorieImpotSource());
+		}
+	}
 
 	@Test
 	public void testRefresh() throws AdresseException, InfrastructureException {

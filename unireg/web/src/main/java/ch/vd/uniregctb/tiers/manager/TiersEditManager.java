@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 
 
@@ -24,18 +25,18 @@ public interface TiersEditManager {
 	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getComplementView(Long numero) throws AdresseException, InfrastructureException;
+	TiersEditView getComplementView(Long numero) throws AdresseException, InfrastructureException;
 
 	/**
-	 * Charge les informations dans TiersView
+	 * Charge les informations dans un objet qui servira de view
 	 *
-	 * @param numero
-	 * @return un objet TiersView
+	 * @param numero numéro de tiers du débiteur recherché
+	 * @return un objet DebiteurEditView
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getDebiteursView(Long numero) throws AdresseException, InfrastructureException;
+	DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, InfrastructureException;
 
 
 	/**
@@ -46,7 +47,7 @@ public interface TiersEditManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
+	TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Rafraichissement de la vue
@@ -57,7 +58,7 @@ public interface TiersEditManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView refresh(TiersEditView view, Long numero) throws AdresseException, InfrastructureException;
+	TiersEditView refresh(TiersEditView view, Long numero) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Cree une nouvelle instance de TiersView correspondant a une personne
@@ -65,7 +66,7 @@ public interface TiersEditManager {
 	 * @return un objet TiersView
 	 */
 	@Transactional(readOnly = true)
-	public abstract TiersEditView creePersonne();
+	TiersEditView creePersonne();
 
 	/**
 	 * Cree une nouvelle instance de TiersView correspondant a une organisation
@@ -73,7 +74,7 @@ public interface TiersEditManager {
 	 * @return un objet TiersView
 	 */
 	@Transactional(readOnly = true)
-	public abstract TiersEditView creeOrganisation();
+	TiersEditView creeOrganisation();
 
 	/**
 	 * Cree une nouvelle instance de TiersView correspondant a un debiteur
@@ -81,7 +82,7 @@ public interface TiersEditManager {
 	 * @return un objet TiersView
 	 */
 	@Transactional(readOnly = true)
-	public abstract TiersEditView creeDebiteur(Long numeroCtbAssocie) throws AdressesResolutionException;
+	TiersEditView creeDebiteur(Long numeroCtbAssocie) throws AdressesResolutionException;
 
 	/**
 	 * Sauvegarde du tiers en base et mise a jour de l'indexeur
@@ -89,7 +90,14 @@ public interface TiersEditManager {
 	 * @param tiersEditView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract Tiers save(TiersEditView tiersEditView);
+	Tiers save(TiersEditView tiersEditView);
+
+	/**
+	 * Sauvegarde du débiteur IS
+	 * @param view paramètres connus dans le débiteur IS
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	void save(DebiteurEditView view);
 
 	/**
 	 * Annule un tiers
@@ -97,7 +105,7 @@ public interface TiersEditManager {
 	 * @param numero
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerTiers(Long numero) ;
+	void annulerTiers(Long numero) ;
 
 	/**
 	 * Compte le nombre de rapports prestation imposable pour un débiteur
@@ -105,5 +113,5 @@ public interface TiersEditManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
+	int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
 }
