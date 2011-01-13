@@ -24,6 +24,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -4404,8 +4406,8 @@ public class TacheServiceTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), date(anneeCourante, 1, 2), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				di.addEtat(new EtatDeclaration(aujourdhui, TypeEtatDeclaration.EMISE));
-				di.addEtat(new EtatDeclaration(aujourdhui, TypeEtatDeclaration.RETOURNEE));
+				di.addEtat(new EtatDeclarationEmise(aujourdhui));
+				di.addEtat(new EtatDeclarationRetournee(aujourdhui));
 				di.setLibre(true);
 
 				return pp.getNumero();

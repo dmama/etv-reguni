@@ -2,10 +2,14 @@ package ch.vd.uniregctb.declaration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -20,6 +24,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
@@ -36,7 +41,9 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
  */
 @Entity
 @Table(name = "ETAT_DECLARATION")
-public class EtatDeclaration extends HibernateEntity implements DateRange, Comparable<EtatDeclaration>, LinkedEntity {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+public abstract class EtatDeclaration extends HibernateEntity implements DateRange, Comparable<EtatDeclaration>, LinkedEntity {
 
 	/**
 	 * Permet de trier les états d'une déclaration du plus ancien au plus récent. En cas de plusieurs états tombant le même jour, des règles
@@ -79,13 +86,6 @@ public class EtatDeclaration extends HibernateEntity implements DateRange, Compa
 	 */
 	private Long id;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_TNdzAOqfEdySTq6PFlf9jQ"
-	 */
-	private TypeEtatDeclaration etat;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -106,9 +106,9 @@ public class EtatDeclaration extends HibernateEntity implements DateRange, Compa
 	public EtatDeclaration() {
 	}
 
-	public EtatDeclaration(RegDate dateObtention, TypeEtatDeclaration etat) {
+	public EtatDeclaration(RegDate dateObtention) {
 		this.dateObtention = dateObtention;
-		this.etat = etat;
+
 	}
 
 	@Transient
@@ -140,25 +140,12 @@ public class EtatDeclaration extends HibernateEntity implements DateRange, Compa
 	 * @return the etat
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_TNdzAOqfEdySTq6PFlf9jQ?GETTER"
 	 */
-	@Column(name = "TYPE", length = LengthConstants.DI_ETAT)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEtatDeclarationUserType")
-	public TypeEtatDeclaration getEtat() {
-		// begin-user-code
-		return etat;
-		// end-user-code
-	}
+//	@Column(name = "TYPE", length = LengthConstants.DI_ETAT)
+//	@Type(type = "ch.vd.uniregctb.hibernate.TypeEtatDeclarationUserType")
+	@Transient
+	public abstract  TypeEtatDeclaration getEtat();
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theEtat the etat to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_TNdzAOqfEdySTq6PFlf9jQ?SETTER"
-	 */
-	public void setEtat(TypeEtatDeclaration theEtat) {
-		// begin-user-code
-		etat = theEtat;
-		// end-user-code
-	}
+
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -249,5 +236,20 @@ public class EtatDeclaration extends HibernateEntity implements DateRange, Compa
 	@Transient
 	public List<?> getLinkedEntities() {
 		return declaration == null ? null : Arrays.asList(declaration);
+	}
+
+	public static EtatDeclaration getInstanceOfEtatDeclaration(TypeEtatDeclaration typeEtat){
+		     switch (typeEtat){
+		     case ECHUE:
+			     return new EtatDeclarationEchue();
+		     case SOMMEE:
+			     return new EtatDeclarationSommee();
+		     case EMISE:
+			     return new EtatDeclarationEmise();
+		     case RETOURNEE:
+			     return new EtatDeclarationRetournee();
+		     default:
+			     return null;
+		     }
 	}
 }

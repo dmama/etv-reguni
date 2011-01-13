@@ -16,6 +16,10 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -321,8 +325,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		lr.setPeriodicite(debiteur.getPeriodiciteAt(debut).getPeriodiciteDecompte());
 
 		if(typeEtat!=null){
-			EtatDeclaration etat = new EtatDeclaration();
-			etat.setEtat(typeEtat);
+			EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(typeEtat);
 			etat.setDateObtention(debut);
 			lr.addEtat(etat);
 		}
@@ -331,6 +334,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		debiteur.addDeclaration(lr);
 		return lr;
 	}
+
+
 
 	protected DebiteurPrestationImposable addDebiteur(CategorieImpotSource categorie, PeriodiciteDecompte periodicite, RegDate debutValiditePeriodicite) {
 		final DebiteurPrestationImposable debiteur = addDebiteur();

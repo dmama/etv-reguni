@@ -19,7 +19,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 
 public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 

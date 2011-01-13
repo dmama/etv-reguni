@@ -9,6 +9,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -73,7 +76,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
+				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
 				return null;
@@ -102,7 +105,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
+				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
 				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
@@ -134,7 +137,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr.addEtat(new EtatDeclaration(RegDate.get().addDays(-10), TypeEtatDeclaration.SOMMEE));
+				lr.addEtat(new EtatDeclarationSommee(RegDate.get().addDays(-10),RegDate.get().addDays(-10)));
 				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
 				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
@@ -162,8 +165,8 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
-				lr.addEtat(new EtatDeclaration(date(2010, 1, 20), TypeEtatDeclaration.ECHUE));
+				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4), date(2009, 12, 4)));
+				lr.addEtat(new EtatDeclarationEchue(date(2010, 1, 20)));
 				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
 				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
@@ -192,11 +195,11 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
 				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr1.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
-				lr1.addEtat(new EtatDeclaration(date(2010, 1, 20), TypeEtatDeclaration.ECHUE));
+				lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+				lr1.addEtat(new EtatDeclarationEchue(date(2010, 1, 20)));
 
 				final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				lr2.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
+				lr2.addEtat(new EtatDeclarationSommee(date(2009, 12, 4), date(2009, 12, 4)));
 
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
 				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
@@ -229,8 +232,8 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
 				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr1.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
-				lr1.addEtat(new EtatDeclaration(date(2010, 1, 20), TypeEtatDeclaration.RETOURNEE));
+				lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+				lr1.addEtat(new EtatDeclarationRetournee(date(2010, 1, 20)));
 
 				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
@@ -260,10 +263,10 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
 				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr1.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
+				lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 
 				final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				lr2.addEtat(new EtatDeclaration(date(2009, 12, 4), TypeEtatDeclaration.SOMMEE));
+				lr2.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
 				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);

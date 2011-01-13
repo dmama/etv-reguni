@@ -20,6 +20,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -347,8 +348,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 					lr.setDateFin(date(2000, 12, 31));
 					lr.setPeriodicite(PeriodiciteDecompte.ANNUEL);
 
-					EtatDeclaration etatDeclaration = new EtatDeclaration();
-					etatDeclaration.setEtat(TypeEtatDeclaration.EMISE);
+					EtatDeclaration etatDeclaration = new EtatDeclarationEmise();
 					etatDeclaration.setDateObtention(date(2001, 1, 1));
 					lr.addEtat(etatDeclaration);
 

@@ -19,7 +19,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 
 public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 
@@ -65,16 +68,17 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 
 	private static class EtatDeclarationMapper implements RowMapper {
 		private static final String BASE_SELECT = "select " +
-				"ID, " + // 1
-				"ANNULATION_DATE, " + // 2
-				"ANNULATION_USER, " + // 3
-				"DATE_OBTENTION, " + // 4
-				"DECLARATION_ID, " + // 5
-				"LOG_CDATE, " + // 6
-				"LOG_CUSER, " + // 7
-				"LOG_MDATE, " + // 8
-				"LOG_MUSER, " + // 9
-				"TYPE " + // 10
+				"TYPE, " + // 1
+				"ID, " + // 2
+				"ANNULATION_DATE, " + // 3
+				"ANNULATION_USER, " + // 4
+				"DATE_ENVOI_COURRIER, " + // 5
+				"DATE_OBTENTION, " + // 6
+				"DECLARATION_ID, " + // 7
+				"LOG_CDATE, " + // 8
+				"LOG_CUSER, " + // 9
+				"LOG_MDATE, " + // 10
+				"LOG_MUSER " + // 11
 				"from ETAT_DECLARATION";
 
 		public static String selectById() {
@@ -91,35 +95,113 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
-			final long temp5 = rs.getLong(5);
-			final Long declarationId = (rs.wasNull() ? null : temp5);
+			final String type = rs.getString(1);
+			final long temp7 = rs.getLong(7);
+			final Long declarationId = (rs.wasNull() ? null : temp7);
 			final EtatDeclaration res;
 			
+			if (type.equals("EMISE")) {
 			
-			final long temp1 = rs.getLong(1);
-			final Long id = (rs.wasNull() ? null : temp1);
-			final Date annulationDate = rs.getTimestamp(2);
-			final String annulationUser = rs.getString(3);
-			final int temp4 = rs.getInt(4);
-			final RegDate dateObtention = (rs.wasNull() ? null : RegDate.fromIndex(temp4, false));
-			final Date logCdate = rs.getTimestamp(6);
-			final String logCuser = rs.getString(7);
-			final Timestamp logMdate = rs.getTimestamp(8);
-			final String logMuser = rs.getString(9);
-			final String temp10 = rs.getString(10);
-			final TypeEtatDeclaration type = (rs.wasNull() ? null : Enum.valueOf(TypeEtatDeclaration.class, temp10));
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp6 = rs.getInt(6);
+				final RegDate dateObtention = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
 			
-			EtatDeclaration o = new EtatDeclaration();
-			o.setId(id);
-			o.setAnnulationDate(annulationDate);
-			o.setAnnulationUser(annulationUser);
-			o.setDateObtention(dateObtention);
-			o.setLogCreationDate(logCdate);
-			o.setLogCreationUser(logCuser);
-			o.setLogModifDate(logMdate);
-			o.setLogModifUser(logMuser);
-			o.setEtat(type);
-			res = o;
+				EtatDeclarationEmise o = new EtatDeclarationEmise();
+				o.setId(id);
+				o.setAnnulationDate(annulationDate);
+				o.setAnnulationUser(annulationUser);
+				o.setDateObtention(dateObtention);
+				o.setLogCreationDate(logCdate);
+				o.setLogCreationUser(logCuser);
+				o.setLogModifDate(logMdate);
+				o.setLogModifUser(logMuser);
+				res = o;
+			}
+			else if (type.equals("SOMMEE")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateEnvoiCourrier = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateObtention = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+			
+				EtatDeclarationSommee o = new EtatDeclarationSommee();
+				o.setId(id);
+				o.setAnnulationDate(annulationDate);
+				o.setAnnulationUser(annulationUser);
+				o.setDateEnvoiCourrier(dateEnvoiCourrier);
+				o.setDateObtention(dateObtention);
+				o.setLogCreationDate(logCdate);
+				o.setLogCreationUser(logCuser);
+				o.setLogModifDate(logMdate);
+				o.setLogModifUser(logMuser);
+				res = o;
+			}
+			else if (type.equals("RETOURNEE")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp6 = rs.getInt(6);
+				final RegDate dateObtention = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+			
+				EtatDeclarationRetournee o = new EtatDeclarationRetournee();
+				o.setId(id);
+				o.setAnnulationDate(annulationDate);
+				o.setAnnulationUser(annulationUser);
+				o.setDateObtention(dateObtention);
+				o.setLogCreationDate(logCdate);
+				o.setLogCreationUser(logCuser);
+				o.setLogModifDate(logMdate);
+				o.setLogModifUser(logMuser);
+				res = o;
+			}
+			else if (type.equals("ECHUE")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp6 = rs.getInt(6);
+				final RegDate dateObtention = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+			
+				EtatDeclarationEchue o = new EtatDeclarationEchue();
+				o.setId(id);
+				o.setAnnulationDate(annulationDate);
+				o.setAnnulationUser(annulationUser);
+				o.setDateObtention(dateObtention);
+				o.setLogCreationDate(logCdate);
+				o.setLogCreationUser(logCuser);
+				o.setLogModifDate(logMdate);
+				o.setLogModifUser(logMuser);
+				res = o;
+			}
+			else {
+				throw new IllegalArgumentException("Type inconnu = [" + type + "]");
+			}
 			
 			final Pair<Long, EtatDeclaration> pair = new Pair<Long, EtatDeclaration>();
 			pair.setFirst(declarationId);

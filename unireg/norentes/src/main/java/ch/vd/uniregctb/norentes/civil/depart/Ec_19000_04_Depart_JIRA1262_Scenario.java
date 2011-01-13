@@ -115,9 +115,8 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 	}
 
 	private void addEtat(DeclarationImpotOrdinaire di, RegDate dateObtention, TypeEtatDeclaration typeEtat) {
-		final EtatDeclaration etat = new EtatDeclaration();
+		final EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(typeEtat);
 		etat.setDateObtention(dateObtention);
-		etat.setEtat(typeEtat);
 		etat.setDeclaration(di);
 		final Set<EtatDeclaration> etats = di.getEtats();
 		etats.add(etat);

@@ -12,6 +12,10 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
@@ -1441,91 +1445,80 @@ public class TestData {
 		dpi1.addDeclaration(dis2);
 		dpi1 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi1);
 
-		EtatDeclaration ed0 = new EtatDeclaration();
+		EtatDeclaration ed0 = new EtatDeclarationEmise();
 		ed0.setId(1L);
 		ed0.setDateObtention(RegDate.get(2008, 3, 20));
 		ed0.setLogModifDate(new Timestamp(1199142000000L));
-		ed0.setEtat(TypeEtatDeclaration.EMISE);
 		dis0.addEtat(ed0);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
-		EtatDeclaration ed1 = new EtatDeclaration();
+		EtatDeclaration ed1 = new EtatDeclarationSommee();
 		ed1.setId(8L);
 		ed1.setDateObtention(RegDate.get(2008, 5, 15));
 		ed1.setLogModifDate(new Timestamp(1199142000000L));
-		ed1.setEtat(TypeEtatDeclaration.SOMMEE);
 		dis0.addEtat(ed1);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
-		EtatDeclaration ed2 = new EtatDeclaration();
+		EtatDeclaration ed2 = new EtatDeclarationRetournee();
 		ed2.setId(10L);
 		ed2.setDateObtention(RegDate.get(2008, 5, 25));
 		ed2.setLogModifDate(new Timestamp(1199142000000L));
-		ed2.setEtat(TypeEtatDeclaration.RETOURNEE);
 		dis0.addEtat(ed2);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
-		EtatDeclaration ed3 = new EtatDeclaration();
+		EtatDeclaration ed3 = new EtatDeclarationEmise();
 		ed3.setId(9L);
 		ed3.setDateObtention(RegDate.get(2008, 6, 20));
 		ed3.setLogModifDate(new Timestamp(1199142000000L));
-		ed3.setEtat(TypeEtatDeclaration.EMISE);
 		dis1.addEtat(ed3);
 		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
 
-		EtatDeclaration ed4 = new EtatDeclaration();
+		EtatDeclaration ed4 = new EtatDeclarationEmise();
 		ed4.setId(2L);
 		ed4.setDateObtention(RegDate.get(2006, 1, 15));
 		ed4.setLogModifDate(new Timestamp(1199142000000L));
-		ed4.setEtat(TypeEtatDeclaration.EMISE);
 		dio0.addEtat(ed4);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
-		EtatDeclaration ed5 = new EtatDeclaration();
+		EtatDeclaration ed5 = new EtatDeclarationRetournee();
 		ed5.setId(3L);
 		ed5.setDateObtention(RegDate.get(2006, 4, 13));
 		ed5.setLogModifDate(new Timestamp(1199142000000L));
-		ed5.setEtat(TypeEtatDeclaration.RETOURNEE);
 		dio0.addEtat(ed5);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
-		EtatDeclaration ed6 = new EtatDeclaration();
+		EtatDeclaration ed6 = new EtatDeclarationEmise();
 		ed6.setId(4L);
 		ed6.setDateObtention(RegDate.get(2007, 1, 16));
 		ed6.setLogModifDate(new Timestamp(1199142000000L));
-		ed6.setEtat(TypeEtatDeclaration.EMISE);
 		dio1.addEtat(ed6);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
-		EtatDeclaration ed7 = new EtatDeclaration();
+		EtatDeclaration ed7 = new EtatDeclarationSommee();
 		ed7.setId(5L);
 		ed7.setDateObtention(RegDate.get(2007, 9, 15));
 		ed7.setLogModifDate(new Timestamp(1199142000000L));
-		ed7.setEtat(TypeEtatDeclaration.SOMMEE);
 		dio1.addEtat(ed7);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
-		EtatDeclaration ed8 = new EtatDeclaration();
+		EtatDeclaration ed8 = new EtatDeclarationEchue();
 		ed8.setId(6L);
 		ed8.setDateObtention(RegDate.get(2007, 11, 1));
 		ed8.setLogModifDate(new Timestamp(1199142000000L));
-		ed8.setEtat(TypeEtatDeclaration.ECHUE);
 		dio1.addEtat(ed8);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
-		EtatDeclaration ed9 = new EtatDeclaration();
+		EtatDeclaration ed9 = new EtatDeclarationEmise();
 		ed9.setId(7L);
 		ed9.setDateObtention(RegDate.get(2007, 1, 15));
 		ed9.setLogModifDate(new Timestamp(1199142000000L));
-		ed9.setEtat(TypeEtatDeclaration.EMISE);
 		dio2.addEtat(ed9);
 		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
 
-		EtatDeclaration ed10 = new EtatDeclaration();
+		EtatDeclaration ed10 = new EtatDeclarationEmise();
 		ed10.setId(18L);
 		ed10.setDateObtention(RegDate.get(2008, 3, 20));
 		ed10.setLogModifDate(new Timestamp(1199142000000L));
-		ed10.setEtat(TypeEtatDeclaration.EMISE);
 		dis2.addEtat(ed10);
 		dis2 = (DeclarationImpotSource) hibernateTemplate.merge(dis2);
 

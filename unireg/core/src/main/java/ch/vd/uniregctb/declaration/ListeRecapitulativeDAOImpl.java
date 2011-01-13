@@ -2,6 +2,7 @@ package ch.vd.uniregctb.declaration;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -160,20 +161,22 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 		if (!criterion.getEtat().equals(TOUS)) {
 			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
 			if (etat != TypeEtatDeclaration.EMISE) {
-				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.etat = ? and etat.annulationDate is null)");
-				parameters.add(etat.name());
+				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ? and etat.annulationDate is null)");
+				EtatDeclaration etatCourant = EtatDeclaration.getInstanceOfEtatDeclaration(etat);
+				parameters.add(etatCourant.getClass().getName());
 			}
 
 			if (etat != TypeEtatDeclaration.RETOURNEE) {
-				final Set<TypeEtatDeclaration> etatsInterdits = new HashSet<TypeEtatDeclaration>(3);
-				etatsInterdits.add(TypeEtatDeclaration.RETOURNEE);
+
+				final List<Class<? extends EtatDeclaration>> classesEtatDeclarationsInterdits = new ArrayList<Class<? extends EtatDeclaration>>(3);
+				classesEtatDeclarationsInterdits.add(EtatDeclarationRetournee.class);
 				switch (etat) {
 					case EMISE:
-						etatsInterdits.add(TypeEtatDeclaration.SOMMEE);
-						etatsInterdits.add(TypeEtatDeclaration.ECHUE);
+						classesEtatDeclarationsInterdits.add(EtatDeclarationSommee.class);
+						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
 						break;
 					case SOMMEE:
-						etatsInterdits.add(TypeEtatDeclaration.ECHUE);
+						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
 						break;
 					case ECHUE:
 						break;
@@ -181,14 +184,14 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 						throw new IllegalArgumentException("Valeur de l'état non-supportée : " + etat);
 				}
 
-				builder.append(" and not exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.etat in (");
+				builder.append(" and not exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class in (");
 				boolean first = true;
-				for (TypeEtatDeclaration etatInterdit : etatsInterdits) {
+				for (Class classeEtatInterdit : classesEtatDeclarationsInterdits) {
 					if (!first) {
 						builder.append(",");
 					}
 					builder.append("?");
-					parameters.add(etatInterdit.name());
+					parameters.add(classeEtatInterdit.getName());
 					first = false;
 				}
 				builder.append(") and etat.annulationDate is null)");
@@ -230,10 +233,9 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			LOGGER.trace("Start of ListeRecapitulativeDAO : findDerniereLrEnvoyee");
 		}
 
-		final String query = "select etatPeriode from EtatDeclaration etatPeriode where etatPeriode.declaration.tiers.numero = ? and etatPeriode.etat = ? and etatPeriode.declaration.annulationDate is null order by etatPeriode.dateObtention desc";
+		final String query = "select etatPeriode from EtatDeclarationEmise etatPeriode where etatPeriode.declaration.tiers.numero = ?  and etatPeriode.declaration.annulationDate is null order by etatPeriode.dateObtention desc";
 		final List<Object> criteria = new ArrayList<Object>();
 		criteria.add(numeroDpi);
-		criteria.add(TypeEtatDeclaration.EMISE.toString());
 		final List<EtatDeclaration> list = getHibernateTemplate().find(query, criteria.toArray());
 		EtatDeclaration etat = null;
 		for (EtatDeclaration etatCourant : list) {

@@ -23,6 +23,10 @@
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
 		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationEchue</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationEmise</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationRetournee</value>
 		<value>ch.vd.uniregctb.declaration.PeriodeFiscale</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>

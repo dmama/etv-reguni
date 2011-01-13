@@ -22,6 +22,10 @@ import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -169,9 +173,8 @@ public abstract class EvenementScenario extends NorentesScenario {
 		di.setDateFin(fin);
 		di.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 
-		final EtatDeclaration etat = new EtatDeclaration();
+		final EtatDeclaration etat = new EtatDeclarationEmise();
 		etat.setDateObtention(dateEmission);
-		etat.setEtat(TypeEtatDeclaration.EMISE);
 		etat.setDeclaration(di);
 		final Set<EtatDeclaration> etats = new HashSet<EtatDeclaration>(1);
 		etats.add(etat);

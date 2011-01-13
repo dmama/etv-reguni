@@ -16,6 +16,8 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -314,9 +316,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	public void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement) {
-		EtatDeclaration etat = new EtatDeclaration();
+		EtatDeclaration etat = new EtatDeclarationEchue();
 		etat.setDateObtention(dateTraitement);
-		etat.setEtat(TypeEtatDeclaration.ECHUE);
 		declaration.addEtat(etat);
 		evenementFiscalService.publierEvenementFiscalEcheanceDI((Contribuable)declaration.getTiers(), declaration, dateTraitement);
 	}
@@ -334,8 +335,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			if (di.getDateRetour() != null) {
 				di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).setAnnule(true);
 			}
-			final EtatDeclaration etat = new EtatDeclaration();
-			etat.setEtat(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etat = new EtatDeclarationRetournee();
 			etat.setDateObtention(dateEvenement);
 			di.addEtat(etat);
 

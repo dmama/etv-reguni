@@ -13,6 +13,10 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
@@ -61,7 +65,7 @@ public class JdbcDaoGenerator {
 		JdbcHibernateEntityDaoGenerator dg = new JdbcHibernateEntityDaoGenerator(DeclarationImpotOrdinaire.class, DeclarationImpotSource.class);
 		dg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcDeclarationDaoImpl.java.template", jdbcDaoPath + "/JdbcDeclarationDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator edg = new JdbcHibernateEntityDaoGenerator(EtatDeclaration.class);
+		JdbcHibernateEntityDaoGenerator edg = new JdbcHibernateEntityDaoGenerator(EtatDeclarationEmise.class, EtatDeclarationSommee.class, EtatDeclarationRetournee.class, EtatDeclarationEchue.class);
 		edg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcEtatDeclarationDaoImpl.java.template", jdbcDaoPath + "/JdbcEtatDeclarationDaoImpl.java");
 
 		JdbcHibernateEntityDaoGenerator ffg = new JdbcHibernateEntityDaoGenerator(ForFiscalPrincipal.class, ForFiscalSecondaire.class,

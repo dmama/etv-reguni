@@ -130,10 +130,9 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 		}
 		EtatDeclaration etat = null;
 
-		String query = " select etatDeclaration from EtatDeclaration etatDeclaration where etatDeclaration.declaration.annulationDate is null and etatDeclaration.declaration.tiers.numero = ? and etatDeclaration.etat = ? order by etatDeclaration.dateObtention desc";
+		String query = " select etatDeclarationEmise from EtatDeclarationEmise etatDeclarationEmise where etatDeclarationEmise.declaration.annulationDate is null and etatDeclarationEmise.declaration.tiers.numero = ? order by etatDeclarationEmise.dateObtention desc";
 		List<Object> criteria = new ArrayList<Object>();
 		criteria.add(numeroCtb);
-		criteria.add(TypeEtatDeclaration.EMISE.toString());
 		List<EtatDeclaration> list = getHibernateTemplate().find(query, criteria.toArray());
 		if (list.size() == 0) {
 			return null;

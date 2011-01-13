@@ -27,6 +27,8 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -173,9 +175,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 		lr.setModeleDocument(modDoc);
 
-		final EtatDeclaration etat = new EtatDeclaration();
+		final EtatDeclaration etat = new EtatDeclarationEmise();
 		etat.setDateObtention(RegDate.get());
-		etat.setEtat(TypeEtatDeclaration.EMISE);
 		lr.addEtat(etat);
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
@@ -202,10 +203,10 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @throws Exception
 	 */
 	public void imprimerSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws Exception {
-		final EtatDeclaration etat = new EtatDeclaration();
-		etat.setEtat(TypeEtatDeclaration.SOMMEE);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee();
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
-		etat.setDateObtention(dateExpedition);
+		etat.setDateObtention(dateTraitement);
+		etat.setDateEnvoiCourrier(dateExpedition);
 		lr.addEtat(etat);
 		editiqueCompositionService.imprimeSommationLRForBatch(lr, RegDate.get());
 		evenementFiscalService.publierEvenementFiscalSommationLR((DebiteurPrestationImposable) lr.getTiers(), lr, etat.getDateObtention());

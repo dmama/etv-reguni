@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -414,7 +415,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				assertNull(di.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
 
-				final EtatDeclaration retour = new EtatDeclaration(RegDate.get(), TypeEtatDeclaration.RETOURNEE);
+				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get());
 				di.addEtat(retour);
 
 				final Ids ids = new Ids();

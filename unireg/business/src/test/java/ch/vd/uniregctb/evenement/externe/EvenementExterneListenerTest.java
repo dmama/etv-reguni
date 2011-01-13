@@ -17,6 +17,8 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -232,9 +234,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclaration(dateFin.addDays(-10), TypeEtatDeclaration.EMISE));
+				lr.addEtat(new EtatDeclarationEmise(dateFin.addDays(-10)));
 
-				final EtatDeclaration etatRetourne = new EtatDeclaration(dateQuittancement, TypeEtatDeclaration.RETOURNEE);
+				final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(dateQuittancement);
 				etatRetourne.setAnnule(true);
 				lr.addEtat(etatRetourne);
 
@@ -284,7 +286,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclaration(dateQuittancement, TypeEtatDeclaration.RETOURNEE));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
 
 				return dpi.getNumero();
 			}
@@ -350,7 +352,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclaration(dateQuittancement, TypeEtatDeclaration.RETOURNEE));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
 
 				return dpi.getNumero();
 			}
@@ -417,8 +419,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclaration(dateQuittancement, TypeEtatDeclaration.RETOURNEE));
-				lr.addEtat(new EtatDeclaration(dateQuittancement, TypeEtatDeclaration.RETOURNEE));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
 
 				return dpi.getNumero();
 			}

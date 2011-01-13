@@ -35,6 +35,9 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.DelaiDeclarationDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
@@ -773,7 +776,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, diEditView.getRegDateFinPeriodeImposition().year());
 			di.setQualification(derniereQualification);
 
-			final EtatDeclaration emission = new EtatDeclaration(RegDate.get(), TypeEtatDeclaration.EMISE);
+			final EtatDeclaration emission = new EtatDeclarationEmise(RegDate.get());
 			di.addEtat(emission);
 
 			// [UNIREG-2705] Création d'une DI déjà retournée
@@ -782,7 +785,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					throw new ActionException("La date de retour d'une DI émise aujourd'hui ne peut pas être dans le passé");
 				}
 
-				final EtatDeclaration retour = new EtatDeclaration(diEditView.getRegDateRetour(), TypeEtatDeclaration.RETOURNEE);
+				final EtatDeclaration retour = new EtatDeclarationRetournee(diEditView.getRegDateRetour());
 				di.addEtat(retour);
 			}
 
@@ -821,8 +824,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 						final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 						etatRetournePrecedent.setAnnule(true);
 					}
-					final EtatDeclaration etat = new EtatDeclaration();
-					etat.setEtat(TypeEtatDeclaration.RETOURNEE);
+					final EtatDeclaration etat = new EtatDeclarationRetournee();
 					etat.setDateObtention(RegDate.get(diEditView.getDateRetour()));
 					di.addEtat(etat);
 					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, RegDate.get(diEditView.getDateRetour()));
@@ -934,9 +936,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException {
 		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
-		final EtatDeclaration etat = new EtatDeclaration();
-		etat.setEtat(TypeEtatDeclaration.SOMMEE);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee();
 		etat.setDateObtention(RegDate.get());
+		etat.setDateEnvoiCourrier(RegDate.get());
 		di.addEtat(etat);
 		diDAO.save(di);
 

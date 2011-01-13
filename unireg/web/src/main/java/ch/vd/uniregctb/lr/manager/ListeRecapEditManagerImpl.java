@@ -22,6 +22,9 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -533,8 +536,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		DeclarationImpotSource lr = null;
 		if (lrEditView.getId() == null)	{
 			lr = new DeclarationImpotSource();
-			etat = new EtatDeclaration();
-			etat.setEtat(TypeEtatDeclaration.EMISE);
+			etat = new EtatDeclarationEmise();
 			etat.setDateObtention(RegDate.get());
 			lr.addEtat(etat);
 			lr.setDateDebut(RegDate.get(lrEditView.getDateDebutPeriode()));
@@ -569,8 +571,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		else {
 			lr = lrDAO.get(lrEditView.getId());
 			if (lrEditView.getRegDateRetour() != null && lrEditView.getRegDateRetour() != lr.getDateRetour()) {
-				etat = new EtatDeclaration();
-				etat.setEtat(TypeEtatDeclaration.RETOURNEE);
+				etat = new EtatDeclarationRetournee();
 				etat.setDateObtention(RegDate.get(lrEditView.getDateRetour()));
 				lr.addEtat(etat);
 				evenementFiscalService.publierEvenementFiscalRetourLR(dpi, lr, RegDate.get(lrEditView.getDateRetour()));
@@ -666,9 +667,9 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	public EditiqueResultat envoieImpressionLocalSommationLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		//Sauvegarde de la DI
 		final DeclarationImpotSource lr = save(lrEditView);
-		final EtatDeclaration etat = new EtatDeclaration();
-		etat.setEtat(TypeEtatDeclaration.SOMMEE);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee();
 		etat.setDateObtention(RegDate.get());
+		etat.setDateEnvoiCourrier(RegDate.get());
 		lr.addEtat(etat);
 		lrDAO.save(lr);
 

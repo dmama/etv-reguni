@@ -26,6 +26,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -136,7 +137,7 @@ public class DeterminerLRsEchuesProcessor {
 				final DeclarationImpotSource lr = lrDAO.get(infoLrEchue.id);
 
 				// création d'un état "ECHUE"
-				final EtatDeclaration etat = new EtatDeclaration(RegDate.get(), TypeEtatDeclaration.ECHUE);
+				final EtatDeclaration etat = new EtatDeclarationEchue(RegDate.get());
 				lr.addEtat(etat);
 
 				// publication d'un événement fiscal

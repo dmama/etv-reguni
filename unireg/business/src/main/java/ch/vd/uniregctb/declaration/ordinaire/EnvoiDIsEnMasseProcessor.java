@@ -38,6 +38,8 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
@@ -491,13 +493,11 @@ public class EnvoiDIsEnMasseProcessor {
 		di.setRetourCollectiviteAdministrativeId(cache.cedi.getId());
 
 		// [UNIREG-1980] l'état 'émis' doit aussi être présent sur les DIs des indigents
-		EtatDeclaration etat = new EtatDeclaration();
-		etat.setEtat(TypeEtatDeclaration.EMISE);
+		EtatDeclaration etat = new EtatDeclarationEmise();
 		etat.setDateObtention(dateTraitement);
 		di.addEtat(etat);
 
-		etat = new EtatDeclaration();
-		etat.setEtat(TypeEtatDeclaration.RETOURNEE);
+		etat = new EtatDeclarationRetournee();
 		etat.setDateObtention(dateTraitement);
 		di.addEtat(etat);
 
@@ -652,8 +652,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 		final RegDate dateExpedition = calculerDateExpedition(dateTraitement);
 
-		final EtatDeclaration etat = new EtatDeclaration();
-		etat.setEtat(TypeEtatDeclaration.EMISE);
+		final EtatDeclaration etat = new EtatDeclarationEmise();
 		etat.setDateObtention(dateExpedition);
 		di.addEtat(etat);
 

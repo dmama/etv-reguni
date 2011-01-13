@@ -19,10 +19,10 @@ public class EtatDeclarationTest extends WithoutSpringTest {
 	public void testComparatorCasNormal() {
 
 		List<EtatDeclaration> list = new ArrayList<EtatDeclaration>();
-		list.add(new EtatDeclaration(date(2000, 1, 1), TypeEtatDeclaration.EMISE));
-		list.add(new EtatDeclaration(date(2000, 3, 3), TypeEtatDeclaration.ECHUE));
-		list.add(new EtatDeclaration(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE));
-		list.add(new EtatDeclaration(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE));
+		list.add(new EtatDeclarationEmise(date(2000, 1, 1)));
+		list.add(new EtatDeclarationEchue(date(2000, 3, 3)));
+		list.add(new EtatDeclarationRetournee(date(2000, 4, 4)));
+		list.add(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
 
 		Collections.sort(list, new EtatDeclaration.Comparator());
 
@@ -37,9 +37,9 @@ public class EtatDeclarationTest extends WithoutSpringTest {
 	public void testComparatorAvecEtatsSommeeEtRetourneeLeMemeJour() {
 
 		List<EtatDeclaration> list = new ArrayList<EtatDeclaration>();
-		list.add(new EtatDeclaration(date(2000, 1, 1), TypeEtatDeclaration.EMISE));
-		list.add(new EtatDeclaration(date(2000, 2, 2), TypeEtatDeclaration.RETOURNEE));
-		list.add(new EtatDeclaration(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE));
+		list.add(new EtatDeclarationEmise(date(2000, 1, 1)));
+		list.add(new EtatDeclarationRetournee(date(2000, 2, 2)));
+		list.add(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
 
 		Collections.sort(list, new EtatDeclaration.Comparator());
 

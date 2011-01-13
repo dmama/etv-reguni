@@ -9,7 +9,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
+import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -29,6 +32,8 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 
 	private ListeRecapService lrService;
 	private DelaisService delaisService;
+	private ListeRecapitulativeDAO lrDAO;
+
 	private EnvoiSommationLRsEnMasseProcessor processor;
 
 	@Override
@@ -36,6 +41,8 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		super.onSetUp();
 		lrService = getBean(ListeRecapService.class, "lrService");
 		delaisService = getBean(DelaisService.class, "delaisService");
+		lrDAO = getBean(ListeRecapitulativeDAO.class,"lrDAO");
+
 
 		// création du processeur à la main pour pouvoir accéder aux méthodes protégées
 		processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, delaisService);
@@ -207,7 +214,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	public void testNonSommationLrRetourneeAvantEmission() throws Exception {
 		final PeriodeFiscale pf = addPeriodeFiscale(2007);
 		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
-		lr.addEtat(new EtatDeclaration(date(2007, 1, 12), TypeEtatDeclaration.RETOURNEE));
+		lr.addEtat(new EtatDeclarationRetournee(date(2007, 1, 12)));
 
 		final RegDate dateEmission = lr.getEtatDeclarationActif(TypeEtatDeclaration.EMISE).getDateObtention();
 		final RegDate dateRetour = lr.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).getDateObtention();
@@ -223,7 +230,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	public void testNonSommationLrDejaSommee() throws Exception {
 		final PeriodeFiscale pf = addPeriodeFiscale(2007);
 		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
-		lr.addEtat(new EtatDeclaration(date(2007, 3, 12), TypeEtatDeclaration.SOMMEE));
+		lr.addEtat(new EtatDeclarationSommee(date(2007, 3, 12),date(2007, 3, 15)));
 		hibernateTemplate.flush();
 
 		final List<IdentifiantDeclaration> allIds = processor.getListIdLRs(null, RegDate.get(), null);
@@ -254,5 +261,32 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(EnvoiSommationLRsResults.ErreurType.ROLLBACK.description(), erreur.getDescriptionRaison());
 		assertEquals("Exception de test!", erreur.details);
 		assertEquals((long) lr.getTiers().getNumero(), erreur.noCtb);
+	}
+
+	@Test
+	public void testDateEnvoiCourrierLrSommee() throws Exception {
+
+
+		final PeriodeFiscale periode = addPeriodeFiscale(2007);
+		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 3, 31), PeriodiciteDecompte.TRIMESTRIEL);
+		hibernateTemplate.flush();
+
+		final RegDate dateTraitement = date(2007, 6, 11);
+		final EnvoiSommationLRsResults run = processor.run(null, null, dateTraitement, null);
+
+		final DeclarationImpotSource lrSommee = lrDAO.get(lr.getId());
+
+		EtatDeclarationSommee etatSomme = (EtatDeclarationSommee)lrSommee.getDernierEtat();
+
+		final RegDate dateObtention = etatSomme.getDateObtention();
+		final RegDate attendu = dateObtention.addDays(3);
+		final RegDate dateEnvoiCourrier =  etatSomme.getDateEnvoiCourrier();
+
+		assertEquals(dateTraitement,dateObtention);
+		assertEquals(attendu,dateEnvoiCourrier);
+
+
+
+
 	}
 }

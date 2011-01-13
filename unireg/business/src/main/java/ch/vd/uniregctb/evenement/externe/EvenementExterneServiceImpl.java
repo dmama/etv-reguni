@@ -31,6 +31,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -264,8 +265,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		// ● Si la date de retour est renseignée, elle en y insère la date de retour.
 		// ● S’il s’agit d’une annulation du retour, elle efface la date de retour.
 		if (quittance.getType() == TypeQuittance.QUITTANCEMENT) {
-			final EtatDeclaration etatDeclaration = new EtatDeclaration();
-			etatDeclaration.setEtat(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatDeclaration = new EtatDeclarationRetournee();
 			etatDeclaration.setDateObtention(RegDate.get(quittance.getDateEvenement()));
 			etatDeclaration.setAnnule(false);
 			declarationImpotSource.addEtat(etatDeclaration);

@@ -56,6 +56,10 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -947,12 +951,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected void addEtatDeclaration(Declaration declaration, RegDate dateObtention, TypeEtatDeclaration type) {
-		EtatDeclaration etat = new EtatDeclaration();
+		EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(type);
 		etat.setDateObtention(dateObtention);
-		etat.setEtat(type);
 		declaration.addEtat(etat);
 		hibernateTemplate.merge(declaration);
 	}
+
 
 	protected void addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu) {
 		DelaiDeclaration delai = new DelaiDeclaration();

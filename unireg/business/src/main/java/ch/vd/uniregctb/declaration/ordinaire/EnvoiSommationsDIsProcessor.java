@@ -28,6 +28,7 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
@@ -263,12 +264,12 @@ public class EnvoiSommationsDIsProcessor  {
 
 	private void sommerDI(final DeclarationImpotOrdinaire di, boolean miseSousPliImpossible, final RegDate dateTraitement) throws DeclarationException {
 
-		EtatDeclaration etat = new EtatDeclaration();
+		EtatDeclarationSommee etat = new EtatDeclarationSommee();
 		etat.setDeclaration(di);
-		etat.setEtat(TypeEtatDeclaration.SOMMEE);
 		etat.setAnnule(false);
 		RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
-		etat.setDateObtention(dateExpedition);
+		etat.setDateObtention(dateTraitement);
+		etat.setDateEnvoiCourrier(dateExpedition);
 		di.addEtat(etat);
 
 		diService.envoiSommationDIForBatch(di, miseSousPliImpossible, dateTraitement);
@@ -334,8 +335,8 @@ public class EnvoiSommationsDIsProcessor  {
 						final StringBuilder b = new StringBuilder();
 						b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinaire AS di");
 						b.append(" WHERE di.annulationDate IS NULL");
-						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat = 'EMISE')");
-						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat IN ('RETOURNEE', 'SOMMEE'))");
+						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee))");
 						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE di.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL");
 						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
 						final String sql = b.toString();

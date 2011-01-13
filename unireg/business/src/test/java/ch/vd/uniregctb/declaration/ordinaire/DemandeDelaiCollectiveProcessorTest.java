@@ -72,7 +72,9 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				TypeContribuable.HORS_CANTON, modeleDocument);
 		d.setDelais(new HashSet<DelaiDeclaration>());
 		assertNull(d.getDelaiAccordeAu());
-		d.addEtat(newEtatDeclaration(TypeEtatDeclaration.EMISE));
+		final EtatDeclaration etatEmis = newEtatDeclaration(TypeEtatDeclaration.EMISE);
+		etatEmis.setDateObtention(date(2010,1,7));
+		d.addEtat(etatEmis);
 
 		{
 			// TEST : On lui ajoute 1 declaration pour 2009 à l'état émise :
@@ -140,25 +142,14 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			assertEquals(RegDate.get(2010, 9, 2), d.getDelaiAccordeAu());
 		}
 
-		{
-			// TEST : La déclaration passe à l'état reçu :
-			// Resultat attendu :
-			// - aucun accord de délai ne doit passer
-			((EtatDeclaration) (d.getEtats().toArray()[0])).setEtat(TypeEtatDeclaration.RETOURNEE);
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
-			assertEquals(0, rapport.traites.size());
-			assertEquals(0, rapport.ignores.size());
-			assertEquals(1, rapport.errors.size());
-			assertEquals(ErreurType.DI_RETOURNEE, rapport.errors.get(0).raison);
-		}
 
 		{
 			// TEST : La déclaration passe à l'état reçu :
 			// Resultat attendu :
 			// - aucun accord de délai ne doit passer
-			((EtatDeclaration) (d.getEtats().toArray()[0])).setEtat(TypeEtatDeclaration.SOMMEE);
+			final EtatDeclaration etatSomme = newEtatDeclaration(TypeEtatDeclaration.SOMMEE);
+			etatSomme.setDateObtention(date(2010,7,18));
+			d.addEtat(etatSomme);
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
@@ -172,7 +163,9 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// TEST : La déclaration passe à l'état reçu :
 			// Resultat attendu :
 			// - aucun accord de délai ne doit passer
-			((EtatDeclaration) (d.getEtats().toArray()[0])).setEtat(TypeEtatDeclaration.ECHUE);
+			final EtatDeclaration etatEchu = newEtatDeclaration(TypeEtatDeclaration.ECHUE);
+			etatEchu.setDateObtention(date(2010,8,17));
+			d.addEtat(etatEchu);
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
@@ -180,6 +173,27 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(1, rapport.errors.size());
 			assertEquals(ErreurType.DI_ECHUE, rapport.errors.get(0).raison);
+		}
+
+		{
+			// TEST : La déclaration passe à l'état reçu :
+			// Resultat attendu :
+			// - aucun accord de délai ne doit passer
+			final EtatDeclaration etatRetourne = newEtatDeclaration(TypeEtatDeclaration.RETOURNEE);
+			etatRetourne.setDateObtention(date(2010,10,1));
+			d.addEtat(etatRetourne);
+		}
+
+		{
+
+
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			processor.setRapport(rapport);
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
+			assertEquals(0, rapport.traites.size());
+			assertEquals(0, rapport.ignores.size());
+			assertEquals(1, rapport.errors.size());
+			assertEquals(ErreurType.DI_RETOURNEE, rapport.errors.get(0).raison);
 		}
 	}
 
@@ -190,8 +204,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 	}
 
 	private EtatDeclaration newEtatDeclaration(TypeEtatDeclaration typeEtat) {
-		EtatDeclaration etat = new EtatDeclaration();
-		etat.setEtat(typeEtat);
+		EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(typeEtat);
 		return etat;
 	}
 }
