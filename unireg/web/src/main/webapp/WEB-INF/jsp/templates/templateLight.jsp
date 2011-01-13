@@ -15,7 +15,7 @@
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
 
-		<%@ include file="/WEB-INF/jsp/include/workaround.jsp" %>
+		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 
 		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/layout.css"/>" rel="stylesheet" type="text/css">
@@ -24,7 +24,7 @@
 		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
 
-		
+
 		<title><tiles:getAsString name='title' ignore='false'/></title>
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>

@@ -28,7 +28,7 @@ function ouvrirAide(url) {
 			}
 		</script>
 
-		<%@ include file="/WEB-INF/jsp/include/workaround.jsp" %>
+		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 
 		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/layout.css"/>" rel="stylesheet" type="text/css">
@@ -157,7 +157,9 @@ function ouvrirAide(url) {
 				<b><fmt:message key="version" /></b>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
 				&nbsp;&nbsp;&nbsp;<b><unireg:environnement/></b>
 			</div>
-			
+
+			<%@ include file="/WEB-INF/jsp/include/tabs-workaround.jsp" %>
+
 	</body>
 
 </html>

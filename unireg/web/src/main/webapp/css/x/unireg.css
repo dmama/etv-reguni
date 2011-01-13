@@ -27,15 +27,7 @@ legend a.delete {
 	background-repeat: repeat;
 }
 
-.individu {
-	float: left;
-}
-
-fieldset.individu + fieldset.individu {
-	float: none;
-}
-
-.individu, .imposition, .entreprise
+.individu
 	{
 	border: 1px solid #cdcdcd;
 	padding: 10px;
@@ -44,7 +36,6 @@ fieldset.individu + fieldset.individu {
 	top: 10px;
 	z-index: 1;
 	display: inherit;
-	width: 45%;
 	background-image: url(bgpannelinner.jpg);
 	background-repeat: repeat;
 }

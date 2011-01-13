@@ -9,13 +9,13 @@
 
 		<script>
 			$(function() {
-				$("#jtabs").tabs({cookie:{}});
+				$("#dbPreviewTabs").tabs({cookie:{}});
 			});
 		</script>
 
 		<p>Les tiers suivants sont présents dans la base de données (affichage limité aux 50 premiers de chaque catégorie) :</p>
 
-		<div id="jtabs">
+		<div id="dbPreviewTabs">
 			<ul>
 				<c:forEach var="entry" varStatus="i" items="${command.tiersTypes}">
 					<li><a href="#tabs-${i.index}"><c:out value="${entry.simpleName}"/></a></li>

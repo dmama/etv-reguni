@@ -52,127 +52,134 @@
 		<!-- Fin Caracteristiques generales -->
 
 		<!--onglets-->
-		<div id="tabs">
-			<ul id="tiersTabs">
+		<div id="tiersTabs">
+			<ul id="menuTiersTabs">
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<li id="fiscalTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.fiscal" /></a>
+						<a href="#tabContent_fiscalTab"><fmt:message key="label.fiscal" /></a>
 					</li>
 					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 						<li id="civilTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.civil" /></a>
+							<a href="#tabContent_civilTab"><fmt:message key="label.civil" /></a>
 						</li>
 					</c:if>
 				</authz:authorize>
 				<li id="adressesTab">
-					<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.adresse" /></a>
+					<a href="#tabContent_adressesTab"><fmt:message key="label.adresse" /></a>
 				</li>
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<li id="complementsTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.complements" /></a>
+						<a href="#tabContent_complementsTab"><fmt:message key="label.complements" /></a>
 					</li>
 					<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 						<li id="rapportsPrestationTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.dossiers.apparentes" /></a>
+							<a href="#tabContent_rapportsPrestationTab"><fmt:message key="label.dossiers.apparentes" /></a>
 						</li>
 						<li id="lrTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.lr" /></a>
+							<a href="#tabContent_lrTab"><fmt:message key="label.lr" /></a>
 						</li>
 					</c:if>
 				</authz:authorize>
 				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 					<li id="dossiersApparentesTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.dossiers.apparentes" /></a>
+						<a href="#tabContent_dossiersApparentesTab"><fmt:message key="label.dossiers.apparentes" /></a>
 					</li>
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<c:if test="${command.natureTiers != 'Entreprise'}">
 						<li id="diTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.di" /></a>
+							<a href="#tabContent_diTab""><fmt:message key="label.di" /></a>
 						</li>
 					</c:if>
 					<c:if test="${command.natureTiers != 'Entreprise'}">
 						<li id="mouvementTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.mouvement" /></a>
+							<a href="#tabContent_mouvementTab""><fmt:message key="label.mouvement" /></a>
 						</li>
 					</c:if>
 					<c:if test="${command.natureTiers == 'Entreprise'}">
 						<li id="regimesFiscauxTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.regimes.fiscaux" /></a>
+							<a href="#tabContent_regimesFiscauxTab"><fmt:message key="label.regimes.fiscaux" /></a>
 						</li>
 						<li id="etatsPMTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.etats.pm" /></a>
+							<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
 						</li>
 					</c:if>
 					</authz:authorize>
 				</c:if>
 				<li id="remarqueTab">
-					<a id="remarqueTabAnchor" href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.remarques" /></a>
+					<a id="remarqueTabAnchor" href="#tabContent_remarqueTab""><fmt:message key="label.remarques" /></a>
 				</li>
 			</ul>
-		</div>
-		<!-- Fin onglets -->
-		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-			<div id="tabContent_fiscalTab" class="situation_fiscale" style="display: none;">
-				<jsp:include page="fiscal/fiscal.jsp"/>
-			</div>
-			<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
-				<div id="tabContent_civilTab" class="editTiers" style="display: none;">
-					<jsp:include page="civil/civil.jsp"/>
-				</div>
-			</c:if>
-		</authz:authorize>
-		<div id="tabContent_adressesTab" class="adresses" style="display: none;">
-			<jsp:include page="adresse/adresse.jsp"/>
-		</div>
-		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-			<div id="tabContent_complementsTab" class="editTiers" style="display: none;">
-				<jsp:include page="complement.jsp"/>
-			</div>
-			<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
-				<div id="tabContent_rapportsPrestationTab" class="visuTiers" style="display: none;">
-					<jsp:include page="rapports-prestation.jsp"/>
-				</div>
-				<div id="tabContent_lrTab" class="visuTiers">
-					<jsp:include page="lr/lrs.jsp"/>
-				</div>
-			</c:if>
-		</authz:authorize>
-			<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
-				
-				<div id="tabContent_dossiersApparentesTab" class="visuTiers" style="display: none;">
-					<jsp:include page="dossiers-apparentes.jsp"/>
-					<jsp:include page="debiteur.jsp"/>
-				</div>
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<c:if test="${command.natureTiers != 'Entreprise'}">
-						<div id="tabContent_diTab" class="visuTiers" style="display: none;">
-							<jsp:include page="di/dis.jsp"/>
-						</div>
-					</c:if>
-				</authz:authorize>
-			</c:if>
-		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-			<c:if test="${command.natureTiers != 'Entreprise'}">
-				<div id="tabContent_mouvementTab" class="visuTiers" style="display: none;">
-					<jsp:include page="mouvement/mouvements.jsp"/>
-				</div>
-			</c:if>
-			<c:if test="${command.natureTiers == 'Entreprise'}">
-				<div id="tabContent_regimesFiscauxTab" class="visuTiers" style="display: none;">
-					<jsp:include page="pm/regimes-fiscaux.jsp"/>
-				</div>
-				<div id="tabContent_etatsPMTab" class="visuTiers">
-					<jsp:include page="pm/etats.jsp"/>
-				</div>
-			</c:if>
-		</authz:authorize>
 
-		<div id="tabContent_remarqueTab" class="visuTiers" style="display:none">
-				<jsp:include page="../common/remarque/remarques.jsp">
-					<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />
-				</jsp:include>
+			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				<div id="tabContent_fiscalTab" class="situation_fiscale">
+					<jsp:include page="fiscal/fiscal.jsp"/>
+				</div>
+				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
+					<div id="tabContent_civilTab" class="editTiers">
+						<jsp:include page="civil/civil.jsp"/>
+					</div>
+				</c:if>
+			</authz:authorize>
+			<div id="tabContent_adressesTab" class="adresses">
+				<jsp:include page="adresse/adresse.jsp"/>
+			</div>
+			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				<div id="tabContent_complementsTab" class="editTiers">
+					<jsp:include page="complement.jsp"/>
+				</div>
+				<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
+					<div id="tabContent_rapportsPrestationTab" class="visuTiers">
+						<jsp:include page="rapports-prestation.jsp"/>
+					</div>
+					<div id="tabContent_lrTab" class="visuTiers">
+						<jsp:include page="lr/lrs.jsp"/>
+					</div>
+				</c:if>
+			</authz:authorize>
+				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
+
+					<div id="tabContent_dossiersApparentesTab" class="visuTiers">
+						<jsp:include page="dossiers-apparentes.jsp"/>
+						<jsp:include page="debiteur.jsp"/>
+					</div>
+					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+						<c:if test="${command.natureTiers != 'Entreprise'}">
+							<div id="tabContent_diTab" class="visuTiers">
+								<jsp:include page="di/dis.jsp"/>
+							</div>
+						</c:if>
+					</authz:authorize>
+				</c:if>
+			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				<c:if test="${command.natureTiers != 'Entreprise'}">
+					<div id="tabContent_mouvementTab" class="visuTiers">
+						<jsp:include page="mouvement/mouvements.jsp"/>
+					</div>
+				</c:if>
+				<c:if test="${command.natureTiers == 'Entreprise'}">
+					<div id="tabContent_regimesFiscauxTab" class="visuTiers">
+						<jsp:include page="pm/regimes-fiscaux.jsp"/>
+					</div>
+					<div id="tabContent_etatsPMTab" class="visuTiers">
+						<jsp:include page="pm/etats.jsp"/>
+					</div>
+				</c:if>
+			</authz:authorize>
+
+			<div id="tabContent_remarqueTab" class="visuTiers">
+					<jsp:include page="../common/remarque/remarques.jsp">
+						<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />
+					</jsp:include>
+			</div>
 		</div>
-		
+		<script>
+			$(function() {
+				$("#tiersTabs").tabs({cookie:{}});
+			});
+		</script>
+
+		<!-- Fin onglets -->
+
 		<!-- Debut Boutons -->
 		<form:form>
 		<c:set var="onClickBoutonRetour" value="document.location='list.do';"/>
@@ -197,45 +204,37 @@
 			<span class="error"><fmt:message key="error.tiers.interdit" /></span>
 		</c:if>
 	</c:if>
-	<script type="text/javascript" language="Javascript1.3">
-			Tabulation.attachObserver("change", Tab_Change);
-			var tabulationInitalized = false;						
-			var onglet = request.getParameter("onglet");
-			if ( onglet) {
-				Tabulation.show( onglet);
-			} else {
-				Tabulation.restoreCurrentTabulation("tiersTabs");
-			}
-			
-			function Tab_Change( selectedTab) {
-				if( selectedTab) {
-					tabulationInitalized = true;
-				}
-				if (!tabulationInitalized) {					
-					Tabulation.showFirst( "tiersTabs");					
-				}
-			} 
 
+	<script type="text/javascript" language="Javascript1.3">
 			function Page_AnnulerTiers(ev) {
 				if(!confirm('Voulez-vous vraiment annuler ce tiers ?'))
 					return Event.stop(ev);
 				return true;
 		 	}
-		 	
+
+		 	/**
+		 	 * Vue imprimable : affichage les contenus des tabs l'un dessus l'autre
+		 	 */
 		 	function showPrintView() {
-		 		Tabulation.showAll('tiersTabs');
-		 		E$("tabs").style.display="none";
-		 		E$("tabnav-disable").style.display="none";
-		 		E$("tabnav-enable").style.display="";
+		 		$('#menuTiersTabs').hide();
+		 		$('.ui-tabs-hide').addClass('tabs_previously_hidden');
+		 		$('.ui-tabs-hide').removeClass('ui-tabs-hide');
+		 		$("#tabnav-disable").hide();
+		 		$("#tabnav-enable").show();
 		 	}
-		 	
+
+		 	/**
+		 	 * Vue normale : affichage les tabs normalement.
+		 	 */
 		 	function showScreenView() {
-		 		Tabulation.showFirst('tiersTabs');
-		 		E$("tabs").style.display="";
-		 		E$("tabnav-disable").style.display="";
-		 		E$("tabnav-enable").style.display="none";
+		 		$('#menuTiersTabs').show();
+		 		$('.tabs_previously_hidden').addClass('ui-tabs-hide');
+		 		$('.tabs_previously_hidden').removeClass('tabs_previously_hidden');
+		 		$("#tabnav-disable").show();
+		 		$("#tabnav-enable").hide();
 		 	}
 	</script>
+
 	<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
 				toggleRowsIsHisto('forFiscal', 'isForHisto', 6);
@@ -254,7 +253,7 @@
 			toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);
 		</script>
 	</c:if>
-		
+
 	</tiles:put>
 	
 </tiles:insert>

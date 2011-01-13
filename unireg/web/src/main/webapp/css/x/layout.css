@@ -787,6 +787,14 @@ div.progress-bar-text {
 /*
  * Override de 2-3 trucs pour rendre les tabs jQuery plus dans le style Unireg
  */
+
+div.ui-tabs {
+	/**
+	 * On force une marge de 10px parce qu'autrement IE6 sautille lorsque le tab sélectionné change et qu'on utilise les cookies pour mémoriser la dernière sélection.
+	 */
+	margin-top: 10px;
+}
+
 .ui-tabs {
 	border: 0px;
 }
@@ -829,7 +837,9 @@ div.progress-bar-text {
 	-moz-border-radius-topright: 4px;
 	-webkit-border-top-right-radius: 4px;
 	border-top-right-radius: 4px;
-	background: none;
+	background-image: url(bgpannelouter.jpg);
+	background-repeat: repeat;
+	padding: 0.3em;
 }
 
 /*******************************************************************
