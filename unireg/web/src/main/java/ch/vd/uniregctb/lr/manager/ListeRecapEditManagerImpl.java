@@ -666,16 +666,15 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 	public EditiqueResultat envoieImpressionLocalSommationLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		//Sauvegarde de la DI
+		final RegDate dateDuJour = RegDate.get();
 		final DeclarationImpotSource lr = save(lrEditView);
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee();
-		etat.setDateObtention(RegDate.get());
-		etat.setDateEnvoiCourrier(RegDate.get());
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour,dateDuJour);
 		lr.addEtat(etat);
 		lrDAO.save(lr);
 
 		try {
 			//Envoi du flux xml à l'éditique
-			return editiqueCompositionService.imprimeSommationLROnline(lr, RegDate.get());
+			return editiqueCompositionService.imprimeSommationLROnline(lr, dateDuJour);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);

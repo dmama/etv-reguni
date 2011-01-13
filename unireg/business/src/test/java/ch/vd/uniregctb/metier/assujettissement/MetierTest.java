@@ -854,8 +854,8 @@ public abstract class MetierTest extends BusinessTest {
 
 		final DeclarationImpotOrdinaire decl =
 				addDeclarationImpot(ctb, periode, date(periodePrecedente, 1, 1), date(periodePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax);
-		addEtatDeclaration(decl, date(periodePrecedente + 1, 1, 15), TypeEtatDeclaration.EMISE);
-		addEtatDeclaration(decl, date(periodePrecedente + 1, 1, 15), TypeEtatDeclaration.RETOURNEE);
+		addEtatDeclarationEmise(decl, date(periodePrecedente + 1, 1, 15));
+		addEtatDeclarationRetournee(decl, date(periodePrecedente + 1, 1, 15));
 		return ctb;
 	}
 

@@ -238,4 +238,7 @@
 
 	<bean id="droitAccesValidator" class="ch.vd.uniregctb.validation.droitacces.DroitAccesValidator" parent="entityValidator"/>
 
+	<bean id="etatDeclarationValidator" class="ch.vd.uniregctb.validation.declaration.EtatDeclarationValidator" abstract="true" parent="entityValidator"/>
+	<bean id="etatDeclarationSommeeValidator" class="ch.vd.uniregctb.validation.declaration.EtatDeclarationsommeeValidator" parent="etatDeclarationValidator"/>
+
 </beans>

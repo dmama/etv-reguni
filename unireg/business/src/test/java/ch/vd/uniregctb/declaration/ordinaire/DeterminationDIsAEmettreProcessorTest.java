@@ -1449,8 +1449,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		ffp.setModeImposition(ModeImposition.INDIGENT);
 
 		final DeclarationImpotOrdinaire decl2008 = addDeclarationImpot(marc, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax);
-		addEtatDeclaration(decl2008, date(2009, 1, 15), TypeEtatDeclaration.EMISE);
-		addEtatDeclaration(decl2008, date(2009, 1, 15), TypeEtatDeclaration.RETOURNEE);
+		addEtatDeclarationEmise(decl2008, date(2009, 1, 15));
+		addEtatDeclarationRetournee(decl2008, date(2009, 1, 15));
 
 		hibernateTemplate.flush();
 

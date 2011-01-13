@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -325,7 +326,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		lr.setPeriodicite(debiteur.getPeriodiciteAt(debut).getPeriodiciteDecompte());
 
 		if(typeEtat!=null){
-			EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(typeEtat);
+			EtatDeclaration etat = EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
 			etat.setDateObtention(debut);
 			lr.addEtat(etat);
 		}

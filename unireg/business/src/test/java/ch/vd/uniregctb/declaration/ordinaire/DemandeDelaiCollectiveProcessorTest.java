@@ -15,6 +15,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -204,7 +205,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 	}
 
 	private EtatDeclaration newEtatDeclaration(TypeEtatDeclaration typeEtat) {
-		EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(typeEtat);
+		EtatDeclaration etat = EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
 		return etat;
 	}
 }

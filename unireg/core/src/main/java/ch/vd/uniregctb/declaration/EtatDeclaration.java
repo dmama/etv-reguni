@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -238,18 +239,9 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 		return declaration == null ? null : Arrays.asList(declaration);
 	}
 
-	public static EtatDeclaration getInstanceOfEtatDeclaration(TypeEtatDeclaration typeEtat){
-		     switch (typeEtat){
-		     case ECHUE:
-			     return new EtatDeclarationEchue();
-		     case SOMMEE:
-			     return new EtatDeclarationSommee();
-		     case EMISE:
-			     return new EtatDeclarationEmise();
-		     case RETOURNEE:
-			     return new EtatDeclarationRetournee();
-		     default:
-			     return null;
-		     }
+	@Override
+	public String toString() {
+		final String dateObtentionStr = dateObtention != null ? RegDateHelper.dateToDisplayString(dateObtention) : "?";
+		return String.format("%s le %s", getClass().getSimpleName(), dateObtentionStr);
 	}
 }

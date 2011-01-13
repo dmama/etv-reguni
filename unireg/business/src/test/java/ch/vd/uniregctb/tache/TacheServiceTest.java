@@ -932,8 +932,8 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(raoul, date(2008, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Orbe);
 
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(raoul, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
-				addEtatDeclaration(di, date(2009, 1, 15), TypeEtatDeclaration.EMISE);
-				addEtatDeclaration(di, date(2009, 2, 21), TypeEtatDeclaration.RETOURNEE);
+				addEtatDeclarationEmise(di, date(2009, 1, 15));
+				addEtatDeclarationRetournee(di, date(2009, 2, 21));
 
 				return null;
 			}
@@ -3080,7 +3080,7 @@ public class TacheServiceTest extends BusinessTest {
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une déclaration émise seulement
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
-		addEtatDeclaration(di, date(anneePrecedente + 1, 1, 15), TypeEtatDeclaration.EMISE);
+		addEtatDeclarationEmise(di, date(anneePrecedente + 1, 1, 15));
 
 		// On vérifie que la déclaration est bien annulée
 		hibernateTemplate.flush();
@@ -3417,14 +3417,14 @@ public class TacheServiceTest extends BusinessTest {
 				final PeriodeFiscale periode1 = addPeriodeFiscale(anneeAvantAvant);
 				final ModeleDocument modele1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode1);
 				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode1, date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeContribuable.HORS_CANTON, modele1);
-				addEtatDeclaration(di1, date(anneeAvant, 1, 15), TypeEtatDeclaration.EMISE);
-				addEtatDeclaration(di1, date(anneeAvant, 4, 19), TypeEtatDeclaration.RETOURNEE);
+				addEtatDeclarationEmise(di1, date(anneeAvant, 1, 15));
+				addEtatDeclarationRetournee(di1, date(anneeAvant, 4, 19));
 
 				final PeriodeFiscale periode2 = addPeriodeFiscale(anneeAvant);
 				final ModeleDocument modele2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2);
 				final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp, periode2, date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeContribuable.HORS_CANTON, modele2);
-				addEtatDeclaration(di2, date(anneeCourante, 1, 15), TypeEtatDeclaration.EMISE);
-				addEtatDeclaration(di2, date(anneeCourante, 4, 19), TypeEtatDeclaration.RETOURNEE);
+				addEtatDeclarationEmise(di2, date(anneeCourante, 1, 15));
+				addEtatDeclarationRetournee(di2, date(anneeCourante, 4, 19));
 
 				ids.ctb = pp.getId();
 				ids.ffp = ffp.getId();
@@ -3566,8 +3566,8 @@ public class TacheServiceTest extends BusinessTest {
 					final PeriodeFiscale periode = addPeriodeFiscale(annee);
 					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
 					final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-					addEtatDeclaration(di1, date(annee - 1, 1, 15), TypeEtatDeclaration.EMISE);
-					addEtatDeclaration(di1, date(annee - 1, 4, 19), TypeEtatDeclaration.RETOURNEE);
+					addEtatDeclarationEmise(di1, date(annee - 1, 1, 15));
+					addEtatDeclarationRetournee(di1, date(annee - 1, 4, 19));
 					ids.dis.add(di1.getId());
 				}
 

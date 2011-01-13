@@ -935,15 +935,15 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException {
+
+		final RegDate dateDuJour = RegDate.get();
 		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee();
-		etat.setDateObtention(RegDate.get());
-		etat.setDateEnvoiCourrier(RegDate.get());
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour,dateDuJour);
 		di.addEtat(etat);
 		diDAO.save(di);
 
 		try {
-			final EditiqueResultat resultat = editiqueCompositionService.imprimeSommationDIOnline(di, RegDate.get());
+			final EditiqueResultat resultat = editiqueCompositionService.imprimeSommationDIOnline(di, dateDuJour);
 			evenementFiscalService.publierEvenementFiscalSommationDI((Contribuable)di.getTiers(), di, etat.getDateObtention());
 			return resultat;
 		}

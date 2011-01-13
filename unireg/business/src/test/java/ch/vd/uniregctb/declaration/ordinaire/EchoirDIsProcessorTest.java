@@ -112,7 +112,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclaration(declaration, date(2008, 1, 15), TypeEtatDeclaration.EMISE);
+				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
 				return declaration.getId();
 			}
 		});
@@ -147,9 +147,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclaration(declaration, date(2008, 1, 15), TypeEtatDeclaration.EMISE);
+				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
 				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15));
-				addEtatDeclaration(declaration, dateSommation, TypeEtatDeclaration.SOMMEE);
+				addEtatDeclarationSommee(declaration, dateSommation,dateSommation.addDays(3));
 				return declaration.getId();
 			}
 		});
@@ -185,9 +185,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclaration(declaration, date(2008, 1, 15), TypeEtatDeclaration.EMISE);
+				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
 				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15));
-				addEtatDeclaration(declaration, dateSommation, TypeEtatDeclaration.SOMMEE);
+				addEtatDeclarationSommee(declaration, dateSommation,dateSommation.addDays(3));
 				return declaration.getId();
 			}
 		});
@@ -225,9 +225,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclaration(declaration, date(2008, 1, 15), TypeEtatDeclaration.EMISE);
-				addEtatDeclaration(declaration, date(2008, 6, 30), TypeEtatDeclaration.SOMMEE);
-				addEtatDeclaration(declaration, date(2008, 10, 15), TypeEtatDeclaration.ECHUE);
+				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
+				addEtatDeclarationSommee(declaration, date(2008, 6, 30), date(2008, 6, 30));
+				addEtatDeclarationEchue(declaration, date(2008, 10, 15));
 				return declaration.getId();
 			}
 		});

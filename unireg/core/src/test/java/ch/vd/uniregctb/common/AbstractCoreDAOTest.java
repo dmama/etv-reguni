@@ -58,6 +58,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -950,12 +951,31 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return ca;
 	}
 
-	protected void addEtatDeclaration(Declaration declaration, RegDate dateObtention, TypeEtatDeclaration type) {
-		EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(type);
-		etat.setDateObtention(dateObtention);
+
+	protected void addEtatDeclarationEmise(Declaration declaration, RegDate dateObtention) {
+		EtatDeclarationEmise etat = new EtatDeclarationEmise(dateObtention);
 		declaration.addEtat(etat);
 		hibernateTemplate.merge(declaration);
 	}
+
+	protected void addEtatDeclarationEchue(Declaration declaration, RegDate dateObtention) {
+		EtatDeclarationEchue etat = new EtatDeclarationEchue(dateObtention);
+		declaration.addEtat(etat);
+		hibernateTemplate.merge(declaration);
+	}
+
+	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention) {
+		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention);
+		declaration.addEtat(etat);
+		hibernateTemplate.merge(declaration);
+	}
+
+	protected void addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
+		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
+		declaration.addEtat(etat);
+		hibernateTemplate.merge(declaration);
+	}
+	
 
 
 	protected void addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu) {

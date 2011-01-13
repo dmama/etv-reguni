@@ -162,8 +162,8 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
 			if (etat != TypeEtatDeclaration.EMISE) {
 				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ? and etat.annulationDate is null)");
-				EtatDeclaration etatCourant = EtatDeclaration.getInstanceOfEtatDeclaration(etat);
-				parameters.add(etatCourant.getClass().getName());
+				final Class classeOfEtatDeclaration = EtatDeclarationHelper.getClasseOfEtatDeclaration(etat);
+				parameters.add(classeOfEtatDeclaration.getName());
 			}
 
 			if (etat != TypeEtatDeclaration.RETOURNEE) {

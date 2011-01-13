@@ -14,6 +14,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -115,7 +116,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 	}
 
 	private void addEtat(DeclarationImpotOrdinaire di, RegDate dateObtention, TypeEtatDeclaration typeEtat) {
-		final EtatDeclaration etat = EtatDeclaration.getInstanceOfEtatDeclaration(typeEtat);
+		final EtatDeclaration etat = EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
 		etat.setDateObtention(dateObtention);
 		etat.setDeclaration(di);
 		final Set<EtatDeclaration> etats = di.getEtats();

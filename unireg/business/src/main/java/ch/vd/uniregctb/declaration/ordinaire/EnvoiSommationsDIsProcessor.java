@@ -264,12 +264,10 @@ public class EnvoiSommationsDIsProcessor  {
 
 	private void sommerDI(final DeclarationImpotOrdinaire di, boolean miseSousPliImpossible, final RegDate dateTraitement) throws DeclarationException {
 
-		EtatDeclarationSommee etat = new EtatDeclarationSommee();
+		RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
+		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement,dateExpedition);
 		etat.setDeclaration(di);
 		etat.setAnnule(false);
-		RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
-		etat.setDateObtention(dateTraitement);
-		etat.setDateEnvoiCourrier(dateExpedition);
 		di.addEtat(etat);
 
 		diService.envoiSommationDIForBatch(di, miseSousPliImpossible, dateTraitement);

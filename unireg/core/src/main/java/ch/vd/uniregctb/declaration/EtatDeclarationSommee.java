@@ -8,6 +8,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 @Entity
@@ -38,5 +39,12 @@ public class EtatDeclarationSommee extends EtatDeclaration {
 
 	public void setDateEnvoiCourrier(RegDate dateEnvoiCourrier) {
 		this.dateEnvoiCourrier = dateEnvoiCourrier;
+	}
+
+	@Override
+	public String toString() {
+	final String desc = super.toString();
+	final String dateEnvoiStr = dateEnvoiCourrier != null ? RegDateHelper.dateToDisplayString(dateEnvoiCourrier) : "?";
+	return String.format(", Courrier envoyé le %s)",dateEnvoiStr);
 	}
 }

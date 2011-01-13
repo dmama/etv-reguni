@@ -203,10 +203,9 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @throws Exception
 	 */
 	public void imprimerSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws Exception {
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee();
+
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
-		etat.setDateObtention(dateTraitement);
-		etat.setDateEnvoiCourrier(dateExpedition);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement,dateExpedition);
 		lr.addEtat(etat);
 		editiqueCompositionService.imprimeSommationLRForBatch(lr, RegDate.get());
 		evenementFiscalService.publierEvenementFiscalSommationLR((DebiteurPrestationImposable) lr.getTiers(), lr, etat.getDateObtention());

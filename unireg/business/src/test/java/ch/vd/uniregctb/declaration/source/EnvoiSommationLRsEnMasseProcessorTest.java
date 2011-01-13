@@ -194,7 +194,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(CategorieImpotSource categorie, PeriodeFiscale periode) {
 		DebiteurPrestationImposable admin = addDebiteur(categorie, PeriodiciteDecompte.MENSUEL,  date(2007, 1, 1));
 		DeclarationImpotSource lr = addLR(admin, date(2007, 1, 1), date(2007, 12, 31), periode);
-		addEtatDeclaration(lr, date(2008, 1, 5), TypeEtatDeclaration.EMISE);
+		addEtatDeclarationEmise(lr, date(2008, 1, 5));
 		addDelaiDeclaration(lr, date(2008, 1, 5), date(2008, 3, 15));
 		return lr;
 	}
@@ -202,7 +202,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(PeriodeFiscale periode, RegDate debut, RegDate fin, PeriodiciteDecompte periodicite) {
 		DebiteurPrestationImposable admin = addDebiteur(CategorieImpotSource.REGULIERS, periodicite, debut);
 		DeclarationImpotSource lr = addLR(admin, debut, fin, periode);
-		addEtatDeclaration(lr, fin.addDays(6), TypeEtatDeclaration.EMISE);
+		addEtatDeclarationEmise(lr, fin.addDays(6));
 		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));
 		return lr;
 	}
