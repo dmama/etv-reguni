@@ -9,7 +9,7 @@
 
 		<script>
 			$(function() {
-				$("#jtabs").tabs();
+				$("#jtabs").tabs({cookie:{}});
 			});
 		</script>
 

@@ -816,6 +816,7 @@ div.progress-bar-text {
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+	margin-top: 0px;
 	background-position: 0 -42px;
 }
 
