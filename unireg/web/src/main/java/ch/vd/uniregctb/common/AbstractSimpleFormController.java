@@ -38,7 +38,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
@@ -97,7 +96,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 		binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, numberFormat, true));
 		binder.registerCustomEditor(List.class, new CustomCollectionEditor(List.class));
 		binder.registerCustomEditor(boolean.class, new CustomBooleanEditor(true));
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
 
 	}
 

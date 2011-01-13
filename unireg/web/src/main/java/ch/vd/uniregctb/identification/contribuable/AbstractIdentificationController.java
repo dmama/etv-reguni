@@ -66,7 +66,7 @@ public  class AbstractIdentificationController extends AbstractSimpleFormControl
 			binder.registerCustomEditor(List.class, new CustomCollectionEditor(List.class, true));
 			binder.registerCustomEditor(List.class, new CustomCollectionEditor(Set.class, true));
 			binder.registerCustomEditor(boolean.class, new CustomBooleanEditor(true));
-			binder.registerCustomEditor(RegDate.class, new RegDateEditor(true));
+			binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
 		}
 
 		/**

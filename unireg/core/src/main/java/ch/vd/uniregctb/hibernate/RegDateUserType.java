@@ -10,6 +10,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 
+import ch.vd.registre.base.date.PartialDateException;
 import ch.vd.registre.base.date.RegDate;
 
 /**
@@ -94,6 +95,9 @@ public class RegDateUserType extends GenericUserType implements UserType, Parame
 		}
 		else {
 			final RegDate date = (RegDate) value;
+			if (!allowPartial && date.isPartial()) {
+				throw new PartialDateException("Date partielle " + date.index() + " interdite");
+			}
 			preparedStatement.setInt(index, date.index());
 		}
 	}

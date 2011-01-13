@@ -105,6 +105,15 @@ public class ValidateHelper {
 	}
 
 	/**
+	 * @param errors erreurs jusqu'ici
+	 * @param field nom du champs à tester
+	 * @return <code>true</code> si les erreurs contiennent déjà quelque chose pour le field donné
+	 */
+	public static boolean alreadyHasErrorOnField(Errors errors, String field) {
+		return errors.getFieldErrorCount(field) > 0;
+	}
+
+	/**
 	 * Formattage des erreurs pour l'affichage
 	 *
 	 * @param erreurs

@@ -31,11 +31,7 @@ public class TiersEditControllerTest extends WebTest {
 
 	private final static String DB_UNIT_FILE = "TiersEditControllerTest.xml";
 
-	public final static String AIGUILLAGE_ANNULER_ADRESSE = "annulerAdresse";
-
 	public final static String TIERS_ID_PARAMETER_NAME = "id";
-
-	public final static String TIERS_NATURE_PARAMETER_NAME = "nature";
 
 	private TiersEditController controller;
 
@@ -58,9 +54,6 @@ public class TiersEditControllerTest extends WebTest {
 		});
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testShowForm() throws Exception {
 
@@ -76,122 +69,99 @@ public class TiersEditControllerTest extends WebTest {
 	@Test
 	public void testOnSubmitWithNom() throws Exception {
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		request.addParameter("tiers.nom", "Kamel");
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
 
-
 		request.setMethod("POST");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
+		final ModelAndView mav = controller.handleRequest(request, response);
+		final Map<?, ?> model = mav.getModel();
+		Assert.assertNotNull(model);
 
-		List<Tiers> l = tiersDAO.getAll();
+		final List<Tiers> l = tiersDAO.getAll();
 		assertEquals(1, l.size());
-		PersonnePhysique nh = (PersonnePhysique)l.get(0);
+		final PersonnePhysique nh = (PersonnePhysique) l.get(0);
 		assertEquals("Kamel", nh.getNom());
-
-		Assert.assertTrue(model != null);
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitWithDateNaissancePartielle() throws Exception {
 
-		String nom = "TestKamel";
-		RegDate dateN = RegDate.get(1956, 11);
+		final String nom = "TestKamel";
+		final RegDate dateN = RegDate.get(1956, 11);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		request.addParameter("tiers.nom", nom);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
 
 		request.setMethod("POST");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
-		List<Tiers> l = tiersDAO.getAll();
+		final ModelAndView mav = controller.handleRequest(request, response);
+		final Map<?, ?> model = mav.getModel();
+		Assert.assertNotNull(model);
+
+		final List<Tiers> l = tiersDAO.getAll();
 		assertEquals(1, l.size());
-		PersonnePhysique nh = (PersonnePhysique)l.get(0);
+		final PersonnePhysique nh = (PersonnePhysique)l.get(0);
 		assertEquals(nom, nh.getNom());
 		assertEquals(dateN, nh.getDateNaissance());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitWithWrongDateNaissance() throws Exception {
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		request.addParameter("tiers.dateNaissance", "12/*/.2008");
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
-		//request.addParameter(AbstractTiersController.ONGLET_PARAMETER_NAME, Onglet.civilTab.toString());
 		request.setMethod("POST");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
+		final ModelAndView mav = controller.handleRequest(request, response);
+		final Map<?, ?> model = mav.getModel();
 		Assert.assertTrue(model != null);
-		List<Tiers> l = tiersDAO.getAll();
+		final List<Tiers> l = tiersDAO.getAll();
 		assertEquals(0, l.size());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitWithDateNaissance() throws Exception {
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		request.addParameter("tiers.nom", "TestKamel");
-		RegDate dateN = RegDate.get(2008, 04, 12);
+		final RegDate dateN = RegDate.get(2008, 4, 12);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
 		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
 
 		request.setMethod("POST");
 		controller.handleRequest(request, response);
-		List<Tiers> l = tiersDAO.getAll();
+
+		final List<Tiers> l = tiersDAO.getAll();
 		assertEquals(1, l.size());
-		PersonnePhysique nh = (PersonnePhysique)l.get(0);
+		final PersonnePhysique nh = (PersonnePhysique)l.get(0);
 		assertEquals(dateN, nh.getDateNaissance());
-
-
-
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testModifyNonHabitant() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+
+		Tiers tiers = tiersDAO.get(12600002L);
+		PersonnePhysique nh = (PersonnePhysique)tiers;
+		assertEquals("Kamel", nh.getNom());
+		assertEquals(null, nh.getPrenom());
+
 		request.addParameter("tiers.nom", "Kamel");
 		request.addParameter("tiers.numero", "12600002");
 		request.addParameter("tiers.prenom", "toto");
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
-		//request.addParameter(AbstractTiersController.ONGLET_PARAMETER_NAME, Onglet.civilTab.toString());
-		Tiers tiers = tiersDAO.get(new Long(12600002));
-		PersonnePhysique nh = (PersonnePhysique)tiers;
-		assertEquals("Kamel", nh.getNom());
-		assertEquals(null, nh.getPrenom());
 		request.setMethod("POST");
 		controller.handleRequest(request, response);
-		tiers = tiersDAO.get(new Long(12600002));
+
+		tiers = tiersDAO.get(12600002L);
 		nh = (PersonnePhysique)tiers;
 		assertEquals("Kamel", nh.getNom());
 		assertEquals("toto", nh.getPrenom());
-
 	}
 
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitWithAiguillage() throws Exception {
 
@@ -200,10 +170,9 @@ public class TiersEditControllerTest extends WebTest {
 		request.addParameter("aiguillage", "annulerAdresse");
 		request.addParameter("idAdresse", "5");
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
-		//request.addParameter(AbstractTiersController.ONGLET_PARAMETER_NAME, Onglet.civilTab.toString());
 		request.setMethod("POST");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		final ModelAndView mav = controller.handleRequest(request, response);
+		final Map<?, ?> model = mav.getModel();
+		Assert.assertNotNull(model);
 	}
 }

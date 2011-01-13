@@ -74,7 +74,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 	@Override
 	protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
 		// [UNIREG-2962] Data binder spécialisé pour contourner le problème des checkboxes.
-		ServletRequestDataBinder binder = new SuperGraDataBinder(command, getCommandName());
+		final ServletRequestDataBinder binder = new SuperGraDataBinder(command, getCommandName());
 		prepareBinder(binder);
 		initBinder(request, binder);
 		return binder;
@@ -86,11 +86,11 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		super.initBinder(request, binder);
 
 		// On enregistre les éditeurs standards
-		Locale locale = request.getLocale();
-		SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_FORMAT_DISPLAY, locale);
+		final Locale locale = request.getLocale();
+		final SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_FORMAT_DISPLAY, locale);
 		sdf.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));
-		NumberFormat numberFormat = NumberFormat.getInstance(locale);
+		final NumberFormat numberFormat = NumberFormat.getInstance(locale);
 		numberFormat.setGroupingUsed(true);
 		binder.registerCustomEditor(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, numberFormat, true));
 		binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, numberFormat, true));
@@ -98,8 +98,10 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		binder.registerCustomEditor(List.class, new CustomCollectionEditor(List.class));
 		binder.registerCustomEditor(boolean.class, new CustomBooleanEditor(true));
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(true));
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
 		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+
+		final PropertyEditor partialDateEditor = new RegDateEditor(true, true);
 
 		final EntityView view = (EntityView) binder.getTarget();
 
@@ -120,6 +122,12 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 					else if (EntityKey.class.isAssignableFrom(type)) {
 						editor = new EntityKeyEditor(a.getEntityType(), true);
 					}
+				}
+
+				// [UNIREG-3188] de doutes les dates de l'application, seule la date de naissance d'une personne physique
+				// autorise la donnée d'une date partielle
+				if (RegDate.class.equals(type) && "dateNaissance".equals(a.getName())) {
+					editor = partialDateEditor;
 				}
 
 				if (editor != null) {

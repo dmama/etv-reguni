@@ -12,10 +12,11 @@ public class RegDateEditor extends PropertyEditorSupport {
 
 	private final boolean allowEmpty;
 
-	public RegDateEditor(boolean allowEmpty) {
+	private final boolean allowPartial;
 
+	public RegDateEditor(boolean allowEmpty, boolean allowPartial) {
 		this.allowEmpty = allowEmpty;
-
+		this.allowPartial = allowPartial;
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public class RegDateEditor extends PropertyEditorSupport {
 		}
 		else {
 			try {
-				setValue(RegDateHelper.displayStringToRegDate(text, true));
+				setValue(RegDateHelper.displayStringToRegDate(text, allowPartial));
 			}
 			catch (ParseException ex) {
 				throw new IllegalArgumentException("Could not parse date: " + ex.getMessage());

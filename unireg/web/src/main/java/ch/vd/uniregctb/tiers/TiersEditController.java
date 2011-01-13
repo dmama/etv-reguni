@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.rapport.manager.RapportEditManager;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -15,6 +18,7 @@ import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.manager.SituationFamilleManager;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier donne.
@@ -100,6 +104,13 @@ public class TiersEditController extends AbstractTiersController {
 		return tiersView;
 	}
 
+	@Override
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
+		super.initBinder(request, binder);
+
+		// on doit autoriser les dates partielles sur la date de naissance des tiers
+		binder.registerCustomEditor(RegDate.class, "tiers.dateNaissance", new RegDateEditor(true, true));
+	}
 
 	@Override
 	protected boolean suppressValidation(HttpServletRequest request, Object command, BindException errors) {
