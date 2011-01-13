@@ -803,11 +803,24 @@ div.progress-bar-text {
 
 .ui-tabs .ui-tabs-nav li {
 	font-weight: bold;
+	border: 0px;
+	margin-left: -1px;
+	padding-left: 4px;
+	background: url("tableftF.gif") no-repeat left top;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+	padding-left: 6px;
+	padding-right: 10px;
+	background: url("tabrightF.gif") no-repeat right top;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
-	background-image: none;
-	background-color: #EFF3FE;
+	background-position: 0 -42px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
+	background-position: 100% -42px;
 }
 
 .ui-tabs .ui-tabs-panel {
