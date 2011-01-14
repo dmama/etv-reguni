@@ -317,6 +317,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 		return addLR(debiteur, debut, fin, periode,null);
 	}
+	//TODO (BNM) Refactorer afin de generer des LR avec un état cohérent: par exemple toujours avec un état émis
 	protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(debut);
