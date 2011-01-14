@@ -1445,79 +1445,68 @@ public class TestData {
 		dpi1.addDeclaration(dis2);
 		dpi1 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi1);
 
-		EtatDeclaration ed0 = new EtatDeclarationEmise();
+		EtatDeclaration ed0 = new EtatDeclarationEmise((RegDate.get(2008, 3, 20)));
 		ed0.setId(1L);
-		ed0.setDateObtention(RegDate.get(2008, 3, 20));
 		ed0.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addEtat(ed0);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
-		EtatDeclaration ed1 = new EtatDeclarationSommee();
+		EtatDeclaration ed1 = new EtatDeclarationSommee(RegDate.get(2008, 5, 15),RegDate.get(2008, 5, 18));
 		ed1.setId(8L);
-		ed1.setDateObtention(RegDate.get(2008, 5, 15));
 		ed1.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addEtat(ed1);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
-		EtatDeclaration ed2 = new EtatDeclarationRetournee();
+		EtatDeclaration ed2 = new EtatDeclarationRetournee(RegDate.get(2008, 5, 25));
 		ed2.setId(10L);
-		ed2.setDateObtention(RegDate.get(2008, 5, 25));
 		ed2.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addEtat(ed2);
 		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
 
-		EtatDeclaration ed3 = new EtatDeclarationEmise();
+		EtatDeclaration ed3 = new EtatDeclarationEmise(RegDate.get(2008, 6, 20));
 		ed3.setId(9L);
-		ed3.setDateObtention(RegDate.get(2008, 6, 20));
 		ed3.setLogModifDate(new Timestamp(1199142000000L));
 		dis1.addEtat(ed3);
 		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
 
-		EtatDeclaration ed4 = new EtatDeclarationEmise();
+		EtatDeclaration ed4 = new EtatDeclarationEmise(RegDate.get(2006, 1, 15));
 		ed4.setId(2L);
-		ed4.setDateObtention(RegDate.get(2006, 1, 15));
 		ed4.setLogModifDate(new Timestamp(1199142000000L));
 		dio0.addEtat(ed4);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
-		EtatDeclaration ed5 = new EtatDeclarationRetournee();
+		EtatDeclaration ed5 = new EtatDeclarationRetournee(RegDate.get(2006, 4, 13));
 		ed5.setId(3L);
-		ed5.setDateObtention(RegDate.get(2006, 4, 13));
 		ed5.setLogModifDate(new Timestamp(1199142000000L));
 		dio0.addEtat(ed5);
 		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
 
-		EtatDeclaration ed6 = new EtatDeclarationEmise();
+		EtatDeclaration ed6 = new EtatDeclarationEmise(RegDate.get(2007, 1, 16));
 		ed6.setId(4L);
-		ed6.setDateObtention(RegDate.get(2007, 1, 16));
 		ed6.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addEtat(ed6);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
-		EtatDeclaration ed7 = new EtatDeclarationSommee();
+		EtatDeclaration ed7 = new EtatDeclarationSommee(RegDate.get(2007, 9, 15),RegDate.get(2007, 9, 18));
 		ed7.setId(5L);
-		ed7.setDateObtention(RegDate.get(2007, 9, 15));
 		ed7.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addEtat(ed7);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
-		EtatDeclaration ed8 = new EtatDeclarationEchue();
+		EtatDeclaration ed8 = new EtatDeclarationEchue(RegDate.get(2007, 11, 1));
 		ed8.setId(6L);
-		ed8.setDateObtention(RegDate.get(2007, 11, 1));
 		ed8.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addEtat(ed8);
 		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
 
-		EtatDeclaration ed9 = new EtatDeclarationEmise();
+		EtatDeclaration ed9 = new EtatDeclarationEmise(RegDate.get(2007, 1, 15));
 		ed9.setId(7L);
-		ed9.setDateObtention(RegDate.get(2007, 1, 15));
 		ed9.setLogModifDate(new Timestamp(1199142000000L));
 		dio2.addEtat(ed9);
 		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
 
-		EtatDeclaration ed10 = new EtatDeclarationEmise();
+		EtatDeclaration ed10 = new EtatDeclarationEmise(RegDate.get(2008, 3, 20));
 		ed10.setId(18L);
-		ed10.setDateObtention(RegDate.get(2008, 3, 20));
 		ed10.setLogModifDate(new Timestamp(1199142000000L));
 		dis2.addEtat(ed10);
 		dis2 = (DeclarationImpotSource) hibernateTemplate.merge(dis2);
