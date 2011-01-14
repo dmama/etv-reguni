@@ -18,75 +18,78 @@
   	</tiles:put>
   	<tiles:put name="body">  		
   		<form:form method="post" id="theForm" name="theForm">
-		    <div id="tabs">
+
+		    <div id="externeEventTabs">
 				<ul>
-					<li id="envoyer"><a href="#" onclick="javascript:Tabulation.show(this);">Envoie</a></li>
-					<li id="historique"><a href="#" onclick="javascript:Tabulation.show(this);">Historique</a></li>
+					<li id="envoyer"><a href="#tabContent_envoyer">Envoie</a></li>
+					<li id="historique"><a href="#tabContent_historique">Historique</a></li>
 				</ul>
+
+				<div id="tabContent_envoyer" class="content_tab">
+					<h3 class="sub-title">Envoyer un événement externe</h3>
+
+					<table style="width:50%;margin-top: 10px" cellpadding="3">
+						<tr>
+							<td nowrap="nowrap" width="10%">Emmetteur du message</td>
+							<td>
+								<select id="emmetteurs" name="emmetteurs" onchange="javascript:Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td nowrap="nowrap">Type du message</td>
+							<td>
+								 <select id="evenements" name="evenements"  onchange="javascript:Form.doAjaxActionPostBack('theForm','OnChange', 'evenements');">
+								 </select>
+							</td>
+						</tr>
+					 </table>
+					 <div id="evenement.content"></div>
+				</div>
+				<div id="tabContent_historique" class="content_tab">
+					<h3 class="sub-title">Historique des évenement externe</h3>
+					<table style="width:50%;margin-top: 10px">
+						<tr>
+							<td nowrap="nowrap" width="10%">Etat Evénement</td>
+							<td>
+								<select id="etats" name="etats" onchange="javascript:Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
+								</select>
+							</td>
+						</tr>
+					 </table>
+					 <table>
+							<thead>
+								<tr>
+									<th>Tiers</th>
+									<th>etat</th>
+									<th>dateEvenement</th>
+									<th>dateTraitement</th>
+									<th>errorMessage</th>
+									<th>businessId</th>
+								</tr>
+							</thead>
+							<tbody id="evenementsList">
+							</tbody>
+					  </table>
+				</div>
 			</div>
-			
-			<div id="tabContent_envoyer" class="content_tab" style="display: none;">
-				<h3 class="sub-title">Envoyer un événement externe</h3>
-				
-				<table style="width:50%;margin-top: 10px" cellpadding="3">
-					<tr>
-						<td nowrap="nowrap" width="10%">Emmetteur du message</td>
-						<td>
-							<select id="emmetteurs" name="emmetteurs" onchange="javascript:Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
-	                 		</select>
-	                 	</td>
-                 	</tr>
-                 	<tr>
-                 		<td nowrap="nowrap">Type du message</td>
-                 		<td>
-			                 <select id="evenements" name="evenements"  onchange="javascript:Form.doAjaxActionPostBack('theForm','OnChange', 'evenements');">
-			                 </select>
-			        	</td>
-			      	</tr>
-                 </table>
-                 <div id="evenement.content"></div>
-			</div>
-			<div id="tabContent_historique" class="content_tab" style="display: none">
-				<h3 class="sub-title">Historique des évenement externe</h3>
-				<table style="width:50%;margin-top: 10px">
-					<tr>
-						<td nowrap="nowrap" width="10%">Etat Evénement</td>
-						<td>
-							<select id="etats" name="etats" onchange="javascript:Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
-	                 		</select>
-	                 	</td>
-                 	</tr>
-                 </table>
-                 <table>
-                        <thead>
-                            <tr>
-                                <th>Tiers</th>
-                                <th>etat</th>
-                                <th>dateEvenement</th>
-                                <th>dateTraitement</th>
-                                <th>errorMessage</th>
-                                <th>businessId</th>
-                            </tr>
-                        </thead>
-                        <tbody id="evenementsList">
-                        </tbody>
-                  </table>
-			</div>
-			<script type="text/javascript" language="Javascript1.3">
-				Tabulation.attachObserver("change", Tab_Change);	
-				var tabulationInitalized = true;						
-				Tabulation.show( "envoyer");										
-				function Tab_Change( selectedTab) {
-					if ( selectedTab === "envoyer" && tabulationInitalized) {
-						Form.doAjaxActionPostBack('theForm', 'OnLoad','emmetteurs');
-						Form.doAjaxActionPostBack('theForm', 'OnLoad', 'etats');
-						tabulationInitalized = false;
-					} else if ( selectedTab === "historique" )  {
-						Element.fireObserver("etats", "change");
-					}
-				} 
-			</script>		
-			</form:form>
+
+			<script>
+				$(function() {
+					Form.doAjaxActionPostBack('theForm', 'OnLoad','emmetteurs');
+					Form.doAjaxActionPostBack('theForm', 'OnLoad', 'etats');
+
+					$("#externeEventTabs").tabs({
+						select: function(event, ui) {
+							if (ui.tab.id === "tabContent_historique") {
+								Element.fireObserver("etats", "change");
+							}
+						}
+					});
+				});
+			</script>
+
+		</form:form>
   	</tiles:put>
 </tiles:insert>
 
