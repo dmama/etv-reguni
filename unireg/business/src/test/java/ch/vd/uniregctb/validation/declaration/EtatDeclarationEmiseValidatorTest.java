@@ -14,7 +14,7 @@ import ch.vd.uniregctb.validation.AbstractValidatorTest;
 import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 
-public class EtatDeclarationValidatorTest extends AbstractValidatorTest<EtatDeclaration> {
+public class EtatDeclarationEmiseValidatorTest extends AbstractValidatorTest<EtatDeclaration> {
 
 
 	@Override
@@ -25,7 +25,7 @@ public class EtatDeclarationValidatorTest extends AbstractValidatorTest<EtatDecl
 	@Test
 	public void testValidateDateObtention() {
 
-		final EtatDeclaration etat = new EtatDeclarationEmise();
+		final EtatDeclarationEmise etat = new EtatDeclarationEmise();
 
 
 		// Date d'obtention nulle

@@ -54,7 +54,4 @@
 
 	<!-- Validateur de test qui permet de tester la classe abstraite ForFiscalValitator -->
 	<bean id="concreteTestForFiscalValidator" class="ch.vd.uniregctb.validation.fors.ConcreteForFiscalValidator" parent="forFiscalValidator"/>
-
-	<bean id="concreteTestEtatDeclarationValidator" class="ch.vd.uniregctb.validation.declaration.ConcreteEtatDeclarationValidator" parent="etatDeclarationValidator"/>
-
 </beans>
