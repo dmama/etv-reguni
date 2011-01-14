@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -20,7 +19,6 @@ import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.manager.TiersListManager;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.web.xt.handler.TabulationHandler;
 
 /**
  * Controller gerant la recherche des tiers.
@@ -70,7 +68,6 @@ public class TiersListController extends AbstractTiersListController {
 			typeTiers = TypeTiers.valueOf(typeRechercheParam);
 		}
 
-		TabulationHandler.resetCurrentTabulation(request, "tiersTabs");
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 		TiersCriteriaView bean = null;
 

@@ -25,8 +25,6 @@
 
 	<!--  xt-Spring configuration -->
 	
-    <bean id="ajaxTabulationHandler" class="ch.vd.uniregctb.web.xt.handler.TabulationHandler" />
-    
     <bean id="ajaxMotifsForHandler" class="ch.vd.uniregctb.web.xt.handler.MotifsForHandler">
     	<property name="tiersDAO" ref="tiersDAO" />
 		<property name="transactionManager" ref="transactionManager" />
@@ -47,7 +45,7 @@
 	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
         <property name="handlerMappings">
             <props>
-                <prop key="/**/*.do">ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,tiersPickerController</prop>
+                <prop key="/**/*.do">ajaxMotifsForHandler,ajaxPostItHandler,tiersPickerController</prop>
 				<prop key="/fiscal/for.do">tiersForController</prop>
 				<prop key="/tiers/*.do">ajaxRemarqueHandler</prop>
                 <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>

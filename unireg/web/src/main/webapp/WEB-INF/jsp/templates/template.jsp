@@ -49,8 +49,7 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/rapport.js"/>"></script>	
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>	
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tab.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jtip.js"/>"></script>	
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jtip.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/quicksearch.js"/>"></script>
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
