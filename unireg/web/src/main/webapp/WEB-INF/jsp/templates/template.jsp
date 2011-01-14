@@ -314,22 +314,6 @@ function ouvrirAide(url) {
 				&nbsp;&nbsp;&nbsp;<b><unireg:environnement/></b>
 			</div>
 			
-			<script type="text/javascript" language="Javascript1.3">
-				var isOverlay = (location.href != top.location.href); 
-				if (isOverlay) {
-					// on masque tout ce qui n'est pas nécessaire dans l'overlay
-					var to_hide = ['sommaire', 'header', 'outils', 'footer'];
-					for (i = 0; i < to_hide.length; i++) {
-						var e = E$(to_hide[i]);
-						e.style.display = 'none';
-					}
-					// on enlève la marge de gauche maintenant que le sommaire n'y est plus
-					var content = E$('content');
-					content.style.marginLeft = '0.5em';
-					content.style.borderLeft = 'none'; 
-				}
-			</script>
-			
 			<%@ include file="/WEB-INF/jsp/include/tabs-workaround.jsp" %>
 
 	</body>
