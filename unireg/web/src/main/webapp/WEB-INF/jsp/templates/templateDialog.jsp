@@ -9,7 +9,6 @@
 		<link media="screen" href="<c:url value="/css/x/layout.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
 
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/request.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>

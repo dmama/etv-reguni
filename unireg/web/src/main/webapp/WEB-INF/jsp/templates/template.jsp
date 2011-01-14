@@ -33,7 +33,6 @@ function ouvrirAide(url) {
 		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
 
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/request.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/custom.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
