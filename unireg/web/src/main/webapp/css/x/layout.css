@@ -817,6 +817,10 @@ div.ui-tabs {
 	background: url("tableftF.gif") no-repeat left top;
 }
 
+.ui-tabs .ui-tabs-nav li.error a {
+	color: red;
+}
+
 .ui-tabs .ui-tabs-nav li a {
 	padding-left: 6px;
 	padding-right: 10px;

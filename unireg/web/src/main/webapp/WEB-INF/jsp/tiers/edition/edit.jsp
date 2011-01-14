@@ -36,12 +36,6 @@
 		</c:if>
 
 	</c:if>
-	<tiles:put name="vue">
-		<li>
-			<a href="javascript:Tabulation.showFirst();"> <span class="form-friendly" style="display: none;" id="tabnav-enable"><fmt:message key="label.vue.ecran" /></span></a>
-			<a href="javascript:Tabulation.showAll('tiersTabs');"> <span class="printer-friendly" style="display: block;" id="tabnav-disable"><fmt:message key="label.vue.imprimable" /></span> </a>
-		</li>
-	</tiles:put>
 
 	<tiles:put name="body">
 		<form:form method="post" id="formEditTiers" name="theForm">
@@ -61,63 +55,53 @@
 				<!-- Fin Caracteristiques generales -->
 
 			<!--onglets-->
-			<div id="tabs">
-			<ul id="tiersTabs">
+			<div id="tiersCreationTabs">
+				<ul>
+					<c:if test="${command.allowedOnglet.FISCAL}">
+						<li id="fiscalTab"><a href="#tabContent_fiscalTab"><fmt:message key="label.fiscal" /></a></li>
+					</c:if>
+					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
+						<li id="civilTab"><a href="#tabContent_civilTab"><fmt:message key="label.civil" /></a></li>
+					</c:if>
+					<c:if test="${command.allowedOnglet.CPLT}">
+						<li id="complementsTab">
+							<a href="#tabContent_complementsTab"><fmt:message key="label.complements" /></a>
+						</li>
+					</c:if>
+				</ul>
+
 				<c:if test="${command.allowedOnglet.FISCAL}">
-					<li id="fiscalTab"><a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.fiscal" /></a></li>
+					<div id="tabContent_fiscalTab" class="situation_fiscale">
+						<jsp:include page="fiscal/fiscal.jsp" />
+					</div>
 				</c:if>
 				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
-					<li id="civilTab"><a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.civil" /></a></li>
-				</c:if>
-				<c:if test="${command.allowedOnglet.ADR}">
-					<li id="adressesTab"><a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.adresse" /></a></li>
+					<div id="tabContent_civilTab" class="visuTiers">
+					<c:choose>
+						<c:when test="${!(command.allowedOnglet.CIVIL)}">
+							<jsp:include page="../visualisation/civil/civil.jsp" />
+						</c:when>
+						<c:otherwise>
+								<jsp:include page="civil/civil.jsp" />
+						</c:otherwise>
+					</c:choose>
+					</div>
 				</c:if>
 				<c:if test="${command.allowedOnglet.CPLT}">
-					<li id="complementsTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.complements" /></a>
-					</li>
+					<div id="tabContent_complementsTab" class="editTiers">
+						<jsp:include page="complement/complement.jsp" />
+					</div>
 				</c:if>
-				<c:if test="${command.allowedOnglet.RPT}">
-					<li id="rapportsPrestationTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.rapports.prestation" /></a>
-					</li>
-				</c:if>
-				<c:if test="${command.allowedOnglet.DOS}">
-					<li id="dossiersApparentesTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.dossier" /></a>
-					</li>
-				</c:if>
-				<c:if test="${command.allowedOnglet.DBT}">
-					<li id="debiteurTab">
-						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.debiteur.is" /></a>
-					</li>
-				</c:if>
-			</ul>
 			</div>
-			<div><!-- Fin onglets -->
-			<c:if test="${command.allowedOnglet.FISCAL}">
-				<div id="tabContent_fiscalTab" class="situation_fiscale" style="display: none;">
-					<jsp:include page="fiscal/fiscal.jsp" />
-				</div>
-			</c:if>
-			<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
-				<div id="tabContent_civilTab" class="visuTiers" style="display: none;">
-				<c:choose>
-					<c:when test="${!(command.allowedOnglet.CIVIL)}">
-						<jsp:include page="../visualisation/civil/civil.jsp" />
-					</c:when>
-					<c:otherwise>
-							<jsp:include page="civil/civil.jsp" />
-					</c:otherwise>
-				</c:choose>
-				</div>
-			</c:if>
-			<c:if test="${command.allowedOnglet.CPLT}">
-				<div id="tabContent_complementsTab" class="editTiers" style="display: none;">
-					<jsp:include page="complement/complement.jsp" />
-				</div>
-			</c:if>
-			</div>
+
+			<script>
+				$(function() {
+					$("#tiersCreationTabs").tabs();
+				});
+			</script>
+
+			<!-- Fin onglets -->
+
 			<!-- Debut Boutons -->
 			<c:choose>
 				<c:when test="${command.tiers.numero != null}">
@@ -145,36 +129,15 @@
 			</c:if>
 		</c:if>
 	</form:form>
-	<script type="text/javascript" language="Javascript1.3">
-			Tabulation.attachObserver("change", Tab_Change);
-			var tabulationInitalized = false;						
-			var onglet = request.getParameter("onglet");
-			if ( onglet) {
-				Tabulation.show( onglet);
-			} else {
-				<c:set var="tabInError" value="false" />
-				<spring:hasBindErrors name="command">		
-					<c:forEach items="${errors.globalErrors}" var="error">
-						<c:if test="${unireg:startsWith(error.code, 'onglet.error')}">
-						Tabulation.setTabInError('<spring:message message="${error}"/>');
-						Tabulation.show('<spring:message message="${error}"/>');
-						<c:set var="tabInError" value="true" />
-						</c:if>
-					</c:forEach>
-				</spring:hasBindErrors>
-				<c:if test="${not tabInError}">
-				Tabulation.restoreCurrentTabulation("tiersTabs");
-				</c:if>
-			}
-
-			function Tab_Change( selectedTab) {
-				if( selectedTab) {
-					tabulationInitalized = true;
-				}
-				if (!tabulationInitalized) {					
-					Tabulation.showFirst( "tiersTabs");					
-				}
-			} 		
+	
+	<script>
+			<spring:hasBindErrors name="command">
+				<c:forEach items="${errors.globalErrors}" var="error">
+					<c:if test="${unireg:startsWith(error.code, 'onglet.error')}">
+						$('#<spring:message message="${error}"/>').addClass('error');
+					</c:if>
+				</c:forEach>
+			</spring:hasBindErrors>
 
 			// Initialisation de l'observeur du flag 'modifier'
 			Modifier.attachObserver( "theForm", <c:out value="${__MODIFIER__}" />);
@@ -186,6 +149,7 @@
 					return Event.stop(ev);
 				return true;
 		 	}
-	</script>					
+	</script>
+
 	</tiles:put>
 </tiles:insert>
