@@ -11,6 +11,9 @@
 	<!--v2008-1-4 - 19.06.2008 : Ajouté élement ExcluTaxationAutomatique; TotalNet/DeductionFamille et PrestationsCapitalCaisse/BeneficeLiquidation-->
 	<!--v2008-1-5 - 24.09.2008 :  élement ExcluTaxationAutomatique devient obligatoire-->
 	<!--v2009-1-1 - 03.07.2009: commenté les éléments Identification/Contribuable/NoAVS et Identification/Epouse/NoAVS, car ces champs ne seront plus alimenté par la DI, dès la DI 2009; Aucune de modification effective.-->
+	<xs:annotation>
+		<xs:documentation>v2011-1-1 - 06.07.2010 : ajout élément DeductionsSpeciales/FraisGarde/Effectif</xs:documentation>
+	</xs:annotation>
 	<xs:include schemaLocation="DocIdentification.xsd"/>
 	<xs:complexType name="PagesType">
 		<xs:sequence>
@@ -1281,6 +1284,11 @@
 											<xs:element name="Revenu" type="xs:string" minOccurs="0">
 												<xs:annotation>
 													<xs:documentation>id138</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Effectif" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id131</xs:documentation>
 												</xs:annotation>
 											</xs:element>
 										</xs:sequence>
