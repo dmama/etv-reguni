@@ -52,7 +52,7 @@
 			</c:if>
 
 			<%-- Affichage des attributs de l'entité --%>
-			<form:form method="post">
+			<form:form commandName="entity" method="post">
 				<input type="submit" name="save" value="Mémoriser les modifications" style="margin: 1em;"/>
 				<display:table name="${entity.attributes}" id="a" class="display_table">
 						<display:column title="Attribute">
@@ -67,12 +67,14 @@
 							</c:if>
 							<c:if test="${!a.collection}">
 								<c:if test="${!a.entity}">
-									<unireg:formField id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" clazz="${a.type}" value="${a.value}" readonly="${a.readonly}"/>
+									<!-- form:input path="attributes[${a_rowNum - 1}].value"/ -->
+									<unireg:formInput id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" clazz="${a.type}" readonly="${a.readonly}"/>
 								</c:if>
 								<c:if test="${a.entity}">
 									<unireg:entityField id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" type="${a.entityType}" value="${a.value}" readonly="${a.readonly}"/>
 								</c:if>
 							</c:if>
+							<form:errors path="attributes[${a_rowNum - 1}].value" cssClass="error"/>
 						</display:column>
 				</display:table>
 				<input type="submit" name="save" value="Mémoriser les modifications" style="margin: 1em;"/>

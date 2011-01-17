@@ -23,7 +23,7 @@
 				</form:form>
 			</div>
 
-			<form:form method="post">
+			<form:form commandName="coll" method="post">
 
 				<table class="display_table" id="a">
 					<thead><tr>
@@ -42,7 +42,7 @@
 									<a href="<c:url value="/supergra/entity.do?id=${a.value}&class=${coll.primaryKeyType}"/>"><c:out value="${a.value}"/></a>
 								</c:if>
 								<c:if test="${a.name != coll.primaryKeyAtt}">
-									<unireg:formField id="attributes_${a_rowNum - 1}_${name}" clazz="${a.type}" value="${a.value}" readonly="true"/>
+									<unireg:formInput id="attributes_${a_rowNum - 1}_${name}" clazz="${a.type}" readonly="true"/>
 								</c:if>
 							</c:if>
 							</td>

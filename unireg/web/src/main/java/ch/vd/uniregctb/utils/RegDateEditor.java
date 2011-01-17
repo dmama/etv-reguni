@@ -30,6 +30,11 @@ public class RegDateEditor extends PropertyEditorSupport {
 			try {
 				setValue(RegDateHelper.displayStringToRegDate(text, allowPartial));
 			}
+			catch (IllegalArgumentException ex) {
+				String message = ex.getMessage();
+				message = message.replaceAll("\\{", "[").replaceAll("\\}", "]"); // pour éviter une mauvaise interprétation de la date comme paramètre ({0}) dans le système de traduction de messages.
+				throw new IllegalArgumentException(message);
+			}
 			catch (ParseException ex) {
 				throw new IllegalArgumentException("Could not parse date: " + ex.getMessage());
 			}

@@ -124,7 +124,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 					}
 				}
 
-				// [UNIREG-3188] de doutes les dates de l'application, seule la date de naissance d'une personne physique
+				// [UNIREG-3188] de toutes les dates de l'application, seule la date de naissance d'une personne physique
 				// autorise la donnée d'une date partielle
 				if (RegDate.class.equals(type) && "dateNaissance".equals(a.getName())) {
 					editor = partialDateEditor;
@@ -135,6 +135,14 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
+		if (errors.hasErrors()) {
+			flashError("Une ou plusieurs erreurs de saisie ont été détectées. Aucun changement n'a été enregistré.");
+		}
+		return super.showForm(request, response, errors);
 	}
 
 	@SuppressWarnings({"unchecked"})

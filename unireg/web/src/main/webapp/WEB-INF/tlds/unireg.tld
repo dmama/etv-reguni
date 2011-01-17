@@ -184,21 +184,15 @@
 	</tag>
 
 	<tag>
-		<name>formField</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormField</tag-class>
+		<name>formInput</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormInput</tag-class>
 		<body-content>JSP</body-content>
-		<description>Tag qui génère un champ d'édition pour la propriété spécifiée.</description>
+		<description>Tag qui génère un champ d'édition pour la propriété spécifiée dans un formulaire.</description>
 		<attribute>
 			<name>clazz</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Le type de la propriété à éditer</description>
-		</attribute>
-		<attribute>
-			<name>value</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Le valeur de la propriété à éditer (peut être nulle)</description>
 		</attribute>
 		<attribute>
 			<name>path</name>

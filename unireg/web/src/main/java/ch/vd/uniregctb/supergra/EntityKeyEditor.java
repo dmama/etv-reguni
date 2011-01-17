@@ -27,6 +27,9 @@ public class EntityKeyEditor extends PropertyEditorSupport {
 
 	@Override
 	public String getAsText() {
+		if (getValue() instanceof String) { // par exemple, "0 éléments"
+			return null;
+		}
 		final EntityKey key = (EntityKey) getValue();
 		return (key != null ? key.getId().toString() : "");
 	}
