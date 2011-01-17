@@ -17,7 +17,7 @@
 
 			<div id="optionsDiv">
 				<form:form id="optionsForm" method="post">
-					<input id="showDetails" name="showDetails" type="checkbox" onclick="F$('optionsForm').submit()" <c:if test="${superGraSession.options.showDetails}">checked="checked"</c:if>/>
+					<input id="showDetails" name="showDetails" type="checkbox" onclick="$('#optionsForm').submit()" <c:if test="${superGraSession.options.showDetails}">checked="checked"</c:if>/>
 					<label for="showDetails">Afficher les détails</label>
 					<input name="_showDetails" type="hidden" value="${!superGraSession.options.showDetails}"/>
 				</form:form>
@@ -42,7 +42,7 @@
 									<a href="<c:url value="/supergra/entity.do?id=${a.value}&class=${coll.primaryKeyType}"/>"><c:out value="${a.value}"/></a>
 								</c:if>
 								<c:if test="${a.name != coll.primaryKeyAtt}">
-									<unireg:formInput id="attributes_${a_rowNum - 1}_${name}" clazz="${a.type}" readonly="true"/>
+									<unireg:out id="attributes_${a_rowNum - 1}_${name}" value="${a.value}" clazz="${a.type}"/>
 								</c:if>
 							</c:if>
 							</td>

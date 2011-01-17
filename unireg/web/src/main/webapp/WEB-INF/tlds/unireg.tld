@@ -184,6 +184,31 @@
 	</tag>
 
 	<tag>
+		<name>out</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagOut</tag-class>
+		<body-content>JSP</body-content>
+		<description>Tag jsp qui permet d'afficher diverse valeurs spécifiques à Unireg.</description>
+		<attribute>
+			<name>clazz</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le type de la propriété à éditer</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>L'id html assigné au champ</description>
+		</attribute>
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>La valeur à afficher</description>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>formInput</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormInput</tag-class>
 		<body-content>JSP</body-content>
