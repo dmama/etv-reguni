@@ -19,6 +19,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -598,8 +600,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws
-			BusinessException, AccessDeniedException, TechnicalException {
+	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.numeroDebiteur);
@@ -630,33 +631,80 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 	}
 
-	@Transactional(rollbackFor = Throwable.class)
-	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
+	/**
+	 * Classe interne au quittancement des déclarations d'impôt
+	 */
+	private static class QuittancementResults implements BatchResults<DemandeQuittancementDeclaration, QuittancementResults> {
+
+		private final List<ReponseQuittancementDeclaration> reponses = new ArrayList<ReponseQuittancementDeclaration>();
+
+		public void addErrorException(DemandeQuittancementDeclaration element, Exception e) {
+			if (e instanceof RuntimeException) {
+				reponses.add(new ReponseQuittancementDeclaration(element.key, (RuntimeException) e));
+			}
+			else {
+				reponses.add(new ReponseQuittancementDeclaration(element.key, new RuntimeException(e.getMessage(), e)));
+			}
+		}
+
+		public void addAll(QuittancementResults right) {
+			this.reponses.addAll(right.getReponses());
+		}
+
+		public void addReponse(ReponseQuittancementDeclaration reponse) {
+			this.reponses.add(reponse);
+		}
+
+		public List<ReponseQuittancementDeclaration> getReponses() {
+			return reponses;
+		}
+	}
+
+	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws TechnicalException {
 
 		try {
-			final List<ReponseQuittancementDeclaration> reponses = new ArrayList<ReponseQuittancementDeclaration>();
+			final List<DemandeQuittancementDeclaration> demandes = params.demandes;
+			final BatchTransactionTemplate<DemandeQuittancementDeclaration,QuittancementResults> template =
+					new BatchTransactionTemplate<DemandeQuittancementDeclaration, QuittancementResults>(demandes, demandes.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+																										context.transactionManager, null, context.hibernateTemplate);
+			final QuittancementResults rapportFinal = new QuittancementResults();
+			template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<DemandeQuittancementDeclaration, QuittancementResults>() {
 
-			for (DemandeQuittancementDeclaration demande : params.demandes) {
-				ReponseQuittancementDeclaration r;
-				try {
-					r = traiterDemande(demande);
+				@Override
+				public QuittancementResults createSubRapport() {
+					return new QuittancementResults();
 				}
-				catch (QuittancementErreur e) {
-					r = new ReponseQuittancementDeclaration(demande.key, e);
+
+				@Override
+				public boolean doInTransaction(List<DemandeQuittancementDeclaration> batch, QuittancementResults rapport) throws Exception {
+					for (DemandeQuittancementDeclaration demande : batch) {
+						final ReponseQuittancementDeclaration r = quittancerDeclaration(demande);
+						rapport.addReponse(r);
+					}
+					return true;
 				}
-				catch (RuntimeException e) {
-					LOGGER.error(e, e);
-					r = new ReponseQuittancementDeclaration(demande.key, e);
-				}
-				reponses.add(r);
-			}
-			
-			return reponses;
+			});
+			return rapportFinal.getReponses();
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
 			throw new TechnicalException(e);
 		}
+	}
+
+	private ReponseQuittancementDeclaration quittancerDeclaration(DemandeQuittancementDeclaration demande) {
+		ReponseQuittancementDeclaration r;
+		try {
+			r = traiterDemande(demande);
+		}
+		catch (QuittancementErreur e) {
+			r = new ReponseQuittancementDeclaration(demande.key, e);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			r = new ReponseQuittancementDeclaration(demande.key, e);
+		}
+		return r;
 	}
 
 	/**

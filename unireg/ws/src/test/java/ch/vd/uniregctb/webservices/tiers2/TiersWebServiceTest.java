@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,27 +9,33 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -447,6 +454,188 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(1, retour.key.numeroSequenceDI);
 		assertEquals(2009, retour.key.periodeFiscale);
 		assertEquals(CodeQuittancement.OK, retour.code);
+	}
+
+	// [UNIREG-3179] si un tiers ne valide pas au milieu du lot, tout explose
+	@Test
+	@NotTransactional
+	public void testQuittanceDeclarationSurContribuableQuiNeValidePas() throws Exception {
+
+		class Ids {
+			long ppId;
+			long diId;
+		}
+		final Ids ids = new Ids();
+
+		final int annee = 2010;
+
+		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
+		validationInterceptor.setEnabled(false);
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+
+					final RegDate debutAnnee = date(annee, 1, 1);
+					final RegDate finAnnee = date(annee, 12, 31);
+
+					final PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), Sexe.MASCULIN);
+					pp.setNom(null);        // <-- c'est là le problème de validation
+
+					addForPrincipal(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+					addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+					final PeriodeFiscale pf = addPeriodeFiscale(annee);
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+					addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+					final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, finAnnee, TypeContribuable.HORS_SUISSE, md);
+					final RegDate dateEmission = date(annee + 1, 1, 11);
+					di.addEtat(new EtatDeclarationEmise(dateEmission));
+
+					final DelaiDeclaration delai = new DelaiDeclaration();
+					delai.setDateTraitement(dateEmission);
+					delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+					di.addDelai(delai);
+
+					ids.ppId = pp.getNumero();
+					ids.diId = di.getId();
+
+					return null;
+				}
+			});
+		}
+		finally {
+			// maintenant, on peut réactiver la validation
+			validationInterceptor.setEnabled(true);
+		}
+
+		// quittancement de la DI
+		final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
+		demande.dateRetour = new Date(RegDate.get());
+		demande.key = new DeclarationImpotOrdinaireKey();
+		demande.key.ctbId = ids.ppId;
+		demande.key.numeroSequenceDI = 1;
+		demande.key.periodeFiscale = annee;
+
+		final QuittancerDeclarations quittances = new QuittancerDeclarations();
+		quittances.login = login;
+		quittances.demandes = Arrays.asList(demande);
+
+		final List<ReponseQuittancementDeclaration> retours = service.quittancerDeclarations(quittances);
+		assertNotNull(retours);
+		assertEquals(1, retours.size());
+
+		final ReponseQuittancementDeclaration retour = retours.get(0);
+		assertNotNull(retour);
+		assertEquals(ids.ppId, retour.key.ctbId);
+		assertEquals(1, retour.key.numeroSequenceDI);
+		assertEquals(annee, retour.key.periodeFiscale);
+		assertEquals(CodeQuittancement.EXCEPTION, retour.code);
+
+		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
+		assertEquals(expectedMessage, retour.exceptionMessage);
+	}
+
+	@Test
+	@NotTransactional
+	public void testQuittanceDeclarationsGroupeesAvecUnContribuableQuiNeValidePas() throws Exception {
+
+		final int annee = 2010;
+		final RegDate debutAnnee = date(annee, 1, 1);
+		final RegDate finAnnee = date(annee, 12, 31);
+
+		class Ids {
+			final long idCtb;
+			final long idDi;
+
+			Ids(long idCtb, long idDi) {
+				this.idCtb = idCtb;
+				this.idDi = idDi;
+			}
+		}
+		final List<Ids> liste = new ArrayList<Ids>();
+
+		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
+		validationInterceptor.setEnabled(false);
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+
+					final PeriodeFiscale pf = addPeriodeFiscale(annee);
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+					addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+					final PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), Sexe.MASCULIN);
+					final PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), Sexe.FEMININ);
+
+					final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, finAnnee, pf, md);
+					final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, finAnnee, pf, md);
+
+					liste.add(new Ids(validePP.getNumero(), valideDi.getId()));
+					liste.add(new Ids(invalidePP.getNumero(), invalideDi.getId()));
+					return null;
+				}
+
+				private PersonnePhysique addPersonnePhysiqueAvecFor(String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+					final PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
+					addForPrincipal(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+					addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+					return pp;
+				}
+
+				private DeclarationImpotOrdinaire addDi(Contribuable ctb, RegDate dateDebut, RegDate dateFin, PeriodeFiscale pf, ModeleDocument md) {
+					final DeclarationImpotOrdinaire di = addDeclarationImpot(ctb, pf, dateDebut, dateFin, TypeContribuable.HORS_SUISSE, md);
+					final RegDate dateEmission = date(annee + 1, 1, 11);
+					di.addEtat(new EtatDeclarationEmise(dateEmission));
+					final DelaiDeclaration delai = new DelaiDeclaration();
+					delai.setDateTraitement(dateEmission);
+					delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+					di.addDelai(delai);
+					return di;
+				}
+			});
+		}
+		finally {
+			// maintenant, on peut réactiver la validation
+			validationInterceptor.setEnabled(true);
+		}
+
+		// quittancement des DI
+		final List<DemandeQuittancementDeclaration> demandes = new ArrayList<DemandeQuittancementDeclaration>();
+		for (Ids ids : liste) {
+			final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
+			demande.dateRetour = new Date(RegDate.get());
+			demande.key = new DeclarationImpotOrdinaireKey();
+			demande.key.ctbId = ids.idCtb;
+			demande.key.numeroSequenceDI = 1;
+			demande.key.periodeFiscale = annee;
+			demandes.add(demande);
+		}
+
+		final QuittancerDeclarations quittances = new QuittancerDeclarations();
+		quittances.login = login;
+		quittances.demandes = demandes;
+
+		final List<ReponseQuittancementDeclaration> retours = service.quittancerDeclarations(quittances);
+		assertNotNull(retours);
+		assertEquals(2, retours.size());
+
+		final ReponseQuittancementDeclaration retourValide = retours.get(0);
+		assertNotNull(retourValide);
+		assertEquals(liste.get(0).idCtb, retourValide.key.ctbId);
+		assertEquals(1, retourValide.key.numeroSequenceDI);
+		assertEquals(annee, retourValide.key.periodeFiscale);
+		assertEquals(CodeQuittancement.OK, retourValide.code);
+
+		final ReponseQuittancementDeclaration retourInvalide = retours.get(1);
+		assertNotNull(retourInvalide);
+		assertEquals(liste.get(1).idCtb, retourInvalide.key.ctbId);
+		assertEquals(1, retourInvalide.key.numeroSequenceDI);
+		assertEquals(annee, retourInvalide.key.periodeFiscale);
+		assertEquals(CodeQuittancement.EXCEPTION, retourInvalide.code);
+
+		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
+		assertEquals(expectedMessage, retourInvalide.exceptionMessage);
 	}
 
 	/**
