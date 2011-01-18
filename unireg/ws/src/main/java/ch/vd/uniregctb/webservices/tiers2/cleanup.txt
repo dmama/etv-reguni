@@ -6,3 +6,5 @@
 - ajouté une code de catégorie sur les exceptions métier 'BusinessException' (UNIREG-3112)
 - voir pour ne plus exposer la date d'annulation sur les états des déclarations
 - supprimer les délais sur les déclarations
+- fusionner les adresses et les adresses d'envoi (UNIREG-2546) + ne plus exposer l'historique mais seulement les valeurs courantes
+- éventuellement fusionner les structure Tiers et TiersHisto pour ne plus garder que TiersHisto.
