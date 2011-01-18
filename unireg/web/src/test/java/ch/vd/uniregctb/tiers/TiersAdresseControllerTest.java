@@ -59,9 +59,6 @@ public class TiersAdresseControllerTest extends WebTest {
 		});
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testShowForm() throws Exception {
 
@@ -84,9 +81,7 @@ public class TiersAdresseControllerTest extends WebTest {
 		Map<?, ?> model = mav.getModel();
 		assertNotNull(model);
 	}
-	/**
-	 * @throws Exception
-	 */
+
 	@Test
 	public void testOnSubmitAdresseEtrangere() throws Exception {
 
@@ -103,7 +98,7 @@ public class TiersAdresseControllerTest extends WebTest {
 		Map<?, ?> model = mav.getModel();
 		assertNotNull(model);
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(67895));
+		Tiers tiers = tiersDAO.get((long) 67895);
 		assertEquals(1, tiers.getAdressesTiers().size());
 	}
 
@@ -123,7 +118,7 @@ public class TiersAdresseControllerTest extends WebTest {
 		Map<?, ?> model = mav.getModel();
 		assertNotNull(model);
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(67895));
+		Tiers tiers = tiersDAO.get((long) 67895);
 		assertEquals(1, tiers.getAdressesTiers().size());
 
 
@@ -141,7 +136,7 @@ public class TiersAdresseControllerTest extends WebTest {
 		request.addParameter("usage", "COURRIER");
 		request.setMethod("POST");
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(67895));
+		Tiers tiers = tiersDAO.get((long) 67895);
 		assertEquals(0, tiers.getAdressesTiers().size());
 
 
@@ -163,13 +158,10 @@ public class TiersAdresseControllerTest extends WebTest {
 		Map<?, ?> model = mav.getModel();
 		assertNotNull(model);
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(67895));
+		Tiers tiers = tiersDAO.get((long) 67895);
 		assertEquals(0, tiers.getAdressesTiers().size());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitModifyAdresseSuisse() throws Exception {
 
@@ -187,16 +179,13 @@ public class TiersAdresseControllerTest extends WebTest {
 		Map<?, ?> model = mav.getModel();
 		assertNotNull(model);
 		AdresseTiersDAO adresseTiersDAO = getBean(AdresseTiersDAO.class, "adresseTiersDAO");
-		AdresseTiers adresseTiers = adresseTiersDAO.get(new Long(192));
+		AdresseTiers adresseTiers = adresseTiersDAO.get((long) 192);
 		AdresseSuisse addSuisse = (AdresseSuisse)adresseTiers ;
 		assertEquals(165, addSuisse.getNumeroOrdrePoste().intValue());
 
 
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitModifyAdresseEtrangere() throws Exception {
 
@@ -214,7 +203,7 @@ public class TiersAdresseControllerTest extends WebTest {
 		Map<?, ?> model = mav.getModel();
 		assertNotNull(model);
 		AdresseTiersDAO adresseTiersDAO = getBean(AdresseTiersDAO.class, "adresseTiersDAO");
-		AdresseTiers adresseTiers = adresseTiersDAO.get(new Long(5));
+		AdresseTiers adresseTiers = adresseTiersDAO.get((long) 5);
 		AdresseEtrangere addEtrangere = (AdresseEtrangere)adresseTiers ;
 		assertEquals("Marseille", addEtrangere.getNumeroPostalLocalite());
 

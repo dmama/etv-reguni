@@ -51,7 +51,6 @@ public class TiersAdresseController extends AbstractTiersController {
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
 		AdresseView adresseView = (AdresseView) command;
 		checkAccesDossierEnEcriture(adresseView.getNumCTB());
 
@@ -65,6 +64,7 @@ public class TiersAdresseController extends AbstractTiersController {
 		return new ModelAndView("redirect:../adresses/edit.do?id=" + adresseView.getNumCTB());
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAdresseManager(AdresseManager adresseManager) {
 		this.adresseManager = adresseManager;
 	}
