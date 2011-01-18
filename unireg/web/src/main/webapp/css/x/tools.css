@@ -68,8 +68,6 @@ a.pdf:hover,
 span.pdf-grayed:hover
 a.key:hover,
 a.calendar:hover {
-	width: 16px;
-	height: 16px;
 	background-repeat: no-repeat;
 	text-decoration: none;
 }
