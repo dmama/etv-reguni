@@ -9,6 +9,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -106,9 +107,9 @@ public class JspTagInfra extends BodyTagSupport {
 			try {
 				final StringBuilder b = new StringBuilder();
 				if (title != null) {
-					b.append("<div title='").append(title).append("'>");
+					b.append("<div title='").append(HtmlUtils.htmlEscape(title.toString())).append("'>");
 				}
-				b.append(property);
+				b.append(HtmlUtils.htmlEscape(property.toString()));
 				if (title != null) {
 					b.append("</div>");
 				}
