@@ -18,7 +18,7 @@ public class AdresseDisponibleView {
 	private String localite;
 	private String paysNpa;
 	private AdresseGenerique.Source source;
-	private Long numeroTiers;
+	private Long representantId;
 
 	public AdresseGenerique.Source getSource() {
 		return source;
@@ -76,12 +76,15 @@ public class AdresseDisponibleView {
 		this.paysNpa = paysNpa;
 	}
 
-	public Long getNumeroTiers() {
-		return numeroTiers;
+	/**
+	 * @return l'id du représentant associé à l'adresse de reprise (<b>null</b> dans le cas d'une adresse reprise du civil).
+	 */
+	public Long getRepresentantId() {
+		return representantId;
 	}
 
-	public void setNumeroTiers(Long numeroTiers) {
-		this.numeroTiers = numeroTiers;
+	public void setRepresentantId(Long representantId) {
+		this.representantId = representantId;
 	}
 
 	public String getTypeAdresseToString() {

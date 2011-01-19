@@ -73,7 +73,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		}
 
 		adresseView = enrichiAdresseView(adresseTiers);
-		final Tiers tiers = getTiersService().getTiers(adresseTiers.getTiers().getNumero());
+		final Tiers tiers = tiersService.getTiers(adresseTiers.getTiers().getNumero());
 		List<AdresseDisponibleView> lAdresse = getAdressesDisponible(tiers);
 
 		adresseView.setNature(tiers.getNatureTiers());
@@ -103,7 +103,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		AdresseView adresseView = new AdresseView();
 		adresseView.setNumCTB(numeroCtb);
 		adresseView.setTypeLocalite(TYPE_LOCALITE_SUISSE);
-		final Tiers tiers = getTiersService().getTiers(numeroCtb);
+		final Tiers tiers = tiersService.getTiers(numeroCtb);
 		List<AdresseDisponibleView> lAdresse = getAdressesDisponible(tiers);
 		adresseView.setAdresseDisponibles(lAdresse);
 		return adresseView;
@@ -212,7 +212,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 			// Recuperer Tiers Representant
 
-			Tiers representant = getTiersService().getTiers(addDisponibleView.getNumeroTiers());
+			Tiers representant = tiersService.getTiers(addDisponibleView.getRepresentantId());
 			addAutreTiers.setAutreTiersId(representant.getId());
 			adresseService.addAdresse(tiers, addAutreTiers);
 
@@ -577,18 +577,15 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	private AdresseDisponibleView createAdresseDisponibleViewFromAddGenerique(AdresseGenerique adresse, Tiers tiers, TypeAdresseRepresentant type) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
 
-		if (type == TypeAdresseRepresentant.CONSEIL_LEGAL || type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
-			Assert.isFalse(tiers instanceof MenageCommun);
-			final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), null);
-			final Tiers conseiller = tiersDAO.get(rapport.getObjetId());
-			
-			addDispoView.setSource(type.getTypeSource());
-			addDispoView.setRepresentantLegal(getNomCourrier(conseiller));
-		}
+		Assert.isFalse(tiers instanceof MenageCommun);
+		final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), null);
+		final Tiers conseiller = tiersDAO.get(rapport.getObjetId());
 
+		addDispoView.setSource(type.getTypeSource());
+		addDispoView.setRepresentantLegal(getNomCourrier(conseiller));
 		addDispoView.setLocalite(adresse.getLocalite());
 		addDispoView.setNumeroCasePostale(adresse.getNumeroOrdrePostal());
-		addDispoView.setNumeroTiers(tiers.getNumero());
+		addDispoView.setRepresentantId(conseiller.getNumero());
 
 		Integer noOfsPays = adresse.getNoOfsPays();
 		if (noOfsPays != null) {
@@ -649,7 +646,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			return null;
 		}
 		TiersEditView tiersEditView = new TiersEditView();
-		final Tiers tiers = getTiersService().getTiers(numero);
+		final Tiers tiers = tiersService.getTiers(numero);
 		if (tiers == null) {
 			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}

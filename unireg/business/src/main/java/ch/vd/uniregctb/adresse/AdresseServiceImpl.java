@@ -1923,9 +1923,11 @@ public class AdresseServiceImpl implements AdresseService {
 			try {
 				final int nextDepth = oneLevelDeeper(callDepth, tiers, autreTiers, adresseSurchargee);
 				final AdresseGenerique autreAdresse = getAdresseFiscale(autreTiers, type, adresseSurchargee.getDateDebut(), nextDepth, strict);
-				if (autreAdresse != null) {
-					surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, Source.FISCALE, false, a.isAnnule());
+				if (autreAdresse == null) {
+					throw new AdressesResolutionException(
+							"Le tiers n°" + autreTiers.getId() + " ne possède pas d'adresse " + type + " alors que le tiers n°" + tiers.getId() + " pointe vers cette adresse.");
 				}
+				surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, Source.FISCALE, false, a.isAnnule());
 			}
 			catch (AdressesResolutionException e) {
 				if (adresseSurchargee.isAnnule()) {
@@ -1941,6 +1943,8 @@ public class AdresseServiceImpl implements AdresseService {
 		else {
 			throw new NotImplementedException("Type d'adresse [" + adresseSurchargee.getClass().getSimpleName() + "] inconnu");
 		}
+
+		Assert.notNull(surcharge);
 		return surcharge;
 	}
 
@@ -2164,8 +2168,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private List<AdresseGenerique> surchargeAdressesTiersHisto(Tiers tiers, List<AdresseGenerique> adresses, List<AdresseTiers> adressesSurchargees, Source sourceSurcharge, Boolean defaultSurcharge,
-	                                                           int callDepth, boolean strict
-	) throws AdresseException {
+	                                                           int callDepth, boolean strict) throws AdresseException {
 
 		if (adressesSurchargees == null || adressesSurchargees.size() == 0) {
 			return adresses;
