@@ -165,7 +165,20 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-		public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+	CollectiviteAdministrative result;
+		long time = tracing.start();
+		try {
+			result = target.getACIImpotSource();
+		}
+		finally {
+			tracing.end(time, "getACIImpotSource", null);
+		}
+
+		return result;
+	}
+
+	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {

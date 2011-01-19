@@ -64,6 +64,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	private Canton vaud;
 	private CollectiviteAdministrative aci;
 	private CollectiviteAdministrative aciSuccessions;
+	private CollectiviteAdministrative aciImpotSource;
 	private CollectiviteAdministrative cedi;
 	private CollectiviteAdministrative cat;
 
@@ -519,6 +520,19 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			}
 		}
 		return aci;
+	}
+
+	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+
+		if (aciImpotSource == null) {
+			try {
+				aciImpotSource = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACIImpotSource));
+			}
+			catch (RemoteException e) {
+				throw new InfrastructureException("Acces a la collectivite administrative", e);
+			}
+		}
+		return aciImpotSource;
 	}
 
 	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {

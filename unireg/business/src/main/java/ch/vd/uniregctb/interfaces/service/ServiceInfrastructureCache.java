@@ -1270,6 +1270,23 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 		}
 	}
 
+	private static class KeyGetACIImpotSource {
+
+		@Override
+		public int hashCode() {
+			return 98712659;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			return getClass() == obj.getClass();
+		}
+	}
+
 
 	public CollectiviteAdministrative getACI() throws InfrastructureException {
 		final CollectiviteAdministrative resultat;
@@ -1287,7 +1304,23 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 		return resultat;
 	}
 
-public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+		final CollectiviteAdministrative resultat;
+
+		final KeyGetACIImpotSource key = new KeyGetACIImpotSource();
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getACIImpotSource();
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (CollectiviteAdministrative) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetACISuccessions key = new KeyGetACISuccessions();

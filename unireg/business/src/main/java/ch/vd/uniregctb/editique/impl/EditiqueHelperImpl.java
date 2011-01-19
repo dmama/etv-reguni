@@ -212,21 +212,21 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		//
 		// Expediteur
 		//
-		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aci = infraService.getACI();
-		ch.vd.uniregctb.interfaces.model.Adresse adresseAci = aci.getAdresse();
+		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aciImpotSource = infraService.getACIImpotSource();
+		ch.vd.uniregctb.interfaces.model.Adresse adresseAciImpotSource = aciImpotSource.getAdresse();
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
-		adresseExpediteur.setAdresseCourrierLigne1(aci.getNomComplet1());
-		adresseExpediteur.setAdresseCourrierLigne2(IMPOT_A_LA_SOURCE_MIN);
-		adresseExpediteur.setAdresseCourrierLigne3(aci.getNomComplet3());
-		adresseExpediteur.setAdresseCourrierLigne4(adresseAci.getRue());
-		adresseExpediteur.setAdresseCourrierLigne5(adresseAci.getNumeroPostal() + " " + adresseAci.getLocalite());
+		adresseExpediteur.setAdresseCourrierLigne1(aciImpotSource.getNomComplet1());
+		adresseExpediteur.setAdresseCourrierLigne2(aciImpotSource.getNomComplet2());
+		adresseExpediteur.setAdresseCourrierLigne3(aciImpotSource.getNomComplet3());
+		adresseExpediteur.setAdresseCourrierLigne4(adresseAciImpotSource.getRue());
+		adresseExpediteur.setAdresseCourrierLigne5(adresseAciImpotSource.getNumeroPostal() + " " + adresseAciImpotSource.getLocalite());
 		expediteur.setAdresse(adresseExpediteur);
-		expediteur.setAdrMes(aci.getAdresseEmail());
-		expediteur.setNumTelephone(aci.getNoTelephone());
-		expediteur.setNumFax(aci.getNoFax());
-		expediteur.setNumCCP(aci.getNoCCP());
+		expediteur.setAdrMes(aciImpotSource.getAdresseEmail());
+		expediteur.setNumTelephone(aciImpotSource.getNoTelephone());
+		expediteur.setNumFax(aciImpotSource.getNoFax());
+		expediteur.setNumCCP(aciImpotSource.getNoCCP());
 		if (traitePar != null) {
 			expediteur.setTraitePar(traitePar);
 		}
