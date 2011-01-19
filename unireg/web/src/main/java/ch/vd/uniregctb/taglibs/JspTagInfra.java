@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -26,6 +28,7 @@ public class JspTagInfra extends BodyTagSupport {
 	private String entityType;
 	private Integer entityId;
 	private String entityPropertyName;
+	private String entityPropertyTitle;
 	private static ServiceInfrastructureService service; // static -> hack pour obtenir le service infrastructure initialisé par spring dans le context d'appels jsp
 
 	private static interface Invocator {
@@ -82,11 +85,17 @@ public class JspTagInfra extends BodyTagSupport {
 		}
 
 		Object property = null;
+		Object title = null;
 		try {
 			Object entity = invocator.invoke(service, entityId);
 			if (entity != null) {
-				ReadOnlyPropertyDescriptor descriptor = new ReadOnlyPropertyDescriptor(entityPropertyName, entity.getClass());
-				property = descriptor.getReadMethod().invoke(entity);
+				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(entityPropertyName, entity.getClass());
+				property = displayDescriptor.getReadMethod().invoke(entity);
+
+				if (StringUtils.isNotBlank(entityPropertyTitle)) {
+					final ReadOnlyPropertyDescriptor titleDescriptor = new ReadOnlyPropertyDescriptor(entityPropertyTitle, entity.getClass());
+					title = titleDescriptor.getReadMethod().invoke(entity);
+				}
 			}
 		}
 		catch (Exception e) {
@@ -95,7 +104,15 @@ public class JspTagInfra extends BodyTagSupport {
 
 		if (property != null) {
 			try {
-				pageContext.getOut().print(property.toString());
+				final StringBuilder b = new StringBuilder();
+				if (title != null) {
+					b.append("<div title='").append(title).append("'>");
+				}
+				b.append(property);
+				if (title != null) {
+					b.append("</div>");
+				}
+				pageContext.getOut().print(b.toString());
 			}
 			catch (IOException e) {
 				throw new JspException(e);
@@ -121,6 +138,10 @@ public class JspTagInfra extends BodyTagSupport {
 
 	public void setEntityPropertyName(String entityPropertyName) {
 		this.entityPropertyName = entityPropertyName;
+	}
+
+	public void setEntityPropertyTitle(String entityPropertyTitle) {
+		this.entityPropertyTitle = entityPropertyTitle;
 	}
 
 	public void setService(ServiceInfrastructureService service) {

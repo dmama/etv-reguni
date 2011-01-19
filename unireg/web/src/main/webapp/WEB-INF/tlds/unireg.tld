@@ -168,6 +168,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>la propriété de l'entité à afficher (nomMinuscule/dateDebutValidite/...)</description>
 		</attribute>
+		<attribute>
+			<name>entityPropertyTitle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la propriété de l'entité à afficher dans un tooltip</description>
+		</attribute>
 	</tag>
 
 	<tag>
