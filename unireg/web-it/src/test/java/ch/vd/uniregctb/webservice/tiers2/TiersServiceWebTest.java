@@ -1517,8 +1517,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresse = pm.getAdresseEnvoi();
 		assertNotNull(adresse);
 
-		assertEquals("Société immobilière de la", trimValiPattern(adresse.getLigne1()));
-		assertEquals("Place centrale S.A. Penthalaz", trimValiPattern(adresse.getLigne2()));
+		assertEquals("Société immobilière de", trimValiPattern(adresse.getLigne1()));
+		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLigne2()));
 		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
 		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLigne4()));
 		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLigne5()));
@@ -1544,11 +1544,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(adresse);
 
 		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLigne1()));
-		assertEquals("en liquidation", trimValiPattern(adresse.getLigne2()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne3()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne4()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne5()));
-		assertNull(adresse.getLigne6());
+		assertEquals("", trimValiPattern(adresse.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne4()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne5()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne6()));
 		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 	}
 }

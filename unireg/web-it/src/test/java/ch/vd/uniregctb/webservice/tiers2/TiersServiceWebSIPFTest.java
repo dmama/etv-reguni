@@ -1,13 +1,42 @@
 package ch.vd.uniregctb.webservice.tiers2;
 
-import ch.vd.uniregctb.webservices.tiers2.*;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import ch.vd.uniregctb.webservices.tiers2.Adresse;
+import ch.vd.uniregctb.webservices.tiers2.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers2.Assujettissement;
+import ch.vd.uniregctb.webservices.tiers2.Capital;
+import ch.vd.uniregctb.webservices.tiers2.CompteBancaire;
+import ch.vd.uniregctb.webservices.tiers2.EtatPM;
+import ch.vd.uniregctb.webservices.tiers2.EvenementPM;
+import ch.vd.uniregctb.webservices.tiers2.ForFiscal;
+import ch.vd.uniregctb.webservices.tiers2.FormatNumeroCompte;
+import ch.vd.uniregctb.webservices.tiers2.FormeJuridique;
+import ch.vd.uniregctb.webservices.tiers2.GenreImpot;
+import ch.vd.uniregctb.webservices.tiers2.GetTiers;
+import ch.vd.uniregctb.webservices.tiers2.GetTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.GetTiersPeriode;
+import ch.vd.uniregctb.webservices.tiers2.MotifRattachement;
+import ch.vd.uniregctb.webservices.tiers2.PersonneMorale;
+import ch.vd.uniregctb.webservices.tiers2.PersonneMoraleHisto;
+import ch.vd.uniregctb.webservices.tiers2.RegimeFiscal;
+import ch.vd.uniregctb.webservices.tiers2.SearchEvenementsPM;
+import ch.vd.uniregctb.webservices.tiers2.Siege;
+import ch.vd.uniregctb.webservices.tiers2.TiersPart;
+import ch.vd.uniregctb.webservices.tiers2.TypeAffranchissement;
+import ch.vd.uniregctb.webservices.tiers2.TypeAssujettissement;
+import ch.vd.uniregctb.webservices.tiers2.TypeAutoriteFiscale;
+import ch.vd.uniregctb.webservices.tiers2.TypeSiege;
+import ch.vd.uniregctb.webservices.tiers2.UserLogin;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Classe de test et d'exemple d'utilisation du web-service PM à l'usage de SIPF.
@@ -61,7 +90,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
 		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertNull(trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		// Récupération des informations des fors fiscaux
@@ -123,7 +152,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
 		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertNull(trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		// Récupération du capital
@@ -445,7 +474,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
 		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertNull(trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		final Adresse adresseCourrier = pm.getAdresseCourrier();
@@ -468,10 +497,10 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLigne4()));
-		assertNull(adresseEnvoi.getLigne5());
+		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLigne4()));
+		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLigne5()));
 		assertNull(adresseEnvoi.getLigne6());
 		assertTrue(adresseEnvoi.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
@@ -496,7 +525,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("R. Borgo", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("JAL HOLDING", trimValiPattern(pm.getDesignationAbregee()));
 		assertEquals("Jal holding S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertNull(trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		final Adresse adresseCourrier = pm.getAdresseCourrier();
@@ -519,11 +548,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLigne4()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLigne5()));
-		assertNull(adresseEnvoi.getLigne6());
+		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLigne4()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLigne5()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLigne6()));
 		assertTrue(adresseEnvoi.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 	}
@@ -548,9 +577,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Fonds prévoyance en faveur du", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("personnel Sté électrique", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("intercommunale de la Côte", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("intercommunale de la C", trimValiPattern(adresseEnvoi.getLigne3()));
 		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLigne4()));
 		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLigne5()));
 		assertNull(adresseEnvoi.getLigne6());
@@ -573,8 +602,8 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(37L, pm.getNumero());
 		assertEquals("Fiduciaire Pierre Terrier", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(pm.getRaisonSociale1()));
-		assertNull(trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("Fiber Seal (Romandie)", trimValiPattern(pm.getRaisonSociale1()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		// Récupération des adresses de domicile (pour le contentieux)
@@ -596,11 +625,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicileFormattee);
-		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adresseDomicileFormattee.getLigne1()));
-		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLigne2()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLigne3()));
-		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLigne4()));
-		assertNull(adresseDomicileFormattee.getLigne5());
+		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adresseDomicileFormattee.getLigne1()));
+		assertEquals("", trimValiPattern(adresseDomicileFormattee.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLigne3()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLigne4()));
+		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLigne5()));
 		assertNull(adresseDomicileFormattee.getLigne6());
 		assertTrue(adresseDomicileFormattee.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseDomicileFormattee.getTypeAffranchissement());
@@ -624,11 +653,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
 		assertNotNull(adressePoursuiteFormattee);
-		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
-		assertEquals("en liquidation", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
-		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
-		assertNull(adressePoursuiteFormattee.getLigne5());
+		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
+		assertEquals("", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
+		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLigne5()));
 		assertNull(adressePoursuiteFormattee.getLigne6());
 		assertTrue(adressePoursuiteFormattee.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adressePoursuiteFormattee.getTypeAffranchissement());
@@ -659,7 +688,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
 		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertNull(trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		// Siege actif
@@ -748,7 +777,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
 		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertNull(trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		final List<Assujettissement> lic = pm.getAssujettissementsLIC();
@@ -788,11 +817,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseCourrier = pm.getAdresseEnvoi();
 		assertNotNull(adresseCourrier);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseCourrier.getLigne1())); // <-- raison sociale ligne 1
-		assertEquals("en liquidation", trimValiPattern(adresseCourrier.getLigne2())); // <-- raison sociale ligne 3
-		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne3());
-		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne4());
-		assertEquals("1003 Lausanne", adresseCourrier.getLigne5());
-		assertNull(adresseCourrier.getLigne6());
+		assertEquals("", trimValiPattern(adresseCourrier.getLigne2())); // <-- raison sociale ligne 2
+		assertEquals("en liquidation", trimValiPattern(adresseCourrier.getLigne3())); // <-- raison sociale ligne 3
+		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne4());
+		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne5());
+		assertEquals("1003 Lausanne", adresseCourrier.getLigne6());
 		assertTrue(adresseCourrier.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseCourrier.getTypeAffranchissement());
 		assertNull(adresseCourrier.getSalutations());
@@ -801,11 +830,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseDomicile = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicile);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseDomicile.getLigne1())); // <-- raison sociale ligne 1
-		assertEquals("en liquidation", trimValiPattern(adresseDomicile.getLigne2())); // <-- raison sociale ligne 3
-		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne3());
-		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne4());
-		assertEquals("1006 Lausanne", adresseDomicile.getLigne5());
-		assertNull(adresseDomicile.getLigne6());
+		assertEquals("", trimValiPattern(adresseDomicile.getLigne2())); // <-- raison sociale ligne 2
+		assertEquals("en liquidation", trimValiPattern(adresseDomicile.getLigne3())); // <-- raison sociale ligne 3
+		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne4());
+		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne5());
+		assertEquals("1006 Lausanne", adresseDomicile.getLigne6());
 		assertTrue(adresseDomicile.isIsSuisse());
 		assertNull(adresseDomicile.getSalutations());
 		assertEquals("Madame, Monsieur", adresseDomicile.getFormuleAppel());
