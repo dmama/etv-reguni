@@ -200,7 +200,7 @@ public interface AdresseService {
 	 * @param status
 	 * @return
 	 */
-	ResolutionAdresseResults ResoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status);
+	ResolutionAdresseResults resoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status);
 
 	/**
 	 * Retourne uniquement les adresses de source purement fiscale stocké en base

@@ -11,16 +11,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
-import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -302,6 +299,17 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse.setNumeroPostalLocalite(numeroPostalEtLocalite);
 		adresse.setNumeroOfsPays(pays.getNoOFS());
 		adresse = (AdresseEtrangere) tiersService.addAndSave(tiers, adresse);
+		return adresse;
+	}
+
+	protected AdresseAutreTiers addAdresseAutreTiers(Tiers tiers, TypeAdresseTiers usage, RegDate debut, RegDate fin, TypeAdresseTiers autreType, Tiers autreTiers) {
+		AdresseAutreTiers adresse = new AdresseAutreTiers();
+		adresse.setDateDebut(debut);
+		adresse.setDateFin(fin);
+		adresse.setUsage(usage);
+		adresse.setAutreTiersId(autreTiers.getId());
+		adresse.setType(autreType);
+		adresse = (AdresseAutreTiers) tiersService.addAndSave(tiers, adresse);
 		return adresse;
 	}
 

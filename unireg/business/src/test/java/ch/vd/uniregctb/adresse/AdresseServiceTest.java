@@ -6095,4 +6095,50 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [UNIREG-3206] Vérifie que  - dans le cas d'une adresse de type 'autre tiers' appartenant à un tiers A et pointant bers le tiers B - l'adresse générique retournée expose bien l'id de l'adresse
+	 * 'autre tiers' du tiers A, et non pas l'id de l'adresse fiscale du tiers B.
+	 */
+	@Test
+	public void testGetAdressesFiscalesContribuableAvecAdresseAutreTiers() throws Exception {
+
+		class Ids {
+			Long jean;
+			Long jacques;
+			Long adresseJean;
+			Long adresseJacques;
+		}
+		final Ids ids = new Ids();
+
+		/**
+		 * Crée deux contribuable Jean (A) et Jacques (B) et ajoute une adresse 'autre tiers' sur Jean qui pointe vers Jacques.
+		 */
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique jean = addNonHabitant("Jean", "A", date(1980, 1, 1), Sexe.MASCULIN);
+				addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1980, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+				ids.jean = jean.getId();
+
+				final PersonnePhysique jacques = addNonHabitant("Jacques", "B", date(1980, 1, 1), Sexe.MASCULIN);
+				final AdresseSuisse adresseJacques = addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1980, 1, 1), null, MockRue.CossonayVille.CheminDeRiondmorcel);
+				ids.jacques = jacques.getId();
+				ids.adresseJacques = adresseJacques.getId();
+
+				final AdresseAutreTiers adresseJean = addAdresseAutreTiers(jean, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, TypeAdresseTiers.REPRESENTATION, jacques);
+				ids.adresseJean = adresseJean.getId();
+				return null;
+			}
+		});
+
+		final PersonnePhysique jean = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.jean);
+		assertNotNull(jean);
+
+		// On s'assure que l'id de l'adresse retournée est celui de l'adresse de Jean
+		final AdresseGenerique adresse = adresseService.getAdresseFiscale(jean, TypeAdresseFiscale.COURRIER, null, true);
+		assertNotNull(adresse);
+		assertEquals(ids.adresseJean, adresse.getId());
+	}
 }

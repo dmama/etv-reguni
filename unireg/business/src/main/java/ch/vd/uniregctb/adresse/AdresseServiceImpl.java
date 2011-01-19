@@ -1884,7 +1884,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private AdresseGenerique resolveAdresseSurchargee(final Tiers tiers, final AdresseTiers adresseSurchargee, int callDepth, boolean strict)
 			throws AdresseException {
 
-		AdresseGenerique surcharge = null;
+		AdresseGenerique surcharge;
 
 		if (adresseSurchargee instanceof AdresseSupplementaire) {
 			final AdresseSupplementaire a = (AdresseSupplementaire) adresseSurchargee;
@@ -1927,7 +1927,7 @@ public class AdresseServiceImpl implements AdresseService {
 					throw new AdressesResolutionException(
 							"Le tiers n°" + autreTiers.getId() + " ne possède pas d'adresse " + type + " alors que le tiers n°" + tiers.getId() + " pointe vers cette adresse.");
 				}
-				surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, Source.FISCALE, false, a.isAnnule());
+				surcharge = new AdresseAutreTiersAdapter(a, autreAdresse, debut, fin, Source.FISCALE, false, a.isAnnule());
 			}
 			catch (AdressesResolutionException e) {
 				if (adresseSurchargee.isAnnule()) {
@@ -2375,7 +2375,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return serviceInfra.getTypeAffranchissement(noPays);
 	}
 
-	public ResolutionAdresseResults ResoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status) {
+	public ResolutionAdresseResults resoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status) {
 		ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this, adresseTiersDAO, serviceInfra, transactionManager);
 		return processor.run(dateTraitement, nbThreads, status);
 	}

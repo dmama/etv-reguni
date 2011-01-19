@@ -49,7 +49,7 @@ public class ResolutionAdresseJob extends JobDefinition{
 
 		// Exécution du job dans une transaction.
 		final StatusManager status = getStatusManager();
-		final ResolutionAdresseResults results = adresseService.ResoudreAdresse(dateTraitement, nbThreads, status);
+		final ResolutionAdresseResults results = adresseService.resoudreAdresse(dateTraitement, nbThreads, status);
 		final ResolutionAdresseRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
