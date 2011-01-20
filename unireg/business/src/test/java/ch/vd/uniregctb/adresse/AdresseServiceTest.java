@@ -2318,6 +2318,118 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
+	 * [UNIREG-3203] Cas d'un couple avec la personne principale sous conseil légal pendant une certaine période.
+	 * <p/>
+	 * <pre>
+	 *                               +--------------------------------------------------------------------------
+	 * Adresse civile principal:     | Lausanne
+	 *                               +--------------------------------------------------------------------------
+	 *                               ¦- 2000.01.01
+	 *                               ¦
+	 *                               +--------------------------------------------------------------------------
+	 * Adresse civile conjoint:      | Bex
+	 *                               +--------------------------------------------------------------------------
+	 *                               ¦- 2000.01.01
+	 *                               ¦
+	 *                               +--------------------------------------------------------------------------
+	 * Adresse conseiller légal:     | Cossonay-Ville
+	 *                               +--------------------------------------------------------------------------
+	 *                               ¦- 1985.04.01
+	 *                               ¦
+	 *                               ¦                            +----------------------------+
+	 * Conseil légal du principal:   ¦                            | Tutelle                    |
+	 *                               ¦                            +----------------------------+
+	 *                               ¦                            ¦- 2004.01.01    2007.12.31 -¦
+	 *                               ¦                            ¦                            ¦
+	 *                               +----------------------------+----------------------------+----------------
+	 * Adresse ménage résultante:    | Lausanne                   | Bex                        | Lausanne
+	 *                               +----------------------------+----------------------------+----------------
+	 *                               ¦- 2000.01.01    2003.12.31 -¦- 2004.01.01    2007.12.31 -¦- 2008.01.01
+	 * </pre>
+	 */
+	@Test
+	public void testGetAdressesFiscalesHistoCoupleConseilLegalPrincipal() throws Exception {
+
+		final long noPrincipal = 2;
+		final long noConjoint = 3;
+		final long noTuteur = 5;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// la pupille
+				MockIndividu paul = addIndividu(noPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+
+				// le conjoint
+				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
+				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				marieIndividus(paul, jeanne, date(2000, 1, 1));
+
+				// le tuteur
+				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
+				addAdresse(jean, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1985, 4, 1), null);
+			}
+		});
+
+		final class Numeros {
+			long numeroContribuablePrincipal;
+			long numeroContribuableConjoint;
+			long numeroContribuableMenage;
+		}
+		final Numeros numeros = new Numeros();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Crée le ménage
+				final PersonnePhysique conjoint = addHabitant(noConjoint);
+				final PersonnePhysique principal = addHabitant(noPrincipal);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 1, 1), null);
+				final MenageCommun menage = ensemble.getMenage();
+				numeros.numeroContribuableMenage = menage.getNumero();
+				numeros.numeroContribuablePrincipal = principal.getNumero();
+				numeros.numeroContribuableConjoint = conjoint.getNumero();
+
+				// Crée le tuteur
+				final PersonnePhysique tuteur = addHabitant(noTuteur);
+
+				// Crée la tutelle proprement dites
+				addConseilLegal(principal, tuteur, date(2004, 1, 1), date(2007, 12, 31));
+				return null;
+			}
+		});
+
+		// Vérification des adresses du ménage
+		{
+			final Tiers menage = tiersService.getTiers(numeros.numeroContribuableMenage);
+			assertNotNull(menage);
+
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(menage, true);
+			assertNotNull(adresses);
+
+			assertEquals(3, adresses.courrier.size());
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", Source.CIVILE, true, adresses.courrier.get(0));
+			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Bex", Source.CONJOINT, false, adresses.courrier.get(1));
+			assertAdresse(date(2008, 1, 1), null, "Lausanne", Source.CIVILE, true, adresses.courrier.get(2));
+
+			assertEquals(1, adresses.representation.size());
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adresses.representation.get(0));
+
+			assertEquals(1, adresses.poursuite.size());
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adresses.poursuite.get(0));
+
+			assertAdressesEquals(adresses.poursuite, adresses.domicile);
+
+			assertEmpty(adresses.poursuiteAutreTiers); // [UNIREG-3203] pas d'adresse de poursuite autre tiers parce que le conjoint remplace le principal dans ce cas-là
+		}
+	}
+
+	/**
 	 * Cas d'un couple avec le conjoint sous tutelle pendant une certaine période.
 	 *
 	 * <pre>
@@ -4467,8 +4579,8 @@ public class AdresseServiceTest extends BusinessTest {
 				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
 				MenageCommun menage = ensemble.getMenage();
 
-				addConseilLegal(principal, conseiller, date(2007, 1, 1));
-				addConseilLegal(conjoint, conseiller, date(2007, 1, 1));
+				addConseilLegal(principal, conseiller, date(2007, 1, 1), null);
+				addConseilLegal(conjoint, conseiller, date(2007, 1, 1), null);
 
 				return menage.getNumero();
 			}
@@ -4546,7 +4658,7 @@ public class AdresseServiceTest extends BusinessTest {
 				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
 				MenageCommun menage = ensemble.getMenage();
 
-				addConseilLegal(principal, conseiller, date(2007, 1, 1));
+				addConseilLegal(principal, conseiller, date(2007, 1, 1), null);
 
 				return menage.getNumero();
 			}

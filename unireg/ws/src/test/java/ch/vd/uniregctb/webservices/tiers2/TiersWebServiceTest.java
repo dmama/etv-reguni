@@ -245,6 +245,89 @@ public class TiersWebServiceTest extends WebserviceTest {
 	}
 
 	/**
+	 * [UNIREG-3203] Cas du contribuable n°497.050.02
+	 */
+	@Test
+	public void testGetAdressesTiersAvecConseilLegal() throws Exception {
+
+		class Ids {
+			Long jeandaniel;
+			Long myriam;
+			Long menage;
+			Long conseiller;
+		}
+		final Ids ids = new Ids();
+
+		// Crée un couple dont le mari est sous tutelle
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final RegDate dateMariage = date(1976, 1, 1);
+
+				final PersonnePhysique jeandaniel = addNonHabitant("Jean-Daniel", "Guex-Martin", RegDate.get(1947, 1, 11), Sexe.MASCULIN);
+				ids.jeandaniel = jeandaniel.getNumero();
+				addAdresseSuisse(jeandaniel, TypeAdresseTiers.COURRIER, date(1947, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+
+				final PersonnePhysique myriam = addNonHabitant("Myriam", "Guex-Martin", RegDate.get(1954, 1, 1), Sexe.FEMININ);
+				ids.myriam = myriam.getNumero();
+				addAdresseSuisse(myriam, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueDeMarcelin);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeandaniel, myriam, dateMariage, null);
+				ids.menage = ensemble.getMenage().getNumero();
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				final PersonnePhysique conseiller = addNonHabitant("Philippe", "Rossy", RegDate.get(1947, 1, 1), Sexe.MASCULIN);
+				ids.conseiller = conseiller.getNumero();
+				addAdresseSuisse(conseiller, TypeAdresseTiers.COURRIER, date(1947, 1, 11), null, MockRue.Lausanne.BoulevardGrancy);
+
+				addConseilLegal(jeandaniel, conseiller, date(2007, 9, 11), null);
+
+				return null;
+			}
+		});
+
+		{
+			final GetTiers params = new GetTiers();
+			params.login = login;
+			params.tiersNumber = ids.menage;
+			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+
+			final MenageCommun menage = (MenageCommun) service.getTiers(params);
+			assertNotNull(menage);
+
+			assertNotNull(menage.adresseCourrier);
+			assertAdresse(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.adresseCourrier); // adresse de madame (puisque monsieur est sous conseil légal)
+
+			assertNotNull(menage.adressePoursuite);
+ 			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.adressePoursuite); // adresse de monsieur (non-impacté par le conseil légal)
+
+			assertNull(menage.adressePoursuiteAutreTiers); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
+		}
+
+		{
+			final GetTiersHisto params = new GetTiersHisto();
+			params.login = login;
+			params.tiersNumber = ids.menage;
+			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+
+			final MenageCommunHisto menage = (MenageCommunHisto) service.getTiersHisto(params);
+			assertNotNull(menage);
+
+			assertNotNull(menage.adressesCourrier);
+			assertEquals(2, menage.adressesCourrier.size());
+			assertAdresse(new Date(1947, 1, 1), new Date(2007, 9, 10), "Av de Beaulieu", "Lausanne", menage.adressesCourrier.get(0)); // adresse de monsieur
+			assertAdresse(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.adressesCourrier.get(1)); // adresse de madame (puisque monsieur est sous conseil légal)
+
+			assertNotNull(menage.adressesPoursuite);
+			assertEquals(1, menage.adressesPoursuite.size());
+			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.adressesPoursuite.get(0)); // adresse de monsieur (non-impacté par le conseil légal)
+
+			assertEmpty(menage.adressesPoursuiteAutreTiers); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
+		}
+	}
+
+	/**
 	 * [UNIREG-2227] Cas du contribuable n°100.864.90 : on s'assure que la source de l'adresse 'poursuite autre tiers' est bien CURATELLE
 	 * dans le cas d'une curatelle dont les adresses de début et de fin sont nulles.
 	 */

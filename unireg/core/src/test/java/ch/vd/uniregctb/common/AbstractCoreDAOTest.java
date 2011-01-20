@@ -58,7 +58,6 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -903,8 +902,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected ConseilLegal addConseilLegal(PersonnePhysique pupille, Tiers conseiller, RegDate dateDebut) {
-		ConseilLegal rapport = new ConseilLegal(dateDebut, null, pupille, conseiller, null);
+	protected ConseilLegal addConseilLegal(PersonnePhysique pupille, Tiers conseiller, RegDate dateDebut, RegDate dateFin) {
+		ConseilLegal rapport = new ConseilLegal(dateDebut, dateFin, pupille, conseiller, null);
 		rapport = (ConseilLegal) hibernateTemplate.merge(rapport);
 		conseiller.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);

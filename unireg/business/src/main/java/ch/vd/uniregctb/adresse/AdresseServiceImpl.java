@@ -1099,7 +1099,7 @@ public class AdresseServiceImpl implements AdresseService {
 			// [UNIREG-1808]
 			adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, null, null, callDepth + 1, strict);
 			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
-			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesConseil, null, null);
+			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesConseil), null, null); // [UNIREG-3203]
 			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesCuratelle), null, null);
 			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesTuteur), null, null);
 		}
