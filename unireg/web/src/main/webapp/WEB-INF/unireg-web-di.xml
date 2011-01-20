@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="abstractDeclarationImpotController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.di.AbstractDeclarationImpotController">
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="diMapHelper" ref="diMapHelper" />
+		<property name="servletService" ref="servletService" />
+	</bean>
+
+	<bean id="diEditValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditValidator" >
+		<property name="diDAO" ref="diDAO" />
+	</bean>
+	
+	<bean id="diEditController" class="ch.vd.uniregctb.di.DeclarationImpotEditController" parent="abstractDeclarationImpotController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="di/edit/edit" />
+		<property name="successView" value="redirect:/di/list.do" />
+		<property name="validator" ref="diEditValidator" />
+		<property name="diEditManager" ref="diEditManager" />
+		<property name="printPCLManager" ref="printPCLManager" />
+	</bean>
+	
+	<bean id="declarationImpotEditContribuableValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditContribuableValidator" >
+		<property name="diEditManager" ref="diEditManager" />
+	</bean>
+	
+	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >
+		<property name="diDAO" ref="diDAO" />
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="diService" ref="diService" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
+		<property name="delaisService" ref="delaisService" />
+		<property name="parametres" ref="parametreAppService" />
+		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
+		<property name="validationService" ref="validationService" />
+	</bean>
+
+	<bean id="diEditDelaiController" class="ch.vd.uniregctb.di.DeclarationImpotEditDelaiController" parent="abstractDeclarationImpotController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.delai.DelaiDeclarationView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="di/edit/delai" />
+		<property name="successView" value="common/refresh-parent" />
+		<property name="diEditManager" ref="diEditManager" />
+		<property name="validator" ref="diEditDelaiValidator" />
+	</bean>
+
+	<bean id="diImpressionController" class="ch.vd.uniregctb.di.DeclarationImpotImpressionController" parent="abstractDeclarationImpotController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.di.view.DeclarationImpotImpressionView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="di/edit/impression" />
+		<property name="successView" value="common/refresh-parent" />
+		<property name="diEditManager" ref="diEditManager" />
+		<property name="printPCLManager" ref="printPCLManager" />
+		<property name="validator" ref="diImpressionValidator" />
+	</bean>
+
+	<bean id="diImpressionValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotImpressionValidator" >
+	</bean>
+
+	<bean id="diMapHelper" class="ch.vd.uniregctb.di.DeclarationImpotMapHelperImpl">
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+	</bean>
+	
+	<bean id="diEditDelaiValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditDelaiValidator" />
+
+	<bean id="declarationCopieConfomeController" class="ch.vd.uniregctb.declaration.CopieConformeController">
+		<property name="sessionForm" value="true" />
+		<property name="servletService" ref="servletService" />
+		<property name="copieConformeManager" ref="copieConformeManager" />
+		<property name="successView" value="../admin/tiersImport.do" /> <!-- msi: temp hack -->
+	</bean>
+
+	<bean id="copieConformeManager" class="ch.vd.uniregctb.declaration.CopieConformeManagerImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="diService" ref="diService"/>
+		<property name="lrService" ref="lrService"/>
+	</bean>
+
+</beans>

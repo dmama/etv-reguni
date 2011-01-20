@@ -1,0 +1,95 @@
+th.sortable {
+	cursor: pointer;
+	background-repeat: no-repeat;
+	background-image: url(arrow_off.png);
+	background-position: right;
+	padding-top: 0;
+	padding-right: 20px;
+	padding-bottom: 1px;
+	padding-left: 4px;
+	color: #336CA6;
+}
+
+th.sortable:hover {
+	color: #A66C33;
+	text-decoration: none;
+}
+
+th.sorted {
+	background-repeat: no-repeat;
+	background-position: right;
+}
+
+th.order1 {
+	background-image: url(arrow_down.png);
+}
+
+th.order2 {
+	background-image: url(arrow_up.png);
+}
+
+tr.odd {
+	
+}
+
+tr.even {
+	background-color: #eff3fe;
+}
+
+tr.strike td {
+	text-decoration:line-through;	
+}
+
+
+tr.horscanton {
+	color: #000080;
+	font-weight: bold;
+	font-style: italic;
+}
+.pageheader {
+	margin-top: 20px;
+	width: 99%;
+}
+
+.pagebanner {
+}
+
+.pagelinks {
+	text-align: right;
+}
+
+.exportlinks {
+	color: #999999;
+}
+
+.exportlinks a {
+	color: #999999;
+}
+
+.export {
+	padding: 0 4px 1px 20px;
+	display: inline;
+	cursor: pointer;
+	background-repeat: no-repeat;
+}
+
+.excel {
+	background-image: url(excel.png);
+}
+
+.pdf {
+	background-image: url(pdf.png);
+}
+
+.pdf-grayed {
+	background-image: url(pdf-grayed.png);
+}
+
+.json {
+	visibility: hidden;
+}
+
+td.action {
+	text-align: center;
+}
+

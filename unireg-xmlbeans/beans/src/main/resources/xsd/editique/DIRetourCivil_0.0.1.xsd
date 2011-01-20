@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version  0.0.1  - 16.11.10 :  - BNM - Factorisé les éléments communs au DI avec adresse de retour -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DIRetour_0.0.2.xsd" />
+
+	<xs:complexType name="DIRetourCivil">
+		<!-- Attributs communs aux DIs avec adresses de retour -->
+		<xsd:complexContent>
+			<xsd:extension base="DIRetour">
+				<xs:sequence>
+					<xs:element name="Contrib1">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="INDETATCIVIL1" type="typCdata">
+									<xs:annotation>
+										<xs:documentation>Etat civil de l'individu1</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="INDNOMPRENOM1" type="typCdata">
+									<xs:annotation>
+										<xs:documentation>Prénom et Nom de l'individu1</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="INDDATENAISS1" type="typDatAAAAMMJJ">
+									<xs:annotation>
+										<xs:documentation>Date de naissance de l'individu1</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="NAVS13" type="xs:string">
+									<xs:annotation>
+										<xs:documentation>Num AVS</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Contrib2">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="INDETATCIVIL2" type="typCdata">
+									<xs:annotation>
+										<xs:documentation>Etat civil de l'individu2</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="INDNOMPRENOM2" type="typCdata">
+									<xs:annotation>
+										<xs:documentation>Prénom et Nom de l'individu2</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="INDDATENAISS2" type="typDatAAAAMMJJ">
+									<xs:annotation>
+										<xs:documentation>Date de naissance de l'individu2</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="NAVS13" type="xs:string">
+									<xs:annotation>
+										<xs:documentation>Num AVS</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xs:complexType>
+
+</xs:schema>

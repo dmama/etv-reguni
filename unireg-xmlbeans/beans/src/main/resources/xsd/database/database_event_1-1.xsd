@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with vim by DSI (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/databaseEvent-v1.1"
+    targetNamespace="http://www.vd.ch/fiscalite/registre/databaseEvent-v1.1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:complexType name="dataEvent">
+		<xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="dataChangeEvent">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="dataEvent">
+					<xs:sequence>
+						<xs:element name="id" type="xs:long"/>
+						<xs:element name="type" type="DataType"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="databaseTruncateEvent">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="dataEvent">
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="databaseLoadEvent">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="dataEvent">
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:simpleType name="DataType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="TIERS"/>
+			<xs:enumeration value="INDIVIDU"/>
+			<xs:enumeration value="DROIT_ACCES"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

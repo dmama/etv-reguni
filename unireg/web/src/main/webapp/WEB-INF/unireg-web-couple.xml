@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="personnePhysiqueListController" class="ch.vd.uniregctb.couple.PersonnePhysiqueListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.couple.view.CoupleListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/couple/pp/list" />
+		<property name="successView" value="list-pp.do" />
+		<property name="coupleListManager" ref="coupleListManager" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="coupleRecapController" class="ch.vd.uniregctb.couple.CoupleRecapController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.couple.view.CoupleRecapView" />
+		<property name="commandName" value="command" />
+		<property name="coupleRecapManager" ref="coupleRecapManager" />
+		<property name="formView" value="tiers/edition/couple/recap" />
+		<property name="successView" value="/tiers/edit.do" />
+		<property name="validator" ref="coupleRecapValidator" />
+	</bean>
+	
+	<bean id="coupleRecapPickerFilterFactory" class="ch.vd.uniregctb.couple.CoupleRecapPickerFilterFactory">
+		<property name="tiersDAO" ref="tiersDAO"/>
+	</bean>
+
+	<bean id="coupleRecapManager" class="ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl" parent="tiersManager">
+		<property name="metierService" ref="metierService" />
+		<property name="coupleHelper" ref="coupleHelper" />
+		<property name="droitAccesService" ref="droitAccesService" />
+	</bean>
+
+	<bean id="coupleListManager" class="ch.vd.uniregctb.couple.manager.CoupleListManagerImpl">
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="coupleRecapValidator" class="ch.vd.uniregctb.couple.validator.CoupleRecapValidator" >
+		<property name="tiersService" ref="tiersService" />
+		<property name="metierService" ref="metierService" />
+		<property name="coupleHelper" ref="coupleHelper" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
+	<bean id="annulationCoupleListController" class="ch.vd.uniregctb.annulation.couple.AnnulationCoupleListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="annulation/couple/list" />
+		<property name="successView" value="list.do" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="annulationCoupleRecapController" class="ch.vd.uniregctb.annulation.couple.AnnulationCoupleRecapController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.annulation.couple.view.AnnulationCoupleRecapView" />
+		<property name="commandName" value="command" />
+		<property name="annulationCoupleRecapManager" ref="annulationCoupleRecapManager" />
+		<property name="formView" value="annulation/couple/recap" />
+		<property name="successView" value="/tiers/edit.do" />
+	</bean>
+	
+	<bean id="annulationCoupleRecapManager" class="ch.vd.uniregctb.annulation.couple.manager.AnnulationCoupleRecapManagerImpl"  >
+		<property name="metierService" ref="metierService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+	</bean>
+
+	<bean id="coupleHelper" class="ch.vd.uniregctb.couple.CoupleHelper">
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+</beans>

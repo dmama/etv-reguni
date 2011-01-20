@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+        					http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+							http://www.springframework.org/schema/jms
+							http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.EvenementCivilSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtCivil}" />
+	</bean>
+
+	<!-- Evt Civil -->
+	<bean id="evtCivilListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtCivil.consumers}" />
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destinationName" value="${extprop.jms.queue.evtCivil}" />
+		<property name="messageListener" ref="evtCivilListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivil.enabled}" />
+	</bean>
+
+	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.jms.EvenementCivilListener" parent="esbMessageListener">
+		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
+		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessorImpl">
+		<property name="delaiPriseEnCompte" value="${extprop.evtCivil.acknowledgementDelay}"/>
+		<property name="fetchAwaitingEventsOnStart" value="true"/>
+		<property name="evenementCivilDAO" ref="evenementCivilDAO"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
+	</bean>
+
+</beans>

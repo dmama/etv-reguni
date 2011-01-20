@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Dispatcher des handlers des evenements civil -->
+	<bean id="evenementCivilProcessor" class="ch.vd.uniregctb.evenement.engine.EvenementCivilProcessorImpl">
+		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="dataEventService" ref="dataEventService"/>
+	</bean>
+
+	<!-- Les Handlers d'evt civils -->
+	<bean id="evenementHandler" class="ch.vd.uniregctb.evenement.common.EvenementCivilHandler" abstract="true">
+		<property name="service" ref="tiersService" />
+		<property name="metier" ref="metierService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="serviceCivil" ref="serviceCivilService"/>
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="registrar" ref="evenementCivilProcessor" />
+	</bean>
+	
+	<bean id="abstractChangementHandler" class="ch.vd.uniregctb.evenement.changement.AbstractChangementHandler" parent="evenementHandler" abstract="true">
+		<property name="indexer" ref="globalTiersIndexer" />
+	</bean>
+	
+	<!-- Gestionnaire d'evenements: les differents handlers -->
+	<!--
+	<bean id="adoptionHandler" class="ch.vd.uniregctb.evenement.adoption.AdoptionHandler" parent="evenementHandler" />
+	-->
+	<bean id="arriveeHandler" class="ch.vd.uniregctb.evenement.arrivee.ArriveeHandler" parent="evenementHandler">
+		<property name="serviceCivilService" ref="serviceCivilService"/>
+	</bean>
+	<bean id="changementNomHandler" class="ch.vd.uniregctb.evenement.changement.nom.ChangementNomHandler" parent="abstractChangementHandler" />
+	<bean id="changementSexeHandler" class="ch.vd.uniregctb.evenement.changement.sexe.ChangementSexeHandler" parent="abstractChangementHandler" />
+	<bean id="correctionDateNaissanceHandler" class="ch.vd.uniregctb.evenement.changement.dateNaissance.CorrectionDateNaissanceHandler" parent="abstractChangementHandler" />
+	<bean id="changementIdentificateurHandler" class="ch.vd.uniregctb.evenement.changement.identificateur.ChangementIdentificateurHandler" parent="abstractChangementHandler" />
+	
+	<!--
+	<bean id="changementNationaliteHandler" class="ch.vd.uniregctb.evenement.changement.nationalite.ChangementNationaliteHandler" parent="evenementHandler" />
+	-->
+	<bean id="veuvageHandler" class="ch.vd.uniregctb.evenement.veuvage.VeuvageHandler" parent="evenementHandler" />
+	<bean id="decesHandler" class="ch.vd.uniregctb.evenement.deces.DecesHandler" parent="evenementHandler" />
+	<bean id="departHandler" class="ch.vd.uniregctb.evenement.depart.DepartHandler" parent="evenementHandler" />
+	<bean id="demenagementHandler" class="ch.vd.uniregctb.evenement.demenagement.DemenagementHandler" parent="evenementHandler" />
+	<bean id="divorceHandler" class="ch.vd.uniregctb.evenement.divorce.DivorceHandler" parent="evenementHandler" />
+	<bean id="leveeTutelleHandler" class="ch.vd.uniregctb.evenement.tutelle.LeveeTutelleHandler" parent="evenementHandler" />
+	<bean id="mariageHandler" class="ch.vd.uniregctb.evenement.mariage.MariageHandler" parent="evenementHandler" />
+	<bean id="naissanceHandler" class="ch.vd.uniregctb.evenement.naissance.NaissanceHandler" parent="evenementHandler" />
+	
+	<bean id="obtentionPermisCOuNationaliteSuisseHandler" class="ch.vd.uniregctb.evenement.obtentionpermis.ObtentionPermisCOuNationaliteSuisseHandler" parent="evenementHandler" abstract="true">
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+	<bean id="obtentionPermisHandler" class="ch.vd.uniregctb.evenement.obtentionpermis.ObtentionPermisHandler" parent="obtentionPermisCOuNationaliteSuisseHandler" />
+	<bean id="obtentionNationaliteHandler" class="ch.vd.uniregctb.evenement.obtentionpermis.ObtentionNationaliteHandler" parent="obtentionPermisCOuNationaliteSuisseHandler"/>
+	
+	<bean id="reconciliationHandler" class="ch.vd.uniregctb.evenement.reconciliation.ReconciliationHandler" parent="evenementHandler" />
+	<bean id="separationHandler" class="ch.vd.uniregctb.evenement.separation.SeparationHandler" parent="evenementHandler" />
+	<bean id="tutelleHandler" class="ch.vd.uniregctb.evenement.tutelle.TutelleHandler" parent="evenementHandler" />
+	<bean id="testingHandler" class="ch.vd.uniregctb.evenement.testing.TestingHandler" parent="evenementHandler" />
+	<bean id="finNationaliteHandler" class="ch.vd.uniregctb.evenement.fin.nationalite.FinNationaliteHandler" parent="evenementHandler" />
+	<bean id="finPermisHandler" class="ch.vd.uniregctb.evenement.fin.permis.FinPermisHandler" parent="evenementHandler" />
+	<bean id="remiseBlancDateFinNationaliteHandler" class="ch.vd.uniregctb.evenement.changement.nationalite.RemiseBlancDateFinNationaliteHandler" parent="evenementHandler" />
+	<bean id="correctionOrigineHandler" class="ch.vd.uniregctb.evenement.changement.origine.CorrectionOrigineHandler" parent="abstractChangementHandler" />
+	<bean id="modificationAdresseNotificationHandler" class="ch.vd.uniregctb.evenement.changement.adresseNotification.ModificationAdresseNotificationHandler" parent="abstractChangementHandler" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+	</bean>
+
+	<!-- handlers d'annulation -->
+	<bean id="suppressionNationaliteHandler" class="ch.vd.uniregctb.evenement.annulationpermis.SuppressionNationaliteHandler" parent="evenementHandler" />
+	<bean id="annulationPermisHandler" class="ch.vd.uniregctb.evenement.annulationpermis.AnnulationPermisHandler" parent="evenementHandler" />
+	<bean id="annulationTutelleHandler" class="ch.vd.uniregctb.evenement.annulationtutelle.AnnulationTutelleHandler" parent="evenementHandler" />
+	<bean id="annulationLeveeTutelleHandler" class="ch.vd.uniregctb.evenement.annulationtutelle.AnnulationLeveeTutelleHandler" parent="evenementHandler" />
+
+	<!-- handlers d'événements simplement ignorés -->
+	<bean id="declarationEtatCompletIndividuECH99Handler" class="ch.vd.uniregctb.evenement.ignore.DeclarationEtatCompletIndividuECH99Handler" parent="evenementHandler"/>
+	
+	<!-- handlers pas encore finis -->
+	<bean id="correctionDateEtatCivilHandler" class="ch.vd.uniregctb.evenement.changement.dateEtatCivil.CorrectionDateEtatCivilHandler" parent="evenementHandler" />
+	<bean id="annulationDecesHandler" class="ch.vd.uniregctb.evenement.annulation.deces.AnnulationDecesHandler" parent="evenementHandler" />
+	<bean id="annulationMariageHandler" class="ch.vd.uniregctb.evenement.annulation.mariage.AnnulationMariageHandler" parent="evenementHandler" />
+	<bean id="annulationSeparationHandler" class="ch.vd.uniregctb.evenement.annulation.separation.AnnulationSeparationHandler" parent="evenementHandler" />
+	<bean id="annulationReconciliationHandler" class="ch.vd.uniregctb.evenement.annulation.reconciliation.AnnulationReconciliationHandler" parent="evenementHandler" />
+	<bean id="annulationDivorceHandler" class="ch.vd.uniregctb.evenement.annulation.divorce.AnnulationDivorceHandler" parent="evenementHandler" />
+	<bean id="annulationVeuvageHandler" class="ch.vd.uniregctb.evenement.annulation.veuvage.AnnulationVeuvageHandler" parent="evenementHandler" />
+	<bean id="correctionDateObtentionNationaliteHandler" class="ch.vd.uniregctb.evenement.changement.nationalite.CorrectionDateObtentionNationaliteHandler" parent="evenementHandler" />
+	<bean id="correctionDateFinNationaliteHandler" class="ch.vd.uniregctb.evenement.changement.nationalite.CorrectionDateFinNationaliteHandler" parent="evenementHandler" />
+	<bean id="annulationArriveeHandler" class="ch.vd.uniregctb.evenement.annulation.arrivee.AnnulationArriveeHandler" parent="evenementHandler" />
+	<bean id="suppressionIndividuHandler" class="ch.vd.uniregctb.evenement.annulation.individu.SuppressionIndividuHandler" parent="evenementHandler" />
+	<bean id="suppressionDepartHandler" class="ch.vd.uniregctb.evenement.annulation.depart.SuppressionDepartHandler" parent="evenementHandler" />
+	<bean id="correctionConjointHandler" class="ch.vd.uniregctb.evenement.changement.conjoint.CorrectionConjointHandler" parent="evenementHandler" />
+	<bean id="correctionPermisHandler" class="ch.vd.uniregctb.evenement.changement.permis.CorrectionPermisHandler" parent="evenementHandler" />
+	<bean id="correctionDebutValiditePermisHandler" class="ch.vd.uniregctb.evenement.changement.permis.CorrectionDebutValiditePermisHandler" parent="evenementHandler" />
+	<bean id="correctionFinValiditePermisHandler" class="ch.vd.uniregctb.evenement.changement.permis.CorrectionFinValiditePermisHandler" parent="evenementHandler" />
+	<bean id="correctionDateArriveeHandler" class="ch.vd.uniregctb.evenement.changement.arrivee.CorrectionDateArriveeHandler" parent="evenementHandler" />
+	<bean id="correctionDateDepartHandler" class="ch.vd.uniregctb.evenement.changement.depart.CorrectionDateDepartHandler" parent="evenementHandler" />
+	<bean id="CorrectionFiliationHandler" class="ch.vd.uniregctb.evenement.changement.filiation.CorrectionFiliationHandler" parent="abstractChangementHandler" />
+	
+</beans>

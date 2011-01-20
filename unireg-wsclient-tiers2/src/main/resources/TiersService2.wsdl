@@ -1,0 +1,1450 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- version 2.11 -->
+<wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
+				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<wsdl:types>
+		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2"
+				   xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:complexType name="SearchTiers">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element minOccurs="0" name="numero" type="xs:string" />
+					<xs:element minOccurs="0" name="nomCourrier" type="xs:string" />
+					<xs:element minOccurs="0" name="localiteOuPays" type="xs:string" />
+					<xs:element minOccurs="0" name="dateNaissance" type="tns:Date" />
+					<xs:element minOccurs="0" name="numeroAVS" type="xs:string" />
+					<xs:element minOccurs="0" name="noOfsFor" type="xs:int" />
+					<xs:element minOccurs="0" name="forPrincipalActif" type="xs:boolean" />
+					<xs:element minOccurs="0" name="typeRecherche" type="tns:TypeRecherche" />
+					<xs:element minOccurs="0" name="typeTiers" type="tns:TypeTiers" />
+					<xs:element minOccurs="0" name="categorieDebiteur" type="tns:CategorieDebiteur" />
+					<xs:element minOccurs="0" name="tiersActif" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="UserLogin">
+				<xs:sequence>
+					<xs:element name="userId" type="xs:string" />
+					<xs:element name="oid" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Date">
+				<xs:sequence>
+					<xs:element name="year" type="xs:int" />
+					<xs:element name="month" type="xs:int" />
+					<xs:element name="day" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TiersInfo">
+				<xs:sequence>
+					<xs:element name="numero" type="xs:long" />
+					<xs:element minOccurs="0" name="nom1" type="xs:string" />
+					<xs:element minOccurs="0" name="nom2" type="xs:string" />
+					<xs:element minOccurs="0" name="dateNaissance" type="xs:string" />
+					<xs:element minOccurs="0" name="rue" type="xs:string" />
+					<xs:element minOccurs="0" name="npa" type="xs:string" />
+					<xs:element minOccurs="0" name="localite" type="xs:string" />
+					<xs:element minOccurs="0" name="pays" type="xs:string" />
+					<xs:element minOccurs="0" name="type" type="tns:TypeTiers" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetDebiteurInfo">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="numeroDebiteur" type="xs:long" />
+					<xs:element name="periodeFiscale" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DebiteurInfo">
+				<xs:sequence>
+					<xs:element name="numeroDebiteur" type="xs:long" />
+					<xs:element name="periodeFiscale" type="xs:int" />
+					<xs:element name="nbLRsTheorique" type="xs:int" />
+					<xs:element name="nbLRsEmises" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetTiers">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element name="date" type="tns:Date" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType abstract="true" name="Tiers">
+				<xs:sequence>
+					<xs:element name="numero" type="xs:long" />
+					<xs:element minOccurs="0" name="complementNom" type="xs:string" />
+					<xs:element minOccurs="0" name="dateDebutActivite" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFinActivite" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element minOccurs="0" name="personneContact" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelPrive" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelProf" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelPortable" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelecopie" type="xs:string" />
+					<xs:element minOccurs="0" name="adresseCourrierElectronique" type="xs:string" />
+					<xs:element name="blocageRemboursementAutomatique" type="xs:boolean" />
+					<xs:element name="isDebiteurInactif" type="xs:boolean" />
+					<xs:element minOccurs="0" name="adresseCourrier" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adressePoursuite" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adresseRepresentation" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adresseDomicile" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adresseEnvoi" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseDomicileFormattee" type="tns:AdresseEnvoi" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="rapportsEntreTiers" type="tns:RapportEntreTiers" />
+					<xs:element minOccurs="0" name="forFiscalPrincipal" type="tns:ForFiscal" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="autresForsFiscaux" type="tns:ForFiscal" />
+					<xs:element minOccurs="0" name="forGestion" type="tns:ForGestion" />
+					<xs:element minOccurs="0" name="declaration" type="tns:Declaration" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="comptesBancaires" type="tns:CompteBancaire" />
+					<xs:element minOccurs="0" name="adressePoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
+					<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="tns:AdresseEnvoiAutreTiers" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Adresse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="titre" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroAppartement" type="xs:string" />
+					<xs:element minOccurs="0" name="rue" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroRue" type="xs:string" />
+					<xs:element minOccurs="0" name="casePostale" type="xs:string" />
+					<xs:element name="localite" type="xs:string" />
+					<xs:element name="numeroPostal" type="xs:string" />
+					<xs:element minOccurs="0" name="pays" type="xs:string" />
+					<xs:element name="noOrdrePostal" type="xs:int" />
+					<xs:element minOccurs="0" name="noRue" type="xs:int" />
+					<xs:element minOccurs="0" name="noPays" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AdresseEnvoi">
+				<xs:sequence>
+					<xs:element name="ligne1" type="xs:string" />
+					<xs:element name="ligne2" type="xs:string" />
+					<xs:element name="ligne3" type="xs:string" />
+					<xs:element name="ligne4" type="xs:string" />
+					<xs:element minOccurs="0" name="ligne5" type="xs:string" />
+					<xs:element minOccurs="0" name="ligne6" type="xs:string" />
+					<xs:element name="isSuisse" type="xs:boolean" />
+					<xs:element minOccurs="0" name="salutations" type="xs:string" />
+					<xs:element minOccurs="0" name="formuleAppel" type="xs:string" />
+					<xs:element name="typeAffranchissement" type="tns:TypeAffranchissement" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="RapportEntreTiers">
+				<xs:sequence>
+					<xs:element name="type" type="tns:TypeRapportEntreTiers" />
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element name="autreTiersNumero" type="xs:long" />
+					<xs:element minOccurs="0" name="typeActivite" type="tns:TypeActivite" />
+					<xs:element minOccurs="0" name="tauxActivite" type="xs:int" />
+					<xs:element minOccurs="0" name="finDernierElementImposable" type="tns:Date" />
+					<xs:element minOccurs="0" name="extensionExecutionForcee" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ForFiscal">
+				<xs:sequence>
+					<xs:element name="id" type="xs:long" />
+					<xs:element name="dateOuverture" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFermeture" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element name="genreImpot" type="tns:GenreImpot" />
+					<xs:element name="typeAutoriteFiscale" type="tns:TypeAutoriteFiscale" />
+					<xs:element name="noOfsAutoriteFiscale" type="xs:int" />
+					<xs:element minOccurs="0" name="motifRattachement" type="tns:MotifRattachement" />
+					<xs:element minOccurs="0" name="motifOuverture" type="tns:MotifFor" />
+					<xs:element minOccurs="0" name="motifFermeture" type="tns:MotifFor" />
+					<xs:element minOccurs="0" name="modeImposition" type="tns:ModeImposition" />
+					<xs:element name="virtuel" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ForGestion">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element name="noOfsCommune" type="xs:int" />
+					<xs:element name="nomCommune" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Declaration">
+				<xs:sequence>
+					<xs:element name="id" type="xs:long" />
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element name="periodesFiscale" type="tns:PeriodeFiscale" />
+					<xs:element maxOccurs="unbounded" name="delais" type="tns:DelaiDeclaration" />
+					<xs:element maxOccurs="unbounded" name="etats" type="tns:EtatDeclaration" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PeriodeFiscale">
+				<xs:sequence>
+					<xs:element name="annee" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DelaiDeclaration">
+				<xs:sequence>
+					<xs:element name="dateDemande" type="tns:Date" />
+					<xs:element name="dateTraitement" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element name="delaiAccordeAu" type="tns:Date" />
+					<xs:element name="confirmationEcrite" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="EtatDeclaration">
+				<xs:sequence>
+					<xs:element name="etat" type="tns:TypeEtatDeclaration" />
+					<xs:element name="dateObtention" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="CompteBancaire">
+				<xs:sequence>
+					<xs:element name="numeroTiersTitulaire" type="xs:long" />
+					<xs:element minOccurs="0" name="titulaire" type="xs:string" />
+					<xs:element name="numero" type="xs:string" />
+					<xs:element name="format" type="tns:FormatNumeroCompte" />
+					<xs:element minOccurs="0" name="clearing" type="xs:string" />
+					<xs:element minOccurs="0" name="adresseBicSwift" type="xs:string" />
+					<xs:element minOccurs="0" name="nomInstitution" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AdresseAutreTiers">
+				<xs:complexContent>
+					<xs:extension base="tns:Adresse">
+						<xs:sequence>
+							<xs:element name="type" type="tns:TypeAdressePoursuiteAutreTiers" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="AdresseEnvoiAutreTiers">
+				<xs:complexContent>
+					<xs:extension base="tns:AdresseEnvoi">
+						<xs:sequence>
+							<xs:element name="type" type="tns:TypeAdressePoursuiteAutreTiers" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="GetBatchTiers">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element maxOccurs="unbounded" name="tiersNumbers" type="xs:long" />
+					<xs:element name="date" type="tns:Date" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="BatchTiers">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" name="entries" type="tns:BatchTiersEntry" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="BatchTiersEntry">
+				<xs:sequence>
+					<xs:element name="number" type="xs:long" />
+					<xs:element minOccurs="0" name="tiers" type="tns:Tiers" />
+					<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
+					<xs:element minOccurs="0" name="exceptionType" type="tns:WebServiceExceptionType" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="QuittancerDeclarations">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element maxOccurs="unbounded" name="demandes" type="tns:DemandeQuittancementDeclaration" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DemandeQuittancementDeclaration">
+				<xs:sequence>
+					<xs:element name="key" type="tns:DeclarationImpotOrdinaireKey" />
+					<xs:element name="dateRetour" type="tns:Date" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DeclarationImpotOrdinaireKey">
+				<xs:sequence>
+					<xs:element name="ctbId" type="xs:long" />
+					<xs:element name="periodeFiscale" type="xs:int" />
+					<xs:element name="numeroSequenceDI" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ReponseQuittancementDeclaration">
+				<xs:sequence>
+					<xs:element name="key" type="tns:DeclarationImpotOrdinaireKey" />
+					<xs:element name="code" type="tns:CodeQuittancement" />
+					<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
+					<xs:element minOccurs="0" name="exceptionType" type="tns:WebServiceExceptionType" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetTiersPeriode">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element name="periode" type="xs:int" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType abstract="true" name="TiersHisto">
+				<xs:sequence>
+					<xs:element name="numero" type="xs:long" />
+					<xs:element minOccurs="0" name="complementNom" type="xs:string" />
+					<xs:element minOccurs="0" name="dateDebutActivite" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFinActivite" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element minOccurs="0" name="personneContact" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelPrive" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelProf" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelPortable" type="xs:string" />
+					<xs:element minOccurs="0" name="numeroTelecopie" type="xs:string" />
+					<xs:element minOccurs="0" name="adresseCourrierElectronique" type="xs:string" />
+					<xs:element name="blocageRemboursementAutomatique" type="xs:boolean" />
+					<xs:element name="isDebiteurInactif" type="xs:boolean" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesCourrier" type="tns:Adresse" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuite" type="tns:Adresse" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesRepresentation" type="tns:Adresse" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesDomicile" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adresseEnvoi" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseDomicileFormattee" type="tns:AdresseEnvoi" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="rapportsEntreTiers" type="tns:RapportEntreTiers" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsFiscauxPrincipaux" type="tns:ForFiscal" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="autresForsFiscaux" type="tns:ForFiscal" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsGestions" type="tns:ForGestion" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="declarations" type="tns:Declaration" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="comptesBancaires" type="tns:CompteBancaire" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
+					<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="tns:AdresseEnvoiAutreTiers" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="SetTiersBlocRembAuto">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element name="blocage" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetTiersType">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetTiersHisto">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AllConcreteTiersClasses">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="pp" type="tns:PersonnePhysique" />
+					<xs:element minOccurs="0" name="pp_histo" type="tns:PersonnePhysiqueHisto" />
+					<xs:element minOccurs="0" name="deb" type="tns:Debiteur" />
+					<xs:element minOccurs="0" name="deb_histo" type="tns:DebiteurHisto" />
+					<xs:element minOccurs="0" name="mc" type="tns:MenageCommun" />
+					<xs:element minOccurs="0" name="mc_histo" type="tns:MenageCommunHisto" />
+					<xs:element minOccurs="0" name="lr" type="tns:DeclarationImpotSource" />
+					<xs:element minOccurs="0" name="di" type="tns:DeclarationImpotOrdinaire" />
+					<xs:element minOccurs="0" name="pM" type="tns:personneMorale" />
+					<xs:element minOccurs="0" name="pm_histo" type="tns:personneMoraleHisto" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PersonnePhysique">
+				<xs:complexContent>
+					<xs:extension base="tns:Contribuable">
+						<xs:sequence>
+							<xs:element name="nom" type="xs:string" />
+							<xs:element minOccurs="0" name="prenom" type="xs:string" />
+							<xs:element minOccurs="0" name="dateNaissance" type="tns:Date" />
+							<xs:element minOccurs="0" name="sexe" type="tns:Sexe" />
+							<xs:element minOccurs="0" name="dateDeces" type="tns:Date" />
+							<xs:element minOccurs="0" name="ancienNumeroAssureSocial" type="xs:string" />
+							<xs:element minOccurs="0" name="nouveauNumeroAssureSocial" type="xs:string" />
+							<xs:element minOccurs="0" name="dateArrivee" type="tns:Date" />
+							<xs:element name="categorie" type="tns:Categorie" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType abstract="true" name="Contribuable">
+				<xs:complexContent>
+					<xs:extension base="tns:Tiers">
+						<xs:sequence>
+							<xs:element minOccurs="0" name="situationFamille" type="tns:SituationFamille" />
+							<xs:element minOccurs="0" name="assujettissementLIC" type="tns:Assujettissement" />
+							<xs:element minOccurs="0" name="assujettissementLIFD" type="tns:Assujettissement" />
+							<xs:element minOccurs="0" name="periodeImposition" type="tns:PeriodeImposition" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="SituationFamille">
+				<xs:sequence>
+					<xs:element name="id" type="xs:long" />
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element name="etatCivil" type="tns:EtatCivil" />
+					<xs:element minOccurs="0" name="nombreEnfants" type="xs:int" />
+					<xs:element minOccurs="0" name="tarifApplicable" type="tns:TarifImpotSource" />
+					<xs:element minOccurs="0" name="numeroContribuablePrincipal" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Assujettissement">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element name="dateFin" type="tns:Date" />
+					<xs:element name="type" type="tns:TypeAssujettissement" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PeriodeImposition">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="idDI" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="PersonnePhysiqueHisto">
+				<xs:complexContent>
+					<xs:extension base="tns:ContribuableHisto">
+						<xs:sequence>
+							<xs:element name="nom" type="xs:string" />
+							<xs:element minOccurs="0" name="prenom" type="xs:string" />
+							<xs:element minOccurs="0" name="dateNaissance" type="tns:Date" />
+							<xs:element minOccurs="0" name="sexe" type="tns:Sexe" />
+							<xs:element minOccurs="0" name="dateDeces" type="tns:Date" />
+							<xs:element minOccurs="0" name="ancienNumeroAssureSocial" type="xs:string" />
+							<xs:element minOccurs="0" name="nouveauNumeroAssureSocial" type="xs:string" />
+							<xs:element minOccurs="0" name="dateArrivee" type="tns:Date" />
+							<xs:element name="categorie" type="tns:Categorie" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType abstract="true" name="ContribuableHisto">
+				<xs:complexContent>
+					<xs:extension base="tns:TiersHisto">
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="situationsFamille" type="tns:SituationFamille" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="assujettissementsLIC" type="tns:Assujettissement" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="assujettissementsLIFD" type="tns:Assujettissement" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="periodesImposition" type="tns:PeriodeImposition" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="Debiteur">
+				<xs:complexContent>
+					<xs:extension base="tns:Tiers">
+						<xs:sequence>
+							<xs:element name="raisonSociale" type="xs:string" />
+							<xs:element name="categorie" type="tns:CategorieDebiteur" />
+							<xs:element name="periodiciteDecompte" type="tns:PeriodiciteDecompte" />
+							<xs:element minOccurs="0" name="periodeDecompte" type="tns:PeriodeDecompte" />
+							<xs:element name="modeCommunication" type="tns:ModeCommunication" />
+							<xs:element name="sansRappel" type="xs:boolean" />
+							<xs:element name="sansListRecapitulative" type="xs:boolean" />
+							<xs:element minOccurs="0" name="contribuableAssocie" type="xs:long" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicites" type="tns:Periodicite" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="Periodicite">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateAnnulation" type="tns:Date" />
+					<xs:element name="periodiciteDecompte" type="tns:PeriodiciteDecompte" />
+					<xs:element minOccurs="0" name="periodeDecompte" type="tns:PeriodeDecompte" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DebiteurHisto">
+				<xs:complexContent>
+					<xs:extension base="tns:TiersHisto">
+						<xs:sequence>
+							<xs:element name="raisonSociale" type="xs:string" />
+							<xs:element name="categorie" type="tns:CategorieDebiteur" />
+							<xs:element name="periodiciteDecompte" type="tns:PeriodiciteDecompte" />
+							<xs:element minOccurs="0" name="periodeDecompte" type="tns:PeriodeDecompte" />
+							<xs:element name="modeCommunication" type="tns:ModeCommunication" />
+							<xs:element name="sansRappel" type="xs:boolean" />
+							<xs:element name="sansListRecapitulative" type="xs:boolean" />
+							<xs:element minOccurs="0" name="contribuableAssocie" type="xs:long" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicites" type="tns:Periodicite" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="MenageCommun">
+				<xs:complexContent>
+					<xs:extension base="tns:Contribuable">
+						<xs:sequence>
+							<xs:element minOccurs="0" name="contribuablePrincipal" type="tns:PersonnePhysique" />
+							<xs:element minOccurs="0" name="contribuableSecondaire" type="tns:PersonnePhysique" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="MenageCommunHisto">
+				<xs:complexContent>
+					<xs:extension base="tns:ContribuableHisto">
+						<xs:sequence>
+							<xs:element minOccurs="0" name="contribuablePrincipal" type="tns:PersonnePhysiqueHisto" />
+							<xs:element minOccurs="0" name="contribuableSecondaire" type="tns:PersonnePhysiqueHisto" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="DeclarationImpotSource">
+				<xs:complexContent>
+					<xs:extension base="tns:Declaration">
+						<xs:sequence>
+							<xs:element name="periodicite" type="tns:PeriodiciteDecompte" />
+							<xs:element name="modeCommunication" type="tns:ModeCommunication" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="DeclarationImpotOrdinaire">
+				<xs:complexContent>
+					<xs:extension base="tns:Declaration">
+						<xs:sequence>
+							<xs:element name="numero" type="xs:long" />
+							<xs:element name="typeDocument" type="tns:TypeDocument" />
+							<xs:element name="numeroOfsForGestion" type="xs:long" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="personneMorale">
+				<xs:complexContent>
+					<xs:extension base="tns:Contribuable">
+						<xs:sequence>
+							<xs:element name="designationAbregee" type="xs:string" />
+							<xs:element name="raisonSociale1" type="xs:string" />
+							<xs:element minOccurs="0" name="raisonSociale2" type="xs:string" />
+							<xs:element minOccurs="0" name="raisonSociale3" type="xs:string" />
+							<xs:element minOccurs="0" name="dateFinDernierExerciceCommercial" type="tns:Date" />
+							<xs:element minOccurs="0" name="dateBouclementFutur" type="tns:Date" />
+							<xs:element minOccurs="0" name="numeroIPMRO" type="xs:string" />
+							<xs:element minOccurs="0" name="siege" type="tns:siege" />
+							<xs:element minOccurs="0" name="formeJuridique" type="tns:formeJuridique" />
+							<xs:element minOccurs="0" name="capital" type="tns:capital" />
+							<xs:element minOccurs="0" name="regimeFiscalICC" type="tns:regimeFiscal" />
+							<xs:element minOccurs="0" name="regimeFiscalIFD" type="tns:regimeFiscal" />
+							<xs:element minOccurs="0" name="etat" type="tns:etatPM" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="siege">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element name="typeSiege" type="tns:TypeSiege" />
+					<xs:element name="noOfsSiege" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="formeJuridique">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="code" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="capital">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element name="capitalAction" type="xs:long" />
+					<xs:element name="capitalLibere" type="xs:long" />
+					<xs:element name="absenceCapitalLibereNormale" type="xs:boolean" />
+					<xs:element minOccurs="0" name="editionFosc" type="tns:editionFosc" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="editionFosc">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="anneeFosc" type="xs:int" />
+					<xs:element minOccurs="0" name="noFosc" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="regimeFiscal">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="code" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="etatPM">
+				<xs:sequence>
+					<xs:element name="dateDebut" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateFin" type="tns:Date" />
+					<xs:element minOccurs="0" name="code" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="personneMoraleHisto">
+				<xs:complexContent>
+					<xs:extension base="tns:ContribuableHisto">
+						<xs:sequence>
+							<xs:element name="designationAbregee" type="xs:string" />
+							<xs:element name="raisonSociale1" type="xs:string" />
+							<xs:element minOccurs="0" name="raisonSociale2" type="xs:string" />
+							<xs:element minOccurs="0" name="raisonSociale3" type="xs:string" />
+							<xs:element minOccurs="0" name="dateFinDernierExerciceCommercial" type="tns:Date" />
+							<xs:element minOccurs="0" name="dateBouclementFutur" type="tns:Date" />
+							<xs:element minOccurs="0" name="numeroIPMRO" type="xs:string" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="sieges" type="tns:siege" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="formesJuridiques" type="tns:formeJuridique" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="capitaux" type="tns:capital" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="regimesFiscauxICC" type="tns:regimeFiscal" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="regimesFiscauxIFD" type="tns:regimeFiscal" />
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="etats" type="tns:etatPM" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="searchEvenementsPM">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
+					<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
+					<xs:element minOccurs="0" name="dateMinimale" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateMaximale" type="tns:Date" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="evenementPM">
+				<xs:sequence>
+					<xs:element name="dateEvenement" type="tns:Date" />
+					<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
+					<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetBatchTiersHisto">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element maxOccurs="unbounded" name="tiersNumbers" type="xs:long" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="BatchTiersHisto">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" name="entries" type="tns:BatchTiersHistoEntry" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="BatchTiersHistoEntry">
+				<xs:sequence>
+					<xs:element name="number" type="xs:long" />
+					<xs:element minOccurs="0" name="tiers" type="tns:TiersHisto" />
+					<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
+					<xs:element minOccurs="0" name="exceptionType" type="tns:WebServiceExceptionType" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="TypeRecherche">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="CONTIENT" />
+					<xs:enumeration value="PHONETIQUE" />
+					<xs:enumeration value="EST_EXACTEMENT" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeTiers">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="PERSONNE_PHYSIQUE" />
+					<xs:enumeration value="MENAGE_COMMUN" />
+					<xs:enumeration value="DEBITEUR" />
+					<xs:enumeration value="PERSONNE_MORALE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="CategorieDebiteur">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ADMINISTRATEURS" />
+					<xs:enumeration value="CONFERENCIERS_ARTISTES_SPORTIFS" />
+					<xs:enumeration value="CREANCIERS_HYPOTHECAIRES" />
+					<xs:enumeration value="PRESTATIONS_PREVOYANCE" />
+					<xs:enumeration value="REGULIERS" />
+					<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TiersPart">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ADRESSES" />
+					<xs:enumeration value="ADRESSES_ENVOI" />
+					<xs:enumeration value="FORS_FISCAUX" />
+					<xs:enumeration value="FORS_FISCAUX_VIRTUELS" />
+					<xs:enumeration value="FORS_GESTION" />
+					<xs:enumeration value="COMPOSANTS_MENAGE" />
+					<xs:enumeration value="ASSUJETTISSEMENTS" />
+					<xs:enumeration value="PERIODE_IMPOSITION" />
+					<xs:enumeration value="RAPPORTS_ENTRE_TIERS" />
+					<xs:enumeration value="SITUATIONS_FAMILLE" />
+					<xs:enumeration value="DECLARATIONS" />
+					<xs:enumeration value="COMPTES_BANCAIRES" />
+					<xs:enumeration value="SIEGES" />
+					<xs:enumeration value="FORMES_JURIDIQUES" />
+					<xs:enumeration value="CAPITAUX" />
+					<xs:enumeration value="REGIMES_FISCAUX" />
+					<xs:enumeration value="ETATS_PM" />
+					<xs:enumeration value="PERIODICITES" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeAffranchissement">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="SUISSE" />
+					<xs:enumeration value="EUROPE" />
+					<xs:enumeration value="MONDE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeRapportEntreTiers">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="TUTELLE" />
+					<xs:enumeration value="CURATELLE" />
+					<xs:enumeration value="CONSEIL_LEGAL" />
+					<xs:enumeration value="PRESTATION_IMPOSABLE" />
+					<xs:enumeration value="APPARTENANCE_MENAGE" />
+					<xs:enumeration value="REPRESENTATION" />
+					<xs:enumeration value="CONTACT_IMPOT_SOURCE" />
+					<xs:enumeration value="ANNULE_ET_REMPLACE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeActivite">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="PRINCIPALE" />
+					<xs:enumeration value="ACCESSOIRE" />
+					<xs:enumeration value="COMPLEMENTAIRE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="GenreImpot">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="REVENU_FORTUNE" />
+					<xs:enumeration value="GAIN_IMMOBILIER" />
+					<xs:enumeration value="DROIT_MUTATION" />
+					<xs:enumeration value="PRESTATION_CAPITAL" />
+					<xs:enumeration value="SUCCESSION" />
+					<xs:enumeration value="FONCIER" />
+					<xs:enumeration value="DEBITEUR_PRESTATION_IMPOSABLE" />
+					<xs:enumeration value="DONATION" />
+					<xs:enumeration value="CHIENS" />
+					<xs:enumeration value="PATENTE_TABAC" />
+					<xs:enumeration value="BENEFICE_CAPITAL" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeAutoriteFiscale">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="COMMUNE_OU_FRACTION_VD" />
+					<xs:enumeration value="COMMUNE_HC" />
+					<xs:enumeration value="PAYS_HS" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="MotifRattachement">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="DOMICILE" />
+					<xs:enumeration value="IMMEUBLE_PRIVE" />
+					<xs:enumeration value="DIPLOMATE_SUISSE" />
+					<xs:enumeration value="ACTIVITE_INDEPENDANTE" />
+					<xs:enumeration value="SEJOUR_SAISONNIER" />
+					<xs:enumeration value="DIRIGEANT_SOCIETE" />
+					<xs:enumeration value="ACTIVITE_LUCRATIVE_CAS" />
+					<xs:enumeration value="ADMINISTRATEUR" />
+					<xs:enumeration value="CREANCIER_HYPOTHECAIRE" />
+					<xs:enumeration value="PRESTATION_PREVOYANCE" />
+					<xs:enumeration value="DIPLOMATE_ETRANGER" />
+					<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
+					<xs:enumeration value="ETABLISSEMENT_STABLE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="MotifFor">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="DEMENAGEMENT_VD" />
+					<xs:enumeration value="VEUVAGE_DECES" />
+					<xs:enumeration value="MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION" />
+					<xs:enumeration value="SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT" />
+					<xs:enumeration value="PERMIS_C_SUISSE" />
+					<xs:enumeration value="MAJORITE" />
+					<xs:enumeration value="ARRIVEE_HS" />
+					<xs:enumeration value="ARRIVEE_HC" />
+					<xs:enumeration value="FUSION_COMMUNES" />
+					<xs:enumeration value="ACHAT_IMMOBILIER" />
+					<xs:enumeration value="VENTE_IMMOBILIER" />
+					<xs:enumeration value="DEBUT_EXPLOITATION" />
+					<xs:enumeration value="FIN_EXPLOITATION" />
+					<xs:enumeration value="DEPART_HS" />
+					<xs:enumeration value="DEPART_HC" />
+					<xs:enumeration value="INDETERMINE" />
+					<xs:enumeration value="SEJOUR_SAISONNIER" />
+					<xs:enumeration value="CHGT_MODE_IMPOSITION" />
+					<xs:enumeration value="ANNULATION" />
+					<xs:enumeration value="REACTIVATION" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="ModeImposition">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ORDINAIRE" />
+					<xs:enumeration value="SOURCE" />
+					<xs:enumeration value="DEPENSE" />
+					<xs:enumeration value="MIXTE_137_1" />
+					<xs:enumeration value="MIXTE_137_2" />
+					<xs:enumeration value="INDIGENT" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeEtatDeclaration">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="EMISE" />
+					<xs:enumeration value="SOMMEE" />
+					<xs:enumeration value="ECHUE" />
+					<xs:enumeration value="RETOURNEE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="FormatNumeroCompte">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="SPECIFIQUE_CH" />
+					<xs:enumeration value="IBAN" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeAdressePoursuiteAutreTiers">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="SPECIFIQUE" />
+					<xs:enumeration value="MANDATAIRE" />
+					<xs:enumeration value="CURATELLE" />
+					<xs:enumeration value="CONSEIL_LEGAL" />
+					<xs:enumeration value="TUTELLE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="WebServiceExceptionType">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="BUSINESS" />
+					<xs:enumeration value="ACCESS_DENIED" />
+					<xs:enumeration value="TECHNICAL" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="CodeQuittancement">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="OK" />
+					<xs:enumeration value="ERREUR_CTB_INCONNU" />
+					<xs:enumeration value="ERREUR_ASSUJETTISSEMENT_CTB" />
+					<xs:enumeration value="ERREUR_CTB_DEBITEUR_INACTIF" />
+					<xs:enumeration value="ERREUR_DECLARATION_INEXISTANTE" />
+					<xs:enumeration value="ERREUR_DECLARATION_ANNULEE" />
+					<xs:enumeration value="ERREUR_DATE_RETOUR_INVALIDE" />
+					<xs:enumeration value="EXCEPTION" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="Sexe">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="FEMININ" />
+					<xs:enumeration value="MASCULIN" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="Categorie">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="SUISSE" />
+					<xs:enumeration value="FONCTIONNAIRE" />
+					<xs:enumeration value="_02_PERMIS_SEJOUR_B" />
+					<xs:enumeration value="_03_ETABLI_C" />
+					<xs:enumeration value="_04_CONJOINT_DIPLOMATE_CI" />
+					<xs:enumeration value="_05_ETRANGER_ADMIS_PROVISOIREMENT_F" />
+					<xs:enumeration value="_06_FRONTALIER_G" />
+					<xs:enumeration value="_07_PERMIS_SEJOUR_COURTE_DUREE_L" />
+					<xs:enumeration value="_08_REQUERANT_ASILE_N" />
+					<xs:enumeration value="_09_A_PROTEGER_S" />
+					<xs:enumeration value="_10_TENUE_DE_S_ANNONCER" />
+					<xs:enumeration value="_11_DIPLOMATE" />
+					<xs:enumeration value="_12_FONCTIONNAIRE_INTERNATIONAL" />
+					<xs:enumeration value="_13_NON_ATTRIBUEE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="EtatCivil">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="CELIBATAIRE" />
+					<xs:enumeration value="MARIE" />
+					<xs:enumeration value="VEUF" />
+					<xs:enumeration value="LIE_PARTENARIAT_ENREGISTRE" />
+					<xs:enumeration value="NON_MARIE" />
+					<xs:enumeration value="PARTENARIAT_DISSOUS_JUDICIAIREMENT" />
+					<xs:enumeration value="DIVORCE" />
+					<xs:enumeration value="SEPARE" />
+					<xs:enumeration value="PARTENARIAT_DISSOUS_DECES" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TarifImpotSource">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="NORMAL" />
+					<xs:enumeration value="DOUBLE_GAIN" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeAssujettissement">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="LIMITE" />
+					<xs:enumeration value="ILLIMITE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="PeriodiciteDecompte">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="MENSUEL" />
+					<xs:enumeration value="ANNUEL" />
+					<xs:enumeration value="TRIMESTRIEL" />
+					<xs:enumeration value="SEMESTRIEL" />
+					<xs:enumeration value="UNIQUE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="PeriodeDecompte">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="M01" />
+					<xs:enumeration value="M02" />
+					<xs:enumeration value="M03" />
+					<xs:enumeration value="M04" />
+					<xs:enumeration value="M05" />
+					<xs:enumeration value="M06" />
+					<xs:enumeration value="M07" />
+					<xs:enumeration value="M08" />
+					<xs:enumeration value="M09" />
+					<xs:enumeration value="M10" />
+					<xs:enumeration value="M11" />
+					<xs:enumeration value="M12" />
+					<xs:enumeration value="T1" />
+					<xs:enumeration value="T2" />
+					<xs:enumeration value="T3" />
+					<xs:enumeration value="T4" />
+					<xs:enumeration value="S1" />
+					<xs:enumeration value="S2" />
+					<xs:enumeration value="A" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="ModeCommunication">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="SITE_WEB" />
+					<xs:enumeration value="PAPIER" />
+					<xs:enumeration value="ELECTRONIQUE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeDocument">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="DECLARATION_IMPOT_COMPLETE" />
+					<xs:enumeration value="DECLARATION_IMPOT_VAUDTAX" />
+					<xs:enumeration value="DECLARATION_IMPOT_DEPENSE" />
+					<xs:enumeration value="DECLARATION_IMPOT_HC_IMMEUBLE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeSiege">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="COMMUNE_CH" />
+					<xs:enumeration value="PAYS_HS" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType final="#all" name="TiersInfoArray">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:TiersInfo" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType final="#all" name="ReponseQuittancementDeclarationArray">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:ReponseQuittancementDeclaration" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType final="#all" name="evenementPMArray">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:evenementPM" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="AccessDeniedException" type="tns:AccessDeniedException" />
+			<xs:complexType name="AccessDeniedException">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:element name="BusinessException" type="tns:BusinessException" />
+			<xs:complexType name="BusinessException">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:element name="TechnicalException" type="tns:TechnicalException" />
+			<xs:complexType name="TechnicalException">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:element name="SearchTiers" nillable="true" type="tns:SearchTiers" />
+			<xs:element name="searchTiersResponse" nillable="true" type="tns:TiersInfoArray" />
+			<xs:element name="GetDebiteurInfo" nillable="true" type="tns:GetDebiteurInfo" />
+			<xs:element name="getDebiteurInfoResponse" nillable="true" type="tns:DebiteurInfo" />
+			<xs:element name="GetTiers" nillable="true" type="tns:GetTiers" />
+			<xs:element name="getTiersResponse" nillable="true" type="tns:Tiers" />
+			<xs:element name="GetBatchTiers" nillable="true" type="tns:GetBatchTiers" />
+			<xs:element name="getBatchTiersResponse" nillable="true" type="tns:BatchTiers" />
+			<xs:element name="QuittancerDeclarations" nillable="true" type="tns:QuittancerDeclarations" />
+			<xs:element name="quittancerDeclarationsResponse" nillable="true" type="tns:ReponseQuittancementDeclarationArray" />
+			<xs:element name="GetTiersPeriode" nillable="true" type="tns:GetTiersPeriode" />
+			<xs:element name="getTiersPeriodeResponse" nillable="true" type="tns:TiersHisto" />
+			<xs:element name="SetTiersBlocRembAuto" nillable="true" type="tns:SetTiersBlocRembAuto" />
+			<xs:element name="GetTiersType" nillable="true" type="tns:GetTiersType" />
+			<xs:element name="getTiersTypeResponse" nillable="true" type="tns:TypeTiers" />
+			<xs:element name="GetTiersHisto" nillable="true" type="tns:GetTiersHisto" />
+			<xs:element name="getTiersHistoResponse" nillable="true" type="tns:TiersHisto" />
+			<xs:element name="doNothing" nillable="true" type="tns:AllConcreteTiersClasses" />
+			<xs:element name="SearchEvenementsPM" nillable="true" type="tns:searchEvenementsPM" />
+			<xs:element name="searchEvenementsPMResponse" nillable="true" type="tns:evenementPMArray" />
+			<xs:element name="GetBatchTiersHisto" nillable="true" type="tns:GetBatchTiersHisto" />
+			<xs:element name="getBatchTiersHistoResponse" nillable="true" type="tns:BatchTiersHisto" />
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="getTiersHisto">
+		<wsdl:part element="tns:GetTiersHisto" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersPeriode">
+		<wsdl:part element="tns:GetTiersPeriode" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBatchTiers">
+		<wsdl:part element="tns:GetBatchTiers" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="doNothingResponse">
+	</wsdl:message>
+	<wsdl:message name="getDebiteurInfo">
+		<wsdl:part element="tns:GetDebiteurInfo" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersHistoResponse">
+		<wsdl:part element="tns:getTiersHistoResponse" name="getTiersHistoResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="doNothing">
+		<wsdl:part element="tns:doNothing" name="doNothing">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="TechnicalException">
+		<wsdl:part element="tns:TechnicalException" name="TechnicalException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="searchEvenementsPMResponse">
+		<wsdl:part element="tns:searchEvenementsPMResponse" name="searchEvenementsPMResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="setTiersBlocRembAuto">
+		<wsdl:part element="tns:SetTiersBlocRembAuto" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBatchTiersHisto">
+		<wsdl:part element="tns:GetBatchTiersHisto" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="quittancerDeclarationsResponse">
+		<wsdl:part element="tns:quittancerDeclarationsResponse" name="quittancerDeclarationsResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersResponse">
+		<wsdl:part element="tns:getTiersResponse" name="getTiersResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiers">
+		<wsdl:part element="tns:GetTiers" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="searchEvenementsPM">
+		<wsdl:part element="tns:SearchEvenementsPM" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="searchTiersResponse">
+		<wsdl:part element="tns:searchTiersResponse" name="searchTiersResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="setTiersBlocRembAutoResponse">
+	</wsdl:message>
+	<wsdl:message name="getDebiteurInfoResponse">
+		<wsdl:part element="tns:getDebiteurInfoResponse" name="getDebiteurInfoResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersTypeResponse">
+		<wsdl:part element="tns:getTiersTypeResponse" name="getTiersTypeResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="BusinessException">
+		<wsdl:part element="tns:BusinessException" name="BusinessException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersPeriodeResponse">
+		<wsdl:part element="tns:getTiersPeriodeResponse" name="getTiersPeriodeResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="AccessDeniedException">
+		<wsdl:part element="tns:AccessDeniedException" name="AccessDeniedException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersType">
+		<wsdl:part element="tns:GetTiersType" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBatchTiersHistoResponse">
+		<wsdl:part element="tns:getBatchTiersHistoResponse" name="getBatchTiersHistoResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBatchTiersResponse">
+		<wsdl:part element="tns:getBatchTiersResponse" name="getBatchTiersResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="searchTiers">
+		<wsdl:part element="tns:SearchTiers" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="quittancerDeclarations">
+		<wsdl:part element="tns:QuittancerDeclarations" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="TiersPort">
+		<wsdl:operation name="searchTiers">
+			<wsdl:input message="tns:searchTiers" name="searchTiers">
+			</wsdl:input>
+			<wsdl:output message="tns:searchTiersResponse" name="searchTiersResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getDebiteurInfo">
+			<wsdl:input message="tns:getDebiteurInfo" name="getDebiteurInfo">
+			</wsdl:input>
+			<wsdl:output message="tns:getDebiteurInfoResponse" name="getDebiteurInfoResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiers">
+			<wsdl:input message="tns:getTiers" name="getTiers">
+			</wsdl:input>
+			<wsdl:output message="tns:getTiersResponse" name="getTiersResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getBatchTiers">
+			<wsdl:input message="tns:getBatchTiers" name="getBatchTiers">
+			</wsdl:input>
+			<wsdl:output message="tns:getBatchTiersResponse" name="getBatchTiersResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="quittancerDeclarations">
+			<wsdl:input message="tns:quittancerDeclarations" name="quittancerDeclarations">
+			</wsdl:input>
+			<wsdl:output message="tns:quittancerDeclarationsResponse" name="quittancerDeclarationsResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersPeriode">
+			<wsdl:input message="tns:getTiersPeriode" name="getTiersPeriode">
+			</wsdl:input>
+			<wsdl:output message="tns:getTiersPeriodeResponse" name="getTiersPeriodeResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="setTiersBlocRembAuto">
+			<wsdl:input message="tns:setTiersBlocRembAuto" name="setTiersBlocRembAuto">
+			</wsdl:input>
+			<wsdl:output message="tns:setTiersBlocRembAutoResponse" name="setTiersBlocRembAutoResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersType">
+			<wsdl:input message="tns:getTiersType" name="getTiersType">
+			</wsdl:input>
+			<wsdl:output message="tns:getTiersTypeResponse" name="getTiersTypeResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersHisto">
+			<wsdl:input message="tns:getTiersHisto" name="getTiersHisto">
+			</wsdl:input>
+			<wsdl:output message="tns:getTiersHistoResponse" name="getTiersHistoResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="doNothing">
+			<wsdl:input message="tns:doNothing" name="doNothing">
+			</wsdl:input>
+			<wsdl:output message="tns:doNothingResponse" name="doNothingResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="searchEvenementsPM">
+			<wsdl:input message="tns:searchEvenementsPM" name="searchEvenementsPM">
+			</wsdl:input>
+			<wsdl:output message="tns:searchEvenementsPMResponse" name="searchEvenementsPMResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getBatchTiersHisto">
+			<wsdl:input message="tns:getBatchTiersHisto" name="getBatchTiersHisto">
+			</wsdl:input>
+			<wsdl:output message="tns:getBatchTiersHistoResponse" name="getBatchTiersHistoResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="TiersServiceSoapBinding" type="tns:TiersPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="searchTiers">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="searchTiers">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="searchTiersResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getDebiteurInfo">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getDebiteurInfo">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getDebiteurInfoResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiers">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTiers">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTiersResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getBatchTiers">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getBatchTiers">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getBatchTiersResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="quittancerDeclarations">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="quittancerDeclarations">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="quittancerDeclarationsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersPeriode">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTiersPeriode">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTiersPeriodeResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="setTiersBlocRembAuto">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="setTiersBlocRembAuto">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="setTiersBlocRembAutoResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersType">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTiersType">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTiersTypeResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersHisto">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTiersHisto">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTiersHistoResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="doNothing">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="doNothing">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="doNothingResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getBatchTiersHisto">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getBatchTiersHisto">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getBatchTiersHistoResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="searchEvenementsPM">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="searchEvenementsPM">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="searchEvenementsPMResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="TiersService">
+		<wsdl:port binding="tns:TiersServiceSoapBinding" name="TiersPortPort">
+			<soap:address location="http://localhost:8080/fiscalite/unireg/ws/tiers2" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

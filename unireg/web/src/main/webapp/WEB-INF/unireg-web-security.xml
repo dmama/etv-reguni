@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- La chaine des filtres ACEGI à appliquer. Ici le filtre siteminderAuthenticationProcessingFilter
+		est d'abord appellé. Si il ne renvoie aucun user, utilise le authenticationProcessingFilter qui
+		va effectuer un login par formulaire html.  -->
+	<bean id="filterChainProxy" class="org.acegisecurity.util.FilterChainProxy">
+		<property name="filterInvocationDefinitionSource">
+			<value>
+				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+				PATTERN_TYPE_APACHE_ANT
+				<!-- FIXME(CFH) : a controler si on peut pas les virer -->
+				/403.do=httpSessionContextIntegrationFilter
+				/404.do=httpSessionContextIntegrationFilter
+				/error.do=httpSessionContextIntegrationFilter
+				/logout.do=httpSessionContextIntegrationFilter
+				/logoutiam.do=httpSessionContextIntegrationFilter
+				/errors/**=httpSessionContextIntegrationFilter
+				/ws/**=#NONE#
+				/remoting/**=#NONE#
+				/chooseoid.do=httpSessionContextIntegrationFilter,iamAuthenticationProcessingFilter
+				/authenticationfailed.do=httpSessionContextIntegrationFilter
+				<!-- Version IAM + IFOSEC -->
+				/**/*.do=httpSessionContextIntegrationFilter, logoutFilter, exceptionTranslationFilter, iamAuthenticationProcessingFilter, ifoSecAuthenticationProcessingFilter, contextHolderAwareRequestFilter, filterInvocationInterceptor
+				/**=httpSessionContextIntegrationFilter
+			</value>
+		</property>
+	</bean>
+	<!-- Needed by Acegi to put SecureContext to HTTP session -->
+	<bean id="httpSessionContextIntegrationFilter" class="org.acegisecurity.context.HttpSessionContextIntegrationFilter">
+		<property name="context" value="org.acegisecurity.context.SecurityContextImpl" />
+	</bean>
+
+	<!-- Filtre de logout: Le securityContextLogoutHandler effectue le logout et invalide la session -->
+	<bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
+		<constructor-arg value="/logoutIAM.do" />
+		<constructor-arg>
+			<list>
+				<bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler">
+					<property name="invalidateHttpSession" value="true" />
+				</bean>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/logout.do" />
+	</bean>
+
+	<!-- effectue le mapping entre les rôles IAM et les rôles métier tels que définis dans l’application. -->
+	<bean id="basicRolesGranter" class="ch.vd.uniregctb.security.UniregBasicRolesGranter">
+		<property name="ignoreUndefinedMapping" value="true" />
+		<property name="roleMappings">
+			<map>
+				<entry key="USER" value="ROLE_USER" />
+				<entry key="USER_EXTERNE" value="ROLE_USER" />
+				<!-- Dans IAM, certains environnements ont TESTER, d'autres DEVELOPPER -->
+				<!-- C'est un ROLE de TESTER et pas de DEVELOPPER bien que les developpeurs en ont aussi besoin -->
+				<!-- On doit donc prendre en compte les 2 ... -->
+				<entry key="DEVELOPPER" value="ROLE_TESTER" />
+				<entry key="TESTER" value="ROLE_TESTER" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Cache utilisateur -->
+	<bean id="authenticationUserCache" class="org.acegisecurity.providers.dao.cache.EhCacheBasedUserCache">
+		<property name="cache" ref="userCacheBackend" />
+	</bean>
+	<bean id="userCacheBackend" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager" ref="cacheManager" />
+		<property name="cacheName" value="authenticationUserCache" />
+		<property name="maxElementsInMemory" value="10000" />
+		<property name="timeToLive" value="14400" />
+		<property name="timeToIdle" value="1200" />
+	</bean>
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" />
+
+	<!-- Recupere l'utilisateur et ses roles depuis IAM -->
+	<bean id="iamAuthenticationProvider" class="ch.vd.ati.security.IAMDaoAuthenticationProvider">
+		<property name="userCache" ref="authenticationUserCache" />
+		<property name="rolesGranter" ref="basicRolesGranter" />
+	</bean>
+
+	<!-- Recupere l'utilisateur et ses roles depuis IfoSec -->
+	<bean id="ifosecAuthenticationProvider" class="ch.vd.uniregctb.security.IFOSecAuthenticationProvider" depends-on="uniregModeHelper">
+	</bean>
+
+	<!-- Verifie que l'utilisateur est bien authentifié. -->
+	<bean id="ifosecAuthenticationManager" class="org.acegisecurity.providers.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref local="ifosecAuthenticationProvider" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- Verifie que l'utilisateur est bien authentifié. -->
+	<bean id="iamAuthenticationManager" class="org.acegisecurity.providers.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref local="iamAuthenticationProvider" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- Recupere l'utilisateur siteminder dans le header si il n'est pas présent en session -->
+	<bean id="iamAuthenticationProcessingFilter" class="ch.vd.uniregctb.security.UniregIAMAuthProcessingFilter">
+		<property name="authenticationManager" ref="iamAuthenticationManager" />
+	</bean>
+
+	<!-- Recupere les données IFOSEc si elles ne sont pas présentes en session -->
+	<bean id="ifoSecAuthenticationProcessingFilter" class="ch.vd.uniregctb.security.IFOSecAuthenticationProcessingFilter">
+		<property name="authenticationManager" ref="ifosecAuthenticationManager" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+	</bean>
+	
+	<bean id="securityDebugConfig" class="ch.vd.uniregctb.security.SecurityDebugConfig">
+		<property name="properties" ref="uniregExternalProperties" />
+		<property name="ifoSecService" ref="ifoSecService" />
+	</bean>
+
+	<!-- Allow the use of getRemoteUser(), getUserPrincipal(), etc on request for Acegi -->
+	<bean id="contextHolderAwareRequestFilter" class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter" />
+
+	<!-- POUR TESTER AVEC IFOSEC (ICB0 crrespond a un code procédure, ie colonne dans la matrice des droits)-->
+	<bean id="filterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
+		<property name="authenticationManager" ref="ifosecAuthenticationManager" />
+		<property name="accessDecisionManager" ref="httpRequestAccessDecisionManager" />
+		<property name="objectDefinitionSource">
+			<value>
+				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+				PATTERN_TYPE_APACHE_ANT
+				/**/*.do=ROLE_USER
+				/*.do=ROLE_USER
+			</value>
+		</property>
+	</bean>
+
+	<!-- This bean specifies that a user can access the protected methods -->
+	<!-- if they have any one of the roles specified in the objectDefinitionSource above. -->
+	<bean id="httpRequestAccessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
+		<property name="allowIfAllAbstainDecisions" value="false" />
+		<property name="decisionVoters">
+			<list>
+				<ref bean="roleVoter" />
+				<!-- COMMENTER LA LIGNE CI DESSOUS POUR IFOSEC -->
+				<!-- ref bean="authenticatedVoter" / -->
+			</list>
+		</property>
+	</bean>
+
+	<!-- Les role voter -->
+	<bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter" />
+	<bean id="authenticatedVoter" class="org.acegisecurity.vote.AuthenticatedVoter" />
+
+	<!-- the fourth item in the chain: securityEnforcementFilter -->
+	<bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
+		<property name="authenticationEntryPoint" ref="authenticationProcessingFilterEntryPoint" />
+	</bean>
+	<bean id="authenticationProcessingFilterEntryPoint" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+		<property name="loginFormUrl" value="/login.do" />
+	</bean>
+	
+	<!-- This bean automatically receives AuthenticationEvent messages from	DaoAuthenticationProvider -->
+	<bean id="loggerListener" class="org.acegisecurity.event.authentication.LoggerListener" />
+
+	<!--  Sécurité sur les méthodes: Intercepteur de sécurité, autorise l'execution des methodes protégées aux seuls roles qui y ont accès. -->
+	<bean id="attributes" class="org.acegisecurity.annotation.SecurityAnnotationAttributes" />
+	<bean id="objectDefinitionSource" class="org.acegisecurity.intercept.method.MethodDefinitionAttributes">
+		<property name="attributes" ref="attributes" />
+	</bean>
+		
+	<bean id="methodSecurityInterceptor" class="org.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+		<property name="validateConfigAttributes" value="false" />
+		<property name="accessDecisionManager" ref="httpRequestAccessDecisionManager" />
+		<property name="authenticationManager" ref="ifosecAuthenticationManager" />
+		<property name="objectDefinitionSource" ref="objectDefinitionSource" />
+	</bean>
+
+	<bean id="methodDefinitionSourceAdvisor"  class="org.acegisecurity.intercept.method.aopalliance.MethodDefinitionSourceAdvisor">
+		<constructor-arg><ref local="methodSecurityInterceptor"/></constructor-arg>
+	</bean>
+	
+	<!-- BeanNameAutoProxyCreator: Ajout de l'intercepteur de sécurité sur les méthodes des classes de Service-->
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames" value="*Service" />
+		<property name="interceptorNames">
+			<list>
+				<value>methodDefinitionSourceAdvisor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="securiteDossierService" class="ch.vd.uniregctb.security.SecuriteDossierServiceImpl">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+	</bean>
+
+	<bean id="ifoSecService" class="ch.vd.uniregctb.security.IfoSecServiceImpl">
+		<property name="securiteService" ref="serviceSecuriteService" />
+	</bean>
+	
+	<bean id="securityProviderImpl" class="ch.vd.uniregctb.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
+		<property name="securiteDossierService" ref="securiteDossierService" />
+		<property name="ifoSecService" ref="ifoSecService" />
+	</bean>
+
+	<bean id="securityProviderCache" class="ch.vd.uniregctb.security.SecurityProviderCache">
+		<property name="target" ref="securityProviderImpl" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="securityProvider" />
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="preloadTiersIds" value="false"/>
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
+		<property name="provider" ref="securityProviderCache" />
+	</bean>
+
+</beans>
