@@ -92,16 +92,10 @@
 						<c:out value="${message.navs13}" />
 				</display:column>
 				<c:if test="${message.traitementUser != null }">
-					<display:column sortable ="true" titleKey="label.identification.traitement.user">
-						<c:out value="${message.traitementUser}"  />
+					<display:column  titleKey="label.identification.traitement.user" style="text-align:center">
+						<unireg:consulterInfoTraitement dateTraitement="${message.traitementDate}" userTraitement="${message.traitementUser}"/>
 					</display:column>
 				</c:if>
-			    <c:if test="${message.traitementDate != null }">
-					<display:column sortable ="true" titleKey="label.identification.traitement.date">
-							<fmt:formatDate value="${message.traitementDate}" pattern="dd.MM.yyyy"/>
-					</display:column>
-				</c:if>
-
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO">
 				<display:column>
 				 <c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||

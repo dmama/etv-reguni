@@ -171,6 +171,53 @@ function open_consulter_log(nature, id) {
 	return false;
 }
 
+ /**
+  * Ouvre une boîte de dialog modale qui affiches la date et l'utilisateur de traitement d'un message d'identification.
+  *
+  * @param stringDate la date de traitement
+  * @param userTraitement le nom du user de traitement
+  */
+ function open_consulter_info_traitement(userTraitement, stringDate) {
+
+	var content = "<div style=\"display:none\">" +
+				"<table>" +
+				"<tr class=\"<unireg:nextRowClass/>\" >" +
+				"<td width=\"25%\">Utilisateur de traitement &nbsp;:</td>" +
+				"<td width=\"25%\">" + userTraitement + "</td>" +
+				"</tr>" +
+				"<tr class=\"<unireg:nextRowClass/>\" >" +
+				"<td width=\"25%\">Date de traitement&nbsp;:</td>" +
+				"<td width=\"25%\">" + stringDate + "</td>" +
+				"</tr>" +
+				"</table></div>";
+
+	var dialog = $('#idinfotraitement');
+	if (!dialog.length) {
+		dialog = $(content);
+		dialog.appendTo('body');
+	}
+	else {
+		dialog.attr('innerHTML', content); // on remplace le contenu de la boîte de dialogue
+	}
+
+ 	dialog.dialog({
+ 		title: 'Consultation des informations de traitement',
+ 		height: 150,
+ 		width: 600,
+ 		resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
+ 		modal: true,
+ 		buttons: {
+ 			Ok: function() {
+ 				dialog.dialog("close");
+ 			}
+ 		}
+ 	});
+
+ 	//prevent the browser to follow the link
+ 	return false;
+ }
+
+
 /**
  * Ouvre une boîte de dialog modale qui affiche les détails d'un mouvement de dossier
  *

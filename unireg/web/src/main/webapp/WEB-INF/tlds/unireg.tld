@@ -485,6 +485,24 @@
 		</attribute>
 	</tag>
 	<tag>
+		<name>consulterInfoTraitement</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagConsulterInfoTraitement</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône d'information</description>
+		<attribute>
+			<name>dateTraitement</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>date du traitement</description>
+		</attribute>
+		<attribute>
+			<name>userTraitement</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>utilisateur ayant effectué l'identification</description>
+		</attribute>
+	</tag>
+	<tag>
 		<name>raccourciAlerter</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Alerter</tag-class>
 		<body-content>JSP</body-content>

@@ -25,6 +25,7 @@ a.add,
 a.copy,
 a.detail,
 a.consult,
+a.infotraitement,
 a.alert,
 a.historique,
 a.download,
@@ -163,6 +164,11 @@ a.detail:hover {
 
 a.consult {
 	background-image: url(consult_off.gif);
+}
+
+a.infotraitement {
+	background-image: url(info.png);
+
 }
 
 a.consult:hover {
