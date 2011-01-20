@@ -45,7 +45,7 @@ if [ -z "$SRV" ]; then
 	        echo "$SERVICES" | while read LINE; do
 	                echo -e "\t$IDX:\t$LINE"
 	                ((++IDX))
-		done
+		done >&2
 	
 		CHOSEN=""
 	        while [[ ! "$CHOSEN" =~ ^[1-9][0-9]*$ || "$CHOSEN" -gt "$NB_SERVICES" ]]; do
