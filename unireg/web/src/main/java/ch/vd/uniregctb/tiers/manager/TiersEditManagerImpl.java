@@ -30,6 +30,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.ComplementView;
+import ch.vd.uniregctb.tiers.view.CompteBancaireView;
 import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
@@ -500,12 +501,15 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 
 		// compte bancaire
-		String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(complement.getCompteBancaire().getNumeroCompteBancaire());
-		if (ibanSaisi != null) {
-			tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());
+		final CompteBancaireView compteBancaire = complement.getCompteBancaire();
+		if (compteBancaire != null) {
+			String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getNumeroCompteBancaire());
+			if (ibanSaisi != null) {
+				tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());
+			}
+			tiers.setTitulaireCompteBancaire(compteBancaire.getTitulaireCompteBancaire());
+			tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift()));
 		}
-		tiers.setTitulaireCompteBancaire(complement.getCompteBancaire().getTitulaireCompteBancaire());
-		tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(complement.getCompteBancaire().getAdresseBicSwift()));
 	}
 
 	public Tiers save(TiersEditView tiersEditView) {
