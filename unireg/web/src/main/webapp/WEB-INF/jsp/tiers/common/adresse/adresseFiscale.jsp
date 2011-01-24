@@ -13,27 +13,27 @@
 <c:if test="${not empty adresses}">	
 <display:table name="${adresses}" id="adresse" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column  sortable ="true" titleKey="label.utilisationAdresse">
-				<fmt:message key="option.usage.${adresse.usage}" />
+			<fmt:message key="option.usage.${adresse.usage}" />
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-				<fmt:formatDate value="${adresse.dateDebut}" pattern="dd.MM.yyyy"/>
+			<fmt:formatDate value="${adresse.dateDebut}" pattern="dd.MM.yyyy"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-				<fmt:formatDate value="${adresse.dateFin}" pattern="dd.MM.yyyy"/>
+			<fmt:formatDate value="${adresse.dateFin}" pattern="dd.MM.yyyy"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.adresse.complement">
-			${adresse.complements}
+			<c:out value="${adresse.complements}"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.rueCasePostale">
-				${adresse.rue}
+			<c:out value="${adresse.rue}"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.localite" >
-				${adresse.localite}
+			<c:out value="${adresse.localite}"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.pays" >
-				<c:if test="${adresse.paysOFS != null }">
-					<unireg:infra entityId="${adresse.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
-				</c:if>
+			<c:if test="${adresse.paysOFS != null }">
+				<unireg:infra entityId="${adresse.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+			</c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.permanente" >
 			<c:if test="${!adresse.annule}">	
@@ -43,8 +43,8 @@
 			</c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.source">
-				<fmt:message key="option.source.${adresse.source}" />
-					<c:if test="${adresse.default || adresse.source == 'CIVILE'}">(<fmt:message key="option.source.default.tag" />)</c:if>
+			<fmt:message key="option.source.${adresse.source}" />
+			<c:if test="${adresse.default || adresse.source == 'CIVILE'}">(<fmt:message key="option.source.default.tag" />)</c:if>
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">

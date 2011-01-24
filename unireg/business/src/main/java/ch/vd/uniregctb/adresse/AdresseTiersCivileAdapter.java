@@ -252,7 +252,11 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	}
 
 	public Long getId() {
-			return adresseCivileSurcharge.getId();
+		return adresseCivileSurcharge.getId();
+	}
+
+	public boolean isPermanente() {
+		return false;
 	}
 
 	@Override

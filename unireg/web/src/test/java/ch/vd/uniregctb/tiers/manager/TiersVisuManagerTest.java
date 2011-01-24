@@ -1,22 +1,14 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.List;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -24,10 +16,13 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TiersVisuManagerTest extends WebTest {
 
@@ -159,7 +154,7 @@ public class TiersVisuManagerTest extends WebTest {
 		 */
 		assertEquals(2, adressesZotan.size());
 		assertEquals(date(2009,12,18), RegDate.get(adressesZotan.get(0).getDateDebut()));
-		assertEquals("",adressesZotan.get(0).getLocalite());
+		assertNull(adressesZotan.get(0).getLocalite());
 
 
 	}

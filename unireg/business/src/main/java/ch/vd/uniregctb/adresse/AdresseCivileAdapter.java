@@ -328,6 +328,10 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		return null;
 	}
 
+	public boolean isPermanente() {
+		return false; // par définition, seules les adresses tiers peuvent être permanentes
+	}
+
 	@Override
 	public String toString() {
 		return DateRangeHelper.toString(this);

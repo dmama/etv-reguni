@@ -120,4 +120,9 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
      * @return si l'adresse est annulée ou pas.
      */
     boolean isAnnule();
+
+	/**
+	 * @return <b>vrai</b> s'il s'agit d'une adresse tiers ({@link AdresseTiers}) permanente; <b>faux</b> dans tous les autres cas.
+	 */
+	boolean isPermanente();
 }

@@ -292,7 +292,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	private void AdaptAdresseCivileToAdresseView(List<AdresseView> adressesView, TypeAdresseCivil type, Tiers tiers, Adresse adresse) throws AdressesResolutionException, InfrastructureException {
 		try {
 			AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, false, getServiceInfrastructureService());
-			AdresseView adresseView = createVisuAdresseView(adrGen, null, tiers);
+			AdresseView adresseView = createAdresseView(adrGen, null);
 			adresseView.setUsageCivil(type);
 			adressesView.add(adresseView);
 
