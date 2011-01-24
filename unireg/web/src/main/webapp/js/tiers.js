@@ -376,6 +376,7 @@ function annulerAdresse(idAdresse) {
 		var form = $('<form method="POST" action="' + getContextPath() + '/adresses/edit.do">' +
 			'<input type="hidden" name="__TARGET__" value="annulerAdresse"/>' +
 			'<input type="hidden" name="__EVENT_ARGUMENT__" value="' + idAdresse + '"/></form>');
+		form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
 		form.submit();
  	}
 }
