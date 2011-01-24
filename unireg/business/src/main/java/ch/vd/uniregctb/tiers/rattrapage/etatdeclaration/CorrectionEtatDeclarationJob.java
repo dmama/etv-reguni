@@ -255,7 +255,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 			"    e1.id != e2.id " +
 			"    and e1.declaration.id = e2.declaration.id " +
 			"    and e1.dateObtention = e2.dateObtention " +
-			"    and e1.etat = e2.etat " +
+			"    and e1.class = e2.class " +
 			"    and e1.annulationDate is null " +
 			"    and e2.annulationDate is null ";
 
