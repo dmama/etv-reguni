@@ -10,6 +10,9 @@ public class CompteBancaireView {
 	private String ibanValidationMessage;
 	private String adresseBicSwift;
 
+	public CompteBancaireView() {
+	}
+
 	public CompteBancaireView(Long numeroTiersTitulaire, String titulaireCompte, String numeroCCP, String numeroCompteBancaire, String nomInstitutionCompteBancaire, String iban,
 	                          String ibanValidationMessage, String adresseBicSwift) {
 		this.numeroTiersTitulaire = numeroTiersTitulaire;
