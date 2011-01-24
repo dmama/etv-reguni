@@ -169,8 +169,8 @@ public class ImpressionChemisesTOProcessor {
 	@SuppressWarnings("unchecked")
 	private List<Long> getIdDesDIPourTO(Session session) {
 		final String queryString = "select di.id from DeclarationImpotOrdinaire AS di"
-				+ " where exists (select ed.id from EtatDeclaration AS ed where ed.declaration.id = di.id and ed.etat = 'ECHUE' and ed.annulationDate is null)"
-				+ " and not exists (select ed.id from EtatDeclaration AS ed where ed.declaration.id = di.id and ed.etat = 'RETOURNEE' and ed.annulationDate is null)"
+				+ " where exists (select ed.id from EtatDeclaration AS ed where ed.declaration.id = di.id and ed.class = EtatDeclarationEchue and ed.annulationDate is null)"
+				+ " and not exists (select ed.id from EtatDeclaration AS ed where ed.declaration.id = di.id and ed.class = EtatDeclarationRetournee and ed.annulationDate is null)"
 				+ " and di.annulationDate is null and di.dateImpressionChemiseTaxationOffice is null order by di.tiers.numero asc";
 		final Query query = session.createQuery(queryString);
 		return query.list();
