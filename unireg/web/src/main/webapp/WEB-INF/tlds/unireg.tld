@@ -32,6 +32,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>field advertiser object</description>
 		</attribute>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>si renseigné, génère un lien vers la visualisation du tiers</description>
+		</attribute>
 	</tag>
 	<tag>
 		<name>numAVS</name>

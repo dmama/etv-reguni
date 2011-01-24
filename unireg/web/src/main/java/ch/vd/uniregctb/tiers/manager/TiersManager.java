@@ -47,13 +47,10 @@ import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
-import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.Rue;
-import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -1197,7 +1194,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	protected ComplementView buildComplement(Tiers tiers) {
-		return new ComplementView(tiers, servicePM, ibanValidator);
+		return new ComplementView(tiers, servicePM, serviceInfrastructureService, ibanValidator);
 	}
 
 	public void setServicePM(ServicePersonneMoraleService servicePM) {

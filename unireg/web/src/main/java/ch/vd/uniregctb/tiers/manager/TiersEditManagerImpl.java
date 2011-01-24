@@ -500,12 +500,12 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 
 		// compte bancaire
-		String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(complement.getNumeroCompteBancaire());
+		String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(complement.getCompteBancaire().getNumeroCompteBancaire());
 		if (ibanSaisi != null) {
 			tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());
 		}
-		tiers.setTitulaireCompteBancaire(complement.getTitulaireCompteBancaire());
-		tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(complement.getAdresseBicSwift()));
+		tiers.setTitulaireCompteBancaire(complement.getCompteBancaire().getTitulaireCompteBancaire());
+		tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(complement.getCompteBancaire().getAdresseBicSwift()));
 	}
 
 	public Tiers save(TiersEditView tiersEditView) {

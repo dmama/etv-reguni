@@ -105,7 +105,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
 			<td width="70%">
-				<form:input path="complement.numeroCompteBancaire" tabindex="10"  id="tiers_numeroCompteBancaire" cssErrorClass="input-with-errors"
+				<form:input path="complement.compteBancaire.iban" tabindex="10"  id="tiers_numeroCompteBancaire" cssErrorClass="input-with-errors"
 				size ="${lengthnumcompte}" maxlength="${lengthnumcompte}"/>
 				<span class="formInfo"><a href="#" title="<c:url value="/htm/iban.htm?width=375"/>" class="jTip" id="tipIban">?</a></span>
 				<form:errors path="tiers.numeroCompteBancaire" cssClass="error"/>
@@ -114,7 +114,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>
 			<td width="70%">
-				<form:input path="complement.titulaireCompteBancaire" tabindex="11" id="tiers_titulaireCompteBancaire"
+				<form:input path="complement.compteBancaire.titulaireCompteBancaire" tabindex="11" id="tiers_titulaireCompteBancaire"
 				cssErrorClass="input-with-errors" size ="30" maxlength="${lengthpersonne}" />
 				<span class="formInfo"><a href="#" title="<c:url value="/htm/titulaireCompte.htm?width=375"/>" class="jTip" id="titulaireCompte">?</a></span>
 				<form:errors path="tiers.titulaireCompteBancaire" cssClass="error"/>
@@ -124,7 +124,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.bicSwift" />&nbsp;:</td>
 			<td width="70%">
-				<form:input path="complement.adresseBicSwift" tabindex="12"  id="tiers_adresseBicSwift" cssErrorClass="input-with-errors"
+				<form:input path="complement.compteBancaire.adresseBicSwift" tabindex="12"  id="tiers_adresseBicSwift" cssErrorClass="input-with-errors"
 				size ="26" maxlength="${lengthbic}" />
 				<span class="formInfo"><a href="#" title="<c:url value="/htm/bic.htm?width=375"/>" class="jTip" id="bic">?</a></span>
 				<form:errors path="tiers.adresseBicSwift" cssClass="error"/>

@@ -38,7 +38,7 @@ public class DebiteurEditView {
 			this.periodeDecompte = periodicite.getPeriodeDecompte();
 		}
 
-		this.complement = new ComplementView(dpi, null, ibanValidator);
+		this.complement = new ComplementView(dpi, null, null, ibanValidator);
 	}
 
 	public Long getId() {

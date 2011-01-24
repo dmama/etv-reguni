@@ -1,13 +1,20 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
+import ch.vd.uniregctb.interfaces.model.Mandat;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.service.PartPM;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -26,11 +33,9 @@ public class ComplementView {
 	private String numeroTelecopie;
 	private String adresseCourrierElectronique;
 
-	private String numeroCompteBancaire;
-	private String nomInstitutionCompteBancaire;
-	private String ibanValidationMessage;
-	private String titulaireCompteBancaire;
-	private String adresseBicSwift;
+	private CompteBancaireView compteBancaire;
+	private List<CompteBancaireView> autresComptesBancaires = new ArrayList<CompteBancaireView>();
+
 	private Boolean blocageRemboursementAutomatique;
 
 	private Long ancienNumeroSourcier;
@@ -38,7 +43,7 @@ public class ComplementView {
 	public ComplementView() {
 	}
 
-	public ComplementView(Tiers tiers, ServicePersonneMoraleService servicePM, IbanValidator ibanValidator) {
+	public ComplementView(Tiers tiers, ServicePersonneMoraleService servicePM, ServiceInfrastructureService serviceInfra, IbanValidator ibanValidator) {
 
 		if (tiers instanceof Entreprise) {
 
@@ -50,15 +55,45 @@ public class ComplementView {
 				this.numeroTelephonePortable = null;
 				this.numeroTelephoneProfessionnel = null;
 
-				// comptes bancaires
-				this.titulaireCompteBancaire = pm.getTitulaireCompte();
-
+				// autres comptes bancaires
 				final List<CompteBancaire> comptes = pm.getComptesBancaires();
 				if (comptes != null && !comptes.isEmpty()) {
-					final CompteBancaire c = comptes.get(0);
-					this.numeroCompteBancaire = c.getNumero();
-					this.nomInstitutionCompteBancaire = c.getNomInstitution();
-					this.adresseBicSwift = null; // pas disponible
+					for (CompteBancaire compte : comptes) {
+						if (compte.getFormat() == CompteBancaire.Format.IBAN) {
+							final String ibanValidationMessage = verifierIban(compte.getNumero(), ibanValidator); // [UNIREG-2582]
+							autresComptesBancaires
+									.add(new CompteBancaireView(tiers.getNumero(), pm.getTitulaireCompte(), null, null, compte.getNomInstitution(), compte.getNumero(), ibanValidationMessage, null));
+						}
+						else {
+							final String numero = compte.getNumero();
+							final String numeroCCP;
+							final String numeroCompteBancaire;
+							if (numero.contains("-")) { // on essaie de départager entre les deux : best effort...
+								numeroCCP = numero;
+								numeroCompteBancaire = null;
+							}
+							else {
+								numeroCCP = null;
+								numeroCompteBancaire = numero;
+							}
+							autresComptesBancaires
+									.add(new CompteBancaireView(tiers.getNumero(), pm.getTitulaireCompte(), numeroCCP, numeroCompteBancaire, compte.getNomInstitution(), null, null, null));
+						}
+					}
+				}
+
+				final List<Mandat> mandats = pm.getMandats();
+				if (mandats != null) {
+					for (Mandat mandat : mandats) {
+						if (RegDateHelper.isBetween(null, mandat.getDateDebut(), mandat.getDateFin(), NullDateBehavior.LATEST)) {
+							if (StringUtils.isNotBlank(mandat.getCompteBancaire()) || StringUtils.isNotBlank(mandat.getCCP()) || StringUtils.isNotBlank(mandat.getIBAN())) {
+								final String nomInstitutionFinanciere = getNomInstitution(mandat.getNumeroInstitutionFinanciere(), serviceInfra);
+								final String ibanValidationMessage = verifierIban(mandat.getIBAN(), ibanValidator); // [UNIREG-2582]
+								autresComptesBancaires.add(new CompteBancaireView(mandat.getNumeroMandataire(), pm.getTitulaireCompte(), mandat.getCCP(), mandat.getCompteBancaire(),
+										nomInstitutionFinanciere, mandat.getIBAN(), ibanValidationMessage, mandat.getBicSwift()));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -75,10 +110,9 @@ public class ComplementView {
 			this.adresseCourrierElectronique = tiers.getAdresseCourrierElectronique();
 
 			// compte bancaire
-			this.numeroCompteBancaire = tiers.getNumeroCompteBancaire();
-			this.titulaireCompteBancaire = tiers.getTitulaireCompteBancaire();
-			this.adresseBicSwift = tiers.getAdresseBicSwift();
-			this.ibanValidationMessage = verifierIban(tiers, ibanValidator); // [UNIREG-2582]
+			final String iban = tiers.getNumeroCompteBancaire();
+			final String ibanValidationMessage = verifierIban(iban, ibanValidator); // [UNIREG-2582]
+			compteBancaire = new CompteBancaireView(tiers.getNumero(), tiers.getTitulaireCompteBancaire(), null, null, null, iban, ibanValidationMessage, tiers.getAdresseBicSwift());
 
 			if (tiers instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) tiers;
@@ -89,15 +123,31 @@ public class ComplementView {
 		this.blocageRemboursementAutomatique = tiers.getBlocageRemboursementAutomatique();
 	}
 
+	private static String getNomInstitution(Long noInstit, ServiceInfrastructureService serviceInfra) {
+
+		if (noInstit == null) {
+			return null;
+		}
+
+		final InstitutionFinanciere instit;
+		try {
+			instit = serviceInfra.getInstitutionFinanciere(noInstit.intValue());
+		}
+		catch (InfrastructureException e) {
+			throw new RuntimeException("L'institution financière avec le numéro = [" + noInstit + "] n'existe pas.");
+		}
+
+		return instit.getNomInstitutionFinanciere();
+	}
+
 	/**
 	 * Permet renseigner la view sur le fait que l'iban du tiers associé est valide ou pas
 	 *
-	 * @param tiers le tiers dont l'IBAN doit être vérifié
-	 * @param ibanValidator
+	 * @param iban          l'iban à vérifier
+	 * @param ibanValidator le validator d'iban
 	 * @return <code>null</code> si l'IBAN est valide, explication textuelle de l'erreur sinon
 	 */
-	private static String verifierIban(Tiers tiers, IbanValidator ibanValidator) {
-		final String iban = tiers.getNumeroCompteBancaire();
+	private static String verifierIban(String iban, IbanValidator ibanValidator) {
 		if (StringUtils.isNotBlank(iban)) {
 			return ibanValidator.getIbanValidationError(iban);
 		}
@@ -160,44 +210,26 @@ public class ComplementView {
 		this.adresseCourrierElectronique = adresseCourrierElectronique;
 	}
 
-	public String getNumeroCompteBancaire() {
-		return numeroCompteBancaire;
+	/**
+	 * @return le compte bancaire du tiers courant.
+	 */
+	public CompteBancaireView getCompteBancaire() {
+		return compteBancaire;
 	}
 
-	public void setNumeroCompteBancaire(String numeroCompteBancaire) {
-		this.numeroCompteBancaire = numeroCompteBancaire;
+	public void setCompteBancaire(CompteBancaireView compteBancaire) {
+		this.compteBancaire = compteBancaire;
 	}
 
-	public String getNomInstitutionCompteBancaire() {
-		return nomInstitutionCompteBancaire;
+	/**
+	 * @return les autres comptes bancaires associés (ex. mandats pm). En lecture seule.
+	 */
+	public List<CompteBancaireView> getAutresComptesBancaires() {
+		return autresComptesBancaires;
 	}
 
-	public void setNomInstitutionCompteBancaire(String nomInstitutionCompteBancaire) {
-		this.nomInstitutionCompteBancaire = nomInstitutionCompteBancaire;
-	}
-
-	public String getIbanValidationMessage() {
-		return ibanValidationMessage;
-	}
-
-	public void setIbanValidationMessage(String ibanValidationMessage) {
-		this.ibanValidationMessage = ibanValidationMessage;
-	}
-
-	public String getTitulaireCompteBancaire() {
-		return titulaireCompteBancaire;
-	}
-
-	public void setTitulaireCompteBancaire(String titulaireCompteBancaire) {
-		this.titulaireCompteBancaire = titulaireCompteBancaire;
-	}
-
-	public String getAdresseBicSwift() {
-		return adresseBicSwift;
-	}
-
-	public void setAdresseBicSwift(String adresseBicSwift) {
-		this.adresseBicSwift = adresseBicSwift;
+	public void setAutresComptesBancaires(List<CompteBancaireView> autresComptesBancaires) {
+		this.autresComptesBancaires = autresComptesBancaires;
 	}
 
 	public Boolean getBlocageRemboursementAutomatique() {

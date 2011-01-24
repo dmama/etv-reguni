@@ -84,13 +84,12 @@ public class ComplementEditValidator implements Validator {
 					}
 				}
 
-
-				if (StringUtils.isNotBlank(complement.getNumeroCompteBancaire())) {
+				if (StringUtils.isNotBlank(complement.getCompteBancaire().getNumeroCompteBancaire())) {
 					//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide. 
 					Tiers tiersInBase = tiersService.getTiers(tiersView.getTiers().getNumero());
-					if (!complement.getNumeroCompteBancaire().equals(tiersInBase.getNumeroCompteBancaire())) {
+					if (!complement.getCompteBancaire().getNumeroCompteBancaire().equals(tiersInBase.getNumeroCompteBancaire())) {
 						try {
-							ibanValidator.validate(complement.getNumeroCompteBancaire());
+							ibanValidator.validate(complement.getCompteBancaire().getNumeroCompteBancaire());
 						}
 						catch (IbanValidationException e) {
 							if (StringUtils.isBlank(e.getMessage())) {
