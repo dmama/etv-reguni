@@ -179,6 +179,10 @@ final class MockAdresseGeneric implements AdresseGenerique {
 		return null;
 	}
 
+	public boolean isPermanente() {
+		return false;
+	}
+
 	public CommuneSimple getCommuneAdresse() {
 		return null;
 	}

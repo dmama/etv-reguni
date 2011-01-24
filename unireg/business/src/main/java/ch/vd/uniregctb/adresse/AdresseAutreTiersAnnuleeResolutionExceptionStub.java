@@ -124,4 +124,8 @@ public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseG
 	public String getAnnulationUser() {
 		return target.getAnnulationUser();
 	}
+
+	public boolean isPermanente() {
+		return false;
+	}
 }

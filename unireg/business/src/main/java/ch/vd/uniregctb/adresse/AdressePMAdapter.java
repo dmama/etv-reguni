@@ -161,4 +161,8 @@ public class AdressePMAdapter implements AdresseGenerique {
 	public Long getId() {
 		return null;
 	}
+
+	public boolean isPermanente() {
+		return false;
+	}
 }

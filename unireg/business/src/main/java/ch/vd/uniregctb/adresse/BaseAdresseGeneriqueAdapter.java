@@ -277,6 +277,10 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		}
 	}
 
+	public boolean isPermanente() {
+		return source == Source.FISCALE && target.isPermanente();
+	}
+
 	public CommuneSimple getCommuneAdresse() {
 		return target.getCommuneAdresse();
 	}

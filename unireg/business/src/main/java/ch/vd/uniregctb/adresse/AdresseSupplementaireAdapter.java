@@ -273,6 +273,10 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		return adresse.getId();
 	}
 
+	public boolean isPermanente() {
+		return adresse.isPermanente();
+	}
+
 	public CommuneSimple getCommuneAdresse() {
 		// les adresses purement fiscales ne sont pas attachées à des communes directement
 		// -> il faut donc passer par la localité postale

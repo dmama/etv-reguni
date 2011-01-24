@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
@@ -27,7 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdresseTiersDAO;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
@@ -138,7 +137,7 @@ public class TiersManager implements MessageSourceAware {
 
 	protected TiersService tiersService;
 
-	private ServiceInfrastructureService serviceInfrastructureService;
+	protected ServiceInfrastructureService serviceInfrastructureService;
 
 	private AdresseManager adresseManager;
 
@@ -1715,140 +1714,46 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		for (AdresseGenerique adresse : adresses) {
-			AdresseView adresseView = createVisuAdresseView(adresse, type, tiers);
+			AdresseView adresseView = createAdresseView(adresse, type);
 			adressesView.add(adresseView);
 		}
 	}
 
 	/**
-	 * Methode annexe de creation d'adresse view pour un type donne
+	 * Crée une adresse view à partir d'une adresse générique.
 	 *
-	 * @param addProf
-	 * @param type
-	 * @return
-	 * @throws InfrastructureException
+	 * @param adresse une adresse générique
+	 * @param type    un type d'adresse
+	 * @return une adresse view
 	 */
-	protected AdresseView createVisuAdresseView(AdresseGenerique adr, TypeAdresseTiers type,
-	                                            Tiers tiers) throws InfrastructureException {
-		AdresseView adresseView = createAdresseView(adr, type, tiers);
+	public AdresseView createAdresseView(AdresseGenerique adresse, TypeAdresseTiers type) {
 
-		RegDate dateJour = RegDate.get();
-		if (((adr.getDateDebut() == null) || (adr.getDateDebut().isBeforeOrEqual(dateJour)))
-				&& ((adr.getDateFin() == null) || (adr.getDateFin().isAfterOrEqual(dateJour)))) {
-			adresseView.setActive(true);
-		}
-		else {
-			adresseView.setActive(false);
-		}
-
-		adresseView.setSurVaud(getServiceInfrastructureService().estDansLeCanton(adr));
-
-
+		final AdresseView adresseView = new AdresseView();
+		adresseView.setDateDebut(adresse.getDateDebut());
+		adresseView.setDateFin(adresse.getDateFin());
+		adresseView.setAnnule(adresse.isAnnule());
+		adresseView.setId(adresse.getId());
+		adresseView.setPermanente(adresse.isPermanente());
+		adresseView.setRue(AdresseServiceImpl.buildRueEtNumero(adresse));
+		adresseView.setLocalite(AdresseServiceImpl.buildNpaEtLocalite(adresse));
+		adresseView.setUsage(type);
+		adresseView.setPaysOFS(adresse.getNoOfsPays());
+		adresseView.setSource(adresse.getSource());
+		adresseView.setDefault(adresse.isDefault());
+		adresseView.setComplements(adresse.getComplement());
+		adresseView.setActive(adresse.isValidAt(RegDate.get()));
+		adresseView.setSurVaud(estDansLeCanton(adresse));
 		return adresseView;
 	}
 
-
-	/**
-	 * <b>AAaaahh ! Horrible méthode qui duplique (mal) le code de l'adresse service ! A ne plus utiliser !!</b>
-	 * <p> 
-	 * Methode annexe de creation d'adresse view pour un type donne
-	 *
-	 * @param addGen
-	 * @param type
-	 * @return
-	 * @throws InfrastructureException
-	 */
-	public AdresseView createAdresseView(AdresseGenerique addGen, TypeAdresseTiers type, Tiers tiers) {
-		AdresseView adresseView = new AdresseView();
-		adresseView.setDateDebut(addGen.getDateDebut());
-		adresseView.setDateFin(addGen.getDateFin());
-		adresseView.setAnnule(addGen.isAnnule());
-		if (addGen.getId() != null) {
-			AdresseTiers adresseTiers = adresseTiersDAO.get(addGen.getId());
-			if (adresseTiers instanceof AdresseSupplementaire) {
-				AdresseSupplementaire adresseSupplementaire = (AdresseSupplementaire) adresseTiers;
-				adresseView.setPermanente(adresseSupplementaire.isPermanente());
-			}
-			else {
-				adresseView.setPermanente(false);
-			}
-			adresseView.setId(addGen.getId());
+	private boolean estDansLeCanton(AdresseGenerique adresse) {
+		try {
+			return serviceInfrastructureService.estDansLeCanton(adresse);
 		}
-		else {
-			adresseView.setPermanente(false);
-			adresseView.setId(null);
+		catch (InfrastructureException e) {
+			LOGGER.error("Impossible de déterminer le canton de l'adresse : " + adresse, e);
+			return false;
 		}
-		Integer numeroRue = addGen.getNumeroRue();
-		String rueFull = null;
-		if ((numeroRue != null) && (numeroRue.intValue() != 0)) {
-			Rue rue = getRueByNumero(numeroRue);
-			if (rue != null) {
-				if ((rue.getDesignationCourrier() != null) && (addGen.getCasePostale() == null)) {
-					rueFull = rue.getDesignationCourrier();
-					if (addGen.getNumero() != null) {
-						rueFull = rueFull + " " + addGen.getNumero();
-					}
-				}
-				if ((rue.getDesignationCourrier() == null) && (addGen.getCasePostale() != null)) {
-					rueFull = addGen.getCasePostale();
-				}
-				if ((rue.getDesignationCourrier() != null) && (addGen.getCasePostale() != null)) {
-
-					rueFull = rue.getDesignationCourrier();
-
-					if (addGen.getNumero() != null) {
-						rueFull = rueFull + " " + addGen.getNumero();
-					}
-					rueFull = rueFull + " / " + addGen.getCasePostale();
-				}
-				Localite localite = getLocaliteByONRP(rue.getNoLocalite());
-				if (localite != null) {
-					String localiteStr = "";
-					if (localite.getNPA() != null) {
-						localiteStr = localite.getNPA().toString() + " ";
-					}
-					localiteStr += localite.getNomAbregeMinuscule();
-					adresseView.setLocalite(localiteStr);
-				}
-			}
-		}
-		else {
-			if ((addGen.getRue() != null) && (addGen.getCasePostale() == null)) {
-				rueFull = addGen.getRue();
-				if (addGen.getNumero() != null) {
-					rueFull = rueFull + " " + addGen.getNumero();
-				}
-			}
-			if ((addGen.getRue() == null) && (addGen.getCasePostale() != null)) {
-				rueFull = addGen.getCasePostale();
-			}
-			if ((addGen.getRue() != null) && (addGen.getCasePostale() != null)) {
-				rueFull = addGen.getRue();
-				if (addGen.getNumero() != null) {
-					rueFull = rueFull + " " + addGen.getNumero();
-				}
-				rueFull = rueFull + " / " + addGen.getCasePostale();
-			}
-			String localiteStr = "";
-			if (StringUtils.hasText(addGen.getNumeroPostal())) {
-				localiteStr = addGen.getNumeroPostal() + " ";
-			}
-			if(addGen.getLocalite()!=null){
-				localiteStr += addGen.getLocalite();
-			}
-
-			adresseView.setLocalite(localiteStr);
-		}
-
-		adresseView.setRue(rueFull);
-		adresseView.setUsage(type);
-		adresseView.setPaysOFS(addGen.getNoOfsPays());
-		adresseView.setSource(addGen.getSource());
-		adresseView.setDefault(addGen.isDefault());
-
-		adresseView.setComplements(addGen.getComplement());
-
-		return adresseView;
 	}
 
 	protected List<AdresseView> removeAdresseFromCivil(List<AdresseView> adresses) {

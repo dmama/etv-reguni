@@ -33,7 +33,7 @@
 					<c:when test="${command.localite != null }">
 						<tr class="<unireg:nextRowClass/>" >
 							<td><fmt:message key="label.localite"/>&nbsp;:</td>
-							<td>${command.localite}<td>
+							<td><c:out value="${command.localite}"/><td>
 						</tr>
 					</c:when>
 					<c:when test="${command.localiteSuisse != null }">

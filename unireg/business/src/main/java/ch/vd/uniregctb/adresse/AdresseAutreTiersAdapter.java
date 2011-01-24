@@ -27,4 +27,9 @@ public class AdresseAutreTiersAdapter extends BaseAdresseGeneriqueAdapter {
 	public Long getId() {
 		return id; // [UNIREG-3206] On veut retourner l'id de l'adresse 'autre tiers' définie sur le tiers courant (et non pas l'id de l'adresse fiscale du tiers pointé).
 	}
+
+	public boolean isPermanente() {
+		// les adresses autre tiers ne peuvent pas être permanentes (à l'heure actuelle)
+		return false;
+	}
 }

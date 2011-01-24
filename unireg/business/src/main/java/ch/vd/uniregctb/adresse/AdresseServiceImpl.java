@@ -877,7 +877,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return nomsComplets;
 	}
 
-	private static String buildRueEtNumero(AdresseGenerique adresse) {
+	public static String buildRueEtNumero(AdresseGenerique adresse) {
 		final String rueEtNumero;
 		final String rue = adresse.getRue();
 		final String numeroRue = adresse.getNumero();
@@ -893,6 +893,24 @@ public class AdresseServiceImpl implements AdresseService {
 			rueEtNumero = null;
 		}
 		return rueEtNumero;
+	}
+
+	public static String buildNpaEtLocalite(AdresseGenerique adresse) {
+		final String localiteEtNumero;
+		final String localite = adresse.getLocalite();
+		if (notEmpty(localite)) {
+			final String numeroPostal = adresse.getNumeroPostal();
+			if (notEmpty(numeroPostal)) {
+				localiteEtNumero = numeroPostal + " " + localite;
+			}
+			else {
+				localiteEtNumero = localite;
+			}
+		}
+		else {
+			localiteEtNumero = null;
+		}
+		return localiteEtNumero;
 	}
 
 	private String buildPays(AdresseGenerique adresse, boolean aussiSuisse) {
@@ -937,15 +955,9 @@ public class AdresseServiceImpl implements AdresseService {
 			adresseEnvoi.addCasePostale(casePostale, OPTIONALITE_CASE_POSTALE);
 		}
 
-		final String localite = adresse.getLocalite();
-		if (notEmpty(localite)) {
-			final String numeroPostal = adresse.getNumeroPostal();
-			if (notEmpty(numeroPostal)) {
-				adresseEnvoi.addNpaEtLocalite(numeroPostal + " " + localite);
-			}
-			else {
-				adresseEnvoi.addNpaEtLocalite(localite);
-			}
+		final String npaEtlocalite = buildNpaEtLocalite(adresse);
+		if (notEmpty(npaEtlocalite)) {
+			adresseEnvoi.addNpaEtLocalite(npaEtlocalite);
 		}
 
 		final String nomPays = buildPays(adresse, false);
