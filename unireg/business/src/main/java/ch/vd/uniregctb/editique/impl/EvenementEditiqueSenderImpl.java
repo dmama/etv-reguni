@@ -42,8 +42,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 		return envoyer(nomDocument, typeDocument, document, TypeImpression.BATCH, typeFormat, archive, esbTemplate);
 	}
 
-	private String envoyer(String nomDocument, String typeDocument, XmlObject document, TypeImpression typeImpression, TypeFormat typeFormat, boolean archive, EsbJmsTemplate esbTemplate) throws
-			EditiqueException {
+	private String envoyer(String nomDocument, String typeDocument, XmlObject document, TypeImpression typeImpression, TypeFormat typeFormat, boolean archive, EsbJmsTemplate esbTemplate) throws EditiqueException {
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
@@ -55,14 +54,20 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 			m.setBusinessId(nomDocument);
 			m.setBusinessUser(principal);
 			m.setServiceDestination(serviceDestination);
-			m.setServiceReplyTo(serviceReplyTo);
+
+			// pas de retour si on est en batch...
+			if (TypeImpression.DIRECT.equals(typeImpression)) {
+				m.setServiceReplyTo(serviceReplyTo);
+			}
+
+			// TODO (jde) il faudrait un nom plus spécifique à chaque type de document...
 			m.setContext("evenementEditique");
 
 			// meta-info requis par éditique
 			m.addHeader(TypeMessagePropertiesNames.PRINT_MODE_MESSAGE_PROPERTY_NAME.toString(), typeImpression.toString());
 			m.addHeader(TypeMessagePropertiesNames.ARCHIVE_MESSAGE_PROPERTY_FLAG.toString(), Boolean.toString(archive));
 			m.addHeader(TypeMessagePropertiesNames.DOCUMENT_TYPE_MESSAGE_PROPERTY_NAME.toString(), typeDocument);
-			if (typeImpression == TypeImpression.DIRECT) {
+			if (TypeImpression.DIRECT.equals(typeImpression)) {
 				m.addHeader(TypeMessagePropertiesNames.RETURN_FORMAT_MESSAGE_PROPERTY_NAME.toString(), typeFormat.toString());
 				// TODO (msi) demander à giampaolo comment setter cette valeur : message.setJMSPriority(MAX_PRIORITY);
 				m.addHeader(EditiqueHelper.DI_ID, nomDocument);
