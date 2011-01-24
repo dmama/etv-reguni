@@ -72,8 +72,9 @@ SUM_TIMES=0
 MIN_TIME=99999999999999
 MAX_TIME=-1
 echo "TIMESTAMP;AVG_TIME;COUNT;MIN_TIME;MAX_TIME"
-while read TS TIME; do
+while read TS_DAY TS_HOUR TIME; do
 
+	TS="$TS_DAY $TS_HOUR"
 	if [ "$OLD_TS" != "$TS" ]; then
 		if [ -n "$OLD_TS" ]; then
 			echo "$OLD_TS;$(($SUM_TIMES / $COUNT));$COUNT;$MIN_TIME;$MAX_TIME"
@@ -89,7 +90,7 @@ while read TS TIME; do
 	if [ -z "$MIN_TIME" -o "$TIME" -lt "$MIN_TIME" ]; then MIN_TIME=$TIME; fi
 	if [ -z "$MAX_TIME" -o "$TIME" -gt "$MAX_TIME" ]; then MAX_TIME=$TIME; fi
 
-done < <(cat_file "$FILE" | grep "\[$WS_USER\]" | awk " \$8 ~ /^$SERVICE\{/ { print \$3 \" \" \$4 \" \" \$6; }" | sed -e 's/[^0-9\.: ]//g' -e 's/ /-/' -e 's/:[0-9]\+\.[0-9]\+//')
+done < <(cat_file "$FILE" | grep "\[$WS_USER\]" | awk " \$8 ~ /^$SERVICE\{/ { print \$3 \" \" \$4 \" \" \$6; }" | sed -e 's/-/\//g' -e 's/[^0-9.: /]//g' -e 's/:[0-9]\+\.[0-9]\+//')
 
 if [ "$COUNT" -gt 0 ]; then
 	echo "$OLD_TS;$(($SUM_TIMES / $COUNT));$COUNT;$MIN_TIME;$MAX_TIME"
