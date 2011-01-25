@@ -125,26 +125,26 @@ function updateMotifsFermeture(element, motifsFermetureSelectId, numeroCtb, genr
 */
 function selectForFiscal(name) {
 	if( name == 'COMMUNE_OU_FRACTION_VD' ){
-		Element.show('for_fraction_commune_label');
-		Element.show('for_fraction_commune');
-		Element.hide('for_commune_label');
-		Element.hide('for_commune');
-		Element.hide('for_pays_label');
-		Element.hide('for_pays');
+		$('#for_fraction_commune_label').show();
+		$('#for_fraction_commune').show();
+		$('#for_commune_label').hide();
+		$('#for_commune').hide();
+		$('#for_pays_label').hide();
+		$('#for_pays').hide();
 	} else if( name == 'COMMUNE_HC' ){
-		Element.hide('for_fraction_commune_label');
-		Element.hide('for_fraction_commune');
-		Element.show('for_commune_label');
-		Element.show('for_commune');
-		Element.hide('for_pays_label');
-		Element.hide('for_pays');
+		$('#for_fraction_commune_label').hide();
+		$('#for_fraction_commune').hide();
+		$('#for_commune_label').show();
+		$('#for_commune').show();
+		$('#for_pays_label').hide();
+		$('#for_pays').hide();
 	} else if( name == 'PAYS_HS' ){
-		Element.hide('for_fraction_commune_label');
-		Element.hide('for_fraction_commune');
-		Element.hide('for_commune_label');
-		Element.hide('for_commune');
-		Element.show('for_pays_label');
-		Element.show('for_pays');
+		$('#for_fraction_commune_label').hide();
+		$('#for_fraction_commune').hide();
+		$('#for_commune_label').hide();
+		$('#for_commune').hide();
+		$('#for_pays_label').show();
+		$('#for_pays').show();
 	} 
 }
 
@@ -153,15 +153,15 @@ function selectForFiscal(name) {
 */
 function selectForFiscalDPI(name) {
 	if( name == 'COMMUNE_OU_FRACTION_VD' ){
-		Element.show('for_fraction_commune_label');
-		Element.show('for_fraction_commune');
-		Element.hide('for_commune_label');
-		Element.hide('for_commune');
+		$('#for_fraction_commune_label').show();
+		$('#for_fraction_commune').show();
+		$('#for_commune_label').hide();
+		$('#for_commune').hide();
 	} else if( name == 'COMMUNE_HC' ){
-		Element.hide('for_fraction_commune_label');
-		Element.hide('for_fraction_commune');
-		Element.show('for_commune_label');
-		Element.show('for_commune');
+		$('#for_fraction_commune_label').hide();
+		$('#for_fraction_commune').hide();
+		$('#for_commune_label').show();
+		$('#for_commune').show();
 	}
 }
 
@@ -202,12 +202,12 @@ function selectGenreImpot(name, callback) {
 			optTypeFor.value = 'PAYS_HS';
 			divTypeForFraction.style.display = 'none';
 			divTypeForHS.style.display = '';
-			Element.hide('for_fraction_commune_label');
-			Element.hide('for_fraction_commune');
-			Element.hide('for_commune_label');
-			Element.hide('for_commune');
-			Element.show('for_pays_label');
-			Element.show('for_pays');
+			$('#for_fraction_commune_label').hide();
+			$('#for_fraction_commune').hide();
+			$('#for_commune_label').hide();
+			$('#for_commune').hide();
+			$('#for_pays_label').show();
+			$('#for_pays').show();
 			divModeImposition.style.display = 'none';
 		} else {
 			//for vaudois
@@ -215,12 +215,12 @@ function selectGenreImpot(name, callback) {
 			optTypeFor.value = 'COMMUNE_OU_FRACTION_VD';
 			divTypeForFraction.style.display = '';
 			divTypeForHS.style.display = 'none';
-			Element.show('for_fraction_commune_label');
-			Element.show('for_fraction_commune');
-			Element.hide('for_commune_label');
-			Element.hide('for_commune');
-			Element.hide('for_pays_label');
-			Element.hide('for_pays');
+			$('#for_fraction_commune_label').show();
+			$('#for_fraction_commune').show();
+			$('#for_commune_label').hide();
+			$('#for_commune').hide();
+			$('#for_pays_label').hide();
+			$('#for_pays').hide();
 			divModeImposition.style.display = 'none';
 		}
 	} else { 
@@ -234,12 +234,12 @@ function selectGenreImpot(name, callback) {
 		optTypeFor.value = 'COMMUNE_OU_FRACTION_VD';
 		divTypeForFraction.style.display = '';
 		divTypeForHS.style.display = 'none';
-		Element.show('for_fraction_commune_label');
-		Element.show('for_fraction_commune');
-		Element.hide('for_commune_label');
-		Element.hide('for_commune');
-		Element.hide('for_pays_label');
-		Element.hide('for_pays');
+		$('#for_fraction_commune_label').show();
+		$('#for_fraction_commune').show();
+		$('#for_commune_label').hide();
+		$('#for_commune').hide();
+		$('#for_pays_label').hide();
+		$('#for_pays').hide();
 		divModeImposition.style.display = 'none';
 	}
 }
@@ -265,12 +265,12 @@ function selectRattachement(name) {
 		optTypeFor.value = 'PAYS_HS';
 		divTypeForFraction.style.display = 'none';
 		divTypeForHS.style.display = '';
-		Element.hide('for_fraction_commune_label');
-		Element.hide('for_fraction_commune');
-		Element.hide('for_commune_label');
-		Element.hide('for_commune');
-		Element.show('for_pays_label');
-		Element.show('for_pays');
+		$('#for_fraction_commune_label').hide();
+		$('#for_fraction_commune').hide();
+		$('#for_commune_label').hide();
+		$('#for_commune').hide();
+		$('#for_pays_label').show();
+		$('#for_pays').show();
 		divModeImposition.style.display = 'none';
 	} else {
 		//for vaudois
@@ -278,12 +278,12 @@ function selectRattachement(name) {
 		optTypeFor.value = 'COMMUNE_OU_FRACTION_VD';
 		divTypeForFraction.style.display = '';
 		divTypeForHS.style.display = 'none';
-		Element.show('for_fraction_commune_label');
-		Element.show('for_fraction_commune');
-		Element.hide('for_commune_label');
-		Element.hide('for_commune');
-		Element.hide('for_pays_label');
-		Element.hide('for_pays');
+		$('#for_fraction_commune_label').show();
+		$('#for_fraction_commune').show();
+		$('#for_commune_label').hide();
+		$('#for_commune').hide();
+		$('#for_pays_label').hide();
+		$('#for_pays').hide();
 		divModeImposition.style.display = 'none';
 	} 
 }

@@ -25,14 +25,14 @@
 								if (m) {
 									var annee = parseInt(m[1]);
 									if (annee < anneeMinimaleForDebiteur) {
-										Element.show('dateOuverture.warning');
+										$('#dateOuverture.warning').show();
 									}
 									else {
-										Element.hide('dateOuverture.warning');
+										$('#dateOuverture.warning').hide();
 									}
 								}
 								else {
-									Element.hide('dateOuverture.warning');
+									$('#dateOuverture.warning').hide();
 								}
 							}
 						}

@@ -16,9 +16,9 @@
 
 		<script type="text/javascript" language="Javascript1.3">
 			function Batch_toggleExpand(element, id) {
-				element = E$('ARGS_'+ id);
-				var expand = (Element.getStyle(element).display == 'none');
-				Element.toggle(element);
+				var element = $('#ARGS_'+ id);
+				var expand = (element.is(":hidden"));
+				element.toggle();
 				var img = E$('IMG_'+ id);
 				if (expand)
 					img.src = img.src.replace('plus','minus');

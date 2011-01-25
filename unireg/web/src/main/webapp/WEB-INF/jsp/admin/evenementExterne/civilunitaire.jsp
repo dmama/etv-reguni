@@ -88,23 +88,22 @@
 </form>
 <script type="text/javascript">
 	function CiviUnitaire_Reset() {
-		Element.setText('quittancement.null.noTechnique',"");
-		Element.setText('quittancement.wrong.noTechnique',"");
-		Element.setText('quittancement.null.numeroOFS',"");
-		Element.setText('quittancement.wrong.numeroOFS',"");
-		Element.setText('quittancement.null.noIndividu',"");
-		Element.setText('quittancement.wrong.noIndividu',"");		
-		Element.setText('quittancement.null.typeEvenementCivil',"");
-		Element.setText('quittancement.null.dateEvenement',"");
-		Element.setText('quittancement.null.dateTraitement',"");
-		Element.setText('error.global', "");
+		$('#quittancement.null.noTechnique').val("");
+		$('#quittancement.wrong.noTechnique').val("");
+		$('#quittancement.null.numeroOFS').val("");
+		$('#quittancement.wrong.numeroOFS').val("");
+		$('#quittancement.null.noIndividu').val("");
+		$('#quittancement.wrong.noIndividu').val("");		
+		$('#quittancement.null.typeEvenementCivil').val("");
+		$('#quittancement.null.dateEvenement').val("");
+		$('#quittancement.null.dateTraitement').val("");
+		$('#error.global').val("");
 		E$('noTechnique').value = "";
 		E$('numeroOFS').value = "";
 		E$('noIndividu').value = "";
 		E$('dateEvenement').value = "";
-		var select = E$('typeEvenementCivil');
-		select.selectedIndex = 0;
-		Element.fireObserver( select, "change");
+		$('#typeEvenementCivil').get(0).selectIndex = 0;
+		$('#typeEvenementCivil').change();
 		return true;
 	}
 	

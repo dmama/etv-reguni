@@ -26,11 +26,11 @@ function selectAllDossiers(checkSelectAll) {
 */
 function selectTypeTache(name) {
 	if( name == 'TacheEnvoiDeclarationImpot' || name == 'TacheAnnulationDeclarationImpot' ){
-		Element.show('periode_fiscale_label');
-		Element.show('periode_fiscale_input');
+		$('#periode_fiscale_label').show();
+		$('#periode_fiscale_input').show();
 	} else {
-		Element.hide('periode_fiscale_label');
-		Element.hide('periode_fiscale_input');
+		$('#periode_fiscale_label').hide();
+		$('#periode_fiscale_input').hide();
 	}
 }
 
@@ -38,7 +38,7 @@ function selectTypeTache(name) {
 * Afficher alerte lors de l'impression de nouveaux dossiers
 */
 function confirmeImpression() {
-	Element.show('desynchro');
+	$('#desynchro').show();
 	var form = F$("theForm");
 	form.action = 'list-nouveau-dossier.do?imprimer=imprimer';
 	form.submit();
@@ -48,7 +48,7 @@ function confirmeImpression() {
 * Cacher alerte lors de l'impression de nouveaux dossiers
 */
 function recherche() {
-	Element.hide('desynchro');
+	$('#desynchro').hide();
 	var form = F$("theForm");
 	form.action = 'list-nouveau-dossier.do';
 	form.submit();
@@ -58,7 +58,7 @@ function recherche() {
 * Cacher alerte lors de l'impression de nouveaux dossiers
 */
 function efface() {
-	Element.hide('desynchro');
+	$('#desynchro').hide();
 	var form = F$("theForm");
 	form.action = 'list-nouveau-dossier.do?effacer=effacer';
 	form.submit();

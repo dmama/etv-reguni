@@ -88,9 +88,10 @@
 		 	</fieldset>		 	
 		</form:form>
 		<script type="text/javascript" language="Javascript1.3">
-				Element.addObserver( window, "load", function() {
+				$(function() {
 					Form.doAjaxActionPostBack( 'theForm', 'OnLoad','currentEvenementCivil');
-				}, false);
+				});
+
 				var periodicalExecuter;
 				function startEtape( link, etape) {
 					var element = E$( "etat-etape-" + etape);

@@ -72,19 +72,18 @@
 </form>
 <script type="text/javascript">
 	function Quittancement_Reset() {
-		Element.setText('quittancement.null.numeroCtb',"");
-		Element.setText('quittancement.wrong.numeroCtb',"");
-		Element.setText('quittancement.null.typeQuittance',"");
-		Element.setText('quittancement.null.dateDebut',"");
-		Element.setText('quittancement.null.dateQuittance',"");
-		Element.setText('error.global', "");
+		$('#quittancement.null.numeroCtb').val("");
+		$('#quittancement.wrong.numeroCtb').val("");
+		$('#quittancement.null.typeQuittance').val("");
+		$('#quittancement.null.dateDebut').val("");
+		$('#quittancement.null.dateQuittance').val("");
+		$('#error.global').val("");
 		E$('numeroCtb').value = "";
 		E$('dateDebut').value = "";
 		E$('dateFin').value = "";
 		E$('dateQuittance').value = "";
-		var select = E$('typeQuittance');
-		select.selectedIndex = 0;
-		Element.fireObserver( select, "change");
+		$('#typeQuittance').get(0).selectIndex = 0;
+		$('#typeQuittance').change();
 		return true;
 	}
 	

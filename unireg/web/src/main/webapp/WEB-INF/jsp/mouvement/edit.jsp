@@ -25,17 +25,17 @@
 		<!-- Fin Boutons -->
 	</form:form>
 	<script type="text/javascript" language="Javascript1.3">
-			Element.addObserver(window, "load", function() {
+			$(function() {
 				var typeMouvementSelect = E$("type_mouvement");
 				selectTypeMouvement(typeMouvementSelect.options[typeMouvementSelect.selectedIndex].value);
-			});
 
-			/**
-			 * Initialisation de l'observeur du flag 'modifier'
-			 */
-			Modifier.attachObserver( "theForm", <c:out value="${__MODIFIER__}" />);
-			Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver cette déclaration d\'impôt ?';
-			Modifier.messageOverConfirmation = "Voulez-vous vraiment quitter cette page sans sauver ?";
+				/**
+				 * Initialisation de l'observeur du flag 'modifier'
+				 */
+				Modifier.attachObserver( "theForm", <c:out value="${__MODIFIER__}" />);
+				Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver cette déclaration d\'impôt ?';
+				Modifier.messageOverConfirmation = "Voulez-vous vraiment quitter cette page sans sauver ?";
+			});
 
 			function Page_RetourEdition(numero) {
 				var status = true;

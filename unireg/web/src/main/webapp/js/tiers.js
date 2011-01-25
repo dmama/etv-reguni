@@ -213,11 +213,11 @@ function reprise(mode,index) {
 */
 function selectPeriodeDecompte(name) {
 	if( name == 'UNIQUE' ){
-		Element.show('div_periodeDecompte_label');
-		Element.show('div_periodeDecompte_input');
+		$('#div_periodeDecompte_label').show();
+		$('#div_periodeDecompte_input').show();
 	} else {
-		Element.hide('div_periodeDecompte_label');
-		Element.hide('div_periodeDecompte_input');
+		$('#div_periodeDecompte_label').hide();
+		$('#div_periodeDecompte_input').hide();
 	} 
 }
 
@@ -257,12 +257,12 @@ function afficheAdressesHisto(elementId,elementIdCiviles,elementIdCivilesConjoin
  */
 function togglePanels(elementId, element1, element2) {
 	if (E$(elementId).checked){
-		Element.hide(element1);
-		Element.show(element2);
+		$(element1).hide();
+		$(element2).show();
 	}
 	else {
-		Element.show(element1);
-		Element.hide(element2);
+		$(element1).show();
+		$(element2).hide();
 	}
 }
 

@@ -136,8 +136,8 @@
 				if(!confirm('Voulez-vous vraiment sommer cette déclaration d\'impôt ?')) {
 					return Event.stop(ev);
 				}
-				Element.hide('boutonSommerActif');
-				Element.show('boutonSommerNonActif');
+				$('#boutonSommerActif').hide();
+				$('#boutonSommerNonActif').show();
 				return true;
 		 	}
 

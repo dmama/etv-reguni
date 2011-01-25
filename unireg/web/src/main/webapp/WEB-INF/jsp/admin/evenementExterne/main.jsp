@@ -82,7 +82,7 @@
 					$("#externeEventTabs").tabs({
 						select: function(event, ui) {
 							if (ui.tab.id === "tabContent_historique") {
-								Element.fireObserver("etats", "change");
+								$('#etats').change();
 							}
 						}
 					});

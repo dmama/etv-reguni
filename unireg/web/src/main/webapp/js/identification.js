@@ -26,7 +26,7 @@ function selectAllIdentifications(checkSelectAll) {
 */
 function confirmeSuspensionMessage() {
 	if(confirm('Voulez-vous suspendre le(s) message(s) selectionné(s) ?')) {
-		Element.show('desynchro');
+		$('#desynchro').show();
 		var form = F$("theForm");
 		form.action = 'listEnCours.do?suspendre=suspendre';
 		form.submit();
@@ -38,7 +38,7 @@ function confirmeSuspensionMessage() {
 */
 function confirmeSoumissionMessage() {
 	if(confirm('Voulez-vous soumettre à nouveau le(s) message(s) selectionné(s) ?')) {
-		Element.show('desynchro');
+		$('#desynchro').show();
 		var form = F$("theForm");
 		form.action = 'listEnCours.do?soumettre=soumettre';
 		form.submit();

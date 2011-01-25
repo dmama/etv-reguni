@@ -10,11 +10,11 @@ function retourVisuFromMvt(numero) {
 */
 function selectTypeMouvement(name) {
 	if( name == 'EnvoiDossier' ){
-		Element.show('envoi');
-		Element.hide('reception');
+		$('#envoi').show();
+		$('#reception').hide();
 	} else if( name == 'ReceptionDossier' ){
-		Element.hide('envoi');
-		Element.show('reception');
+		$('#envoi').hide();
+		$('#reception').show();
 	} 
 }
 
@@ -23,12 +23,12 @@ function selectTypeMouvement(name) {
 */
 function selectEnvoi(name) {
 	if( name == 'utilisateurEnvoi' ){
-		Element.show('utilisateursEnvoi');
-		Element.hide('collectivites');	
+		$('#utilisateursEnvoi').show();
+		$('#collectivites').hide();	
 	}
 	if( name == 'collectivite' ){
-		Element.show('collectivites');
-		Element.hide('utilisateursEnvoi');	
+		$('#collectivites').show();
+		$('#utilisateursEnvoi').hide();	
 	}
 }
 
@@ -37,9 +37,9 @@ function selectEnvoi(name) {
 */
 function selectReception(name) {
 	if( name == 'PERSONNE' ){
-		Element.show('utilisateursReception');	
+		$('#utilisateursReception').show();	
 	}
 	else {
-		Element.hide('utilisateursReception');
+		$('#utilisateursReception').hide();
 	}
 }

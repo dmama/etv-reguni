@@ -211,24 +211,10 @@
 					<tr class="even">
 						<td width="25%"><fmt:message key="label.texte.case.postale" />&nbsp;:</td>
 						<td width="25%">
-							<form:select path="texteCasePostale" onchange="javascript:TexteCasePostale_OnChange(this);">
+							<form:select path="texteCasePostale" id="texteCasePostale">
 								<form:option value="" ></form:option>
 								<form:options items="${textesCasePostale}" />
 							</form:select>
-							<script type="text/javascript" language="Javascript.1.3">
-								function TexteCasePostale_OnChange( select) {
-									var value = select.options[select.selectedIndex].value;
-									if ( value == null || value === "") {
-										var e =  document.forms["formAddAdresse"].numeroCasePostale;
-										e.value = "";
-										Element.hide('td_case_postale');
-										Element.hide('td_case_postale_label');
-									} else {
-										Element.show('td_case_postale_label');
-										Element.show('td_case_postale');
-									}
-								}
-							</script>
 						</td>
 						<td width="25%" id="td_case_postale_label"><fmt:message key="label.case.postale" /> :</td>
 						<td width="25%"	id="td_case_postale">
@@ -324,10 +310,27 @@
 
 
 <script type="text/javascript" language="Javascript.1.3">
-	Element.addObserver( window, "load", function() {
+
+	$(function() {
 		AddressEdit_Adjust();
-		Element.fireObserver( F$("formAddAdresse").texteCasePostale, "change");
+		$("#texteCasePostale").keyup(TexteCasePostale_OnChange); // autrement les changements de sélection effectués au clavier ne sont pas pris en compte
+		$("#texteCasePostale").change(TexteCasePostale_OnChange);
+		$("#texteCasePostale").change();
 	});
+
+	function TexteCasePostale_OnChange() {
+		var value = $(this).val();
+		if (value == null || value === "") {
+			var e = document.forms["formAddAdresse"].numeroCasePostale;
+			e.value = "";
+			$('#td_case_postale').hide();
+			$('#td_case_postale_label').hide();
+		}
+		else {
+			$('#td_case_postale_label').show();
+			$('#td_case_postale').show();
+		}
+	}
 
 	function AddressEdit_Adjust() {
 		var form = F$("formAddAdresse");
@@ -346,22 +349,22 @@
 
 	function selectLocalite(name) {
 		if( name == 'pays' ){
-			Element.hide('div_label_localite_suisse');
-			Element.hide('div_input_localite_suisse');
-			Element.show('div_pays');
-			Element.show('div_label_lieu');
-			Element.show('div_input_lieu');
-			Element.show('div_label_pays_npa');
-			Element.show('div_input_pays_npa');
+			$('#div_label_localite_suisse').hide();
+			$('#div_input_localite_suisse').hide();
+			$('#div_pays').show();	
+			$('#div_label_lieu').show();
+			$('#div_input_lieu').show();	
+			$('#div_label_pays_npa').show();	
+			$('#div_input_pays_npa').show();
 		}
 		if( name == 'localite_suisse' ){
-			Element.show('div_label_localite_suisse');
-			Element.show('div_input_localite_suisse');
-			Element.hide('div_pays');
-			Element.hide('div_label_lieu');
-			Element.hide('div_input_lieu');
-			Element.hide('div_label_pays_npa');
-			Element.hide('div_input_pays_npa');
+			$('#div_label_localite_suisse').show();
+			$('#div_input_localite_suisse').show();
+			$('#div_pays').hide();	
+			$('#div_label_lieu').hide();
+			$('#div_input_lieu').hide();	
+			$('#div_label_pays_npa').hide();	
+			$('#div_input_pays_npa').hide();
 		}
 		AddressEdit_Adjust();
 	}

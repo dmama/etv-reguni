@@ -32,11 +32,9 @@
 		  	<c:if test="${numeroPP1 != null}">
 		  		<form:checkbox path="conjointInconnu" id="conjointInconnu" value="true" onclick="conjointInconnuHandle()"/><label for="conjointInconnu">&nbsp;<fmt:message key="label.conjoint.inconnu"/></label>
 		  		<script type="text/javascript" language="Javascript">
-		  			function conjointInconnuHandle(ev) {
+		  			$(function() {
 		  				togglePanels('conjointInconnu', 'searchPanel', 'marieSeulPanel')
-		  			}
-		  			
-		  			Element.addObserver(window, "load" , conjointInconnuHandle);
+		  			});
 		  		</script>
 		  	</c:if>
 			<div id="searchPanel">
