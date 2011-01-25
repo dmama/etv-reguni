@@ -2,15 +2,18 @@ package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
@@ -22,6 +25,7 @@ import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.servlet.ServletService;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.utils.RegDateEditor;
 
 public class IdentificationMessagesEditController extends AbstractTiersListController {
 
@@ -133,6 +137,14 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		}
 
 		return mav;
+	}
+
+		@Override
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
+		super.initBinder(request, binder);
+
+		// on doit autoriser les dates partielles sur la date de naissance
+		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true));
 	}
 
 	/**
