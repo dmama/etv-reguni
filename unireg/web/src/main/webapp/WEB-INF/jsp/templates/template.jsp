@@ -36,6 +36,7 @@ function ouvrirAide(url) {
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/custom.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.bgiframe.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.tooltip.js"/>"></script>
