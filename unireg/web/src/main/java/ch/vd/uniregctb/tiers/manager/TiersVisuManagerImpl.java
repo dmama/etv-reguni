@@ -2,7 +2,6 @@ package ch.vd.uniregctb.tiers.manager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,14 +18,10 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -38,9 +33,6 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
-import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -60,10 +52,8 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -76,8 +66,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	private MouvementVisuManager mouvementVisuManager;
 
-	private final List<TypeAdresseCivil> typesAdressesCiviles = Arrays.asList(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.SECONDAIRE, TypeAdresseCivil.TUTEUR);
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementVisuManager(MouvementVisuManager mouvementVisuManager) {
 		this.mouvementVisuManager = mouvementVisuManager;
 	}
@@ -153,7 +142,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			}
 
-			resolveAdressesHisto(tiers, new AdressesResolverCallback() {
+			resolveAdressesHisto(new AdressesResolverCallback() {
 				public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
 					return service.getAdressesFiscalHisto(tiers, false);
 				}
@@ -172,10 +161,20 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			//Les entreprises et les etablissement ne sont pas pris en charge par l'adresseService
 			if (NatureTiers.Entreprise != tiersVisuView.getNatureTiers() &&
 					NatureTiers.Etablissement != tiersVisuView.getNatureTiers()) {
-				tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, true));
+				try {
+					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, true));
+				}
+				catch (DonneesCivilesException e) {
+					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
+				}
 				final Tiers conjoint = tiersVisuView.getTiersConjoint();
 				if (conjoint != null) {
-					tiersVisuView.setHistoriqueAdressesCivilesConjoint(getAdressesHistoriquesCiviles(conjoint, true));
+					try {
+						tiersVisuView.setHistoriqueAdressesCivilesConjoint(getAdressesHistoriquesCiviles(conjoint, true));
+					}
+					catch (DonneesCivilesException e) {
+						tiersVisuView.setExceptionAdresseCivilesConjoint(e.getMessage());
+					}
 				}
 			}
 
@@ -226,111 +225,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		return allowedModif;
 	}
-
-
-	/**
-	 * recuperation des adresses civiles historiques
-	 *
-	 * @param tiers                un tiers
-	 * @param adressesHistoCiviles <b>vrai</b> si l'on vient l'historique complet des adresses; <b>faux</b> si l'on s'intéresse uniquement aux adresses actives aujourd'hui
-	 * @return une liste d'adresses
-	 * @throws ch.vd.infrastructure.service.InfrastructureException
-	 *          si ça foire du côté de l'infrastructure
-	 * @throws ch.vd.uniregctb.adresse.AdresseException
-	 *          si ça foire du côté des adresses
-	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
-	 *          si ça foire du côté du civil
-	 */
-	private List<AdresseView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws AdresseException, InfrastructureException, DonneesCivilesException {
-
-		final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(tiers);
-		List<AdresseView> adresses = new ArrayList<AdresseView>();
-		if (noIndividu != null) {
-			if (adressesHistoCiviles) {
-				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
-
-				if (adressesCivilesHisto != null) {
-					// rempli tous les types d'adresse
-					for (TypeAdresseCivil type : typesAdressesCiviles) {
-						fillAdressesHistoCivilesView(adresses, adressesCivilesHisto, type, tiers);
-					}
-				}
-			}
-			else {
-
-				final AdressesCivilesActives adressesCiviles = serviceCivilService.getAdresses(noIndividu, RegDate.get(), false);
-				if (adressesCiviles != null) {
-					// rempli tous les types d'adresse
-					for (TypeAdresseCivil type : typesAdressesCiviles) {
-						fillAdressesCivilesView(adresses, adressesCiviles, type, tiers);
-					}
-				}
-			}
-
-		}
-
-		Collections.sort(adresses, new AdresseViewComparator());
-		return adresses;
-	}
-
-
-	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHistoriques adressesCivilesHisto, TypeAdresseCivil type, Tiers tiers) throws AdressesResolutionException,
-			InfrastructureException {
-		final List<Adresse> adresses = adressesCivilesHisto.ofType(type);
-		if (adresses == null) {
-			// rien à faire
-			return;
-		}
-
-		for (Adresse adresse : adresses) {
-
-			AdaptAdresseCivileToAdresseView(adressesView, type, tiers, adresse);
-
-		}
-	}
-
-	private void AdaptAdresseCivileToAdresseView(List<AdresseView> adressesView, TypeAdresseCivil type, Tiers tiers, Adresse adresse) throws AdressesResolutionException, InfrastructureException {
-		try {
-			AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, false, getServiceInfrastructureService());
-			AdresseView adresseView = createAdresseView(adrGen, null);
-			adresseView.setUsageCivil(type);
-			adressesView.add(adresseView);
-
-		}
-		catch (DonneesCivilesException e) {
-			throw new AdressesResolutionException(e.getMessage());
-		}
-	}
-
-	/**
-	 * Remplir la collection des adressesView avec l'adresse civile du type spécifié.
-	 */
-	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCivilesActives adressesCiviles, TypeAdresseCivil type,
-	                                       Tiers tiers) throws AdressesResolutionException, InfrastructureException {
-
-		if (TypeAdresseCivil.SECONDAIRE == type) {
-			List<Adresse> addressesSecondaires = adressesCiviles.secondaires;
-			if (addressesSecondaires == null) {
-				// rien à faire
-				return;
-			}
-			for (Adresse addressesSecondaire : addressesSecondaires) {
-				AdaptAdresseCivileToAdresseView(adressesView, type, tiers, addressesSecondaire);	
-			}
-
-		}
-		else {
-			Adresse adresse = adressesCiviles.ofType(type);
-			if (adresse == null) {
-				// rien à faire
-				return;
-			}
-
-			AdaptAdresseCivileToAdresseView(adressesView, type, tiers, adresse);
-		}
-
-	}
-
 
 	/**
 	 * Mise à jour de la vue Declaration Impot Ordinaire

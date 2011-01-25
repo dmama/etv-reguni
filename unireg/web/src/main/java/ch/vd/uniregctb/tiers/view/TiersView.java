@@ -48,8 +48,10 @@ public class TiersView {
 	private List<AdresseView> historiqueAdresses;
 
 	private List<AdresseView> historiqueAdressesCiviles;
+	private String exceptionAdresseCiviles;
 
 	private List<AdresseView> historiqueAdressesCivilesConjoint;
+	private String exceptionAdresseCivilesConjoint;
 
 	private List<AdresseView> adressesEnErreur;
 
@@ -436,13 +438,29 @@ public class TiersView {
 		return historiqueAdressesCiviles;
 	}
 
+	public String getExceptionAdresseCiviles() {
+		return exceptionAdresseCiviles;
+	}
+
+	public void setExceptionAdresseCiviles(String exceptionAdresseCiviles) {
+		this.exceptionAdresseCiviles = exceptionAdresseCiviles;
+	}
+
 	public void setHistoriqueAdressesCivilesConjoint(List<AdresseView> historiqueAdressesCivilesConjoint) {
 		this.historiqueAdressesCivilesConjoint = historiqueAdressesCivilesConjoint;
 	}
 
 	public List<AdresseView> getHistoriqueAdressesCivilesConjoint() {
-		return historiqueAdressesCivilesConjoint;	}
+		return historiqueAdressesCivilesConjoint;
+	}
 
+	public String getExceptionAdresseCivilesConjoint() {
+		return exceptionAdresseCivilesConjoint;
+	}
+
+	public void setExceptionAdresseCivilesConjoint(String exceptionAdresseCivilesConjoint) {
+		this.exceptionAdresseCivilesConjoint = exceptionAdresseCivilesConjoint;
+	}
 
 	public String getNomPrenomPrincipal() {
 		return nomPrenomPrincipal;
