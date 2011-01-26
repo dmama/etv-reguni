@@ -48,6 +48,16 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 		}
 	}
 
+	public void ping() throws BVRPlusClientException {
+		final long start = tracing.start();
+		try {
+			target.ping();
+		}
+		finally {
+			tracing.end(start);
+		}
+	}
+
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
