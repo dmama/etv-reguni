@@ -1722,7 +1722,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final AdressesCiviles adressesCiviles;
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique personne = (PersonnePhysique) tiers;
-			if (personne.getNumeroIndividu() != null && personne.getNumeroIndividu() != 0) {
+			if (personne.isConnuAuCivil()) {
 				adressesCiviles = getAdressesCiviles(personne, date, strict);
 			}
 			else {
@@ -1733,7 +1733,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final MenageCommun menage = (MenageCommun) tiers;
 			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 
-			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { //le principal peut être null dans le cas d'un mariage annulé
+			if (principal != null && principal.isConnuAuCivil()) { //le principal peut être null dans le cas d'un mariage annulé
 				adressesCiviles = getAdressesCiviles(principal, date, strict);
 			}
 			else {

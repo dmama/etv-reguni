@@ -13,9 +13,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.ListesThread;
@@ -116,15 +115,18 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 		}
 
 		if (suisseOuPermisC) {
-			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(ctb, TypeAdresseFiscale.DOMICILE, dateTraitement, false);
-			if (adresseDomicile != null && serviceInfrastructure.estDansLeCanton(adresseDomicile)) {
+			final AdressesCiviles adresses = adresseService.getAdressesCiviles(ctb, dateTraitement, false);
+			if (adresses != null && adresses.principale != null && serviceInfrastructure.estDansLeCanton(adresses.principale)) {
 
-				// dans ce cas-à seulement, on met le contribuable dans le rapport :
+				// dans ce cas-là seulement, on met le contribuable dans le rapport :
 				// 1. suisse ou permis C majeur (ou couple)
 				// 2. sans for vaudois (vu dans la requête initiale)
 				// 3. avec adresse de domicile dans le canton
 
 				super.traiteContribuable(ctb);
+			}
+			else {
+				getResults().addContribuableIgnore(ctb, ListeContribuablesResidentsSansForVaudoisResults.CauseIgnorance.DOMICILE_NON_VAUDOIS);
 			}
 		}
 	}

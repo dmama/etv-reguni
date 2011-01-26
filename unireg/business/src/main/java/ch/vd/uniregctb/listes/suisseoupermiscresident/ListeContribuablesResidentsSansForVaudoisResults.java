@@ -22,6 +22,7 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 		MENAGE_FERME("Ménage commun non actif"),
 		DECEDE("Décédé"),
 		MINEUR("Mineur"),
+		DOMICILE_NON_VAUDOIS("Domicile non vaudois"),
 		ETRANGER_SANS_PERMIS_C("Etranger sans permis C");
 
 		private final String description;
