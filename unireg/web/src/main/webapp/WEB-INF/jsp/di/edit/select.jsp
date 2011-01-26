@@ -38,8 +38,7 @@
 
 		<script type="text/javascript" language="Javascript1.3">
 		 	function creerDi() {		 
-				var form = F$("theForm");
-				form.doPostBack("creerDI", "");
+				Form.doPostBack("theForm", "creerDI", "");
 		 	}
 		</script>	
 		

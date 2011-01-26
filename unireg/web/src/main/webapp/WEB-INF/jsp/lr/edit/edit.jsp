@@ -58,8 +58,7 @@
 		function Page_ImprimerLR(ev, el) {		 		
 			if(!confirm('Voulez-vous vraiment imprimer cette liste recapitulative ?'))
 				return Event.stop(ev);
-			var form = F$("theForm");
-			form.doPostBack("imprimerLR", "");
+			Form.doPostBack("theForm", "imprimerLR", "");
 			el.disabled = true; 
 			return true;
 	 	}

@@ -60,8 +60,7 @@
 	<script type="text/javascript">
 		function Page_AnnulerMvt(idMvt) {
 				if(confirm('Voulez-vous vraiment annuler ce mouvement de dossier ?')) {
-					var form = F$("theForm");
-					form.doPostBack("annulerMvt", idMvt);
+					Form.doPostBack("theForm", "annulerMvt", idMvt);
 			 	}
 	 	} 	
 	</script>

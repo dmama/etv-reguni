@@ -23,8 +23,7 @@
 <script type="text/javascript" language="javascript1.3">
 function annulerSituationFamille(idSituationFamille) {
 	if(confirm('Voulez-vous vraiment annuler cette situation de famille ?')) {
-		var form = F$('theForm');
-		form.doPostBack("annulerSituationFamille", idSituationFamille);
+		Form.doPostBack("theForm", "annulerSituationFamille", idSituationFamille);
  	}
 }
 </script>

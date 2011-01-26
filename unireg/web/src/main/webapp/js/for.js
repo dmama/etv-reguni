@@ -293,7 +293,6 @@ function selectRattachement(name) {
 */
 function annulerFor(idFor) {
 	if(confirm('Voulez-vous vraiment annuler ce for fiscal ?')) {
-		var form = F$("theForm");
-		form.doPostBack("annulerFor", idFor);
+		Form.doPostBack("theForm", "annulerFor", idFor);
  	}
 }	

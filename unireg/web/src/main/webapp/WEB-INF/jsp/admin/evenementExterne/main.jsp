@@ -32,14 +32,14 @@
 						<tr>
 							<td nowrap="nowrap" width="10%">Emmetteur du message</td>
 							<td>
-								<select id="emmetteurs" name="emmetteurs" onchange="javascript:Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
+								<select id="emmetteurs" name="emmetteurs" onchange="Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
 								</select>
 							</td>
 						</tr>
 						<tr>
 							<td nowrap="nowrap">Type du message</td>
 							<td>
-								 <select id="evenements" name="evenements"  onchange="javascript:Form.doAjaxActionPostBack('theForm','OnChange', 'evenements');">
+								 <select id="evenements" name="evenements"  onchange="Form.doAjaxActionPostBack('theForm','OnChange', 'evenements');">
 								 </select>
 							</td>
 						</tr>
@@ -52,7 +52,7 @@
 						<tr>
 							<td nowrap="nowrap" width="10%">Etat Evénement</td>
 							<td>
-								<select id="etats" name="etats" onchange="javascript:Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
+								<select id="etats" name="etats" onchange="Form.doAjaxActionPostBack('theForm', 'OnChange',this);">
 								</select>
 							</td>
 						</tr>
@@ -76,8 +76,8 @@
 
 			<script>
 				$(function() {
-					Form.doAjaxActionPostBack('theForm', 'OnLoad','emmetteurs');
-					Form.doAjaxActionPostBack('theForm', 'OnLoad', 'etats');
+					Form.doAjaxActionPostBack("theForm", 'OnLoad','emmetteurs');
+					Form.doAjaxActionPostBack("theForm", 'OnLoad', 'etats');
 
 					$("#externeEventTabs").tabs({
 						select: function(event, ui) {

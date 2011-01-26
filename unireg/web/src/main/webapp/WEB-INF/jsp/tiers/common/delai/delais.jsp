@@ -56,8 +56,7 @@
 	<script type="text/javascript">
 		function Page_AnnulerDelai(idDelai) {
 				if(confirm('Voulez-vous vraiment annuler ce delai ?')) {
-					var form = F$("theForm");
-					form.doPostBack("annulerDelai", idDelai);
+					Form.doPostBack("theForm", "annulerDelai", idDelai);
 			 	}
 	 	}
 
@@ -77,7 +76,7 @@
 		function Page_ImprimerDelai(idDelai) {
 			Page_ActivationImpressionDelai(idDelai, false);
 			setTimeout("Page_ActivationImpressionDelai(" + idDelai + ", true);", 2000);
-			F$("theForm").doPostBack("imprimerDelai", idDelai);
+			Form.doPostBack("theForm", "imprimerDelai", idDelai);
 		}
 	</script>
 	

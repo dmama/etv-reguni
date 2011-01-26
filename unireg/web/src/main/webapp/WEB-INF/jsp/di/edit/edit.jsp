@@ -148,8 +148,7 @@
 		 	}
 		 	
 		 	function Page_ImprimerDI(ev, el) {		 
-				var form = F$("theForm");
-				form.doPostBack("imprimerDI", "");
+				Form.doPostBack("theForm", "imprimerDI", "");
 				el.disabled = true; 
 				return true;
 		 	}

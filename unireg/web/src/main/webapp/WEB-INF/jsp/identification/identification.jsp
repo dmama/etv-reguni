@@ -125,8 +125,7 @@
 		
 			function Page_Identifier(idCtb) {
 				if(confirm('Voulez-vous vraiment identifier ce message avec ce contribuable ?')) {					
-					var form = F$("theForm");
-					form.doPostBack("identifier", idCtb);
+					Form.doPostBack("theForm", "identifier", idCtb);
 				}
 			}
 			function AppSelect_OnChange(select) {

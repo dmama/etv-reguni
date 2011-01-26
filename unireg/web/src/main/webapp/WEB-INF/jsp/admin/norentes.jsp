@@ -65,7 +65,7 @@
 						<td width="2%" nowrap="nowrap">Type d'événement</td>
 						<td width="98%">
 							<spring:bind path="command.currentEvenementCivil">
-							<select id="<c:out value="${status.expression}"/>" name="<c:out value="${status.expression}"/>" onchange="javascript:Form.doAjaxSubmitPostBack('theForm', 'OnChange',this);" >
+							<select id="<c:out value="${status.expression}"/>" name="<c:out value="${status.expression}"/>" onchange="Form.doAjaxSubmitPostBack('theForm', 'OnChange',this);" >
 								<option>--------------------------------------------------------------------------------------------------------------------------------</option>
 					         </select>
 					         </spring:bind>
@@ -75,7 +75,7 @@
 						<td nowrap="nowrap">Scénario</td>
 						<td>
 							<spring:bind path="command.currentScenarioName">
-								<select id="<c:out value="${status.expression}"/>" name="<c:out value="${status.expression}"/>" onchange="javascript:Form.doAjaxSubmitPostBack('theForm', 'OnChange',this);" >
+								<select id="<c:out value="${status.expression}"/>" name="<c:out value="${status.expression}"/>" onchange="Form.doAjaxSubmitPostBack('theForm', 'OnChange',this);" >
 									<option>-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</option>
 					            </select>
 				         	</spring:bind>
@@ -89,13 +89,13 @@
 		</form:form>
 		<script type="text/javascript" language="Javascript1.3">
 				$(function() {
-					Form.doAjaxActionPostBack( 'theForm', 'OnLoad','currentEvenementCivil');
+					Form.doAjaxActionPostBack('theForm', 'OnLoad','currentEvenementCivil');
 				});
 
 				var periodicalExecuter;
 				function startEtape( link, etape) {
 					var element = E$( "etat-etape-" + etape);
-			        Form.doAjaxSubmitPostBack( 'theForm', 'OnClick',link, {etapeIndex: etape });
+			        Form.doAjaxSubmitPostBack("theForm", 'OnClick',link, {etapeIndex: etape });
 					periodicalExecuter = new PeriodicalExecuter(function() {
 						Form.doAjaxActionPostBack('theForm', 'OnLoad', 'currentEvenementCivil', {periodical:true, lastEtape: etape},
 						{ 

@@ -66,8 +66,7 @@
 				<script type="text/javascript">
 					function Page_AnnulerRestriction(id) {
 							if(confirm('Voulez-vous vraiment annuler ce droit d\'acces ?')) {
-								var form = F$("theForm");
-								form.doPostBack("annulerRestriction", id);
+								Form.doPostBack("theForm", "annulerRestriction", id);
 						 	}
 				 	} 	
 				</script>

@@ -130,7 +130,7 @@ Element.addMethods = function(methods) {
 
   if (typeof HTMLElement != 'undefined') {
     copy(Element, HTMLElement.prototype);
-    copy(Form, HTMLFormElement.prototype);
+    //copy(Form, HTMLFormElement.prototype);
     _nativeExtensions = true;
   }
 }
@@ -491,48 +491,6 @@ function A$(args) {
     return results;
 }
 
-/*
- * Cette classe permet 
-*/
-var Form = {
-	doPostBack : function(theForm, eventTarget, eventArgument) {
-	    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {	    	
-	        if ( theForm.__TARGET__) theForm.__TARGET__.value = eventTarget;
-	        if ( theForm.__EVENT_ARGUMENT__) theForm.__EVENT_ARGUMENT__.value = eventArgument;
-	        theForm.submit();
-	    }
-	},
-	doAjaxActionPostBack : function(theForm, event, eventTarget,eventArgument) {
-		eventTarget = E$(eventTarget);
-		theForm = E$(theForm);
-		var eventId = eventTarget.name;
-		if( !eventId) {
-			eventId = eventTarget.id;
-		}
-		eventArgument = (  !eventArgument ? {}: eventArgument);
-		XT.doAjaxAction( eventId+event ,eventTarget, eventArgument,
-		{
-			clearQueryString: true,
-			formName:theForm.name
-		});
-	},
-	doAjaxSubmitPostBack : function(theForm, event, eventTarget, eventArgument) {
-		eventTarget = E$(eventTarget);
-		theForm = E$(theForm);
-		var eventId = eventTarget.name;
-		if( !eventId) {
-			eventId = eventTarget.id;
-		}
-		eventArgument = (  !eventArgument ? {}: eventArgument);
-		XT.doAjaxSubmit( eventId+event,eventTarget, eventArgument,
-		{
-			clearQueryString: true,
-			formName:theForm.name
-		});
-	}
-};
-
- 
 if (!window.Event) {
   var Event = new Object();
 }

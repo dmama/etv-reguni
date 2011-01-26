@@ -147,8 +147,7 @@ function filter(tableName,element){
 */
 function annulerRapport(idRapport) {
 	if(confirm('Voulez-vous vraiment annuler ce rapport entre tiers ?')) {
-		var form = F$("theForm");
-		form.doPostBack("annulerRapport", idRapport);
+		Form.doPostBack("theForm", "annulerRapport", idRapport);
  	}
 }
 

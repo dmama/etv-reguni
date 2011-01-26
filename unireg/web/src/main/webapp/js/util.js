@@ -78,3 +78,44 @@ function compare(date_1, date_2){
   diff = date_1.getTime()-date_2.getTime();
   return (diff==0?diff:diff/Math.abs(diff));
 }
+
+/**
+ * Ces trois méthodes sont utilisées pour soumettre une forme avec un nom d'action (eventTarget) et
+ * un argument (eventArgument). La forme doit posséder deux champs cachés nommés __TARGET__ et
+ * __EVENT_ARGUMENT__. Il s'agit donc d'un mécanisme bizarre qui ne devrait plus être utilisé dans
+ * les nouveaux écrans.
+ */
+var Form = {
+	doPostBack : function(formName, eventTarget, eventArgument) {
+		var theForm = $("form[name='" + formName + "']");
+		if (theForm.length > 0) {
+			$('input[name="__TARGET__"]', theForm).val(eventTarget);
+			$('input[name="__EVENT_ARGUMENT__"]', theForm).val(eventArgument);
+	        theForm.submit();
+	    }
+	},
+	doAjaxActionPostBack : function(formName, event, eventTarget, eventArgument) {
+		eventTarget = $(eventTarget);
+		var eventId = eventTarget.attr('name');
+		if (!eventId) {
+			eventId = eventTarget.attr('id');
+		}
+		eventArgument = (!eventArgument ? {}: eventArgument);
+		XT.doAjaxAction(eventId + event, eventTarget, eventArgument, {
+			clearQueryString: true,
+			formName: formName
+		});
+	},
+	doAjaxSubmitPostBack : function(formName, event, eventTarget, eventArgument) {
+		eventTarget = $(eventTarget);
+		var eventId = eventTarget.attr('name');
+		if (!eventId) {
+			eventId = eventTarget.attr('id');
+		}
+		eventArgument = (!eventArgument ? {}: eventArgument);
+		XT.doAjaxSubmit(eventId + event, eventTarget, eventArgument, {
+			clearQueryString: true,
+			formName:formName
+		});
+	}
+};

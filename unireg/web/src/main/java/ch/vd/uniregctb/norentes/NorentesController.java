@@ -168,7 +168,7 @@ public class NorentesController extends AbstractEnhancedSimpleFormController {
 		toolbar.getControls().add( createButton(request, "buttonRefresh", "refresh", enabledRefresh, "javascript:window.location.reload();", "Refresh", "Refresh"));
 		toolbar.getControls().add( new ToolbarSeparator());
 		boolean enabledStop = norentesManager.getCurrentScenario() != null  ;
-		toolbar.getControls().add( createButton(request, "buttonStop", "stop", enabledStop, "javascript:Form.doAjaxSubmitPostBack('theForm', 'OnClick', 'buttonStop');", "Stop", "Arrête le scénario courant"));
+		toolbar.getControls().add( createButton(request, "buttonStop", "stop", enabledStop, "Form.doAjaxSubmitPostBack($('#theForm'), 'OnClick', 'buttonStop');", "Stop", "Arrête le scénario courant"));
 		toolbar.getControls().add( new ToolbarSeparator());
 
 		ReplaceContentAction action = new ReplaceContentAction("buttonStart.div", toolbar);
