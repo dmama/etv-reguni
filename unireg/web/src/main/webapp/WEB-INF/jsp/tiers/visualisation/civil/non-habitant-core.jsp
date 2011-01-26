@@ -150,13 +150,13 @@
 			<!-- (msi/fde) on a pas trouvé mieux... -->
 			<c:choose>
 				<c:when test="${param.path == 'tiersPrincipal'}">
-					<unireg:infra entityId="${command.tiersPrincipal.numeroOfsCommuneOrigine}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:commune ofs="${command.tiersPrincipal.numeroOfsCommuneOrigine}" displayProperty="nomMinuscule"/>
 				</c:when>
 				<c:when test="${param.path == 'tiersConjoint'}">
-					<unireg:infra entityId="${command.tiersConjoint.numeroOfsCommuneOrigine}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:commune ofs="${command.tiersConjoint.numeroOfsCommuneOrigine}" displayProperty="nomMinuscule"/>
 				</c:when>
 				<c:when test="${param.path == 'tiers'}">
-					<unireg:infra entityId="${command.tiers.numeroOfsCommuneOrigine}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:commune ofs="${command.tiers.numeroOfsCommuneOrigine}" displayProperty="nomMinuscule"/>
 				</c:when>
 			</c:choose>
 		</td>

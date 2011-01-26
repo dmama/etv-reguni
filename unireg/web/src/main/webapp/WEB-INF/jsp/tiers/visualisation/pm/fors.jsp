@@ -25,11 +25,11 @@
 			<display:column sortable ="true" titleKey="label.for.abrege">
 				<c:choose>
 					<c:when test="${forsFiscauxPM.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">
-						<unireg:infra entityId="${forsFiscauxPM.numeroForFiscalCommune}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+						<unireg:commune ofs="${forsFiscauxPM.numeroForFiscalCommune}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forsFiscauxPM.dateDebut}"/>
 					</c:when>
 					<c:when test="${forsFiscauxPM.typeAutoriteFiscale == 'COMMUNE_HC' }">
-						<unireg:infra entityId="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
-						(<unireg:infra entityId="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" entityType="commune" entityPropertyName="sigleCanton"></unireg:infra>)
+						<unireg:commune ofs="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forsFiscauxPM.dateDebut}"/>
+						(<unireg:commune ofs="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forsFiscauxPM.dateDebut}"/>
 					</c:when>
 					<c:when test="${forsFiscauxPM.typeAutoriteFiscale == 'PAYS_HS' }">
 						<unireg:infra entityId="${forsFiscauxPM.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>

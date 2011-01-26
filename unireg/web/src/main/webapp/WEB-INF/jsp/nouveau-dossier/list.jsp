@@ -50,7 +50,7 @@
 			</display:column>
 			<display:column titleKey="label.for.gestion" >
 				<c:if test="${nouveauDossier.annule}"><strike></c:if>
-					<unireg:infra entityId="${nouveauDossier.numeroForGestion}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:commune ofs="${nouveauDossier.numeroForGestion}" displayProperty="nomMinuscule"/>
 				<c:if test="${nouveauDossier.annule}"></strike></c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.etat.tache" sortName="etat">

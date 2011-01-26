@@ -84,7 +84,7 @@
 								<c:when test="${fp.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">			
 									<td class="principal_vd" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
 									    <a href="#tooltip" class="staticTip" id="ffp-${fp.id}">
-										    <unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+										    <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomMinuscule" date="${fp.dateDebut}"/>
 										</a>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
@@ -98,8 +98,8 @@
 								<c:when test="${fp.typeAutoriteFiscale == 'COMMUNE_HC'}">
 									<td class="principal_hc" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
 									    <a href="#tooltip" class="staticTip" id="ffp-${fp.id}">
-    										<unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
-    										(<unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="commune" entityPropertyName="sigleCanton"></unireg:infra>)
+    										<unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomMinuscule" date="${fp.dateDebut}"/>
+    										(<unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="sigleCanton" date="${fp.dateDebut}"/>
 										</a>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
@@ -140,7 +140,7 @@
 							<c:when test="${!fs.span && !fs.filler}">
 								<td class="secondaire" rowspan="<c:out value="${fs.longueurAffichage}" />">
                                     <a href="#tooltip" class="staticTip" id="ffs-${fs.range.id}">
-    									<unireg:infra entityId="${fs.range.numeroOfsAutoriteFiscale}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+    									<unireg:commune ofs="${fs.range.numeroOfsAutoriteFiscale}" displayProperty="nomMinuscule" date="${fs.range.dateDebut}"/>
                                     </a>
                                     <div id="ffs-${fs.range.id}-tooltip" style="display:none;">
                                         For fiscal secondaire <b>#${fs.range.id}</b><br/>
@@ -165,7 +165,7 @@
 							<c:set var="fg" value="${ligne.forGestion.range}" />
 							<td class="gestion" rowspan="<c:out value="${ligne.forGestion.longueurAffichage}" />">
                                 <a href="#tooltip" class="staticTip" id="fg-${fg.dateDebut}">
-    								<unireg:infra entityId="${fg.noOfsCommune}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+    								<unireg:commune ofs="${fg.noOfsCommune}" displayProperty="nomMinuscule" date="${fg.dateDebut}"/>
                                 </a>
                                 <div id="fg-${fg.dateDebut}-tooltip" style="display:none;">
                                     Ouverture : <b><unireg:date date="${fg.dateDebut}"/></b><br/>

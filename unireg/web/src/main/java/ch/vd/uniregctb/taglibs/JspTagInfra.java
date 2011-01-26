@@ -1,18 +1,16 @@
 package ch.vd.uniregctb.taglibs;
 
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -49,16 +47,6 @@ public class JspTagInfra extends BodyTagSupport {
 		}
 	}
 
-	/**
-	 * Appelle la méthode {@link ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getCommuneByNumeroOfsEtendu(int, ch.vd.registre.base.date.RegDate)}
-	 * avec la date à <code>null</code>
-	 */
-	private static class CommuneInvocator implements Invocator {
-		public Commune invoke(ServiceInfrastructureService service, int id) throws Exception {
-			return service.getCommuneByNumeroOfsEtendu(id, null);
-		}
-	}
-
 	private static Map<String, Invocator> invocators = new HashMap<String, Invocator>();
 
 	static {
@@ -66,7 +54,6 @@ public class JspTagInfra extends BodyTagSupport {
 		try {
 			invocators.put("canton", new MethodInvocator(clazz.getMethod("getCanton", int.class)));
 			invocators.put("collectivite", new MethodInvocator(clazz.getMethod("getCollectivite", int.class)));
-			invocators.put("commune", new CommuneInvocator());
 			invocators.put("localite", new MethodInvocator(clazz.getMethod("getLocaliteByONRP", int.class)));
 			invocators.put("officeImpot", new MethodInvocator(clazz.getMethod("getOfficeImpot", int.class)));
 			invocators.put("pays", new MethodInvocator(clazz.getMethod("getPays", int.class)));
@@ -120,13 +107,6 @@ public class JspTagInfra extends BodyTagSupport {
 			}
 		}
 		return SKIP_BODY;
-	}
-
-	public static String capitalize(String name) {
-		if (name == null || name.length() == 0) {
-			return name;
-		}
-		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
 	public void setEntityType(String entityType) {
