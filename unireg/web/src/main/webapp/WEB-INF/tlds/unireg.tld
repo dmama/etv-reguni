@@ -154,7 +154,7 @@
 			<name>entityType</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>le type de l'entité (canton/collectivite/commune/localite/officeImpot/pays/rue)</description>
+			<description>le type de l'entité (canton/collectivite/localite/officeImpot/pays/rue)</description>
 		</attribute>
 		<attribute>
 			<name>entityId</name>
@@ -173,6 +173,37 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>la propriété de l'entité à afficher dans un tooltip</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commune</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagCommune</tag-class>
+		<body-content>JSP</body-content>
+		<description>Interface sur les communes du service infrastructure</description>
+		<attribute>
+			<name>ofs</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le numéro OFS (étendu) de la commune</description>
+		</attribute>
+		<attribute>
+			<name>date</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la date de référence de validité de la commune</description>
+		</attribute>
+		<attribute>
+			<name>displayProperty</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>nom de la propriété à afficher dans l'élément</description>
+		</attribute>
+		<attribute>
+			<name>titleProperty</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>nom de la propriété à afficher dans un tooltip au survol de l'élément</description>
 		</attribute>
 	</tag>
 

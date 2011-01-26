@@ -15,7 +15,7 @@
 	
 	<display:column sortable ="true" titleKey="label.commune">
 		<c:if test="${forFiscal.annule}"><strike></c:if>
-			<unireg:infra entityId="${forFiscal.numeroForFiscalCommune}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+			<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
 		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 

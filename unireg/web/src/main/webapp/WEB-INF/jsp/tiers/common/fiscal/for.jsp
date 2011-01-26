@@ -36,11 +36,11 @@
 		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<c:choose>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">			
-					<unireg:infra entityId="${forFiscal.numeroForFiscalCommune}" entityType="commune" entityPropertyName="nomMinuscule" entityPropertyTitle="noOFSEtendu"></unireg:infra>
+					<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
 				</c:when>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_HC' }">
-					<unireg:infra entityId="${forFiscal.numeroForFiscalCommuneHorsCanton}" entityType="commune" entityPropertyName="nomMinuscule" entityPropertyTitle="noOFSEtendu"></unireg:infra>
-					(<unireg:infra entityId="${forFiscal.numeroForFiscalCommuneHorsCanton}" entityType="commune" entityPropertyName="sigleCanton"></unireg:infra>)
+					<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
+					(<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forFiscal.regDateOuverture}"/>)
 				</c:when>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'PAYS_HS' }">
 					<unireg:infra entityId="${forFiscal.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule" entityPropertyTitle="noOFS"></unireg:infra>

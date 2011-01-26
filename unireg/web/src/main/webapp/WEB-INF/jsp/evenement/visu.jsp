@@ -34,7 +34,7 @@
 					<td width="25%"><fmt:message key="label.etat.evenement" /> :</td>
 					<td width="25%"><fmt:message key="option.etat.evenement.${command.evenement.etat}" /></td>
 					<td width="25%"><fmt:message key="label.commune.evenement" /> :</td>
-					<td width="25%"><unireg:infra entityId="${command.evenement.numeroOfsCommuneAnnonce}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra></td>
+					<td width="25%"><unireg:commune ofs="${command.evenement.numeroOfsCommuneAnnonce}" displayProperty="nomMinuscule" date="${command.evenement.dateEvenement}"/></td>
 				</tr>
 			</table>
 			
