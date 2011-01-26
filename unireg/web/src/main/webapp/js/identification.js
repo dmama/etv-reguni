@@ -51,7 +51,7 @@ function confirmeSoumissionMessage() {
 function confirmeExpertise(id) {
 	if(confirm('Voulez-vous soumettre à expertise le message ?')) {
 		var form = F$("theForm");
-		form.action = 'edit.do?id=" + id + "&expertiser=expertiser';
+		form.action = 'edit.do?id=' + id + '&expertiser=expertiser';
 		form.submit();
 	}
 }
