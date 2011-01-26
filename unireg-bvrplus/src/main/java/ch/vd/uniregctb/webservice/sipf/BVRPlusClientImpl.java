@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.webservice.sipf;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
-import java.util.*;
-
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import java.io.FileNotFoundException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.message.Message;
@@ -14,6 +15,8 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
+import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.GetPingRequest;
+import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.PingRequest;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.SipfBVRPlus;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.SipfBVRPlus_Service;
 
@@ -45,7 +48,7 @@ public class BVRPlusClientImpl implements BVRPlusClient {
 	public BvrReponse getBVRDemande(BvrDemande bvrDemande) throws BVRPlusClientException {
 
 		initService();
-		
+
 		List<BvrReponse> bvrsReponse;
 		try {
 			bvrsReponse = this.service.getBVRDemande(Arrays.asList(bvrDemande));
@@ -70,6 +73,18 @@ public class BVRPlusClientImpl implements BVRPlusClient {
 		else {
 			return null;
 		}
+	}
+
+	public void ping() throws BVRPlusClientException {
+
+		initService();
+
+		final GetPingRequest param = new GetPingRequest();
+		final PingRequest request = new PingRequest();
+		request.setText("Y a quelqu'un ?");
+		param.getListPingRequest().add(request);
+
+		this.service.ping(param);
 	}
 
 	public void initService() {

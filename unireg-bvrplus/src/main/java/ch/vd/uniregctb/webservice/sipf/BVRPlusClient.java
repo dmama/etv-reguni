@@ -14,4 +14,11 @@ public interface BVRPlusClient {
 	 * @throws BVRPlusClientException en cas d'erreur de communication ou d'erreur levée par le service BVR.
 	 */
 	public BvrReponse getBVRDemande(BvrDemande bvrDemande) throws BVRPlusClientException;
+
+	/**
+	 * Envoie une requête de ping au service pour s'assurer que la connexion est bien établie.
+	 *
+	 * @throws BVRPlusClientException si le service n'est pas connecté.
+	 */
+	public void ping() throws BVRPlusClientException;
 }

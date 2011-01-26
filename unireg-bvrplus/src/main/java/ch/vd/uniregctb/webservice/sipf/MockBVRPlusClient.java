@@ -8,4 +8,7 @@ public class MockBVRPlusClient implements BVRPlusClient{
 	public BvrReponse getBVRDemande(BvrDemande bvrDemande) throws BVRPlusClientException {
 		return new BvrReponse();
 	}
+
+	public void ping() throws BVRPlusClientException {
+	}
 }
