@@ -6,6 +6,7 @@ import noNamespace.TypAdresse;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -37,7 +38,7 @@ public interface EditiqueHelper {
 	 * @throws InfrastructureException
 	 * @throws InfrastructureException
 	 */
-	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException ;
+	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
 
 	/**
 	 * Alimente la partie expéditeur CAT du document
@@ -49,12 +50,12 @@ public interface EditiqueHelper {
 	 * @throws InfrastructureException
 	 * @throws InfrastructureException
 	 */
-	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException ;
+	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
 
 
 	/**
-	 * Alimente la partie Destinataire du document
-	 * Alimente la partie expéditeur du document
+	 * Alimente la partie Destinataire du document Alimente la partie expéditeur du document
+	 *
 	 * @param ca
 	 * @return
 	 * @throws InfrastructureException
@@ -73,6 +74,7 @@ public interface EditiqueHelper {
 
 	/**
 	 * Alimente la partie Destinataire (collectivité administrative) du document
+	 *
 	 * @param collAdm
 	 * @param infoEnteteDocument
 	 * @return
@@ -82,6 +84,7 @@ public interface EditiqueHelper {
 
 	/**
 	 * Alimente la partie Destinataire du document avec la mention "Archives"
+	 *
 	 * @param infoEnteteDocument
 	 * @return
 	 */
@@ -98,13 +101,27 @@ public interface EditiqueHelper {
 	 * @throws InfrastructureException
 	 * @throws InfrastructureException
 	 */
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException ;
+	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
+
 	/**
-	 * Retrouve le nom de la commune à mettre dans le champs OFS des documents de sommation de DI
-	 * et de confirmation de délai.
+	 * Alimente la partie expéditeur du document en indiquant si le document est une sommation
+	 *
+	 * @param declaration
+	 * @param infoEnteteDocument
+	 * @param traitePar
+	 * @param isSommation
+	 * @return
+	 * @throws InfrastructureException
+	 * @throws RemoteException
+	 * @throws InfrastructureException
+	 * @throws InfrastructureException
+	 */
+	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar, boolean isSommation) throws InfrastructureException;
+
+	/**
+	 * Retrouve le nom de la commune à mettre dans le champs OFS des documents de sommation de DI et de confirmation de délai.
 	 *
 	 * @param di - la di concernée par la sommation ou la demande de délai
-	 *
 	 * @return le nom de la commune
 	 */
 	public String getCommune(Declaration di) throws EditiqueException;

@@ -18,6 +18,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -205,10 +206,17 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	}
 
 
+
+		public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
+			   return remplitExpediteurACIForIS(declaration, infoEnteteDocument, traitePar,false);
+		}
+
+
+
 	/**
 	 * Alimente la partie expéditeur du document
 	 */
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
+	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar, boolean isSommation) throws InfrastructureException {
 		//
 		// Expediteur
 		//
@@ -234,7 +242,15 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		// expediteur.setSrvExp(srvExp);
 		// expediteur.setIdeUti(ideUti);
 		expediteur.setLocaliteExpedition("Lausanne");
-		expediteur.setDateExpedition(Integer.valueOf(RegDate.get().index()).toString());
+		RegDate dateExpedition = null;
+		if(isSommation){
+			EtatDeclarationSommee sommee =(EtatDeclarationSommee)declaration.getDernierEtat();
+			dateExpedition = sommee.getDateEnvoiCourrier();
+		}
+		else{
+			dateExpedition = RegDate.get();
+		}
+		expediteur.setDateExpedition(Integer.valueOf(dateExpedition.index()).toString());
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 		expediteur.setVotreReference("");
 		// expediteur.setNumIBAN(numIBAN);
