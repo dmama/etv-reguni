@@ -35,10 +35,8 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.editique.DelegateEditique;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -50,10 +48,9 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
-public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditique, InitializingBean {
+public class ListeRecapServiceImpl implements ListeRecapService, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(ListeRecapServiceImpl.class);
 
@@ -368,11 +365,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			while (manquante.isValidAt(date));
 		}
 		return lr;
-	}
-
-	
-
-	public void surDocumentRecu(EditiqueResultat resultat) {
 	}
 
 	/**
