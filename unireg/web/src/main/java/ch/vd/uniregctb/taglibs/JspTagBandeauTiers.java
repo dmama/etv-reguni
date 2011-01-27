@@ -522,15 +522,12 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		s.append("<script type=\"text/javascript\">\n");
 		s.append("    // cache les erreurs par défaut\n");
-		s.append("    var vs = E$('val_errors');\n");
-		s.append("    vs.style.display = 'none';\n");
+		s.append("    $('#val_errors').hide();\n");
 		s.append("\n");
 		s.append("    // affiche les erreurs\n");
 		s.append("    function showDetails() {\n");
-		s.append("        var ve = E$('val_errors');\n");
-		s.append("        ve.style.display = '';\n");
-		s.append("        var vs = E$('val_script');\n");
-		s.append("        vs.style.display = 'none';\n");
+		s.append("        $('#val_errors').show();\n");
+		s.append("        $('#val_script').hide();\n");
 		s.append("    }\n");
 		s.append("</script>");
 

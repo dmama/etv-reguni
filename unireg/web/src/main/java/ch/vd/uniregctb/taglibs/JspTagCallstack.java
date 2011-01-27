@@ -41,13 +41,10 @@ public class JspTagCallstack extends BodyTagSupport {
 
 			// le code javascript pour cacher la callstack par défaut
 			out.print("<script type=\"text/javascript\">");
-			out.print("var vs = E$('exception_callstack');");
-			out.print("vs.style.display = 'none';");
+			out.print("$('#exception_callstack').hide();");
 			out.print("function showDetails() {");
-			out.print("  var ve = E$('exception_callstack');");
-			out.print("  ve.style.display = '';");
-			out.print("  var vs = E$('details_link');");
-			out.print("  vs.style.display = 'none';");
+			out.print("  $('#exception_callstack').show();");
+			out.print("  $('#details_link').hide();");
 			out.print("}");
 			out.print("</script>");
 

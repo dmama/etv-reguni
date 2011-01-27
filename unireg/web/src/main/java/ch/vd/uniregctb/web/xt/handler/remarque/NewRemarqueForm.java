@@ -25,7 +25,7 @@ public class NewRemarqueForm extends Container {
 		final InputField button = new InputField("new_remarque_submit", "Ajouter", InputField.InputType.BUTTON);
 		button.addAttribute("id", "new_remarque_submit");
 		button.addAttribute("onclick",
-				"XT.doAjaxSubmit('saveRemarque', E$('new_remarque_text'), {'tiersId' : " + tiersId + ", 'texte' : E$('new_remarque_text').value}, { 'clearQueryString' : false});");
+				"XT.doAjaxSubmit('saveRemarque', $('#new_remarque_text').get(0), {'tiersId' : " + tiersId + ", 'texte' : $('#new_remarque_text').val()}, { 'clearQueryString' : false});");
 		addComponent(button);
 
 		addComponent(new SimpleText("&nbsp;ou&nbsp;"));
