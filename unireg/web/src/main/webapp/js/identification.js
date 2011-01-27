@@ -27,8 +27,8 @@ function selectAllIdentifications(checkSelectAll) {
 function confirmeSuspensionMessage() {
 	if(confirm('Voulez-vous suspendre le(s) message(s) selectionné(s) ?')) {
 		$('#desynchro').show();
-		var form = F$("theForm");
-		form.action = 'listEnCours.do?suspendre=suspendre';
+		var form = $("#formRechercheMessage");
+		form.attr('action', 'listEnCours.do?suspendre=suspendre');
 		form.submit();
 	}
 }
@@ -39,8 +39,8 @@ function confirmeSuspensionMessage() {
 function confirmeSoumissionMessage() {
 	if(confirm('Voulez-vous soumettre à nouveau le(s) message(s) selectionné(s) ?')) {
 		$('#desynchro').show();
-		var form = F$("theForm");
-		form.action = 'listEnCours.do?soumettre=soumettre';
+		var form = $("#formRechercheMessage");
+		form.attr('action', 'listEnCours.do?soumettre=soumettre');
 		form.submit();
 	}
 }
@@ -50,18 +50,15 @@ function confirmeSoumissionMessage() {
 */
 function confirmeExpertise(id) {
 	if(confirm('Voulez-vous soumettre à expertise le message ?')) {
-		var form = F$("theForm");
-		form.action = 'edit.do?id=' + id + '&expertiser=expertiser';
+		var form = $("#formRecherchePersonne");
+		form.attr('action', 'edit.do?id=' + id + '&expertiser=expertiser');
 		form.submit();
 	}
 }
 
 function Page_RetourNonIdentification() {
 	if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {			
-		
-			window.location.href='edit.do';
-		
-		
+		window.location.href='edit.do';
 	}
 }
 
@@ -70,8 +67,8 @@ function Page_RetourNonIdentification() {
 */
 function confirmerImpossibleAIdentifier(id) {
 	if(confirm('Voulez-vous marquer le message comme impossible à identifier ?')) {
-		var form = F$("formNonIdentifie");
-		form.action = 'nonIdentifie.do';
+		var form = $("#formNonIdentifie");
+		form.attr('action', 'nonIdentifie.do');
 		form.submit();		
 	}
 	

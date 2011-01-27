@@ -118,8 +118,8 @@
 			}
 
 			function voirMessage() {
-				var form = F$("theForm");
-				form.action = 'edit.do?fichier_acicom=true';
+				var form = $("#formRecherchePersonne");
+				form.attr('action', 'edit.do?fichier_acicom=true');
 				form.submit();
 			}
 		

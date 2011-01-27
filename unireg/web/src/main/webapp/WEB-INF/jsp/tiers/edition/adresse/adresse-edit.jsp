@@ -333,7 +333,7 @@
 	}
 
 	function AddressEdit_Adjust() {
-		var form = F$("formAddAdresse");
+		var form = $("#formAddAdresse").get(0);
 		if (!isBlankString(form.numeroOrdrePoste.value) || !form.typeLocalite1.checked) {
 			form.rue.readOnly = '';
 			$('#rue').removeClass("readonly");

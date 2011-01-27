@@ -67,7 +67,7 @@
 			}
 			
 			function startJob(name) {
-				var form = F$(name);
+				var form = $('#'+name).get(0);
 				XT.doAjaxSubmit('startJob', form, null,
 					{
 						formId : form.id,

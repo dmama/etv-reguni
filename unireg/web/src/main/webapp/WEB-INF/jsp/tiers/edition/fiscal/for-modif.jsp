@@ -179,7 +179,7 @@
 				}
 				
 
-				var f = F$('formFor');
+				var f = $('#formFor').get(0);
 				var noOfsAut = f.numeroForFiscalCommune.value + f.numeroForFiscalCommuneHorsCanton.value + f.numeroForFiscalPays.value;
 
 				XT.doAjaxAction('buildSynchronizeActionsTableSurModificationDeFor', E$('actions_list'), {

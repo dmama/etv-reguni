@@ -39,8 +39,8 @@ function selectTypeTache(name) {
 */
 function confirmeImpression() {
 	$('#desynchro').show();
-	var form = F$("theForm");
-	form.action = 'list-nouveau-dossier.do?imprimer=imprimer';
+	var form = $("form[name=\"theForm\"]");
+	form.attr('action', 'list-nouveau-dossier.do?imprimer=imprimer');
 	form.submit();
 }	
 
@@ -49,8 +49,8 @@ function confirmeImpression() {
 */
 function recherche() {
 	$('#desynchro').hide();
-	var form = F$("theForm");
-	form.action = 'list-nouveau-dossier.do';
+	var form = $("form[name=\"theForm\"]");
+	form.attr('action', 'list-nouveau-dossier.do');
 	form.submit();
 }	
 
@@ -59,7 +59,7 @@ function recherche() {
 */
 function efface() {
 	$('#desynchro').hide();
-	var form = F$("theForm");
-	form.action = 'list-nouveau-dossier.do?effacer=effacer';
+	var form = $("form[name=\"theForm\"]");
+	form.attr('action', 'list-nouveau-dossier.do?effacer=effacer');
 	form.submit();
 }	

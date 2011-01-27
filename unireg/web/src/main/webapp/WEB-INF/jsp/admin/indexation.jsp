@@ -86,14 +86,15 @@
 		* Submit du formulaire de gestion de l'indexation
 		*/
 		function submitIndex(action) {
-			var formGestionIndexation = F$('formGestionIndexation');
+			var formGestionIndexation = $('#formGestionIndexation');
 			if (action == 'clean' || action == 'hostClean') {
 				if(confirm('Voulez-vous vraiment supprimer cet index ?')) {
-					formGestionIndexation.action = 'indexation.do?action=' + action;
+					formGestionIndexation.attr('action', 'indexation.do?action=' + action);
 					formGestionIndexation.submit();
 				}
-			} else {
-				formGestionIndexation.action = 'indexation.do?action=' + action;
+			}
+			else {
+				formGestionIndexation.attr('action', 'indexation.do?action=' + action);
 				formGestionIndexation.submit();
 			}
 		}

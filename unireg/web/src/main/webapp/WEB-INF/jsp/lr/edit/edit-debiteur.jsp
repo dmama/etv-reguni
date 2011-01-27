@@ -28,8 +28,7 @@
 			document.location.href='../tiers/visu.do?id=' + numero ;
 		}
 		function SubmitFormEditLR(){
-			var formEditLR = F$('formEditLR');
-			formEditLR.submit();	
+			$('#formEditLR').submit();
 		}
 	</script>
 	</tiles:put>

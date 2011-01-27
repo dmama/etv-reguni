@@ -9,17 +9,16 @@
   	
 		<script type="text/javascript">
 			function submitForm(){
-				var formEditMvt = F$('formGestionTracing');
-				formEditMvt.submit();
+				$('#formGestionTracing').submit();
 			}
 		</script>
   	
   		<span id="logs_header">
-	  		Afficher les messages de type : <form:checkbox path="showInfo" id="showInfo" label="info" onchange="javascript:submitForm()" />
-	  		<form:checkbox path="showWarning" id="showWarning" label="warnings" onchange="javascript:submitForm()" /> 
-	  		<form:checkbox path="showError" id="showError" label="erreurs" onchange="javascript:submitForm()" /> 
-	  		<form:checkbox path="showSuccess" id="showSuccess" label="succès" onchange="javascript:submitForm()" />
-	  		<form:checkbox path="showEvCivil" id="showEvCivil" label="événements civils" onchange="javascript:submitForm()" />
+	  		Afficher les messages de type : <form:checkbox path="showInfo" id="showInfo" label="info" onchange="submitForm()" onclick="submitForm()" />
+	  		<form:checkbox path="showWarning" id="showWarning" label="warnings" onchange="submitForm()" onclick="submitForm()" />
+	  		<form:checkbox path="showError" id="showError" label="erreurs" onchange="submitForm()" onclick="submitForm()" />
+	  		<form:checkbox path="showSuccess" id="showSuccess" label="succès" onchange="submitForm()" onclick="submitForm()" />
+	  		<form:checkbox path="showEvCivil" id="showEvCivil" label="événements civils" onchange="submitForm()" onclick="submitForm()" />
   		</span> 
   	
 		<display:table name="${command.list}" id="logs" pagesize="50" partialList="true" size="${command.totalSize}" requestURI="/admin/audit.do" 

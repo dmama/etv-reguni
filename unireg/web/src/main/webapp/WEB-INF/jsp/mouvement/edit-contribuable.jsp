@@ -26,8 +26,7 @@
 	</form:form>
 	<script type="text/javascript">
 		function SubmitFormEditMvt(){
-			var formEditMvt = F$('formEditMvt');
-			formEditMvt.submit();	
+			$('#formEditMvt').submit();
 		}
 	</script>
 	</tiles:put>
