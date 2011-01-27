@@ -78,25 +78,29 @@
 		$('#quittancement.null.dateDebut').val("");
 		$('#quittancement.null.dateQuittance').val("");
 		$('#error.global').val("");
-		E$('numeroCtb').value = "";
-		E$('dateDebut').value = "";
-		E$('dateFin').value = "";
-		E$('dateQuittance').value = "";
+		$('#numeroCtb').val("");
+		$('#dateDebut').val("");
+		$('#dateFin').val("");
+		$('#dateQuittance').val("");
 		$('#typeQuittance').get(0).selectIndex = 0;
 		$('#typeQuittance').change();
 		return true;
 	}
 	
-	
 	function TypeQuittance_OnChange( element) {
 		var option = element.options[element.selectedIndex];
 		if (option) {
-			var annulation =( option.value ==='Annulation') ;
-			E$('dateQuittance').readOnly  =  annulation ;
-			E$('dateQuittance').className  = (annulation ? "readonly" :"");
-			E$('dateQuittance_Anchor').style.visibility  = (annulation ? 'hidden' : 'visible');
-			if ( annulation)
-				E$('dateQuittance').value = "";
+			if (option.value === 'Annulation') {
+				$('#dateQuittance').attr('readOnly', true);
+				$('#dateQuittance').addClass("readonly");
+				$('#dateQuittance_Anchor').hide();
+				$('#dateQuittance').val("");
+			}
+			else {
+				$('#dateQuittance').attr('readOnly', false);
+				$('#dateQuittance').removeClass("readonly");
+				$('#dateQuittance_Anchor').show();
+			}
 		}
 		return true;
 	}

@@ -26,8 +26,7 @@
 	</form:form>
 	<script type="text/javascript" language="Javascript1.3">
 			$(function() {
-				var typeMouvementSelect = E$("type_mouvement");
-				selectTypeMouvement(typeMouvementSelect.options[typeMouvementSelect.selectedIndex].value);
+				selectTypeMouvement($("#type_mouvement").val());
 
 				/**
 				 * Initialisation de l'observeur du flag 'modifier'

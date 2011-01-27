@@ -2,22 +2,22 @@
 /**
 * Efface les valeurs des criteres de recherche du Host
 */
-function effacerCriteres()
-{
+function effacerCriteres() {
   top.location.replace('list.do?action=effacer');
 }
 
 /*
 * Toggle rows is actif
 */
-function toggleRowsIsHisto(tableName,elementId, numCol){
+function toggleRowsIsHisto(tableId,elementId, numCol){
 	
-	var tbl = E$(tableName);
+	var tbl = $('#' + tableId).get(0);
 	if (tbl != null) {
 		var len = tbl.rows.length;
-		
-		for (i=1 ; i< len; i++){
-			if (!E$(elementId).checked ){		
+		var showHisto = $('#' + elementId).attr('checked');
+
+		for (i=1 ; i< len; i++) {
+			if (!showHisto) {
 				var x = tbl.rows[i].cells;
 				if (numCol >= x.length) {
 					// work-around parce que le tag <display:table> ajoute une ligne avec une *seule* colonne lorsque la table est vide
@@ -29,13 +29,14 @@ function toggleRowsIsHisto(tableName,elementId, numCol){
 				else {
 					tbl.rows[i].style.display = 'none';
 				}
-			 }  else {
-			 	tbl.rows[i].style.display = '';
-			 } 
+			}
+			else {
+				tbl.rows[i].style.display = '';
+			}
 		}
 		
-		if (tableName=='dossierApparente'){
-			filter(tableName,E$('typeRapportId'));
+		if (tableId == 'dossierApparente') {
+			filter(tbl, $('#typeRapportId'));
 		}
 	}
 }	
@@ -44,23 +45,26 @@ function toggleRowsIsHisto(tableName,elementId, numCol){
 /*
 * Toggle rows is actif
 */
-function toggleRowsIsHistoPeriodicite(tableName,elementId, numCol,numColActive){
+function toggleRowsIsHistoPeriodicite(tableId,elementId, numCol,numColActive){
 
-	var tbl = E$(tableName);
+	var tbl = $('#' + tableId).get(0);
 	if (tbl != null) {
 		var len = tbl.rows.length;
+		var showHisto = $('#' + elementId).attr('checked');
 
 		for (i=1 ; i< len; i++){
-			if (!E$(elementId).checked ){
+			if (!showHisto) {
 				var x = tbl.rows[i].cells;
 				if ((trim(x[numCol].innerHTML) == '') && (!hasClassName(tbl.rows[i], 'strike'))||(x[numColActive].innerHTML.match('Active'))){
 					tbl.rows[i].style.display = '';
-				}else {
+				}
+				else {
 					tbl.rows[i].style.display = 'none';
 				}
-			 }  else {
-			 	tbl.rows[i].style.display = '';
-			 }
+			}
+			else {
+				tbl.rows[i].style.display = '';
+			}
 		}
 
 	}
@@ -68,23 +72,26 @@ function toggleRowsIsHistoPeriodicite(tableName,elementId, numCol,numColActive){
 /*
 * Toggle rows is actif
 */
-function toggleRowsIsActif(tableName, elementId, numCol){
+function toggleRowsIsActif(tableId, elementId, numCol){
 
-	var tbl = E$(tableName);
+	var tbl = $('#' + tableId).get(0);
 	if (tbl != null) {
 		var len = tbl.rows.length;
+		var showHisto = $('#' + elementId).attr('checked');
 
 		for (i=1 ; i< len; i++){
-			if (!E$(elementId).checked ){
+			if (!showHisto) {
 				var x = tbl.rows[i].cells;
 				if ((x[numCol].innerHTML.indexOf('strike')== -1) && (!hasClassName(tbl.rows[i], 'strike'))){
 					tbl.rows[i].style.display = '';
-				}else {
+				}
+				else {
 					tbl.rows[i].style.display = 'none';
 				}
-			 }  else {
-			 	tbl.rows[i].style.display = '';
-			 } 
+			}
+			else {
+				tbl.rows[i].style.display = '';
+			}
 		}
 	}
 }	
@@ -92,9 +99,8 @@ function toggleRowsIsActif(tableName, elementId, numCol){
 /*
 * Filter select box
 */
-function filter(tableName,element){
-	var tbl = E$(tableName);		
-	var sel  = element.options[element.selectedIndex].value ;
+function filter(tbl, element){
+	var sel  = $(element).val();
 	var hide= true;
 	var len = tbl.rows.length;
 	var vStyle = (hide)? "none":"";
@@ -229,20 +235,20 @@ function afficheAdressesHisto(elementId,elementIdCiviles,elementIdCivilesConjoin
 	var histoCiviles;
 	var histoCivilesConjoint;
 
-	if (E$(elementId).checked ){
+	if ($('#' + elementId).attr('checked')) {
 		histo = '&adressesHisto=true';
 	}
 	else {
 		histo =  '&adressesHisto=false';
 	}
 
-	if (E$(elementIdCiviles).checked ){
+	if ($(elementIdCiviles).attr('checked')) {
 		histoCiviles = '&adressesHistoCiviles=true';
 	}
 	else {
 		histoCiviles =  '&adressesHistoCiviles=false';
 	}
-	if (E$(elementIdCivilesConjoint).checked ){
+	if ($(elementIdCivilesConjoint).attr('checked')) {
 		histoCivilesConjoint = '&adressesHistoCivilesConjoint=true';
 	}
 	else {
@@ -255,7 +261,7 @@ function afficheAdressesHisto(elementId,elementIdCiviles,elementIdCivilesConjoin
  * 
  */
 function togglePanels(elementId, element1, element2) {
-	if (E$(elementId).checked){
+	if ($('#' + elementId).attr('checked')){
 		$(element1).hide();
 		$(element2).show();
 	}
@@ -317,7 +323,7 @@ function hasClassName(objElement, strClass)
  * Affiche ou filtre les données historiques d'une table
  */
 function refreshHistoTable(showHisto, table, dateFinIndex) {
-	var len = table.rows.length;
+	var len = $(table).get(0).rows.length;
 	var firstLine = null;
 	var foundSomething = false; // vrai si une ligne au moins est affichée
 	var visibleCount = 0;

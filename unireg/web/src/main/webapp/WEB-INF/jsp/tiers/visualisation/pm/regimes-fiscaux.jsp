@@ -63,8 +63,8 @@
 	 * Affiche ou filtre les données historiques de la table des sièges
 	 */
 	function refreshRegimesVDTable(checkbox) {
-		var showHisto = checkbox.checked;
-		var table = E$('regimesVD');
+		var showHisto = $(checkbox).get(0).checked;
+		var table = $('#regimesVD');
 		refreshHistoTable(showHisto, table, 1);
 	}
 
@@ -72,13 +72,13 @@
 	 * Affiche ou filtre les données historiques de la table des sièges
 	 */
 	function refreshRegimesCHTable(checkbox) {
-		var showHisto = checkbox.checked;
-		var table = E$('regimesCH');
+		var showHisto = $(checkbox).get(0).checked;
+		var table = $('#regimesCH');
 		refreshHistoTable(showHisto, table, 1);
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page
-	refreshRegimesVDTable(E$('showRegimesVDHisto'));
-	refreshRegimesCHTable(E$('showRegimesCHHisto'));
+	refreshRegimesVDTable($('#showRegimesVDHisto'));
+	refreshRegimesCHTable($('#showRegimesCHHisto'));
 
 </script>

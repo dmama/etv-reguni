@@ -53,7 +53,7 @@
 							<%-- Motif d''ouverture (éditable) --%>
 							<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 							<td>
-								<form:select path="motifOuverture" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
+								<form:select path="motifOuverture" id="motifOuverture" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
 								<form:errors path="motifOuverture" cssClass="error" />
 							</td>
 						</c:if>
@@ -91,7 +91,7 @@
 							<%-- Motif de fermeture --%>
 							<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
 							<td>
-								<form:select path="motifFermeture" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
+								<form:select path="motifFermeture" id="motifFermeture" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
 								<form:errors path="motifFermeture" cssClass="error" />
 							</td>
 						</c:if>
@@ -112,10 +112,10 @@
 			<script type="text/javascript">
 				// on met-à-jour les motifs d'ouverture et de fermeture au chargement de la page (genre impôt et rattachement sont fixés)
 				<c:if test="${command.dateOuvertureEditable}">
-					updateMotifsOuverture(E$('motifOuverture'), 'motifOuverture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifOuverture}');
+					updateMotifsOuverture($('#motifOuverture').get(0), 'motifOuverture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifOuverture}');
 				</c:if>
 				<c:if test="${command.dateFermetureEditable}">
-					updateMotifsFermeture(E$('motifFermeture'), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
+					updateMotifsFermeture($('#motifFermeture').get(0), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
 				</c:if>
 			</script>
 
@@ -142,37 +142,37 @@
 		<script type="text/javascript">
 			function updateSyncActions() {
 
-				var motifsOuvertureSelect = E$('motifOuverture');
+				var motifsOuvertureSelect = $('#motifOuverture');
 				var motifsOuverture;
-				if (motifsOuvertureSelect) {
-					motifsOuverture = (motifsOuvertureSelect.selectedIndex < 0 ? null : motifsOuvertureSelect.options[motifsOuvertureSelect.selectedIndex].value);
+				if (motifsOuvertureSelect.length) {
+					motifsOuverture = motifsOuvertureSelect.val();
 				}
 				else {
 					motifsOuverture = '${command.motifOuverture}';
 				}
 
-				var dateOuvertureInput = E$('dateOuverture');
+				var dateOuvertureInput = $('#dateOuverture');
 				var dateOuverture;
-				if (dateOuvertureInput) {
-					dateOuverture = dateOuvertureInput.value;
+				if (dateOuvertureInput.length) {
+					dateOuverture = dateOuvertureInput.val();
 				}
 				else {
 					dateOuverture = '<unireg:regdate regdate="${command.regDateOuverture}" />'
 				}
 
-				var motifsFermetureSelect = E$('motifFermeture');
+				var motifsFermetureSelect = $('#motifFermeture');
 				var motifsFermeture;
-				if (motifsFermetureSelect) {
-					motifsFermeture = (motifsFermetureSelect.selectedIndex < 0 ? null : motifsFermetureSelect.options[motifsFermetureSelect.selectedIndex].value);
+				if (motifsFermetureSelect.length) {
+					motifsFermeture = motifsFermetureSelect.val();
 				}
 				else {
 					motifsFermeture = '${command.motifFermeture}';
 				}
 				
-				var dateFermetureInput = E$('dateFermeture');
+				var dateFermetureInput = $('#dateFermeture');
 				var dateFermeture;
-				if (dateFermetureInput) {
-					dateFermeture = dateFermetureInput.value;
+				if (dateFermetureInput.length) {
+					dateFermeture = dateFermetureInput.val();
 				}
 				else {
 					dateFermeture = '<unireg:regdate regdate="${command.regDateFermeture}" />'
@@ -182,7 +182,7 @@
 				var f = $('#formFor').get(0);
 				var noOfsAut = f.numeroForFiscalCommune.value + f.numeroForFiscalCommuneHorsCanton.value + f.numeroForFiscalPays.value;
 
-				XT.doAjaxAction('buildSynchronizeActionsTableSurModificationDeFor', E$('actions_list'), {
+				XT.doAjaxAction('buildSynchronizeActionsTableSurModificationDeFor', $('#actions_list').get(0), {
 					'forId' : ${command.id},
 					'dateOuverture' : dateOuverture,
 					'motifOuverture' : motifsOuverture,

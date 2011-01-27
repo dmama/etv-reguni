@@ -76,7 +76,7 @@
 					<%-- Mode d'imposition --%>
 					<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
 					<td>
-						<form:select path="modeImposition" items="${modesImposition}" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
+						<form:select path="modeImposition" id="modeImposition" items="${modesImposition}" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
 						<form:errors path="modeImposition" cssClass="error" />
 					</td>
 
@@ -103,7 +103,7 @@
 					<%-- Motif de changement --%>
 					<td><fmt:message key="label.motif.mode.imposition"/>&nbsp;:</td>
 					<td>
-						<form:select path="motifImposition" onchange="updateSyncActions();" onkeyup="updateSyncActions();">
+						<form:select path="motifImposition" id="motifImposition" onchange="updateSyncActions();" onkeyup="updateSyncActions();">
 							<form:option value="PERMIS_C_SUISSE" ><fmt:message key="option.motif.ouverture.PERMIS_C_SUISSE" /></form:option>
 							<form:option value="CHGT_MODE_IMPOSITION" ><fmt:message key="option.motif.ouverture.CHGT_MODE_IMPOSITION" /></form:option>
 						</form:select>
@@ -139,15 +139,12 @@
 		<script type="text/javascript">
 			function updateSyncActions() {
 
-				var modeImpositionSelect = E$('modeImposition');
-				var modeImposition = (modeImpositionSelect.selectedIndex < 0 ? null : modeImpositionSelect.options[modeImpositionSelect.selectedIndex].value);
+				var modeImposition = $('#modeImposition').val();
+				var motifChangement = $('#motifImposition').val();
 
-				var motifChangementSelect = E$('motifImposition');
-				var motifChangement = (motifChangementSelect.selectedIndex < 0 ? null : motifChangementSelect.options[motifChangementSelect.selectedIndex].value);
-
-				XT.doAjaxAction('updateActionListSurModificationDuModeImposition', E$('actions_list'), {
+				XT.doAjaxAction('updateActionListSurModificationDuModeImposition', $('#actions_list').get(), {
 					'forId' : ${command.id},
-					'dateChangement' : E$('dateChangement').value,
+					'dateChangement' : $('#dateChangement').val(),
 					'modeImposition' : modeImposition,
 					'motifChangement' : motifChangement
 				});

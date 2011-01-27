@@ -98,10 +98,10 @@
 		$('#quittancement.null.dateEvenement').val("");
 		$('#quittancement.null.dateTraitement').val("");
 		$('#error.global').val("");
-		E$('noTechnique').value = "";
-		E$('numeroOFS').value = "";
-		E$('noIndividu').value = "";
-		E$('dateEvenement').value = "";
+		$('#noTechnique').val("");
+		$('#numeroOFS').val("");
+		$('#noIndividu').val("");
+		$('#dateEvenement').val("");
 		$('#typeEvenementCivil').get(0).selectIndex = 0;
 		$('#typeEvenementCivil').change();
 		return true;

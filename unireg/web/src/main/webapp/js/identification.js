@@ -6,18 +6,8 @@ function selectAllIdentifications(checkSelectAll) {
 	var lignesMessage = document.getElementById('message').getElementsByTagName('tr');
 	var taille = lignesMessage.length;
 
-	if (checkSelectAll.checked) {
-		for(var i=1; i < taille; i++) {
-			if (E$('tabIdsMessages_' + i) != null) {
-				E$('tabIdsMessages_' + i).checked = true ;
-			}
-		}
-	} else {
-		for(var i=1; i < taille; i++) {
-			if (E$('tabIdsMessages_' + i) != null) {
-				E$('tabIdsMessages_' + i).checked = false ;
-			}
-		}
+	for(var i=1; i < taille; i++) {
+		$('#tabIdsMessages_' + i).attr('checked', checkSelectAll.checked);
 	}
 }
 

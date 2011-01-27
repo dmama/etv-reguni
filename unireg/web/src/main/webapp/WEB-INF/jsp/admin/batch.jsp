@@ -19,11 +19,15 @@
 				var element = $('#ARGS_'+ id);
 				var expand = (element.is(":hidden"));
 				element.toggle();
-				var img = E$('IMG_'+ id);
-				if (expand)
-					img.src = img.src.replace('plus','minus');
-				else
-					img.src = img.src.replace('minus','plus');
+				var img = $('#IMG_'+ id);
+				var src = img.attr('src');
+				if (expand) {
+					src = src.replace('plus','minus');
+				}
+				else {
+					src = src.replace('minus','plus');
+				}
+				img.attr('src', src);
 			}
 		</script>
 
@@ -51,7 +55,7 @@
 				if ( !requestDone)
 					return;
 				requestDone = false;
-				XT.doAjaxAction('loadJobActif', E$("jobsActif"), {},
+				XT.doAjaxAction('loadJobActif', $("#jobsActif").get(0), {},
 				{ 
 					clearQueryString: true,
 					errorHandler :  function(ajaxRequest, exception) {
@@ -78,7 +82,7 @@
 			}
 			
 			function stopJob(name) {
-				XT.doAjaxAction('stopJob', E$("jobsActif"),
+				XT.doAjaxAction('stopJob', $("#jobsActif").get(0),
 					{
 						jobName :name
 					},

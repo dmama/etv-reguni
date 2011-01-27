@@ -6,18 +6,8 @@ function selectAllDossiers(checkSelectAll) {
 	var lignesNouveauDossier = document.getElementById('nouveauDossier').getElementsByTagName('tr');
 	var taille = lignesNouveauDossier.length;
 
-	if (checkSelectAll.checked) {
-		for(var i=1; i < taille; i++) {
-			if (E$('tabIdsDossiers_' + i) != null) {
-				E$('tabIdsDossiers_' + i).checked = true ;
-			}
-		}
-	} else {
-		for(var i=1; i < taille; i++) {
-			if (E$('tabIdsDossiers_' + i) != null) {
-				E$('tabIdsDossiers_' + i).checked = false ;
-			}
-		}
+	for(var i=1; i < taille; i++) {
+		$('#tabIdsDossiers_' + i).attr('checked', checkSelectAll.checked);
 	}
 }
 

@@ -94,7 +94,6 @@
 
 				var periodicalExecuter;
 				function startEtape( link, etape) {
-					var element = E$( "etat-etape-" + etape);
 			        Form.doAjaxSubmitPostBack("theForm", 'OnClick',link, {etapeIndex: etape });
 					periodicalExecuter = new PeriodicalExecuter(function() {
 						Form.doAjaxActionPostBack('theForm', 'OnLoad', 'currentEvenementCivil', {periodical:true, lastEtape: etape},

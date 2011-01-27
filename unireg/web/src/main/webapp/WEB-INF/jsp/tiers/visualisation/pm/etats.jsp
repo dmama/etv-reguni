@@ -35,12 +35,12 @@
 	 * Affiche ou filtre les données historiques de la table des sièges
 	 */
 	function refreshEtatsPM(checkbox) {
-		var showHisto = checkbox.checked;
-		var table = E$('etatsPM');
+		var showHisto = $(checkbox).get(0).checked;
+		var table = $('#etatsPM');
 		refreshHistoTable(showHisto, table, 1);
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page
-	refreshEtatsPM(E$('showEtatsPMHisto'));
+	refreshEtatsPM($('#showEtatsPMHisto'));
 
 </script>

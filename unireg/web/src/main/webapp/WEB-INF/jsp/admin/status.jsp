@@ -23,7 +23,7 @@
 				if (!requestDone)
 					return;
 				requestDone = false;
-				XT.doAjaxAction('loadJobActif', E$("jobsActif"), {},
+				XT.doAjaxAction('loadJobActif', $("#jobsActif").get(0), {},
 					{ 
 						clearQueryString: true,
 						errorHandler : function(ajaxRequest, exception) {
@@ -76,71 +76,62 @@
 			</table>
 		</fieldset>
 
-        <fieldset id="stats.fieldset" class="info">
+        <fieldset id="stats_fieldset" class="info">
             <legend><span><fmt:message key="title.info.stats" /></span></legend>
-            <div id="stats.output" class="asciiart"><c:out value="${stats}" escapeXml="false"/></div>
-
-			<%-- Ajuste la taille du div stats.output par rapport à celle du div stats.fieldset, ceci pour
-			     contourner une limitation du style 'overflow:auto' qui ne supporte pas des tailles relatives --%>
-			<script type="text/javascript" language="Javascript1.3">
-				var fieldset = E$('stats.fieldset');
-				var output = E$('stats.output');
-				output.style.width = fieldset.offsetWidth - 20;
-			</script>
-
+            <div id="stats_output" class="asciiart"><c:out value="${stats}" escapeXml="false"/></div>
         </fieldset>
-
+        
 		<fieldset class="info">
 			<legend><span><fmt:message key="title.info.cache" /></span></legend>
 			<c:out value="${cacheStatus}" escapeXml="false"/>
 		</fieldset>
 		
 		<authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
-			<fieldset id="extprop.fieldset" class="info">
+			<fieldset id="extprop_fieldset" class="info">
 				<legend><span><fmt:message key="title.info.extprop" /></span></legend>
-				<div id="extprop.output" class="output"><c:out value="${extProps}" escapeXml="false"/></div>
+				<div id="extprop_output" class="output"><c:out value="${extProps}" escapeXml="false"/></div>
 			</fieldset>
 
-			<%-- Ajuste la taille du div extprop.output par rapport à celle du div extprop.div, ceci pour
-			     contourner une limitation du style 'overflow:auto' qui ne supporte pas des tailles relatives --%>
-			<script type="text/javascript" language="Javascript1.3">
-				var fieldset = E$('extprop.fieldset');
-				var output = E$('extprop.output');
-				output.style.width = fieldset.offsetWidth - 20;
-			</script>
-
-			<fieldset id="log4j.fieldset" class="info">
+			<fieldset id="log4j_fieldset" class="info">
 				<legend><span><fmt:message key="title.info.log4j" /></span></legend>
 				<table>
 					<tr><td><fmt:message key="label.info.log4j.config"/></td><td><span class="value"><c:out value="${log4jConfig}"/></span></td></tr>
 					<tr><td><fmt:message key="label.info.log4j.logfile"/></td><td><span class="value"><c:out value="${logFilename}"/></span></td></tr>
 					<tr><td colspan="2"><fmt:message key="label.info.log4j.taillog"/></td></tr>
-					<tr><td colspan="2"><div id="log4j.output" class="console"><c:out value="${tailLog}" escapeXml="false"/></div></td></tr>
+					<tr><td colspan="2"><div id="log4j_output" class="console"><c:out value="${tailLog}" escapeXml="false"/></div></td></tr>
 				</table>
 			
 			</fieldset>
 
-			<script type="text/javascript" language="Javascript1.3">
-
-				var fieldset = E$('log4j.fieldset');
-				var output = E$('log4j.output');
-				output.style.width = fieldset.offsetWidth - 20;
-			
-				var logExecuter = new PeriodicalExecuter(function() {
-					XT.doAjaxAction('updateTailLog', E$("log4j.output"), {},
-						{ 
-							clearQueryString: true,
-							errorHandler : function(ajaxRequest, exception) {
-								// on ignore les éventuelles erreurs
-							}
-		    			});
-				}, 3);
-				
-				logExecuter.onTimerEvent();
-				
-			</script>
-			
 		</authz:authorize>
+
+		<script>
+			$(function() {
+
+				// Ajuste la taille des divs *_output par rapport à celles des divs *_fieldset, ceci pour
+				// contourner une limitation du style 'overflow:auto' qui ne supporte pas des tailles relatives
+				var divs = ['stats', 'extprop', 'log4j'];
+				for (d in divs) {
+					var fieldset = $('#' + divs[d] + '_fieldset');
+					var output = $('#' + divs[d] + '_output');
+					output.css('width', fieldset.attr('offsetWidth') - 20);
+				}
+
+				if ($('#log4j_output')) {
+					var logExecuter = new PeriodicalExecuter(function() {
+						XT.doAjaxAction('updateTailLog', $("#log4j_output").get(0), {},
+							{
+								clearQueryString: true,
+								errorHandler : function(ajaxRequest, exception) {
+									// on ignore les éventuelles erreurs
+								}
+							});
+					}, 3);
+				}
+
+				logExecuter.onTimerEvent();
+			});
+		</script>
 
   	</tiles:put>
 </tiles:insert>

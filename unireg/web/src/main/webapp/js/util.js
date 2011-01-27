@@ -119,3 +119,13 @@ var Form = {
 		});
 	}
 };
+
+/**
+ * Redirige la page courante vers l'application (TAO, SIPF, CAT, ...) désirée
+ */
+function AppSelect_OnChange(select) {
+	var value = select.options[select.selectedIndex].value;
+	if ( value && value !== '') {
+		window.location.href = value;
+	}
+}

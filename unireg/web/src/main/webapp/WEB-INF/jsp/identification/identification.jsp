@@ -128,13 +128,6 @@
 					Form.doPostBack("theForm", "identifier", idCtb);
 				}
 			}
-			function AppSelect_OnChange(select) {
-				var value = select.options[select.selectedIndex].value;
-				if ( value && value !== '') {
-					//window.open(value, '_blank') ;
-					window.location.href = value;
-				}
-			}
 
 			function getParamValue( name )
 			{

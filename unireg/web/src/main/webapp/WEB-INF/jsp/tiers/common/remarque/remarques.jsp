@@ -7,7 +7,7 @@
 
 <script type="text/javascript">
 	// appels ajax pour charger les remarques
-	XT.doAjaxAction('refreshRemarques', E$('remarques'), {
+	XT.doAjaxAction('refreshRemarques', $('#remarques').get(0), {
 		'tiersId' : ${tiersId} 
 	});
 </script>

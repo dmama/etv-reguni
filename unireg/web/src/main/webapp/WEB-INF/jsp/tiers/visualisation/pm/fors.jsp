@@ -55,12 +55,12 @@
 	 * Affiche ou filtre les données historiques de la table des sièges
 	 */
 	function refreshforsFiscauxPM(checkbox) {
-		var showHisto = checkbox.checked;
-		var table = E$('forsFiscauxPM');
+		var showHisto = $(checkbox).get(0).checked;
+		var table = $('#forsFiscauxPM');
 		refreshHistoTable(showHisto, table, 4);
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page
-	refreshforsFiscauxPM(E$('showforsFiscauxPMHisto'));
+	refreshforsFiscauxPM($('#showforsFiscauxPMHisto'));
 
 </script>

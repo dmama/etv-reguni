@@ -208,7 +208,7 @@ function ouvrirAide(url) {
 						
 						<script type="text/javascript">
 							// appels ajax pour mettre-à-jour le post-it
-							XT.doAjaxAction('updatePostIt', E$('postit'));
+							XT.doAjaxAction('updatePostIt', $('#postit').get(0));
 						</script>
 					</authz:authorize>
 				</authz:authorize>

@@ -52,9 +52,9 @@
 					<p>
 						<%-- Type de rapport --%>					
 						<label for="typeRapport"><fmt:message key="label.type.rapport.entre.tiers" />&nbsp;:</label>
-						<form:select id="typeRapport" path="typeRapportEntreTiers" onchange="onTypeChange(this);">
+						<form:select id="typeRapport" path="typeRapportEntreTiers" onchange="onTypeChange(this);" onkeyup="onTypeChange(this);">
 							<form:option value="REPRESENTATION"><fmt:message key="option.rapport.entre.tiers.SUJET.REPRESENTATION" /></form:option>
-<form:option value="CONSEIL_LEGAL"><fmt:message key="option.rapport.entre.tiers.SUJET.CONSEIL_LEGAL" /></form:option>							
+							<form:option value="CONSEIL_LEGAL"><fmt:message key="option.rapport.entre.tiers.SUJET.CONSEIL_LEGAL" /></form:option>
 							<form:option value="TUTELLE"><fmt:message key="option.rapport.entre.tiers.SUJET.TUTELLE" /></form:option>
 							<form:option value="CURATELLE"><fmt:message key="option.rapport.entre.tiers.SUJET.CURATELLE" /></form:option>
 						</form:select>
@@ -108,18 +108,18 @@
 				</fieldset>
 
 				<script type="text/javascript">
-					function refreshLegend(element) {
-						var type = E$('typeRapport');
-						var sens = E$('sensRapport');
+					function refreshLegend() {
+						var type = $('#typeRapport');
+						var sens = $('#sensRapport');
 
 						// détermine le sens du rapport
 						var contenuGauche;
 						var contenuDroite;
 
-						var divTiers = E$('div_tiers');
-						var divTiersLie = E$('div_tiers_lie');
+						var divTiers = $('#div_tiers');
+						var divTiersLie = $('#div_tiers_lie');
 						
-						switch (sens.value) {
+						switch (sens.val()) {
 						case 'SUJET':
 							// le tiers lié est le sujet
 							contenuGauche = divTiers;
@@ -135,7 +135,7 @@
 						// détermine le texte du rapport
 						var autorite;
 						
-						switch (type.value) {
+						switch (type.val()) {
 						case 'TUTELLE':
 							autorite = "tuteur";
 							break;
@@ -151,107 +151,97 @@
 						}
 
 						// mis-à-jour du DOM
-						setChild(E$('td_tiers_gauche'), contenuGauche);
-						setChild(E$('td_tiers_droite'), contenuDroite);
+						setChild($('#td_tiers_gauche'), contenuGauche);
+						setChild($('#td_tiers_droite'), contenuDroite);
 
 
-						E$('flecheMilieu').innerHTML = 'est le ' + autorite + ' de';
+						$('#flecheMilieu').html('est le ' + autorite + ' de');
 					}
 
 					function setChild(td, child) {
-						while (td.childNodes[0]) {
-							td.removeChild(td.childNodes[0]);
-						}
-						td.appendChild(child);
+						td.empty();
+						td.append(child);
 					}
 
 					function refreshExecutionForcee() {
-						var type = E$('typeRapport');
-						if (type.value == 'REPRESENTATION') {
-							E$('executionForcee').style.display = '';
-							E$('executionForceeLabel').style.display = '';
+						var type = $('#typeRapport');
+						if (type.val() == 'REPRESENTATION') {
+							$('#executionForcee').show();
+							$('#executionForceeLabel').show();
 
 							// [UNIREG-1341/UNIREG-2655] execution forcee est seulement valable pour les contribuables hors-Suisse
-							var sens = E$('sensRapport');
+							var sens = $('#sensRapport');
 							var tiersRepresente;
-							switch (sens.value) {
+							switch (sens.val()) {
 							case 'SUJET':
 								// le tiers lié est le sujet
-								tiersRepresente = E$('div_tiers_lie');
+								tiersRepresente = $('#div_tiers_lie');
 								break;
 							case 'OBJET':
 								// le tiers lié est l'objet
-								tiersRepresente = E$('div_tiers');
+								tiersRepresente = $('#div_tiers');
 								break;
 							}
 
 							var typeFFP = getTypeForPrincipalActif(tiersRepresente);
 
 							if (typeFFP == 'PAYS_HS') {
-								E$('executionForcee').disabled = null;
-								E$('executionForceeLabel').style.color = '';
-								E$('executionForceeLabel').title = "";
+								$('#executionForcee').attr('disabled', null);
+								$('#executionForceeLabel').css('color', '');
+								$('#executionForceeLabel').attr('title', "");
 							}
 							else {
-								E$('executionForcee').checked = null;
-								E$('executionForcee').disabled = 'disabled';
-								E$('executionForceeLabel').style.color = 'gray';
-								E$('executionForceeLabel').title = "Uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse";
+								$('#executionForcee').attr('checked', null);
+								$('#executionForcee').attr('disabled', 'disabled');
+								$('#executionForceeLabel').css('color', 'gray');
+								$('#executionForceeLabel').attr('title', "Uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse");
 							}
 						}
 						else {
-							E$('executionForcee').style.display = 'none';
-							E$('executionForceeLabel').style.display = 'none';
+							$('#executionForcee').hide();
+							$('#executionForceeLabel').hide();
 						}
 					}
 
 					 function refreshAutoriteTutelaire() {
-						var type = E$('typeRapport');
-						if (type.value == 'TUTELLE' || type.value == 'CURATELLE' || type.value == 'CONSEIL_LEGAL') {
-							E$('autoriteTutelaireLabel').style.display = '';
-							E$('nomAutoriteTutelaire').style.display = '';
+						var type = $('#typeRapport');
+						if (type.val() == 'TUTELLE' || type.val() == 'CURATELLE' || type.val() == 'CONSEIL_LEGAL') {
+							$('#autoriteTutelaireLabel').show();
+							$('#nomAutoriteTutelaire').show();
 
 						}
 						else {
-							E$('autoriteTutelaireLabel').style.display = 'none';
-							E$('nomAutoriteTutelaire').style.display = 'none';
+							$('#autoriteTutelaireLabel').hide();
+							$('#nomAutoriteTutelaire').hide();
 						}
 					 }
 
 				
 					function getTypeForPrincipalActif(divTiers) {
-						var inputs = divTiers.getElementsByTagName('input');
-						var typeInput;
-						for (var i = 0; i < inputs.length; ++i) {
-							if (inputs[i].name == 'debugTypeForPrincipalActif') {
-								typeInput = inputs[i];
-								break;
-							}
-						}
-						return typeInput.value;
+						return $('input[name=\"debugTypeForPrincipalActif\"]', divTiers).val();
 					}
 
 					function onTypeChange(element) {
 						refreshExecutionForcee();
-						refreshLegend(element);
+						refreshLegend();
 						refreshAutoriteTutelaire();
 					}
 
 					function inverseSens() {
-						var sens = E$('sensRapport');
-						if (sens.value == 'SUJET') {
-							sens.value = 'OBJET';
+						var sens = $('#sensRapport');
+						if (sens.val() == 'SUJET') {
+							sens.val('OBJET');
 						}
 						else {						
-							sens.value = 'SUJET';
+							sens.val('SUJET');
 						}
-						refreshLegend(sens);
+						refreshLegend();
 						refreshExecutionForcee();
 						refreshAutoriteTutelaire();
 					}
 
 					refreshExecutionForcee();
-					refreshLegend(E$('sensRapport'));
+					refreshLegend();
 					refreshAutoriteTutelaire();
 				</script>
 			</td>

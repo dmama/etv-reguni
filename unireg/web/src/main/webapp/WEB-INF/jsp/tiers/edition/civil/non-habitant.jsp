@@ -73,7 +73,7 @@
 			<script type="text/javascript">
 				function dateNaissance_OnChange( element) {
 					if ( element)
-						E$("dateNaissanceFormate").value = element.value;
+						$("#dateNaissanceFormate").val(element.value);
 				}
 			</script>
 			<form:hidden path="sdateNaissance" id="dateNaissanceFormate" />
@@ -92,7 +92,7 @@
 			<script type="text/javascript">
 				function dateDeces_OnChange( element) {
 					if ( element)
-						E$("dateDecesFormate").value = element.value;
+						$("#dateDecesFormate").val(element.value);
 				}
 			</script>
 			<form:hidden path="sdateDeces" id="dateDecesFormate" />
@@ -133,7 +133,7 @@
 			<script type="text/javascript">
 				function dateDebutValiditeAutorisation_OnChange( element) {
 					if ( element)
-						E$("dateDebutValiditeAutorisationFormate").value = element.value;
+						$("#dateDebutValiditeAutorisationFormate").val(element.value);
 				}
 			</script>
 			<form:hidden path="sdateDebutValiditeAutorisation" id="dateDebutValiditeAutorisationFormate" />

@@ -22,18 +22,13 @@
  */
 function updateMotifsFor(element, motifsOuvertureSelectId, motifsFermetureSelectId, numeroCtb, genreImpotSelectId, rattachementSelectId, defaultMotifOuverture, defaultMotifFermeture) {
 
-	var motifsOuvertureSelect = E$(motifsOuvertureSelectId);
-	var motifsFermetureSelect = E$(motifsFermetureSelectId);
-	var genreImpotSelect = E$(genreImpotSelectId);
-	var rattachementSelect = E$(rattachementSelectId);
-
 	// on récupère les valeurs courantes / par défaut
-	var motifOuverture = (motifsOuvertureSelect.selectedIndex < 0 ? null : motifsOuvertureSelect.options[motifsOuvertureSelect.selectedIndex].value);
+	var motifOuverture = $('#' + motifsOuvertureSelectId).val();
 	if (motifOuverture == null) motifOuverture = defaultMotifOuverture;
-	var motifsFermeture = (motifsFermetureSelect.selectedIndex < 0 ? null : motifsFermetureSelect.options[motifsFermetureSelect.selectedIndex].value);
+	var motifsFermeture = $('#' + motifsFermetureSelectId).val();
 	if (motifsFermeture == null) motifsFermeture = defaultMotifFermeture;
-	var genreImpot = (genreImpotSelect == null ? null : genreImpotSelect.options[genreImpotSelect.selectedIndex].value);
-	var rattachement = (rattachementSelect == null ? null : rattachementSelect.options[rattachementSelect.selectedIndex].value);
+	var genreImpot = $('#' + genreImpotSelectId).val();
+	var rattachement = $('#' + rattachementSelectId).val();
 	
 	// appels ajax pour mettre-à-jour les motifs d'ouverture
 	XT.doAjaxAction('updateMotifsOuverture', element, {
@@ -73,8 +68,7 @@ function updateMotifsFor(element, motifsOuvertureSelectId, motifsFermetureSelect
  */
 function updateMotifsOuverture(element, motifsOuvertureSelectId, numeroCtb, genreImpot, rattachement, defaultMotifOuverture) {
 	
-	var motifsOuvertureSelect = E$(motifsOuvertureSelectId);
-	var motifsOuverture = (motifsOuvertureSelect.selectedIndex < 0 ? null : motifsOuvertureSelect.options[motifsOuvertureSelect.selectedIndex].value);
+	var motifsOuverture = $('#' + motifsOuvertureSelectId).val();
 	if (motifsOuverture == null) motifsOuverture = defaultMotifOuverture;
 	 
 	// appels ajax pour mettre-à-jour les motifs de ouverture
@@ -106,8 +100,7 @@ function updateMotifsOuverture(element, motifsOuvertureSelectId, numeroCtb, genr
  */
 function updateMotifsFermeture(element, motifsFermetureSelectId, numeroCtb, genreImpot, rattachement, defaultMotifFermeture) {
 	
-	var motifsFermetureSelect = E$(motifsFermetureSelectId);
-	var motifsFermeture = (motifsFermetureSelect.selectedIndex < 0 ? null : motifsFermetureSelect.options[motifsFermetureSelect.selectedIndex].value);
+	var motifsFermeture = $('#' + motifsFermetureSelectId).val();
 	if (motifsFermeture == null) motifsFermeture = defaultMotifFermeture;
 	 
 	// appels ajax pour mettre-à-jour les motifs de fermeture
@@ -169,78 +162,78 @@ function selectForFiscalDPI(name) {
 * Selection du genre d'impot
 */
 function selectGenreImpot(name, callback) {
-	var divRattachement = E$('div_rattachement');
-	var divRattachementLabel = E$('div_rattachement_label');
-	var divDateForPeriodique = E$('date_for_periodique');
-	var divMotifForPeriodique = E$('motif_for_periodique');
-	var divForUnique = E$('for_unique');
-	var divSelectTypeFor = E$('select_type_for');
-	var optTypeFor = E$('optionTypeAutoriteFiscale');
-	var	divTypeForFraction = E$('type_for_fraction');
-	var divTypeForHS = E$('type_for_hs');
-	var rattachement = E$('rattachement');
-	var	divModeImposition = E$('mode_imposition');
+	var divRattachement = $('#div_rattachement');
+	var divRattachementLabel = $('#div_rattachement_label');
+	var divDateForPeriodique = $('#date_for_periodique');
+	var divMotifForPeriodique = $('#motif_for_periodique');
+	var divForUnique = $('#for_unique');
+	var divSelectTypeFor = $('#select_type_for');
+	var optTypeFor = $('#optionTypeAutoriteFiscale');
+	var	divTypeForFraction = $('#type_for_fraction');
+	var divTypeForHS = $('#type_for_hs');
+	var rattachement = $('#rattachement');
+	var	divModeImposition = $('#mode_imposition');
 	
 	if (name == 'REVENU_FORTUNE'){
 		// callback à cause d'un bug IE6 qui raffiche la combo même si elle est cachée 
 		if (callback) {
-			callback(E$('genre_impot'));
+			callback($('#genre_impot').get(0));
 		}
-		divRattachementLabel.style.display = '';
-		divRattachement.style.display = '';
-		divDateForPeriodique.style.display = '';
-		divMotifForPeriodique.style.display = '';
-		divForUnique.style.display = 'none';
-		if (rattachement.value == 'DOMICILE') {
-			divSelectTypeFor.style.display = '';
-			divTypeForFraction.style.display = 'none';
-			divTypeForHS.style.display = 'none';
-			divModeImposition.style.display = '';
-		} else if (rattachement.value == 'DIPLOMATE_ETRANGER') {
+		divRattachementLabel.show();
+		divRattachement.show();
+		divDateForPeriodique.show();
+		divMotifForPeriodique.show();
+		divForUnique.hide();
+		if (rattachement.val() == 'DOMICILE') {
+			divSelectTypeFor.show();
+			divTypeForFraction.hide();
+			divTypeForHS.hide();
+			divModeImposition.show();
+		} else if (rattachement.val() == 'DIPLOMATE_ETRANGER') {
 			//for hors suisse
-			divSelectTypeFor.style.display = 'none';
-			optTypeFor.value = 'PAYS_HS';
-			divTypeForFraction.style.display = 'none';
-			divTypeForHS.style.display = '';
+			divSelectTypeFor.hide();
+			optTypeFor.val('PAYS_HS');
+			divTypeForFraction.hide();
+			divTypeForHS.show();
 			$('#for_fraction_commune_label').hide();
 			$('#for_fraction_commune').hide();
 			$('#for_commune_label').hide();
 			$('#for_commune').hide();
 			$('#for_pays_label').show();
 			$('#for_pays').show();
-			divModeImposition.style.display = 'none';
+			divModeImposition.hide();
 		} else {
 			//for vaudois
-			divSelectTypeFor.style.display = 'none';
-			optTypeFor.value = 'COMMUNE_OU_FRACTION_VD';
-			divTypeForFraction.style.display = '';
-			divTypeForHS.style.display = 'none';
+			divSelectTypeFor.hide();
+			optTypeFor.val('COMMUNE_OU_FRACTION_VD');
+			divTypeForFraction.show();
+			divTypeForHS.hide();
 			$('#for_fraction_commune_label').show();
 			$('#for_fraction_commune').show();
 			$('#for_commune_label').hide();
 			$('#for_commune').hide();
 			$('#for_pays_label').hide();
 			$('#for_pays').hide();
-			divModeImposition.style.display = 'none';
+			divModeImposition.hide();
 		}
 	} else { 
 		//for vaudois
-		divRattachementLabel.style.display = 'none';
-		divRattachement.style.display = 'none';
-		divDateForPeriodique.style.display = 'none';
-		divMotifForPeriodique.style.display = 'none';
-		divForUnique.style.display = '';
-		divSelectTypeFor.style.display = 'none';
-		optTypeFor.value = 'COMMUNE_OU_FRACTION_VD';
-		divTypeForFraction.style.display = '';
-		divTypeForHS.style.display = 'none';
+		divRattachementLabel.hide();
+		divRattachement.hide();
+		divDateForPeriodique.hide();
+		divMotifForPeriodique.hide();
+		divForUnique.show();
+		divSelectTypeFor.hide();
+		optTypeFor.val('COMMUNE_OU_FRACTION_VD');
+		divTypeForFraction.show();
+		divTypeForHS.hide();
 		$('#for_fraction_commune_label').show();
 		$('#for_fraction_commune').show();
 		$('#for_commune_label').hide();
 		$('#for_commune').hide();
 		$('#for_pays_label').hide();
 		$('#for_pays').hide();
-		divModeImposition.style.display = 'none';
+		divModeImposition.hide();
 	}
 }
 
@@ -248,43 +241,43 @@ function selectGenreImpot(name, callback) {
 * Selection du rattachement
 */
 function selectRattachement(name) {
-	var divSelectTypeFor = E$('select_type_for');
-	var optTypeFor = E$('optionTypeAutoriteFiscale');
-	var	divTypeForFraction = E$('type_for_fraction');
-	var divTypeForHS = E$('type_for_hs');
-	var	divModeImposition = E$('mode_imposition');
+	var divSelectTypeFor = $('#select_type_for');
+	var optTypeFor = $('#optionTypeAutoriteFiscale');
+	var	divTypeForFraction = $('#type_for_fraction');
+	var divTypeForHS = $('#type_for_hs');
+	var	divModeImposition = $('#mode_imposition');
 	
 	if (name == 'DOMICILE'){
-		divSelectTypeFor.style.display = '';
-		divTypeForFraction.style.display = 'none';
-		divTypeForHS.style.display = 'none';
-		divModeImposition.style.display = '';
+		divSelectTypeFor.show();
+		divTypeForFraction.hide();
+		divTypeForHS.hide();
+		divModeImposition.show();
 	} else if (name == 'DIPLOMATE_ETRANGER') {
 		//for hors suisse
-		divSelectTypeFor.style.display = 'none';
-		optTypeFor.value = 'PAYS_HS';
-		divTypeForFraction.style.display = 'none';
-		divTypeForHS.style.display = '';
+		divSelectTypeFor.hide();
+		optTypeFor.val('PAYS_HS');
+		divTypeForFraction.hide();
+		divTypeForHS.show();
 		$('#for_fraction_commune_label').hide();
 		$('#for_fraction_commune').hide();
 		$('#for_commune_label').hide();
 		$('#for_commune').hide();
 		$('#for_pays_label').show();
 		$('#for_pays').show();
-		divModeImposition.style.display = 'none';
+		divModeImposition.hide();
 	} else {
 		//for vaudois
-		divSelectTypeFor.style.display = 'none';
-		optTypeFor.value = 'COMMUNE_OU_FRACTION_VD';
-		divTypeForFraction.style.display = '';
-		divTypeForHS.style.display = 'none';
+		divSelectTypeFor.hide();
+		optTypeFor.val('COMMUNE_OU_FRACTION_VD');
+		divTypeForFraction.show();
+		divTypeForHS.hide();
 		$('#for_fraction_commune_label').show();
 		$('#for_fraction_commune').show();
 		$('#for_commune_label').hide();
 		$('#for_commune').hide();
 		$('#for_pays_label').hide();
 		$('#for_pays').hide();
-		divModeImposition.style.display = 'none';
+		divModeImposition.hide();
 	} 
 }
 

@@ -63,15 +63,6 @@
 			</display:table>
 
 		</form:form>
-		<script type="text/javascript">
-			function AppSelect_OnChange(select) {
-				var value = select.options[select.selectedIndex].value;
-				if ( value && value !== '') {
-					//window.open(value, '_blank') ;
-					window.location.href = value;
-				}
-			}
-		</script>
 
    </tiles:put>
    

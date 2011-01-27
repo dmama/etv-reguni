@@ -91,7 +91,7 @@
 		
 		<script type="text/javascript">
 			// on initialise les motifs au chargement de la page
-			updateMotifsFor(E$('motifFermeture'), 'motifOuverture', 'motifFermeture', '${command.numeroCtb}', 
+			updateMotifsFor($('#motifFermeture').get(0), 'motifOuverture', 'motifFermeture', '${command.numeroCtb}',
 					'genre_impot', 'rattachement', '${command.motifOuverture}', '${command.motifFermeture}');
 
 			selectGenreImpot('${command.genreImpot}');

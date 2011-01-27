@@ -124,8 +124,8 @@
 	 * Affiche ou filtre les données historiques de la table des sièges
 	 */
 	function refreshSiegesTable(checkbox) {
-		var showHisto = checkbox.checked;
-		var table = E$('sieges');
+		var showHisto = $(checkbox).get(0).checked;
+		var table = $('#sieges');
 		refreshHistoTable(showHisto, table, 1);
 	}
 
@@ -133,8 +133,8 @@
 	 * Affiche ou filtre les données historiques de la table des formes juridiques
 	 */
 	function refreshFormesJuridiquesTable(checkbox) {
-		var showHisto = checkbox.checked;
-		var table = E$('formesJuridiques');
+		var showHisto = $(checkbox).get(0).checked;
+		var table = $('#formesJuridiques');
 		refreshHistoTable(showHisto, table, 1);
 	}
 
@@ -142,14 +142,14 @@
 	 * Affiche ou filtre les données historiques de la table des capitaux
 	 */
 	function refreshCapitauxTable(checkbox) {
-		var showHisto = checkbox.checked;
-		var table = E$('capitaux');
+		var showHisto = $(checkbox).get(0).checked;
+		var table = $('#capitaux');
 		refreshHistoTable(showHisto, table, 1);
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page
-	refreshSiegesTable(E$('showSiegesHisto'));
-	refreshFormesJuridiquesTable(E$('showFormesJuridiquesHisto'));
-	refreshCapitauxTable(E$('showCapitauxHisto'));
+	refreshSiegesTable($('#showSiegesHisto'));
+	refreshFormesJuridiquesTable($('#showFormesJuridiquesHisto'));
+	refreshCapitauxTable($('#showCapitauxHisto'));
 
 </script>

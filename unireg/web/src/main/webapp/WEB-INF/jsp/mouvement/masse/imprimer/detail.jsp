@@ -31,8 +31,9 @@
                     var lignesMvts = document.getElementById('mvt').getElementsByTagName('tr');
                     var taille = lignesMvts.length;
                     for(var i=1; i < taille; i++) {
-                        if (E$('selection_' + i) != null && !E$('selection_' + i).disabled) {
-                            E$('selection_' + i).checked = checkSelectAll.checked;
+                    	var sel = $('#selection_' + i);
+                        if (sel && !sel.attr('disabled')) {
+                            sel.attr('checked', checkSelectAll.checked);
                         }
                     }
                 }
@@ -42,7 +43,8 @@
                     var taille = lignesMvts.length;
                     var nbSelectionnes = 0;
                     for(var i=1; i < taille; i++) {
-                        if (E$('selection_' + i) != null && !E$('selection_' + i).disabled && E$('selection_' + i).checked) {
+                    	var sel = $('#selection_' + i);
+                        if (sel && !sel.attr('disabled') && sel.attr('checked')) {
                             ++ nbSelectionnes;
                         }
                     }
@@ -123,16 +125,6 @@
             </table>
 
         </form:form>
-
-		<script type="text/javascript">
-			function AppSelect_OnChange(select) {
-				var value = select.options[select.selectedIndex].value;
-				if ( value && value !== '') {
-					//window.open(value, '_blank') ;
-					window.location.href = value;
-				}
-			}
-		</script>
 
    </tiles:put>
 

@@ -52,7 +52,7 @@
 
 					<script type="text/javascript">
 						// pour forcer la validation au chargement
-						dateOuverture_OnChange(E$('dateOuverture'));
+						dateOuverture_OnChange($('#dateOuverture').get(0));
 					</script>
 
 				</td>
