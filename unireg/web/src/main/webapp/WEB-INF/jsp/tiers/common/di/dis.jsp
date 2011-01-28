@@ -59,7 +59,6 @@
 							title: "Détails de la déclaration d'impôt",
 							height: 650,
 							width: 650,
-							resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
 							modal: true,
 							buttons: {
 								Ok: function() {

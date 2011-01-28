@@ -158,7 +158,6 @@ function open_consulter_log(nature, id) {
 		title: 'Consultation des logs',
 		height: 200,
 		width: 800,
-		resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
 		modal: true,
 		buttons: {
 			Ok: function() {
@@ -204,7 +203,6 @@ function open_consulter_log(nature, id) {
  		title: 'Consultation des informations de traitement',
  		height: 150,
  		width: 600,
- 		resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
  		modal: true,
  		buttons: {
  			Ok: function() {
@@ -234,7 +232,6 @@ function open_details_mouvement(id) {
 		title: 'Détails du mouvement de dossier',
 		height: 440,
 		width: 900,
-		resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
 		modal: true,
 		buttons: {
 			Ok: function() {

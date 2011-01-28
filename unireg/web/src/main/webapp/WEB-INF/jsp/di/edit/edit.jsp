@@ -65,7 +65,6 @@
 							title: "Impression d'un duplicata",
 							height: 350,
 							width: 500,
-							resizable: false, // TODO (msi) parce que le resizing ne fonctionne pas à cause de custom.js
 							modal: true,
 							buttons: {
 								"Imprimer": function() {
