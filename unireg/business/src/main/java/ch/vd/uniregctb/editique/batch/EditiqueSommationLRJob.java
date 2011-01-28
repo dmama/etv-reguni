@@ -53,13 +53,18 @@ public class EditiqueSommationLRJob extends JobDefinition {
 	}
 
 	@Override
+	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
+	}
+
+	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Récupération de la date de traitement
 		final RegDate date = getRegDateValue(params, FIN_PERIODE); // [UNIREG-2109]
 		final RegDate dateFinPeriode = (date != null ? endOfMonth(date) : null);
-		final RegDate date2 = getRegDateValue(params, DATE_TRAITEMENT); // [UNIREG-2003] la date de traitement est toujours affichée
-		final RegDate dateTraitement = (date2 != null ? date2 : RegDate.get());
+		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager status = getStatusManager();
 		final CategorieImpotSource categorie = getEnumValue(params, CATEGORIE_DEB, CategorieImpotSource.class);
 
