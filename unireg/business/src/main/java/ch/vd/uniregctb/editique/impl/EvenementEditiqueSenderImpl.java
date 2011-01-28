@@ -69,7 +69,6 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 			m.addHeader(TypeMessagePropertiesNames.DOCUMENT_TYPE_MESSAGE_PROPERTY_NAME.toString(), typeDocument);
 			if (TypeImpression.DIRECT.equals(typeImpression)) {
 				m.addHeader(TypeMessagePropertiesNames.RETURN_FORMAT_MESSAGE_PROPERTY_NAME.toString(), typeFormat.toString());
-				// TODO (msi) demander à giampaolo comment setter cette valeur : message.setJMSPriority(MAX_PRIORITY);
 				m.addHeader(EditiqueHelper.DI_ID, nomDocument);
 			}
 

@@ -477,7 +477,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
-			// TODO (msi) implémenter le contrôle d'accès au niveau PM
+			// Note : il n'y a pas de contrôle d'accès sur les PMs.
 			return service.searchEvenementsPM(params);
 		}
 		catch (BusinessException e) {
