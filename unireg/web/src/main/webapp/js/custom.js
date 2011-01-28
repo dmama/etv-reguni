@@ -16,6 +16,10 @@ Object.extend = function(destination, source) {
   return destination;
 }
 
+if (!window.Event) {
+  var Event = new Object();
+}
+
 Object.extend(Event, {
 	  KEY_BACKSPACE: 8,
 	  KEY_TAB:       9,
@@ -46,10 +50,6 @@ Object.extend(Event, {
 	  }
 
 });
-
-if (!window.Event) {
-  var Event = new Object();
-}
 
 var Modifier = {
 
