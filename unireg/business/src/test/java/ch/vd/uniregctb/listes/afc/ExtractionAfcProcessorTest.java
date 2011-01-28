@@ -498,6 +498,70 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	public void testRevenuHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// mise en place
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ExtractionAfcResults res = processor.run(RegDate.get(), 2008, TypeExtractionAfc.REVENU, 1, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(0, res.getListePrincipale().size());
+		Assert.assertEquals(0, res.getListeSecondaire().size());
+		Assert.assertEquals(1, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(0, res.getListeErreurs().size());
+
+		final ExtractionAfcResults.InfoCtbIgnore elt = res.getListeCtbsIgnores().get(0);
+		Assert.assertNotNull(elt);
+		Assert.assertEquals(ppId, elt.noCtb);
+		Assert.assertEquals("Hors canton", elt.raisonIgnore);
+	}
+
+	@Test
+	public void testFortuneHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// mise en place
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ExtractionAfcResults res = processor.run(RegDate.get(), 2008, TypeExtractionAfc.FORTUNE, 1, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(0, res.getListePrincipale().size());
+		Assert.assertEquals(0, res.getListeSecondaire().size());
+		Assert.assertEquals(1, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(0, res.getListeErreurs().size());
+
+		final ExtractionAfcResults.InfoCtbIgnore elt = res.getListeCtbsIgnores().get(0);
+		Assert.assertNotNull(elt);
+		Assert.assertEquals(ppId, elt.noCtb);
+		Assert.assertEquals("Assujetti sans for vaudois au 31 décembre", elt.raisonIgnore);
+	}
+
+	@Test
 	public void testRevenuHorsSuisse() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
