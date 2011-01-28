@@ -527,53 +527,6 @@ Object.extend(Event, {
   
 });
 
-var PeriodicalExecuter = Class.create();
-
-
-PeriodicalExecuter.prototype = {
-	initialize: function(callback, frequency) {
-		this.callback = callback;
-	    this.frequency = frequency;
-	    this.currentlyExecuting = false;
-	
-	    this.registerCallback();
-	},
-
-  registerCallback: function() {
-  	var self = this;
-    this.timer = setInterval(function() {
-    	self.onTimerEvent();
-    }, this.frequency * 1000);
-  },
-
-  stop: function() {
-    if (!this.timer) return;
-    clearInterval(this.timer);
-    this.timer = null;
-  },
-
-  onTimerEvent: function() {
-    if (!this.currentlyExecuting) {
-      try {
-        this.currentlyExecuting = true;
-        this.callback(this);
-      } finally {
-        this.currentlyExecuting = false;
-      }
-    }
-  }
-}
-
-
-
-
-
-
-
-
-
-
- 
 var Modifier = {
 
 	formName : null,

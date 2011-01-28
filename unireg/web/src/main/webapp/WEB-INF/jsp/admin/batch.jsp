@@ -2,7 +2,9 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
-	<tiles:put name="head" />
+	<tiles:put name="head">
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.timers.js"/>"></script>
+	</tiles:put>
 	<tiles:put name="title">
 		<fmt:message key="label.batch.gestion" />
 	</tiles:put>
@@ -51,7 +53,7 @@
 		<script type="text/javascript" language="Javascript1.3"><!--
 			
 			var requestDone = true;
-			var periodicalExecuter = new PeriodicalExecuter(function() {
+			$(document).everyTime("3s", function() {
 				if ( !requestDone)
 					return;
 				requestDone = false;
@@ -62,9 +64,7 @@
 							requestDone = true;
 						}
     			});
-			}, 3);
-			
-			periodicalExecuter.onTimerEvent();
+			});
 			
 			function onRecieved() {
 				requestDone = true;

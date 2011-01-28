@@ -50,6 +50,7 @@
 				font-weight: bold;
 			}
   		</style>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.timers.js"/>"></script>
 	</tiles:put>
 	<tiles:put name="title">
 		Norentes
@@ -92,22 +93,20 @@
 					Form.doAjaxActionPostBack('theForm', 'OnLoad','currentEvenementCivil');
 				});
 
-				var periodicalExecuter;
 				function startEtape( link, etape) {
 			        Form.doAjaxSubmitPostBack("theForm", 'OnClick',link, {etapeIndex: etape });
-					periodicalExecuter = new PeriodicalExecuter(function() {
+
+					$(document).everyTime("1s", "OnLoadTimer", function() {
 						Form.doAjaxActionPostBack('theForm', 'OnLoad', 'currentEvenementCivil', {periodical:true, lastEtape: etape},
 						{ 
 							clearQueryString: true,
-							errorHandler :  function(ajaxRequest, exception) {
-								}
+							errorHandler :  function(ajaxRequest, exception) {}
 		    			});
-					}, 1);	        
+					});
 				}
+				
 				function stopPeriodical(param) {
-					if (periodicalExecuter)
-						periodicalExecuter.stop();
-					//window.location.reload();
+					$(document).stopTime("OnLoadTimer");
 				}
 			</script>		
 	</tiles:put>

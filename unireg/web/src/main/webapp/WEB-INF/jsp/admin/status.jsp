@@ -3,6 +3,10 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
+	<tiles:put name="head">
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.timers.js"/>"></script>
+	</tiles:put>
+
   	<tiles:put name="title"><fmt:message key="title.info"/></tiles:put>
 
   	<tiles:put name="body">
@@ -19,7 +23,7 @@
 		<script type="text/javascript" language="Javascript1.3">
 		
 			var requestDone = true;
-			var jobExecuter = new PeriodicalExecuter(function() {
+			$(document).everyTime("3s", function() {
 				if (!requestDone)
 					return;
 				requestDone = false;
@@ -30,9 +34,7 @@
 							requestDone = true;
 						}
 		   			});
-			}, 3);
-			
-			jobExecuter.onTimerEvent();
+			});
 			
 			function onRecieved() {
 				requestDone = true;
@@ -118,7 +120,7 @@
 				}
 
 				if ($('#log4j_output')) {
-					var logExecuter = new PeriodicalExecuter(function() {
+					$(document).everyTime("3s", function() {
 						XT.doAjaxAction('updateTailLog', $("#log4j_output").get(0), {},
 							{
 								clearQueryString: true,
@@ -126,10 +128,8 @@
 									// on ignore les éventuelles erreurs
 								}
 							});
-					}, 3);
+					});
 				}
-
-				logExecuter.onTimerEvent();
 			});
 		</script>
 
