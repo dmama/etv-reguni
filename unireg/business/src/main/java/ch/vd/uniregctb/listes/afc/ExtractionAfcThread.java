@@ -18,8 +18,10 @@ import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 
@@ -46,7 +48,7 @@ public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 			typeAssujettissement = acceptePourFortune(assujettissements, periodeFiscale);
 		}
 		else {
-			throw new IllegalArgumentException("Mode non-supporté : " + mode);
+			throw new IllegalArgumentException(String.format("Mode non-supporté : %s", mode));
 		}
 
 		switch (typeAssujettissement) {
@@ -62,17 +64,25 @@ public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 				getResults().addContribuableLimiteHC(ctb);
 				break;
 
+			case ASSUJETTI_SANS_FOR_VD_FIN_PERIODE:
+				if (mode != TypeExtractionAfc.FORTUNE) {
+					throw new IllegalArgumentException(String.format("Positionnement %s non supporté pour le mode %s", typeAssujettissement, mode));
+				}
+				getResults().addContribuableAssujettiMaisSansForVaudoisEnFinDePeriode(ctb);
+				break;
+
 			case ILLIMITE:
 				super.traiteContribuable(ctb);
 				break;
 
 			default:
-				throw new IllegalArgumentException("Positionnement " + typeAssujettissement + " non supporté!");
+				throw new IllegalArgumentException(String.format("Positionnement %s non supporté!", typeAssujettissement));
 		}
 	}
 
 	private static enum TypeAssujettissement {
 		NON_ASSUJETTI,
+		ASSUJETTI_SANS_FOR_VD_FIN_PERIODE,
 		ILLIMITE,
 		LIMITE_HS,
 		LIMITE_HC
@@ -122,11 +132,29 @@ public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 			return TypeAssujettissement.NON_ASSUJETTI;
 		}
 
-		// on cherge un assujettissement au 31.12
-		final Assujettissement assujettissement = DateRangeHelper.rangeAt(assujettissements, RegDate.get(periodeFiscale, 12, 31));
+		// on cherche un assujettissement au 31.12
+		final RegDate finPeriode = RegDate.get(periodeFiscale, 12, 31);
+		final Assujettissement assujettissement = DateRangeHelper.rangeAt(assujettissements, finPeriode);
 		if (assujettissement == null || assujettissement instanceof SourcierPur) {
 			// pas d'assujettissement au 31.12, ou sourcier pur (ignoré)
 			return TypeAssujettissement.NON_ASSUJETTI;
+		}
+
+		// [UNIREG-3248] malgré l'assujettissement, si le contribuable n'a aucun for vaudois au 31 décembre, il
+		// faut l'ignorer dans le cadre de l'extraction "fortune"
+		final Contribuable ctb = assujettissement.getContribuable();
+		final List<ForFiscal> fors = ctb.getForsFiscauxValidAt(finPeriode);
+		boolean trouveForVaudois = false;
+		if (fors != null && fors.size() > 0) {
+			for (ForFiscal ff : fors) {
+				if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					trouveForVaudois = true;
+					break;
+				}
+			}
+		}
+		if (!trouveForVaudois) {
+			return TypeAssujettissement.ASSUJETTI_SANS_FOR_VD_FIN_PERIODE;
 		}
 
 		if (assujettissement instanceof HorsCanton) {

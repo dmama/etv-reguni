@@ -35,6 +35,7 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 
 	private String NON_ASSUJETTI_OU_SOURCIER_PUR = "Non-assujetti ou sourcier pur";
 	private String HORS_CANTON = "Hors canton";
+	private String ASSUJETTI_SANS_FOR_VD_AU_31_12 = "Assujetti sans for vaudois au 31 décembre";
 
 	public static abstract class InfoCtbBase {
 		public final long noCtb;
@@ -143,6 +144,10 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 
 	public void addContribuableNonAssujettiOuSourcierPur(Contribuable ctb) {
 		addContribuableIgnore(ctb, NON_ASSUJETTI_OU_SOURCIER_PUR);
+	}
+
+	public void addContribuableAssujettiMaisSansForVaudoisEnFinDePeriode(Contribuable ctb) {
+		addContribuableIgnore(ctb, ASSUJETTI_SANS_FOR_VD_AU_31_12);
 	}
 
 	private void addContribuable(Contribuable ctb, boolean dansListePrincipale, boolean assujettissementIllimite) throws InfrastructureException {
