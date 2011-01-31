@@ -21,7 +21,7 @@
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 		<property name="messageListener" ref="dataEventJmsListener" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="destinationName" value="${extprop.jms.queue.db.event.input}" />
+		<property name="destinationName" value="INTERNAL.${extprop.jms.queue.db.event.input}" /> <!-- [UNIREG-3242] utilisation d'une queue interne -->
 		<property name="autoStartup" value="${extprop.jms.queue.db.event.enabled}" />
 	</bean>
 
