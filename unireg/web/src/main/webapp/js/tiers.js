@@ -262,12 +262,12 @@ function afficheAdressesHisto(elementId,elementIdCiviles,elementIdCivilesConjoin
  */
 function togglePanels(elementId, element1, element2) {
 	if ($('#' + elementId).attr('checked')){
-		$(element1).hide();
-		$(element2).show();
+		$('#' + element1).hide();
+		$('#' + element2).show();
 	}
 	else {
-		$(element1).show();
-		$(element2).hide();
+		$('#' + element1).show();
+		$('#' + element2).hide();
 	}
 }
 
