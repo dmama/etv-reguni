@@ -6,7 +6,8 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
+
+import ch.vd.technical.esb.jms.EsbMessageListenerContainer;
 
 /**
  * Classe qui se comporte comme un {@link org.springframework.jms.listener.DefaultMessageListenerContainer} en offrant :
@@ -16,7 +17,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
  * <li>attend que le context Spring soit entièrement (= tous les beans) initialisé pour commencer à écouter la queue</li>
  * </ul>
  */
-public class JmxAwareDefaultMessageListenerContainer extends DefaultMessageListenerContainer implements MessageListenerContainerJmxInterface, ApplicationListener {
+public class JmxAwareDefaultMessageListenerContainer extends EsbMessageListenerContainer implements MessageListenerContainerJmxInterface, ApplicationListener {
 
 	private static final Logger LOGGER = Logger.getLogger(JmxAwareDefaultMessageListenerContainer.class);
 

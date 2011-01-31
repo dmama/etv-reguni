@@ -171,7 +171,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
 		}
-		esbTemplate.sendInternal(m); // [UNIREG-3242] utilisation d'une queue interne
+		send(m);
 	}
 
 	private void sendTruncateEvent() throws Exception {
@@ -190,7 +190,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
 		}
-		esbTemplate.send(m);
+		send(m);
 	}
 
 	private void sendLoadEvent() throws Exception {
@@ -209,6 +209,10 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
 		}
-		esbTemplate.send(m);
+		send(m);
+	}
+
+	private void send(EsbMessage m) throws Exception {
+		esbTemplate.sendInternal(m); // [UNIREG-3242] utilisation d'une queue interne
 	}
 }
