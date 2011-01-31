@@ -23,7 +23,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -4207,6 +4206,21 @@ public class TacheServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * [UNIREG-3223] Vérifie que la fermeture d'un for principal pour cause de décès sur un sourcier pur parti hors-canton ne génère pas de tâche de transmission de dossier
+	 */
+	@Test
+	public void testDecesSourcierPur() throws Exception {
+
+		final PersonnePhysique marcel = addNonHabitant("Marcel", "Longuesmanches", date(1923, 4, 22), Sexe.MASCULIN);
+		final ForFiscalPrincipal ffp = addForPrincipal(marcel, date(1956, 6, 17), MotifFor.ARRIVEE_HS, date(1977, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle);
+		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(marcel, date(1977, 4, 13), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+
+		tiersService.closeForFiscalPrincipal(marcel, date(2000, 3, 22), MotifFor.VEUVAGE_DECES);
+		assertEmpty(tacheDAO.getAll());
 	}
 
 	@Test

@@ -226,7 +226,10 @@ public class TacheServiceImpl implements TacheService {
 			break;
 
 		case VEUVAGE_DECES:
-			generateTacheTransmissionDossier(contribuable);
+			final CollectiviteAdministrative collectiviteAssignee = tiersService.getOfficeImpotAt(contribuable, null);
+			if (collectiviteAssignee != null) { // [UNIREG-3223] les sourciers purs ne possèdent pas de dossier, on peut donc les ignorer
+				generateTacheTransmissionDossier(contribuable, collectiviteAssignee);
+			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de décès (car elles n'ont pas lieu d'être)
 			// [UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
 			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
@@ -247,10 +250,9 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
-	private void generateTacheTransmissionDossier(Contribuable contribuable) {
-		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-		Assert.notNull(oid);
-		final TacheTransmissionDossier tache = new TacheTransmissionDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, oid);
+	private void generateTacheTransmissionDossier(Contribuable contribuable, CollectiviteAdministrative collectiviteAssignee) {
+		Assert.notNull(collectiviteAssignee);
+		final TacheTransmissionDossier tache = new TacheTransmissionDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, collectiviteAssignee);
 		tacheDAO.save(tache);
 	}
 
