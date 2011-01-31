@@ -47,7 +47,7 @@ testprop.db2.password=ze7m8deu
 testprop.db2.schema=CIIA1
 
 # CJVZ/CIIV1 (Validation)
-#testprop.host-interfaces.url=t3://solve61v:63222
+#testprop.host-interfaces.url=t3://ssv0214v:31330
 #testprop.host-interfaces.username=
 #testprop.host-interfaces.password=
 #testprop.db2.username=W#ASIZV1
