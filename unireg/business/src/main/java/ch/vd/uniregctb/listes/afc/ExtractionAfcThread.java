@@ -143,17 +143,7 @@ public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 		// [UNIREG-3248] malgré l'assujettissement, si le contribuable n'a aucun for vaudois au 31 décembre, il
 		// faut l'ignorer dans le cadre de l'extraction "fortune"
 		final Contribuable ctb = assujettissement.getContribuable();
-		final List<ForFiscal> fors = ctb.getForsFiscauxValidAt(finPeriode);
-		boolean trouveForVaudois = false;
-		if (fors != null && fors.size() > 0) {
-			for (ForFiscal ff : fors) {
-				if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					trouveForVaudois = true;
-					break;
-				}
-			}
-		}
-		if (!trouveForVaudois) {
+		if (!hasForVaudoisActif(ctb, finPeriode)) {
 			return TypeAssujettissement.ASSUJETTI_SANS_FOR_VD_FIN_PERIODE;
 		}
 
@@ -166,5 +156,19 @@ public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 		else {
 			return TypeAssujettissement.ILLIMITE;
 		}
+	}
+
+	private static boolean hasForVaudoisActif(Contribuable ctb, RegDate date) {
+		final List<ForFiscal> fors = ctb.getForsFiscauxValidAt(date);
+		boolean trouveForVaudois = false;
+		if (fors != null && fors.size() > 0) {
+			for (ForFiscal ff : fors) {
+				if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					trouveForVaudois = true;
+					break;
+				}
+			}
+		}
+		return trouveForVaudois;
 	}
 }
