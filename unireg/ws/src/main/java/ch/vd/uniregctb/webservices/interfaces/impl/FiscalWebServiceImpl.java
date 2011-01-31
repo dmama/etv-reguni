@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.webservices.interfaces.impl;
 
+import javax.jws.WebService;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,37 +10,31 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.interfaces.fiscal.Fiscal;
 import ch.vd.interfaces.fiscal.RechercherNoContribuable;
 import ch.vd.interfaces.fiscal.RechercherNoContribuableResponse;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
-import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersException;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers.impl.Context;
+import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersService;
 
 @WebService(targetNamespace = "http://www.vd.ch/interfaces/Fiscal/", serviceName = "FiscalService", portName = "FiscalServicePort", endpointInterface = "ch.vd.interfaces.fiscal.Fiscal")
 public class FiscalWebServiceImpl implements Fiscal {
 
-	private final Context context = new Context();
-
-	private GlobalTiersSearcher tiersSearcher;
-
-	/** Le loggeur log4j. */
 	private static final Logger LOGGER = Logger.getLogger(FiscalWebServiceImpl.class);
+
+	private TiersService tiersService;
+	private GlobalTiersSearcher tiersSearcher;
 
 	@Transactional(readOnly = true)
 	public RechercherNoContribuableResponse rechercherNoContribuable(RechercherNoContribuable parameters) {
@@ -126,14 +119,14 @@ public class FiscalWebServiceImpl implements Fiscal {
 			if (numeroCtbSeul > 0) {
 
 				response.setNoContribuableSeul(numeroCtbSeul);
-				contribuable = context.tiersService.getTiersDAO().getContribuableByNumero(numeroCtbSeul);
+				contribuable = tiersService.getTiersDAO().getContribuableByNumero(numeroCtbSeul);
 				if (contribuable != null) {
 
 					// recherche du menage commun sur la periode
 					Range rangePeriode = new Range(RegDate.get(periode, RegDate.JANVIER, 1), RegDate.get(periode, RegDate.DECEMBRE, 31));
 					MenageCommun menage = null;
 					try {
-						menage = context.tiersService.getMenageCommunActifAt(contribuable, rangePeriode);
+						menage = tiersService.getMenageCommunActifAt(contribuable, rangePeriode);
 					}
 					catch (Exception e) {
 
@@ -182,7 +175,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 					}
 					else {
 						try {
-							if (context.tiersService.isEtrangerSansPermisC(pp, null)) {
+							if (tiersService.isEtrangerSansPermisC(pp, null)) {
 								response.setSourcierPur(true);
 							}
 							else {
@@ -200,24 +193,12 @@ public class FiscalWebServiceImpl implements Fiscal {
 		return response;
 	}
 
-
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
-		context.tiersService = tiersService;
+		this.tiersService = tiersService;
 	}
 
-	public void setSituationService(SituationFamilleService situationService) {
-		context.situationService = situationService;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		context.adresseService = adresseService;
-	}
-
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		context.infraService = infraService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
 		this.tiersSearcher = tiersSearcher;
 	}

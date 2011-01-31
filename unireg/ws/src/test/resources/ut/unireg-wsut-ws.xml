@@ -7,35 +7,6 @@
 		<property name="exposeNosTechniques" value="false" />        
 	</bean>
 
-	<!-- Beans du web-service Tiers v1 mais sans le end-point jaxws -->
-
-	<bean id="tiersServiceEndPoint" class="ch.vd.uniregctb.webservices.tiers.impl.TiersWebServiceEndPoint">
-		<property name="service" ref="tiersServiceCache" />
-	</bean>
-
-	<bean id="tiersServiceBean" class="ch.vd.uniregctb.webservices.tiers.impl.TiersWebServiceImpl">
-		<property name="adresseService" ref="adresseService" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersSearcher" ref="globalTiersSearcher" />
-		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="situationService" ref="situationFamilleService" />
-		<property name="parametreService" ref="parametreAppService" />
-		<property name="noOfsTranslator" ref="noOfsTranslator" />
-	</bean>
-
-	<bean id="tiersServiceCache" class="ch.vd.uniregctb.webservices.tiers.cache.TiersWebServiceCache">
-		<property name="target" ref="tiersServiceBean" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webServiceTiers" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-	</bean>
-
-	<bean id="tiersServiceCacheManager" class="ch.vd.uniregctb.webservices.tiers.cache.TiersWebServiceCacheManager">
-		<property name="dataEventService" ref="dataEventService" />
-		<property name="cache" ref="tiersServiceCache" />
-		<property name="tiersDAO" ref="tiersDAO" />
-	</bean>
-
 	<!-- Beans du web-service Tiers v2 mais sans le end-point jaxws -->
 
 	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">

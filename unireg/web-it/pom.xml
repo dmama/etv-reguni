@@ -36,11 +36,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-wsclient-tiers1</artifactId>
-			<version>1.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-tiers2</artifactId>
 			<version>2.11</version>
 		</dependency>

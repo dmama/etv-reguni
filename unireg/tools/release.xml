@@ -16,10 +16,6 @@
 			<destName>dbuniteditor.sh</destName>
 		</file>
 		<file>
-			<source>src/main/scripts/perfs.sh</source>
-			<destName>perfs.sh</destName>
-		</file>
-		<file>
 			<source>src/main/scripts/perfs2.sh</source>
 			<destName>perfs2.sh</destName>
 		</file>
