@@ -29,19 +29,21 @@ public interface AnnulationDecesRecapManager {
 	public void save(AnnulationDecesRecapView annulationDecesRecapView);
 
 
-	/**Veuf marie seul ou pas
+	/**
+	 * Veuf marie seul ou pas
 	 *
-	 * @param tiers
-	 * @return true si veuf marie seul false sinon
+	 * @param noTiers numéro du tiers dont on veut connaître un peu plus
+	 * @return <code>true</code> si veuf marié seul, <code>false</code> sinon
 	 */
 	@Transactional(readOnly = true)
-	boolean isVeuvageMarieSeul(PersonnePhysique tiers);
+	boolean isVeuvageMarieSeul(long noTiers);
 
-	/**Indique si le tiers est décédé
+	/**
+	 * Indique si le tiers est décédé
 	 *
-	 * @param tiers
-	 * @return
+	 * @param noTiers numéro du tiers dont on veut savoir s'il est décédé
+	 * @return <code>true</code> si le tiers est une personne physique décédée, <code>false</code> sinon
 	 */
 	@Transactional(readOnly = true)
-	boolean isDecede(PersonnePhysique tiers);
+	boolean isDecede(long noTiers);
 }

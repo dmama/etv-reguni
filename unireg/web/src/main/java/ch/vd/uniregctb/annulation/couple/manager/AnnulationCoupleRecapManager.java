@@ -2,6 +2,7 @@ package ch.vd.uniregctb.annulation.couple.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.annulation.couple.view.AnnulationCoupleRecapView;
 
 public interface AnnulationCoupleRecapManager {
@@ -13,7 +14,7 @@ public interface AnnulationCoupleRecapManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public AnnulationCoupleRecapView get(Long numero);
+	AnnulationCoupleRecapView get(Long numero);
 
 
 	/**
@@ -22,6 +23,12 @@ public interface AnnulationCoupleRecapManager {
 	 * @param annulationCoupleRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(AnnulationCoupleRecapView annulationCoupleRecapView);
+	void save(AnnulationCoupleRecapView annulationCoupleRecapView);
+
+	/**
+	 *
+	 */
+	@Transactional(readOnly = true)
+	boolean isMenageCommunAvecPrincipal(long noCtb, RegDate date);
 
 }

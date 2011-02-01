@@ -11,6 +11,7 @@ import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -105,14 +106,20 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 
 	}
 
-	@Transactional(readOnly = true)
-	public boolean isVeuvageMarieSeul(PersonnePhysique tiers) {
-		return tiersService.isVeuvageMarieSeul(tiers);
+	private boolean isVeuvageMarieSeul(PersonnePhysique pp) {
+		return tiersService.isVeuvageMarieSeul(pp);
 	}
 
 	@Transactional(readOnly = true)
-	public boolean isDecede(PersonnePhysique tiers) {
-		return tiersService.isDecede(tiers);
+	public boolean isVeuvageMarieSeul(long noTiers) {
+		final Tiers tiers = tiersService.getTiers(noTiers);
+		return tiers instanceof PersonnePhysique && tiersService.isVeuvageMarieSeul((PersonnePhysique) tiers);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isDecede(long noTiers) {
+		final Tiers tiers = tiersService.getTiers(noTiers);
+		return tiers instanceof PersonnePhysique && tiersService.isDecede((PersonnePhysique) tiers);
 	}
 
 	/**

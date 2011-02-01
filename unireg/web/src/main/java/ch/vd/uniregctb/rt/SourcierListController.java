@@ -47,25 +47,23 @@ public class SourcierListController  extends  AbstractTiersListController implem
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		//vérification droit création rapport de travail
-		if(!SecurityProvider.isGranted(Role.RT)){
+		// vérification droit création rapport de travail
+		if (!SecurityProvider.isGranted(Role.RT)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de créer un rapport de travail");
 		}
 
-		String numeroDpiParam = request.getParameter(NUMERO_DEBITEUR_PARAMETER_NAME);
-		Long numeroDpi = Long.parseLong(numeroDpiParam);
+		final String numeroDpiParam = request.getParameter(NUMERO_DEBITEUR_PARAMETER_NAME);
+		final Long numeroDpi = Long.parseLong(numeroDpiParam);
 
-		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) getTiersSloooow(numeroDpi);
-		if (dpi == null) {
+		if (!rapportPrestationEditManager.isExistingTiers(numeroDpi)) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.debiteur.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
+		final HttpSession session = request.getSession();
+		final String action = request.getParameter(ACTION_PARAMETER_NAME);
 
 		SourcierListView bean = (SourcierListView) session.getAttribute(SOURCIER_CRITERIA_NAME);
-		if(	(bean == null) ||
-				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
+		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
 			bean = rapportPrestationEditManager.getSourcierList(numeroDpi);
 	 	}
 

@@ -36,7 +36,7 @@ public class RegDateEditor extends PropertyEditorSupport {
 				throw new IllegalArgumentException(message);
 			}
 			catch (ParseException ex) {
-				throw new IllegalArgumentException("Could not parse date: " + ex.getMessage());
+				throw new IllegalArgumentException("Could not parse date: " + ex.getMessage(), ex);
 			}
 		}
 	}

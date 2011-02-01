@@ -98,6 +98,22 @@
 
 				<!-- Edition des débiteurs -->
 				<entry key="/debiteur/edit.do" value-ref="debiteurEditController" />
+
+				<!-- Annulation Couple -->
+				<entry key="/annulation/couple/recap.do" value-ref="annulationCoupleRecapController" />
+				<entry key="/annulation/couple/list.do" value-ref="annulationCoupleListController" />
+				<!-- Separation -->
+				<entry key="/separation/list.do" value-ref="separationListController" />
+				<entry key="/separation/recap.do" value-ref="separationRecapController" />
+				<!-- Annulation Separation -->
+				<entry key="/annulation/separation/list.do" value-ref="annulationSeparationListController" />
+				<entry key="/annulation/separation/recap.do" value-ref="annulationSeparationRecapController" />
+				<!-- Deces -->
+				<entry key="/deces/list.do" value-ref="decesListController" />
+				<entry key="/deces/recap.do" value-ref="decesRecapController" />
+				<!-- Annulation deces -->
+				<entry key="/annulation/deces/list.do" value-ref="annulationDecesListController" />
+				<entry key="/annulation/deces/recap.do" value-ref="annulationDecesRecapController" />
 			</map>
 		</property>
 	</bean>
@@ -210,21 +226,6 @@
 				<!-- Couple -->
 				<entry key="/couple/list-pp.do" value-ref="personnePhysiqueListController" />
 				<entry key="/couple/recap.do" value-ref="coupleRecapController" />
-				<!-- Annulation Couple -->
-				<entry key="/annulation/couple/list.do" value-ref="annulationCoupleListController" />
-				<entry key="/annulation/couple/recap.do" value-ref="annulationCoupleRecapController" />
-				<!-- Separation -->
-				<entry key="/separation/list.do" value-ref="separationListController" />
-				<entry key="/separation/recap.do" value-ref="separationRecapController" />
-				<!-- Annulation Separation -->
-				<entry key="/annulation/separation/list.do" value-ref="annulationSeparationListController" />
-				<entry key="/annulation/separation/recap.do" value-ref="annulationSeparationRecapController" />
-				<!-- Deces -->
-				<entry key="/deces/list.do" value-ref="decesListController" />
-				<entry key="/deces/recap.do" value-ref="decesRecapController" />
-				<!-- Annulation deces -->
-				<entry key="/annulation/deces/list.do" value-ref="annulationDecesListController" />
-				<entry key="/annulation/deces/recap.do" value-ref="annulationDecesRecapController" />
 				<!-- DI -->
 				<entry key="/di/edit.do" value-ref="diEditController" />
 				<entry key="/di/delai.do" value-ref="diEditDelaiController" />

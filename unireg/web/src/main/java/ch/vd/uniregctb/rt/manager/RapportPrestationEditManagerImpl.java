@@ -16,6 +16,7 @@ import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rt.view.DebiteurListView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.rt.view.SourcierListView;
+import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -23,6 +24,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -93,14 +95,14 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(numeroSrc);
 		if (sourcier == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.sourcier.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageSource.getMessage("error.sourcier.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 		TiersGeneralView sourcierView = tiersGeneralManager.getPersonnePhysique(sourcier, true);
 		rapportView.setSourcier(sourcierView);
 
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi);
 		if (dpi == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.debiteur.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageSource.getMessage("error.debiteur.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		rapportView.setDebiteur(dpiView);
@@ -120,7 +122,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		RapportEntreTiers rapportEntreTiers	= rapportEntreTiersDAO.get(idRapport);
 		if (rapportEntreTiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.rapport.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageSource.getMessage("error.rapport.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
 		rapportView.setSensRapportEntreTiers(sensRapportEntreTiers);
@@ -158,7 +160,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		final Tiers tiers = getTiersService().getTiers(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageSource.getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 		List<String> nomCourrier = getAdresseService().getNomCourrier(tiers, null, false);
 		rapportView.setNomCourrier(nomCourrier);
@@ -215,16 +217,19 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		return bean;
 	}
 
+	@Transactional(readOnly = true)
+	public Niveau getAccessLevel(long tiersId) {
+		final Tiers tiers = tiersService.getTiers(tiersId);
+		return SecurityProvider.getDroitAcces(tiers);
+	}
 
-	/**
-	 * @return the messageSource
-	 */
-	protected MessageSource getMessageSource() {
-		return messageSource;
+	@Transactional(readOnly = true)
+	public boolean isExistingTiers(long tiersId) {
+		final Tiers tiers = tiersService.getTiers(tiersId);
+		return tiers != null;
 	}
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
-
 }

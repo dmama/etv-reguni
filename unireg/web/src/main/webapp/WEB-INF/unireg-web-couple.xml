@@ -51,6 +51,7 @@
 		<property name="formView" value="annulation/couple/list" />
 		<property name="successView" value="list.do" />
 		<property name="validator" ref="tiersCriteriaValidator" />
+		<property name="annulationCoupleRecapManager" ref="annulationCoupleRecapManager" />
 	</bean>
 
 	<bean id="annulationCoupleRecapController" class="ch.vd.uniregctb.annulation.couple.AnnulationCoupleRecapController" parent="abstractSimpleFormController">
