@@ -183,7 +183,7 @@ public abstract class PdfRapport extends Document {
 	 */
 	protected void addListeDetaillee(PdfWriter writer, int size, String titre, String listVide, String filename, String contenu) throws DocumentException {
 		addEnteteListeDetaillee(titre);
-		addPartieDeListeDetaillee(writer, size, titre, listVide, filename, contenu);
+		addPartieDeListeDetaillee(writer, size == 0, titre, listVide, filename, contenu);
 	}
 
 	private void addEnteteListeDetaillee(String titre) throws DocumentException {
@@ -196,14 +196,14 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Ajoute un lien vers un fichier de détails
 	 */
-	private void addPartieDeListeDetaillee(PdfWriter writer, int size, String titre, String listVide, String filename, String contenu) throws DocumentException {
+	private void addPartieDeListeDetaillee(PdfWriter writer, boolean vide, String titre, String listVide, String filename, String contenu) throws DocumentException {
 		final Paragraph details = new Paragraph();
 		details.setIndentationLeft(50);
 		details.setSpacingBefore(10);
 		details.setSpacingAfter(10);
 		details.setFont(normalFont);
 
-		if (size == 0) {
+		if (vide) {
 			details.add(new Chunk(listVide));
 		}
 		else {
@@ -212,23 +212,23 @@ public abstract class PdfRapport extends Document {
 
 		add(details);
 
-		if (size > 0) {
+		if (!vide) {
 			Assert.notNull(contenu);
 			attacheFichier(writer, filename, titre, contenu);
 		}
 	}
 
-	protected void addListeDetailleeDecoupee(PdfWriter writer, int size, String titre, String listVide, String[] filenames, String[] contenus) throws DocumentException {
+	protected void addListeDetailleeDecoupee(PdfWriter writer, boolean vide, String titre, String listVide, String[] filenames, String[] contenus) throws DocumentException {
 		Assert.isEqual(filenames.length, contenus.length);
 
 		addEnteteListeDetaillee(titre);
 		if (filenames.length > 0) {
 			for (int i = 0 ; i < filenames.length ; ++ i) {
-				addPartieDeListeDetaillee(writer, size, titre, listVide, filenames[i], contenus[i]);
+				addPartieDeListeDetaillee(writer, vide, titre, listVide, filenames[i], contenus[i]);
 			}
 		}
 		else {
-			addPartieDeListeDetaillee(writer, size, titre, listVide, "empty-file", "");
+			addPartieDeListeDetaillee(writer, vide, titre, listVide, "empty-file", "");
 		}
 	}
 
@@ -294,7 +294,7 @@ public abstract class PdfRapport extends Document {
 	 * Transforme la ligne spécifiée (qui peut contenir des retours de lignes embeddés) en une chaîne de caractère capable de tenir dans un champ d'un fichier CSV. Les retours de lignes sont préservés,
 	 * mais les éventuels caractères interdits (" et ;) sont supprimés.
 	 */
-	private static String asCsvField(String lignes) {
+	protected static String asCsvField(String lignes) {
 		return asCsvField(lignes.split("\n"));
 	}
 
