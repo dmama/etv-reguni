@@ -11,9 +11,10 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.fidor.ws.v1.generated.Acces;
-import ch.vd.fidor.ws.v1.generated.FidorPortType;
+import ch.vd.fidor.ws.v2.Acces;
+import ch.vd.fidor.ws.v2.FidorPortType;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.webservice.fidor.FidorClient;
 
 /**
  * [UNIREG-2187]
@@ -22,9 +23,8 @@ public class FidorServiceImpl implements FidorService {
 
 	private static final Logger LOGGER = Logger.getLogger(FidorServiceImpl.class);
 
-	private String serviceUrl;
-	private String username;
-	private String password;
+
+	private FidorClient fidorClient;
 
 	private String patternTaoPP;
 	private String patternTaoBA;
@@ -34,19 +34,9 @@ public class FidorServiceImpl implements FidorService {
 	private long lastTentative = 0;
 	private static final long fiveMinutes = 5L * 60L * 1000000000L; // en nanosecondes
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceUrl(String serviceUrl) {
-		this.serviceUrl = serviceUrl;
-	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setPassword(String password) {
-		this.password = password;
+	public void setFidorClient(FidorClient fidorClient) {
+		this.fidorClient = fidorClient;
 	}
 
 	public String getUrlTaoPP(Long numero) {
@@ -95,11 +85,10 @@ public class FidorServiceImpl implements FidorService {
 			synchronized (this) {
 				try {
 					if (patternSipf == null) {
-						final FidorPortType service = initWebService(serviceUrl, username, password);
-						patternTaoPP = getUrl(service, "TAOPP", "synthese");
-						patternTaoBA = getUrl(service, "TAOBA", "dossier");
-						patternTaoIS = getUrl(service, "TAOIS", "default");
-						patternSipf = getUrl(service, "SIPF", "explorer"); // [UNIREG-2409]
+						patternTaoPP = getUrl("TAOPP", "synthese");
+						patternTaoBA = getUrl("TAOBA", "dossier");
+						patternTaoIS = getUrl("TAOIS", "default");
+						patternSipf = getUrl("SIPF", "explorer"); // [UNIREG-2409]
 						LOGGER.info("URLs externes (FiDoR) :\n" +
 								" * TAOPP = " + patternTaoPP + "\n" +
 								" * TAOBA = " + patternTaoBA + "\n" +
@@ -115,37 +104,12 @@ public class FidorServiceImpl implements FidorService {
 		}
 	}
 
-	private String getUrl(FidorPortType service, String app, String target) {
-		final String url = service.getUrl(app, Acces.INTERNE, target, null);
+	private String getUrl(String app, String target) {
+		final String url = fidorClient.getUrl(app, Acces.INTERNE, target, null);
 		if (url == null) {
 			LOGGER.error(String.format("Il manque l'url d'accès à %s (target %s) dans FiDoR !", app, target));
 		}
 		return url;
 	}
 
-	private static FidorPortType initWebService(String serviceUrl, String username, String password) {
-
-		final URL wsdlUrl;
-		try {
-			wsdlUrl = ResourceUtils.getURL("classpath:fidor_ws_v1.wsdl");
-		}
-		catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-
-		final ch.vd.fidor.ws.v1.generated.FidorService ts = new ch.vd.fidor.ws.v1.generated.FidorService(wsdlUrl);
-		final FidorPortType service = ts.getFidorPort();
-		final Map<String, Object> context = ((BindingProvider) service).getRequestContext();
-		if (StringUtils.isNotBlank(username)) {
-			context.put(BindingProvider.USERNAME_PROPERTY, username);
-			context.put(BindingProvider.PASSWORD_PROPERTY, password);
-		}
-		context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
-
-		// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
-		context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
-		context.put("set-jaxb-validation-event-handler", false);
-		
-		return service;
-	}
 }

@@ -29,9 +29,21 @@
 	<alias alias="aciComClient" name="aciComClientTracing"/>
 
 	<bean id="fidorService" class="ch.vd.uniregctb.wsclient.fidor.FidorServiceImpl">
-		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
-		<property name="username" value="${extprop.webservice.fidor.username}" />
-		<property name="password" value="${extprop.webservice.fidor.password}" />
+		<property name="fidorClient" ref="fidorClient" />
 	</bean>
+
+	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.FidorClientImpl">
+		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
+	    <property name="username" value="${extprop.webservice.fidor.username}" />
+	    <property name="password" value="${extprop.webservice.fidor.password}" />
+	</bean>
+
+	<bean id="fidorClientTracing" class="ch.vd.uniregctb.wsclient.fidor.FidorClientTracing">
+		<property name="target" ref="fidorClientRaw"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="fidorClient" name="fidorClientTracing"/>
+
 	
 </beans>

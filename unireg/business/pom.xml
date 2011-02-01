@@ -57,6 +57,11 @@
 			<version>1.0.4</version>
 		</dependency>
 		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>unireg-wsclient-fidor</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<artifactId>shared-jmx</artifactId>
 			<groupId>ch.vd.registre</groupId>
 			<version>1.2-java1.5-1</version>
