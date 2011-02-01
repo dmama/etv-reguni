@@ -120,7 +120,6 @@ public class TiersListController extends AbstractTiersListController {
 		return mav;
 	}
 
-
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)

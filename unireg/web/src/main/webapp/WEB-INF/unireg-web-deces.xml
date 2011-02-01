@@ -9,6 +9,7 @@
 		<property name="formView" value="tiers/edition/deces/list" />
 		<property name="successView" value="list.do" />
 		<property name="validator" ref="tiersCriteriaValidator" />
+		<property name="decesRecapManager" ref="decesRecapManager" />
 	</bean>
 
 	<bean id="decesRecapController" class="ch.vd.uniregctb.deces.DecesRecapController" parent="abstractSimpleFormController">

@@ -18,7 +18,7 @@ public interface DecesRecapManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public DecesRecapView get(Long numero);
+	DecesRecapView get(Long numero);
 
 
 	/**
@@ -27,7 +27,12 @@ public interface DecesRecapManager {
 	 * @param decesRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(DecesRecapView decesRecapView);
+	void save(DecesRecapView decesRecapView);
 
-
+	/**
+	 * @param numeroCtb numéro de tiers du contribuable dont on veut savoir s'il est décédé
+	 * @return <code>true</code> si le contribuable est une personne physique décédée, <code>false</code> sinon
+	 */
+	@Transactional(readOnly = true)
+	boolean isDecede(long numeroCtb);
 }

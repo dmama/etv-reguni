@@ -13,13 +13,11 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.annulation.couple.manager.AnnulationCoupleRecapManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
@@ -33,6 +31,12 @@ public class AnnulationCoupleListController extends AbstractTiersListController 
 
 	public static final String ANNULATION_COUPLE_CRITERIA_NAME = "AnnulationCoupleCriteria";
 	public static final String ANNULATION_COUPLE_LIST_ATTRIBUTE_NAME = "list";
+
+	private AnnulationCoupleRecapManager annulationCoupleRecapManager;
+
+	public void setAnnulationCoupleRecapManager(AnnulationCoupleRecapManager annulationCoupleRecapManager) {
+		this.annulationCoupleRecapManager = annulationCoupleRecapManager;
+	}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -75,14 +79,10 @@ public class AnnulationCoupleListController extends AbstractTiersListController 
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedDataView> results = searchTiers(bean);
-						List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
+						final List<TiersIndexedDataView> results = searchTiers(bean);
+						final List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
 						for (TiersIndexedDataView tiersIndexedData : results) {
-							Tiers tiers = getTiersSloooow(tiersIndexedData.getNumero());
-							EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCoupleSloooow(tiers);
-							PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-							PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
-							if ((principal != null) || (conjoint != null)) {
+							if (annulationCoupleRecapManager.isMenageCommunAvecPrincipal(tiersIndexedData.getNumero(), null)) {
 								filtredResults.add(tiersIndexedData);
 							}
 						}
@@ -111,13 +111,12 @@ public class AnnulationCoupleListController extends AbstractTiersListController 
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
+		final ModelAndView mav = super.onSubmit(request, response, command, errors);
 
-		TiersCriteriaView bean = (TiersCriteriaView) command;
-		HttpSession session = request.getSession();
+		final TiersCriteriaView bean = (TiersCriteriaView) command;
+		final HttpSession session = request.getSession();
 		session.setAttribute(ANNULATION_COUPLE_CRITERIA_NAME, bean);
 
 		if (request.getParameter(BOUTON_EFFACER) != null) {

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.annulation.couple.manager;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,7 +9,9 @@ import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -53,17 +56,17 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 	 */
 	@Transactional(readOnly = true)
 	public AnnulationCoupleRecapView get(Long numero) {
-		AnnulationCoupleRecapView annulationCoupleRecapView =  new AnnulationCoupleRecapView();
+
+		final AnnulationCoupleRecapView annulationCoupleRecapView =  new AnnulationCoupleRecapView();
 		//FIXME (CGD) impléementer Ifosec
-		MenageCommun menage = (MenageCommun) tiersService.getTiers(numero);
-		TiersGeneralView menageView = tiersGeneralManager.getTiers(menage, true);
+
+		final EnsembleTiersCouple couple = getEnsembleTiersCouple(numero, null);
+		final MenageCommun menageCommun = couple.getMenage();
+		final TiersGeneralView menageView = tiersGeneralManager.getTiers(menageCommun, true);
 		annulationCoupleRecapView.setCouple(menageView);
 
-		EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
-
-		final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
 		if (menageCommun != null) {
-			RapportEntreTiers dernierRapport = menageCommun.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			final RapportEntreTiers dernierRapport = menageCommun.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 			annulationCoupleRecapView.setDateMenageCommun(dernierRapport.getDateDebut());
 		}
 
@@ -77,9 +80,25 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(AnnulationCoupleRecapView annulationCoupleRecapView) {
-		MenageCommun menage = (MenageCommun) tiersService.getTiers(annulationCoupleRecapView.getCouple().getNumero());
-		EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, annulationCoupleRecapView.getDateMenageCommun());
-		metierService.annuleMariage(ensembleTiersCouple.getPrincipal(), ensembleTiersCouple.getConjoint(), annulationCoupleRecapView.getDateMenageCommun(), null);
+		final EnsembleTiersCouple couple = getEnsembleTiersCouple(annulationCoupleRecapView.getCouple().getNumero(), annulationCoupleRecapView.getDateMenageCommun());
+		metierService.annuleMariage(couple.getPrincipal(), couple.getConjoint(), annulationCoupleRecapView.getDateMenageCommun(), null);
+	}
+
+	private EnsembleTiersCouple getEnsembleTiersCouple(long noCtb, RegDate date) {
+		final Tiers tiers = tiersService.getTiers(noCtb);
+		if (tiers instanceof MenageCommun) {
+			return tiersService.getEnsembleTiersCouple((MenageCommun) tiers, date);
+		}
+		else if (tiers instanceof PersonnePhysique) {
+			return tiersService.getEnsembleTiersCouple((PersonnePhysique) tiers, date);
+		}
+		return null;
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isMenageCommunAvecPrincipal(long noCtb, RegDate date) {
+		final EnsembleTiersCouple couple = getEnsembleTiersCouple(noCtb, date);
+		return couple != null && (couple.getPrincipal() != null || couple.getConjoint() != null);
 	}
 
 }

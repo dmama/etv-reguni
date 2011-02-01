@@ -14,14 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.annulation.deces.AnnulationDecesListController;
+import ch.vd.uniregctb.annulation.separation.manager.AnnulationSeparationRecapManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.type.MotifFor;
 
 public class AnnulationSeparationListController extends AbstractTiersListController {
 
@@ -34,18 +33,23 @@ public class AnnulationSeparationListController extends AbstractTiersListControl
 	public static final String ANNULATION_SEPARATION_CRITERIA_NAME = "AnnulationSeparationCriteria";
 	public static final String ANNULATION_SEPARATION_LIST_ATTRIBUTE_NAME = "list";
 
+	private AnnulationSeparationRecapManager annulationSeparationRecapManager;
+
+	public void setAnnulationSeparationRecapManager(AnnulationSeparationRecapManager annulationSeparationRecapManager) {
+		this.annulationSeparationRecapManager = annulationSeparationRecapManager;
+	}
+
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
+		final HttpSession session = request.getSession();
+		final String action = request.getParameter(ACTION_PARAMETER_NAME);
 
 		TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(ANNULATION_SEPARATION_CRITERIA_NAME);
-		if(	(bean == null) ||
-				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
+		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
 			bean = new TiersCriteriaView();
 			bean.setTypeRechercheDuNom(TiersCriteriaView.TypeRecherche.EST_EXACTEMENT);
 			bean.setTypeTiers(TiersCriteriaView.TypeTiers.MENAGE_COMMUN);
@@ -59,14 +63,13 @@ public class AnnulationSeparationListController extends AbstractTiersListControl
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
-			throws Exception {
-		HttpSession session = request.getSession();
-		TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(ANNULATION_SEPARATION_CRITERIA_NAME);
-		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
-		ModelAndView mav  =  super.showForm(request, response, errors, model);
+	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
+		final HttpSession session = request.getSession();
+		final TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(ANNULATION_SEPARATION_CRITERIA_NAME);
+		final String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
+		final ModelAndView mav  =  super.showForm(request, response, errors, model);
 		if (errors.getErrorCount() == 0) {
-			if(buttonEffacer == null) {
+			if (buttonEffacer == null) {
 				LOGGER.debug("Affichage du formulaire de recherche...");
 				if (bean != null && !bean.isEmpty()) {
 					LOGGER.debug("Critères de recherche=" + bean);
@@ -74,13 +77,10 @@ public class AnnulationSeparationListController extends AbstractTiersListControl
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedDataView> results = searchTiers(bean);
-						List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
+						final List<TiersIndexedDataView> results = searchTiers(bean);
+						final List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
 						for (TiersIndexedDataView tiersIndexedData : results) {
-							Tiers tiers = getTiersSloooow(tiersIndexedData.getNumero());
-							if ((tiers.getDernierForFiscalPrincipal() != null)
-									&& (tiers.getDernierForFiscalPrincipal().getDateFin() != null)
-									&& (tiers.getDernierForFiscalPrincipal().getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT)) {
+							if (annulationSeparationRecapManager.isDernierForFiscalPrincipalFermePourSeparation(tiersIndexedData.getNumero())) {
 								filtredResults.add(tiersIndexedData);
 							}
 						}

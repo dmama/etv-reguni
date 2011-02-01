@@ -8,7 +8,9 @@ import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.separation.view.SeparationRecapView;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 
@@ -96,4 +98,13 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 		metierService.separe(menage, dateSeparation, separationRecapView.getRemarque(), etatCivilFamille, true, null);
 	}
 
+	@Transactional(readOnly = true)
+	public boolean isAvecForFiscalPrincipalActif(long noTiers) {
+		final Tiers tiers = tiersService.getTiers(noTiers);
+		if (tiers != null) {
+			final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+			return ffp != null && ffp.getDateFin() == null;
+		}
+		return false;
+	}
 }

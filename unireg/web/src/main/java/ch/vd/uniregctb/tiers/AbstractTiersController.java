@@ -7,14 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.param.manager.ParamApplicationManager;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
@@ -266,11 +260,8 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 
 	public final static String BUTTON_SAVE = "__confirmed_save";
 
-	private GlobalTiersIndexer indexer;
 	private TiersService service;
 	private TiersMapHelper tiersMapHelper;
-
-	private PlatformTransactionManager transactionManager;
 
 	/**
 	 * @param tiersMapHelper the tiersMapHelper to set
@@ -282,20 +273,14 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	/**
 	 * @param manager the manager to set
 	 */
+	@SuppressWarnings({"JavaDoc"})
 	public final void setService(TiersService service) {
 		this.service = service;
 	}
 
-	public void setIndexer(GlobalTiersIndexer indexer) {
-		this.indexer = indexer;
-	}
-
+	@SuppressWarnings({"JavaDoc"})
 	public void setParamApplicationManager(ParamApplicationManager paramApplicationManager) {
 		this.paramApplicationManager = paramApplicationManager;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 
 	protected List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean) {
@@ -309,42 +294,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		}
 
 		return list;
-	}
-
-	/**
-	 * Méthode qui récupère un tiers à partir de son numéro. Cette méthode ouvre une transaction à chaque appel, elle existe uniquement pour des raisons historiques et ne devrait pas être appelée sur du
-	 * nouveau code.
-	 *
-	 * @param numero le numéro du tiers
-	 * @return un tiers
-	 */
-	protected Tiers getTiersSloooow(final Long numero) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		return (Tiers) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return service.getTiers(numero);
-			}
-		});
-	}
-
-	/**
-	 * Méthode qui récupère un ensemble-tiers-couple à partir d'un de ses composants. Cette méthode ouvre une transaction à chaque appel, elle existe uniquement pour des raisons historiques et ne devrait
-	 * pas être appelée sur du nouveau code.
-	 *
-	 * @param tiers un des composants du couple
-	 * @return un tiers
-	 */
-	protected EnsembleTiersCouple getEnsembleTiersCoupleSloooow(final Tiers tiers) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		return (EnsembleTiersCouple) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return service.getEnsembleTiersCouple((MenageCommun) tiers, null);
-			}
-		});
 	}
 }
 

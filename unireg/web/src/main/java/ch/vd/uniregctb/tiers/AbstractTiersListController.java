@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -8,9 +9,12 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.wsclient.fidor.FidorService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
@@ -50,6 +54,14 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 			return true;
 		}
 		return super.suppressValidation(request, command, errors);
+	}
+
+	@Override
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
+		super.initBinder(request, binder);
+
+		// le critère de recherche sur la date de naissance peut être une date partielle
+		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true));
 	}
 
 	/**
@@ -111,10 +123,12 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 		return mav;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setFidorService(FidorService fidorService) {
 		this.fidorService = fidorService;
 	}

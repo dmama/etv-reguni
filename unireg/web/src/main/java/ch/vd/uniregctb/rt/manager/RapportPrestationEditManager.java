@@ -6,6 +6,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.rt.view.DebiteurListView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.rt.view.SourcierListView;
+import ch.vd.uniregctb.type.Niveau;
 
 public interface RapportPrestationEditManager {
 
@@ -18,14 +19,14 @@ public interface RapportPrestationEditManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public RapportPrestationView get (Long numeroSrc, Long numeroDpi, String provenance) ;
+	RapportPrestationView get (Long numeroSrc, Long numeroDpi, String provenance) ;
 
 	/**
 	 * Persiste le rapport de travail
 	 * @param rapportView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(RapportPrestationView rapportView) ;
+	void save(RapportPrestationView rapportView) ;
 
 
 	/**
@@ -35,7 +36,7 @@ public interface RapportPrestationEditManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public DebiteurListView getDebiteurList(Long numeroSrc) ;
+	DebiteurListView getDebiteurList(Long numeroSrc) ;
 
 
 	/**
@@ -45,5 +46,19 @@ public interface RapportPrestationEditManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public SourcierListView getSourcierList(Long numeroDpi) ;
+	SourcierListView getSourcierList(Long numeroDpi) ;
+
+	/**
+	 * @param tiersId le numéro du tiers qui nous intéresse
+	 * @return le niveau d'accès autorisé par l'utilisateur actuellement connecté au débiteur
+	 */
+	@Transactional(readOnly = true)
+	Niveau getAccessLevel(long tiersId);
+
+	/**
+	 * @param tiersId le numéro du tiers dont on aimerait s'assurer de l'existence
+	 * @return <code>true</code> si le tiers existe bien, <code>false</code> sinon
+	 */
+	@Transactional(readOnly = true)
+	boolean isExistingTiers(long tiersId);
 }

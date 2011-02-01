@@ -14,7 +14,7 @@ public interface SeparationRecapManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public SeparationRecapView get(Long numero);
+	SeparationRecapView get(Long numero);
 
 
 	/**
@@ -23,6 +23,13 @@ public interface SeparationRecapManager {
 	 * @param separationRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(SeparationRecapView separationRecapView);
+	void save(SeparationRecapView separationRecapView);
+
+	/**
+	 * @param noTiers le numéro du tiers dont on veut connaître l'activité au niveau des fors principaux
+	 * @return <code>true</code> si le tiers possède un for principal actif (= non-fermé), <code>false</code> sinon
+	 */
+	@Transactional(readOnly = true)
+	boolean isAvecForFiscalPrincipalActif(long noTiers);
 
 }

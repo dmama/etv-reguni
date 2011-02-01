@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.deces.manager;
 
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -8,10 +7,12 @@ import ch.vd.uniregctb.deces.view.DecesRecapView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class DecesRecapManagerImpl implements  DecesRecapManager  {
+public class DecesRecapManagerImpl implements DecesRecapManager  {
 
 	private TiersService tiersService;
 
@@ -19,26 +20,17 @@ public class DecesRecapManagerImpl implements  DecesRecapManager  {
 
 	private TiersGeneralManager tiersGeneralManager;
 
-	public TiersService getTiersService() {
-		return tiersService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
-	public MetierService getMetierService() {
-		return metierService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
 	}
 
-	public TiersGeneralManager getTiersGeneralManager() {
-		return tiersGeneralManager;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersGeneralManager(TiersGeneralManager tiersGeneralManager) {
 		this.tiersGeneralManager = tiersGeneralManager;
 	}
@@ -81,4 +73,9 @@ public class DecesRecapManagerImpl implements  DecesRecapManager  {
 
 	}
 
+	@Transactional(readOnly = true)
+	public boolean isDecede(long numeroCtb) {
+		final Tiers tiers = tiersService.getTiers(numeroCtb);
+		return tiers instanceof PersonnePhysique && tiersService.isDecede((PersonnePhysique) tiers);
+	}
 }

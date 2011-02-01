@@ -13,6 +13,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -102,6 +103,16 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 		EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(premierPP, annulationSeparationRecapView.getDateSeparation().getOneDayBefore());
 		metierService.annuleSeparation(ensembleTiersCouple.getMenage(), annulationSeparationRecapView.getDateSeparation(), null);
 		return ensembleTiersCouple.getMenage();
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isDernierForFiscalPrincipalFermePourSeparation(long noCtb) {
+		final Tiers tiers = tiersService.getTiers(noCtb);
+		if (tiers != null) {
+			final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+			return ffp != null && ffp.getDateFin() != null && ffp.getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT;
+		}
+		return false;
 	}
 
 	/**

@@ -9,6 +9,7 @@
 		<property name="formView" value="tiers/edition/separation/list" />
 		<property name="successView" value="list.do" />
 		<property name="validator" ref="tiersCriteriaValidator" />
+		<property name="separationRecapManager" ref="separationRecapManager" />
 	</bean>
 
 	<bean id="separationRecapController" class="ch.vd.uniregctb.separation.SeparationRecapController" parent="abstractSimpleFormController">
@@ -39,6 +40,7 @@
 		<property name="formView" value="annulation/separation/list" />
 		<property name="successView" value="list.do" />
 		<property name="validator" ref="tiersCriteriaValidator" />
+		<property name="annulationSeparationRecapManager" ref="annulationSeparationRecapManager" />
 	</bean>
 
 	<bean id="annulationSeparationRecapController" class="ch.vd.uniregctb.annulation.separation.AnnulationSeparationRecapController" parent="abstractSimpleFormController">

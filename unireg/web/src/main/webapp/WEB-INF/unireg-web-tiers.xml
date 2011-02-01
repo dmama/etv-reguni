@@ -6,7 +6,6 @@
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="service" ref="tiersService" />
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
-		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="abstractTiersListController" parent="abstractTiersController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersListController">

@@ -18,7 +18,6 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
@@ -77,8 +76,8 @@ public class AnnulationDecesListController extends AbstractTiersListController {
 						List<TiersIndexedDataView> results = searchTiers(bean);
 						List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
 						for (TiersIndexedDataView tiersIndexedData : results) {
-							PersonnePhysique tiers = (PersonnePhysique) getTiersSloooow(tiersIndexedData.getNumero());
-							if (annulationDecesRecapManager.isDecede(tiers) || annulationDecesRecapManager.isVeuvageMarieSeul(tiers)) {
+							final long noCtb = tiersIndexedData.getNumero();
+							if (annulationDecesRecapManager.isDecede(noCtb) || annulationDecesRecapManager.isVeuvageMarieSeul(noCtb)) {
 								filtredResults.add(tiersIndexedData);
 							}
 						}
@@ -98,7 +97,6 @@ public class AnnulationDecesListController extends AbstractTiersListController {
 		}
 		return mav;
 	}
-
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,

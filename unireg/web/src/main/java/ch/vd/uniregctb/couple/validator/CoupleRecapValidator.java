@@ -69,15 +69,16 @@ public class CoupleRecapValidator implements Validator {
 		if ((typeUnion == TypeUnion.COUPLE || typeUnion == TypeUnion.SEUL) && !coupleRecapView.isNouveauCtb()) {
 			if (coupleRecapView.getNumeroTroisiemeTiers() == null) {
 				errors.rejectValue("numeroTroisiemeTiers", "error.aucun.contribuable.existant");
-				return;
-			}
-			final Tiers troisieme = tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
-			if (troisieme == null) {
-				errors.rejectValue("numeroTroisiemeTiers", "error.tiers.inexistant");
 			}
 			else {
-				if (!CoupleRecapPickerFilter.isValideCommeTroisiemeTiers(troisieme)) {
-					errors.rejectValue("numeroTroisiemeTiers", "error.troisieme.tiers.non.valide");
+				final Tiers troisieme = tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
+				if (troisieme == null) {
+					errors.rejectValue("numeroTroisiemeTiers", "error.tiers.inexistant");
+				}
+				else {
+					if (!CoupleRecapPickerFilter.isValideCommeTroisiemeTiers(troisieme)) {
+						errors.rejectValue("numeroTroisiemeTiers", "error.troisieme.tiers.non.valide");
+					}
 				}
 			}
 

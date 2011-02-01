@@ -19,7 +19,6 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -46,30 +45,28 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		//vérification droit création rapport de travail
-		if(!SecurityProvider.isGranted(Role.RT)){
+		// vérification droit création rapport de travail
+		if (!SecurityProvider.isGranted(Role.RT)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de créer un rapport de travail");
 		}
 
-		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
+		final HttpSession session = request.getSession();
+		final String action = request.getParameter(ACTION_PARAMETER_NAME);
 
-		String numeroSrcParam = request.getParameter(NUMERO_SOURCIER_PARAMETER_NAME);
-		Long numeroSrc = Long.parseLong(numeroSrcParam);
+		final String numeroSrcParam = request.getParameter(NUMERO_SOURCIER_PARAMETER_NAME);
+		final Long numeroSrc = Long.parseLong(numeroSrcParam);
 
-		Contribuable ctb = (Contribuable) getTiersSloooow(numeroSrc);
-		if (ctb == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.sourcier.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+		if (!rapportPrestationEditManager.isExistingTiers(numeroSrc)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.sourcier.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		final Niveau acces = SecurityProvider.getDroitAcces(ctb);
+		final Niveau acces = rapportPrestationEditManager.getAccessLevel(numeroSrc);
 		if (acces == null || acces == Niveau.LECTURE) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de créer un rapport de travail sur ce contribuable");
 		}
 
 		DebiteurListView bean = (DebiteurListView) session.getAttribute(DEBITEUR_CRITERIA_NAME);
-		if(	(bean == null) ||
-				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
+		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
 			bean = rapportPrestationEditManager.getDebiteurList(numeroSrc);
 		}
 
@@ -83,12 +80,11 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
-			throws Exception {
+	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
 
-		HttpSession session = request.getSession();
-		DebiteurListView bean = (DebiteurListView) session.getAttribute(DEBITEUR_CRITERIA_NAME);
-		ModelAndView mav = showFormForList(request, response, errors, model, DEBITEUR_CRITERIA_NAME, DEBITEUR_LIST_ATTRIBUTE_NAME, bean, true);
+		final HttpSession session = request.getSession();
+		final DebiteurListView bean = (DebiteurListView) session.getAttribute(DEBITEUR_CRITERIA_NAME);
+		final ModelAndView mav = showFormForList(request, response, errors, model, DEBITEUR_CRITERIA_NAME, DEBITEUR_LIST_ATTRIBUTE_NAME, bean, true);
 		session.removeAttribute(DEBITEUR_CRITERIA_NAME);
 		return mav;
 	}
@@ -99,13 +95,12 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
+		final ModelAndView mav = super.onSubmit(request, response, command, errors);
 
-		DebiteurListView bean = (DebiteurListView) command;
-		HttpSession session = request.getSession();
+		final DebiteurListView bean = (DebiteurListView) command;
+		final HttpSession session = request.getSession();
 		session.setAttribute(DEBITEUR_CRITERIA_NAME, bean);
 
 		if (request.getParameter(BOUTON_RECHERCHER) != null) {
@@ -116,23 +111,11 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		return mav;
 	}
 
-	public RapportPrestationEditManager getRapportPrestationEditManager() {
-		return rapportPrestationEditManager;
-	}
-
 	public void setRapportPrestationEditManager(RapportPrestationEditManager rapportPrestationEditManager) {
 		this.rapportPrestationEditManager = rapportPrestationEditManager;
-	}
-
-	/**
-	 * @return the messageSource
-	 */
-	protected MessageSource getMessageSource() {
-		return messageSource;
 	}
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
-
 }

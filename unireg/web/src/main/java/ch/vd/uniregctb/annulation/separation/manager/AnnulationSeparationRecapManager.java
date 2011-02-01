@@ -14,7 +14,7 @@ public interface AnnulationSeparationRecapManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public AnnulationSeparationRecapView get(Long numero);
+	AnnulationSeparationRecapView get(Long numero);
 
 
 	/**
@@ -23,7 +23,13 @@ public interface AnnulationSeparationRecapManager {
 	 * @param annulationSeparationRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public MenageCommun save(AnnulationSeparationRecapView annulationSeparationRecapView);
+	MenageCommun save(AnnulationSeparationRecapView annulationSeparationRecapView);
 
 
+	/**
+	 * @param noCtb numéro du contribuable dont on regarde les fors
+	 * @return <code>true</code> si le dernier for fiscal principal du contribuable a bien été fermé pour motif "séparation", <code>false</code> sinon
+	 */
+	@Transactional(readOnly = true)
+	boolean isDernierForFiscalPrincipalFermePourSeparation(long noCtb);
 }
