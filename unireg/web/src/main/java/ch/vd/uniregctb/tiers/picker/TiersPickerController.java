@@ -128,6 +128,8 @@ public class TiersPickerController extends CommonSimpleFormController implements
 
 		final List<Component> components = new ArrayList<Component>();
 
+		id = (id == null ? id : id.replaceAll("[^0-9]", "")); // [UNIREG-3253] supprime tous les caractères non-numériques
+
 		if (isLessThan3Chars(id) && isLessThan3Chars(nomraison) && isLessThan3Chars(localite) && isLessThan3Chars(datenaissance) && isLessThan3Chars(noavs)) {
 			components.add(new SimpleText("Veuillez saisir au minium 3 caractères."));
 		}
