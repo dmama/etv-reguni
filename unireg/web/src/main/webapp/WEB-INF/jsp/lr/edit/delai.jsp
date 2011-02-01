@@ -4,7 +4,7 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
 	<tiles:put name="title">
-  		<fmt:message key="title.ajout.delai">
+  		<fmt:message key="title.ajout.delai.lr">
   			<fmt:param>${command.declarationPeriode}</fmt:param>
   			<fmt:param><unireg:date date="${command.declarationRange.dateDebut}"/></fmt:param>
   			<fmt:param><unireg:date date="${command.declarationRange.dateFin}"/></fmt:param>
