@@ -89,8 +89,6 @@
 						<li id="diTab">
 							<a href="#tabContent_diTab""><fmt:message key="label.di" /></a>
 						</li>
-					</c:if>
-					<c:if test="${command.natureTiers != 'Entreprise'}">
 						<li id="mouvementTab">
 							<a href="#tabContent_mouvementTab""><fmt:message key="label.mouvement" /></a>
 						</li>
@@ -147,24 +145,20 @@
 							<div id="tabContent_diTab" class="visuTiers">
 								<jsp:include page="di/dis.jsp"/>
 							</div>
+							<div id="tabContent_mouvementTab" class="visuTiers">
+								<jsp:include page="mouvement/mouvements.jsp"/>
+							</div>
+						</c:if>
+						<c:if test="${command.natureTiers == 'Entreprise'}">
+							<div id="tabContent_regimesFiscauxTab" class="visuTiers">
+								<jsp:include page="pm/regimes-fiscaux.jsp"/>
+							</div>
+							<div id="tabContent_etatsPMTab" class="visuTiers">
+								<jsp:include page="pm/etats.jsp"/>
+							</div>
 						</c:if>
 					</authz:authorize>
 				</c:if>
-			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-				<c:if test="${command.natureTiers != 'Entreprise'}">
-					<div id="tabContent_mouvementTab" class="visuTiers">
-						<jsp:include page="mouvement/mouvements.jsp"/>
-					</div>
-				</c:if>
-				<c:if test="${command.natureTiers == 'Entreprise'}">
-					<div id="tabContent_regimesFiscauxTab" class="visuTiers">
-						<jsp:include page="pm/regimes-fiscaux.jsp"/>
-					</div>
-					<div id="tabContent_etatsPMTab" class="visuTiers">
-						<jsp:include page="pm/etats.jsp"/>
-					</div>
-				</c:if>
-			</authz:authorize>
 
 			<div id="tabContent_remarqueTab" class="visuTiers">
 					<jsp:include page="../common/remarque/remarques.jsp">
