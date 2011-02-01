@@ -35,9 +35,9 @@
 				</c:when>
 			</c:choose>
 		</fieldset>
+		</c:if>
 	</td>
 </tr></table>
-</c:if>
 
 
 
