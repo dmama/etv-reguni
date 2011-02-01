@@ -7253,13 +7253,17 @@ $.extend(Datepicker.prototype, {
 		if (input.hasClass(this.markerClassName))
 			return;
 		this._attachments(input, inst);
-		input.addClass(this.markerClassName).keydown(this._doKeyDown).
+		input.addClass(this.markerClassName);
+
+/* [UNIREG-3259] on désactive la mise-à-jour automatique à partir du champ input du date-picker quand ce dernier est ouvert parce que c'est très lent dans IE6
+		.keydown(this._doKeyDown).
 			keypress(this._doKeyPress).keyup(this._doKeyUp).
 			bind("setData.datepicker", function(event, key, value) {
 				inst.settings[key] = value;
 			}).bind("getData.datepicker", function(event, key) {
 				return this._get(inst, key);
 			});
+*/
 		this._autoSize(inst);
 		$.data(target, PROP_NAME, inst);
 	},
