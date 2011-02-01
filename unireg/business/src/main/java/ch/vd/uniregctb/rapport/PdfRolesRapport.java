@@ -42,7 +42,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return infraService;
 	}
 
-	protected void writeFichierDetail(T results, PdfWriter writer, String[] contenu, int size, String nomEntite) throws DocumentException {
+	protected void writeFichierDetail(T results, PdfWriter writer, String[] contenu, boolean vide, String nomEntite) throws DocumentException {
 		final String[] filenames = new String[contenu.length];
 		if (filenames.length > 1) {
 			for (int i = 0 ; i < contenu.length ; ++ i) {
@@ -54,7 +54,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		}
 		final String titre = "Liste détaillée";
 		final String listVide = "(aucun rôle trouvé)";
-	    addListeDetailleeDecoupee(writer, size, titre, listVide, filenames, contenu);
+	    addListeDetailleeDecoupee(writer, vide, titre, listVide, filenames, contenu);
 	}
 
 	/**

@@ -15,11 +15,14 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang.mutable.MutableInt;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +44,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 	public void write(final StatsEvenementsCivilsResults civils, final StatsEvenementsExternesResults externes,
 	                  final StatsEvenementsIdentificationContribuableResults identCtb,
 	                  final RegDate dateReference, String nom, String description, final Date dateGeneration, OutputStream os,
-	                  StatusManager status) throws Exception{
+	                  StatusManager status) throws Exception {
 
 		Assert.notNull(status);
 
@@ -70,8 +73,9 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 		if (civils != null) {
 
+			addEntete1("Evénements civils");
+
 			// Evénements civils : états
-			addEntete1("Etats des événements civils");
 			{
 				addTableSimple(3, new PdfRapport.TableSimpleCallback() {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
@@ -94,54 +98,38 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			}
 
 			// événements civils : types en erreur
-			addEntete1("Erreurs par type d'événements civils");
 			{
-				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
-					public void fillTable(PdfTableSimple table) throws DocumentException {
+				final String filename = "erreurs_evts_civils_par_type.csv";
+				final String contenu = asCsvFile(civils.getErreursParType(), civils.getErreursParTypeNouveaux(), dateReference, TypeEvenementCivil.class, filename, status);
+				final String titre = "Erreurs des événements civils par type d'événement";
+				final String listVide = "(aucune)";
+				addListeDetaillee(writer, civils.getErreursParType().size(), titre, listVide, filename, contenu);
+			}
 
-						table.addLigne("Type", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
-						table.setHeaderRows(1);
-
-						final Map<TypeEvenementCivil, Integer> erreurs = civils.getErreursParType();
-						final Map<TypeEvenementCivil, Integer> erreursNouveaux = civils.getErreursParTypeNouveaux();
-						for (TypeEvenementCivil type : TypeEvenementCivil.values()) {
-							final Integer nombre = erreurs.get(type);
-							final Integer nombreNouveaux = erreursNouveaux.get(type);
-							if ((nombre != null && nombre > 0) || (nombreNouveaux != null && nombreNouveaux > 0)) {
-								table.addLigne(String.format("%s :", type.getDescription()), toStringInt(nombre, 0), toStringInt(nombreNouveaux, 0));
-							}
-						}
-					}
-				});
+			// messages d'erreur regroupés par type
+			{
+				final String filename = "messages_erreurs_evts_civils_par_type.csv";
+				final String contenu = buildStatsMessagesErreursParType(civils.getToutesErreurs(), filename, status);
+				final String titre = "Messages d'erreurs des événements civils par type d'événement";
+				final String listVide = "(aucun)";
+				addListeDetaillee(writer, civils.getErreursParType().size(), titre, listVide, filename, contenu);
 			}
 
 			// toutes les erreurs
 			{
-				String filename = "erreurs_evts_civils.csv";
-				String contenu = asCsvFile(civils.getToutesErreurs(), filename, status);
-				String titre = "Erreurs des événements civils";
-				String listVide = "(aucune)";
+				final String filename = "erreurs_evts_civils.csv";
+				final String contenu = asCsvFile(civils.getToutesErreurs(), filename, status);
+				final String titre = "Erreurs des événements civils";
+				final String listVide = "(aucune)";
 				addListeDetaillee(writer, civils.getToutesErreurs().size(), titre, listVide, filename, contenu);
 			}
 
 			// manipulations manuelles
-			addEntete1("Manipulations manuelles d'événements civils depuis le " + RegDateHelper.dateToDisplayString(dateReference));
 			{
-				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-					public void fillTable(PdfTableSimple table) throws DocumentException {
-						final List<StatsEvenementsCivilsResults.EvenementCivilTraiteManuellementInfo> manips = civils.getManipulationsManuelles();
-						final int nbManips = manips != null ? manips.size() : 0;
-						table.addLigne("Nombre :", Integer.toString(nbManips));
-					}
-				});
-			}
-
-			// manipulations manuelles
-			{
-				String filename = "manipulations_evts_civils.csv";
-				String contenu = asCsvFile(civils.getManipulationsManuelles(), filename, status);
-				String titre = "Manipulations manuelles des événements civils";
-				String listVide = "(aucune)";
+				final String filename = "manipulations_evts_civils.csv";
+				final String contenu = asCsvFile(civils.getManipulationsManuelles(), filename, status);
+				final String titre = String.format("Manipulations manuelles des événements civils depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
+				final String listVide = "(aucune)";
 				addListeDetaillee(writer, civils.getManipulationsManuelles().size(), titre, listVide, filename, contenu);
 			}
 
@@ -175,15 +163,18 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		if (externes != null) {
 
 			// événements externes : états
-			addEntete1("Etats des événements externes");
+			addEntete1("Evénements externes");
 			{
 				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
+						table.addLigne("Etat", "Total");
+						table.setHeaderRows(1);
+
 						final Map<EtatEvenementExterne, Integer> etats = externes.getEtats();
 						for (EtatEvenementExterne etat : EtatEvenementExterne.values()) {
 							final Integer nombre = etats.get(etat);
-							table.addLigne(String.format("Etat %s :", etat.toString()), toStringInt(nombre, 0));
+							table.addLigne(etat.name(), toStringInt(nombre, 0));
 						}
 					}
 				});
@@ -191,10 +182,10 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 			// événements externes : erreurs
 			{
-				String filename = "erreurs_evts_externes.csv";
-				String contenu = asCsvFile(externes.getErreurs(), filename, status);
-				String titre = "Erreurs des événements externes";
-				String listVide = "(aucune)";
+				final String filename = "erreurs_evts_externes.csv";
+				final String contenu = asCsvFile(externes.getErreurs(), filename, status);
+				final String titre = "Erreurs des événements externes";
+				final String listVide = "(aucune)";
 				addListeDetaillee(writer, externes.getErreurs().size(), titre, listVide, filename, contenu);
 			}
 		}
@@ -202,8 +193,9 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		// événements d'identification de contribuable
 		if (identCtb != null) {
 
+			addEntete1("Demandes d'identification de contribuable");
+
 			// événements d'identification de contribuable : états
-			addEntete1("Etats des événements d'identification de contribuable");
 			{
 				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
@@ -227,10 +219,10 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 			// événements d'identification de contribuable : restant à traiter
 			{
-				String filename = "identification_ctb_a_traiter.csv";
-				String contenu = asCsvFile(identCtb.getATraiter(), filename, status);
-				String titre = "Evénements d'identification à traiter";
-				String listVide = "(aucun)";
+				final String filename = "identification_ctb_a_traiter.csv";
+				final String contenu = asCsvFile(identCtb.getATraiter(), filename, status);
+				final String titre = "Evénements d'identification à traiter";
+				final String listVide = "(aucun)";
 				addListeDetaillee(writer, identCtb.getATraiter().size(), titre, listVide, filename, contenu);
 			}
 		}
@@ -282,6 +274,126 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final T element = iterator.next();
 				final String[] valeurs = element.getValeursColonnes();
 				b.append(asCsvLine(valeurs, true));
+			}
+
+			contenu = b.toString();
+		}
+		return contenu;
+	}
+
+	private static <T extends Enum<T>> String asCsvFile(Map<T, Integer> tous, Map<T, Integer> nouveaux, RegDate dateReference, Class<T> enumClass, String fileName, StatusManager statusManager) {
+		String contenu = null;
+		if (tous != null && tous.size() > 0) {
+			final String message = String.format("Génération du fichier %s", fileName);
+			statusManager.setMessage(message, 0);
+			final StringBuilder b = new StringBuilder();
+
+			// les noms des colonnes
+			b.append("VALEUR").append(COMMA).append("TOTAL").append(COMMA).append("NOUVEAUX_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference)).append('\n');
+
+			// les valeurs
+			for (T mod : enumClass.getEnumConstants()) {
+				final Integer total = tous.get(mod);
+				final Integer marginal = nouveaux.get(mod);
+				if ((total != null && total > 0) || (marginal != null && marginal > 0)) {
+					b.append(mod).append(COMMA).append(toStringInt(total, 0)).append(COMMA).append(toStringInt(marginal, 0)).append('\n');
+				}
+			}
+			contenu = b.toString();
+
+			statusManager.setMessage(message, 100);
+		}
+		return contenu;
+	}
+
+	private static final class MsgTypeKey {
+
+		public final String msg;
+		public final TypeEvenementCivil type;
+
+		public MsgTypeKey(String msg, TypeEvenementCivil type) {
+			this.msg = msg;
+			this.type = type;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final MsgTypeKey that = (MsgTypeKey) o;
+
+			if (type != that.type) return false;
+			if (msg != null ? !msg.equals(that.msg) : that.msg != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = msg != null ? msg.hashCode() : 0;
+			result = 31 * result + (type != null ? type.hashCode() : 0);
+			return result;
+		}
+	}
+
+	private String buildStatsMessagesErreursParType(List<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo> toutesErreurs, String fileName, StatusManager statusManager) {
+		String contenu = null;
+		if (toutesErreurs != null && toutesErreurs.size() > 0) {
+
+			final String messageCalcul = String.format("Calcul des statistiques pour le fichier %s", fileName);
+			statusManager.setMessage(messageCalcul, 0);
+
+			// première partie : calcul des statistiques
+			final Map<MsgTypeKey, MutableInt> map = new HashMap<MsgTypeKey, MutableInt>();
+			final GentilIterator<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo> iter = new GentilIterator<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo>(toutesErreurs);
+			int textSize = 0;
+			while (iter.hasNext()) {
+				if (iter.isAtNewPercent()) {
+					statusManager.setMessage(messageCalcul, iter.getPercent());
+				}
+
+				final StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo erreur = iter.next();
+				if (erreur != null) {
+					final MsgTypeKey key = new MsgTypeKey(erreur.message, erreur.type);
+					final MutableInt nb = map.get(key);
+					if (nb == null) {
+						map.put(key, new MutableInt(1));
+						textSize += 2 /*les ;*/ + 2 /*les guillemets autour du message*/ + erreur.type.name().length() + erreur.message.length() + 1 /*le CR*/;
+					}
+					else {
+						nb.increment();
+					}
+				}
+			}
+
+			// tri des lignes dans l'ordre décroissant des nombres d'occurrence
+			final List<Map.Entry<MsgTypeKey, MutableInt>> stats = new ArrayList<Map.Entry<MsgTypeKey, MutableInt>>(map.entrySet());
+			Collections.sort(stats, new Comparator<Map.Entry<MsgTypeKey, MutableInt>>() {
+				public int compare(Map.Entry<MsgTypeKey, MutableInt> o1, Map.Entry<MsgTypeKey, MutableInt> o2) {
+					return o2.getValue().intValue() - o1.getValue().intValue();
+				}
+			});
+
+			// touche finale : remplissage de la chaîne de caractères qui finira dans le fichier CSV
+			final String messageRemplissage = String.format("Génération du fichier %s", fileName);
+			statusManager.setMessage(messageRemplissage, 0);
+
+			final String header = String.format("MESSAGE%sTYPE_EVT%sCOUNT\n", COMMA, COMMA);
+			final StringBuilder b = new StringBuilder(textSize + stats.size() * 10 + header.length());    // on suppose qu'aucun message ne sera présent plus d'un milliard de fois...
+			b.append(header);
+
+			final GentilIterator<Map.Entry<MsgTypeKey, MutableInt>> iterStats = new GentilIterator<Map.Entry<MsgTypeKey, MutableInt>>(stats);
+			while (iterStats.hasNext()) {
+				if (iterStats.isAtNewPercent()) {
+					statusManager.setMessage(messageRemplissage, iterStats.getPercent());
+				}
+				final Map.Entry<MsgTypeKey, MutableInt> stat = iterStats.next();
+				final MsgTypeKey key = stat.getKey();
+				b.append(asCsvField(key.msg)).append(COMMA);
+				b.append(key.type).append(COMMA);
+				b.append(stat.getValue().intValue());
+				b.append('\n');
 			}
 
 			contenu = b.toString();
