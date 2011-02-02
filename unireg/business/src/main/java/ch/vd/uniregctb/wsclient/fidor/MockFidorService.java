@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.wsclient.fidor;
 
+import java.util.List;
+
+import ch.vd.uniregctb.wsclient.model.Logiciel;
+
 public class MockFidorService implements FidorService {
 
 	public String getUrlTaoPP(Long numero) {
@@ -16,5 +20,13 @@ public class MockFidorService implements FidorService {
 
 	public String getUrlSipf(Long numero) {
 		return "https://blabla/_NOCTB_/_OID_";
+	}
+
+	public Logiciel getLogiciel(long idLogiciel) {
+		return null;
+	}
+
+	public List<Logiciel> getTousLesLogiciels() {
+		return null;
 	}
 }

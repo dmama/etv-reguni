@@ -3,6 +3,9 @@ package ch.vd.uniregctb.wsclient.fidor;
 import javax.xml.ws.BindingProvider;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +18,8 @@ import ch.vd.fidor.ws.v2.Acces;
 import ch.vd.fidor.ws.v2.FidorPortType;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.webservice.fidor.FidorClient;
+import ch.vd.uniregctb.wsclient.model.Logiciel;
+import ch.vd.uniregctb.wsclient.model.impl.LogicielImpl;
 
 /**
  * [UNIREG-2187]
@@ -37,6 +42,22 @@ public class FidorServiceImpl implements FidorService {
 
 	public void setFidorClient(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
+	}
+
+	public Logiciel getLogiciel(long idLogiciel) {
+		return LogicielImpl.get(fidorClient.getLogicielDetail(idLogiciel));
+
+	}
+
+	public List<Logiciel> getTousLesLogiciels(){
+		final List<Logiciel> listeLogiciel = new ArrayList<Logiciel>();
+		Collection<ch.vd.fidor.ws.v2.Logiciel> logicielsFidor = fidorClient.getTousLesLogiciels();
+		if (logicielsFidor != null) {
+			for (ch.vd.fidor.ws.v2.Logiciel logicielFidor : logicielsFidor) {
+				 listeLogiciel.add(LogicielImpl.get(logicielFidor));
+			}
+		}
+		return listeLogiciel;
 	}
 
 	public String getUrlTaoPP(Long numero) {
@@ -71,9 +92,8 @@ public class FidorServiceImpl implements FidorService {
 	/**
 	 * Initialise le client du web-service à la demande.
 	 * <p/>
-	 * <b>Note:</b> il est absolument nécessaire d'initialiser le client <i>après</i> le contexte Spring, car il y a une dépendence
-	 * implicite sur le bus CXF qui risque d'être initialisé plus tard que ce bean. Dans ce dernier, cas on reçoit une NPE dans
-	 * le constructeur du service.
+	 * <b>Note:</b> il est absolument nécessaire d'initialiser le client <i>après</i> le contexte Spring, car il y a une dépendence implicite sur le bus CXF qui risque d'être initialisé plus tard que ce
+	 * bean. Dans ce dernier, cas on reçoit une NPE dans le constructeur du service.
 	 */
 	private void lazyInit() {
 		if (patternSipf == null) {
