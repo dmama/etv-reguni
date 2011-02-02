@@ -471,7 +471,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		s.append("<div style=\"float: right;margin-right: 10px\">\n");
 		s.append("<span>").append(message("label.ouvrir.vers")).append(" : </span>\n");
 
-		if (urlRetour == null) {
+		if (StringUtils.isBlank(urlRetour)) {
 			s.append("<select name=\"AppSelect\" onchange=\"javascript:AppSelect_OnChange(this);\">\n");
 			s.append("\t<option value=\"\">---</option>\n");
 			final boolean isEntreprise = tiers instanceof Entreprise;
