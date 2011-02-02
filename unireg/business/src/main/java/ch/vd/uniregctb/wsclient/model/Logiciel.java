@@ -2,26 +2,26 @@ package ch.vd.uniregctb.wsclient.model;
 
 public interface Logiciel {
 
-	public String	getContactMetierMail();
+	public String getContactMetierMail();
 
-	public String 	getContactMetierNom();
+	public String getContactMetierNom();
 
-    public String 	getContactTechniqueMail();
+	public String getContactTechniqueMail();
 
- public String 	getContactTechniqueNom();
+	public String getContactTechniqueNom();
 
- public String 	getFournisseur();
+	public String getFournisseur();
 
- public String 	getFournisseurAdresse();
+	public String getFournisseurAdresse();
 
- public long 	getId();
+	public long getId();
 
- public String 	getLibelle();
+	public String getLibelle();
 
- public TypeLogicielMetier 	getMetier();
+	public LogicielMetier getMetier();
 
- public String 	getVersion();
+	public String getVersion();
 
 
- public boolean 	isCertifie();
+	public boolean isCertifie();
 }

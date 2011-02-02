@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.wsclient.model.impl;
 
 import ch.vd.uniregctb.wsclient.model.Logiciel;
-import ch.vd.uniregctb.wsclient.model.TypeLogicielMetier;
+import ch.vd.uniregctb.wsclient.model.LogicielMetier;
 
 public class LogicielImpl implements Logiciel {
 
@@ -13,7 +13,7 @@ public class LogicielImpl implements Logiciel {
 	private String fournisseurAdresse;
 	private long id;
 	private String libelle;
-	private TypeLogicielMetier metier;
+	private LogicielMetier metier;
 	private String version;
 	private boolean certifie;
 
@@ -33,7 +33,7 @@ public class LogicielImpl implements Logiciel {
 		this.fournisseurAdresse = target.getFournisseurAdresse();
 		this.id = target.getId();
 		this.libelle = target.getLibelle();
-		this.metier = TypeLogicielMetier.get(target.getMetier());
+		this.metier = LogicielMetier.get(target.getMetier());
 		this.version = target.getVersion();
 		this.certifie = target.isCertifie();
 
@@ -71,7 +71,7 @@ public class LogicielImpl implements Logiciel {
 		return libelle;
 	}
 
-	public TypeLogicielMetier getMetier() {
+	public LogicielMetier getMetier() {
 		return metier;
 	}
 
