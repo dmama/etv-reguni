@@ -17,5 +17,5 @@
 <c:set var="showLinks" value="${page == 'visu'}"/>
 
 <!-- Debut Caracteristiques generales -->
-<unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="${showLinks}"/>
+<unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="${showLinks}" urlRetour="${urlRetour}"/>
 <!-- Fin Caracteristiques generales -->
