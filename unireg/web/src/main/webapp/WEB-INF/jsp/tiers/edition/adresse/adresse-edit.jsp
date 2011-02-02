@@ -331,16 +331,26 @@
 
 	function AddressEdit_Adjust() {
 		var form = F$("formAddAdresse");
-		if (!isBlankString(form.numeroOrdrePoste.value) || !form.typeLocalite1.checked) {
-			form.rue.readOnly = '';
-			$('#rue').removeClass("readonly");
-			$('#rue').autocomplete("enable");
+		if (form.typeLocalite1.checked) {
+			// localité suisse -> la localité est un prérequis pour que l'autocompletion soit activée sur le champs rue
+			if (!isBlankString(form.numeroOrdrePoste.value)) {
+				form.rue.readOnly = '';
+				$('#rue').removeClass("readonly");
+				$('#rue').autocomplete("enable");
+			}
+			else {
+				form.rue.readOnly = 'readonly';
+				$('#rue').addClass("readonly");
+				$('#rue').autocomplete("disable");
+				$('#rue').val('^^^ entrez une localité ^^^');
+			}
 		}
 		else {
-			form.rue.readOnly = 'readonly';
-			$('#rue').addClass("readonly");
+			// pays étranger -> le champs rue est une chaîne de caractères libre [UNIREG-3255]
+			form.rue.readOnly = '';
+			$('#rue').removeClass("readonly");
 			$('#rue').autocomplete("disable");
-			$('#rue').val('^^^ entrez une localité ^^^');
+			$('#rue').val('');
 		}
 	}
 
