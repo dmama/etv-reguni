@@ -222,7 +222,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		}
 	}
 
-	@Test(timeout = 600)
+	@Test(timeout = 800)
 	public void testReceptionPendantAttenteMaisPasLeBon() throws Exception {
 
 		// on lance un thread qui envoie un document dans 200ms

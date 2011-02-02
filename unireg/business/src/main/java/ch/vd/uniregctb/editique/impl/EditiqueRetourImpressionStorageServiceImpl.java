@@ -87,7 +87,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 
 		@Override
 		public void run() {
-			final long tickPrecedent = System.currentTimeMillis() - cleanupPeriod * 1000L;
+			final long tickPrecedent = getTimestampMillis() - cleanupPeriod * 1000L;
 			synchronized (impressionsRecues) {
 				final Iterator<Map.Entry<String, EditiqueResultat>> iterator = impressionsRecues.entrySet().iterator();
 				while (iterator.hasNext()) {
