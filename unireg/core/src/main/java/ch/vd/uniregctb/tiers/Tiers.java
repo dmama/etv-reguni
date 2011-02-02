@@ -1182,12 +1182,27 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudois() {
 
-		List<ForFiscal> list = getForsFiscauxSorted();
+		final List<ForFiscal> list = getForsFiscauxSorted();
 		if (list != null) {
 			for (int i = list.size() - 1; i >= 0; i--) {
-				ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()
-						&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale()) {
+				final ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale()) {
+					return (ForFiscalPrincipal) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
+
+	// ***********************************************
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudoisAvant(RegDate date) {
+
+		final List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				final ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
 					return (ForFiscalPrincipal) forFiscal;
 				}
 			}

@@ -78,6 +78,7 @@ public class ProduireStatsCtbsProcessor {
 
 		final List<Long> listeComplete = chargerIdentifiantsContribuables(anneePeriode);
 		final BatchTransactionTemplate<Long, StatistiquesCtbs> template = new BatchTransactionTemplate<Long, StatistiquesCtbs>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
+		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchCallback<Long, StatistiquesCtbs>() {
 
 			@Override
@@ -87,7 +88,7 @@ public class ProduireStatsCtbsProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, StatistiquesCtbs rapport) throws Exception {
-				traiteBatch(batch, rapport, status, listeComplete.size());
+				traiteBatch(batch, rapport, status, listeComplete.size(), rapportFinal.nbCtbsTotal);
 				return true;
 			}
 		});
@@ -99,7 +100,7 @@ public class ProduireStatsCtbsProcessor {
 	/**
 	 * Traite tous les contribuables spécifiés par l'iterateur passé en paramètre.
 	 */
-	private void traiteBatch(final List<Long> batch, final StatistiquesCtbs rapport, final StatusManager status, final int nbTotalContribuables) {
+	private void traiteBatch(final List<Long> batch, final StatistiquesCtbs rapport, final StatusManager status, final int nbTotalContribuables, final int nbCtbTraites) {
 
 		hibernateTemplate.getSessionFactory().getCurrentSession().setFlushMode(FlushMode.MANUAL); // on ne va rien changer
 
@@ -109,7 +110,7 @@ public class ProduireStatsCtbsProcessor {
 
 			final Long id = iterator.next();
 			if (first) {
-				status.setMessage(String.format("Traitement du contribuable n°%d (%d/%d)", id, rapport.nbCtbsTotal, nbTotalContribuables), (rapport.nbCtbsTotal * 100) / nbTotalContribuables);
+				status.setMessage(String.format("Traitement du contribuable n°%d (%d/%d)", id, nbCtbTraites, nbTotalContribuables), (nbCtbTraites * 100) / nbTotalContribuables);
 				first = false;
 			}
 
@@ -135,7 +136,7 @@ public class ProduireStatsCtbsProcessor {
 			// Dans tous les cas, on prend l'assujettissement le plus récent
 			final Assujettissement assujet = assujettissements.get(assujettissements.size() - 1);
 			final TypeContribuable typeCtb = determineType(assujet);
-			final Commune commune = getCommune(ctb);
+			final Commune commune = typeCtb == TypeContribuable.SOURCIER_PUR ? getCommuneDepuisFor(ctb, rapport.annee) : getCommuneGestion(ctb, rapport.annee);
 			final Integer oid = getOID(commune);
 
 			rapport.addStats(oid, commune, typeCtb);
@@ -169,11 +170,20 @@ public class ProduireStatsCtbsProcessor {
 	 * @return la commune du for de gestion du contribuable spécifié, ou <b>null</b> si le contribuable ne possède pas de for de gestion.
 	 * @throws InfrastructureException
 	 */
-	private Commune getCommune(Contribuable ctb) throws InfrastructureException {
-		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, null);
+	private Commune getCommuneGestion(Contribuable ctb, int annee) throws InfrastructureException {
+		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, RegDate.get(annee, 12, 31));
 		Commune commune = null;
 		if (forGestion != null) {
 			commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), forGestion.getDateFin());
+		}
+		return commune;
+	}
+
+	private Commune getCommuneDepuisFor(Contribuable ctb, int annee) throws InfrastructureException {
+		final ForFiscalPrincipal ffp = ctb.getDernierForFiscalPrincipalVaudoisAvant(RegDate.get(annee, 12, 31));
+		Commune commune = null;
+		if (ffp != null) {
+			commune = infraService.getCommuneByNumeroOfsEtendu(ffp.getNumeroOfsAutoriteFiscale(), ffp.getDateFin());
 		}
 		return commune;
 	}
@@ -226,7 +236,7 @@ public class ProduireStatsCtbsProcessor {
 			}
 		}
 		else if (assujet instanceof SourcierPur) {
-			type = TypeContribuable.SOURCIER_PURE;
+			type = TypeContribuable.SOURCIER_PUR;
 		}
 		else if (assujet instanceof VaudoisDepense) {
 			type = TypeContribuable.VAUDOIS_DEPENSE;

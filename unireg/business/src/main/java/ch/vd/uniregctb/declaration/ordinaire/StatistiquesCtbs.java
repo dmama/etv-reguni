@@ -50,7 +50,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		VAUDOIS_DEPENSE("à la dépense"),
 		HORS_CANTON("hors canton"),
 		HORS_SUISSE("hors suisse"),
-		SOURCIER_PURE("sourcier");
+		SOURCIER_PUR("sourcier");
 
 		private String description;
 
@@ -62,6 +62,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 			return description;
 		}
 	}
+
 	public static class Key implements Comparable<Key> {
 
 		public final Integer oid;
@@ -69,7 +70,6 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		public final TypeContribuable typeCtb;
 
 		public Key(Integer oid, Commune commune, TypeContribuable typeCtb) {
-			Assert.notNull(commune);
 			this.oid = oid;
 			this.commune = commune;
 			this.typeCtb = typeCtb;
@@ -85,37 +85,24 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 			return result;
 		}
 
-
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Key other = (Key) obj;
-			if (commune == null) {
-				if (other.commune != null)
-					return false;
-			}
-			else if (commune.getNoOFSEtendu() != other.commune.getNoOFSEtendu())
-				return false;
-			if (oid == null) {
-				if (other.oid != null)
-					return false;
-			}
-			else if (!oid.equals(other.oid))
-				return false;
-			if (typeCtb == null) {
-				if (other.typeCtb != null)
-					return false;
-			}
-			else if (typeCtb != other.typeCtb)
-				return false;
-			return true;
-		}
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
 
+			final Key key = (Key) o;
+
+			if (oid != null ? !oid.equals(key.oid) : key.oid != null) return false;
+			if (typeCtb != key.typeCtb) return false;
+
+			if (commune == key.commune) {
+				return true;
+			}
+			if (commune == null || key.commune == null) {
+				return false;
+			}
+			return commune.getNoOFSEtendu() == key.commune.getNoOFSEtendu();
+		}
 
 		/**
 		 * Ordre de tri naturel: oid, commune et typeCtb.
@@ -132,8 +119,10 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 				return oid - o.oid;
 			}
 
-			if (commune.getNoOFSEtendu() != o.commune.getNoOFSEtendu()) {
-				return commune.getNomMinuscule().compareTo(o.commune.getNomMinuscule());
+			if ((commune == null && o.commune != null) || (commune != null && o.commune == null) || (commune != null && o.commune != null && commune.getNoOFSEtendu() != o.commune.getNoOFSEtendu())) {
+				final String nomCommune1 = commune != null ? commune.getNomMinuscule() : "";
+				final String nomCommune2 = o.commune != null ? o.commune.getNomMinuscule() : "";
+				return nomCommune1.compareTo(nomCommune2);
 			}
 
 			if (typeCtb == null) {
