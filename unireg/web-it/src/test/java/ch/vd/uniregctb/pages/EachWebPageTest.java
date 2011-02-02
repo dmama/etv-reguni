@@ -403,7 +403,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition d'un délai d'une LR
 	@Test
 	public void testLrDelai() throws Exception {
-		assertPage("/lr/delai.do?idLR=1", "Ajout d'un délai sur la déclaration 2004 (01.01.2008 - 31.03.2008) du tiers 16.784.32");
+		assertPage("/lr/delai.do?idLR=1", "Ajout d'un délai sur la liste récapitulative 2004 (01.01.2008 - 31.03.2008) du débiteur 16.784.32");
 	}
 
 	@Test
@@ -441,7 +441,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition d'un délai d'une DI
 	@Test
 	public void testDiDelai() throws Exception {
-		assertPage("/di/delai.do?idDI=2", "Ajout d'un délai sur la déclaration 2005 (01.01.2005 - 31.12.2005) du tiers 860.062.02");
+		assertPage("/di/delai.do?idDI=2", "Ajout d'un délai sur la déclaration 2005 (01.01.2005 - 31.12.2005) du contribuable 860.062.02");
 	}
 
 	@Test
