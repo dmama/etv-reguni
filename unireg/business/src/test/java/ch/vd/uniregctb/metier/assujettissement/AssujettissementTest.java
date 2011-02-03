@@ -1513,6 +1513,50 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	/**
+	 * [UNIREG-3261] Cas du ctb n°10546107. Vérifie qu'un contribuable sourcier pur qui arrive de hors-Suisse et part hors-canton la même année est bien assujetti comme sourcier pur pendant toute la durée de
+	 * sa présence sur sol vaudois (situation similaire mais avec comportement différent du test testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeAvecImmeuble parce que le contribuable est
+	 * sourcier pur).
+	 */
+	@Test
+	public void testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeSourcierPur() throws Exception {
+
+		final RegDate dateArriveeHS = date(2010, 9, 6);
+		final RegDate dateDepartHC = date(2010, 10, 18);
+		final Contribuable ctb = createArriveeHorsSuisseEtDepartHCSourcier(10000039L, dateArriveeHS, dateDepartHC);
+
+		// 2009
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pure hors-Suisse toute l'année
+			assertSourcierPur(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+		}
+
+		// 2010
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2010);
+			assertNotNull(list);
+			assertEquals(3, list.size());
+			// sourcier pur hors-Suisse jusqu'à l'arrivee
+			assertSourcierPur(date(2010, 1, 1), date(2010, 9, 5), null, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			// sourcier pur vaudois pendant les mois de septembre et octobre 2010
+			assertSourcierPur(date(2010, 9, 6), date(2010, 10, 18), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			// sourcier pur hors-canton après le départ
+			assertSourcierPur(date(2010, 10, 19), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(2));
+		}
+
+		// 2011
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2011);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pure hors-canton toute l'année
+			assertSourcierPur(date(2011, 1, 1), date(2011, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		}
+	}
+
+	/**
 	 * [UNIREG-1327] Vérifie que l'assujettissement d'un contribuable HS qui possède un immeuble, arrive de HS et vend son immeuble dans la
 	 * même année est bien fractionné à la date d'arrivée HS.
 	 */

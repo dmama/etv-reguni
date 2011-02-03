@@ -22,7 +22,6 @@ import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -448,6 +447,14 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
+	}
+
+	protected Contribuable createArriveeHorsSuisseEtDepartHCSourcier(long ctbId, RegDate dateArriveeHS, RegDate dateDepartHC) throws Exception {
+		Contribuable ctb = createContribuableSansFor(ctbId);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.INDETERMINE, dateArriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark).setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, dateArriveeHS, MotifFor.ARRIVEE_HS, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne).setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Zurich).setModeImposition(ModeImposition.SOURCE);
+		return ctb;
 	}
 
 	protected Contribuable createArriveeHorsSuisseEtDepartHCAvecImmeuble(long ctbId, RegDate dateArriveeHS, RegDate dateDepartHC) throws Exception {

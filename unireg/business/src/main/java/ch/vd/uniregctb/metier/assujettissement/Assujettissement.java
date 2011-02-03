@@ -768,9 +768,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// fractionnement systématique à la date d'ouverture pour ce motif
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsSuisse(previous, current) && isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current)) {
+		else if (isDepartOuArriveeHorsSuisse(previous, current) && isDepartDepuisOuArriveeVersVaud(current, previous) &&
+				(!isDepartHCApresArriveHSMemeAnnee(current) || modeImposition == ModeImposition.SOURCE)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsCanton(previous, current) &&
@@ -805,9 +807,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// fractionnement systématique à la date de fermeture pour ce motif
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && isDepartDepuisOuArriveeVersVaud(current, next) && !isDepartHCApresArriveHSMemeAnnee(next)) {
+		else if (isDepartOuArriveeHorsSuisse(current, next) && isDepartDepuisOuArriveeVersVaud(current, next) &&
+				(!isDepartHCApresArriveHSMemeAnnee(next) || nextModeImposition == ModeImposition.SOURCE)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsCanton(current, next) &&
