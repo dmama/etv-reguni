@@ -4,13 +4,11 @@ import java.io.OutputStream;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
@@ -85,7 +83,6 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnIsntanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
@@ -99,31 +96,16 @@ public class RapportServiceImpl implements RapportService {
 
 	private static final Logger LOGGER = Logger.getLogger(RapportServiceImpl.class);
 
-	private AdresseService adresseService;
 	private DocumentService docService;
-	private HibernateTemplate hibernateTemplate;
 	private ServiceInfrastructureService infraService;
-	private TiersService tiersService;
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDocService(DocumentService docService) {
 		this.docService = docService;
 	}
 
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
-
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
 	}
 
 	/**
@@ -134,8 +116,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportDetermDIs" + results.annee;
-		final String description = "Rapport du job de détermination des DIs à émettre pour l'année " + results.annee
-				+ ". Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport du job de détermination des DIs à émettre pour l'année %d. Date de traitement = %s", results.annee, RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -159,8 +140,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportEnvoiDIs" + results.annee;
-		final String description = "Rapport d'exécution du job d'envoi des DIs en masse pour l'année " + results.annee
-				+ ". Date de traitement = " + results.dateTraitement + "Type de contribuable = " + results.categorie.name();
+		final String description = String.format("Rapport d'exécution du job d'envoi des DIs en masse pour l'année %d. Date de traitement = %s. Type de contribuable = %s",
+				                                 results.annee, RegDateHelper.dateToDisplayString(results.dateTraitement), results.categorie.name());
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -178,7 +159,7 @@ public class RapportServiceImpl implements RapportService {
 
 	public ListeDIsNonEmisesRapport generateRapport(final ListeDIsNonEmises results, final StatusManager status) {
 		final String nom = "RapportListeDIsNonEmises" + results.dateTraitement.index();
-		final String description = "Rapport de la liste des DIs non émises." + ". Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport de la liste des DIs non émises.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ListeDIsNonEmisesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeDIsNonEmisesRapport>() {
@@ -201,8 +182,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportMajorite" + results.dateTraitement.index();
-		final String description = "Rapport d'exécution du job d'ouverture des fors des contribuables majeurs." + ". Date de traitement = "
-				+ results.dateTraitement;
+		final String description = String.format("Rapport d'exécution du job d'ouverture des fors des contribuables majeurs.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -226,7 +206,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "FusionDeCommunes" + results.dateTraitement.index();
-		final String description = "Rapport d'exécution du job de fusion de communes." + ". Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport d'exécution du job de fusion de communes.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -250,7 +230,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RolesCommunes" + results.dateTraitement.index();
-		final String description = "Rapport des rôles pour les communes." + ". Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport des rôles pour les communes.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -276,7 +256,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RolesOIDs" + dateTraitement.index();
-		final String description = "Rapport des rôles pour les OID." + ". Date de traitement = " + dateTraitement;
+		final String description = String.format("Rapport des rôles pour les OID.. Date de traitement = %s", RegDateHelper.dateToDisplayString(dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -297,8 +277,7 @@ public class RapportServiceImpl implements RapportService {
 	 */
 	public StatistiquesDIsRapport generateRapport(final StatistiquesDIs results, final StatusManager status) {
 		final String nom = "RapportStatsDIs" + results.dateTraitement.index();
-		final String description = "Rapport des statistiques des déclarations d'impôt ordinaires." + ". Date de traitement = "
-				+ results.dateTraitement;
+		final String description = String.format("Rapport des statistiques des déclarations d'impôt ordinaires.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -319,8 +298,7 @@ public class RapportServiceImpl implements RapportService {
 	 */
 	public StatistiquesCtbsRapport generateRapport(final StatistiquesCtbs results, final StatusManager status) {
 		final String nom = "RapportStatsCtbs" + results.dateTraitement.index();
-		final String description = "Rapport des statistiques des contribuables assujettis." + ". Date de traitement = "
-				+ results.dateTraitement;
+		final String description = String.format("Rapport des statistiques des contribuables assujettis.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -338,7 +316,7 @@ public class RapportServiceImpl implements RapportService {
 
 	public EnvoiSommationsDIsRapport generateRapport(final EnvoiSommationsDIsResults results, final StatusManager statusManager) {
 		final String nom = "RapportSommationDI" + results.getDateTraitement().index();
-		final String description = "Rapport de l'envoi de sommation des DIs." + " Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport de l'envoi de sommation des DIs. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(EnvoiSommationsDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsRapport>() {
@@ -356,7 +334,7 @@ public class RapportServiceImpl implements RapportService {
 
 	public ValidationJobRapport generateRapport(final ValidationJobResults results, final StatusManager statusManager) {
 		final String nom = "RapportValidationTiers" + results.dateTraitement.index();
-		final String description = "Rapport de la validation de tous les tiers." + " Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport de la validation de tous les tiers. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ValidationJobRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ValidationJobRapport>() {
@@ -373,8 +351,8 @@ public class RapportServiceImpl implements RapportService {
 
 	public EnvoiLRsRapport generateRapport(final EnvoiLRsResults results, final StatusManager statusManager) {
 		final String nom = "RapportEnvoiLR" + results.dateTraitement.index();
-		final String description = "Rapport de l'envoi de LR pour le mois de " + results.dateFinPeriode + "." + " Date de traitement = "
-				+ results.dateTraitement;
+		final RegDate month = RegDate.get(results.dateFinPeriode.year(), results.dateFinPeriode.month());
+		final String description = String.format("Rapport de l'envoi de LR pour le mois de %s. Date de traitement = %s", RegDateHelper.dateToDisplayString(month), RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(EnvoiLRsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiLRsRapport>() {
@@ -391,7 +369,7 @@ public class RapportServiceImpl implements RapportService {
 
 	public EnvoiSommationLRsRapport generateRapport(final EnvoiSommationLRsResults results, final StatusManager statusManager) {
 		final String nom = "RapportSommationLR" + results.dateTraitement.index();
-		final String description = "Rapport de l'envoi de sommation de LR." + " Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport de l'envoi de sommation de LR. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(EnvoiSommationLRsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationLRsRapport>() {
@@ -414,7 +392,7 @@ public class RapportServiceImpl implements RapportService {
 	 */
 	public ListesNominativesRapport generateRapport(final ListesNominativesResults results, final StatusManager statusManager) {
 		final String nom = "RapportListesNominatives" + results.getDateTraitement().index();
-		final String description = "Rapport de la génération des listes nominatives au " + results.getDateTraitement() + ".";
+		final String description = String.format("Rapport de la génération des listes nominatives au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ListesNominativesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListesNominativesRapport>() {
@@ -431,8 +409,7 @@ public class RapportServiceImpl implements RapportService {
 
 	public AcomptesRapport generateRapport(final AcomptesResults results, final StatusManager statusManager) {
 		final String nom = "RapportAcomptes" + results.getDateTraitement().index();
-		final String description = "Rapport de la génération des populations pour les bases acomptes au " + results.getDateTraitement()
-				+ ".";
+		final String description = String.format("Rapport de la génération des populations pour les bases acomptes au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(AcomptesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AcomptesRapport>() {
@@ -478,7 +455,7 @@ public class RapportServiceImpl implements RapportService {
 	 */
 	public ImpressionChemisesTORapport generateRapport(final ImpressionChemisesTOResults results, final StatusManager statusManager) {
 		final String nom = "RapportChemisesTO" + results.getDateTraitement().index();
-		final String description = "Rapport de l'impression des chemises de taxation d'office au " + results.getDateTraitement() + ".";
+		final String description = String.format("Rapport de l'impression des chemises de taxation d'office au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ImpressionChemisesTORapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ImpressionChemisesTORapport>() {
@@ -501,8 +478,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportEchoirDIs" + results.dateTraitement.index();
-		final String description = "Rapport d'exécution du job de passage des DIs sommées à l'état échu. Date de traitement = "
-				+ results.dateTraitement + ".";
+		final String description = String.format("Rapport d'exécution du job de passage des DIs sommées à l'état échu. Date de traitement = %s.", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -526,8 +502,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "ReinitDoubleGain" + results.dateTraitement.index();
-		final String description = "Rapport d'exécution du job de réinitialisation des barèmes double-gain. Date de traitement = "
-				+ results.dateTraitement + ".";
+		final String description = String.format("Rapport d'exécution du job de réinitialisation des barèmes double-gain. Date de traitement = %s.", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -545,7 +520,7 @@ public class RapportServiceImpl implements RapportService {
 
 	public ListeTachesEnIsntanceParOIDRapport generateRapport(final ListeTachesEnIsntanceParOID results, final StatusManager status) {
 		final String nom = "RapportListeTacheEnInstanceParOID" + results.dateTraitement.index();
-		final String description = "Rapport de la liste des Taches en instance par OID." + ". Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport de la liste des Taches en instance par OID.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ListeTachesEnIsntanceParOIDRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeTachesEnIsntanceParOIDRapport>() {
@@ -565,8 +540,7 @@ public class RapportServiceImpl implements RapportService {
 
 		final RegDate dateTraitement = RegDate.get();
 		final String nom = "RapportExclCtbsEnvoi" + dateTraitement.index();
-		final String description = "Rapport d'exécution du job d'exclusion de contribuables de l'envoi automatique de DIs. Date de traitement = "
-				+ dateTraitement + ".";
+		final String description = String.format("Rapport d'exécution du job d'exclusion de contribuables de l'envoi automatique de DIs. Date de traitement = %s.", RegDateHelper.dateToDisplayString(dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -590,8 +564,7 @@ public class RapportServiceImpl implements RapportService {
 
 		final RegDate dateTraitement = RegDate.get();
 		final String nom = "RapportDemDelaiColl" + dateTraitement.index();
-		final String description = "Rapport d'exécution du traitement d'une demande de délais collective. Date de traitement = "
-				+ dateTraitement + ".";
+		final String description = String.format("Rapport d'exécution du traitement d'une demande de délais collective. Date de traitement = %s.", RegDateHelper.dateToDisplayString(dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -611,8 +584,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportRapprochementCtbs";
-		final String description = "Rapport d'exécution du job qui fait le rappochement entre les contribuables et les propriétaires fonciers"
-				+ ". Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport d'exécution du job qui fait le rappochement entre les contribuables et les propriétaires fonciers. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -632,8 +604,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 	       final String nom = "RapportResSansForVD";
-	       final String description = "Rapport d'exécution du job qui liste les contribuables résidents suisses ou titulaires d'un permis C sans for vaudois"
-	               + ". Date de traitement = " + results.getDateTraitement();
+	       final String description = String.format("Rapport d'exécution du job qui liste les contribuables résidents suisses ou titulaires d'un permis C sans for vaudois. Date de traitement = %s",
+	                                                RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 	       final Date dateGeneration = DateHelper.getCurrentDate();
 
 	       try {
@@ -654,8 +626,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportCorrectionFlagHabitant";
-		final String description = "Rapport d'exécution du job qui corrige les flags 'habitant' sur les personnes physiques en fonction de leur for principal actif"
-				+ ". Date de traitement = " + RegDate.get();
+		final String description = String.format("Rapport d'exécution du job qui corrige les flags 'habitant' sur les personnes physiques en fonction de leur for principal actif. Date de traitement = %s",
+				                                 RegDateHelper.dateToDisplayString(RegDate.get()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -677,7 +649,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportStatsEvenements";
-		final String description = "Statistiques des événements reçus par Unireg. Date de traitement = " + RegDate.get();
+		final String description = String.format("Statistiques des événements reçus par Unireg. Date de traitement = %s", RegDateHelper.dateToDisplayString(RegDate.get()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -698,7 +670,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportMouvementsDossiersMasse";
-		final String description = "Rapport d'exécution du job de détermination des mouvements de dossiers en masse. Date de traitement = " + results.dateTraitement;
+		final String description = String.format("Rapport d'exécution du job de détermination des mouvements de dossiers en masse. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -719,7 +691,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportLrEchues";
-		final String description = "Rapport d'exécution du job de détermination LR échues. Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport d'exécution du job de détermination LR échues. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -740,7 +712,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 			final String nom = "RapportRelanceIdentification";
-			final String description = "Rapport d'exécution du job de relance de l'indentification des contribuables. Date de traitement = " + results.getDateTraitement();
+			final String description = String.format("Rapport d'exécution du job de relance de l'indentification des contribuables. Date de traitement = %s",
+			                                         RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			final Date dateGeneration = DateHelper.getCurrentDate();
 
 			try {
@@ -761,7 +734,7 @@ public class RapportServiceImpl implements RapportService {
 			final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 			final String nom = "RapportRelanceEvenementExterne";
-			final String description = "Rapport d'exécution du job de relance des evenements externes. Date de traitement = " + results.getDateTraitement();
+			final String description = String.format("Rapport d'exécution du job de relance des evenements externes. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			final Date dateGeneration = DateHelper.getCurrentDate();
 
 			try {
@@ -781,7 +754,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportResolutionAdresse";
-		final String description = "Rapport d'exécution du job de résolution des adresses. Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport d'exécution du job de résolution des adresses. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -802,7 +775,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportComparerSituationFamille";
-		final String description = "Rapport d'exécution du job de comparaison des situations de famille. Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport d'exécution du job de comparaison des situations de famille. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -822,7 +795,8 @@ public class RapportServiceImpl implements RapportService {
 	final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportListeNote";
-		final String description = "Rapport d'exécution du job qui produit la liste des contribuable ayant reçu une note. Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport d'exécution du job qui produit la liste des contribuable ayant reçu une note. Date de traitement = %s",
+		                                         RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -842,7 +816,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "MigrationCoquillesPM";
-		final String description = "Rapport de la migration des coquilles des personnes morales. Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport de la migration des coquilles des personnes morales. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -862,7 +836,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportComparerForFiscalEtCommune";
-		final String description = "Rapport d'exécution du job de comparaison du dernier For fiscal et de la commune de résidence. Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport d'exécution du job de comparaison du dernier For fiscal et de la commune de résidence. Date de traitement = %s",
+		                                         RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -882,7 +857,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportCorrectionEtatDeclaration";
-		final String description = "Rapport d'exécution du job de suppression des doublons des états des déclarations. Date de traitement = " + results.getDateTraitement();
+		final String description = String.format("Rapport d'exécution du job de suppression des doublons des états des déclarations. Date de traitement = %s",
+		                                         RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {

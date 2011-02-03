@@ -124,11 +124,8 @@
 	</bean>
 
 	<bean id="rapportService" class="ch.vd.uniregctb.rapport.RapportServiceImpl">
-		<property name="adresseService" ref="adresseService" />
 		<property name="docService" ref="docService" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="tiersService" ref="tiersService" />
 	</bean>
 	
 	<!--  Paramètres -->
@@ -190,7 +187,7 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
-			<property name="editiqueHelper" ref="editiqueHelper" />
+		<property name="editiqueHelper" ref="editiqueHelper" />
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 	
