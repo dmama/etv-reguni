@@ -70,8 +70,8 @@ public class CoupleRecapPickerFilter implements TiersPickerFilterWithPostFilteri
 		final boolean valide;
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			// seulement les non-habitants ouverts et indéterminés doivent être affichés
-			valide = (!pp.isHabitantVD() && pp.getSexe() == null && pp.getSituationFamilleActive() == null && pp.getForFiscalPrincipalAt(null) != null);
+			// seulement les non-habitants (en fait, UNIREG-3264, il s'agit des inconnus CdH) ouverts et indéterminés doivent être affichés
+			valide = (!pp.isConnuAuCivil() && pp.getSexe() == null && pp.getSituationFamilleActive() == null && pp.getForFiscalPrincipalAt(null) != null);
 		}
 		else if (tiers instanceof MenageCommun) {
 			final MenageCommun menage = (MenageCommun) tiers;
