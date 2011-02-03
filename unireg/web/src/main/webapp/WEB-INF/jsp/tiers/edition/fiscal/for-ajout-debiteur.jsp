@@ -97,7 +97,7 @@
 					<form:hidden path="numeroForFiscalCommuneHorsCanton" />			
 					<script>
 						$(function() {
-							autocomplete_infra('communeVD', '#libCommuneHorsCanton', function(item) {
+							autocomplete_infra('communeHC', '#libCommuneHorsCanton', function(item) {
 								if (item) {
 									$('#numeroForFiscalCommuneHorsCanton').val(item.id1);
 								}
