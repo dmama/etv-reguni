@@ -475,6 +475,22 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
+	protected Contribuable createDepartHorsSuisseEtArriveeHorsSuisseDansLAnneeMaisAvecMotifArriveeHorsCantonSourcierPur(long ctbId, RegDate dateDepartHS, RegDate dateArriveeHS) throws Exception {
+		Contribuable ctb = createContribuableSansFor(ctbId);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.INDETERMINE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne).setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, dateArriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockPays.Danemark).setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, dateArriveeHS, MotifFor.ARRIVEE_HC, MockCommune.Lausanne).setModeImposition(ModeImposition.SOURCE);
+		return ctb;
+	}
+
+	protected Contribuable createArriveeHorsSuisseEtDepartHorsSuisseDansLAnneeMaisAvecMotifDepartHorsCantonSourcierPur(long ctbId, RegDate dateArriveeHS, RegDate dateDepartHS) throws Exception {
+		Contribuable ctb = createContribuableSansFor(ctbId);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.INDETERMINE, dateArriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark).setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, dateArriveeHS, MotifFor.ARRIVEE_HS, dateDepartHS, MotifFor.DEPART_HC, MockCommune.Lausanne).setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HC, MockPays.Danemark).setModeImposition(ModeImposition.SOURCE);
+		return ctb;
+	}
+
 	/**
 	 * Cas réel du contribuable n°16109718. Il s'agit d'une arrivée de hors-Suisse normale, mais avec un motif de fermeture du for principal 'Déménagement'.
 	 */

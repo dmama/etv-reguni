@@ -45,6 +45,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 	/**
 	 * Visibilité package seulement
+	 *
 	 * @param validationService le service de validation
 	 */
 	static void setValidationService(ValidationService validationService) {
@@ -212,7 +213,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 		while (iterPrn.hasNext()) {
 			final ForFiscalPrincipal ffp = iterPrn.next();
 			if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getNumeroOfsAutoriteFiscale() != noOfsCommuneVaudoise) {
-				final ForFiscalPrincipal remplacement = new ForFiscalPrincipal(ffp.getDateDebut(), ffp.getDateFin(), -1, TypeAutoriteFiscale.COMMUNE_HC, ffp.getMotifRattachement(), ffp.getModeImposition());
+				final ForFiscalPrincipal remplacement =
+						new ForFiscalPrincipal(ffp.getDateDebut(), ffp.getDateFin(), -1, TypeAutoriteFiscale.COMMUNE_HC, ffp.getMotifRattachement(), ffp.getModeImposition());
 				iterPrn.set(remplacement);
 			}
 		}
@@ -252,7 +254,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 				final ValidationResults vr = validationService.validate(ctb);
 				if (vr.hasErrors()) {
 					// si le contribuable ne valide pas, on est un peu plus explicite
-					throw new AssujettissementException("Une exception a été levée sur le contribuable n°" + ctb.getNumero() + " lors du calcul des assujettissements, mais en fait le contribuable ne valide pas: " + vr.toString(), e);
+					throw new AssujettissementException("Une exception a été levée sur le contribuable n°" + ctb.getNumero() +
+							" lors du calcul des assujettissements, mais en fait le contribuable ne valide pas: " + vr.toString(), e);
 				}
 			}
 
@@ -297,7 +300,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 				forsFictifs.add(forFictif);
 			}
 		}
-		
+
 		if (forsFictifs != null) {
 			forsPrincipaux.addAll(forsFictifs);
 			Collections.sort(forsPrincipaux, new DateRangeComparator<ForFiscalPrincipal>());
@@ -412,26 +415,24 @@ public abstract class Assujettissement implements CollatableDateRange {
 		while (iter.hasNext()) {
 			final Triplet<ForFiscalPrincipal> triplet = iter.next();
 
-			// on détermine les fors principaux qui précédent et suivent immédiatement
-			final ForFiscalPrincipal current = triplet.current;
-			final ForFiscalPrincipal previous = (triplet.previous != null && DateRangeHelper.isCollatable(triplet.previous, current) ? triplet.previous : null);
-			final ForFiscalPrincipal next = (triplet.next != null && DateRangeHelper.isCollatable(current, triplet.next) ? triplet.next : null);
+			// on détermine les fors principaux qui précèdent et suivent immédiatement
+			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
 
 			// on détecte une éventuelle date de fractionnement à l'ouverture
-			if (isFractionOuverture(current, previous)) {
-				fraction = current.getDateDebut();
-				motifFraction = current.getMotifOuverture();
+			if (isFractionOuverture(forPrincipal)) {
+				fraction = forPrincipal.current.getDateDebut();
+				motifFraction = forPrincipal.current.getMotifOuverture();
 
-				if (next != null && isArriveeHCApresDepartHSMemeAnnee(current)) {
+				if (forPrincipal.next != null && isArriveeHCApresDepartHSMemeAnnee(forPrincipal.current) && !roleSourcierPur(forPrincipal.current)) {
 					// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
-					motifFraction = next.getMotifOuverture();
+					motifFraction = forPrincipal.next.getMotifOuverture();
 				}
 
 				fractionnements.add(new Fraction(fraction, motifFraction));
 			}
 
 			// on détermine l'assujettissement pour le for principal courant
-			final Data a = determine(current, previous, next);
+			final Data a = determine(forPrincipal);
 			if (a != null) {
 
 				if (fraction != null && fraction.isAfterOrEqual(a.debut)) {
@@ -443,9 +444,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 			}
 
 			// on détecte une éventuelle date de fractionnement à la fermeture
-			if (isFractionFermeture(current, next)) {
-				fraction = (current.getDateFin() == null ? null : current.getDateFin().getOneDayAfter());
-				motifFraction = current.getMotifFermeture();
+			if (isFractionFermeture(forPrincipal)) {
+				fraction = (forPrincipal.current.getDateFin() == null ? null : forPrincipal.current.getDateFin().getOneDayAfter());
+				motifFraction = forPrincipal.current.getMotifFermeture();
 
 				fractionnements.add(new Fraction(fraction, motifFraction));
 			}
@@ -695,9 +696,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 			Assert.isTrue(left.getDateFin().getOneDayAfter() == right.getDateDebut());
 
 			//noinspection SimplifiableIfStatement
-			if (isArriveeHCApresDepartHSMemeAnnee(left)) {
+			if (isArriveeHCApresDepartHSMemeAnnee(left) && !roleSourcierPur(left)) {
 				// dans le cas d'un départ HS et d'arrivée HC dans le même année (donc avec un seul for fiscal HS avec
 				// ces deux motifs), il ne faut pas que l'arrivée HC fractionne l'assujettissement.
+				// [UNIREG-3261] sauf si le for courant possède un mode d'imposition source, dans ce cas, la date de fin de l'assujettissement est quand même fractionné
 				fraction = false;
 			}
 			else {
@@ -718,23 +720,67 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return fraction;
 	}
 
-	private static boolean isArriveeHCApresDepartHSMemeAnnee(ForFiscalPrincipal left) {
-		return left.getDateDebut().year() == left.getDateFin().year() && left.getMotifOuverture() == MotifFor.DEPART_HS && left.getMotifFermeture() == MotifFor.ARRIVEE_HC;
+	/**
+	 * [UNIREG-3261] Détermine si le for fiscal se ferme avec un motif arrivée hors-canton la même année qu'il s'est ouvert avec un départ hors-Suisse.
+	 *
+	 * @param current le for fiscal principal à tester
+	 * @return <b>vrai</b> si le for fiscal se ferme avec un motif arrivée hors-canton la même année qu'il s'est ouvert avec un départ hors-Suisse; <b>faux</b> autrement.
+	 */
+	private static boolean isArriveeHCApresDepartHSMemeAnnee(ForFiscalPrincipal current) {
+		return current.getDateDebut().year() == current.getDateFin().year() && current.getMotifOuverture() == MotifFor.DEPART_HS && current.getMotifFermeture() == MotifFor.ARRIVEE_HC;
 	}
 
+//	/**
+//	 * [UNIREG-3261] Détermine si le for fiscal se ferme avec un motif arrivée hors-canton la même année qu'il s'est ouvert avec un départ hors-Suisse.
+//	 *
+//	 * @param current le for fiscal principal à tester
+//	 * @param next    le for fiscal principal qui suit immédiatement; ou <b>null</b> s'il n'y en a pas
+//	 * @return <b>vrai</b> si le for fiscal se ferme avec un motif arrivée hors-canton la même année qu'il s'est ouvert avec un départ hors-Suisse; <b>faux</b> autrement.
+//	 */
+//	private static boolean isArriveeHCApresDepartHSMemeAnnee(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+//		if (current.getDateDebut().year() != current.getDateFin().year()) {
+//			return false;
+//		}
+//		if (next == null) {
+//			// pas de for fiscal immédiatement suivant, on se rabat sur le motif de fermeture
+//			return current.getMotifOuverture() == MotifFor.DEPART_HS && current.getMotifFermeture() == MotifFor.ARRIVEE_HC;
+//		}
+//		else {
+//			// autant que possible, on se base sur les types d'autorités fiscales pour déterminer l'arrivée de HC plutôt que les motifs (qui sont souvent faux)
+//			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+//		}
+//	}
+
 	/**
-	 * [UNIREG-2759] Détermine si le for fiscal se ferme avec un départ hors-canton la même année qu'une arrivée de hors-Suisse
+	 * [UNIREG-2759] Détermine si le for fiscal se ferme avec un départ hors-canton la même année qu'il s'est ouvert avec une arrivée de hors-Suisse
 	 *
-	 * @param ffp une for fiscal principal
+	 * @param current le for fiscal principal à tester
+	 * @param next    le for fiscal principal qui suit immédiatement; ou <b>null</b> s'il n'y en a pas
 	 * @return <b>vrai</b> si le for fiscal se ferme avec un départ hors-canton la même année qu'une arrivée de hors-Suisse; <b>faux</b> autrement.
 	 */
-	private static boolean isDepartHCApresArriveHSMemeAnnee(ForFiscalPrincipal ffp) {
-		if (ffp == null) {
+	private static boolean isDepartHCApresArriveHSMemeAnnee(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+
+		if (current == null) {
 			return false;
 		}
-		final RegDate fin = ffp.getDateFin();
-		final MotifFor motifFin = ffp.getMotifFermeture();
-		return fin != null && motifFin == MotifFor.DEPART_HC && fin.year() == ffp.getDateDebut().year();
+
+		final RegDate fin = current.getDateFin();
+		if (fin == null) {
+			return false;
+		}
+
+		if (fin.year() != current.getDateDebut().year()) {
+			return false;
+		}
+
+		if (next != null) {
+			// autant que possible, on se base sur les types d'autorités fiscales pour déterminer le départ HC plutôt que les motifs (qui sont souvent faux)
+			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
+		}
+		else {
+			// pas de for fiscal immédiatement suivant, on se rabat sur le motif de fermeture
+			return current.getMotifFermeture() == MotifFor.DEPART_HC;
+		}
 	}
 
 	/**
@@ -755,7 +801,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return motifDetecte && typeAutoriteOk;
 	}
 
-	private static boolean isFractionOuverture(ForFiscalPrincipal current, ForFiscalPrincipal previous) {
+	private static boolean isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
+
+		final ForFiscalPrincipal previous = forPrincipal.previous;
+		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal next = forPrincipal.next;
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 		final ModeImposition modeImposition = current.getModeImposition();
@@ -769,7 +819,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsSuisse(previous, current) && isDepartDepuisOuArriveeVersVaud(current, previous) &&
-				(!isDepartHCApresArriveHSMemeAnnee(current) || modeImposition == ModeImposition.SOURCE)) {
+				(!isDepartHCApresArriveHSMemeAnnee(current, next) || modeImposition == ModeImposition.SOURCE)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
@@ -794,7 +844,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return fraction;
 	}
 
-	private static boolean isFractionFermeture(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+	private static boolean isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
+
+		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal next = forPrincipal.next;
 
 		final MotifFor motifFermeture = current.getMotifFermeture();
 		final ModeImposition modeImposition = current.getModeImposition();
@@ -808,7 +861,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsSuisse(current, next) && isDepartDepuisOuArriveeVersVaud(current, next) &&
-				(!isDepartHCApresArriveHSMemeAnnee(next) || nextModeImposition == ModeImposition.SOURCE)) {
+				(!isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext) || nextModeImposition == ModeImposition.SOURCE)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
@@ -836,14 +889,15 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine la date de début d'un assujettissement induit par un for fiscal principal.
 	 *
-	 * @param current  le for fiscal principal à la source de l'assujettissement
-	 * @param previous le for fiscal principal immédiatement précédant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de début d'assujettissement
 	 * @return la date de début de l'assujettissement
 	 */
-	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal previous) {
+	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipalContext forPrincipal) {
 
 		final RegDate debut;
-		if (isFractionOuverture(current, previous) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+		final ForFiscalPrincipal current = forPrincipal.current;
+
+		if (isFractionOuverture(forPrincipal) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			debut = current.getDateDebut();
 		}
 		else {
@@ -857,16 +911,16 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine la date de fin d'un assujettissement induit par un for fiscal principal.
 	 *
-	 * @param current le for fiscal principal à la source de l'assujettissement
-	 * @param next    le for fiscal principal immédiatement suivant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de fin d'assujettissement
 	 * @return la date de fin de l'assujettissement
 	 */
-	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipalContext forPrincipal) {
 
+		final ForFiscalPrincipal current = forPrincipal.current;
 		final RegDate fin = current.getDateFin();
 
 		final RegDate afin;
-		if (fin == null || isFractionFermeture(current, next) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+		if (fin == null || isFractionFermeture(forPrincipal) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			afin = fin;
 		}
 		else {
@@ -880,17 +934,20 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine la date de début de la période de non-assujettissement correspondant à un for fiscal principal (période durant laquelle un for secondaire pourrait provoquer un assujettissement).
 	 *
-	 * @param current  le for fiscal principal courant
-	 * @param previous le for fiscal principal immédiatement précédant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de début de non-assujettissement
 	 * @return la date de fin de la période de non-assujettissement
 	 */
-	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal previous) {
+	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipalContext forPrincipal) {
+
+		final ForFiscalPrincipal previous = forPrincipal.previous;
+		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal next = forPrincipal.next;
 
 		final RegDate debut = current.getDateDebut();
 
 		final RegDate adebut;
 		if (isDepartOuArriveeHorsSuisse(previous, current)) {
-			if (isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current)) {
+			if (isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current, next)) {
 				// fin de l'assujettissement en cours de période fiscale (fractionnement)
 				adebut = debut;
 			}
@@ -920,11 +977,13 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine la date de fin de la période de non-assujettissement correspondant à un for fiscal principal (période durant laquelle un for secondaire pourrait provoquer un assujettissement).
 	 *
-	 * @param current le for fiscal principal courant
-	 * @param next    le for fiscal principal immédiatement suivant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de fin de non-assujettissement
 	 * @return la date de fin de la période de non-assujettissement
 	 */
-	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipalContext forPrincipal) {
+
+		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal next = forPrincipal.next;
 
 		final RegDate fin = current.getDateFin();
 		final MotifFor motifFermeture = current.getMotifFermeture();
@@ -937,7 +996,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			afin = fin;
 		}
 		else if (isDepartOuArriveeHorsSuisse(current, next)) {
-			if (isDepartDepuisOuArriveeVersVaud(current, next) && !isDepartHCApresArriveHSMemeAnnee(next)) {
+			if (isDepartDepuisOuArriveeVersVaud(current, next) && !isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext)) {
 				// fin de l'assujettissement en cours de période fiscale (fractionnement)
 				afin = fin;
 			}
@@ -951,9 +1010,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement.
 			afin = fin;
 		}
-		else if (isArriveeHCApresDepartHSMemeAnnee(current)) {
+		else if (isArriveeHCApresDepartHSMemeAnnee(current) && !roleSourcierPur(current)) {
 			// cas limite du ctb qui part HS et arrive de HC dans la même année -> la durée précise de la période hors-Suisse n'est pas connue et on prend la solution
 			// la plus avantageuse pour l'ACI : arrivée de HS au 31 décembre de l'année précédente.
+			// [UNIREG-3261] sauf si le for courant possède un mode d'imposition source, dans ce cas l'assujettissement est fractionné à la date d'arrivée
 			afin = getDernier31Decembre(fin);
 		}
 		else if (next == null) {
@@ -1161,21 +1221,20 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine les données d'assujettissement pour un for fiscal principal.
 	 *
-	 * @param current  le for fiscal dont on veut calculer l'assujettissement
-	 * @param previous le for fiscal qui précède immédiatement
-	 * @param next     le for fiscal qui suit immédiatement
+	 * @param forPrincipal le for fiscal dont on veut calculer l'assujettissement (plus ceux qui précèdent et suivent immédiatement)
 	 * @return les données d'assujettissement, ou <b>null</b> si le for principal n'induit aucun assujettissement
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static Data determine(ForFiscalPrincipal current, ForFiscalPrincipal previous, ForFiscalPrincipal next) throws AssujettissementException {
+	private static Data determine(ForFiscalPrincipalContext forPrincipal) throws AssujettissementException {
 
 		final Data data;
+		final ForFiscalPrincipal current = forPrincipal.current;
 
 		switch (current.getTypeAutoriteFiscale()) {
 		case COMMUNE_OU_FRACTION_VD: {
 
-			final RegDate adebut = determineDateDebutAssujettissement(current, previous);
-			final RegDate afin = determineDateFinAssujettissement(current, next);
+			final RegDate adebut = determineDateDebutAssujettissement(forPrincipal);
+			final RegDate afin = determineDateFinAssujettissement(forPrincipal);
 
 			if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 				final MotifRattachement motifRattachement = current.getMotifRattachement();
@@ -1204,8 +1263,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 			if (isSource(current.getModeImposition())) {
 
 				final Type type = getAType(current.getModeImposition());
-				final RegDate adebut = determineDateDebutAssujettissement(current, previous);
-				final RegDate afin = determineDateFinAssujettissement(current, next);
+				final RegDate adebut = determineDateDebutAssujettissement(forPrincipal);
+				final RegDate afin = determineDateFinAssujettissement(forPrincipal);
 
 				if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), type, current.getTypeAutoriteFiscale());
@@ -1216,8 +1275,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 				}
 			}
 			else {
-				final RegDate adebut = determineDateDebutNonAssujettissement(current, previous);
-				final RegDate afin = determineDateFinNonAssujettissement(current, next);
+				final RegDate adebut = determineDateDebutNonAssujettissement(forPrincipal);
+				final RegDate afin = determineDateFinNonAssujettissement(forPrincipal);
 
 				if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), Type.NonAssujetti, current.getTypeAutoriteFiscale());
@@ -1427,6 +1486,31 @@ public abstract class Assujettissement implements CollatableDateRange {
 				assujettissement.motifFin = null;
 			}
 			return assujettissement;
+		}
+	}
+
+	/**
+	 * Un for fiscal principal et sont context, c'est-à-dire les fors fiscaux principaux qui précèdent et qui suivent immédiatement.
+	 */
+	private static class ForFiscalPrincipalContext {
+
+		public final ForFiscalPrincipal previousprevious;
+		public final ForFiscalPrincipal previous;
+		public final ForFiscalPrincipal current;
+		public final ForFiscalPrincipal next;
+		public final ForFiscalPrincipal nextnext;
+
+		/**
+		 * Construit le contact d'un for fiscal principal à partir du triplet de fors fiscaux (qui ne se touchent pas forcément).
+		 *
+		 * @param triplet le triplet de fors fiscaux initials
+		 */
+		public ForFiscalPrincipalContext(Triplet<ForFiscalPrincipal> triplet) {
+			current = triplet.current;
+			previous = (triplet.previous != null && DateRangeHelper.isCollatable(triplet.previous, current) ? triplet.previous : null);
+			previousprevious = (previous != null && triplet.previousprevious != null && DateRangeHelper.isCollatable(triplet.previousprevious, previous) ? triplet.previousprevious : null);
+			next = (triplet.next != null && DateRangeHelper.isCollatable(current, triplet.next) ? triplet.next : null);
+			nextnext = (next != null && triplet.nextnext != null && DateRangeHelper.isCollatable(next, triplet.nextnext) ? triplet.nextnext : null);
 		}
 	}
 

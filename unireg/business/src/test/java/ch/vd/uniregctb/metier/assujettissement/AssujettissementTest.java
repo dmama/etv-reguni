@@ -1517,12 +1517,16 @@ public class AssujettissementTest extends MetierTest {
 	 * sa présence sur sol vaudois (situation similaire mais avec comportement différent du test testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeAvecImmeuble parce que le contribuable est
 	 * sourcier pur).
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10546107&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(description = "Cas du ctb n°10546107. Vérifie qu'un contribuable sourcier pur qui arrive de hors-Suisse et part hors-canton la même année est bien assujetti comme sourcier " +
+			"pur pendant toute la durée de sa présence sur sol vaudois (situation similaire mais avec comportement différent du test " +
+			"testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeAvecImmeuble parce que le contribuable est sourcier pur)")
 	@Test
 	public void testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeSourcierPur() throws Exception {
 
 		final RegDate dateArriveeHS = date(2010, 9, 6);
 		final RegDate dateDepartHC = date(2010, 10, 18);
-		final Contribuable ctb = createArriveeHorsSuisseEtDepartHCSourcier(10000039L, dateArriveeHS, dateDepartHC);
+		final Contribuable ctb = createArriveeHorsSuisseEtDepartHCSourcier(10546107L, dateArriveeHS, dateDepartHC);
 
 		// 2009
 		{
@@ -1553,6 +1557,100 @@ public class AssujettissementTest extends MetierTest {
 			assertEquals(1, list.size());
 			// sourcier pure hors-canton toute l'année
 			assertSourcierPur(date(2011, 1, 1), date(2011, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		}
+	}
+
+	/**
+	 * [UNIREG-3261] Cas du ctb n°10558415. En cas de départ et d'arrivée hors-Suisse la même année avec un motif d'arrivée faux (hors-canton) d'un sourcier pur. L'algorithme doit détecter
+	 * l'erreur dans le motif et quand même fractionner l'assujettissement à la date d'arrivée. Autrement, les périodes d'assujettissement source se chevauchent.
+	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10558415&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(description = "Cas du ctb n°10558415. En cas de départ et d'arrivée hors-Suisse la même année avec un motif d'arrivée faux (hors-canton) d'un sourcier pur. " +
+			"L'algorithme doit détecter l'erreur dans le motif et quand même fractionner l'assujettissement à la date d'arrivée.")
+	@Test
+	public void testDetermineDepartHorsSuisseEtArriveeHorsSuisseDansLAnneeMaisAvecMotifArriveHorsCantonSourcierPur() throws Exception {
+
+		final RegDate dateDepartHS = date(2009, 3, 11);
+		final RegDate dateArriveeHS = date(2009, 9, 1);
+		final Contribuable ctb = createDepartHorsSuisseEtArriveeHorsSuisseDansLAnneeMaisAvecMotifArriveeHorsCantonSourcierPur(10558415L, dateDepartHS, dateArriveeHS);
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pur VD toute l'année
+			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			assertNotNull(list);
+			assertEquals(3, list.size());
+			// sourcier pur VD jusqu'à son départ HS
+			assertSourcierPur(date(2009, 1, 1), dateDepartHS, null, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			// sourcier pur HS durant son séjour HS
+			assertSourcierPur(dateDepartHS.getOneDayAfter(), dateArriveeHS.getOneDayBefore(), MotifFor.DEPART_HS, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			// et de sourcier pur VD dès son retour
+			assertSourcierPur(dateArriveeHS, date(2009, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(2));
+		}
+
+		// 2010
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2010);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pur VD toute l'année
+			assertSourcierPur(date(2010, 1, 1), date(2010, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+	}
+
+	/**
+	 * [UNIREG-3261] En cas d'arrivée et de départ hors-Suisse la même année avec un motif de départ faux (hors-canton) d'un sourcier pur. L'algorithme doit détecter
+	 * l'erreur dans le motif et quand même fractionner l'assujettissement à la date de départ. Autrement, les périodes d'assujettissement source se chevauchent (cas inverse du test
+	 * testDetermineDepartHorsSuisseEtArriveeHorsSuisseDansLAnneeMaisAvecMotifArriveHorsCantonSourcierPur).
+	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10558415&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(description = "En cas d'arrivée et de départ hors-Suisse la même année avec un motif de départ faux (hors-canton) d'un sourcier pur. L'algorithme doit détecter " +
+			"l'erreur dans le motif et quand même fractionner l'assujettissement à la date de départ. Autrement, les périodes d'assujettissement source se chevauchent (cas inverse du test " +
+			"testDetermineDepartHorsSuisseEtArriveeHorsSuisseDansLAnneeMaisAvecMotifArriveHorsCantonSourcierPur)")
+	@Test
+	public void testDetermineArriveeHorsSuisseEtDepartHorsSuisseDansLAnneeMaisAvecMotifDepartHorsCantonSourcierPur() throws Exception {
+
+		final RegDate dateArriveeHS = date(2010, 9, 6);
+		final RegDate dateDepartHS = date(2010, 10, 18);
+		final Contribuable ctb = createArriveeHorsSuisseEtDepartHorsSuisseDansLAnneeMaisAvecMotifDepartHorsCantonSourcierPur(10558415L, dateArriveeHS, dateDepartHS);
+
+		// 2009
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pur HS toute l'année
+			assertSourcierPur(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+		}
+
+		// 2010
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2010);
+			assertNotNull(list);
+			assertEquals(3, list.size());
+			// sourcier pur HS jusqu'à l'arrivée
+			assertSourcierPur(date(2010, 1, 1), dateArriveeHS.getOneDayBefore(), null, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			// sourcier pur VD le temps du passage en Suisse
+			assertSourcierPur(dateArriveeHS, dateDepartHS, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			// sourcier pur HS dès le départ
+			assertSourcierPur(dateDepartHS.getOneDayAfter(), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.PAYS_HS, list.get(2));
+		}
+
+		// 2011
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2011);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pur HS toute l'année
+			assertSourcierPur(date(2011, 1, 1), date(2011, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
 		}
 	}
 
