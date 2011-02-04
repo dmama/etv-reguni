@@ -24,20 +24,6 @@ public class EchoirDIsResults extends JobResults<Long, EchoirDIsResults> {
 		}
 	}
 
-	public enum IgnoreType {
-		DELAI_NON_ECHU("le délai de retour n'est pas échu");
-
-		private final String description;
-
-		private IgnoreType(String description) {
-			this.description = description;
-		}
-
-		public String description() {
-			return description;
-		}
-	}
-
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 		public final long diId;
@@ -54,31 +40,19 @@ public class EchoirDIsResults extends JobResults<Long, EchoirDIsResults> {
 		}
 	}
 
-	public static class Ignore extends Info {
-		public final IgnoreType raison;
-		public final long diId;
-
-		public Ignore(long noCtb, Integer officeImpotID, long diId, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
-			this.raison = raison;
-			this.diId = diId;
-		}
-
-		@Override
-		public String getDescriptionRaison() {
-			return raison.description;
-		}
-	}
-
 	public static class Echue {
 		public final long diId;
 		public final long ctbId;
 		public final Integer officeImpotID;
+		public final RegDate dateDebut;
+		public final RegDate dateFin;
 
-		public Echue(long ctbId, Integer officeImpotID, long diId) {
+		public Echue(long ctbId, Integer officeImpotID, long diId, RegDate dateDebut, RegDate dateFin) {
 			this.diId = diId;
 			this.ctbId = ctbId;
 			this.officeImpotID = officeImpotID;
+			this.dateDebut = dateDebut;
+			this.dateFin = dateFin;
 		}
 	}
 
@@ -88,7 +62,6 @@ public class EchoirDIsResults extends JobResults<Long, EchoirDIsResults> {
 	// Données de processing
 	public int nbDIsTotal;
 	public List<Echue> disEchues = new ArrayList<Echue>();
-	public List<Ignore> disIgnorees = new ArrayList<Ignore>();
 	public List<Erreur> disEnErrors = new ArrayList<Erreur>();
 
 	public boolean interrompu;
@@ -100,14 +73,13 @@ public class EchoirDIsResults extends JobResults<Long, EchoirDIsResults> {
 	public void addDeclarationTraitee(DeclarationImpotOrdinaire di) {
 		++nbDIsTotal;
 		final Tiers tiers = di.getTiers();
-		disEchues.add(new Echue(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId()));
+		disEchues.add(new Echue(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), di.getDateDebut(), di.getDateFin()));
 	}
 
 	public void addErrorEtatIncoherent(DeclarationImpotOrdinaire di, String message) {
 		++nbDIsTotal;
 		final Tiers tiers = di.getTiers();
-		disEnErrors
-				.add(new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), ErreurType.ETAT_DECLARATION_INCOHERENT, message));
+		disEnErrors.add(new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), ErreurType.ETAT_DECLARATION_INCOHERENT, message));
 	}
 
 	public void addErrorException(Long idDI, Exception e) {
@@ -115,16 +87,9 @@ public class EchoirDIsResults extends JobResults<Long, EchoirDIsResults> {
 		disEnErrors.add(new Erreur(0, null, idDI, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
-	public void addIgnoreDelaiNonEchu(DeclarationImpotOrdinaire di, String message) {
-		++nbDIsTotal;
-		final Tiers tiers = di.getTiers();
-		disIgnorees.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), IgnoreType.DELAI_NON_ECHU, message));
-	}
-
 	public void addAll(EchoirDIsResults rapport) {
 		nbDIsTotal += rapport.nbDIsTotal;
 		disEchues.addAll(rapport.disEchues);
-		disIgnorees.addAll(rapport.disIgnorees);
 		disEnErrors.addAll(rapport.disEnErrors);
 	}
 }

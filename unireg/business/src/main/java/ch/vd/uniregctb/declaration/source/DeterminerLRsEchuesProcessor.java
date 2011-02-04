@@ -33,7 +33,6 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
  * Processeur chargé de la détermination des LR échues
@@ -71,6 +70,8 @@ public class DeterminerLRsEchuesProcessor {
 		}
 		final StatusManager s = status;
 
+		s.setMessage("Récupération des listes récapitulatives...");
+
 		final DeterminerLRsEchuesResults rapportFinal = new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService);
 		final DateRange pf = new DateRangeHelper.Range(RegDate.get(periodeFiscale, 1, 1), RegDate.get(periodeFiscale, 12, 31));
 
@@ -82,6 +83,9 @@ public class DeterminerLRsEchuesProcessor {
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults>() {
 			@Override
 			public boolean doInTransaction(List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> batch, DeterminerLRsEchuesResults rapport) throws Exception {
+
+				s.setMessage(String.format("Débiteurs analysés : %d/%d...", rapportFinal.getNbDebiteursAnalyses(), list.size()), percent);
+
 				for (DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue debiteur : batch) {
 					traiteDebiteur(rapport, debiteur, pf, dateTraitement);
 					if (s.interrupted()) {
@@ -99,13 +103,13 @@ public class DeterminerLRsEchuesProcessor {
 
 		if (status.interrupted()) {
 			status.setMessage(String.format(
-					"La génération de la liste des débiteurs ayant au moins une LR échue pour la période fiscale %d au %s a été interrompue. Nombre de débiteurs identifiés au moment de l'interruption : %d",
+					"La génération de la liste des débiteurs ayant au moins une LR échue pour la période fiscale %d au %s a été interrompue. Nombre de listes identifiées au moment de l'interruption : %d",
 					periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement), rapportFinal.lrEchues.size()));
 			rapportFinal.setInterrompu(true);
 		}
 		else {
 			status.setMessage(String.format(
-					"La génération de la liste des débiteurs ayant au moins une LR échue pour la période fiscale %d au %s est terminée. Nombre de débiteurs concernés : %d (%s erreur(s))",
+					"La génération de la liste des débiteurs ayant au moins une LR échue pour la période fiscale %d au %s est terminée. Nombre de listes concernées : %d (%d erreur(s))",
 					periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement), rapportFinal.lrEchues.size(), rapportFinal.erreurs.size()));
 		}
 
@@ -147,6 +151,9 @@ public class DeterminerLRsEchuesProcessor {
 				rapport.addLrEchue(dpi, lr);
 			}
 		}
+
+		// comptabilisation des débiteurs passés en revue
+		rapport.newDebiteurAnalyse();
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -164,8 +171,7 @@ public class DeterminerLRsEchuesProcessor {
 		b.append(" JOIN ETAT_DECLARATION ES ON ES.DECLARATION_ID = LR.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMMEE'");
 		b.append(" JOIN PERIODE_FISCALE PF ON LR.PERIODE_ID = PF.ID AND PF.ANNEE=:pf");
 		b.append(" WHERE LR.DOCUMENT_TYPE='LR' AND LR.ANNULATION_DATE IS NULL");
-		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ER WHERE ER.DECLARATION_ID = LR.ID AND ER.ANNULATION_DATE IS NULL AND ER.TYPE='RETOURNEE')");
-		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION EE WHERE EE.DECLARATION_ID = LR.ID AND EE.ANNULATION_DATE IS NULL AND EE.TYPE='ECHUE')");
+		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = LR.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE'))");
 		b.append(" ORDER BY LR.TIERS_ID, LR.DATE_DEBUT");
 		final String sql = b.toString();
 

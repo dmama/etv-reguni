@@ -174,14 +174,13 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		final boolean reprise = (behavior == Behavior.REPRISE_AUTOMATIQUE);
 		boolean processNextBatch = true;
 
+		action.percent = 0;
 		while (iterator.hasNext() && processNextBatch) {
 
 			final List<E> batch = iterator.next();
 			if (batch == null) {
 				break;
 			}
-
-			action.percent = iterator.getPercent();
 
 			if (statusManager != null && statusManager.interrupted()) {
 				LOGGER.debug("le batch a été interrompu.");
@@ -217,6 +216,8 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 					}
 				}
 			}
+
+			action.percent = iterator.getPercent();
 		}
 
 		return processNextBatch;

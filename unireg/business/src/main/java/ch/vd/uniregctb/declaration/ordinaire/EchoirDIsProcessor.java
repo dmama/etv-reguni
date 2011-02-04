@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -16,12 +17,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -39,17 +39,14 @@ public class EchoirDIsProcessor {
 
 	private static final Logger LOGGER = Logger.getLogger(EchoirDIsProcessor.class);
 
-	private final int BATCH_SIZE = 100;
+	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
 	private final DelaisService delaisService;
 	private final DeclarationImpotService diService;
 	private final PlatformTransactionManager transactionManager;
 
-	private EchoirDIsResults rapport;
-
-	public EchoirDIsProcessor(HibernateTemplate hibernateTemplate, DelaisService delaisService, DeclarationImpotService diService,
-			PlatformTransactionManager transactionManager) {
+	public EchoirDIsProcessor(HibernateTemplate hibernateTemplate, DelaisService delaisService, DeclarationImpotService diService, PlatformTransactionManager transactionManager) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.delaisService = delaisService;
 		this.diService = diService;
@@ -62,14 +59,12 @@ public class EchoirDIsProcessor {
 
 		status.setMessage("Récupération des déclarations d'impôt...");
 
-		final List<Long> dis = retrieveListDIsSommees();
-
-		status.setMessage("Début du traitement des déclarations d'impôt...");
-
 		final EchoirDIsResults rapportFinal = new EchoirDIsResults(dateTraitement);
+		final List<Long> dis = retrieveListDIsSommeesCandidates(dateTraitement);
 
-		final BatchTransactionTemplate<Long, EchoirDIsResults> template = new BatchTransactionTemplate<Long, EchoirDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, hibernateTemplate);
+		status.setMessage("Analyse des déclarations d'impôt...");
+
+		final BatchTransactionTemplate<Long, EchoirDIsResults> template = new BatchTransactionTemplate<Long, EchoirDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, EchoirDIsResults>() {
 
 			@Override
@@ -80,11 +75,10 @@ public class EchoirDIsProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, EchoirDIsResults r) throws Exception {
 
-				rapport = r;
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
+				status.setMessage(String.format("Déclarations d'impôt analysées : %d/%d", rapportFinal.nbDIsTotal, dis.size()), percent);
 
-				traiterBatch(batch, dateTraitement);
-				return true;
+				traiterBatch(batch, r, status);
+				return !status.interrupted();
 			}
 		});
 
@@ -96,14 +90,16 @@ public class EchoirDIsProcessor {
 	/**
 	 * Traite tout le batch des déclarations, une par une.
 	 *
-	 * @param batch
-	 *            le batch des déclarations à traiter
-	 * @param dateTraitement
-	 *            la date de traitemet. Voir {@link EchoirDIsProcessor#traiterDI(Long, RegDate)}.
+	 * @param batch le batch des déclarations à traiter
+	 * @param rapport le rapport à remplir, voir {@link EchoirDIsProcessor#traiterDI(Long, EchoirDIsResults)}.
+	 * @param statusManager utilisé pour tester l'interruption
 	 */
-	private void traiterBatch(List<Long> batch, RegDate dateTraitement) {
+	private void traiterBatch(List<Long> batch, EchoirDIsResults rapport, StatusManager statusManager) {
 		for (Long id : batch) {
-			traiterDI(id, dateTraitement);
+			traiterDI(id, rapport);
+			if (statusManager.interrupted()) {
+				break;
+			}
 		}
 	}
 
@@ -111,13 +107,10 @@ public class EchoirDIsProcessor {
 	 * Traite une déclaration d'impôt ordinaire. C'est-à-dire vérifier qu'elle est dans l'état sommée et que le délai de retour est dépassé;
 	 * puis si c'est bien le cas, la faire passer à l'état échu.
 	 *
-	 * @param id
-	 *            l'id de la déclaration à traiter
-	 * @param dateTraitement
-	 *            la date de traitement pour vérifier le dépassement du délai de retour, et - le cas échéant - pour définir la date
-	 *            d'obtention de l'état échu.
+	 * @param id l'id de la déclaration à traiter
+	 * @param rapport rapport à remplir
 	 */
-	protected void traiterDI(Long id, RegDate dateTraitement) {
+	protected void traiterDI(Long id, EchoirDIsResults rapport) {
 
 		Assert.notNull(id, "L'id doit être spécifié.");
 
@@ -127,93 +120,70 @@ public class EchoirDIsProcessor {
 		final EtatDeclaration etat = di.getDernierEtat();
 		Assert.notNull(etat, "La déclaration ne possède pas d'état.");
 
-		// Vérifie l'état de la DI
+		// Vérifie l'état de la DI (en cas de bug)
 		if (etat.getEtat() != TypeEtatDeclaration.SOMMEE) {
-			if (estSommeeEtRetourneeLeMemeJour(di)) {
-				// dans ce cas, la requête SQL ne distingue pas lequel des deux états est le dernier. On peut recevoir des DIs retournées
-				// (faux positifs), que l'on ignore silencieusement.
-			}
-			else {
-				rapport.addErrorEtatIncoherent(di, "Etat attendu=" + TypeEtatDeclaration.SOMMEE + ", état constaté=" + etat.getEtat()
-						+ ". Erreur dans la requête SQL ?");
-			}
-			return;
-		}
-
-		// [UNIREG-1468] L'échéance de sommation = date sommation + 30 jours (délai normal) + 15 jours (délai administratif)
-		final RegDate dateSommation = etat.getDateObtention();
-		final RegDate delaiTemp = delaisService.getDateFinDelaiEcheanceSommationDeclarationImpot(dateSommation); // 30 jours
-		final RegDate delaiFinal = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(delaiTemp); // 15 jours
-
-		// Vérifie que le délai initial (+ le délai administratif) est bien dépassé
-		if (delaiFinal.isAfterOrEqual(dateTraitement)) {
-			rapport.addIgnoreDelaiNonEchu(di, "Date de traitement=" + RegDateHelper.dateToDisplayString(dateTraitement)
-					+ ", délai calculé=" + RegDateHelper.dateToDisplayString(delaiFinal));
+			rapport.addErrorEtatIncoherent(di, String.format("Etat attendu=%s, état constaté=%s. Erreur dans la requête SQL ?", TypeEtatDeclaration.SOMMEE, etat.getEtat()));
 			return;
 		}
 
 		// On fait passer la DI à l'état échu
-		diService.echoirDI(di, dateTraitement);
+		diService.echoirDI(di, rapport.dateTraitement);
 		rapport.addDeclarationTraitee(di);
+
+		// un peu de paranoïa ne fait pas de mal
 		Assert.isTrue(di.getDernierEtat().getEtat() == TypeEtatDeclaration.ECHUE, "L'état après traitement n'est pas ECHUE.");
 	}
 
 	/**
-	 * @return <b>vrai</b> si la déclaration a été sommée et retournée le même jour; <b>faux</b> autrement.
-	 */
-	private boolean estSommeeEtRetourneeLeMemeJour(final DeclarationImpotOrdinaire di) {
-		final EtatDeclaration dernierEtat = di.getDernierEtat();
-		final EtatDeclaration etatSomme = di.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
-		return etatSomme != null && dernierEtat.getEtat() == TypeEtatDeclaration.RETOURNEE && dernierEtat.getDateObtention() == etatSomme.getDateObtention();
-	}
-
-	private static final String QUERY_STRING = "SELECT di.id"// ----------------------------------------------------
-			+ " FROM DeclarationImpotOrdinaire AS di" // -----------------------------------------------------------
-			+ " WHERE di.annulationDate IS NULL "// ----------------------------------------------------------------
-			+ " AND EXISTS ("// ------------------------------------------------------------------------------------
-			+ "   SELECT etat1.declaration.id"// -------------------------------------------------------------------
-			+ "   FROM EtatDeclaration AS etat1"// -----------------------------------------------------------------
-			+ "   WHERE di.id = etat1.declaration.id"// ------------------------------------------------------------
-			+ "     AND etat1.annulationDate IS NULL"// ------------------------------------------------------------
-			+ "     AND etat1.class = EtatDeclarationSommee"// -------------------------------------------------------------------
-			+ "     AND etat1.dateObtention IN ("// ----------------------------------------------------------------
-			+ "       SELECT MAX(etat2.dateObtention) "// ----------------------------------------------------------
-			+ "       FROM EtatDeclaration AS etat2 "// ------------------------------------------------------------
-			+ "       WHERE etat1.declaration.id = etat2.declaration.id AND etat2.annulationDate IS NULL))" // ------
-			+ " ORDER BY di.id";
-
-	/**
-	 * @return les ids des DIs dont l'état courant est <i>sommée</i>.
+	 * @return les ids des DIs dont l'état courant est <i>sommée</i> et qui dont le délai de retour de sommation est maintenant dépassé.
+	 * @param dateTraitement date de référence pour la détermination du dépassement du délai de retour
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Long> retrieveListDIsSommees() {
+	private List<Long> retrieveListDIsSommeesCandidates(final RegDate dateTraitement) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
+
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT DI.ID, ES.DATE_OBTENTION FROM DECLARATION DI");
+		b.append(" JOIN ETAT_DECLARATION ES ON ES.DECLARATION_ID = DI.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMMEE'");
+		b.append(" WHERE DI.DOCUMENT_TYPE='DI' AND DI.ANNULATION_DATE IS NULL");
+		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = DI.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE'))");
+		b.append(" ORDER BY DI.TIERS_ID");
+		final String sql = b.toString();
 
 		return (List<Long>) template.execute(new TransactionCallback() {
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 
-						// requêtes nécessaires en production pour avoir des performances acceptables
-						SQLQuery sqlQuery = session.createSQLQuery("alter session set optimizer_index_caching = 90");
-						sqlQuery.executeUpdate();
-						sqlQuery = session.createSQLQuery("alter session set optimizer_index_cost_adj = 10");
-						sqlQuery.executeUpdate();
-
-						final Query query = session.createQuery(QUERY_STRING);
-						return query.list();
+						final Query query = session.createSQLQuery(sql);
+						final List<Object[]> rows = query.list();
+						if (rows != null && !rows.isEmpty()) {
+							final List<Long> idDis = new LinkedList<Long>();
+							for (Object[] row : rows) {
+								final int indexDateSommation = ((Number) row[1]).intValue();
+								final RegDate dateSommation = RegDate.fromIndex(indexDateSommation, false);
+								final RegDate echeanceReelle = getSeuilEcheanceSommation(dateSommation);
+								if (dateTraitement.isAfter(echeanceReelle)) {
+									final long diId = ((Number) row[0]).longValue();
+									idDis.add(diId);
+								}
+							}
+							return idDis;
+						}
+						else {
+							return Collections.emptyList();
+						}
 					}
 				});
 			}
 		});
 	}
 
-	/**
-	 * Uniquement pour le testing.
-	 */
-	protected void setRapport(EchoirDIsResults rapport) {
-		this.rapport = rapport;
+	private RegDate getSeuilEcheanceSommation(RegDate dateSommation) {
+		// [UNIREG-1468] L'échéance de sommation = date sommation + 30 jours (délai normal) + 15 jours (délai administratif)
+		final RegDate delaiTemp = delaisService.getDateFinDelaiEcheanceSommationDeclarationImpot(dateSommation); // 30 jours
+		return delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(delaiTemp); // 15 jours
 	}
 }

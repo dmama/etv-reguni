@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs.
@@ -53,7 +54,6 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de déclarations inspectées:", String.valueOf(results.nbDIsTotal));
 					table.addLigne("Nombre de déclarations passées dans l'état échu:", String.valueOf(results.disEchues.size()));
-					table.addLigne("Nombre de déclarations ignorées:", String.valueOf(results.disIgnorees.size()));
 					table.addLigne("Nombre de déclarations en erreur:", String.valueOf(results.disEnErrors.size()));
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
@@ -68,15 +68,6 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 			String titre = "Liste des déclarations nouvellement échues";
 			String listVide = "(aucun déclaration échue)";
 			addListeDetaillee(writer, results.disEchues.size(), titre, listVide, filename, contenu);
-		}
-
-		// DIs ignorées
-		{
-			String filename = "dis_ignorees.csv";
-			String contenu = asCsvFile(results.disIgnorees, filename, status);
-			String titre = "Liste des déclarations ignorées";
-			String listVide = "(aucun déclaration ignorée)";
-			addListeDetaillee(writer, results.disIgnorees.size(), titre, listVide, filename, contenu);
 		}
 
 		// DIs en erreur
@@ -96,12 +87,11 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 
 	private String disEchuesAsCsvFile(List<EchoirDIsResults.Echue> disEchues, String filename, StatusManager status) {
 		String contenu = null;
-		int size = disEchues.size();
+		final int size = disEchues.size();
 		if (size > 0) {
 
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * disEchues.size());
-			b.append("Numéro de l'office d'impôt").append(COMMA).append("Numéro de contribuable").append(COMMA).append(
-					"Numéro de la déclaration\n");
+			final StringBuilder b = new StringBuilder(100 * size);
+			b.append("OID").append(COMMA).append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE").append('\n');
 
 			final GentilIterator<EchoirDIsResults.Echue> iter = new GentilIterator<EchoirDIsResults.Echue>(disEchues);
 			while (iter.hasNext()) {
@@ -109,14 +99,13 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
 				}
 
-				EchoirDIsResults.Echue info = iter.next();
-				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-				bb.append(info.officeImpotID).append(COMMA);
-				bb.append(info.ctbId).append(COMMA);
-				bb.append(info.diId);
-				bb.append('\n');
-
-				b.append(bb);
+				final EchoirDIsResults.Echue info = iter.next();
+				b.append(info.officeImpotID).append(COMMA);
+				b.append(info.ctbId).append(COMMA);
+				b.append(info.diId).append(COMMA);
+				b.append(info.dateDebut.index()).append(COMMA);
+				b.append(info.dateFin.index()).append(COMMA);
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}
