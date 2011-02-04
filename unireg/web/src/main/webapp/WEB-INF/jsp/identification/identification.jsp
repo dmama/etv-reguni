@@ -117,15 +117,20 @@
 				document.location.href='nonIdentifie.do?id='+id;
 			}
 
-			function voirMessage() {
-				var form = $("#formRecherchePersonne");
-				form.attr('action', 'edit.do?fichier_acicom=true');
-				form.submit();
+			function voirMessage(id) {
+				document.location.href='voirMessage.do?id='+id;
 			}
 		
 			function Page_Identifier(idCtb) {
 				if(confirm('Voulez-vous vraiment identifier ce message avec ce contribuable ?')) {					
 					Form.doPostBack("theForm", "identifier", idCtb);
+				}
+			}
+			function AppSelect_OnChange(select) {
+				var value = select.options[select.selectedIndex].value;
+				if ( value && value !== '') {
+					//window.open(value, '_blank') ;
+					window.location.href = value;
 				}
 			}
 

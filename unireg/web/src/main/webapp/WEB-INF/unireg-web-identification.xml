@@ -66,7 +66,6 @@
 		<property name="formView" value="identification/identification" />
 		<property name="successView" value="edit.do" />
 		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
-		<property name="servletService" ref="servletService"/>
 	</bean>
 	<bean id="identificationMessagesNonIdentifieController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesNonIdentifieController" parent="abstractIdentificationController">
 		<property name="sessionForm" value="true" />
@@ -108,6 +107,16 @@
 		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.tooltip.individu.IdentificationIndividuTooltipView" />
 		<property name="civilService" ref="serviceCivilService" />
 		<property name="manager" ref="identificationIndividuTooltipDataManager" />
+	</bean>
+
+	<bean id="voirMessageIdentificationController" class="ch.vd.uniregctb.identification.contribuable.VoirMessageIdentificationController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/identification" />
+		<property name="successView" value="voirMessage.do" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+		<property name="servletService" ref="servletService"/>
 	</bean>
 
 	
