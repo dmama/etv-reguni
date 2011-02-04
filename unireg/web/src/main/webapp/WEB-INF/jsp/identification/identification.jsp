@@ -117,10 +117,8 @@
 				document.location.href='nonIdentifie.do?id='+id;
 			}
 
-			function voirMessage() {
-				var form = F$("theForm");
-				form.action = 'edit.do?fichier_acicom=true';
-				form.submit();
+			function voirMessage(id) {
+				document.location.href='voirMessage.do?id='+id;
 			}
 		
 			function Page_Identifier(idCtb) {

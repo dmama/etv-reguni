@@ -74,7 +74,7 @@
 			<td></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><input type="button" name="fichier_acicom" onclick="voirMessage()" value="<fmt:message key="label.bouton.identification.acicom" />" /></td>
+			<td><input type="button" name="fichier_acicom" onclick="voirMessage(${message.id})" value="<fmt:message key="label.bouton.identification.acicom" />" /></td>
 			<td></td>
 			<td><fmt:message key="label.adresse" />&nbsp;:</td>
 			<td>

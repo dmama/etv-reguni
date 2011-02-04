@@ -25,20 +25,15 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 	protected static final Logger LOGGER = Logger.getLogger(IdentificationMessagesEditController.class);
 
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
-	private ServletService servletService;
 
 	public void setIdentificationMessagesEditManager(IdentificationMessagesEditManager identificationMessagesEditManager) {
 		this.identificationMessagesEditManager = identificationMessagesEditManager;
 	}
 
 
-	public void setServletService(ServletService servletService) {
-		this.servletService = servletService;
-	}
 
 	public static final String PP_CRITERIA_NAME = "ppCriteria";
 	public final static String BOUTON_EXPERTISER = "expertiser";
-	public final static String BOUTON_FICHIER_ACICOM = "fichier_acicom";
 	public final static String BOUTON_IMPOSSIBLE_A_IDENTIFIER = "impossibleAIdentifier";
 	public final static String TARGET_IDENTIFIER = "identifier";
 	public final static String ID_PARAMETER_NAME = "id";
@@ -187,13 +182,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			return mav;
 		}
 
-		if (request.getParameter(BOUTON_FICHIER_ACICOM)!= null) {
 
-			retournerFichierOrigine(request, response, command, errors);
-
-			return null;
-
-		}
 
 		session.setAttribute(PP_CRITERIA_NAME, bean);
 		if (request.getParameter(BOUTON_EFFACER) != null) {
@@ -205,19 +194,5 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		return mav;
 	}
 
-	private ModelAndView retournerFichierOrigine(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-
-		IdentificationMessagesEditView bean = (IdentificationMessagesEditView) command;
-		final FichierOrigine resultat = identificationMessagesEditManager.getMessageFile(bean.getDemandeIdentificationView().getBusinessId());
-		if (resultat != null) {
-			servletService.downloadAsFile("message." + resultat.getExtension(), resultat.getContent(), response);
-		}
-		else {
-			//errors.reject("global.error.communication.editique");
-		}
-
-
-		return null;
-	}
 
 }
