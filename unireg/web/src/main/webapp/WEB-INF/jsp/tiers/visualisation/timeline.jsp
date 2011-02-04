@@ -201,6 +201,9 @@
                                          - <b>${a.motifFractFin}</b>
                                     </c:if>
                                     <br/>
+                                    <c:if test="${a.class.name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a.class.name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
+                                    	Type autorité : <b><c:out value="${a.typeAutoriteFiscale}"/></b>
+                                    </c:if>
                                 </div>
 							</td>
 						</c:when>
