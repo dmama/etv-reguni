@@ -47,7 +47,7 @@
 								</jsp:include>
 								<font color="#FF0000">*</font>
 							</td>
-							<td rowspan="2" valign="top"><div id="vignetteTroisiemeTiers"/></td>
+							<td width="45%" rowspan="2" valign="top"><div id="vignetteTroisiemeTiers"/></td>
 						</tr>
 						<tr>
 							<td>&nbsp;</td>
