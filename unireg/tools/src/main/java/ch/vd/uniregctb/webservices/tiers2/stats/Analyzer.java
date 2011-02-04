@@ -140,6 +140,7 @@ class Analyzer {
 				FileCopyUtils.copy(is, os);
 			}
 			catch (IOException e) {
+				System.err.println("Exception when connecting to url [" + chart.getUrl() + "] : " + e.getMessage());
 				e.printStackTrace();
 				return HtmlUtils.htmlEscape(e.getMessage());
 			}
