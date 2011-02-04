@@ -209,6 +209,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 	private final TiersService tiersService;
 
 	private boolean interrompu;
+	private int nbDebiteursAnalyses = 0;
 	public final List<ResultLrEchue> lrEchues = new ArrayList<ResultLrEchue>();
 	public final List<ResultDebiteurNonTraite> ignores = new ArrayList<ResultDebiteurNonTraite>();
 	public final List<ResultErreurDebiteur> erreurs = new ArrayList<ResultErreurDebiteur>();
@@ -227,6 +228,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		lrEchues.addAll(right.lrEchues);
 		ignores.addAll(right.ignores);
 		erreurs.addAll(right.erreurs);
+		nbDebiteursAnalyses += right.nbDebiteursAnalyses;
 	}
 
 	@Override
@@ -239,6 +241,14 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 
 	public boolean isInterrompu() {
 		return interrompu;
+	}
+
+	public int getNbDebiteursAnalyses() {
+		return nbDebiteursAnalyses;
+	}
+
+	public void newDebiteurAnalyse() {
+		++ nbDebiteursAnalyses;
 	}
 
 	public void setInterrompu(boolean interrompu) {

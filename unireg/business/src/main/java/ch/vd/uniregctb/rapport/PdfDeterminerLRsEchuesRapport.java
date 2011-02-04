@@ -53,6 +53,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 
 			addTableSimple(new float[] {70f, 30f}, new TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
+					table.addLigne("Nombre de débiteurs analysés :", String.valueOf(results.getNbDebiteursAnalyses()));
 					table.addLigne("Nombre de débiteurs ignorés :", String.valueOf(results.ignores.size()));
 					table.addLigne("Nombre de listes échues :", String.valueOf(results.lrEchues.size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
