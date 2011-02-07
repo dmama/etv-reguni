@@ -113,7 +113,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		demandeIdentificationView.setEtatMessage(identificationContribuable.getEtat());
 		if(identificationContribuable.getDemande() != null) {
 			demandeIdentificationView.setDateMessage(identificationContribuable.getDemande().getDate());
-			demandeIdentificationView.setEmetteurId(identCtbService.getNomCantonFromEmetteurId(identificationContribuable.getDemande().getEmetteurId()));
+			demandeIdentificationView.setEmetteurId(identificationContribuable.getDemande().getEmetteurId());
 			demandeIdentificationView.setPeriodeFiscale(Integer.valueOf(identificationContribuable.getDemande().getPeriodeFiscale()));
 			demandeIdentificationView.setTypeMessage(identificationContribuable.getDemande().getTypeMessage());
 			demandeIdentificationView.setBusinessId(identificationContribuable.getHeader().getBusinessId());
