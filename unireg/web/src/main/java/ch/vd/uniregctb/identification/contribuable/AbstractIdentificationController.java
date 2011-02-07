@@ -30,7 +30,7 @@ public  class AbstractIdentificationController extends AbstractSimpleFormControl
 
 		protected static final Logger LOGGER = Logger.getLogger(AbstractIdentificationController.class);
 
-		private TacheMapHelper tacheMapHelper;
+		protected TacheMapHelper tacheMapHelper;
 
 		protected IdentificationMapHelper identificationMapHelper;
 
@@ -75,17 +75,7 @@ public  class AbstractIdentificationController extends AbstractSimpleFormControl
 		@Override
 		protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
-			// TracePoint tp = TracingManager.begin();
-			// TracingManager.end(tp);
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
-			data.put(EMETTEUR_MAP_NAME, identificationMapHelper.initMapEmetteurId());
-			data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
-			data.put(TYPE_MESSAGE_MAP_NAME, identificationMapHelper.initMapTypeMessage());
-			data.put(PRIORITE_EMETTEUR_MAP_NAME, identificationMapHelper.initMapPrioriteEmetteur());
-			data.put(ERREUR_MESSAGE_MAP_NAME, identificationMapHelper.initErreurMessage());
-			data.put(TRAITEMENT_USER_MAP_NAME,identificationMapHelper.initMapUser());
-			return data;
+			return null;
 		}
 		protected boolean areUsed(String parametreEtat,String parametrePeriode,String parametreTypeMessage ){
 			return (parametreEtat!=null) || (parametrePeriode!=null) || (parametreTypeMessage!=null) ;

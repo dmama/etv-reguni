@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -157,7 +158,21 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	}
 
 
+	    @Override
+		protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
+			// TracePoint tp = TracingManager.begin();
+			// TracingManager.end(tp);
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
+			data.put(EMETTEUR_MAP_NAME, identificationMapHelper.initMapEmetteurId(false));
+			data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
+			data.put(TYPE_MESSAGE_MAP_NAME, identificationMapHelper.initMapTypeMessage());
+			data.put(PRIORITE_EMETTEUR_MAP_NAME, identificationMapHelper.initMapPrioriteEmetteur());
+			data.put(ERREUR_MESSAGE_MAP_NAME, identificationMapHelper.initErreurMessage());
+			data.put(TRAITEMENT_USER_MAP_NAME,identificationMapHelper.initMapUser());
+			return data;
+		}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,

@@ -57,6 +57,20 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 */
 	public List<String> getEmetteursId();
 
+	/**
+	 * Récupère la liste des émetteurs pour les messages non traités
+	 *
+	 * @return
+	 */
+	public List<String> getEmetteursIdEnCours();
+
+	/**
+	 * Récupère la liste des émetteurs pour les messages traités
+	 *
+	 * @return
+	 */
+	public List<String> getEmetteursIdTraites();
+
 	/**Recupère la lliste des utilisateurs ayant effectué un traitement
 	 *
 	 * @return

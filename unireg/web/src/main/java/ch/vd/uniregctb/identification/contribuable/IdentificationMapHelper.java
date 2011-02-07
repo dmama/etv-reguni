@@ -150,7 +150,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		mapTypeMessage = new HashMap<String, String>();
+		final Map<String, String> mapMessage = new HashMap<String, String>();
 		final List<String> typesMessage = (List<String>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getTypesMessage();
@@ -161,10 +161,10 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		while (itMessages.hasNext()) {
 			String typeMessage = itMessages.next();
 			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
-			mapTypeMessage.put(typeMessage, typeMessageValeur);
+			mapMessage.put(typeMessage, typeMessageValeur);
 		}
 
-		return mapTypeMessage;
+		return mapMessage;
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		mapUser = new HashMap<String, String>();
+		final Map<String, String>	mapUtilisateur = new HashMap<String, String>();
 		final List<String> listVisaUser = (List<String>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getTraitementUser();
@@ -190,14 +190,14 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(visaUser);
 			visaUser = identifiantUtilisateur.getVisa();
 			String nom = identifiantUtilisateur.getNomComplet();
-			if (mapUser.get(visaUser) == null) {
-				mapUser.put(visaUser, nom);
+			if (mapUtilisateur.get(visaUser) == null) {
+				mapUtilisateur.put(visaUser, nom);
 			}
 
 		}
 		//Ajout du user de traitement automatique ignoré dans la requete
-		mapUser.put("Traitement automatique","Traitement automatique");
-		return mapUser;
+		mapUtilisateur.put("Traitement automatique", "Traitement automatique");
+		return mapUtilisateur;
 	}
 
 	/**
@@ -206,14 +206,20 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 
-	public Map<String, String> initMapEmetteurId() {
+	public Map<String, String> initMapEmetteurId(final boolean forTraite) {
 
-		mapEmetteur = new HashMap<String, String>();
+		final Map<String, String> allEmetteur = new HashMap<String, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<String> emetteurs = (List<String>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				return identCtbDAO.getEmetteursId();
+				if(forTraite){
+					return identCtbDAO.getEmetteursIdTraites();
+				}
+				else{
+					return identCtbDAO.getEmetteursIdEnCours();
+				}
+
 			}
 		});
 
@@ -229,10 +235,10 @@ public class IdentificationMapHelper extends CommonMapHelper {
 				//on revoie l'emetteurId Tel Quel
 				nomCantonFromEmetteurId = emetteur;
 			}
-			mapEmetteur.put(emetteur, nomCantonFromEmetteurId);
+			allEmetteur.put(emetteur, nomCantonFromEmetteurId);
 		}
 
-		return mapEmetteur;
+		return allEmetteur;
 	}
 
 	public Map<ErreurMessage, String> initErreurMessage() {

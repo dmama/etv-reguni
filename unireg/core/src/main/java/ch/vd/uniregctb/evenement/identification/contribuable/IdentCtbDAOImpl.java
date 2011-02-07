@@ -136,6 +136,20 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return getHibernateTemplate().find(query);
 	}
 
+	public List<String> getEmetteursIdEnCours() {
+		String query = " select distinct identificationContribuable.demande.emetteurId" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<String> getEmetteursIdTraites() {
+		String query =  " select distinct identificationContribuable.demande.emetteurId" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT') ";
+		return getHibernateTemplate().find(query);
+	}
+
 	public List<String> getTraitementUser() {
 		String query = " select distinct identificationContribuable.traitementUser " +
 				"from IdentificationContribuable identificationContribuable where identificationContribuable.traitementUser is not null " +
