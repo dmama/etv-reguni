@@ -79,6 +79,8 @@
 		</c:if>
 		<!-- Fin liste de tous les rapports -->
 
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location='../tiers/visu.do?id=${command.idDpi}';" />
+
 	</tiles:put>
 			
 </tiles:insert>
