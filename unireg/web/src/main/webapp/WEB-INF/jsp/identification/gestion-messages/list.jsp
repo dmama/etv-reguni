@@ -66,7 +66,7 @@
 				<display:column sortable ="true" titleKey="label.date.message" sortName="demande.date">
 						<fmt:formatDate value="${message.dateMessage}" pattern="dd.MM.yyyy"/>
 				</display:column>
-				<display:column sortable ="true" titleKey="label.etat.message" style="white-space:nowrap">
+				<display:column sortable ="true" titleKey="label.etat.message"  sortName="etat" style="white-space:nowrap">
 						<fmt:message key="option.etat.message.${message.etatMessage}"  />
 				</display:column>
 				<display:column sortable ="true" titleKey="label.nom" sortName="demande.personne.nom">
