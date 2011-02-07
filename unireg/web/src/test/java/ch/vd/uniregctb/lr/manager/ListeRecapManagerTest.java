@@ -2,6 +2,7 @@ package ch.vd.uniregctb.lr.manager;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -231,6 +232,42 @@ public class ListeRecapManagerTest extends WebTest {
 
 	}
 
+//[UNIREG-3120]
+@Test
+public void testLRForPeriodicites_3120_2() throws Exception{
+//Ajout d'une première periodicite'
+	final int anneeReference =2009;
+	final int anneeSuivante = 2010;
+	final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+		@Override
+		public Object execute(TransactionStatus status) throws Exception {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
+			addForDebiteur(dpi,date(anneeReference, 1, 1),date(anneeReference, 6, 30), MockCommune.Bex);
+			addForDebiteur(dpi,date(anneeSuivante, 10, 1),date(anneeSuivante, 12, 31), MockCommune.Bex);
+
+			final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference);
+			final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeSuivante);
+
+			addLR(dpi, date(anneeReference,1,1),date(anneeReference,3,31), fiscale2009, TypeEtatDeclaration.EMISE);
+			addLR(dpi, date(anneeReference,4,1),date(anneeReference,6,30), fiscale2009, TypeEtatDeclaration.EMISE);
+			addLR(dpi, date(anneeSuivante,10,1),date(anneeSuivante,12,31), fiscale2010, TypeEtatDeclaration.EMISE);
+
+			return  dpi.getNumero();
+		}
+	});
+
+	doInNewTransaction(new TxCallback() {
+		@Override
+		public Object execute(TransactionStatus status) throws Exception {
+			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+			assertNull(lrView.getDateDebutPeriode());
+			assertNull(lrView.getDateFinPeriode());
+			return null;
+		}
+	});
+
+}
 
 
 		@Test
@@ -269,6 +306,7 @@ public class ListeRecapManagerTest extends WebTest {
 		});
 
 	}
+
 
 	@Test
 	public void testLRForPeriodicitesMensuelUnique() throws Exception {

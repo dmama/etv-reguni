@@ -354,9 +354,14 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				}
 
 				DateRange periodeSuivante = getPeriodeSuivante(dpi, periodiciteSuivante,lr);
-				lrEditView.setDateDebutPeriode(periodeSuivante.getDateDebut());
-				lrEditView.setDateFinPeriode(periodeSuivante.getDateFin());
-				lrEditView.setPeriodicite(periodiciteSuivante.getPeriodiciteDecompte());
+				//UNIREG-3120 - 2 On ne doit pas pouvoir generer une lr si le debiteur n'a pas de for actif sur la periode
+				ForDebiteurPrestationImposable forDebiteur= dpi.getForDebiteurPrestationImposableAt(periodeSuivante.getDateDebut());
+				if(forDebiteur!=null){
+					lrEditView.setDateDebutPeriode(periodeSuivante.getDateDebut());
+					lrEditView.setDateFinPeriode(periodeSuivante.getDateFin());
+					lrEditView.setPeriodicite(periodiciteSuivante.getPeriodiciteDecompte());
+				}
+
 
 
 			}
@@ -380,10 +385,13 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				lrEditView.setDateFinPeriode(periodicite.getFinPeriode(nouvDateDebut));
 			}
 		}
-		lrEditView.setSansSommation(dpi.getSansRappel());
-		lrEditView.setImprimable(true);
-		lrEditView.setDelaiAccorde(delaisService.getDateFinDelaiRetourListeRecapitulative(aujourdhui, lrEditView.getRegDateFinPeriode()));
-		setDroitLR(lrEditView, dpi);
+		if(lrEditView.getDateDebutPeriode()!=null){
+			lrEditView.setSansSommation(dpi.getSansRappel());
+			lrEditView.setImprimable(true);
+			lrEditView.setDelaiAccorde(delaisService.getDateFinDelaiRetourListeRecapitulative(aujourdhui, lrEditView.getRegDateFinPeriode()));
+			setDroitLR(lrEditView, dpi);
+		}
+
 		return lrEditView;
 	}
 
