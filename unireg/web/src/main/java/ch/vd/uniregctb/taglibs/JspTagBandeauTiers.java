@@ -189,6 +189,14 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					return "";
 				}
 
+				EnsembleTiersCouple ensemble = null;
+				if (tiers instanceof PersonnePhysique) {
+					ensemble = tiersService.getEnsembleTiersCouple((PersonnePhysique) tiers, null);
+				}
+				else if (tiers instanceof MenageCommun) {
+					ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
+				}
+
 				if (titre == null) {
 					titre = message("caracteristiques.tiers");
 				}
@@ -202,11 +210,20 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("<legend><span>").append(HtmlUtils.htmlEscape(titre)).append("</span></legend>\n");
 				s.append(buildDebugInfo(tiers));
 
-				if (showAvatar) {
+				if (showAvatar && showLinks) {
 					s.append("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td>\n");
 					s.append(buildDescriptifTiers(tiers));
 					s.append("</td><td width=\"130 px\">\n");
 					s.append(buildImageTiers(tiers));
+
+					if (ensemble != null) {
+						// si on a un tiers appartenant à un ensemble tiers-couple, on affiche des raccourcis vers les autres membres
+						final String others = buildImageOtherTiers(tiers, ensemble);
+						if (others != null) {
+							s.append("</td><td class=\"composition_menage\" valign=\"top\">\n");
+							s.append(others);
+						}
+					}
 					s.append("</td></tr></table>\n");
 				}
 				else {
@@ -537,7 +554,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private String buildImageTiers(Tiers tiers) {
 
 		final TypeAvatar type = getTypeAvatar(tiers);
-		final String image = getImageUrl(type);
+		final String image = getImageUrl(type, false);
 
 		final StringBuilder s = new StringBuilder();
 		s.append("<img class=\"iepngfix\" src=\"").append(url(image)).append("\">\n");
@@ -545,55 +562,111 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return s.toString();
 	}
 
-	private static String getImageUrl(TypeAvatar type) {
+	/**
+	 * Construit le code Html qui permet d'afficher les avatars miniatures des autres composants d'un ménage-commun.
+	 *
+	 * @param tiers    le tiers couramment affiché
+	 * @param ensemble l'ensemble tiers-couple à partir duquel les autres composants du ménage sont déduits.
+	 * @return le code Html à insérer ou <b>null</b> s'il n'y a rien à faire.
+	 */
+	private String buildImageOtherTiers(Tiers tiers, EnsembleTiersCouple ensemble) {
+
+		if (tiers == ensemble.getConjoint() || tiers == ensemble.getPrincipal()) {
+			final MenageCommun menage = ensemble.getMenage();
+			final TypeAvatar type = getTypeAvatar(menage);
+
+			final String image = getImageUrl(type, true);
+
+			final StringBuilder s = new StringBuilder();
+			s.append("<a href=\"").append(url("/tiers/visu.do?id=")).append(menage.getId()).append("\">");
+			s.append("<img class=\"iepngfix\" title=\"Aller vers le ménage-commun du tiers\" src=\"").append(url(image)).append("\">\n");
+			s.append("</a>");
+
+			return s.toString();
+		}
+		else if (tiers == ensemble.getMenage()) {
+			StringBuilder s = null;
+
+			final PersonnePhysique principal = ensemble.getPrincipal();
+			if (principal != null) {
+				final TypeAvatar type = getTypeAvatar(principal);
+				final String image = getImageUrl(type, true);
+				s = new StringBuilder();
+				s.append("<a href=\"").append(url("/tiers/visu.do?id=")).append(principal.getId()).append("\">");
+				s.append("<img class=\"iepngfix\" title=\"Aller vers le tiers principal du ménage\" src=\"").append(url(image)).append("\">\n");
+				s.append("</a>");
+			}
+
+			final PersonnePhysique conjoint = ensemble.getConjoint();
+			if (conjoint != null) {
+				final TypeAvatar type = getTypeAvatar(conjoint);
+				final String image = getImageUrl(type, true);
+				if (s == null) {
+					s = new StringBuilder();
+				}
+				s.append("<a href=\"").append(url("/tiers/visu.do?id=")).append(conjoint.getId()).append("\">");
+				s.append("<img class=\"iepngfix\" title=\"Aller vers le tiers secondaire du ménage\" src=\"").append(url(image)).append("\">\n");
+				s.append("</a>");
+			}
+
+			return s == null ? null : s.toString();
+		}
+		else {
+			return null;
+		}
+	}
+
+	private static String getImageUrl(TypeAvatar type, boolean translucide) {
 		final String image;
 		switch (type) {
 		case HOMME:
-			image = "/images/tiers/homme.png";
+			image = "homme.png";
 			break;
 		case FEMME:
-			image = "/images/tiers/femme.png";
+			image = "femme.png";
 			break;
 		case SEXE_INCONNU:
-			image = "/images/tiers/inconnu.png";
+			image = "inconnu.png";
 			break;
 		case MC_MIXTE:
-			image = "/images/tiers/menagecommun.png";
+			image = "menagecommun.png";
 			break;
 		case MC_HOMME_SEUL:
-			image = "/images/tiers/homme_seul.png";
+			image = "homme_seul.png";
 			break;
 		case MC_FEMME_SEULE:
-			image = "/images/tiers/femme_seule.png";
+			image = "femme_seule.png";
 			break;
 		case MC_HOMME_HOMME:
-			image = "/images/tiers/homme_homme.png";
+			image = "homme_homme.png";
 			break;
 		case MC_FEMME_FEMME:
-			image = "/images/tiers/femme_femme.png";
+			image = "femme_femme.png";
 			break;
 		case MC_SEXE_INCONNU:
-			image = "/images/tiers/mc_inconnu.png";
+			image = "mc_inconnu.png";
 			break;
 		case ENTREPRISE:
-			image = "/images/tiers/entreprise.png";
+			image = "entreprise.png";
 			break;
 		case ETABLISSEMENT:
-			image = "/images/tiers/etablissement.png";
+			image = "etablissement.png";
 			break;
 		case AUTRE_COMM:
-			image = "/images/tiers/autrecommunaute.png";
+			image = "autrecommunaute.png";
 			break;
 		case COLLECT_ADMIN:
-			image = "/images/tiers/collectiviteadministrative.png";
+			image = "collectiviteadministrative.png";
 			break;
 		case DEBITEUR:
-			image = "/images/tiers/debiteur.png";
+			image = "debiteur.png";
 			break;
 		default:
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
 		}
-		return image;
+
+		final String basePath = (translucide ? "/images/tiers/translucides/" : "/images/tiers/");
+		return basePath + image;
 	}
 
 	/**

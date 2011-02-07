@@ -132,6 +132,18 @@ legend a.delete {
 	font-size:xx-small;
 }
 
+.information td.composition_menage {
+	width: 32px;
+	padding-left: 10px;
+	border-left: 1px solid #CDCDCD;
+}
+
+.information td.composition_menage img {
+	width: 32px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
 /**
  * Table d'action de synchronisation
  */
