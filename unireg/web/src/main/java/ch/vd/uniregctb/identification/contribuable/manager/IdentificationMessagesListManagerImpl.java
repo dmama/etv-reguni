@@ -237,7 +237,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		identificationMessagesResultView.setEtatMessage(identification.getEtat());
 		if (identification.getDemande() != null) {
 			identificationMessagesResultView.setDateMessage(identification.getDemande().getDate());
-			identificationMessagesResultView.setEmetteurId(identCtbService.getNomCantonFromEmetteurId(identification.getDemande().getEmetteurId()));
+			identificationMessagesResultView.setEmetteurId(identification.getDemande().getEmetteurId());
 			identificationMessagesResultView.setPeriodeFiscale(Integer.valueOf(identification.getDemande().getPeriodeFiscale()));
 			identificationMessagesResultView.setTypeMessage(identification.getDemande().getTypeMessage());
 			if (identification.getDemande().getPersonne() != null) {

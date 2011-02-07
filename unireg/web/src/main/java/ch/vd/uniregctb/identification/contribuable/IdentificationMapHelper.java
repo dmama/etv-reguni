@@ -227,15 +227,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		while (itEmetteurs.hasNext()) {
 			String emetteur = itEmetteurs.next();
 
-			String nomCantonFromEmetteurId = emetteur;
-			try {
-				nomCantonFromEmetteurId = identCtbService.getNomCantonFromEmetteurId(emetteur);
-			}
-			catch (InfrastructureException e) {
-				//on revoie l'emetteurId Tel Quel
-				nomCantonFromEmetteurId = emetteur;
-			}
-			allEmetteur.put(emetteur, nomCantonFromEmetteurId);
+			allEmetteur.put(emetteur, emetteur);
 		}
 
 		return allEmetteur;
