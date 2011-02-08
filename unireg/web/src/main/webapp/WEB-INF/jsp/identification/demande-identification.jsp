@@ -74,8 +74,13 @@
 			<td></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><input type="button" name="fichier_acicom" onclick="voirMessage(${message.id})" value="<fmt:message key="label.bouton.identification.acicom" />" /></td>
-			<td></td>
+			<td>
+				<c:if test="${message.viewable}">
+					<input type="button" name="fichier_acicom" onclick="voirMessage(${message.id})" value="<fmt:message key="label.bouton.identification.acicom" />"/>
+				</c:if>
+				&nbsp;
+			</td>
+			<td/>
 			<td><fmt:message key="label.adresse" />&nbsp;:</td>
 			<td>
 				<c:if test="${message.rue != null }">
