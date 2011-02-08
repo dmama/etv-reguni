@@ -687,7 +687,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		final CommuneSimple commune;
 		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
 			final AdressesCiviles adresseDomicile = new AdressesCiviles(serviceCivilService.getAdresses(pp.getNumeroIndividu(), date, false));
-			if (adresseDomicile != null) {
+			if (adresseDomicile.principale != null) {
 				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile.principale);
 			}
 			else {
