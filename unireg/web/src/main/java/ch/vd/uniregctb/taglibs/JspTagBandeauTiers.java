@@ -578,7 +578,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			final String image = getImageUrl(type, true);
 
 			final StringBuilder s = new StringBuilder();
-			s.append("<a title=\"Aller vers le tiers secondaire du ménage\" href=\"").append(url("/tiers/visu.do?id=")).append(menage.getId()).append("\">");
+			s.append("<a title=\"Aller vers le ménage du tiers\" href=\"").append(url("/tiers/visu.do?id=")).append(menage.getId()).append("\">");
 			s.append("<img class=\"iepngfix avatar\" src=\"").append(url(image)).append("\">\n");
 			s.append("</a>");
 
