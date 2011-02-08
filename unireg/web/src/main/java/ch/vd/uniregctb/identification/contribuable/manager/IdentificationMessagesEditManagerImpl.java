@@ -1,16 +1,21 @@
 package ch.vd.uniregctb.identification.contribuable.manager;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
+import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.identification.contribuable.AciComService;
 import ch.vd.uniregctb.identification.contribuable.FichierOrigine;
@@ -18,8 +23,8 @@ import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableSer
 import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.webservice.acicom.AciComClientException;
 
 public class IdentificationMessagesEditManagerImpl implements IdentificationMessagesEditManager {
@@ -32,16 +37,33 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	private AciComService aciComService;
 
+	private final Set<String> viewableTypes = new HashSet<String>();
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
 		this.identCtbService = identCtbService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
 		this.identCtbDAO = identCtbDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setViewableTypes(String viewableTypesString) {
+		if (viewableTypesString != null) {
+			final String[] tokens = viewableTypesString.split("[ ,]");
+			for (String token : tokens) {
+				if (StringUtils.isNotBlank(token)) {
+					viewableTypes.add(token.trim());
+				}
+			}
+		}
 	}
 
 	/**
@@ -107,26 +129,32 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	@Transactional(readOnly = true)
 	public DemandeIdentificationView getDemandeIdentificationView (Long id) throws Exception {
 
-		IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
-		DemandeIdentificationView demandeIdentificationView = new DemandeIdentificationView();
+		final IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
+		final DemandeIdentificationView demandeIdentificationView = new DemandeIdentificationView();
 		demandeIdentificationView.setId(identificationContribuable.getId());
 		demandeIdentificationView.setEtatMessage(identificationContribuable.getEtat());
-		if(identificationContribuable.getDemande() != null) {
-			demandeIdentificationView.setDateMessage(identificationContribuable.getDemande().getDate());
-			demandeIdentificationView.setEmetteurId(identificationContribuable.getDemande().getEmetteurId());
-			demandeIdentificationView.setPeriodeFiscale(Integer.valueOf(identificationContribuable.getDemande().getPeriodeFiscale()));
-			demandeIdentificationView.setTypeMessage(identificationContribuable.getDemande().getTypeMessage());
+
+		final Demande demande = identificationContribuable.getDemande();
+		if (demande != null) {
+			demandeIdentificationView.setDateMessage(demande.getDate());
+			demandeIdentificationView.setEmetteurId(demande.getEmetteurId());
+			demandeIdentificationView.setPeriodeFiscale(demande.getPeriodeFiscale());
+			demandeIdentificationView.setTypeMessage(demande.getTypeMessage());
 			demandeIdentificationView.setBusinessId(identificationContribuable.getHeader().getBusinessId());
-			if(identificationContribuable.getDemande().getPersonne() != null) {
-				demandeIdentificationView.setNom(identificationContribuable.getDemande().getPersonne().getNom());
-				demandeIdentificationView.setPrenoms(identificationContribuable.getDemande().getPersonne().getPrenoms());
-				demandeIdentificationView.setNavs13(FormatNumeroHelper.formatNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS13()));
-				demandeIdentificationView.setNavs11(FormatNumeroHelper.formatAncienNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS11()));
-				demandeIdentificationView.setDateNaissance(identificationContribuable.getDemande().getPersonne().getDateNaissance());
-				demandeIdentificationView.setSexe(identificationContribuable.getDemande().getPersonne().getSexe());
+			demandeIdentificationView.setViewable(showViewLink(demande.getTypeMessage()));
+
+			final CriteresPersonne personne = demande.getPersonne();
+			if (personne != null) {
+				demandeIdentificationView.setNom(personne.getNom());
+				demandeIdentificationView.setPrenoms(personne.getPrenoms());
+				demandeIdentificationView.setNavs13(FormatNumeroHelper.formatNumAVS(personne.getNAVS13()));
+				demandeIdentificationView.setNavs11(FormatNumeroHelper.formatAncienNumAVS(personne.getNAVS11()));
+				demandeIdentificationView.setDateNaissance(personne.getDateNaissance());
+				demandeIdentificationView.setSexe(personne.getSexe());
 				demandeIdentificationView.setAnnule(identificationContribuable.isAnnule());
-				if (identificationContribuable.getDemande().getPersonne().getAdresse()!=null) {
-					CriteresAdresse adresse = identificationContribuable.getDemande().getPersonne().getAdresse();
+
+				final CriteresAdresse adresse = personne.getAdresse();
+				if (adresse != null) {
 					demandeIdentificationView.setRue(adresse.getRue());
 					demandeIdentificationView.setNpa(adresse.getNpaSuisse());
 					demandeIdentificationView.setLieu(adresse.getLieu());
@@ -134,12 +162,14 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 					demandeIdentificationView.setNpaEtranger(adresse.getNpaEtranger());
 					demandeIdentificationView.setNoPolice(adresse.getNoPolice());
 				}
-
 			}
 		}
 		return demandeIdentificationView;
 	}
 
+	private boolean showViewLink(String typeMessage) {
+		return viewableTypes.contains(typeMessage);
+	}
 
 	/**
 	 * Force l'identification du contribuable

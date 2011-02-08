@@ -7,7 +7,7 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.type.Sexe;
 
-public class DemandeIdentificationView implements Annulable{
+public class DemandeIdentificationView implements Annulable {
 
 	private Long id;
 	private String typeMessage;
@@ -29,6 +29,7 @@ public class DemandeIdentificationView implements Annulable{
 	private String npaEtranger;
 	private String noPolice;
 	private boolean annule;
+	private boolean viewable;
 
 	public Long getId() {
 		return id;
@@ -155,5 +156,13 @@ public class DemandeIdentificationView implements Annulable{
 
 	public void setNavs11(String navs11) {
 		this.navs11 = navs11;
+	}
+
+	public boolean isViewable() {
+		return viewable;
+	}
+
+	public void setViewable(boolean viewable) {
+		this.viewable = viewable;
 	}
 }

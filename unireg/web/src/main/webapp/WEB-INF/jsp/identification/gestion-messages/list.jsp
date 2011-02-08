@@ -91,34 +91,32 @@
 				<display:column sortable ="true" titleKey="label.navs13" sortName="demande.personne.NAVS13">
 						<c:out value="${message.navs13}" />
 				</display:column>
-				<c:if test="${message.traitementUser != null }">
-					<display:column  titleKey="label.identification.traitement.user" style="text-align:center">
-						<unireg:consulterInfoTraitement dateTraitement="${message.traitementDate}" userTraitement="${message.traitementUser}"/>
-					</display:column>
-				</c:if>
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO">
-				<display:column>
-				 <c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||
-					 (message.etatMessage == 'A_EXPERTISER') || (message.etatMessage == 'SUSPENDU') ||
-					  (message.etatMessage == 'A_EXPERTISER_SUSPENDU') || (message.etatMessage == 'A_TRAITER_MAN_SUSPENDU')}">				  
-					  	
-					  	<c:choose>
-					  		<c:when test="${(message.utilisateurTraitant==null) || (message.utilisateurTraitant==command.userCourant)}">
-					  		<c:if test="${!messageTraite}">
-								<unireg:raccourciModifier link="edit.do?id=${message.id}" />
-							</c:if>					
-					  		</c:when>
-					  		<c:when test="${(message.utilisateurTraitant!=null)}">
-					  		<img src="<c:url value="/css/x/running.png"/>" title="En cours de Traitement par ${message.utilisateurTraitant}" />
-					  		</c:when>
-					  	</c:choose>					  	
-				</c:if>
-				</display:column>
+					<display:column>
+						<c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||
+							 (message.etatMessage == 'A_EXPERTISER') || (message.etatMessage == 'SUSPENDU') ||
+							  (message.etatMessage == 'A_EXPERTISER_SUSPENDU') || (message.etatMessage == 'A_TRAITER_MAN_SUSPENDU')}">
+
+								<c:choose>
+									<c:when test="${(message.utilisateurTraitant==null) || (message.utilisateurTraitant==command.userCourant)}">
+										<c:if test="${!messageTraite}">
+											<unireg:raccourciModifier link="edit.do?id=${message.id}" />
+										</c:if>
+									</c:when>
+									<c:when test="${(message.utilisateurTraitant!=null)}">
+										<img src="<c:url value="/css/x/running.png"/>" title="En cours de Traitement par ${message.utilisateurTraitant}" />
+									</c:when>
+								</c:choose>
+						</c:if>
+					</display:column>
 				</authz:authorize>
 				<display:column style="action">
                     <c:if test="${message.id != null}">
 						 <unireg:consulterLog entityNature="identification" entityId="${message.id}"/>
                     </c:if>
+					<c:if test="${message.traitementUser != null }">
+						<unireg:consulterInfoTraitement dateTraitement="${message.traitementDate}" userTraitement="${message.traitementUser}"/>
+					</c:if>
                </display:column>
 			</display:table>
 		
