@@ -578,8 +578,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			final String image = getImageUrl(type, true);
 
 			final StringBuilder s = new StringBuilder();
-			s.append("<a href=\"").append(url("/tiers/visu.do?id=")).append(menage.getId()).append("\">");
-			s.append("<img class=\"iepngfix\" title=\"Aller vers le ménage-commun du tiers\" src=\"").append(url(image)).append("\">\n");
+			s.append("<a title=\"Aller vers le tiers secondaire du ménage\" href=\"").append(url("/tiers/visu.do?id=")).append(menage.getId()).append("\">");
+			s.append("<img class=\"iepngfix avatar\" src=\"").append(url(image)).append("\">\n");
 			s.append("</a>");
 
 			return s.toString();
@@ -592,8 +592,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				final TypeAvatar type = getTypeAvatar(principal);
 				final String image = getImageUrl(type, true);
 				s = new StringBuilder();
-				s.append("<a href=\"").append(url("/tiers/visu.do?id=")).append(principal.getId()).append("\">");
-				s.append("<img class=\"iepngfix\" title=\"Aller vers le tiers principal du ménage\" src=\"").append(url(image)).append("\">\n");
+				s.append("<a title=\"Aller vers le tiers principal du ménage\" href=\"").append(url("/tiers/visu.do?id=")).append(principal.getId()).append("\">");
+				s.append("<img class=\"iepngfix avatar\" src=\"").append(url(image)).append("\">\n");
 				s.append("</a>");
 			}
 
@@ -604,8 +604,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				if (s == null) {
 					s = new StringBuilder();
 				}
-				s.append("<a href=\"").append(url("/tiers/visu.do?id=")).append(conjoint.getId()).append("\">");
-				s.append("<img class=\"iepngfix\" title=\"Aller vers le tiers secondaire du ménage\" src=\"").append(url(image)).append("\">\n");
+				s.append("<a title=\"Aller vers le tiers secondaire du ménage\" href=\"").append(url("/tiers/visu.do?id=")).append(conjoint.getId()).append("\">");
+				s.append("<img class=\"iepngfix avatar\" src=\"").append(url(image)).append("\">\n");
 				s.append("</a>");
 			}
 
@@ -616,7 +616,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 	}
 
-	private static String getImageUrl(TypeAvatar type, boolean translucide) {
+	private static String getImageUrl(TypeAvatar type, boolean forLink) {
 		final String image;
 		switch (type) {
 		case HOMME:
@@ -665,7 +665,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
 		}
 
-		final String basePath = (translucide ? "/images/tiers/translucides/" : "/images/tiers/");
+		final String basePath = (forLink ? "/images/tiers/links/" : "/images/tiers/");
 		return basePath + image;
 	}
 

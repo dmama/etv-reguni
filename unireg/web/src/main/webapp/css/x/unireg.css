@@ -138,7 +138,7 @@ legend a.delete {
 	border-left: 1px solid #CDCDCD;
 }
 
-.information td.composition_menage img {
+.information td.composition_menage img.avatar {
 	width: 32px;
 	margin-top: 5px;
 	margin-bottom: 5px;
