@@ -13,6 +13,7 @@
 		$(function() {
 			$('#${id}').datepicker({
 				showOn: "button",
+				showAnim: '',
 				yearRange: '1900:+10',
 				buttonImage: "<c:url value='/css/x/calendar_off.gif'/>",
 				buttonImageOnly: true,

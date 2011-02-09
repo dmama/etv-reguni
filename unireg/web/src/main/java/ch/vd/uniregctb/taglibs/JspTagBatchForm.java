@@ -226,6 +226,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		b.append("    $(function() {\n");
 		b.append("        $('#").append(id).append("').datepicker({\n");
 		b.append("            showOn: \"button\",\n");
+		b.append("            showAnim: '',\n");
 		b.append("            yearRange: '1900:+10',\n");
 		b.append("            buttonImage: \"").append(request.getContextPath()).append("/css/x/calendar_off.gif\",\n");
 		b.append("            buttonImageOnly: true,\n");

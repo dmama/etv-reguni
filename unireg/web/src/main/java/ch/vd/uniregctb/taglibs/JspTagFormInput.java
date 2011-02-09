@@ -235,6 +235,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 				final String script = "$(function() {\n" +
 						"\t$( \"#" + id + "\" ).datepicker({" +
 						"showOn: \"button\", " +
+						"showAnim: '', " +
 						"buttonImage: \"" + getContextPath() + "/css/x/calendar_off.gif\", " +
 						"buttonImageOnly: true, " +
 						"changeMonth: true, " +
