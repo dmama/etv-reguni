@@ -232,7 +232,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 	}
 
-//[UNIREG-3120]
+//[UNIREG-3120] le debiteur n'a pas de for pour la periode pour laquelle on veut générer la lr
 @Test
 public void testLRForPeriodicites_3120_2() throws Exception{
 //Ajout d'une première periodicite'
@@ -263,6 +263,49 @@ public void testLRForPeriodicites_3120_2() throws Exception{
 			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
 			assertNull(lrView.getDateDebutPeriode());
 			assertNull(lrView.getDateFinPeriode());
+			return null;
+		}
+	});
+
+}
+
+//le debiteur possède plusieurs for mais pas de manière continue
+@Test
+public void testLRForPeriodicites_3120_3() throws Exception{
+//Ajout d'une première periodicite'
+	final int anneeReference =2009;
+	final int anneeSuivante = 2010;
+	final int anneePostSuivante = 2011;
+
+	final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+		@Override
+		public Object execute(TransactionStatus status) throws Exception {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
+			addForDebiteur(dpi,date(anneeReference, 1, 1),date(anneeReference, 6, 30), MockCommune.Bex);
+			addForDebiteur(dpi,date(anneeSuivante, 10, 1),date(anneeSuivante, 12, 31), MockCommune.Bex);
+			addForDebiteur(dpi,date(anneePostSuivante, 3, 1),null, MockCommune.Bex);
+			final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference);
+			final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeSuivante);
+			final PeriodeFiscale fiscale2011 = addPeriodeFiscale(anneePostSuivante);
+
+			addLR(dpi, date(anneeReference,1,1),date(anneeReference,3,31), fiscale2009, TypeEtatDeclaration.EMISE);
+			addLR(dpi, date(anneeReference,4,1),date(anneeReference,6,30), fiscale2009, TypeEtatDeclaration.EMISE);
+			addLR(dpi, date(anneeSuivante,10,1),date(anneeSuivante,12,31), fiscale2010, TypeEtatDeclaration.EMISE);
+
+			return  dpi.getNumero();
+		}
+	});
+
+	doInNewTransaction(new TxCallback() {
+		@Override
+		public Object execute(TransactionStatus status) throws Exception {
+			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				assertNotNull(lrView);
+				RegDate dateDebutPeriodeAttendue = RegDate.get(anneePostSuivante, 1, 1);
+				RegDate dateFinPeriodeAttendue = RegDate.get(anneePostSuivante, 3, 31);
+				assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
+				assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
 			return null;
 		}
 	});

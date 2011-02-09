@@ -355,8 +355,8 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 				DateRange periodeSuivante = getPeriodeSuivante(dpi, periodiciteSuivante,lr);
 				//UNIREG-3120 - 2 On ne doit pas pouvoir generer une lr si le debiteur n'a pas de for actif sur la periode
-				ForDebiteurPrestationImposable forDebiteur= dpi.getForDebiteurPrestationImposableAt(periodeSuivante.getDateDebut());
-				if(forDebiteur!=null){
+				ForDebiteurPrestationImposable forDebiteur= dpi.getDernierForDebiteur();
+				if(forDebiteur!=null && DateRangeHelper.intersect(periodeSuivante,forDebiteur)){
 					lrEditView.setDateDebutPeriode(periodeSuivante.getDateDebut());
 					lrEditView.setDateFinPeriode(periodeSuivante.getDateFin());
 					lrEditView.setPeriodicite(periodiciteSuivante.getPeriodiciteDecompte());
