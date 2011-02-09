@@ -29,6 +29,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
 import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
@@ -559,7 +560,9 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 						"L'utilisateur spécifié (" + params.login.userId + "/" + params.login.oid + ") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
 			}
 
-			return service.quittancerDeclarations(params);
+			final List<ReponseQuittancementDeclaration> reponses = service.quittancerDeclarations(params);
+			logEmbeddedErrors(params, reponses);
+			return reponses;
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -852,7 +855,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 
 		if (inError != null) {
-			StringBuilder message = new StringBuilder();
+			final StringBuilder message = new StringBuilder();
 			message.append("Les exceptions suivantes ont été levées lors du traitement du message ").append(params).append(" : ");
 			for (BatchTiersHistoEntry entry : inError) {
 				message.append("\n - id=").append(entry.number);
@@ -860,6 +863,39 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 				message.append("\", type=").append(entry.exceptionType);
 			}
 			LOGGER.error(message.toString());
+		}
+	}
+
+	/**
+	 * Log en erreur les erreurs rencontrées dans les demandes de quittancement
+	 * @param params le message de demande de quittancements
+	 * @param reponses les données retournées
+	 */
+	private void logEmbeddedErrors(QuittancerDeclarations params, List<ReponseQuittancementDeclaration> reponses) {
+
+		// 1. collection des cas en erreur
+		List<ReponseQuittancementDeclaration> inError = null;
+		for (ReponseQuittancementDeclaration reponse : reponses) {
+			if (reponse.code != CodeQuittancement.OK) {
+				if (inError == null) {
+					inError = new ArrayList<ReponseQuittancementDeclaration>();
+				}
+				inError.add(reponse);
+			}
+		}
+
+		// 2. log des erreurs
+		if (inError != null) {
+			final StringBuilder b = new StringBuilder();
+			b.append("Les erreurs suivantes ont été levées lors du traitement du message ").append(params).append(" : ");
+			for (ReponseQuittancementDeclaration reponse : inError) {
+				b.append("\n - key=").append(reponse.key);
+				b.append(", code=").append(reponse.code);
+				if (reponse.code == CodeQuittancement.EXCEPTION) {
+					b.append(", exception=\"").append(reponse.exceptionMessage).append("\", type=").append(reponse.exceptionType);
+				}
+			}
+			LOGGER.error(b.toString());
 		}
 	}
 
