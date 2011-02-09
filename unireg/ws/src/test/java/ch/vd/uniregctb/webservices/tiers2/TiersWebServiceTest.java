@@ -485,6 +485,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * n'a pas été créé fonctionne quand-même
 	 */
 	@Test
+	@NotTransactional
 	public void testQuittanceDeclarationSansDateEmission() throws Exception {
 
 		class Ids {
@@ -537,6 +538,16 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(1, retour.key.numeroSequenceDI);
 		assertEquals(2009, retour.key.periodeFiscale);
 		assertEquals(CodeQuittancement.OK, retour.code);
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+				assertNotNull(di);
+				assertNotNull(di.getDernierEtat());
+				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
+				return null;
+			}
+		});
 	}
 
 	// [UNIREG-3179] si un tiers ne valide pas au milieu du lot, tout explose
@@ -617,6 +628,16 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
 		assertEquals(expectedMessage, retour.exceptionMessage);
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+				assertNotNull(di);
+				assertNotNull(di.getDernierEtat());
+				assertEquals(TypeEtatDeclaration.EMISE, di.getDernierEtat().getEtat());
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -719,6 +740,21 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
 		assertEquals(expectedMessage, retourInvalide.exceptionMessage);
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DeclarationImpotOrdinaire diValide = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
+				assertNotNull(diValide);
+				assertNotNull(diValide.getDernierEtat());
+				assertEquals(TypeEtatDeclaration.RETOURNEE, diValide.getDernierEtat().getEtat());
+
+				final DeclarationImpotOrdinaire diInvalide = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
+				assertNotNull(diInvalide);
+				assertNotNull(diInvalide.getDernierEtat());
+				assertEquals(TypeEtatDeclaration.EMISE, diInvalide.getDernierEtat().getEtat());
+				return null;
+			}
+		});
 	}
 
 	/**
