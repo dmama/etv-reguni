@@ -123,4 +123,17 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 		HttpSession session = request.getSession(true);
 		session.removeAttribute(module);
 	}
+
+	@Override
+	protected Map<String, String> initMapTypeMessage() {
+		return identificationMapHelper.initMapTypeMessage();
+
+	}
+
+	@Override
+	protected Map<Integer, String> initMapPeriodeFiscale() {
+		return identificationMapHelper.initMapPeriodeFiscale();
+
+	}
+
 }

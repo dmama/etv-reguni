@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -114,6 +113,21 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return count;
 	}
 
+	public List<String> getTypesMessageEtatsNonTraites() {
+			String query = " select distinct identificationContribuable.demande.typeMessage" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+				return getHibernateTemplate().find(query);
+	}
+
+	public List<String> getTypesMessageEtatsTraites() {
+		String query = " select distinct identificationContribuable.demande.typeMessage" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT') ";
+		return getHibernateTemplate().find(query);
+	}
+
+
 	/**
 	 * Récupère la liste des types de message
 	 *
@@ -136,17 +150,38 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return getHibernateTemplate().find(query);
 	}
 
-	public List<String> getEmetteursIdEnCours() {
+	public List<String> getEmetteursIdEtatsNonTraites() {
 		String query = " select distinct identificationContribuable.demande.emetteurId" +
 				" from IdentificationContribuable identificationContribuable" +
 				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
 		return getHibernateTemplate().find(query);
 	}
 
-	public List<String> getEmetteursIdTraites() {
-		String query =  " select distinct identificationContribuable.demande.emetteurId" +
+
+
+	public List<String> getEmetteursIdEtatsTraites() {
+		String query = " select distinct identificationContribuable.demande.emetteurId" +
 				" from IdentificationContribuable identificationContribuable" +
 				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT') ";
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<Integer> getPeriodeEtatsTraites() {
+		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT') ";
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<Integer> getPeriodes() {
+		String query = " select distinct identificationContribuable.demande.periodeFiscale from IdentificationContribuable identificationContribuable";
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<Integer> getPeriodeEtatsNonTraites() {
+		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
 		return getHibernateTemplate().find(query);
 	}
 
@@ -154,6 +189,20 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		String query = " select distinct identificationContribuable.traitementUser " +
 				"from IdentificationContribuable identificationContribuable where identificationContribuable.traitementUser is not null " +
 				"and identificationContribuable.traitementUser not like '%JMS-EvtIdentCtb%' ";
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<Etat> getListeEtatsMessagesNonTraites() {
+		String query = " select distinct identificationContribuable.etat" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<Etat> getListeEtatsMessagesTraites() {
+		String query = " select distinct identificationContribuable.etat" +
+				" from IdentificationContribuable identificationContribuable" +
+				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT')";
 		return getHibernateTemplate().find(query);
 	}
 
@@ -187,12 +236,12 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 		String visaUser = identificationContribuableCriteria.getTraitementUser();
 		if ((visaUser != null) && (!TOUS.equals(visaUser))) {
-			if("Traitement automatique".equals(visaUser)){
+			if ("Traitement automatique".equals(visaUser)) {
 				visaUser = "%JMS-EvtIdentCtb%";
 				queryWhere += " and identificationContribuable.traitementUser like ? ";
 
 			}
-			else{
+			else {
 				queryWhere += " and identificationContribuable.traitementUser = ? ";
 			}
 
