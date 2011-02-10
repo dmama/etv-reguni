@@ -1,26 +1,24 @@
 package ch.vd.uniregctb.identification.contribuable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.ApplicationConfig;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CommonMapHelper;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
 public class IdentificationMapHelper extends CommonMapHelper {
 
@@ -88,18 +86,17 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Etat, String> initMapEtatEnCoursMessage() {
 
-		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
-				Etat.A_EXPERTISER_SUSPENDU,
-				Etat.A_TRAITER_MAN_SUSPENDU,
-				Etat.RECU,
-				Etat.EXCEPTION,
-				Etat.NON_IDENTIFIE,
-				Etat.SUSPENDU,
-				Etat.TRAITE_AUTOMATIQUEMENT,
-				Etat.TRAITE_MANUELLEMENT,
-				Etat.TRAITE_MAN_EXPERT);
+		final Map <Etat,String> etatsMessages = initMapEtatMessage(false);
 
-		return mapEtatMessage;
+		if(etatsMessages.containsValue(Etat.A_EXPERTISER_SUSPENDU)){
+			etatsMessages.remove(Etat.A_EXPERTISER_SUSPENDU);
+		}
+
+		if(etatsMessages.containsValue(Etat.A_TRAITER_MAN_SUSPENDU)){
+			etatsMessages.remove(Etat.A_TRAITER_MAN_SUSPENDU);
+		}
+
+		return etatsMessages;
 	}
 
 	/**
@@ -109,16 +106,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Etat, String> initMapEtatEnCoursSuspenduMessage() {
 
-		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
-				Etat.RECU,
-				Etat.EXCEPTION,
-				Etat.NON_IDENTIFIE,
-				Etat.SUSPENDU,
-				Etat.TRAITE_AUTOMATIQUEMENT,
-				Etat.TRAITE_MANUELLEMENT,
-				Etat.TRAITE_MAN_EXPERT);
+		final Map <Etat,String> etatsMessages = initMapEtatMessage(false);
 
-		return mapEtatMessage;
+		return etatsMessages;
 	}
 
 	/**
@@ -126,18 +116,31 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<Etat, String> initMapEtatArchivewMessage() {
+	public Map<Etat, String> initMapEtatMessage(final boolean isTraite) {
 
-		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
-				Etat.A_EXPERTISER_SUSPENDU,
-				Etat.A_TRAITER_MAN_SUSPENDU,
-				Etat.RECU,
-				Etat.EXCEPTION,
-				Etat.A_EXPERTISER,
-				Etat.A_TRAITER_MANUELLEMENT,
-				Etat.SUSPENDU);
+	final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-		return mapEtatMessage;
+		final Map<Etat, String> mapEtat = new HashMap<Etat, String>();
+		final List<Etat> typesMessage = (List<Etat>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				if(isTraite){
+					return identCtbDAO.getListeEtatsMessagesTraites();
+				}
+				else{
+					return identCtbDAO.getListeEtatsMessagesNonTraites();
+				}
+
+			}
+		});
+
+		Iterator<Etat> itEtat = typesMessage.iterator();
+		while (itEtat.hasNext()) {
+			Etat etat = itEtat.next();
+			String libelleEtat = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyEtatMessage + etat);
+			mapEtat.put(etat, libelleEtat);
+		}
+		return mapEtat;
 	}
 
 	/**
@@ -154,6 +157,39 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final List<String> typesMessage = (List<String>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getTypesMessage();
+			}
+		});
+
+		Iterator<String> itMessages = typesMessage.iterator();
+		while (itMessages.hasNext()) {
+			String typeMessage = itMessages.next();
+			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
+			mapMessage.put(typeMessage, typeMessageValeur);
+		}
+
+		return mapMessage;
+	}
+
+
+	/**
+	 * Initialise la map des types du message
+	 *
+	 * @return une map
+	 */
+
+	public Map<String, String> initMapTypeMessage(final boolean isTraite) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final Map<String, String> mapMessage = new HashMap<String, String>();
+		final List<String> typesMessage = (List<String>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+					if(isTraite){
+					return identCtbDAO.getTypesMessageEtatsTraites();
+				}
+				else{
+					return identCtbDAO.getTypesMessageEtatsNonTraites();
+				}
 			}
 		});
 
@@ -206,18 +242,18 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 
-	public Map<String, String> initMapEmetteurId(final boolean forTraite) {
+	public Map<String, String> initMapEmetteurId(final boolean isTraite) {
 
 		final Map<String, String> allEmetteur = new HashMap<String, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<String> emetteurs = (List<String>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				if(forTraite){
-					return identCtbDAO.getEmetteursIdTraites();
+				if(isTraite){
+					return identCtbDAO.getEmetteursIdEtatsTraites();
 				}
 				else{
-					return identCtbDAO.getEmetteursIdEnCours();
+					return identCtbDAO.getEmetteursIdEtatsNonTraites();
 				}
 
 			}
@@ -241,4 +277,64 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	}
 
 
+	public Map<Etat, String> initMapEtatArchiveMessage() {
+		final Map <Etat,String> etatsMessages = initMapEtatMessage(true);
+
+		return etatsMessages;
+	}
+
+	/**
+	 * Initialise la map des periodes fiscales
+	 * @return une map
+	 */
+	public Map<Integer, String> initMapPeriodeFiscale(final boolean isTraite) {
+		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final List<Integer> periodes = (List<Integer>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				if(isTraite){
+					return identCtbDAO.getPeriodeEtatsTraites();
+				}
+				else{
+					return identCtbDAO.getPeriodeEtatsNonTraites();
+				}
+
+			}
+		});
+
+		Iterator<Integer> itPeriode = periodes.iterator();
+		while (itPeriode.hasNext()) {
+			Integer periode = itPeriode.next();
+
+			allPeriodeFiscale .put(periode, Integer.toString(periode));
+		}
+
+		return allPeriodeFiscale;
+	}
+
+		/**
+	 * Initialise la map des periodes fiscales
+	 * @return une map
+	 */
+	public Map<Integer, String> initMapPeriodeFiscale() {
+		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final List<Integer> periodes = (List<Integer>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return identCtbDAO.getPeriodes();
+
+			}
+		});
+
+		Iterator<Integer> itPeriode = periodes.iterator();
+		while (itPeriode.hasNext()) {
+			Integer periode = itPeriode.next();
+
+			allPeriodeFiscale .put(periode, Integer.toString(periode));
+		}
+
+		return allPeriodeFiscale;
+	}
 }

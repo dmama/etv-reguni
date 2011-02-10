@@ -42,13 +42,33 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu, TypeDemande typeDemande);
 
+
+
 	/**
-	 * Récupère la liste des types de message
+	 * Récupère la liste des types de message quel que soit l'etat
 	 *
 	 * @return
 	 */
 
 	public List<String> getTypesMessage();
+
+
+	/**
+	 * Récupère la liste des types de message avec un état non traité
+	 *
+	 * @return
+	 */
+
+	public List<String> getTypesMessageEtatsNonTraites();
+
+/**
+	 * Récupère la liste des types de message
+	 *
+	 * @return
+	 */
+
+	public List<String> getTypesMessageEtatsTraites();
+
 
 	/**
 	 * Récupère la liste des émetteurs
@@ -62,18 +82,53 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 *
 	 * @return
 	 */
-	public List<String> getEmetteursIdEnCours();
+	public List<String> getEmetteursIdEtatsNonTraites();
 
 	/**
 	 * Récupère la liste des émetteurs pour les messages traités
 	 *
 	 * @return
 	 */
-	public List<String> getEmetteursIdTraites();
+	public List<Integer> getPeriodeEtatsTraites();
+
+
+	/**
+	 * Récupère la liste des périodes quel que soit l'état
+	 *
+	 * @return
+	 */
+	public List<Integer> getPeriodes();
+
+	/**
+	 * Récupère la liste des périodes pour les messages non traités
+	 *
+	 * @return
+	 */
+	public List<Integer> getPeriodeEtatsNonTraites();
+
+	/**
+	 * Récupère la liste des périodes pour les messages traités
+	 *
+	 * @return
+	 */
+	public List<String> getEmetteursIdEtatsTraites();
+
 
 	/**Recupère la lliste des utilisateurs ayant effectué un traitement
 	 *
 	 * @return
 	 */
 	public List<String> getTraitementUser();
+
+	/**Retourne la liste des états des messages non traités
+	 *
+	 * @return
+	 */
+	public List<IdentificationContribuable.Etat> getListeEtatsMessagesNonTraites();
+
+	/**Retourne la liste des états des messages traités
+	 *
+	 * @return
+	 */
+	public List<IdentificationContribuable.Etat> getListeEtatsMessagesTraites();
 }

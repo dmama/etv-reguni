@@ -181,6 +181,10 @@ public class IdentificationMessagesListController extends AbstractIdentification
 	}
 
 
+	@Override
+	protected Map<String, String> initMapTypeMessage() {
+		return identificationMapHelper.initMapTypeMessage(false);
 
+	}
 
 }

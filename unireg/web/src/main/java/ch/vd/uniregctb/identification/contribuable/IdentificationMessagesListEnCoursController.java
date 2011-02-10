@@ -42,8 +42,6 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	private static final String TABLE_IDENTIFICATION_ID = "message";
 
 
-
-
 	private IdentificationMessagesListManager identificationMessagesListManager;
 
 	public void setIdentificationMessagesListManager(IdentificationMessagesListManager identificationMessagesListManager) {
@@ -66,18 +64,17 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		String parametreTypeMessage = request.getParameter(TYPE_MESSAGE_PARAMETER_NAME);
 
 
-
 		boolean fromTraiteMessage = false;
 
 
-		if (session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE)!=null) {
-			fromTraiteMessage = (Boolean)session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE);
+		if (session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE) != null) {
+			fromTraiteMessage = (Boolean) session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE);
 		}
 
 		// on remet a zero les critères de recherche afin
 
 		boolean fromTableauDeBord = areUsed(parametreEtat, parametrePeriode, parametreTypeMessage);
-		if (fromTableauDeBord||  fromTraiteMessage) {
+		if (fromTableauDeBord || fromTraiteMessage) {
 			removeModuleFromSession(request, IDENTIFICATION_CRITERIA_NAME);
 		}
 
@@ -99,9 +96,8 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse,
-	 *      org.springframework.validation.BindException, java.util.Map)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException,
+	 *      java.util.Map)
 	 */
 
 	@SuppressWarnings("unchecked")
@@ -118,23 +114,20 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			Integer nombreElements = 0;
 
 
+			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
 
-
-			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN) ){
-
-				listIdentifications = identificationMessagesListManager.find(bean, pagination,false,false,true, TypeDemande.MELDEWESEN);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean,false,false,true, TypeDemande.MELDEWESEN));
+				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true, TypeDemande.MELDEWESEN);
+				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean, false, false, true, TypeDemande.MELDEWESEN));
 
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination,true,false,false, TypeDemande.MELDEWESEN);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean,true,false,false, TypeDemande.MELDEWESEN));
+				listIdentifications = identificationMessagesListManager.find(bean, pagination, true, false, false, TypeDemande.MELDEWESEN);
+				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean, true, false, false, TypeDemande.MELDEWESEN));
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination);
 				nombreElements = Integer.valueOf(identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.MELDEWESEN));
 			}
-
 
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
@@ -150,33 +143,16 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 		mav.addObject(IDENTIFICATION_TRAITE_MESSAGE, false);
 
-		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE,Boolean.TRUE);
+		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE, Boolean.TRUE);
 
-		session.setAttribute(IDENTIFICATION_TRAITE_MESSAGE,Boolean.FALSE);
+		session.setAttribute(IDENTIFICATION_TRAITE_MESSAGE, Boolean.FALSE);
 
 		return mav;
 	}
 
 
-	    @Override
-		protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-
-			// TracePoint tp = TracingManager.begin();
-			// TracingManager.end(tp);
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
-			data.put(EMETTEUR_MAP_NAME, identificationMapHelper.initMapEmetteurId(false));
-			data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
-			data.put(TYPE_MESSAGE_MAP_NAME, identificationMapHelper.initMapTypeMessage());
-			data.put(PRIORITE_EMETTEUR_MAP_NAME, identificationMapHelper.initMapPrioriteEmetteur());
-			data.put(ERREUR_MESSAGE_MAP_NAME, identificationMapHelper.initErreurMessage());
-			data.put(TRAITEMENT_USER_MAP_NAME,identificationMapHelper.initMapUser());
-			return data;
-		}
-
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
@@ -202,7 +178,8 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		session.setAttribute(IDENTIFICATION_CRITERIA_NAME, bean);
 		if (request.getParameter(EFFACER_PARAMETER_VALUE) != null) {
 			mav.setView(new RedirectView("listEnCours.do?action=effacer"));
-		} else {
+		}
+		else {
 			mav.setView(new RedirectView(getSuccessView()));
 		}
 		return mav;
@@ -210,6 +187,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 	/**
 	 * Removes the mapping for this module.
+	 *
 	 * @param	request	HttpRequest
 	 * @param	module	Name of the specific module
 	 */
@@ -221,7 +199,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	@Override
 	public Map<Etat, String> initMapEtatMessage() {
 		{
-			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN) ){
+			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
 
 				return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
 
@@ -232,5 +210,25 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		}
 		return null;
 	}
+
+
+	@Override
+	protected Map<String, String> initMapEmetteurId() {
+		return identificationMapHelper.initMapEmetteurId(false);
+
+	}
+
+	@Override
+	protected Map<String, String> initMapTypeMessage() {
+		return identificationMapHelper.initMapTypeMessage(false);
+
+	}
+
+	@Override
+	protected Map<Integer, String> initMapPeriodeFiscale() {
+		return identificationMapHelper.initMapPeriodeFiscale(false);
+
+	}
+
 
 }

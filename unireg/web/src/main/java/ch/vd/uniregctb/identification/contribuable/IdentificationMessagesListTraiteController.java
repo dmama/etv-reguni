@@ -36,8 +36,6 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 	private static final String TABLE_IDENTIFICATION_ID = "message";
 
 
-
-
 	private IdentificationMessagesListManager identificationMessagesListManager;
 
 	public void setIdentificationMessagesListManager(IdentificationMessagesListManager identificationMessagesListManager) {
@@ -62,9 +60,8 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		boolean fromMessageEnCours = false;
 
 
-
-		if (session.getAttribute(IDENTIFICATION_EN_COURS_MESSAGE)!=null) {
-			fromMessageEnCours = (Boolean)session.getAttribute(IDENTIFICATION_EN_COURS_MESSAGE);
+		if (session.getAttribute(IDENTIFICATION_EN_COURS_MESSAGE) != null) {
+			fromMessageEnCours = (Boolean) session.getAttribute(IDENTIFICATION_EN_COURS_MESSAGE);
 		}
 
 		// on remet a zero les critères de recherche afin
@@ -79,8 +76,8 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
 
 		if (bean == null || (buttonEffacer != null && buttonEffacer.equals(EFFACER_PARAMETER_VALUE))) {
-	 		if (fromTableauDeBord) {
-	 			bean = identificationMessagesListManager.getView(parametreTypeMessage, parametrePeriode, parametreEtat);
+			if (fromTableauDeBord) {
+				bean = identificationMessagesListManager.getView(parametreTypeMessage, parametrePeriode, parametreEtat);
 			}
 			else {
 				bean = identificationMessagesListManager.getView(null, null, null);
@@ -94,9 +91,8 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse,
-	 *      org.springframework.validation.BindException, java.util.Map)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException,
+	 *      java.util.Map)
 	 */
 
 	@SuppressWarnings("unchecked")
@@ -110,10 +106,10 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 			// Récupération de la pagination
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 
-			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true,false, TypeDemande.MELDEWESEN);
+			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.MELDEWESEN);
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(identificationMessagesListManager.count(bean,false, true,false, TypeDemande.MELDEWESEN)));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(identificationMessagesListManager.count(bean, false, true, false, TypeDemande.MELDEWESEN)));
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
@@ -123,32 +119,15 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 		mav.addObject(IDENTIFICATION_TRAITE_MESSAGE, true);
 
-		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE,Boolean.FALSE);
-		session.setAttribute(IDENTIFICATION_TRAITE_MESSAGE,Boolean.TRUE);
+		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE, Boolean.FALSE);
+		session.setAttribute(IDENTIFICATION_TRAITE_MESSAGE, Boolean.TRUE);
 
 		return mav;
 	}
 
-	@Override
-		protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-
-			// TracePoint tp = TracingManager.begin();
-			// TracingManager.end(tp);
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
-			data.put(EMETTEUR_MAP_NAME, identificationMapHelper.initMapEmetteurId(true));
-			data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
-			data.put(TYPE_MESSAGE_MAP_NAME, identificationMapHelper.initMapTypeMessage());
-			data.put(PRIORITE_EMETTEUR_MAP_NAME, identificationMapHelper.initMapPrioriteEmetteur());
-			data.put(ERREUR_MESSAGE_MAP_NAME, identificationMapHelper.initErreurMessage());
-			data.put(TRAITEMENT_USER_MAP_NAME,identificationMapHelper.initMapUser());
-			return data;
-		}
-
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
@@ -164,7 +143,8 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		session.setAttribute(IDENTIFICATION_CRITERIA_NAME, bean);
 		if (request.getParameter(EFFACER_PARAMETER_VALUE) != null) {
 			mav.setView(new RedirectView("listTraite.do?action=effacer"));
-		} else {
+		}
+		else {
 			mav.setView(new RedirectView(getSuccessView()));
 		}
 		return mav;
@@ -172,6 +152,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	/**
 	 * Removes the mapping for this module.
+	 *
 	 * @param	request	HttpRequest
 	 * @param	module	Name of the specific module
 	 */
@@ -182,9 +163,25 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	@Override
 	public Map<Etat, String> initMapEtatMessage() {
-		{
-			return identificationMapHelper.initMapEtatArchivewMessage();
-		}
+		return identificationMapHelper.initMapEtatArchiveMessage();
+	}
+
+	@Override
+	protected Map<String, String> initMapEmetteurId() {
+		return identificationMapHelper.initMapEmetteurId(true);
+
+	}
+
+	@Override
+	protected Map<String, String> initMapTypeMessage() {
+		return identificationMapHelper.initMapTypeMessage(true);
+
+	}
+
+	@Override
+	protected Map<Integer, String> initMapPeriodeFiscale() {
+		return identificationMapHelper.initMapPeriodeFiscale(true);
+
 	}
 
 }
