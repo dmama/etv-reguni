@@ -17,4 +17,6 @@ public interface FidorService {
 	Logiciel getLogiciel(Long idLogiciel);
 
 	List<Logiciel> getTousLesLogiciels();
+
+	List<Logiciel> getLogicielsForEmpaci();
 }

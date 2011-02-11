@@ -29,4 +29,8 @@ public class MockFidorService implements FidorService {
 	public List<Logiciel> getTousLesLogiciels() {
 		return null;
 	}
+
+	public List<Logiciel> getLogicielsForEmpaci() {
+		return null;
+	}
 }

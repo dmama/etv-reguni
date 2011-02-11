@@ -20,6 +20,7 @@ import ch.vd.fidor.ws.v2.FidorPortType;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.webservice.fidor.FidorClient;
 import ch.vd.uniregctb.wsclient.model.Logiciel;
+import ch.vd.uniregctb.wsclient.model.LogicielMetier;
 import ch.vd.uniregctb.wsclient.model.impl.LogicielImpl;
 
 /**
@@ -62,6 +63,17 @@ public class FidorServiceImpl implements FidorService {
 			}
 		}
 		return Collections.unmodifiableList(listeLogiciel);
+	}
+
+	public List<Logiciel> getLogicielsForEmpaci() {
+		final List<Logiciel> logicielsForEmpaci = new ArrayList<Logiciel>();
+		final List<Logiciel> allLogiciels = getTousLesLogiciels();
+		for (Logiciel logiciel : allLogiciels) {
+			if (logiciel.getMetier() == LogicielMetier.EMPACI) {
+				logicielsForEmpaci.add(logiciel);
+			}
+		}
+		return  logicielsForEmpaci;
 	}
 
 	public String getUrlTaoPP(Long numero) {

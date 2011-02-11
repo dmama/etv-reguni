@@ -491,7 +491,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<Long, String> getAllLibellesLogiciels() {
 		Map<Long,String> mapLibelleLogiciel = new HashMap<Long, String>();
-		List<Logiciel> listeLogiciels = fidorService.getTousLesLogiciels();
+		List<Logiciel> listeLogiciels = fidorService.getLogicielsForEmpaci();
 		if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
 			for (Logiciel logiciel : listeLogiciels) {
 				mapLibelleLogiciel.put(logiciel.getId(),logiciel.getFournisseur());
