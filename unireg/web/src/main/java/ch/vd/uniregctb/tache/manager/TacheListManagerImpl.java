@@ -1,17 +1,16 @@
 package ch.vd.uniregctb.tache.manager;
 
+import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.jms.JMSException;
-
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -135,7 +134,7 @@ public class TacheListManagerImpl implements TacheListManager {
 				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
 				tacheView.setNomCourrier(Arrays.asList("<erreur: individu introuvable>"));
 			}
-			catch (AdresseException e) {
+			catch (Exception e) {
 				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
 				tacheView.setNomCourrier(Arrays.asList("<erreur: " + e.getMessage() + ">"));
 			}
