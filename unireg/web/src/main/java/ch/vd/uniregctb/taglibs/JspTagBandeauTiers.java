@@ -21,7 +21,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -371,7 +370,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				}
 			}
 		}
-		catch (AdresseException e) {
+		catch (Exception e) {
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
 			s.append("\t<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
 			s.append("\t<td width=\"75%\" colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.entete")).append("</td>\n");
@@ -702,7 +701,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		try {
 			adresseService.getAdressesFiscalHisto(tiers, true /* strict */);
 		}
-		catch (AdresseException e) {
+		catch (Exception e) {
 			validationResults.addWarning("Des incohérences ont été détectées dans les adresses du tiers : " + e.getMessage() +
 					". Dans la mesure du possible, ces incohérences ont été corrigées à la volée (mais pas sauvées en base).");
 		}
