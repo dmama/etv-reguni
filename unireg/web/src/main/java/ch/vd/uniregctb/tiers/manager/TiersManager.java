@@ -385,7 +385,7 @@ public class TiersManager implements MessageSourceAware {
 				try {
 					nomSujet = adresseService.getNomCourrier(tiersSujet, null, false);
 				}
-				catch (AdresseException e) {
+				catch (Exception e) {
 					nomSujet = new ArrayList<String>();
 					nomSujet.add(e.getMessage());
 				}
@@ -419,7 +419,7 @@ public class TiersManager implements MessageSourceAware {
 				try {
 					nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);
 				}
-				catch (AdresseException e) {
+				catch (Exception e) {
 					nomObjet = new ArrayList<String>();
 					nomObjet.add(e.getMessage());
 				}
@@ -1677,7 +1677,7 @@ public class TiersManager implements MessageSourceAware {
 
 			callback.setAdressesView(adresses);
 		}
-		catch (AdresseException exception) {
+		catch (Exception exception) {
 
 			List<AdresseView> adresses = new ArrayList<AdresseView>();
 
