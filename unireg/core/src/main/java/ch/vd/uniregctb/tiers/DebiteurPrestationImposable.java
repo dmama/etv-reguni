@@ -53,6 +53,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	private Boolean sansRappel;
 	private Boolean sansListeRecapitulative;
 	private Set<Periodicite> periodicites;
+	private Long logicielId;
 
 
 	@Column(name = "DPI_NOM1", length = LengthConstants.DPI_NOM1)
@@ -116,6 +117,15 @@ public class DebiteurPrestationImposable extends Tiers {
 	@Column(name = "SANS_RAPPEL")
 	public Boolean getSansRappel() {
 		return sansRappel;
+	}
+
+	@Column(name = "LOGICIEL_ID")
+	public Long getLogicielId() {
+		return logicielId;
+	}
+
+	public void setLogicielId(Long logicielId) {
+		this.logicielId = logicielId;
 	}
 
 	public void setSansRappel(Boolean theSansRappel) {

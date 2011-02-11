@@ -14,7 +14,7 @@ public interface FidorService {
 
 	String getUrlSipf(Long numero);
 
-	Logiciel getLogiciel(long idLogiciel);
+	Logiciel getLogiciel(Long idLogiciel);
 
 	List<Logiciel> getTousLesLogiciels();
 }

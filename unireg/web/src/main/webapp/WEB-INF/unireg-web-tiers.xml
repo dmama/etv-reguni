@@ -13,7 +13,9 @@
 		<property name="fidorService" ref="fidorService" />
 	</bean>
 
-	<bean id="tiersMapHelper" class="ch.vd.uniregctb.tiers.TiersMapHelper" />
+	<bean id="tiersMapHelper" class="ch.vd.uniregctb.tiers.TiersMapHelper" >
+		<property name="fidorService" ref="fidorService" />
+	</bean>
 
 	<bean id="tiersCriteriaValidator" class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator" />
 
@@ -93,6 +95,7 @@
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="fidorService" ref="fidorService" />
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">

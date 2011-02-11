@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,10 @@ public class FidorServiceImpl implements FidorService {
 		this.fidorClient = fidorClient;
 	}
 
-	public Logiciel getLogiciel(long idLogiciel) {
+	public Logiciel getLogiciel(Long idLogiciel) {
+		if(idLogiciel== null){
+			return null;
+		}
 		return LogicielImpl.get(fidorClient.getLogicielDetail(idLogiciel));
 
 	}
@@ -57,7 +61,7 @@ public class FidorServiceImpl implements FidorService {
 				 listeLogiciel.add(LogicielImpl.get(logicielFidor));
 			}
 		}
-		return listeLogiciel;
+		return Collections.unmodifiableList(listeLogiciel);
 	}
 
 	public String getUrlTaoPP(Long numero) {

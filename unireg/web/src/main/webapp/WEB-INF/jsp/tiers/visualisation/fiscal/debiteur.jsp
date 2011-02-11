@@ -26,6 +26,17 @@
 	</table>
 </fieldset>
 <fieldset>
+		<legend><span><fmt:message key="label.complement.logicielPaye" /></span></legend>
+			<c:if test="${command.logiciel != null}">
+				<table>
+					<tr class="<unireg:nextRowClass/>" >
+						<td><fmt:message key="label.complement.logiciel.fournisseur" />&nbsp;:</td>
+						<td><c:out value="${command.logiciel.fournisseur}"/></td>
+					</tr>
+				</table>
+			</c:if>
+</fieldset>
+<fieldset>
 		<legend><span><fmt:message key="label.periodicites" /></span></legend>
 		<c:if test="${not empty command.periodicites}">
 			<input name="periodicites_histo"  id="isPeriodiciteHisto"

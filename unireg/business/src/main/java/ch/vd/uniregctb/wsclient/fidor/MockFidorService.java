@@ -22,7 +22,7 @@ public class MockFidorService implements FidorService {
 		return "https://blabla/_NOCTB_/_OID_";
 	}
 
-	public Logiciel getLogiciel(long idLogiciel) {
+	public Logiciel getLogiciel(Long idLogiciel) {
 		return null;
 	}
 

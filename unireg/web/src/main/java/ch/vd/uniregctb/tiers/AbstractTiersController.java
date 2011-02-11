@@ -54,6 +54,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		data.put(TYPE_ADRESSE_FISCALE_TIERS,tiersMapHelper.getMapTypeAdresseFiscale());
 		data.put(TARIF_IMPOT_SOURCE_MAP_NAME, tiersMapHelper.getTarifsImpotSource());
 		data.put(PERIODE_DECOMPTE_MAP_NAME, tiersMapHelper.getPeriodeDecomptes());
+		data.put(LIBELLE_LOGICIEL,tiersMapHelper.getAllLibellesLogiciels());
 
 		data.put(PARAMETRES_APP, paramApplicationManager.getForm());
 
@@ -249,7 +250,13 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	 */
 	public static final String TYPE_ADRESSE_TIERS = "typeAdresseTiers";
 
-		/**
+	/**
+	 * Libellé des logiciels
+	 */
+
+	public static final String LIBELLE_LOGICIEL = "libellesLogiciel";
+
+	/**
 	 * Type Adresse Fiscale autorisé pour les Tiers
 	 */
 	public static final String TYPE_ADRESSE_FISCALE_TIERS = "typeAdresseFiscaleTiers";

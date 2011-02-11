@@ -103,6 +103,8 @@ public class TiersView {
 
 	private boolean addContactISAllowed;
 
+	private LogicielView logiciel;
+
 	private Map<String, Boolean> allowedOnglet;
 
 	public ComplementView getComplement() {
@@ -492,5 +494,13 @@ public class TiersView {
 
 	public void setPeriodicite(PeriodiciteView periodicite) {
 		this.periodicite = periodicite;
+	}
+
+	public LogicielView getLogiciel() {
+		return logiciel;
+	}
+
+	public void setLogiciel(LogicielView logiciel) {
+		this.logiciel = logiciel;
 	}
 }

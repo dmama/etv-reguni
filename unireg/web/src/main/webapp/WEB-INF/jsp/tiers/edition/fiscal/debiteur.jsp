@@ -30,7 +30,10 @@
 			<td width="25%"><fmt:message key="label.sans.lr"/>&nbsp;:</td>
 			<td width="25%"><form:checkbox path="sansListeRecapitulative" /></td>
 		</tr>
-		
+		<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.complement.logiciel.fournisseur" />&nbsp;:</td>
+					<td><form:select path="logicielId" items="${libellesLogiciel}" /></td>
+		</tr>
 	</table>
 </fieldset>
 <script type="text/javascript">

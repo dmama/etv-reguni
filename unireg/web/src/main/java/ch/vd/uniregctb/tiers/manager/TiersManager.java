@@ -104,6 +104,7 @@ import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
+import ch.vd.uniregctb.tiers.view.LogicielView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteViewComparator;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
@@ -122,6 +123,8 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.uniregctb.wsclient.fidor.FidorService;
+import ch.vd.uniregctb.wsclient.model.Logiciel;
 
 /**
  * Methodes annexes utilisées par TiersVisuManager et TiersEditManager
@@ -139,6 +142,8 @@ public class TiersManager implements MessageSourceAware {
 	private HostPersonneMoraleService hostPersonneMoraleService;
 
 	protected ServiceCivilService serviceCivilService;
+
+	private FidorService fidorService;
 
 	protected TiersDAO tiersDAO;
 
@@ -495,6 +500,15 @@ public class TiersManager implements MessageSourceAware {
 			}
 		}
 		tiersView.setContribuablesAssocies(rapportsView);
+	}
+
+	protected void setLogicielView(TiersView tiersView, DebiteurPrestationImposable debiteur){
+		final Long logicielId = debiteur.getLogicielId();
+		final Logiciel logiciel = fidorService.getLogiciel(logicielId);
+		if(logiciel!=null){
+			tiersView.setLogiciel(new LogicielView(logiciel));
+		}
+
 	}
 
 	/**
@@ -2013,6 +2027,10 @@ public class TiersManager implements MessageSourceAware {
 
 	public MessageSource getMessageSource() {
 		return messageSource;
+	}
+
+	public void setFidorService(FidorService fidorService) {
+		this.fidorService = fidorService;
 	}
 
 	/**

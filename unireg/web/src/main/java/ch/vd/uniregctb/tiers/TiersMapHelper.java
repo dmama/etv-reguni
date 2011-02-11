@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
+import ch.vd.uniregctb.tiers.view.LogicielView;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
@@ -14,6 +16,8 @@ import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.type.*;
+import ch.vd.uniregctb.wsclient.fidor.FidorService;
+import ch.vd.uniregctb.wsclient.model.Logiciel;
 
 /**
  * Cette classe expose les différents enums sours forme de map enum->description.
@@ -53,6 +57,12 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<PeriodeDecompte, String> mapPeriodeDecompte;
 	private Map<TypeDroitAcces, String> mapDroitAcces;
 	private Map<TypeOperation, String> mapTypeOperation;
+
+	private FidorService fidorService;
+
+	public void setFidorService(FidorService fidorService) {
+		this.fidorService = fidorService;
+	}
 
 	/**
 	 * Initialise la map des formes juridiques
@@ -124,7 +134,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	public Map<CategorieEtranger, String> getMapCategorieEtranger() {
 		if (mapCategorieEtranger == null) {
 			mapCategorieEtranger = initMapEnum(ApplicationConfig.masterKeyCategorieEtranger, CategorieEtranger.class,
-						CategorieEtranger._01_SAISONNIER_A);
+					CategorieEtranger._01_SAISONNIER_A);
 		}
 		return mapCategorieEtranger;
 	}
@@ -334,7 +344,7 @@ public class TiersMapHelper extends CommonMapHelper {
 		return mapTypeAdresse;
 	}
 
-		/**
+	/**
 	 * Initialise la map de etats des types autorisés pour une adresse fiscale
 	 *
 	 * @return une map
@@ -380,13 +390,15 @@ public class TiersMapHelper extends CommonMapHelper {
 
 
 		if (mapTypesDeclarationImpot == null) {
-			mapTypesDeclarationImpot = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+			mapTypesDeclarationImpot =
+					initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 		}
 		return mapTypesDeclarationImpot;
 	}
 
 	/**
 	 * Initialise la map des types de declarations d'impôt ordinaires pour l'écran d'édition de la DI (quittancement)
+	 *
 	 * @return une map
 	 */
 	public Map<TypeDocument, String> getTypesDeclarationsImpotOrdinaires() {
@@ -431,8 +443,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map des periode de décompte
-	 * Elles sont triées par clef
+	 * Initialise la map des periode de décompte Elles sont triées par clef
 	 *
 	 * @return une map
 	 */
@@ -454,7 +465,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<TypeDroitAcces, String> getDroitAcces() {
-		if ( mapDroitAcces == null) {
+		if (mapDroitAcces == null) {
 			mapDroitAcces = initMapEnum(ApplicationConfig.masterKeyDroitAcces, TypeDroitAcces.class);
 		}
 		return mapDroitAcces;
@@ -466,10 +477,28 @@ public class TiersMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<TypeOperation, String> getTypeOperation() {
-		if ( mapTypeOperation == null) {
+		if (mapTypeOperation == null) {
 			mapTypeOperation = initMapEnum(ApplicationConfig.masterKeyTypeOperation, TypeOperation.class);
 		}
 		return mapTypeOperation;
 	}
 
+	/**
+	 * Initialise la map avec touts les fournisseurs de tous les logiciels presents dans FiDoR
+	 *
+	 * @param fidorService
+	 * @return une map
+	 */
+	public Map<Long, String> getAllLibellesLogiciels() {
+		Map<Long,String> mapLibelleLogiciel = new HashMap<Long, String>();
+		List<Logiciel> listeLogiciels = fidorService.getTousLesLogiciels();
+		if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
+			for (Logiciel logiciel : listeLogiciels) {
+				mapLibelleLogiciel.put(logiciel.getId(),logiciel.getFournisseur());
+
+
+			}
+		}
+		return mapLibelleLogiciel;
+	}
 }

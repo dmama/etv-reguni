@@ -119,7 +119,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			setDebiteurPrestationImposable(tiersVisuView, dpi, rapportsPrestationHisto, webParamPagination);
 			setContribuablesAssocies(tiersVisuView, dpi);
 			setForsFiscauxDebiteur(tiersVisuView, dpi);
-			setPeriodicitesView(tiersVisuView,dpi);
+			setPeriodicitesView(tiersVisuView, dpi);
+			setLogicielView(tiersVisuView, dpi);
 		}
 		else if (tiers instanceof CollectiviteAdministrative) {
 			tiersVisuView.setTiers(tiers);
