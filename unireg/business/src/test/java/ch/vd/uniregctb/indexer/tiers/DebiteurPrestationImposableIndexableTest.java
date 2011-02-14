@@ -68,7 +68,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				nh = (PersonnePhysique) dao.save(nh);
 				numeros.noCtbNh = nh.getNumero();
 
-				addAdresseSuisse(nh, TypeAdresseTiers.COURRIER, date(2000,1,1), null, MockRue.Chamblon.GrandRue);
+				addAdresseSuisse(nh, TypeAdresseTiers.COURRIER, date(2000,1,1), null, MockRue.Chamblon.RueDesUttins);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nh, dpi);
 				dao.getHibernateTemplate().merge(contact);

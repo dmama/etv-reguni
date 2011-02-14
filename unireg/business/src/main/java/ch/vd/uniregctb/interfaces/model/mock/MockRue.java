@@ -80,7 +80,7 @@ public class MockRue implements Rue {
 	}
 
 	public static class Chamblon {
-		public static final MockRue GrandRue = new MockRue(MockLocalite.Chamblon, "Rue des Uttins", 23);
+		public static final MockRue RueDesUttins = new MockRue(MockLocalite.Chamblon, "Rue des Uttins", 23);
 	}
 
 	public static class LIsle {

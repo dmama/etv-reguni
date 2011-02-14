@@ -80,15 +80,15 @@ public class Ec_19000_08_Depart_JIRA1996_Scenario extends DepartScenario {
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
 				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
 				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
-				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
-				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
+				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 
 				final RegDate dateNaissanceGeorgette = RegDate.get(1946, 5, 14);
 				indGorgette = addIndividu(noIndGeorgette, dateNaissanceGeorgette, "CHABOUDEZ", "Georgette", false);
 				addOrigine(indGorgette, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGeorgette);
 				addNationalite(indGorgette, MockPays.Suisse, dateNaissanceGeorgette, null, 1);
-				addAdresse(indGorgette, TypeAdresseCivil.PRINCIPALE,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
-				addAdresse(indGorgette, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indGorgette, TypeAdresseCivil.PRINCIPALE,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
+				addAdresse(indGorgette, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 
 				marieIndividus(indCharles, indGorgette, dateMariage);
 			}
