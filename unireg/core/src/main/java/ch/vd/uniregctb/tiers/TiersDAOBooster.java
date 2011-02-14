@@ -155,7 +155,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 		return target.getAllNumeroIndividu();
 	}
 
-	public Set<Long> getNumerosIndividu(Set<Long> tiersIds, boolean includesComposantsMenage) {
+	public Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage) {
 		return target.getNumerosIndividu(tiersIds, includesComposantsMenage);
 	}
 

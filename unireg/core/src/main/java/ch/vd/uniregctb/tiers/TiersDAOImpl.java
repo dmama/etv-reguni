@@ -444,7 +444,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 					"and am.objetId in (:ids)";
 
     @SuppressWarnings("unchecked")
-    public Set<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
+    public Set<Long> getNumerosIndividu(final Collection<Long> tiersIds, final boolean includesComposantsMenage) {
 
 	    if (tiersIds.size() > 1000) {
 			throw new IllegalArgumentException("Il n'est pas possible de spécifier plus de 1'000 ids");		    

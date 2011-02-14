@@ -151,7 +151,7 @@ public class TiersDAOWithPM implements TiersDAO {
 		throw new NotImplementedException();
 	}
 
-	public Set<Long> getNumerosIndividu(Set<Long> tiersIds, boolean includesComposantsMenage) {
+	public Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage) {
 		throw new NotImplementedException();
 	}
 
