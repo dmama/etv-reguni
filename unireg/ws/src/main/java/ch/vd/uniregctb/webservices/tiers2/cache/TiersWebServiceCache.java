@@ -249,6 +249,10 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 */
 	private void cacheBatchTiersEntries(BatchTiers batch, GetBatchTiers params) {
 		for (BatchTiersEntry entry : batch.entries) {
+			if (entry.exceptionMessage != null) {   // [UNIREG-3288] on ignore les tiers qui ont levé une exception
+				continue;
+			}
+
 			final GetTiersKey key = new GetTiersKey(entry.number, params.date);
 
 			final Element element = cache.get(key);
@@ -257,8 +261,8 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 				GetTiersValue value = new GetTiersValue(params.parts, entry.tiers);
 				cache.put(new Element(key, value));
 			}
-			else {
-				// on met-à-jour le tiers existant avec les parts chargées
+			else if (entry.tiers != null) {
+				// on met-à-jour le tiers (s'il existe) avec les parts chargées
 				GetTiersValue value = (GetTiersValue) element.getObjectValue();
 				Assert.isFalse(value.isNull());
 				value.addParts(params.parts, entry.tiers);
@@ -383,6 +387,10 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 */
 	private void cacheBatchTiersHistoEntries(BatchTiersHisto batch, GetBatchTiersHisto params) {
 		for (BatchTiersHistoEntry entry : batch.entries) {
+			if (entry.exceptionMessage != null) {   // [UNIREG-3288] on ignore les tiers qui ont levé une exception
+				continue;
+			}
+
 			final GetTiersHistoKey key = new GetTiersHistoKey(entry.number);
 
 			final Element element = cache.get(key);
@@ -391,8 +399,8 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 				GetTiersHistoValue value = new GetTiersHistoValue(params.parts, entry.tiers);
 				cache.put(new Element(key, value));
 			}
-			else {
-				// on met-à-jour le tiers existant avec les parts chargées
+			else if (entry.tiers != null) {
+				// on met-à-jour le tiers (s'il existe) avec les parts chargées
 				GetTiersHistoValue value = (GetTiersHistoValue) element.getObjectValue();
 				Assert.isFalse(value.isNull());
 				value.addParts(params.parts, entry.tiers);
