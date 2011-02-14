@@ -7,4 +7,6 @@
 	<xs:include schemaLocation="evenementFiscalFor-v1.xsd"/>
 	<xs:include schemaLocation="evenementFiscalLR-v1.xsd"/>
 	<xs:include schemaLocation="evenementFiscalSituationFamille-v1.xsd"/>
+	<xs:include schemaLocation="evenementFiscalFinAutoriteParentale-v1.xsd"/>
+	<xs:include schemaLocation="evenementFiscalNaissance-v1.xsd"/>
 </xs:schema>
