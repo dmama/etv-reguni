@@ -1645,6 +1645,94 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
+	public PersonnePhysique getPere(PersonnePhysique pp, RegDate dateValidite) {
+		if (pp == null || !pp.isConnuAuCivil()) {
+			return null;
+		}
+
+		final Long numeroIndividu = pp.getNumeroIndividu();
+		Assert.notNull(numeroIndividu);
+
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.PARENTS);
+		if (individu == null) {
+			throw new IndividuNotFoundException(numeroIndividu);
+		}
+
+		PersonnePhysique pere = null;
+
+		final Individu individuPere = individu.getPere();
+		if (individuPere != null) {
+			pere = tiersDAO.getPPByNumeroIndividu(individuPere.getNoTechnique(), true);
+		}
+
+		return pere;
+	}
+
+	public PersonnePhysique getMere(PersonnePhysique pp, RegDate dateValidite) {
+		if (pp == null || !pp.isConnuAuCivil()) {
+			return null;
+		}
+
+		final Long numeroIndividu = pp.getNumeroIndividu();
+		Assert.notNull(numeroIndividu);
+
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.PARENTS);
+		if (individu == null) {
+			throw new IndividuNotFoundException(numeroIndividu);
+		}
+
+		PersonnePhysique mere = null;
+
+		final Individu individuPere = individu.getMere();
+		if (individuPere != null) {
+			mere = tiersDAO.getPPByNumeroIndividu(individuPere.getNoTechnique(), true);
+		}
+
+		return mere;
+	}
+
+	public List<PersonnePhysique> getParents(PersonnePhysique pp, RegDate dateValidite) {
+		if (pp == null || !pp.isConnuAuCivil()) {
+			return Collections.emptyList();
+		}
+
+		final PersonnePhysique mere = getMere(pp, dateValidite);
+		final PersonnePhysique pere = getPere(pp, dateValidite);
+
+		final List<PersonnePhysique> parents = new ArrayList<PersonnePhysique>(2);
+		if (mere != null) {
+			parents.add(mere);
+		}
+		if (pere != null) {
+			parents.add(pere); 
+		}
+		return parents;
+	}
+
+	public List<PersonnePhysique> getEnfants(PersonnePhysique pp, RegDate dateValidite) {
+		if (pp == null || !pp.isConnuAuCivil()) {
+			return Collections.emptyList();
+		}
+
+		final Long numeroIndividu = pp.getNumeroIndividu();
+		Assert.notNull(numeroIndividu);
+
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.ENFANTS);
+		if (individu == null) {
+			throw new IndividuNotFoundException(numeroIndividu);
+		}
+
+		final List<PersonnePhysique> enfants = new ArrayList<PersonnePhysique>();
+		for (Individu ind : individu.getEnfants()) {
+			PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(ind.getNoTechnique(), true);
+			if (enfant != null) {
+				enfants.add(enfant);
+			}
+		}
+
+		return enfants;
+	}
+
 	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee) {
 		boolean change = false;
 		if (pp != null && !pp.isHabitantVD() && !isDecede(pp) && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
@@ -1666,8 +1754,7 @@ public class TiersServiceImpl implements TiersService {
 
 		if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			if (motifOuverture == MotifFor.CHGT_MODE_IMPOSITION || motifOuverture == MotifFor.PERMIS_C_SUISSE) {
-				this.evenementFiscalService.publierEvenementFiscalChangementModeImposition(contribuable,
-						dateOuverture, modeImposition, forFiscalPrincipal.getId());
+				this.evenementFiscalService.publierEvenementFiscalChangementModeImposition(contribuable, dateOuverture, modeImposition, forFiscalPrincipal.getId());
 			}
 			else if (motifOuverture == MotifFor.DEMENAGEMENT_VD ||
 					motifOuverture == MotifFor.FUSION_COMMUNES ||
@@ -1677,8 +1764,19 @@ public class TiersServiceImpl implements TiersService {
 					motifOuverture == MotifFor.VEUVAGE_DECES ||
 					motifOuverture == MotifFor.ARRIVEE_HC ||
 					motifOuverture == MotifFor.ARRIVEE_HS) {
-				this.evenementFiscalService.publierEvenementFiscalOuvertureFor(contribuable,
-						dateOuverture, motifOuverture, forFiscalPrincipal.getId());
+				this.evenementFiscalService.publierEvenementFiscalOuvertureFor(contribuable, dateOuverture, motifOuverture, forFiscalPrincipal.getId());
+			}
+
+			if (motifOuverture == MotifFor.MAJORITE && contribuable instanceof PersonnePhysique) {
+				final PersonnePhysique enfant = (PersonnePhysique) contribuable;
+				// [UNIREG-3244] Lorsqu'un premier for principal pour le revenu ou la fortune est ouvert pour un contribuable
+				// pour motif de « Majorité », un événement fiscal de type « Fin d'autorité parentale » est engendré
+				if (enfant.getForsFiscauxNonAnnules(false).size() == 1) {
+					final Contribuable parent = getAutoriteParentaleDe(enfant, dateOuverture.getOneDayBefore());
+					if (parent != null) {
+						evenementFiscalService.publierEvenementFiscalFinAutoriteParentale(enfant, parent, dateOuverture);
+					}
+				}
 			}
 		}
 
@@ -1715,6 +1813,24 @@ public class TiersServiceImpl implements TiersService {
 
 		// [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois
 		resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
+	}
+
+	public Contribuable getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite) {
+
+		final PersonnePhysique parent = getMere(contribuableEnfant, dateValidite);
+		if (parent == null) {
+			return null;
+		}
+
+		final Contribuable autoriteParentale;
+		final EnsembleTiersCouple ensemble = getEnsembleTiersCouple(parent, dateValidite);
+		if (ensemble == null) {
+			autoriteParentale = parent;
+		}
+		else {
+			autoriteParentale = ensemble.getMenage();
+		}
+		return autoriteParentale;
 	}
 
 	/**

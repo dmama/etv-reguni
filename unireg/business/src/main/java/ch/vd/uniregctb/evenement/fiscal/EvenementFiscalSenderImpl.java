@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -14,12 +15,16 @@ import org.w3c.dom.Node;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIDocument;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalFinAutoriteParentaleDocument;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalFinAutoriteParentaleType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalForDocument;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalForEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalForType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalLRDocument;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalLREnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalLRType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalNaissanceDocument;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalNaissanceType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamilleDocument;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamilleEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamilleType;
@@ -33,8 +38,10 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.EvenementFiscalDI;
+import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
 import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.EvenementFiscalLR;
+import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.type.MotifFor;
 
@@ -121,8 +128,14 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		else if (evenement instanceof EvenementFiscalLR) {
 			object = creerEvenementFiscal((EvenementFiscalLR) evenement);
 		}
+		else if (evenement instanceof EvenementFiscalFinAutoriteParentale) {
+			object = creerEvenementFiscal((EvenementFiscalFinAutoriteParentale) evenement);
+		}
+		else if (evenement instanceof EvenementFiscalNaissance) {
+			object = creerEvenementFiscal((EvenementFiscalNaissance) evenement);
+		}
 		else {
-			throw new EvenementFiscalException("Type d'événement inconnu = ["+evenement.getClass()+"]");
+			throw new EvenementFiscalException("Type d'événement inconnu = [" + evenement.getClass() + "]");
 		}
 
 		return object;
@@ -201,6 +214,28 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 
 		return document;
 
+	}
+
+	private static EvenementFiscalFinAutoriteParentaleDocument creerEvenementFiscal(EvenementFiscalFinAutoriteParentale evenement) {
+		final EvenementFiscalFinAutoriteParentaleDocument document = EvenementFiscalFinAutoriteParentaleDocument.Factory.newInstance();
+		final EvenementFiscalFinAutoriteParentaleType evt = document.addNewEvenementFiscalFinAutoriteParentale();
+		evt.setDateEvenement(DateUtils.calendar(evenement.getDateEvenement().asJavaDate()));
+		evt.setDateTraitement(DateUtils.calendar(new Date()));
+		evt.setNumeroTiers(String.valueOf(evenement.getTiers().getNumero()));
+		evt.setNumeroTiersEnfant(String.valueOf(evenement.getEnfant().getNumero()));
+		evt.setNumeroTechnique(evenement.getId());
+		return document;
+	}
+
+	private static EvenementFiscalNaissanceDocument creerEvenementFiscal(EvenementFiscalNaissance evenement) {
+		final EvenementFiscalNaissanceDocument document = EvenementFiscalNaissanceDocument.Factory.newInstance();
+		final EvenementFiscalNaissanceType evt = document.addNewEvenementFiscalNaissance();
+		evt.setDateEvenement(DateUtils.calendar(evenement.getDateEvenement().asJavaDate()));
+		evt.setDateTraitement(DateUtils.calendar(new Date()));
+		evt.setNumeroTiers(String.valueOf(evenement.getTiers().getNumero()));
+		evt.setNumeroTiersEnfant(String.valueOf(evenement.getEnfant().getNumero()));
+		evt.setNumeroTechnique(evenement.getId());
+		return document;
 	}
 
 	/**

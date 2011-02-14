@@ -16,6 +16,7 @@ import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -44,8 +45,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.evenement.common.EvenementCivilHandler#validate(java.lang.Object,
-	 *      java.util.List)
+	 * @see ch.vd.uniregctb.evenement.common.EvenementCivilHandler#validate(java.lang.Object, java.util.List)
 	 */
 	@Override
 	protected void validateSpecific(EvenementCivil evenementCivil, List<EvenementCivilErreur> errors, List<EvenementCivilErreur> warnings) {
@@ -85,6 +85,13 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 			Audit.info(naissance.getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: "+bebe.getNumero()+")");
 
 			this.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
+
+			// [UNIREG-3244] on envoie les fairs-parts de naissance
+			final Contribuable parent = this.getService().getAutoriteParentaleDe(bebe, dateEvenement);
+			if (parent != null) {
+				this.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
+			}
+			
 			return new Pair<PersonnePhysique, PersonnePhysique>(bebe, null);
 		}
 		catch (Exception e) {

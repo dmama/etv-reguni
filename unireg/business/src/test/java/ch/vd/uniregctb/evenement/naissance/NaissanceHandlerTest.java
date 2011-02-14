@@ -1,21 +1,32 @@
 package ch.vd.uniregctb.evenement.naissance;
 
-import static junit.framework.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.evenement.EvenementFiscal;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
+import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
+@SuppressWarnings({"JavaDoc"})
 public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 
 	private static final Logger LOGGER = Logger.getLogger(NaissanceHandlerTest.class);
@@ -27,18 +38,14 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 	private static final long NOUVEAU_NE_MAJEUR = 89123L;
 	private static final long NOUVEAU_NE_FIN_ANNEE = 123456L;
 
-	/**
-	 * La date de naissance.
-	 */
-	//private static final RegDate DATE_NAISSANCE = RegDate.get(1964, 4, 8);
-
-
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 
 	@Test
@@ -132,4 +139,96 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		return naissance;
 	}
 
+	/**
+	 * [UNIREG-3244] Teste que le traitement d'un événement civil de naissance provoque bien l'envoi d'un événement fiscal de naissance.
+	 */
+	@Test
+	@NotTransactional
+	public void testHandlePourEnvoiEvenementFiscalDeNaissance() throws Exception {
+
+		final long indPere = 1;
+		final long indMere = 2;
+		final long indFils = 3;
+
+		// On crée la situation de départ : une mère et un fils mineur qui possède un immeuble
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Cognac", "Raoul", true);
+				MockIndividu mere = addIndividu(indMere, date(1980, 1, 1), "Cognac", "Josette", false);
+				MockIndividu fils = addIndividu(indFils, date(2010, 2, 8), "Cognac", "Yvan", true);
+				fils.setMere(pere);
+				fils.setMere(mere);
+			}
+		});
+
+		class Ids {
+			Long pere;
+			Long mere;
+			Long fils;
+		}
+		final Ids ids = new Ids();
+
+		// On crée le père et la mère
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				return null;
+			}
+		});
+
+		// On envoie l'événement de naissance
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu fils = serviceCivil.getIndividu(indFils, 2010);
+				final Naissance naissance = createValidNaissance(fils);
+
+				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+				evenementCivilHandler.checkCompleteness(naissance, erreurs, warnings);
+				assertEmpty(erreurs);
+				assertEmpty(warnings);
+
+				evenementCivilHandler.validate(naissance, erreurs, warnings);
+				assertEmpty(erreurs);
+				assertEmpty(warnings);
+
+				final Pair<PersonnePhysique, PersonnePhysique> res = evenementCivilHandler.handle(naissance, warnings);
+				assertEmpty(erreurs);
+				assertEmpty(warnings);
+
+				ids.fils = res.getFirst().getNumero();
+				return null;
+			}
+		});
+
+
+		// On vérifie que il y a eu :
+		// - un événement de changement de situation de famille
+		// - un événement de naissane
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertNotNull(events);
+				assertEquals(2, events.size());
+
+				final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) events.get(0);
+				assertNotNull(event0);
+
+				final EvenementFiscalNaissance event1 = (EvenementFiscalNaissance) events.get(1);
+				assertNotNull(event1);
+				assertEquals(ids.mere, event1.getTiers().getNumero());
+				assertEquals(ids.fils, event1.getEnfant().getNumero());
+				assertEquals(date(2010, 2, 8), event1.getDateEvenement());
+				return null;
+			}
+		});
+	}
 }

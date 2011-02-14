@@ -25,6 +25,10 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
+import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -75,6 +79,7 @@ public class TiersServiceTest extends BusinessTest {
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private ValidationInterceptor validationInterceptor;
 	private ValidationService validationService;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -85,6 +90,7 @@ public class TiersServiceTest extends BusinessTest {
 		rapportEntreTiersDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
 		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		validationService = getBean(ValidationService.class, "validationService");
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 
 	@Test
@@ -3262,7 +3268,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
-				addForDebiteur(dpi,date(2009, 6, 1),null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
 				return  dpi.getNumero();
 			}
 		});
@@ -3566,7 +3572,8 @@ public class TiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
+						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -3593,7 +3600,8 @@ public class TiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockPays.RoyaumeUni.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockPays.RoyaumeUni.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE,
+						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -3620,7 +3628,8 @@ public class TiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+						ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -3881,7 +3890,8 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.closeForFiscalPrincipal(pp, date(2010, 5, 23), MotifFor.DEMENAGEMENT_VD);
-				tiersService.addForPrincipal(pp, date(2010, 5, 24), MotifFor.DEMENAGEMENT_VD, null, null, MotifRattachement.DOMICILE, MockCommune.Bex.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
+				tiersService.addForPrincipal(pp, date(2010, 5, 24), MotifFor.DEMENAGEMENT_VD, null, null, MotifRattachement.DOMICILE, MockCommune.Bex.getNoOFSEtendu(),
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
@@ -4250,6 +4260,329 @@ public class TiersServiceTest extends BusinessTest {
 
 				final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
 				tiersService.addRapport(candidat, pp, mc);
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [UNIREG-3244] Vérifie qu'un événement de fin d'autorité parentale est envoyé lorsqu'un enfant devient majeure et qu'on ne connaît que sa mère.
+	 */
+	@NotTransactional
+	@Test
+	public void testOuvertureForPrincipalPourMajoriteMereSeule() throws Exception {
+
+		final long indMere = 1;
+		final long indFils = 2;
+
+		// On crée la situation de départ : une mère et un fils mineur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
+				fils.setMere(mere);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long fils;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				return null;
+			}
+		});
+
+		// Précondition : pas d'événement fiscal envoyé
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEmpty(evenementFiscalDAO.getAll());
+				return null;
+			}
+		});
+
+		// Le fils devient majeur
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				assertNotNull(fils);
+
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+				return null;
+			}
+		});
+
+		// On vérifie que il y a eu :
+		// - un événement pour l'ouverture du for fiscal
+		// - un événement pour la fin d'autorité parentale
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertNotNull(events);
+				assertEquals(2, events.size());
+
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
+				assertNotNull(event0);
+
+				final EvenementFiscalFinAutoriteParentale event1 = (EvenementFiscalFinAutoriteParentale) events.get(1);
+				assertNotNull(event1);
+				assertEquals(ids.mere, event1.getTiers().getNumero());
+				assertEquals(ids.fils, event1.getEnfant().getNumero());
+				assertEquals(date(2011, 2, 8), event1.getDateEvenement());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [UNIREG-3244] Vérifie qu'aucun événement de fin d'autorité parentale n'est envoyé lorsqu'un enfant devient majeure et qu'on ne connaît que son père.
+	 */
+	@NotTransactional
+	@Test
+	public void testOuvertureForPrincipalPourMajoritePereSeul() throws Exception {
+
+		final long indPere = 1;
+		final long indFils = 2;
+
+		// On crée la situation de départ : un père et un fils mineur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Raoul", true);
+				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
+				fils.setPere(pere);
+			}
+		});
+
+		class Ids {
+			Long pere;
+			Long fils;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				return null;
+			}
+		});
+
+		// Précondition : pas d'événement fiscal envoyé
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEmpty(evenementFiscalDAO.getAll());
+				return null;
+			}
+		});
+
+		// Le fils devient majeur
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				assertNotNull(fils);
+
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+				return null;
+			}
+		});
+
+		// On vérifie que :
+		// - il y a eu un événement pour l'ouverture du for fiscal
+		// - il n'y a pas eu d'événement pour la fin d'autorité parentale
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertNotNull(events);
+				assertEquals(1, events.size());
+
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
+				assertNotNull(event0);
+
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [UNIREG-3244] Vérifie qu'un événement de fin d'autorité parentale est envoyé lorsqu'un enfant devient majeure et qu'on ne connaît que sa mère et que cette dernière appartient à un ménage-commun.
+	 */
+	@NotTransactional
+	@Test
+	public void testOuvertureForPrincipalPourMajoriteMereEnCouple() throws Exception {
+
+		final long indMere = 1;
+		final long indFils = 2;
+
+		// On crée la situation de départ : une mère mariée seule et un fils mineur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
+				fils.setMere(mere);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long menage;
+			Long fils;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(mere, null, date(1990, 1, 1), null);
+				ids.menage = ensemble.getMenage().getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				return null;
+			}
+		});
+
+		// Précondition : pas d'événement fiscal envoyé
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEmpty(evenementFiscalDAO.getAll());
+				return null;
+			}
+		});
+
+		// Le fils devient majeur
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				assertNotNull(fils);
+
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+				return null;
+			}
+		});
+
+		// On vérifie que il y a eu :
+		// - un événement pour l'ouverture du for fiscal
+		// - un événement pour la fin d'autorité parentale associé au ménage commun de la mère
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertNotNull(events);
+				assertEquals(2, events.size());
+
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
+				assertNotNull(event0);
+
+				final EvenementFiscalFinAutoriteParentale event1 = (EvenementFiscalFinAutoriteParentale) events.get(1);
+				assertNotNull(event1);
+				assertEquals(ids.menage, event1.getTiers().getNumero());
+				assertEquals(ids.fils, event1.getEnfant().getNumero());
+				assertEquals(date(2011, 2, 8), event1.getDateEvenement());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [UNIREG-3244] Vérifie qu'aucun événement de fin d'autorité parentale n'est envoyé lorsqu'un enfant devient majeure alors qu'il est déjà été assujetti (pour cause de fortune personnelle, par
+	 * exemple).
+	 */
+	@NotTransactional
+	@Test
+	public void testOuvertureForPrincipalPourMajoriteEnfantDejaAssujettiDansLePasse() throws Exception {
+
+		final long indMere = 1;
+		final long indFils = 2;
+
+		// On crée la situation de départ : une mère et un fils mineur qui possède un immeuble
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
+				fils.setMere(mere);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long fils;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				addForPrincipal(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny);
+				addForSecondaire(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return null;
+			}
+		});
+
+		// Précondition : pas d'événement fiscal envoyé
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEmpty(evenementFiscalDAO.getAll());
+				return null;
+			}
+		});
+
+		// Le fils devient majeur
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				assertNotNull(fils);
+
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+				return null;
+			}
+		});
+
+		// On vérifie que  :
+		// - il y a eu un événement pour l'ouverture du for fiscal
+		// - il n'y a pas eu d'événement pour la fin d'autorité parentale
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertNotNull(events);
+				assertEquals(1, events.size());
+
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
+				assertNotNull(event0);
 				return null;
 			}
 		});

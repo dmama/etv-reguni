@@ -1,22 +1,31 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.evenement.*;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEvenementFiscal;
+import java.util.Collection;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.Collection;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.EvenementFiscalDI;
+import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
+import ch.vd.uniregctb.evenement.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.EvenementFiscalLR;
+import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
+import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 /**
  * Service des événement fiscaux
@@ -107,6 +116,22 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 		final RegDate dateFin = forFiscal.getDateFin();
 		if (dateFin == null || peutPublierEvenementFiscal(dateFin)) {
 			final EvenementFiscal evenementFiscal = new EvenementFiscalFor(forFiscal.getTiers(), dateAnnulation, TypeEvenementFiscal.ANNULATION_FOR, null, null, forFiscal.getId());
+			publierEvenementFiscal(evenementFiscal);
+		}
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement) {
+		if (peutPublierEvenementFiscal(dateEvenement)) {
+			final EvenementFiscal evenementFiscal = new EvenementFiscalFinAutoriteParentale(contribuableEnfant, contribuableParent, dateEvenement);
+			publierEvenementFiscal(evenementFiscal);
+		}
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement) {
+		if (peutPublierEvenementFiscal(dateEvenement)) {
+			final EvenementFiscal evenementFiscal = new EvenementFiscalNaissance(contribuableEnfant, contribuableParent, dateEvenement);
 			publierEvenementFiscal(evenementFiscal);
 		}
 	}

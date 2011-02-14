@@ -12,6 +12,7 @@ import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -77,6 +78,26 @@ public interface EvenementFiscalService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public void publierEvenementFiscalChangementModeImposition(Contribuable contribuable, RegDate dateEvenement, ModeImposition modeImposition, Long id) ;
+
+	/**
+	 * [UNIREG-3244] Publie un événement de fin d'autorité parentale sur un contribuable parent suite à la majorité d'un enfant.
+	 *
+	 * @param contribuableEnfant le contribuable qui acquiert la majorité
+	 * @param contribuableParent le contribuable dont l'autorité parentale prends fin
+	 * @param dateEvenement      la date d'acquisition de la majorité
+	 */
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
+
+	/**
+	 * [UNIREG-3244] Publie un événement de naissance d'un contribuable enfant
+	 *
+	 * @param contribuableEnfant le contribuable nouveau né
+	 * @param contribuableParent le contribuable qui possède l'autorité parentale du nouveau né
+	 * @param dateEvenement      la date de naissance
+	 */
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de situation de famille'

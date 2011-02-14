@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -127,6 +126,61 @@ public interface TiersService {
 	 * @return <code>true</code> si un changement de flag habitant a eu lieu
 	 */
 	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee);
+
+	/**
+	 * Retourne le contribuable <i>père</i> (au sens civil du terme) du contribuable spécifié.
+	 * <p/>
+	 * Si le contribuable spécifié est inconnu au contrôle des habitants, la valeur retournée est nulle. D'autre part, n'est retourné une valeur qui le père est lui-même contribuable.
+	 *
+	 * @param pp           une personne physique
+	 * @param dateValidite la date de validité des données retournées
+	 * @return un contribuable, ou <b>null</b> selon les cas.
+	 */
+	public PersonnePhysique getPere(PersonnePhysique pp, RegDate dateValidite);
+
+	/**
+	 * Retourne le contribuable <i>mère</i> (au sens civil du terme) du contribuable spécifié.
+	 * <p/>
+	 * Si le contribuable spécifié est inconnu au contrôle des habitants, la valeur retournée est nulle. D'autre part, n'est retourné une valeur qui la mère est elle-même contribuable.
+	 *
+	 * @param pp           une personne physique
+	 * @param dateValidite la date de validité des données retournées
+	 * @return un contribuable, ou <b>null</b> selon les cas.
+	 */
+	public PersonnePhysique getMere(PersonnePhysique pp, RegDate dateValidite);
+
+	/**
+	 * Retourne la liste des contribuables <i>parents</i> (au sens civil du terme) du contribuable spécifié.
+	 * <p/>
+	 * Si le contribuable spécifié est inconnu au contrôle des habitants, la liste retournée est vide. D'autre part, ne sont retournés que les parents qui sont eux-mêmes contribuables.
+	 *
+	 * @param pp           une personne physique
+	 * @param dateValidite la date de validité des données retournées
+	 * @return une liste de contribuables, qui peut contenir 0 ou plusieurs contribuables selon les cas.
+	 */
+	public List<PersonnePhysique> getParents(PersonnePhysique pp, RegDate dateValidite);
+
+	/**
+	 * Retourne la liste des contribuables <i>enfants</i> (au sens civil du terme) du contribuable spécifié.
+	 * <p/>
+	 * Si le contribuable spécifié est inconnu au contrôle des habitants, la liste retournée est vide. D'autre part, ne sont retournés que les enfants qui sont eux-mêmes contribuables.
+	 *
+	 * @param pp           une personne physique
+	 * @param dateValidite la date de validité des données retournées
+	 * @return une liste de contribuables, qui peut contenir 0 ou plusieurs contribuables selon les cas.
+	 */
+	public List<PersonnePhysique> getEnfants(PersonnePhysique pp, RegDate dateValidite);
+
+	/**
+	 * Détermine et retourne le contribuable (la mère ou ménage-commun de la mère) qui possède l'autorité parentale du contribuable spécifié [UNIREG-3244].
+	 * <p/>
+	 * <b>Note:</b> le contribuable est supposé non-majeur à la date de validité spécifiée
+	 *
+	 * @param contribuableEnfant un contribuable enfant
+	 * @param dateValidite       une date de validité
+	 * @return le contribuable personne physique ou ménage-commun qui possède l'autorité parentale; ou <b>null</b> si la mère est inconnue.
+	 */
+	public Contribuable getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite);
 
 	/**
 	 * Renvoie la collectivité administrative rattachée au numero de collectivité donné.
