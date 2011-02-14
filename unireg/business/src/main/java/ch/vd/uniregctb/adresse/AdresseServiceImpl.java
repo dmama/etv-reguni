@@ -12,6 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -33,6 +34,7 @@ import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -43,6 +45,7 @@ import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersHelper;
@@ -538,7 +541,9 @@ public class AdresseServiceImpl implements AdresseService {
 		final TypeAdresseRepresentant type = TypeAdresseRepresentant.getTypeAdresseRepresentantFromSource(adresseFiscale.getSource());
 		if (type != null) {
 			final Tiers representant = getRepresentant(tiers, type, date);
-			Assert.notNull(representant);
+			if (representant == null) {
+				throw new AdresseDataException("Impossible de trouver un représentant de type " + adresseFiscale.getSource() + " sur le tiers n°" + tiers.getNumero());
+			}
 			adresse.addPourAdresse(getPourAdresse(representant));
 		}
 	}
@@ -1273,11 +1278,11 @@ public class AdresseServiceImpl implements AdresseService {
 				rapport = rapportPrincipal; // le principal est marié seul
 			}
 			else {
+				// le principal est sous tutelle, et il existe un conjoint
 
-				final RegDate dateDeces = tiersService.getDateDeces(conjoint);
-
-				if (dateDeces != null && RegDateHelper.isBeforeOrEqual(dateDeces, date, NullDateBehavior.LATEST)) {
-					rapport = rapportPrincipal; // [UNIREG-2915] le conjoint est décédé
+				final RapportEntreTiers appartenanceConjoint = TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.APPARTENANCE_MENAGE, date);
+				if (appartenanceConjoint == null) {
+					rapport = rapportPrincipal; // [UNIREG-2915] [UNIREG-3279] le conjoint n'appartient plus au ménage (par exemple, il est décédé ou séparé)
 				}
 				else if (TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.TUTELLE, date) != null ||
 						TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CURATELLE, date) != null ||
@@ -1429,6 +1434,9 @@ public class AdresseServiceImpl implements AdresseService {
 			// On récupère l'historique des adresses du tuteur du principal
 			final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHistoPourTiers(principal, type, callDepth + 1, strict);
 
+			// [UNIREG-3279] faut-il restreindre la validité des adresses tuteur aux périodes d'appartenance ménage du principal ? Il semblerait que UNIREG-2644 demande explicitement que le
+			// tuteur de monsieur continue de recevoir le courrier du couple après la fermeture des rapports d'appartenance ménage. A vérifier une fois ou l'autre.
+
 			if (adressesTuteur.isEmpty()) {
 				adresses = Collections.emptyList();
 			}
@@ -1441,7 +1449,7 @@ public class AdresseServiceImpl implements AdresseService {
 				final List<DateRange> periodesTutellesPrincipal = DateRangeHelper.collateRange(adressesTuteur);
 
 				// On détermine les adresses courrier du conjoint pour représenter le ménage pendant les périodes de tutelle du principal
-				final List<AdresseGenerique> adressesConjointSansTutelle = getAdresseCourrierConjointPourRepresentationMenage(conjoint, periodesTutellesPrincipal, callDepth, strict);
+				final List<AdresseGenerique> adressesConjointSansTutelle = getAdresseCourrierConjointPourRepresentationMenage(menage, conjoint, periodesTutellesPrincipal, callDepth, strict);
 				adresses = AdresseMixer.override(adressesTuteur, adressesConjointSansTutelle, null, null);
 			}
 		}
@@ -1454,92 +1462,88 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
+	 * Retourne la liste des périodes durant lesquelles une personne physique appartient à un ménage commun.
+	 *
+	 * @param menage    un ménage commun
+	 * @param principal une personne physique
+	 * @return une liste de périodes, qui peut être vide.
+	 */
+	private static List<DateRange> getPeriodesAppartenanceMenage(MenageCommun menage, PersonnePhysique principal) {
+		final List<DateRange> list = new ArrayList<DateRange>();
+
+		for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
+			if (!rapport.isAnnule() && rapport instanceof AppartenanceMenage && rapport.getSujetId().equals(principal.getId())) {
+				list.add(rapport);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Retourne la liste des périodes durant lesquelles une personne physique est sous représentation légale (tutelle, curatelle ou conseil légal)
+	 *
+	 * @param pp une personne physique
+	 * @return une liste de périodes, qui peut être vide.
+	 */
+	private static List<DateRange> getPeriodesSousRepresentationLegale(PersonnePhysique pp) {
+		final List<DateRange> list = new ArrayList<DateRange>();
+
+		for (RapportEntreTiers rapport : pp.getRapportsSujet()) {
+			if (!rapport.isAnnule() && rapport instanceof RepresentationLegale) {
+				list.add(rapport);
+			}
+		}
+
+		return list;
+	}
+
+	/**
 	 * Cette méthode permet de déterminer les adresses courrier du conjoint pour représenter le ménage pendant les périodes de tutelle/curatelle du principal.
 	 *
-	 * @param conjoint                  le conjoint
+	 * @param menage                   le ménage considéré
+	 * @param conjoint                 le conjoint
 	 * @param periodesTutellePrincipal les périodes pendant lesquelles le principal est sous tutelle/curatelle
-	 * @param callDepth                 paramètre technique pour éviter les récursions infinies
-	 * @param strict                    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @param callDepth                paramètre technique pour éviter les récursions infinies
+	 * @param strict                   si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return une liste d'adresses à utiliser comme adresses courrier du ménage dont fait partie le conjoint
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> getAdresseCourrierConjointPourRepresentationMenage(PersonnePhysique conjoint, List<DateRange> periodesTutellePrincipal, int callDepth,
+	private List<AdresseGenerique> getAdresseCourrierConjointPourRepresentationMenage(MenageCommun menage, PersonnePhysique conjoint, List<DateRange> periodesTutellePrincipal, int callDepth,
 	                                                                                  boolean strict) throws AdresseException {
-
-		final RegDate dateDeces = tiersService.getDateDeces(conjoint);
 
 		//
 		// Attention, le comportement de cette méthode doit être cohérent avec celui de la méthode getRepresentantPourMenage()
 		//
 
+		// [UNIREG-2644] [UNIREG-3279] il est nécessaire de limite la validité des adresses aux périodes d'appartenance ménage (notamment en cas de décès ou de séparation)
+		final List<DateRange> periodesAppartenance = getPeriodesAppartenanceMenage(menage, conjoint);
+
 		// On détermine les périodes de validité des adresses du conjoint comme adresse de représentation du ménage
-		final List<DateRange> periodesValiditeAdressesConjoint;
-		if (dateDeces == null) {
-			periodesValiditeAdressesConjoint = periodesTutellePrincipal;
-		}
-		else {
-			// [UNIREG-2644] en case de décès du conjoint, on limite la validité des adresses à la période avant le décès
-			periodesValiditeAdressesConjoint = truncate(periodesTutellePrincipal, dateDeces.getOneDayBefore());
+		List<DateRange> periodesRepresentation = DateRangeHelper.intersections(periodesAppartenance, periodesTutellePrincipal);
+
+		// On ignore toutes les adresses où le conjoint est lui-même sous représentation légale
+		final List<DateRange> periodesPupille = getPeriodesSousRepresentationLegale(conjoint);
+		if (!periodesPupille.isEmpty()) {
+			periodesRepresentation = DateRangeHelper.subtract(periodesRepresentation, periodesPupille, new DateRangeAdapterCallback());
 		}
 
-		final List<AdresseGenerique> adressesConjointSansTutelle = new ArrayList<AdresseGenerique>();
+		// [UNIREG-1341] on utilise l'adresse courrier *propre* du conjoint (hors représentation) comme adresse de représentation du ménage
+		final List<AdresseGenerique> adressesCourrierConjoint = getAdressesCourrierPropreHistoInRanges(conjoint, DateRangeHelper.collateRange(periodesRepresentation), callDepth, strict);
+		final List<AdresseGenerique> adressesAdaptees = new ArrayList<AdresseGenerique>();
 
-		final List<AdresseGenerique> adressesCourrierConjoint = getAdressesCourrierHistoInRanges(conjoint, periodesValiditeAdressesConjoint, callDepth + 1, strict);
 		for (AdresseGenerique adresse : adressesCourrierConjoint) {
-
-			final Source source = adresse.getSource();
-			if (source == Source.TUTELLE || source == Source.CURATELLE || source == Source.CONSEIL_LEGAL) {
-				// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
-				continue;
-			}
-
-			final AdresseGenerique adresseConjoint;
-			if (source != Source.CIVILE && source != Source.FISCALE) {
-				// [UNIREG-1341] on utilise l'adresse courrier *propre* du conjoint (hors représentation) comme adresse de représentation du ménage
-				final AdresseGenerique adressePropre = getAdresseFiscalPropre(conjoint, TypeAdresseFiscale.COURRIER, adresse.getDateDebut(), callDepth + 1, strict);
-				adresseConjoint = new AdresseGeneriqueAdapter(adressePropre, adresse.getDateDebut(), adresse.getDateFin(), Source.CONJOINT, false);
-			}
-			else {
-				adresseConjoint = new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false);
-			}
-
 			// [UNIREG-2676] on ignore toutes les adresses où le conjoint est hors-Suisse
-			if (adresseConjoint.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
-				adressesConjointSansTutelle.add(adresseConjoint);
+			if (adresse.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+				adressesAdaptees.add(new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false));
 			}
 		}
 
-		return adressesConjointSansTutelle;
+		return adressesAdaptees;
 	}
 
 	/**
-	 * Tronque une liste de ranges pour qu'ils ne dépassent pas une date maximum
-	 *
-	 * @param ranges      une liste de ranges, triés par ordre croissants et qui ne se chevauchent pas.
-	 * @param dateMaximum une date utilisée comme limite supérieur (incluse)
-	 * @return une liste contenant tous les ranges qui sont valides avant la date maximum (le dernier range est tronqué si nécessaire).
-	 */
-	private static List<DateRange> truncate(List<DateRange> ranges, RegDate dateMaximum) {
-		final List<DateRange> truncated = new ArrayList<DateRange>(ranges.size());
-		for (DateRange range : ranges) {
-
-			if (range.getDateDebut().isAfterOrEqual(dateMaximum)) {
-				break; // inutile de continuer
-			}
-
-			if (range.getDateFin() == null || dateMaximum.isBeforeOrEqual(range.getDateFin())) {
-				final DateRange r = new DateRangeHelper.Range(range.getDateDebut(), dateMaximum);
-				truncated.add(r);
-				break; // inutile de continuer
-			}
-
-			truncated.add(range);
-		}
-		return truncated;
-	}
-
-	/**
-	 * Détermine et retourne les adresses courrier d'un tiers pour plusieurs périodes données.
+	 * Détermine et retourne les adresses courrier propres (= hors représentation) d'un tiers pour plusieurs périodes données.
 	 *
 	 * @param tiers     un tiers
 	 * @param ranges    les périodes pour lesquelles on veut extraire les adresses
@@ -1548,17 +1552,17 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return une liste d'adresses courrier valides pendant les périodes demandées.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> getAdressesCourrierHistoInRanges(Tiers tiers, List<DateRange> ranges, int callDepth, boolean strict) throws AdresseException {
+	private List<AdresseGenerique> getAdressesCourrierPropreHistoInRanges(Tiers tiers, List<DateRange> ranges, int callDepth, boolean strict) throws AdresseException {
 
 		// On récupère les adresses du conjoint et on les filtre pour ne garder que celles valides durant les périodes calculées plus haut
-		final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(tiers, true, callDepth + 1, strict);
+		final AdressesFiscalesHisto adresses = getAdressesFiscalHisto(tiers, false, callDepth + 1, strict);
 		if (strict) {
-			verifieCoherenceAdresses(adressesConjoint.courrier, "Adresse de courrier", tiers);
+			verifieCoherenceAdresses(adresses.courrier, "Adresse de courrier", tiers);
 		}
 
 		final List<AdresseGenerique> adressesInRange = new ArrayList<AdresseGenerique>();
 		for (DateRange range : ranges) {
-			final List<AdresseGenerique> adressesRange = AdresseMixer.extract(adressesConjoint.courrier, range.getDateDebut(), range.getDateFin());
+			final List<AdresseGenerique> adressesRange = AdresseMixer.extract(adresses.courrier, range.getDateDebut(), range.getDateFin());
 			adressesInRange.addAll(adressesRange);
 		}
 

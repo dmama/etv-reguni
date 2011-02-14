@@ -63,8 +63,8 @@ public class Ec_19000_09_Depart_DejaNonHabitant_Scenario extends DepartScenario 
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
 				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
 				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
-				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
-				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
+				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 			}
 
 		});

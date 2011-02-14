@@ -4979,7 +4979,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, date(2005, 1, 1), date(2008, 12, 31));
 				virginie.getAdresses().add(newAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, date(2009, 1, 1), null));
 
-				marieIndividus(paul, virginie, date(2004, 7, 14));
+				marieIndividus(paul, virginie, date(1990, 7, 14));
 
 				final MockIndividu ronald = addIndividu(noIndividuTuteurPrincipal, date(1945, 3, 17), "MacDonald", "Ronald", false);
 				addAdresse(ronald, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
@@ -4995,7 +4995,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(1990, 7, 14), null);
 				MenageCommun menage = ensemble.getMenage();
 
 				// 2000-2004 : principal sous tutelle, conjoint en Suisse
@@ -5114,8 +5114,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(3, adressesHisto.courrier.size());
 		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
-		assertAdresse(date(2000, 1, 1), dateDeces.getOneDayBefore(), "Bussigny-près-Lausanne", Source.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
-		assertAdresse(dateDeces, null, "Le Sentier", Source.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
+		assertAdresse(date(2000, 1, 1), dateDeces, "Bussigny-près-Lausanne", Source.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+		assertAdresse(dateDeces.getOneDayAfter(), null, "Le Sentier", Source.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
 
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
@@ -6095,7 +6095,7 @@ public class AdresseServiceTest extends BusinessTest {
 	public void testGetTypeAffranchissement() throws Exception {
 
 		final PersonnePhysique jean = addNonHabitant("Jean", "Lavanchy", date(1967, 5, 12), Sexe.MASCULIN);
-		addAdresseSuisse(jean, TypeAdresseTiers.REPRESENTATION, date(2000, 1, 1), null, MockRue.Chamblon.GrandRue);
+		addAdresseSuisse(jean, TypeAdresseTiers.REPRESENTATION, date(2000, 1, 1), null, MockRue.Chamblon.RueDesUttins);
 		addAdresseEtrangere(jean, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, "Grand-Rue 23", "23000 Ciboulette", MockPays.France);
 		addAdresseEtrangere(jean, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, "Rue de la poudre de merlin-pinpin", "4444 Bogotta", MockPays.Colombie);
 
@@ -6252,5 +6252,120 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseGenerique adresse = adresseService.getAdresseFiscale(jean, TypeAdresseFiscale.COURRIER, null, true);
 		assertNotNull(adresse);
 		assertEquals(ids.adresseJean, adresse.getId());
+	}
+
+	/**
+	 * [UNIREG-3279] Cas du ménage commun n°850.088.03.
+	 */
+	@Test
+	public void testGetAdressesFiscalesMenageCommunPrincipalSousTutelleConjointAvecRepresentantSeparesPuisReconcilies() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+		final long noIndividuTuteurPrincipal = 11;
+		final long noIndividuRepresentantConjoint = 15;
+
+		final RegDate dateMariage = date(1979, 6, 1);
+		final RegDate dateSeparation = date(2006, 7, 31);
+		final RegDate dateReconciliation = date(2007, 5, 3);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu roland = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Schaenzli", "Roland", true);
+				addAdresse(roland, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1957, 1, 23), null);
+
+				final MockIndividu marie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Schaenzli", "Marie", false);
+				addAdresse(marie, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1957, 1, 23), date(2006, 7, 31));
+				addAdresse(marie, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, date(2006, 8, 1), null);
+
+				marieIndividus(roland, marie, dateMariage);
+
+				final MockIndividu tuteur = addIndividu(noIndividuTuteurPrincipal, date(1945, 3, 17), "MacDonald", "Ronald", false);
+				addAdresse(tuteur, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
+
+				final MockIndividu representant = addIndividu(noIndividuRepresentantConjoint, date(1945, 3, 17), "Wendy", "Oswald", false);
+				addAdresse(representant, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(1945, 3, 17), null);
+			}
+		});
+
+		// Crée un ménage composé de deux habitants dont monsieur est sous tutelle et madame possède un représentant conventionnel, qui se séparent puis se réconcilient
+		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+				PersonnePhysique representantConjoint = addHabitant(noIndividuRepresentantConjoint);
+
+				// 1979 : mariage
+				// 2006 : séparation
+				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateSeparation);
+				MenageCommun menage = ensemble.getMenage();
+
+				// 2007 : réconciliation
+				addAppartenanceMenage(menage, principal, dateReconciliation, null, false);
+				addAppartenanceMenage(menage, conjoint, dateReconciliation, null, false);
+
+				// 1995 : madame prend un représentant
+				// 2004 : mise sous tutelle de monsieur
+				addRepresentationConventionnelle(conjoint, representantConjoint, date(1995,2,13), false);
+				addTutelle(principal, tuteurPrincipal, null, date(2004, 12, 6), null);
+
+				return menage.getNumero();
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+
+		// Vérification des adresses
+//		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
+//		assertNotNull(adressesHisto);
+//
+//		assertEquals(3, adressesHisto.courrier.size());
+//		assertAdresse(dateMariage, date(2004, 12, 5), "Vallorbe", Source.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
+//		assertAdresse(date(2004, 12, 6), dateSeparation.getOneDayBefore(), "Vallorbe", Source.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+//		assertAdresse(dateReconciliation, null, "Vallorbe", Source.CONJOINT, false, adressesHisto.courrier.get(2)); // adresse de Madame
+
+		// monsieur sans tutelle => adresse de monsieur
+		final AdresseEnvoiDetaillee adresseEnvoi1990 = adresseService.getAdresseEnvoi(menage, date(1990, 1, 1), TypeAdresseFiscale.COURRIER, true);
+		assertNotNull(adresseEnvoi1990);
+		assertEquals("Monsieur et Madame", adresseEnvoi1990.getLigne1());
+		assertEquals("Roland Schaenzli", adresseEnvoi1990.getLigne2());
+		assertEquals("Marie Schaenzli", adresseEnvoi1990.getLigne3());
+		assertEquals("Rue des Uttins", adresseEnvoi1990.getLigne4());
+		assertEquals("1436 Chamblon", adresseEnvoi1990.getLigne5());
+		assertNull(adresseEnvoi1990.getLigne6());
+
+		// monsieur sous tutelle => adresse de madame
+		final AdresseEnvoiDetaillee adresseEnvoi2005 = adresseService.getAdresseEnvoi(menage, date(2005, 1, 1), TypeAdresseFiscale.COURRIER, true);
+		assertNotNull(adresseEnvoi2005);
+		assertEquals("Monsieur et Madame", adresseEnvoi2005.getLigne1());
+		assertEquals("Roland Schaenzli", adresseEnvoi2005.getLigne2());
+		assertEquals("Marie Schaenzli", adresseEnvoi2005.getLigne3());
+		assertEquals("Rue des Uttins", adresseEnvoi2005.getLigne4());
+		assertEquals("1436 Chamblon", adresseEnvoi2005.getLigne5());
+		assertNull(adresseEnvoi2005.getLigne6());
+
+		// séparation => on passe sur le tuteur de monsieur (voir UNIREG-2644)
+		final AdresseEnvoiDetaillee adresseEnvoi2007 = adresseService.getAdresseEnvoi(menage, date(2007, 1, 1), TypeAdresseFiscale.COURRIER, true);
+		assertNotNull(adresseEnvoi2007);
+		assertEquals("Monsieur et Madame", adresseEnvoi2007.getLigne1());
+		assertEquals("Roland Schaenzli", adresseEnvoi2007.getLigne2());
+		assertEquals("Marie Schaenzli", adresseEnvoi2007.getLigne3());
+		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2007.getLigne4());
+		assertEquals("Grande-Rue", adresseEnvoi2007.getLigne5());
+		assertEquals("1347 Le Sentier", adresseEnvoi2007.getLigne6());
+
+		// après réconciliation, monsieur sous tutelle => adresse de madame
+		final AdresseEnvoiDetaillee adresseEnvoi2010 = adresseService.getAdresseEnvoi(menage, date(2010, 1, 1), TypeAdresseFiscale.COURRIER, true);
+		assertNotNull(adresseEnvoi2010);
+		assertEquals("Monsieur et Madame", adresseEnvoi2010.getLigne1());
+		assertEquals("Roland Schaenzli", adresseEnvoi2010.getLigne2());
+		assertEquals("Marie Schaenzli", adresseEnvoi2010.getLigne3());
+		assertEquals("Grand-Rue", adresseEnvoi2010.getLigne4());
+		assertEquals("1337 Vallorbe", adresseEnvoi2010.getLigne5());
+		assertNull(adresseEnvoi2010.getLigne6());
 	}
 }
