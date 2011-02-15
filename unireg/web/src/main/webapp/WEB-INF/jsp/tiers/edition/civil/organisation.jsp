@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <%@page import="ch.vd.uniregctb.common.LengthConstants"%>
+<span><%-- span vide pour que IE6 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset class="information">
 	<legend><span><fmt:message key="label.organisation" /></span></legend>
 	<unireg:nextRowClass reset="1"/>

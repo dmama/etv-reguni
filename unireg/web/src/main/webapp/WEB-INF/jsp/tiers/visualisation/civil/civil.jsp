@@ -12,6 +12,7 @@
 	</table>
 </c:if>	
 
+<span><%-- span vide pour que IE6 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <c:choose>
 	<c:when test="${command.natureTiers == 'Habitant'}"><jsp:include page="individu.jsp"/></c:when>
 	<c:when test="${command.natureTiers == 'NonHabitant'}"><jsp:include page="non-habitant.jsp"/></c:when>

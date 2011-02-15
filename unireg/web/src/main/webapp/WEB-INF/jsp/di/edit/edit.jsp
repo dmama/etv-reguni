@@ -63,7 +63,7 @@
 
 						dialog.dialog({
 							title: "Impression d'un duplicata",
-							height: 410,
+							height: 440,
 							width: 500,
 							modal: true,
 							buttons: {
