@@ -3,6 +3,9 @@ package ch.vd.uniregctb.tiers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -42,7 +45,17 @@ public class DebiteurEditController extends AbstractTiersController {
 		return view;
 	}
 
+	 	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
+		Map<String, Object> data =  super.referenceData(request);
+		data.put(LIBELLE_LOGICIEL,tiersMapHelper.getAllLibellesLogiciels());
+
+		return data;
+	}
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
