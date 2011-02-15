@@ -26,7 +26,7 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 		this.identificationMessagesEditManager = identificationMessagesEditManager;
 	}
 
-	public static final String PP_CRITERIA_NAME = "ppCriteria";
+	public static final String PP_CRITERIA_NAME = "identCriteria";
 	public final static String BOUTON_ANNULER = "annuler";
 	public final static String ID_PARAMETER_NAME = "id";
 	public final static String SOURCE_PARAMETER = "source";

@@ -32,7 +32,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 
 
-	public static final String PP_CRITERIA_NAME = "ppCriteria";
+	public static final String PP_CRITERIA_NAME = "identCriteria";
 	public final static String BOUTON_EXPERTISER = "expertiser";
 	public final static String BOUTON_IMPOSSIBLE_A_IDENTIFIER = "impossibleAIdentifier";
 	public final static String TARGET_IDENTIFIER = "identifier";
