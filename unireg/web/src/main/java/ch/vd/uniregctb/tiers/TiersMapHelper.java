@@ -1,21 +1,45 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
-import ch.vd.uniregctb.tiers.view.LogicielView;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.type.*;
+import ch.vd.uniregctb.type.CategorieEtranger;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.NatureJuridique;
+import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.uniregctb.type.TypeActivite;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeOperation;
 import ch.vd.uniregctb.wsclient.fidor.FidorService;
 import ch.vd.uniregctb.wsclient.model.Logiciel;
 
@@ -23,6 +47,8 @@ import ch.vd.uniregctb.wsclient.model.Logiciel;
  * Cette classe expose les différents enums sours forme de map enum->description.
  */
 public class TiersMapHelper extends CommonMapHelper {
+
+	private static final Logger LOGGER = Logger.getLogger(TiersMapHelper.class);
 
 	private Map<FormeJuridique, String> mapFormeJuridique;
 	private Map<NatureJuridique, String> mapNatureJuridique;
@@ -60,6 +86,7 @@ public class TiersMapHelper extends CommonMapHelper {
 
 	private FidorService fidorService;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setFidorService(FidorService fidorService) {
 		this.fidorService = fidorService;
 	}
@@ -486,19 +513,22 @@ public class TiersMapHelper extends CommonMapHelper {
 	/**
 	 * Initialise la map avec touts les fournisseurs de tous les logiciels presents dans FiDoR
 	 *
-	 * @param fidorService
 	 * @return une map
 	 */
 	public Map<Long, String> getAllLibellesLogiciels() {
-		Map<Long,String> mapLibelleLogiciel = new HashMap<Long, String>();
-		List<Logiciel> listeLogiciels = fidorService.getLogicielsForEmpaci();
-		if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
-			for (Logiciel logiciel : listeLogiciels) {
-				mapLibelleLogiciel.put(logiciel.getId(),logiciel.getFournisseur());
-
-
+		try {
+			final List<Logiciel> listeLogiciels = fidorService.getLogicielsForEmpaci();
+			final HashMap<Long, String> map = new HashMap<Long, String>();
+			if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
+				for (Logiciel logiciel : listeLogiciels) {
+					map.put(logiciel.getId(), logiciel.getFournisseur());
+				}
 			}
+			return map;
 		}
-		return mapLibelleLogiciel;
+		catch (Exception e) {
+			LOGGER.error("Impossible de récupérer la liste des logiciels", e);
+			return Collections.emptyMap();
+		}
 	}
 }
