@@ -44,7 +44,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 			});
 			// ids en entrées
 			String filename = "contribuables_a_traiter.csv";
-			String contenu = idsCtbsAsCsvFile(results.ctbsIds, filename, status);
+			String contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
 			attacheFichier(writer, filename, "Contribuables à traiter", contenu, 500);
 		}
 

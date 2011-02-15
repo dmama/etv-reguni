@@ -46,6 +46,7 @@ import ch.vd.uniregctb.document.ExtractionAfcRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
+import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
 import ch.vd.uniregctb.document.ListeNoteRapport;
@@ -67,6 +68,7 @@ import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
+import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
@@ -865,6 +867,26 @@ public class RapportServiceImpl implements RapportService {
 			return docService.newDoc(CorrectionEtatDeclarationRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<CorrectionEtatDeclarationRapport>() {
 				public void writeDoc(CorrectionEtatDeclarationRapport doc, OutputStream os) throws Exception {
 					final PdfCorrectionEtatDeclarationRapport document = new PdfCorrectionEtatDeclarationRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public ListeAssujettisRapport generateRapport(final ListeAssujettisResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportListeAssujettis";
+		final String description = "Rapport d'exécution du job d'extraction de la liste des assujettis d'une période fiscale.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(ListeAssujettisRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeAssujettisRapport>() {
+				public void writeDoc(ListeAssujettisRapport doc, OutputStream os) throws Exception {
+					final PdfListeAssujettisRapport document = new PdfListeAssujettisRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

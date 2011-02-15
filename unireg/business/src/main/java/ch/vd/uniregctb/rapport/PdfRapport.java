@@ -233,61 +233,90 @@ public abstract class PdfRapport extends Document {
 	}
 
 	/**
-	 * Construit le contenu du fichier détaillé des contribuables traités
+	 * Interface implémentée par le code spécifique au remplissage d'un fichier CSV
+	 * @param <T>
 	 */
-	protected static String ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
-		String contenu = null;
-		int size = ctbsTraites.size();
-		if (size > 0) {
-			StringBuilder b = new StringBuilder("Numéro de contribuable\n");
+	protected static interface Filler<T> {
+		/**
+		 * Remplissage de la ligne d'entête (sans le CR final)
+		 * @param b destination du remplissage
+		 */
+		void fillHeader(StringBuilder b);
 
-			final GentilIterator<Long> iter = new GentilIterator<Long>(ctbsTraites);
+		/**
+		 * Remplissage de chacune des lignes (sans le CR final)
+		 * @param b destination du remplissage
+		 * @param elt source de l'information à utiliser pour le remplissage
+		 */
+		void fillLine(StringBuilder b, T elt);
+	}
+
+	protected static <T> String asCsvFile(List<T> list, String fileName, StatusManager status, int avgLineLength, Filler<T> filler) {
+		String contenu = null;
+		final int size = list.size();
+		final String CR = "\n";
+		if (size > 0) {
+			final StringBuilder b = new StringBuilder((avgLineLength + CR.length()) * size);
+			filler.fillHeader(b);
+			b.append(CR);
+
+			final String message = String.format("Génération du fichier %s", fileName);
+			status.setMessage(message, 0);
+
+			final GentilIterator<T> iter = new GentilIterator<T>(list);
 			while (iter.hasNext()) {
+				final T info = iter.next();
 				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+					status.setMessage(message, iter.getPercent());
 				}
-				b.append(iter.next());
-				b.append('\n');
+
+				final int sizeBefore = b.length();
+				filler.fillLine(b, info);
+				if (sizeBefore < b.length()) {
+					b.append(CR);
+				}
 			}
+
 			contenu = b.toString();
 		}
 		return contenu;
 	}
 
 	/**
+	 * Construit le contenu du fichier détaillé des contribuables traités
+	 */
+	protected static String ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
+		return asCsvFile(ctbsTraites, filename, status, 10, new Filler<Long>() {
+			public void fillHeader(StringBuilder b) {
+				b.append("NO_CTB");
+			}
+
+			public void fillLine(StringBuilder b, Long elt) {
+				b.append(elt);
+			}
+		});
+	}
+
+	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
 	protected static <T extends JobResults.Info> String asCsvFile(List<T> list, String filename, StatusManager status) {
-		String contenu = null;
-		int size = list.size();
-		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * list.size());
-			b.append("Numéro de l'office d'impôt").append(COMMA).append("Numéro de contribuable").append(COMMA + "Nom du contribuable")
-					.append(COMMA).append("Raison").append(COMMA).append("Commentaire\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
-				}
-
-				T info = iter.next();
-				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-				bb.append(info.officeImpotID).append(COMMA);
-				bb.append(info.noCtb).append(COMMA);
-				bb.append(escapeChars(info.nomCtb)).append(COMMA);
-				bb.append(info.getDescriptionRaison());
-				if (info.details != null) {
-					bb.append(COMMA).append(asCsvField(info.details));
-				}
-				bb.append('\n');
-
-				b.append(bb);
+		return asCsvFile(list, filename, status, AVG_LINE_LEN, new Filler<T>() {
+			public void fillHeader(StringBuilder b) {
+				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")
+						.append(COMMA).append("RAISON").append(COMMA).append("COMMENTAIRE");
 			}
-			contenu = b.toString();
-		}
-		return contenu;
+
+			public void fillLine(StringBuilder b, T elt) {
+				b.append(elt.officeImpotID).append(COMMA);
+				b.append(elt.noCtb).append(COMMA);
+				b.append(escapeChars(elt.nomCtb)).append(COMMA);
+				b.append(elt.getDescriptionRaison());
+				if (elt.details != null) {
+					b.append(COMMA).append(asCsvField(elt.details));
+				}
+			}
+		});
 	}
 
 	/**
@@ -422,27 +451,5 @@ public abstract class PdfRapport extends Document {
 		else {
 			return singular;
 		}
-	}
-
-	protected static String idsCtbsAsCsvFile(List<Long> ctbsIds, String filename, StatusManager status) {
-		String contenu = null;
-		int size = ctbsIds.size();
-		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * ctbsIds.size());
-			b.append("Numéro de contribuable\n");
-
-			final GentilIterator<Long> iter = new GentilIterator<Long>(ctbsIds);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
-				}
-
-				Long id = iter.next();
-				b.append(id).append('\n');
-			}
-			contenu = b.toString();
-		}
-		return contenu;
 	}
 }

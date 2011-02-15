@@ -37,6 +37,7 @@ import ch.vd.uniregctb.document.ExtractionAfcRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
+import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
 import ch.vd.uniregctb.document.ListeNoteRapport;
@@ -57,6 +58,7 @@ import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
+import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
@@ -400,4 +402,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	CorrectionEtatDeclarationRapport generateRapport(CorrectionEtatDeclarationResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du job d'extraction de la liste des assujettis d'une période fiscale
+	 *
+	 * @param results les résultats du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	ListeAssujettisRapport generateRapport(ListeAssujettisResults results, StatusManager status);
 }

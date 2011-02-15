@@ -44,7 +44,7 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	        });
 	        // ids en entrées
 	        String filename = "contribuables_a_exclure.csv";
-	        String contenu = idsCtbsAsCsvFile(results.ctbsIds, filename, status);
+	        String contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
 	        attacheFichier(writer, filename, description, contenu, 500);
 	    }
 
