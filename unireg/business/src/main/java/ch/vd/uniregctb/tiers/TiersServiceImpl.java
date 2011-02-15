@@ -2940,8 +2940,21 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 		catch (InfrastructureException e) {
-			oid = null;
+			throw new RuntimeException("Impossible de déterminer l'office d'impôt de la commune avec le numéro Ofs = " + noOfsCommune);
 		}
+		return oid;
+	}
+
+	@SuppressWarnings({"UnnecessaryLocalVariable"})
+	public Integer calculateCurrentOfficeID(Tiers tiers) {
+		final ForGestion forGestion = getDernierForGestionConnu(tiers, null);
+		if (forGestion == null) {
+			// pas de for de gestion, pas d'oid
+			return null;
+		}
+
+		final int noOfs = forGestion.getNoOfsCommune();
+		final Integer oid = getOfficeImpot(noOfs);
 		return oid;
 	}
 

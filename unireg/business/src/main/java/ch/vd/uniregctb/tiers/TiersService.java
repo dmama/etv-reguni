@@ -941,6 +941,14 @@ public interface TiersService {
 	public CollectiviteAdministrative getOfficeImpotAt(Tiers tiers, RegDate date);
 
 	/**
+	 * Calcule l'office d'impôt du tiers spécifié et retourne son id.
+	 *
+	 * @param tiers un tiers.
+	 * @return l'ID de l'office d'impôt (OID); ou <b>null</b> si le tiers n'a pas de for de gestion donc pas d'OID.
+	 */
+	public Integer calculateCurrentOfficeID(Tiers tiers);
+
+	/**
 	 * Réouvre le for et l'assigne au tiers.
 	 *
 	 * @param ff    un for fiscal

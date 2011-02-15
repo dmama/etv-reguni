@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -15,7 +16,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -28,18 +28,18 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.OuvertureForsResults.ErreurType;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -60,22 +60,23 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
+	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfra;
-	private final GlobalTiersSearcher searcher;
+	private final ServiceCivilService serviceCivil;
 	private final ValidationService validationService;
 
 	protected OuvertureForsResults rapport;
 
-	public OuvertureForsContribuablesMajeursProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                                                  TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfra,
-	                                                  GlobalTiersSearcher searcher, ValidationService validationService) {
+	public OuvertureForsContribuablesMajeursProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersDAO tiersDAO, TiersService tiersService,
+	                                                  AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilService serviceCivil, ValidationService validationService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
+		this.tiersDAO = tiersDAO;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
-		this.searcher = searcher;
+		this.serviceCivil = serviceCivil;
 		this.validationService = validationService;
 	}
 
@@ -135,6 +136,16 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	}
 
 	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status) {
+
+		// On préchauffe le cache des individus, si possible
+		if (serviceCivil.isWarmable()) {
+			final Set<Long> numeroIndividus = tiersDAO.getNumerosIndividu(batch, false);
+			if (!numeroIndividus.isEmpty()) {
+				serviceCivil.getIndividus(numeroIndividus, dateReference.year(), AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE, AttributeIndividu.PARENTS);
+				serviceCivil.getIndividus(numeroIndividus, 2400, AttributeIndividu.ADRESSES);
+			}
+		}
+
 		for (Long id : batch) {
 			if (status.interrupted()) {
 				break;
@@ -164,7 +175,6 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 	private static class HabitantData {
 
-		private TiersIndexedData indexerData;
 		private Individu individu;
 
 		private RegDate dateNaissance;
@@ -176,14 +186,6 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		private TypeEtatCivil etatCivil;
 		private boolean hasPermisC;
 		private boolean hasNationaliteSuisse;
-
-		public TiersIndexedData getIndexerData() {
-			return indexerData;
-		}
-
-		public void setIndexerData(TiersIndexedData indexerData) {
-			this.indexerData = indexerData;
-		}
 
 		public Individu getIndividu() {
 			return individu;
@@ -344,8 +346,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		// [UNIREG-1585] on s'assure que l'oid est bien renseigné
-		hibernateTemplate.flush();
-		Integer oid = habitant.getOfficeImpotId();
+		final Integer oid = tiersService.calculateCurrentOfficeID(habitant);
 		//On n'assert pas car les sourcier n'ont pour le moment pas de for de gestion
 		//Assert.notNull(oid);
 				
@@ -354,23 +355,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 	private void fillDatesNaissanceEtDeces(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {
 
-		final TiersIndexedData tiersData = searcher.get(habitant.getNumero());
-		if (tiersData != null) {
-			// si l'individu est indexé, on passe par les données indexées pour aller plus vite
-			RegDate dateNaissance = RegDateHelper.indexStringToDate(tiersData.getDateNaissance());
-			RegDate dateDeces = RegDateHelper.indexStringToDate(tiersData.getDateDeces());
-
-			data.setIndexerData(tiersData);
-			data.setDateNaissance(dateNaissance);
-			data.setDateDeces(dateDeces);
-
-			if (dateNaissance != null) {
-				// on a toutes les infos
-				return;
-			}
-		}
-
-		// autrement, on doit faire un appel à host-interface
+		// on fait appel à host-interface
 		Individu individu;
 		try {
 			individu = tiersService.getIndividu(habitant, dateReference.year(), new AttributeIndividu[]{AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE});
@@ -395,25 +380,6 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	}
 
 	private void fillInfoDomicile(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {
-
-		final TiersIndexedData indexerData = data.getIndexerData();
-		if (indexerData != null) {
-
-			final Boolean domicilieDansLeCanton = indexerData.isDomicilieDansLeCanton();
-			if (domicilieDansLeCanton != null) {
-				data.setDomicilieDansLeCanton(domicilieDansLeCanton);
-			}
-
-			final Integer noOfsCommuneDomicile = indexerData.getNoOfsCommuneDomicile();
-			if (noOfsCommuneDomicile != null) {
-				data.setNumeroOfsAutoriteFiscale(noOfsCommuneDomicile);
-			}
-
-			if (domicilieDansLeCanton != null && (!domicilieDansLeCanton || noOfsCommuneDomicile != null)) {
-				// on a toutes les infos
-				return;
-			}
-		}
 
 		final AdresseGenerique adresseDomicile;
 		try {
@@ -470,17 +436,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		final boolean hasPermisC;
 		final boolean hasNationaliteSuisse;
 
-		Individu individu = data.getIndividu();
-		if (individu == null) {
-			try {
-				individu = tiersService.getIndividu(habitant, dateReference.year(), new AttributeIndividu[]{AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE});
-			}
-			catch (ServiceCivilException e) {
-				LOGGER.error("Impossible de récupérer l'habitant n° " + habitant.getNumero(), e);
-				throw new OuvertureForsException(habitant, ErreurType.CIVIL_EXCEPTION, e);
-			}
-		}
-
+		final Individu individu = data.getIndividu();
 		if (individu == null) {
 			LOGGER.error("Impossible de récupérer l'individu n° " + habitant.getNumeroIndividu() + " associé à l'habitant n° "
 					+ habitant.getNumero());

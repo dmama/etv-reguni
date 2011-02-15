@@ -6,18 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -28,12 +23,11 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 
-	private static final Logger LOGGER = Logger.getLogger(OfficeImpotHibernateInterceptor.class);
+	//private static final Logger LOGGER = Logger.getLogger(OfficeImpotHibernateInterceptor.class);
 
 	private TiersService tiersService;
 	private TacheDAO tacheDAO;
 	private TiersDAO tiersDAO;
-	private ServiceInfrastructureService infraService;
 
 	private static class Behavior {
 		public boolean enabled = true;
@@ -72,7 +66,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		try {
 			// On change la valeur de l'oid sur le tiers. On traitera les tâches dans le post-flush.
 			for (Tiers tiers : dirty.values()) {
-				final Integer oid = calculateCurrentOfficeID(tiers);
+				final Integer oid = tiersService.calculateCurrentOfficeID(tiers);
 				final Integer old = tiers.getOfficeImpotId();
 				if (!ObjectUtils.equals(oid,old)) {
 					tiers.setOfficeImpotId(oid);
@@ -98,7 +92,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 			return false;
 		}
 
-		final Integer oid = calculateCurrentOfficeID(tiers);
+		final Integer oid = tiersService.calculateCurrentOfficeID(tiers);
 		final Integer old = tiers.getOfficeImpotId();
 		if(ObjectUtils.equals(oid,old)){ // on évite de rendre le tiers dirty pour rien
 		return false;
@@ -233,7 +227,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 				continue;
 			}
 
-			Integer oid = calculateCurrentOfficeID(tiers);
+			Integer oid = tiersService.calculateCurrentOfficeID(tiers);
 			final Integer old = tiers.getOfficeImpotId();
 			if (!ObjectUtils.equals(oid,old)) {
 				// Met-à-jour l'OID sur le tiers
@@ -247,60 +241,11 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		tacheDAO.updateCollAdmAssignee(todo);
 	}
 
-	/**
-	 * Détecte si l'id de l'office d'impôt du tiers spécifié doit être changé, et retourne la nouvelle valeur. Le tiers n'est pas modifié.
-	 *
-	 * @param tiers le tiers à mettre à jour.
-	 * @return le numéro du nouveau OID; ou <b>null</b> si le tiers n'a pas de for de gestion donc pas d'OID.
-	 */
-	private Integer calculateCurrentOfficeID(Tiers tiers) {
-		Integer oid = null;
-		final ForGestion forGestion = tiersService.getDernierForGestionConnu(tiers, null);
-		if (forGestion != null) {
-			int noOfs = forGestion.getNoOfsCommune();
-			oid = getOID(noOfs);
-		}
-		else {
-			/*
-			 * si le contribuable n'a pas de for de gestion (e.g. contribuable pour tous, mineur, ...), ne pas avoir d'oid est sans
-			 * importance: le contribuable n'est pas assujetti.
-			 */
-			return null;
-		}
-		  	return oid;
-
-	}
-
-	/**
-	 * @param noOfs le numéro Ofs d'une commune
-	 * @return l'id de l'office d'impôt responsable de la commune spécifiée en paramètre.
-	 */
-	private Integer getOID(int noOfs) {
-		Integer oid = null;
-		try {
-			CollectiviteAdministrative office = infraService.getOfficeImpotDeCommune(noOfs);
-			if (office == null) {
-				LOGGER.warn("Le service infrastructure a retourné un office d'impôt nul pour la commune avec le numéro OFS " + noOfs);
-			}
-			else {
-				oid = office.getNoColAdm();
-			}
-		}
-		catch (InfrastructureException e) {
-			LOGGER.error("Impossible de récupérer l'office d'impôt de la commune avec le numéro OFS " + noOfs, e);
-			throw new CallbackException(e);
-		}
-		return oid;
-	}
-
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
 	}

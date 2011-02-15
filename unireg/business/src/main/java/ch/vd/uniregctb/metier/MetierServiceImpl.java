@@ -1347,7 +1347,7 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	public OuvertureForsResults ouvertureForsContribuablesMajeurs(RegDate dateReference, StatusManager status) {
 		final OuvertureForsContribuablesMajeursProcessor processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager,
-				hibernateTemplate, tiersService, adresseService, serviceInfra, tiersSearcher, validationService);
+				hibernateTemplate, tiersDAO, tiersService, adresseService, serviceInfra, serviceCivilService, validationService);
 		return processor.run(dateReference, status);
 	}
 

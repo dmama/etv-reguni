@@ -47,8 +47,8 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager, hibernateTemplate, tiersService, adresseService,
-				serviceInfra, searcher, validationService);
+		processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService,
+				serviceInfra, serviceCivil, validationService);
 	}
 
 	/**
