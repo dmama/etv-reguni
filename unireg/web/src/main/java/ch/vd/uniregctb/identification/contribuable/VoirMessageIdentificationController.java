@@ -22,7 +22,7 @@ public class VoirMessageIdentificationController extends AbstractTiersListContro
 
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
 	private ServletService servletService;
-	public static final String PP_CRITERIA_NAME = "ppCriteria";
+	public static final String PP_CRITERIA_NAME = "identCriteria";
 	public final static String ID_PARAMETER_NAME = "id";
 
 	public void setIdentificationMessagesEditManager(IdentificationMessagesEditManager identificationMessagesEditManager) {
