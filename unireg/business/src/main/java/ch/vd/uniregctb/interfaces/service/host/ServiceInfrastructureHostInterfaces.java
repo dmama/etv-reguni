@@ -111,9 +111,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 */
 	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
 		try {
-			final ch.vd.infrastructure.model.impl.CantonImpl c = new ch.vd.infrastructure.model.impl.CantonImpl();
-			c.setSigleOFS(canton.getSigleOFS());
-			final List<?> list = serviceInfrastructure.getCommunes(c);
+			final List<?> list = serviceInfrastructure.getCommunes(canton.getSigleOFS());
 			List<Commune> communes = new ArrayList<Commune>();
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Commune co = (ch.vd.infrastructure.model.Commune) o;
