@@ -20,7 +20,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DebiteurHisto", propOrder = {
 		"raisonSociale", "categorie", "periodiciteDecompte", "periodeDecompte", "modeCommunication", "sansRappel",
-		"sansListRecapitulative", "contribuableAssocie", "periodicites"
+		"sansListRecapitulative", "contribuableAssocie", "periodicites","logicielId"
 })
 public class DebiteurHisto extends TiersHisto {
 
@@ -44,6 +44,9 @@ public class DebiteurHisto extends TiersHisto {
 
 	@XmlElement(required = true)
 	public boolean sansListRecapitulative;
+
+	@XmlElement(required = false)
+	public Long logicielId;
 
 	/**
 	 * Le numéro du contribuable associé à ce débiteur; ou <b>null</b> si le débiteur n'est pas lié à un contribuable.
@@ -107,6 +110,7 @@ public class DebiteurHisto extends TiersHisto {
 		this.sansListRecapitulative = debiteur.sansListRecapitulative;
 		this.contribuableAssocie = debiteur.contribuableAssocie;
 		this.periodicites = debiteur.periodicites;
+		this.logicielId = debiteur.logicielId;
 	}
 
 	private void setBase(Context context, ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur) {
@@ -127,6 +131,7 @@ public class DebiteurHisto extends TiersHisto {
 		this.sansRappel = DataHelper.coreToWeb(debiteur.getSansRappel());
 		this.sansListRecapitulative = DataHelper.coreToWeb(debiteur.getSansListeRecapitulative());
 		this.contribuableAssocie = debiteur.getContribuableId();
+		this.logicielId = debiteur.getLogicielId();
 	}
 
 	/**
