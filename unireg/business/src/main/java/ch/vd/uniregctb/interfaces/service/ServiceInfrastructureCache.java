@@ -32,7 +32,7 @@ import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 import ch.vd.uniregctb.stats.StatsService;
 
-public class ServiceInfrastructureCache extends AbstractServiceInfrastructureService implements UniregCacheInterface, ServiceInfrastructureService, InitializingBean, DisposableBean {
+public class ServiceInfrastructureCache extends ServiceInfrastructureBase implements UniregCacheInterface, InitializingBean, DisposableBean {
 
 	//private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureCache.class);
 

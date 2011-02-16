@@ -15,12 +15,12 @@ import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.mock.MockFormeJuridique;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleBase;
 import ch.vd.uniregctb.type.TypeAdressePM;
 

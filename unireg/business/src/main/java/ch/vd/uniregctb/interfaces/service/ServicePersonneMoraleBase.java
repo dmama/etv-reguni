@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdressesPM;
 import ch.vd.uniregctb.adresse.AdressesPMHisto;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 
 public abstract class ServicePersonneMoraleBase implements ServicePersonneMoraleService {

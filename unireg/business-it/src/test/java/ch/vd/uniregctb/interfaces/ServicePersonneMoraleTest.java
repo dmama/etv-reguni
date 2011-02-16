@@ -9,11 +9,11 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.Mandat;
+import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.Siege;
 import ch.vd.uniregctb.interfaces.model.TypeMandataire;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
-import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 
 import static org.junit.Assert.assertEquals;

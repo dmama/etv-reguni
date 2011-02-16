@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.uniregctb.interfaces.model;
 
 /**
  * Les des attributs multivalués pouvant être renseignés à la demande sur une PM.

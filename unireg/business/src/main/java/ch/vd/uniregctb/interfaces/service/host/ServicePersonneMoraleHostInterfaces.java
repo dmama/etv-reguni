@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.uniregctb.interfaces.service.host;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,16 +10,19 @@ import ch.vd.registre.pm.service.ServicePersonneMorale;
 import ch.vd.uniregctb.common.JvmVersionHelper;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
+import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.impl.EtablissementImpl;
 import ch.vd.uniregctb.interfaces.model.impl.EvenementPMImpl;
 import ch.vd.uniregctb.interfaces.model.impl.PersonneMoraleImpl;
+import ch.vd.uniregctb.interfaces.service.PersonneMoraleException;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleBase;
 
-public class ServicePersonneMoraleServiceImpl extends ServicePersonneMoraleBase {
+public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBase {
 
 	private ServicePersonneMorale servicePersonneMorale;
 
-	public ServicePersonneMoraleServiceImpl() {
+	public ServicePersonneMoraleHostInterfaces() {
 		// l'EJB de HostInterface a besoin d'une version 1.5
 		JvmVersionHelper.checkJava_1_5();
 	}

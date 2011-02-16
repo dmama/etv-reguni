@@ -4,13 +4,13 @@
 
 	<!-- Service Infrastructure -->
 	
-	<bean id="serviceInfrastructureServiceRaw" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureServiceImpl">
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceInfrastructureHostInterfaces">
 		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
 		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
 	</bean>
 
 	<bean id="serviceInfrastructureTracing" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureTracing">
-		<property name="target" ref="serviceInfrastructureServiceRaw" />
+		<property name="target" ref="serviceInfrastructureServiceHost" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -30,12 +30,12 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
-	<bean id="serviceCivilServiceRaw" class="ch.vd.uniregctb.interfaces.service.ServiceCivilServiceImpl" parent="serviceCivilServiceBase">
+	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceCivilServiceHostInterfaces" parent="serviceCivilServiceBase">
 		<property name="serviceCivil" ref="_serviceCivil" />
 	</bean>
 
 	<bean id="serviceCivilServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilServiceRaw" />
+		<property name="target" ref="serviceCivilServiceHost" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -52,12 +52,12 @@
 
 	<!-- Service Securité -->
 
-	<bean id="serviceSecuriteServiceRaw" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteServiceImpl">
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfaces">
 		<property name="serviceSecurite" ref="_serviceSecurite" />
 	</bean>
 
 	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
-		<property name="target" ref="serviceSecuriteServiceRaw" />
+		<property name="target" ref="serviceSecuriteServiceHost" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -73,12 +73,12 @@
 
 	<!-- Service PM -->
 	
-	<bean id="servicePersonneMoraleServiceRaw" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleServiceImpl">
+	<bean id="servicePersonneMoraleServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServicePersonneMoraleHostInterfaces">
 		<property name="servicePersonneMorale" ref="_servicePersonneMorale" />
 	</bean>
 
 	<bean id="servicePersonneMoraleServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleTracing">
-		<property name="target" ref="servicePersonneMoraleServiceRaw" />
+		<property name="target" ref="servicePersonneMoraleServiceHost" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

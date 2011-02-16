@@ -26,12 +26,12 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 
-public abstract class AbstractServiceInfrastructureService implements ServiceInfrastructureService {
+public abstract class ServiceInfrastructureBase implements ServiceInfrastructureService {
 
 
 	private Map<Integer, List<Localite>> allLocaliteCommune;
 
-	public AbstractServiceInfrastructureService() {
+	public ServiceInfrastructureBase() {
 		super();
 	}
 

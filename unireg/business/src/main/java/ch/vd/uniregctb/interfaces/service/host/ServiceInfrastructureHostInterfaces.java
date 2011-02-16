@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.uniregctb.interfaces.service.host;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -39,14 +39,17 @@ import ch.vd.uniregctb.interfaces.model.impl.PaysImpl;
 import ch.vd.uniregctb.interfaces.model.impl.RueImpl;
 import ch.vd.uniregctb.interfaces.model.impl.TypeEtatPMImpl;
 import ch.vd.uniregctb.interfaces.model.impl.TypeRegimeFiscalImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureBase;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * @author Jean-Eric CUENDET
  *
  */
-public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastructureService {
+public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBase {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureServiceImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureHostInterfaces.class);
 
 	private ServiceInfrastructure serviceInfrastructure;
 	private ServiceInfrastructureFiscal serviceInfrastructureFiscal;
@@ -80,7 +83,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		this.serviceInfrastructureFiscal = serviceInfrastructureFiscal;
 	}
 
-	public ServiceInfrastructureServiceImpl() {
+	public ServiceInfrastructureHostInterfaces() {
 		// l'EJB de HostInterface a besoin d'une version 1.5
 		JvmVersionHelper.checkJava_1_5();
 	}

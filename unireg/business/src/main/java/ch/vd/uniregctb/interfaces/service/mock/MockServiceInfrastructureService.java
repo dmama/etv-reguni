@@ -22,7 +22,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
-import ch.vd.uniregctb.interfaces.service.AbstractServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
@@ -47,7 +47,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
  *  };
  * </pre>
  */
-public abstract class MockServiceInfrastructureService extends AbstractServiceInfrastructureService {
+public abstract class MockServiceInfrastructureService extends ServiceInfrastructureBase {
 
 	// private static final Logger LOGGER = Logger.getLogger(MockServiceInfrastructureService.class);
 

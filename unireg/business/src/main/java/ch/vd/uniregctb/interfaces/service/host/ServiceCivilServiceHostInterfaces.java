@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.uniregctb.interfaces.service.host;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -15,14 +15,16 @@ import ch.vd.uniregctb.common.JvmVersionHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 
-public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
+public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceHostInterfaces.class);
 
 	private ServiceCivil serviceCivil;
 
-	public ServiceCivilServiceImpl() {
+	public ServiceCivilServiceHostInterfaces() {
 		// l'EJB de HostInterface a besoin d'une version 1.5
 		JvmVersionHelper.checkJava_1_5();
 	}

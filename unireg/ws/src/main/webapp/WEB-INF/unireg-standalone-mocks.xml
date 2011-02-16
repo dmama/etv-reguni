@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-							http://www.springframework.org/schema/jee
-							http://www.springframework.org/schema/jee/spring-jee.xsd
-							http://www.springframework.org/schema/util
-							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Le ehcache manager pour ne pas avoir à inclure le fichier unireg-ws-cache.xml -->
 	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
@@ -24,18 +19,18 @@
 	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
 
 	<!-- Bean client interfacesService MOCK -->
-	<bean id="serviceInfrastructureServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService"/>
-	<alias alias="serviceInfrastructureService" name="serviceInfrastructureServiceRaw"/>
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService"/>
+	<alias alias="serviceInfrastructureService" name="serviceInfrastructureServiceHost"/>
 
 	<!-- Bean client ServiceCivil MOCK -->
-	<bean id="serviceCivilServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil" />
-	<alias alias="serviceCivilService" name="serviceCivilServiceRaw"/>
+	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil" />
+	<alias alias="serviceCivilService" name="serviceCivilServiceHost"/>
 
 	<!-- Bean client ServicePM MOCK -->
 	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM"  />
 
-	<bean id="serviceSecuriteServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite"  />
-	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceRaw"/>
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite"  />
+	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
 
 	<!-- Mock service BVR -->
 	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient">

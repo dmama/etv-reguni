@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.uniregctb.interfaces.service.host;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -12,13 +12,15 @@ import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.securite.service.SecuriteException;
 import ch.vd.securite.service.ServiceSecurite;
 import ch.vd.uniregctb.common.JvmVersionHelper;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.utils.proxy.ProxyBuisnessException;
 
-public class ServiceSecuriteServiceImpl implements ServiceSecuriteService {
+public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 
 	private ServiceSecurite serviceSecurite;
 
-	public ServiceSecuriteServiceImpl() {
+	public ServiceSecuriteHostInterfaces() {
 		// l'EJB de HostInterface a besoin d'une version 1.5
 		JvmVersionHelper.checkJava_1_5();
 	}
