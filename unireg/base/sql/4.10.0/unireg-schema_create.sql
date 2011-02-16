@@ -182,6 +182,12 @@ create index IDX_ANC_NO_SRC on TIERS (ANCIEN_NUMERO_SOURCIER);
 
 create index IDX_NUMERO_INDIVIDU on TIERS (NUMERO_INDIVIDU);
 
+create index IDX_TIERS_LOG_MDATE on TIERS (LOG_MDATE);
+
+create index IDX_FF_LOG_MDATE on FOR_FISCAL (LOG_MDATE);
+
+create index IDX_ED_LOG_MDATE on ETAT_DECLARATION (LOG_MDATE);
+
 create sequence S_PM start with 2000000 increment by 1;
 
 create sequence S_DPI start with 1500000 increment by 1;
