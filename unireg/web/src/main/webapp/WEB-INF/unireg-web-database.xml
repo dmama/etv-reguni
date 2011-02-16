@@ -9,7 +9,7 @@
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<property name="delaiPurge" value="185"/>
 		<!-- BEGIN_LVERSION -->
-		<property name="appName" value="Web (version 4.9.1-SNAPSHOT)" />
+		<property name="appName" value="Web (version 4.9.1)" />
 		<!-- END_LVERSION -->
 	</bean>
 
