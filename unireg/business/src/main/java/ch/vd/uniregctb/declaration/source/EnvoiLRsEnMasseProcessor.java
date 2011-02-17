@@ -82,7 +82,7 @@ public class EnvoiLRsEnMasseProcessor {
 			@Override
 			public void afterTransactionCommit() {
 				final int percent = (100 * rapportFinal.nbDPIsTotal) / list.size();
-				s.setMessage(String.format("%d sur %d débiteurs traités (%d%%)", rapportFinal.nbDPIsTotal, list.size(), percent));
+				s.setMessage(String.format("%d sur %d débiteurs traités", rapportFinal.nbDPIsTotal, list.size()), percent);
 			}
 		});
 
