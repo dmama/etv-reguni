@@ -86,8 +86,8 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 			@Override
 			public void afterTransactionCommit() {
 				int percent = (100 * rapportFinal.nbLRsTotal) / list.size();
-				s.setMessage(String.format("%d sur %d listes récapitulatives traitées (%d%%) : (%d LR sommées)",
-						rapportFinal.nbLRsTotal, list.size(), percent, rapportFinal.lrSommees.size()));
+				s.setMessage(String.format("%d sur %d listes récapitulatives traitées (%d LR sommées)",
+						rapportFinal.nbLRsTotal, list.size(), rapportFinal.lrSommees.size()), percent);
 			}
 		});
 
