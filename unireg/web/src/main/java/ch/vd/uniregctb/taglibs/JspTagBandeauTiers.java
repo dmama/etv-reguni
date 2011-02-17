@@ -27,9 +27,11 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.general.view.TypeAvatar;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -49,7 +51,6 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.WebContextUtils;
 import ch.vd.uniregctb.validation.ValidationService;
-import ch.vd.uniregctb.wsclient.fidor.FidorService;
 
 /**
  * Affiche les informations générales d'un tiers (nom, prénom, type d'assujettissement, adresse, image, ...).
@@ -65,8 +66,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static TiersDAO tiersDAO;
 	private static TiersService tiersService;
 	private static ServiceCivilService serviceCivilService;
+	private static ServiceInfrastructureService serviceInfrastructure;
 	private static AdresseService adresseService;
-	private static FidorService fidorService;
 	private static PlatformTransactionManager transactionManager;
 	private static ValidationService validationService;
 
@@ -160,8 +161,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setFidorService(FidorService fidorService) {
-		JspTagBandeauTiers.fidorService = fidorService;
+	public void setServiceInfrastructure(ServiceInfrastructureService serviceInfrastructure) {
+		JspTagBandeauTiers.serviceInfrastructure = serviceInfrastructure;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -492,11 +493,15 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			s.append("\t<option value=\"\">---</option>\n");
 			final boolean isEntreprise = tiers instanceof Entreprise;
 			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
-				s.append("\t<option value=\"").append(fidorService.getUrlTaoPP(tiers.getNumero())).append("\">").append(message("label.TAOPP")).append("</option>\n");
-				s.append("\t<option value=\"").append(fidorService.getUrlTaoBA(tiers.getNumero())).append("\">").append(message("label.TAOBA")).append("</option>\n");
-				s.append("\t<option value=\"").append(fidorService.getUrlTaoIS(tiers.getNumero())).append("\">").append(message("label.TAOIS")).append("</option>\n");
+				final String urlTaoPP = serviceInfrastructure.getUrlVers(ApplicationFiscale.TAO_PP, tiers.getNumero());
+				final String urlTaoBA = serviceInfrastructure.getUrlVers(ApplicationFiscale.TAO_BA, tiers.getNumero());
+				final String urlTaoIS = serviceInfrastructure.getUrlVers(ApplicationFiscale.TAO_IS, tiers.getNumero());
+				s.append("\t<option value=\"").append(urlTaoPP).append("\">").append(message("label.TAOPP")).append("</option>\n");
+				s.append("\t<option value=\"").append(urlTaoBA).append("\">").append(message("label.TAOBA")).append("</option>\n");
+				s.append("\t<option value=\"").append(urlTaoIS).append("\">").append(message("label.TAOIS")).append("</option>\n");
 			}
-			s.append("\t<option value=\"").append(fidorService.getUrlSipf(tiers.getNumero())).append("\">").append(message("label.SIPF")).append("</option>\n");
+			final String urlSIPF = serviceInfrastructure.getUrlVers(ApplicationFiscale.SIPF, tiers.getNumero());
+			s.append("\t<option value=\"").append(urlSIPF).append("\">").append(message("label.SIPF")).append("</option>\n");
 			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
 				s.append("\t<option value=\"launchcat.do?numero=").append(tiers.getNumero()).append("\">").append(message("label.CAT")).append("</option>\n");
 			}

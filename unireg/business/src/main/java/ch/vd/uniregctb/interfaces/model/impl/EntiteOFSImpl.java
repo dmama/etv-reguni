@@ -13,6 +13,13 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 	private final String nomMinuscule;
 	private final String sigleOFS;
 
+	protected EntiteOFSImpl(int noOFS, String nomMajuscule, String nomMinuscule, String sigleOFS) {
+		this.noOFS = noOFS;
+		this.nomMajuscule = nomMajuscule;
+		this.nomMinuscule = nomMinuscule;
+		this.sigleOFS = sigleOFS;
+	}
+
 	public EntiteOFSImpl(ch.vd.infrastructure.model.EntiteOFS target) {
 		this.noOFS = target.getNoOFS();
 		this.nomMajuscule = target.getNomMajuscule();

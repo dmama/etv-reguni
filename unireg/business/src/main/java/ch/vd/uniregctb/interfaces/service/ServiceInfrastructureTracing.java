@@ -13,12 +13,15 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
+import ch.vd.uniregctb.interfaces.model.LogicielMetier;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -964,6 +967,73 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 				@Override
 				public String toString() {
 					return String.format("code=%s", code);
+				}
+			});
+		}
+
+		return result;
+	}
+
+	public String getUrlVers(final ApplicationFiscale application, final Long tiersId) {
+		String result;
+		final long time = tracing.start();
+		try {
+			result = target.getUrlVers(application, tiersId);
+		}
+		finally {
+			tracing.end(time, "getUrlVers", new Object() {
+				@Override
+				public String toString() {
+					return String.format("application=%s, tiersId=%d", application.name(), tiersId);
+				}
+			});
+		}
+
+		return result;
+	}
+
+	public Logiciel getLogiciel(final Long idLogiciel) {
+		Logiciel result;
+		long time = tracing.start();
+		try {
+			result = target.getLogiciel(idLogiciel);
+		}
+		finally {
+			tracing.end(time, "getLogiciel", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d", idLogiciel);
+				}
+			});
+		}
+
+		return result;
+	}
+
+	public List<Logiciel> getTousLesLogiciels() {
+		List<Logiciel> result;
+		long time = tracing.start();
+		try {
+			result = target.getTousLesLogiciels();
+		}
+		finally {
+			tracing.end(time, "getTousLesLogiciels", null);
+		}
+
+		return result;
+	}
+
+	public List<Logiciel> getLogicielsPour(final LogicielMetier metier) {
+		List<Logiciel> result;
+		long time = tracing.start();
+		try {
+			result = target.getLogicielsPour(metier);
+		}
+		finally {
+			tracing.end(time, "getLogicielsPour", new Object() {
+				@Override
+				public String toString() {
+					return String.format("metier=%s", metier);
 				}
 			});
 		}

@@ -9,8 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
@@ -29,7 +27,6 @@ import ch.vd.uniregctb.security.Role;
 		"classpath:WEB-INF/unireg-web-remoting.xml",
 		"classpath:WEB-INF/unireg-web-config.xml",
 		"classpath:WEB-INF/unireg-web-tiers.xml",
-		"classpath:WEB-INF/unireg-web-info.xml",
 		"classpath:WEB-INF/unireg-web-admin.xml",
 		"classpath:WEB-INF/unireg-web-evenements.xml",
 		"classpath:WEB-INF/unireg-web-lr.xml",
@@ -49,7 +46,6 @@ import ch.vd.uniregctb.security.Role;
 		"classpath:WEB-INF/unireg-web-acces.xml",
 		"classpath:WEB-INF/unireg-web-activation.xml",
 		"classpath:WEB-INF/unireg-web-identification.xml",
-		"classpath:WEB-INF/unireg-web-checker.xml",
 		"classpath:WEB-INF/unireg-web-supergra.xml",
 		WebTestingConstants.UNIREG_WEBUT_SERVICES,
 		WebTestingConstants.UNIREG_WEBUT_SECURITY

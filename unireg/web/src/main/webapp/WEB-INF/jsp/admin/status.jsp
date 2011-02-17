@@ -63,8 +63,12 @@
 						<td id="serviceCivilStatus"><c:out value="${serviceCivilStatus}" escapeXml="false"/></td>
 					</tr>
 					<tr>
-						<td><fmt:message key="label.info.service.infra"/></td>
+						<td><fmt:message key="label.info.service.host.infra"/></td>
 						<td id="serviceInfraStatus"><c:out value="${serviceInfraStatus}" escapeXml="false"/></td>
+					</tr>
+					<tr>
+						<td><fmt:message key="label.info.service.fifor"/></td>
+						<td id="serviceFidorStatus"><c:out value="${serviceFidorStatus}" escapeXml="false"/></td>
 					</tr>
 					<tr>
 						<td><fmt:message key="label.info.service.securite"/></td>

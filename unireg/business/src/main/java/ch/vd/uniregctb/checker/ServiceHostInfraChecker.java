@@ -5,7 +5,7 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
-public class ServiceInfraChecker implements ServiceChecker {
+public class ServiceHostInfraChecker implements ServiceChecker {
 
 	private ServiceInfrastructureService serviceInfraRaw;
 	private String details;

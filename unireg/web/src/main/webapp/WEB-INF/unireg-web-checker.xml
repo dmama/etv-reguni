@@ -5,7 +5,8 @@
 	<bean id="applicationChecker" class="ch.vd.uniregctb.checker.ApplicationChecker">
 		<property name="version" value="${pom.version}" />
 		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
-		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
+		<property name="serviceHostInfraChecker" ref="serviceHostInfraChecker" />
+		<property name="serviceFidorChecker" ref="serviceFidorChecker" />
 		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
 		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
 	</bean>
@@ -14,8 +15,12 @@
 		<property name="serviceCivilRaw" ref="serviceCivilServiceHost" />
 	</bean>
 
-	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">
+	<bean id="serviceHostInfraChecker" class="ch.vd.uniregctb.checker.ServiceHostInfraChecker">
 		<property name="serviceInfraRaw" ref="serviceInfrastructureServiceHost" />
+	</bean>
+
+	<bean id="serviceFidorChecker" class="ch.vd.uniregctb.checker.ServiceFidorChecker">
+		<property name="serviceFidorRaw" ref="serviceInfrastructureFidor" />
 	</bean>
 
 	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.ServiceSecuriteChecker">

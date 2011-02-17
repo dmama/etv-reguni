@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="infoController" class="ch.vd.uniregctb.admin.InfoController">
 		<property name="viewName" value="admin/status" />
@@ -14,7 +12,8 @@
 		<property name="statsService" ref="statsService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
-		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
+		<property name="serviceHostInfraChecker" ref="serviceHostInfraChecker" />
+		<property name="serviceFidorChecker" ref="serviceFidorChecker" />
 		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
 		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
 	</bean>

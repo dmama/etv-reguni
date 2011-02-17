@@ -57,7 +57,8 @@ public class InfoController extends ParameterizableViewController implements Aja
 	private StatsService statsService;
 
 	private ServiceChecker serviceCivilChecker;
-	private ServiceChecker serviceInfraChecker;
+	private ServiceChecker serviceHostInfraChecker;
+	private ServiceChecker serviceFidorChecker;
 	private ServiceChecker serviceSecuriteChecker;
 	private ServiceChecker serviceBVRChecker;
 
@@ -97,8 +98,12 @@ public class InfoController extends ParameterizableViewController implements Aja
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
-	public void setServiceInfraChecker(ServiceChecker serviceInfraChecker) {
-		this.serviceInfraChecker = serviceInfraChecker;
+	public void setServiceHostInfraChecker(ServiceChecker serviceHostInfraChecker) {
+		this.serviceHostInfraChecker = serviceHostInfraChecker;
+	}
+
+	public void setServiceFidorChecker(ServiceChecker serviceFidorChecker) {
+		this.serviceFidorChecker = serviceFidorChecker;
 	}
 
 	public void setServiceSecuriteChecker(ServiceChecker serviceSecuriteChecker) {
@@ -117,7 +122,8 @@ public class InfoController extends ParameterizableViewController implements Aja
 		mav.addObject("tiersCount", getTiersCount());
 		mav.addObject("cacheStatus", getCacheStatus());
 		fillServiceCivilInfo(mav);
-		fillServiceInfraInfo(mav);
+		fillServiceHostInfraInfo(mav);
+		fillServiceFidorInfo(mav);
 		fillServiceSecuriteInfo(mav);
 		fillStatsServiceInfo(mav);
 		fillBvrClientInfo(mav);
@@ -218,11 +224,19 @@ public class InfoController extends ParameterizableViewController implements Aja
 		}
 	}
 
-	private void fillServiceInfraInfo(ModelAndView mav) {
-		final Status status = serviceInfraChecker.getStatus();
+	private void fillServiceHostInfraInfo(ModelAndView mav) {
+		final Status status = serviceHostInfraChecker.getStatus();
 		mav.addObject("serviceInfraStatus", status.name());
 		if (status == Status.KO) {
-			mav.addObject("serviceInfraException", HtmlHelper.renderMultilines(serviceInfraChecker.getStatusDetails()));
+			mav.addObject("serviceInfraException", HtmlHelper.renderMultilines(serviceHostInfraChecker.getStatusDetails()));
+		}
+	}
+
+	private void fillServiceFidorInfo(ModelAndView mav) {
+		final Status status = serviceFidorChecker.getStatus();
+		mav.addObject("serviceFidorStatus", status.name());
+		if (status == Status.KO) {
+			mav.addObject("serviceFidorException", HtmlHelper.renderMultilines(serviceFidorChecker.getStatusDetails()));
 		}
 	}
 

@@ -22,6 +22,8 @@ import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
+import ch.vd.uniregctb.interfaces.model.LogicielMetier;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
@@ -528,5 +530,15 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 
 		// here be dragons
 		return TypeAffranchissement.MONDE;
+	}
+
+	public List<Logiciel> getLogicielsPour(LogicielMetier metier) {
+		final List<Logiciel> list = new ArrayList<Logiciel>();
+		for (Logiciel l : getTousLesLogiciels()) {
+			if (l.getMetier() == metier) {
+				list.add(l);
+			}
+		}
+		return list;
 	}
 }

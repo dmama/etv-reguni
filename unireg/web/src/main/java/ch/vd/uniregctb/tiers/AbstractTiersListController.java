@@ -14,11 +14,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.wsclient.fidor.FidorService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
  * Classe controller utilisée pour l'affichage de listes
@@ -31,7 +32,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 	protected final Logger LOGGER = Logger.getLogger(AbstractTiersListController.class);
 
 	protected TiersService tiersService;
-	private FidorService fidorService;
+	protected ServiceInfrastructureService infraService;
 
 	/**
 	 * Bouton rechercher
@@ -49,8 +50,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 	 */
 	@Override
 	protected boolean suppressValidation(HttpServletRequest request, Object command, BindException errors) {
-		if (getTarget() != null ||
-				request.getParameter(BOUTON_EFFACER) != null) {
+		if (getTarget() != null || request.getParameter(BOUTON_EFFACER) != null) {
 			return true;
 		}
 		return super.suppressValidation(request, command, errors);
@@ -64,19 +64,6 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true));
 	}
 
-	/**
-	 * Methode annexe de showForm utilisée par tour les controllers de type List
-	 *
-	 * @param request
-	 * @param response
-	 * @param errors
-	 * @param model
-	 * @param criteriaName
-	 * @param listAttributeName
-	 * @param bean
-	 * @return
-	 * @throws Exception
-	 */
 	protected ModelAndView showFormForList(	HttpServletRequest request, HttpServletResponse response, BindException errors, Map<?, ?> model,
 											String criteriaName, String listAttributeName, TiersCriteriaView bean, boolean keepCriteriaInSession)
 	throws Exception {
@@ -99,10 +86,10 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 						for (TiersIndexedDataView oneTiersLine : displaysTiers) {
 							// Populate les URLs TAO/SIPF/...
 							Long numero = oneTiersLine.getNumero();
-							oneTiersLine.setUrlTaoPP(fidorService.getUrlTaoPP(numero));
-							oneTiersLine.setUrlTaoBA(fidorService.getUrlTaoBA(numero));
-							oneTiersLine.setUrlTaoIS(fidorService.getUrlTaoIS(numero));
-							oneTiersLine.setUrlSipf(fidorService.getUrlSipf(numero));
+							oneTiersLine.setUrlTaoPP(infraService.getUrlVers(ApplicationFiscale.TAO_PP, numero));
+							oneTiersLine.setUrlTaoBA(infraService.getUrlVers(ApplicationFiscale.TAO_BA, numero));
+							oneTiersLine.setUrlTaoIS(infraService.getUrlVers(ApplicationFiscale.TAO_IS, numero));
+							oneTiersLine.setUrlSipf(infraService.getUrlVers(ApplicationFiscale.SIPF, numero));
 						}
 
 						mav.addObject(listAttributeName, displaysTiers);
@@ -129,7 +116,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setFidorService(FidorService fidorService) {
-		this.fidorService = fidorService;
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 }

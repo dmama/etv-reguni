@@ -16,8 +16,19 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		return new PaysImpl(target);
 	}
 
+	public static PaysImpl get(ch.vd.fidor.ws.v2.Pays target) {
+		if (target == null) {
+			return null;
+		}
+		return new PaysImpl(target);
+	}
+
 	private PaysImpl(ch.vd.infrastructure.model.Pays target) {
 		super(target);
+	}
+
+	private PaysImpl(ch.vd.fidor.ws.v2.Pays target) {
+		super(target.getOfsId(), target.getNomCourtFr().toUpperCase(), target.getNomCourtFr(), target.getIso2Id());
 	}
 
 	public boolean isSuisse() {

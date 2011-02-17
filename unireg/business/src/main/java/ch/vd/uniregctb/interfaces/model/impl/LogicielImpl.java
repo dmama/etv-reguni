@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.wsclient.model.impl;
+package ch.vd.uniregctb.interfaces.model.impl;
 
-import ch.vd.uniregctb.wsclient.model.Logiciel;
-import ch.vd.uniregctb.wsclient.model.LogicielMetier;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
+import ch.vd.uniregctb.interfaces.model.LogicielMetier;
 
 public class LogicielImpl implements Logiciel {
 

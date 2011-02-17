@@ -20,11 +20,13 @@ import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -1712,4 +1714,77 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		return target.getLocaliteByNPA(npa);
 	}
 
+	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+		// on ne cache pas cette information parce que l'url est composée d'une partie statique auquelle est appondue le numéro d'id, et que le service concret fait ça de manière très efficace.
+		return target.getUrlVers(application, tiersId);
+	}
+
+	private static class KeyGetLogiciel {
+
+		private Long id;
+
+		private KeyGetLogiciel(Long id) {
+			this.id = id;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetLogiciel that = (KeyGetLogiciel) o;
+			return id.equals(that.id);
+		}
+
+		@Override
+		public int hashCode() {
+			return id.hashCode();
+		}
+	}
+
+	public Logiciel getLogiciel(Long idLogiciel) {
+		final Logiciel resultat;
+
+		final KeyGetLogiciel key = new KeyGetLogiciel(idLogiciel);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getLogiciel(idLogiciel);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (Logiciel) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	private static class KeyGetTousLesLogiciels {
+
+		@Override
+		public boolean equals(Object o) {
+			return this == o || getClass() == o.getClass();
+		}
+
+		@Override
+		public int hashCode() {
+			return 5308472;
+		}
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public List<Logiciel> getTousLesLogiciels() {
+		final List<Logiciel> resultat;
+
+		final KeyGetTousLesLogiciels key = new KeyGetTousLesLogiciels();
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getTousLesLogiciels();
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (List<Logiciel>) element.getObjectValue();
+		}
+
+		return resultat;
+	}
 }

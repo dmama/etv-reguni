@@ -55,6 +55,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -123,8 +124,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
-import ch.vd.uniregctb.wsclient.fidor.FidorService;
-import ch.vd.uniregctb.wsclient.model.Logiciel;
 
 /**
  * Methodes annexes utilisées par TiersVisuManager et TiersEditManager
@@ -142,8 +141,6 @@ public class TiersManager implements MessageSourceAware {
 	private HostPersonneMoraleService hostPersonneMoraleService;
 
 	protected ServiceCivilService serviceCivilService;
-
-	private FidorService fidorService;
 
 	protected TiersDAO tiersDAO;
 
@@ -504,11 +501,10 @@ public class TiersManager implements MessageSourceAware {
 
 	protected void setLogicielView(TiersView tiersView, DebiteurPrestationImposable debiteur){
 		final Long logicielId = debiteur.getLogicielId();
-		final Logiciel logiciel = fidorService.getLogiciel(logicielId);
+		final Logiciel logiciel = serviceInfrastructureService.getLogiciel(logicielId);
 		if(logiciel!=null){
 			tiersView.setLogiciel(new LogicielView(logiciel));
 		}
-
 	}
 
 	/**
@@ -2027,10 +2023,6 @@ public class TiersManager implements MessageSourceAware {
 
 	public MessageSource getMessageSource() {
 		return messageSource;
-	}
-
-	public void setFidorService(FidorService fidorService) {
-		this.fidorService = fidorService;
 	}
 
 	/**

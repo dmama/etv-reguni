@@ -19,12 +19,15 @@ import ch.vd.infrastructure.service.ServiceInfrastructure;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.JvmVersionHelper;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -654,5 +657,17 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		return null;
+	}
+
+	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+		throw new NotImplementedException("La méthode 'getUrlVers' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	public Logiciel getLogiciel(Long idLogiciel) {
+		throw new NotImplementedException("La méthode 'getLogiciel' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	public List<Logiciel> getTousLesLogiciels() {
+		throw new NotImplementedException("La méthode 'getTousLesLogiciels' ne doit pas être appelée sur le service host-interfaces.");
 	}
 }

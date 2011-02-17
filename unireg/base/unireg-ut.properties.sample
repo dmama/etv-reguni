@@ -98,3 +98,8 @@ testprop.documents.repository=/projets/tmp/unireg-documents-unittests
 testprop.webservice.sipf.bvrplus.url=http://ssv0214v:64804/fiscalite/form-sipf/bvrplus/SipfBVRPlusImpl
 testprop.webservice.sipf.bvrplus.username=
 testprop.webservice.sipf.bvrplus.password=
+
+# Fidor WebService
+testprop.webservice.fidor.url=http://fidor-in.etat-de-vaud.ch/fiscalite/int-fidor/ws/v2
+testprop.webservice.fidor.username=
+testprop.webservice.fidor.password=

@@ -6,14 +6,15 @@ public class ApplicationChecker {
 
 	private String version;
 	private ServiceCivilChecker serviceCivilChecker;
-	private ServiceInfraChecker serviceInfraChecker;
+	private ServiceHostInfraChecker serviceHostInfraChecker;
+	private ServiceFidorChecker serviceFidorChecker;
 	private ServiceSecuriteChecker serviceSecuriteChecker;
 	private ServiceBVRChecker serviceBVRChecker;
 
 	public String getStatus() {
 		final Status status;
-		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK && serviceSecuriteChecker.getStatus() == Status.OK &&
-				serviceBVRChecker.getStatus() == Status.OK) {
+		if (serviceCivilChecker.getStatus() == Status.OK && serviceHostInfraChecker.getStatus() == Status.OK && serviceFidorChecker.getStatus() == Status.OK &&
+				serviceSecuriteChecker.getStatus() == Status.OK && serviceBVRChecker.getStatus() == Status.OK) {
 			status = Status.OK;
 		}
 		else {
@@ -24,7 +25,8 @@ public class ApplicationChecker {
 
 	public String getStatusJSON() {
 		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
-				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "', " +
+				"'serviceHostInfra' : '" + serviceHostInfraChecker.getStatus().name() + "', " +
+				"'serviceFidor' : '" + serviceFidorChecker.getStatus().name() + "', " +
 				"'serviceSecurite' : '" + serviceSecuriteChecker.getStatus().name() + "', " +
 				"'serviceBVRPlus' : '" + serviceBVRChecker.getStatus().name() + "'}";
 	}
@@ -80,8 +82,12 @@ public class ApplicationChecker {
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
-	public void setServiceInfraChecker(ServiceInfraChecker serviceInfraChecker) {
-		this.serviceInfraChecker = serviceInfraChecker;
+	public void setServiceHostInfraChecker(ServiceHostInfraChecker serviceHostInfraChecker) {
+		this.serviceHostInfraChecker = serviceHostInfraChecker;
+	}
+
+	public void setServiceFidorChecker(ServiceFidorChecker serviceFidorChecker) {
+		this.serviceFidorChecker = serviceFidorChecker;
 	}
 
 	public void setServiceSecuriteChecker(ServiceSecuriteChecker serviceSecuriteChecker) {

@@ -6,21 +6,10 @@
 	<bean id="ejbJndiTemplate" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
 		<property name="environment">
 			<map>
-
-				<!-- default
-				default -->
 				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
 				<entry key="java.naming.provider.url" value="${testprop.host-interfaces.url}"/>
 				<entry key="java.naming.security.principal" value="${testprop.host-interfaces.username}" />
 				<entry key="java.naming.security.credentials" value="${testprop.host-interfaces.password}" />
-
-				<!-- WLS solve61v
-				<entry key="java.naming.factory.initial" value="weblogic.jndi.WLInitialContextFactory" />
-				<entry key="java.naming.provider.url" value="t3://solve61v:65032"/>
-				<entry key="java.naming.security.principal" value="unireg-interfaces-user" />
-				<entry key="java.naming.security.credentials" value="unireg-interfaces-pwd" />
-				solve61v -->
-
 			</map>
 		</property>
 	</bean>
@@ -68,6 +57,12 @@
 		<property name="lookupHomeOnStartup" value="false"/>
 		<property name="businessInterface" value="ch.vd.registre.pm.service.ServicePersonneMorale"/>
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.FidorClientImpl">
+		<property name="serviceUrl" value="${testprop.webservice.fidor.url}" />
+	    <property name="username" value="${testprop.webservice.fidor.username}" />
+	    <property name="password" value="${testprop.webservice.fidor.password}" />
 	</bean>
 
 </beans>

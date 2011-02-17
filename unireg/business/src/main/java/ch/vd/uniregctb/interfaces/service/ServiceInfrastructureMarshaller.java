@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service.mock;
+package ch.vd.uniregctb.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,278 +23,266 @@ import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
- * Proxy du service host-infrastructure à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier
- * précisemment l'instance du service civil à utiliser.
- * <p>
- * Ce proxy est initialisé par défaut sur une instance de DefaultMockServiceInfrastructureService.
+ * Service de transition qui délégue les appels au service host-interfaces ou au service Fidor.
  */
-public class ProxyServiceInfrastructureService implements ServiceInfrastructureService {
+public class ServiceInfrastructureMarshaller implements ServiceInfrastructureService {
 
-	private ServiceInfrastructureService target = null;
+	private ServiceInfrastructureService hostService = null;
+	private ServiceInfrastructureService fidorService = null;
 
-	public ProxyServiceInfrastructureService() {
-		setUpDefault();
+	public void setHostService(ServiceInfrastructureService hostService) {
+		this.hostService = hostService;
 	}
 
-	public void setUpDefault() {
-		setUp(new DefaultMockServiceInfrastructureService());
-	}
-
-	public void setUp(ServiceInfrastructureService target) {
-		this.target = target;
-	}
-
-	public void tearDown() {
-		this.target = null;
+	public void setFidorService(ServiceInfrastructureService fidorService) {
+		this.fidorService = fidorService;
 	}
 
 	public List<Canton> getAllCantons() throws InfrastructureException {
-		return target.getAllCantons();
+		return hostService.getAllCantons();
 	}
 
 	public Canton getCanton(int cantonOFS) throws InfrastructureException {
-		return target.getCanton(cantonOFS);
+		return hostService.getCanton(cantonOFS);
 	}
 
 	public Canton getCantonBySigle(String sigle) throws InfrastructureException {
-		return target.getCantonBySigle(sigle);
+		return hostService.getCantonBySigle(sigle);
 	}
 
 	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException {
-		return target.getCantonByCommune(noOfsCommune);
+		return hostService.getCantonByCommune(noOfsCommune);
 	}
 
 	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
-		return target.getCommuneByNumeroOfsEtendu(noCommune, date);
+		return hostService.getCommuneByNumeroOfsEtendu(noCommune, date);
 	}
 
 	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException {
-		return target.getCommuneVaudByNumACI(numeroACI);
+		return hostService.getCommuneVaudByNumACI(numeroACI);
 	}
 
 	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
-		return target.getCommunesDeVaud();
+		return hostService.getCommunesDeVaud();
 	}
 
 	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
-		return target.getCommunesHorsCanton();
+		return hostService.getCommunesHorsCanton();
 	}
 
 	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
-		return target.getListeCommunes(canton);
+		return hostService.getListeCommunes(canton);
 	}
 
 	public List<Commune> getListeCommunes(int cantonOFS) throws InfrastructureException {
-		return target.getListeCommunes(cantonOFS);
+		return hostService.getListeCommunes(cantonOFS);
 	}
 
 	public List<Commune> getListeCommunesByOID(int oid) throws InfrastructureException {
-		return target.getListeCommunesByOID(oid);
+		return hostService.getListeCommunesByOID(oid);
 	}
 
 	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {
-		return target.getCommuneFaitiere(commune, dateReference);
+		return hostService.getCommuneFaitiere(commune, dateReference);
 	}
 
 	public Localite getLocaliteByONRP(int onrp) throws InfrastructureException {
-		return target.getLocaliteByONRP(onrp);
+		return hostService.getLocaliteByONRP(onrp);
 	}
 
 	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException {
-		return target.getLocaliteByCommune(commune);
+		return hostService.getLocaliteByCommune(commune);
 	}
 
 	public List<Localite> getLocalites() throws InfrastructureException {
-		return target.getLocalites();
+		return hostService.getLocalites();
 	}
 
 	public List<Pays> getPays() throws InfrastructureException {
-		return target.getPays();
+		return hostService.getPays();
 	}
 
 	public Pays getPays(int numeroOFS) throws InfrastructureException {
-		return target.getPays(numeroOFS);
+		return hostService.getPays(numeroOFS);
 	}
 
 	public Pays getPays(String codePays) throws InfrastructureException {
-		return target.getPays(codePays);
+		return hostService.getPays(codePays);
 	}
 
 	public Rue getRueByNumero(int numero) throws InfrastructureException {
-		return target.getRueByNumero(numero);
+		return hostService.getRueByNumero(numero);
 	}
 
 	public List<Rue> getRues(Localite localite) throws InfrastructureException {
-		return target.getRues(localite);
+		return hostService.getRues(localite);
 	}
 
 	public List<Rue> getRues(Collection<Localite> localites) throws InfrastructureException {
-		return target.getRues(localites);
+		return hostService.getRues(localites);
 	}
 
 	public List<Rue> getRues(Canton canton) throws InfrastructureException {
-		return target.getRues(canton);
+		return hostService.getRues(canton);
 	}
 
 	public Pays getSuisse() throws ServiceInfrastructureException {
-		return target.getSuisse();
+		return hostService.getSuisse();
 	}
 
 	public Canton getVaud() throws InfrastructureException {
-		return target.getVaud();
+		return hostService.getVaud();
 	}
 
 	public CollectiviteAdministrative getACI() throws InfrastructureException {
-		return target.getACI();
+		return hostService.getACI();
 	}
 
 	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
-		return target.getACIImpotSource();
+		return hostService.getACIImpotSource();
 	}
 
 	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
-		return target.getACISuccessions();
+		return hostService.getACISuccessions();
 	}
 
 	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
-		return target.getCEDI();
+		return hostService.getCEDI();
 	}
 
 	public CollectiviteAdministrative getCAT() throws InfrastructureException {
-		return target.getCAT();
+		return hostService.getCAT();
 	}
 
 	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
-		return target.getCommuneByAdresse(adresse);
+		return hostService.getCommuneByAdresse(adresse);
 	}
 
 	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
-		return target.getCommuneByAdresse(adresse);
+		return hostService.getCommuneByAdresse(adresse);
 	}
 
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
-		return target.getCollectivite(noColAdm);
+		return hostService.getCollectivite(noColAdm);
 	}
 
 	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
-		return target.getOfficeImpot(noColAdm);
+		return hostService.getOfficeImpot(noColAdm);
 	}
 
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
-		return target.getOfficeImpotDeCommune(noCommune);
+		return hostService.getOfficeImpotDeCommune(noCommune);
 	}
 
 	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
-		return target.getOfficesImpot();
+		return hostService.getOfficesImpot();
 	}
 
 	public boolean estDansLeCanton(CommuneSimple commune) throws InfrastructureException {
-		return target.estDansLeCanton(commune);
+		return hostService.estDansLeCanton(commune);
 	}
 
 	public boolean estDansLeCanton(Commune commune) throws InfrastructureException {
-		return target.estDansLeCanton(commune);
+		return hostService.estDansLeCanton(commune);
 	}
 
 	public boolean estDansLeCanton(Rue rue) throws InfrastructureException {
-		return target.estDansLeCanton(rue);
+		return hostService.estDansLeCanton(rue);
 	}
 
 	public boolean estDansLeCanton(AdresseGenerique adresse) throws InfrastructureException {
-		return target.estDansLeCanton(adresse);
+		return hostService.estDansLeCanton(adresse);
 	}
 
 	public boolean estDansLeCanton(Adresse adresse) throws InfrastructureException {
-		return target.estDansLeCanton(adresse);
+		return hostService.estDansLeCanton(adresse);
 	}
 
 	public boolean estEnSuisse(AdresseGenerique adresse) throws InfrastructureException {
-		return target.estEnSuisse(adresse);
+		return hostService.estEnSuisse(adresse);
 	}
 
 	public boolean estEnSuisse(Adresse adresse) throws InfrastructureException {
-		return target.estEnSuisse(adresse);
+		return hostService.estEnSuisse(adresse);
 	}
 
 
 	public Zone getZone(AdresseGenerique adresse) throws InfrastructureException {
-		return target.getZone(adresse);
+		return hostService.getZone(adresse);
 	}
 
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
-		return target.getCollectivitesAdministratives();
+		return hostService.getCollectivitesAdministratives();
 	}
 
 	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
-		return target.getCommuneByLocalite(localite);
+		return hostService.getCommuneByLocalite(localite);
 	}
 
 	public Pays getPaysInconnu() throws InfrastructureException {
-		return target.getPays(8999);
+		return hostService.getPays(8999);
 	}
 
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
 			throws InfrastructureException {
-		return target.getCollectivitesAdministratives();
+		return hostService.getCollectivitesAdministratives();
 	}
 
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException {
-		return target.getInstitutionFinanciere(id);
+		return hostService.getInstitutionFinanciere(id);
 	}
 
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException {
-		return target.getInstitutionsFinancieres(noClearing);
+		return hostService.getInstitutionsFinancieres(noClearing);
 	}
 
 	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
-		return target.getListeFractionsCommunes();
+		return hostService.getListeFractionsCommunes();
 	}
 
 	public List<Commune> getCommunes() throws InfrastructureException {
-		return target.getCommunes();
+		return hostService.getCommunes();
 	}
 
 	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
-		return target.getLocaliteByNPA(npa);
+		return hostService.getLocaliteByNPA(npa);
 	}
 
 	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
-		return target.getTypeAffranchissement(noOfsPays);
+		return hostService.getTypeAffranchissement(noOfsPays);
 	}
 
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
-		return target.getTypesRegimesFiscaux();
+		return hostService.getTypesRegimesFiscaux();
 	}
 
 	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
-		return target.getTypeRegimeFiscal(code);
+		return hostService.getTypeRegimeFiscal(code);
 	}
 
 	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
-		return target.getTypesEtatsPM();
+		return hostService.getTypesEtatsPM();
 	}
 
 	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
-		return target.getTypeEtatPM(code);
+		return hostService.getTypeEtatPM(code);
 	}
 
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
-		return target.getUrlVers(application, tiersId);
+		return fidorService.getUrlVers(application, tiersId);
 	}
 
 	public Logiciel getLogiciel(Long idLogiciel) {
-		return target.getLogiciel(idLogiciel);
+		return fidorService.getLogiciel(idLogiciel);
 	}
 
 	public List<Logiciel> getTousLesLogiciels() {
-		return target.getTousLesLogiciels();
+		return fidorService.getTousLesLogiciels();
 	}
 
 	public List<Logiciel> getLogicielsPour(LogicielMetier metier) {
-		return target.getLogicielsPour(metier);
+		return fidorService.getLogicielsPour(metier);
 	}
 }

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.wsclient.model;
+package ch.vd.uniregctb.interfaces.model;
 
 public interface Logiciel {
 

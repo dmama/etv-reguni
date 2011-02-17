@@ -11,6 +11,9 @@ import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
+import ch.vd.uniregctb.interfaces.model.LogicielMetier;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
@@ -40,8 +43,6 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeOperation;
-import ch.vd.uniregctb.wsclient.fidor.FidorService;
-import ch.vd.uniregctb.wsclient.model.Logiciel;
 
 /**
  * Cette classe expose les différents enums sours forme de map enum->description.
@@ -84,11 +85,11 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeDroitAcces, String> mapDroitAcces;
 	private Map<TypeOperation, String> mapTypeOperation;
 
-	private FidorService fidorService;
+	private ServiceInfrastructureService infraService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setFidorService(FidorService fidorService) {
-		this.fidorService = fidorService;
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	/**
@@ -517,7 +518,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<Long, String> getAllLibellesLogiciels() {
 		try {
-			final List<Logiciel> listeLogiciels = fidorService.getLogicielsForEmpaci();
+			final List<Logiciel> listeLogiciels = infraService.getLogicielsPour(LogicielMetier.EMPACI);
 			final HashMap<Long, String> map = new HashMap<Long, String>();
 			if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
 				for (Logiciel logiciel : listeLogiciels) {

@@ -33,7 +33,6 @@ import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.CompteBancaireView;
 import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
-import ch.vd.uniregctb.tiers.view.LogicielView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
@@ -43,7 +42,6 @@ import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.utils.BeanUtils;
 import ch.vd.uniregctb.utils.WebContextUtils;
-import ch.vd.uniregctb.wsclient.model.Logiciel;
 
 /**
  * Service qui fournit les methodes pour editer un tiers

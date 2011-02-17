@@ -9,8 +9,17 @@
 		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
 	</bean>
 
+	<bean id="serviceInfrastructureFidor" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureFidor">
+		<property name="fidorClient" ref="fidorClient" />
+	</bean>
+
+	<bean id="serviceInfrastructureMarshaller" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureMarshaller">
+		<property name="hostService" ref="serviceInfrastructureServiceHost" />
+		<property name="fidorService" ref="serviceInfrastructureFidor" />
+	</bean>
+
 	<bean id="serviceInfrastructureTracing" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureTracing">
-		<property name="target" ref="serviceInfrastructureServiceHost" />
+		<property name="target" ref="serviceInfrastructureMarshaller" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

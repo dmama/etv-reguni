@@ -7,11 +7,13 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -449,6 +451,18 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	}
 
 	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
+		return null;
+	}
+
+	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+		return null;
+	}
+
+	public Logiciel getLogiciel(Long idLogiciel) {
+		return null;
+	}
+
+	public List<Logiciel> getTousLesLogiciels() {
 		return null;
 	}
 }

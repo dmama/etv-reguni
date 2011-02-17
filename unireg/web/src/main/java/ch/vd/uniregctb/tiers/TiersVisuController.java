@@ -11,6 +11,8 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -18,13 +20,12 @@ import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.wsclient.fidor.FidorService;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier
  * donne.
  *
- * @author XSIKCE</a>
+ * @author XSIKCE
  */
 public class TiersVisuController extends AbstractTiersController {
 	/**
@@ -40,10 +41,8 @@ public class TiersVisuController extends AbstractTiersController {
 	private final static String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
 
 	private TiersVisuManager tiersVisuManager ;
-
 	private TacheListManager tacheListManager;
-
-	private FidorService fidorService;
+	private ServiceInfrastructureService infraService;
 
 	public static final String PAGE_SIZE_NAME = "pageSize";
 	public static final String RESULT_SIZE_NAME = "resultSize";
@@ -78,10 +77,10 @@ public class TiersVisuController extends AbstractTiersController {
 
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
 			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, pagination);
-			tiersVisuView.setUrlTaoPP(fidorService.getUrlTaoPP(id));
-			tiersVisuView.setUrlTaoBA(fidorService.getUrlTaoBA(id));
-			tiersVisuView.setUrlTaoIS(fidorService.getUrlTaoIS(id));
-			tiersVisuView.setUrlSipf(fidorService.getUrlSipf(id));
+			tiersVisuView.setUrlTaoPP(infraService.getUrlVers(ApplicationFiscale.TAO_PP, id));
+			tiersVisuView.setUrlTaoBA(infraService.getUrlVers(ApplicationFiscale.TAO_BA, id));
+			tiersVisuView.setUrlTaoIS(infraService.getUrlVers(ApplicationFiscale.TAO_IS, id));
+			tiersVisuView.setUrlSipf(infraService.getUrlVers(ApplicationFiscale.SIPF, id));
 
 			//vérification des droits de visualisation
 			boolean isAllowed = true;
@@ -156,15 +155,18 @@ public class TiersVisuController extends AbstractTiersController {
 		return showForm(request, response, errors);
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersVisuManager(TiersVisuManager tiersVisuManager) {
 		this.tiersVisuManager = tiersVisuManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheListManager(TacheListManager tacheListManager) {
 		this.tacheListManager = tacheListManager;
 	}
 
-	public void setFidorService(FidorService fidorService) {
-		this.fidorService = fidorService;
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 }

@@ -8,12 +8,15 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.model.Logiciel;
+import ch.vd.uniregctb.interfaces.model.LogicielMetier;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -434,4 +437,32 @@ public interface ServiceInfrastructureService {
 	 * @throws InfrastructureException en cas de problème
 	 */
 	TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException;
+
+	/**
+	 * Construit et retourne l'url vers la page de visualisation d'un tiers dans un application fiscale connectée à Unireg.
+	 *
+	 * @param application l'application considérée
+	 * @param tiersId     le numéro de tiers
+	 * @return une chaîne de caractère qui contient l'url demandée
+	 */
+	String getUrlVers(ApplicationFiscale application, Long tiersId);
+
+	/**
+	 * Retourne un logiciel déterminé par son id.
+	 *
+	 * @param idLogiciel l'id d'un logiciel
+	 * @return un logiciel; ou <b>null</b> si aucun logiciel ne possède l'id spécifié.
+	 */
+	Logiciel getLogiciel(Long idLogiciel);
+
+	/**
+	 * @return la liste de tous les logiciels connus.
+	 */
+	List<Logiciel> getTousLesLogiciels();
+
+	/**
+	 * @param metier un domaine métier
+	 * @return la liste de tous les logiciels associés au domaine métier spécifié.
+	 */
+	List<Logiciel> getLogicielsPour(LogicielMetier metier);
 }

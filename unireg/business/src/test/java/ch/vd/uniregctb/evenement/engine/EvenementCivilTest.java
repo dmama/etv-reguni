@@ -10,7 +10,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.jms.EvenementCivilListener;
@@ -72,13 +74,22 @@ public class EvenementCivilTest extends BusinessTest {
 		 * Préparation
 		 */
 
-		// Initialisation du service civil avec un cache
 		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
 		assertNotNull(cacheManager);
 
+		final DataEventService dataEventService = getBean(DataEventService.class, "dataEventService");
+		assertNotNull(dataEventService);
+
+		final UniregCacheManager uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
+		assertNotNull(uniregCacheManager);
+
+		// Initialisation du service civil avec un cache
 		final ServiceCivilCache cache = new ServiceCivilCache();
 		cache.setCacheManager(cacheManager);
 		cache.setCacheName("serviceCivil");
+		cache.setUniregCacheManager(uniregCacheManager);
+		cache.setDataEventService(dataEventService);
+		cache.afterPropertiesSet();
 		serviceCivil.setUp(cache);
 
 		final long jeanNoInd = 1234;
