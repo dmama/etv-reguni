@@ -53,7 +53,7 @@ public class DeclarationImpotEditValidator implements Validator {
 					DeclarationImpotOrdinaire di = diDAO.get(details.getId());
 					EtatDeclaration dernierEtat = di.getDernierEtat();
 					if (details.getRegDateRetour() != null && details.getRegDateRetour().isBefore(dernierEtat.getDateObtention())) {
-						errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
+						errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
 					}
 				}
 			}
