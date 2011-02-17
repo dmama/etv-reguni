@@ -1,13 +1,15 @@
 package ch.vd.uniregctb.evenement;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -27,7 +29,9 @@ public abstract class EvenementTest {
 		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
 		final EsbMessage msg = esbTemplate.receive(queueName);
 		assertNotNull(msg);
-		assertEquals(texte, msg.getBodyAsString());
+		String actual = msg.getBodyAsString();
+		actual = actual.replaceAll(" standalone=\"(no|yes)\"", ""); // on ignore l'attribut standalone s'il existe
+		assertEquals(texte, actual);
 
 		final EsbMessage noMsg = esbTemplate.receive(queueName);
 		assertNull(noMsg);

@@ -19,6 +19,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 /**
@@ -138,7 +139,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		m.setServiceDestination(replyTo);
 		m.setContext("identificationContribuable");
 		final Node node = identificationCtb.newDomNode();
-		m.setBody((Document) node);
+		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only

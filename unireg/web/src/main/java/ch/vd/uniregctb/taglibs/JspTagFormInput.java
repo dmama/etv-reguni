@@ -81,7 +81,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 	private Editor instanciateEditor(Class<? extends Editor> editorClass) {
 		final Editor editor;
 		try {
-			Constructor<? extends Editor> constructor = editorClass.getDeclaredConstructors()[0];
+			Constructor<? extends Editor> constructor = (Constructor<? extends Editor>) editorClass.getDeclaredConstructors()[0];
 			constructor.setAccessible(true);
 			editor = constructor.newInstance(this);
 		}

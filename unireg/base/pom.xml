@@ -119,8 +119,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -630,7 +630,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>oracle.jdbc</groupId>
-					<artifactId>ojdbc5</artifactId>
+					<artifactId>ojdbc6</artifactId>
 					<version>${oracle.version}</version>
 				</dependency>
 			</dependencies>

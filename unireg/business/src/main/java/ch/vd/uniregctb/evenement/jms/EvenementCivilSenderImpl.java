@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.jms;
 
-import java.util.Date;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -13,6 +11,7 @@ import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 
 /**
@@ -61,7 +60,7 @@ public class EvenementCivilSenderImpl implements EvenementCivilSender {
 		m.setServiceDestination(serviceDestination);
 		m.setContext("evenementCivil");
 		final Node node = document.newDomNode();
-		m.setBody((Document) node);
+		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only

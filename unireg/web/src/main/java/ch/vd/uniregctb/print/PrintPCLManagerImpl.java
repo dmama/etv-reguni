@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.print;
 
-import java.io.IOException;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
 
 public class PrintPCLManagerImpl implements PrintPCLManager{
 
@@ -90,9 +89,8 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 
 		out.write(debutCorps.getBytes());
 
-		BASE64Encoder be = new BASE64Encoder();
-		String pclAsString = be.encodeBuffer(pcl);
-		out.write(pclAsString.getBytes());
+		byte[] bytes = Base64.encodeBase64(pcl);
+		out.write(bytes);
 
 		String finCorps = construitFinCorps();
 		out.write(finCorps.getBytes());

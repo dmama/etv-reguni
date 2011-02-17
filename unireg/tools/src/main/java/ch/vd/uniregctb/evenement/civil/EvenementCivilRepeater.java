@@ -11,6 +11,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.jms.EvenementCivilSenderImpl;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -65,7 +66,7 @@ public class EvenementCivilRepeater {
 
 				final EvtRegCivilDocument document = EvenementCivilSenderImpl.createDocument(data);
 				final Node node = document.newDomNode();
-				m.setBody((Document) node);
+				m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 				template.send(m);
 

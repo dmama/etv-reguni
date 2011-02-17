@@ -8,12 +8,15 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -127,6 +130,56 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 		target.setObject(parameterIndex, x, targetSqlType, scale);
 	}
 
+	@Override
+	public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setNCharacterStream(int parameterIndex, Reader value) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setClob(int parameterIndex, Reader reader) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void setNClob(int parameterIndex, Reader reader) throws SQLException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
 	public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
 		target.setObject(parameterIndex, x, targetSqlType);
 	}
@@ -195,5 +248,45 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 
 	public ParameterMetaData getParameterMetaData() throws SQLException {
 		return target.getParameterMetaData();
+	}
+
+	@Override
+	public void setRowId(int parameterIndex, RowId x) throws SQLException {
+		target.setRowId(parameterIndex, x);
+	}
+
+	@Override
+	public void setNString(int parameterIndex, String value) throws SQLException {
+		target.setNString(parameterIndex, value);
+	}
+
+	@Override
+	public void setNCharacterStream(int parameterIndex, Reader value, long length) throws SQLException {
+		target.setNCharacterStream(parameterIndex, value, length);
+	}
+
+	@Override
+	public void setNClob(int parameterIndex, NClob value) throws SQLException {
+		target.setNClob(parameterIndex, value);
+	}
+
+	@Override
+	public void setClob(int parameterIndex, Reader reader, long length) throws SQLException {
+		target.setClob(parameterIndex, reader, length);
+	}
+
+	@Override
+	public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException {
+		target.setBlob(parameterIndex, inputStream, length);
+	}
+
+	@Override
+	public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException {
+		target.setNClob(parameterIndex, reader, length);
+	}
+
+	@Override
+	public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException {
+		target.setSQLXML(parameterIndex, xmlObject);
 	}
 }

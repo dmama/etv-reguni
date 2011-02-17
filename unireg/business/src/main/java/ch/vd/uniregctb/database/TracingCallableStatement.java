@@ -9,8 +9,11 @@ import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.Ref;
+import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -342,5 +345,165 @@ public class TracingCallableStatement extends TracingPreparedStatement implement
 
 	public URL getURL(String parameterName) throws SQLException {
 		return target.getURL(parameterName);
+	}
+
+	@Override
+	public RowId getRowId(int parameterIndex) throws SQLException {
+		return target.getRowId(parameterIndex);
+	}
+
+	@Override
+	public RowId getRowId(String parameterName) throws SQLException {
+		return target.getRowId(parameterName);
+	}
+
+	@Override
+	public void setRowId(String parameterName, RowId x) throws SQLException {
+		target.setRowId(parameterName, x);
+	}
+
+	@Override
+	public void setNString(String parameterName, String value) throws SQLException {
+		target.setNString(parameterName, value);
+	}
+
+	@Override
+	public void setNCharacterStream(String parameterName, Reader value, long length) throws SQLException {
+		target.setNCharacterStream(parameterName, value, length);
+	}
+
+	@Override
+	public void setNClob(String parameterName, NClob value) throws SQLException {
+		target.setNClob(parameterName, value);
+	}
+
+	@Override
+	public void setClob(String parameterName, Reader reader, long length) throws SQLException {
+		target.setClob(parameterName, reader, length);
+	}
+
+	@Override
+	public void setBlob(String parameterName, InputStream inputStream, long length) throws SQLException {
+		target.setBlob(parameterName, inputStream, length);
+	}
+
+	@Override
+	public void setNClob(String parameterName, Reader reader, long length) throws SQLException {
+		target.setNClob(parameterName, reader, length);
+	}
+
+	@Override
+	public NClob getNClob(int parameterIndex) throws SQLException {
+		return target.getNClob(parameterIndex);
+	}
+
+	@Override
+	public NClob getNClob(String parameterName) throws SQLException {
+		return target.getNClob(parameterName);
+	}
+
+	@Override
+	public void setSQLXML(String parameterName, SQLXML xmlObject) throws SQLException {
+		target.setSQLXML(parameterName, xmlObject);
+	}
+
+	@Override
+	public SQLXML getSQLXML(int parameterIndex) throws SQLException {
+		return target.getSQLXML(parameterIndex);
+	}
+
+	@Override
+	public SQLXML getSQLXML(String parameterName) throws SQLException {
+		return target.getSQLXML(parameterName);
+	}
+
+	@Override
+	public String getNString(int parameterIndex) throws SQLException {
+		return target.getNString(parameterIndex);
+	}
+
+	@Override
+	public String getNString(String parameterName) throws SQLException {
+		return target.getNString(parameterName);
+	}
+
+	@Override
+	public Reader getNCharacterStream(int parameterIndex) throws SQLException {
+		return target.getNCharacterStream(parameterIndex);
+	}
+
+	@Override
+	public Reader getNCharacterStream(String parameterName) throws SQLException {
+		return target.getNCharacterStream(parameterName);
+	}
+
+	@Override
+	public Reader getCharacterStream(int parameterIndex) throws SQLException {
+		return target.getCharacterStream(parameterIndex);
+	}
+
+	@Override
+	public Reader getCharacterStream(String parameterName) throws SQLException {
+		return target.getCharacterStream(parameterName);
+	}
+
+	@Override
+	public void setBlob(String parameterName, Blob x) throws SQLException {
+		target.setBlob(parameterName, x);
+	}
+
+	@Override
+	public void setClob(String parameterName, Clob x) throws SQLException {
+		target.setClob(parameterName, x);
+	}
+
+	@Override
+	public void setAsciiStream(String parameterName, InputStream x, long length) throws SQLException {
+		target.setAsciiStream(parameterName, x, length);
+	}
+
+	@Override
+	public void setBinaryStream(String parameterName, InputStream x, long length) throws SQLException {
+		target.setBinaryStream(parameterName, x, length);
+	}
+
+	@Override
+	public void setCharacterStream(String parameterName, Reader reader, long length) throws SQLException {
+		target.setCharacterStream(parameterName, reader, length);
+	}
+
+	@Override
+	public void setAsciiStream(String parameterName, InputStream x) throws SQLException {
+		target.setAsciiStream(parameterName, x);
+	}
+
+	@Override
+	public void setBinaryStream(String parameterName, InputStream x) throws SQLException {
+		target.setBinaryStream(parameterName, x);
+	}
+
+	@Override
+	public void setCharacterStream(String parameterName, Reader reader) throws SQLException {
+		target.setCharacterStream(parameterName, reader);
+	}
+
+	@Override
+	public void setNCharacterStream(String parameterName, Reader value) throws SQLException {
+		target.setNCharacterStream(parameterName, value);
+	}
+
+	@Override
+	public void setClob(String parameterName, Reader reader) throws SQLException {
+		target.setClob(parameterName, reader);
+	}
+
+	@Override
+	public void setBlob(String parameterName, InputStream inputStream) throws SQLException {
+		target.setBlob(parameterName, inputStream);
+	}
+
+	@Override
+	public void setNClob(String parameterName, Reader reader) throws SQLException {
+		target.setNClob(parameterName, reader);
 	}
 }

@@ -19,10 +19,21 @@ public class JvmVersionHelper {
 	}
 
 	/**
-	 * Renvoie une RuntimeException si la JVM n'est pas en version 1.5
+	 * Vérifie que la JVM est compatible avec un Host-Interfaces
 	 */
-	public static void checkJava_1_5() {
-		checkJavaVersion(Version.JAVA_1_5);
+	public static void checkJvmWrtHostInterfaces() {
+		checkJavaVersion(Version.JAVA_1_6);
+		checkArraySerializationWorkaround();
+	}
+
+	/**
+	 * Vérifie que le workaround de sérialisation des tableaux entre java 1.5 et java 1.6 est activé.
+	 */
+	public static void checkArraySerializationWorkaround() {
+		final String enabled = System.getProperty("sun.lang.ClassLoader.allowArraySyntax");
+		if (!enabled.equals("true")) {
+			throw new RuntimeException("La proriété système 'sun.lang.ClassLoader.allowArraySyntax' doit être renseignée à vrai sur les JVM 1.6 pour permettre une communication avec Host-Interfaces.");
+		}
 	}
 
 	/**

@@ -120,4 +120,14 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	public void setLoginTimeout(int seconds) throws SQLException {
 		target.setLoginTimeout(seconds);
 	}
+
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		return target.unwrap(iface);
+	}
+
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return target.isWrapperFor(iface);
+	}
 }

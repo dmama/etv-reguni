@@ -1,14 +1,22 @@
 package ch.vd.uniregctb.database;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
 
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 
@@ -119,6 +127,61 @@ public class TracingConnection implements Connection {
 		return new TracingPreparedStatement(target.prepareStatement(sql, columnNames), sql, tracing);
 	}
 
+	@Override
+	public Clob createClob() throws SQLException {
+		return target.createClob();
+	}
+
+	@Override
+	public Blob createBlob() throws SQLException {
+		return target.createBlob();
+	}
+
+	@Override
+	public NClob createNClob() throws SQLException {
+		return target.createNClob();
+	}
+
+	@Override
+	public SQLXML createSQLXML() throws SQLException {
+		return target.createSQLXML();
+	}
+
+	@Override
+	public boolean isValid(int timeout) throws SQLException {
+		return target.isValid(timeout);
+	}
+
+	@Override
+	public void setClientInfo(String name, String value) throws SQLClientInfoException {
+		target.setClientInfo(name, value);
+	}
+
+	@Override
+	public void setClientInfo(Properties properties) throws SQLClientInfoException {
+		target.setClientInfo(properties);
+	}
+
+	@Override
+	public String getClientInfo(String name) throws SQLException {
+		return target.getClientInfo(name);
+	}
+
+	@Override
+	public Properties getClientInfo() throws SQLException {
+		return target.getClientInfo();
+	}
+
+	@Override
+	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+		return target.createArrayOf(typeName, elements);
+	}
+
+	@Override
+	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+		return target.createStruct(typeName, attributes);
+	}
+
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
 		return new TracingPreparedStatement(target.prepareStatement(sql, resultSetType, resultSetConcurrency), sql, tracing);
 	}
@@ -171,4 +234,13 @@ public class TracingConnection implements Connection {
 		target.setTypeMap(map);
 	}
 
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		return target.unwrap(iface);
+	}
+
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return target.isWrapperFor(iface);
+	}
 }

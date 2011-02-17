@@ -36,6 +36,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.EvenementFiscalDI;
 import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
@@ -97,7 +98,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 			m.setContext("evenementFiscal");
 			m.addHeader("noCtb", String.valueOf(evenement.getTiers().getNumero()));
 			final Node node = document.newDomNode();
-			m.setBody((Document) node);
+			m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 			if (outputQueue != null) {
 				m.setServiceDestination(outputQueue); // for testing only

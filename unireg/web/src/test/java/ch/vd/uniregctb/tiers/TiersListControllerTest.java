@@ -6,6 +6,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +24,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test case du controlleur spring du m�me nom.
@@ -82,7 +84,7 @@ public class TiersListControllerTest extends WebTest {
 		}
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		Assert.assertNotNull(model);
 
 		// showForm
 		request.setMethod("GET");
@@ -102,6 +104,7 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheForTous() throws Exception {
 
 		loadDatabase();
@@ -116,6 +119,7 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheForActifs() throws Exception {
 
 		loadDatabase();
@@ -132,17 +136,19 @@ public class TiersListControllerTest extends WebTest {
 	 * @throws Exception
 	 */
 	@Test
+	@NotTransactional
 	public void testShowForm() throws Exception {
 
 		loadDatabase();
 		request.setMethod("GET");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		Assert.assertNotNull(model);
 
 	}
 
 	@Test
+	@NotTransactional
 	public void testOnSubmitWithCriteresWithNumCTB() throws Exception {
 
 		loadDatabase();
@@ -150,7 +156,7 @@ public class TiersListControllerTest extends WebTest {
 		request.addParameter("numeroFormatte", "12300003");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		Assert.assertNotNull(model);
 		request.setMethod("GET");
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
@@ -162,6 +168,7 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheNomContient() throws Exception {
 
 		loadDatabase();
@@ -170,7 +177,7 @@ public class TiersListControllerTest extends WebTest {
 		request.addParameter("typeRechercheDuNom", "CONTIENT");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		Assert.assertNotNull(model);
 		request.setMethod("GET");
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
@@ -181,6 +188,7 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheNomPhonetique() throws Exception {
 
 		loadDatabase();
@@ -189,7 +197,7 @@ public class TiersListControllerTest extends WebTest {
 		request.addParameter("typeRechercheDuNom", "PHONETIQUE");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		Assert.assertNotNull(model);
 		request.setMethod("GET");
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
@@ -200,6 +208,7 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheDateNaissance() throws Exception {
 
 		loadDatabase();
@@ -207,17 +216,18 @@ public class TiersListControllerTest extends WebTest {
 		request.addParameter("dateNaissance", "23.01.1970");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		assertNotNull(model);
+		
 		request.setMethod("GET");
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
+		assertNotNull(model2);
 		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
-		assertEquals(1, list.size());
-
+		assertEquals(1, list.size()); // il y a 2 ctbs qui ont cette date de naissance, mais un des deux est un i107 qui n'est pas retourné par défaut.
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheLocalite() throws Exception {
 
 		loadDatabase();
@@ -225,17 +235,18 @@ public class TiersListControllerTest extends WebTest {
 		request.addParameter("localiteOuPays", "Lausanne");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		assertNotNull(model);
 		request.setMethod("GET");
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
+		assertNotNull(model2);
 		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
 		assertTrue(!list.isEmpty());
 
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheNumAVS() throws Exception {
 
 		loadDatabase();
@@ -243,17 +254,18 @@ public class TiersListControllerTest extends WebTest {
 		request.addParameter("numeroAVS", "7561234567897");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		assertNotNull(model);
 		request.setMethod("GET");
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
+		assertNotNull(model2);
 		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
 		assertEquals(3, list.size());
 
 	}
 
 	@Test
+	@NotTransactional
 	public void testRechercheNumAVSWithDash() throws Exception {
 
 		loadDatabase();
@@ -261,17 +273,18 @@ public class TiersListControllerTest extends WebTest {
 		request.addParameter("numeroAVS", "75612.34.567.897");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
-		Assert.assertTrue(model != null);
+		assertNotNull(model);
 		request.setMethod("GET");
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
+		assertNotNull(model2);
 		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
 		assertEquals(3, list.size());
 
 	}
 
 	private void loadDatabase() throws Exception {
+		globalTiersIndexer.overwriteIndex();
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				TestData.loadTiersBasic(hibernateTemplate);

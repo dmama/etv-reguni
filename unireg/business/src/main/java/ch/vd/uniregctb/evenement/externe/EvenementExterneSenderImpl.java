@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.evenement.externe;
 
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import ch.vd.uniregctb.common.XmlUtils;
 
 /**
  * Bean qui envoie des événements externes JMS.
@@ -66,7 +68,7 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 		m.setServiceDestination(serviceDestination);
 		m.setContext("evenementExterne");
 		final Node node = document.newDomNode();
-		m.setBody((Document) node);
+		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only

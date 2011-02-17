@@ -288,4 +288,29 @@ public class TracingStatement implements Statement {
 	public int getResultSetHoldability() throws SQLException {
 		return target.getResultSetHoldability();
 	}
+
+	@Override
+	public boolean isClosed() throws SQLException {
+		return target.isClosed();
+	}
+
+	@Override
+	public void setPoolable(boolean poolable) throws SQLException {
+		target.setPoolable(poolable);
+	}
+
+	@Override
+	public boolean isPoolable() throws SQLException {
+		return target.isPoolable();
+	}
+
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		return target.unwrap(iface);
+	}
+
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return target.isWrapperFor(iface);
+	}
 }

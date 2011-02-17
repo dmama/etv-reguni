@@ -25,8 +25,7 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 	private ServiceCivil serviceCivil;
 
 	public ServiceCivilServiceHostInterfaces() {
-		// l'EJB de HostInterface a besoin d'une version 1.5
-		JvmVersionHelper.checkJava_1_5();
+		JvmVersionHelper.checkJvmWrtHostInterfaces();
 	}
 
 	/**

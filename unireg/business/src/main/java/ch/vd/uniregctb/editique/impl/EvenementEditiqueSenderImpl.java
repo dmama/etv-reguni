@@ -13,6 +13,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.EvenementEditiqueSender;
@@ -74,7 +75,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 			// le document à imprimer lui-même
 			final Node node = document.newDomNode();
-			m.setBody((Document) node);
+			m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 			// on envoie l'événement sous forme de message JMS à travers l'ESB
 			esbTemplate.send(m);

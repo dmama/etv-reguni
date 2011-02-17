@@ -21,8 +21,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	private ServiceSecurite serviceSecurite;
 
 	public ServiceSecuriteHostInterfaces() {
-		// l'EJB de HostInterface a besoin d'une version 1.5
-		JvmVersionHelper.checkJava_1_5();
+		JvmVersionHelper.checkJvmWrtHostInterfaces();
 	}
 
 	/**

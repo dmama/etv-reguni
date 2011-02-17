@@ -14,6 +14,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.EsbMessageImpl;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.uniregctb.common.XmlUtils;
 
 /**
  * Bean qui envoie les événements de modification de données comme messages JSM.
@@ -166,7 +167,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		m.setServiceDestination(serviceDestination);
 		m.setContext("databaseEvent");
 		final Node node = doc.newDomNode();
-		m.setBody((Document) node);
+		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
@@ -185,7 +186,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		m.setServiceDestination(serviceDestination);
 		m.setContext("databaseEvent");
 		final Node node = doc.newDomNode();
-		m.setBody((Document) node);
+		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
@@ -204,7 +205,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		m.setServiceDestination(serviceDestination);
 		m.setContext("databaseEvent");
 		final Node node = doc.newDomNode();
-		m.setBody((Document) node);
+		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
