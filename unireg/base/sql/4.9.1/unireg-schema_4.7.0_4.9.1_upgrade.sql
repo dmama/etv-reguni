@@ -1,5 +1,5 @@
 -- Version
-INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('4.9.0', '4.7.0_4.9.0_upgrade');
+INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('4.9.1', '4.7.0_4.9.1_upgrade');
 
 --
 -- Suppression de la colonne NUMERO_PM qui dupliquait les données de la colonne NUMERO. 
