@@ -31,7 +31,7 @@ public class JvmVersionHelper {
 	 */
 	public static void checkArraySerializationWorkaround() {
 		final String enabled = System.getProperty("sun.lang.ClassLoader.allowArraySyntax");
-		if (!enabled.equals("true")) {
+		if (enabled == null || !enabled.equals("true")) {
 			throw new RuntimeException("La proriété système 'sun.lang.ClassLoader.allowArraySyntax' doit être renseignée à vrai sur les JVM 1.6 pour permettre une communication avec Host-Interfaces.");
 		}
 	}
