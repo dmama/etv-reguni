@@ -3,18 +3,16 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
@@ -25,15 +23,15 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
@@ -41,6 +39,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	private DeclarationImpotOrdinaireDAO diDao;
 	private DeclarationImpotService diService;
 	private DelaisService delaisService;
+	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -49,7 +48,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		delaisService = getBean(DelaisService.class, "delaisService");
 		diService = getBean(DeclarationImpotService.class, "diService");
 		diDao = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
-		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, transactionManager);
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
+		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager);
 	}
 
 	@Test
@@ -413,7 +413,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, transactionManager) {
+		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager) {
 			@Override
 			protected void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
 				throw new RuntimeException("Exception de test");
@@ -571,4 +571,63 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 	}
 
+	@Test
+	@NotTransactional
+	public void testSommationDiSurMenageAvecMembresInconnus() throws Exception {
+
+		class Ids {
+			final long mcId;
+			final long diId;
+			Ids(long mcId, long diId) {
+				this.mcId = mcId;
+				this.diId = diId;
+			}
+		}
+
+		final Ids ids;
+		validationInterceptor.setEnabled(false); // nécessaire pour créer le for sur un ménage commun sans appartenance ménage existante
+		try {
+			ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+				public Ids doInTransaction(TransactionStatus status) {
+
+					addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+					final MenageCommun mc = (MenageCommun) hibernateTemplate.merge(new MenageCommun());
+					addForPrincipal(mc, RegDate.get(2008, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.ANNULATION, MockCommune.Aubonne);
+
+					final RegDate dateEmission = RegDate.get(2009, 1, 15);
+					final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
+					final PeriodeFiscale periode = addPeriodeFiscale(2008);
+					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+					final DeclarationImpotOrdinaire declaration = addDeclarationImpot(mc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+					declaration.addEtat(new EtatDeclarationEmise(dateEmission));
+
+					final DelaiDeclaration delai = new DelaiDeclaration();
+					delai.setDateDemande(dateEmission);
+					delai.setDelaiAccordeAu(dateDelaiInitial);
+					declaration.addDelai(delai);
+
+					return new Ids(mc.getId(), declaration.getId());
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+
+		final EnvoiSommationsDIsResults results = processor.run(RegDate.get(), false, 0, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getSommations().size());
+
+		final List<EnvoiSommationsDIsResults.ErrorInfo> erreurs = results.getListeSommationsEnErreur();
+		Assert.assertNotNull(erreurs);
+		Assert.assertEquals(1, erreurs.size());
+
+		final String expectedError = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] est un ménage commun dont les membres sont inconnus", ids.diId, ids.mcId);
+		final EnvoiSommationsDIsResults.ErrorInfo erreur = erreurs.get(0);
+		Assert.assertNotNull(erreur);
+		Assert.assertEquals((Long) ids.mcId, erreur.getNumeroTiers());
+		Assert.assertEquals(expectedError, erreur.getCause());
+	}
 }

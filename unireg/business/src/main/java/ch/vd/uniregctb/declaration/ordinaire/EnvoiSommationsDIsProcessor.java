@@ -27,7 +27,6 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -37,6 +36,9 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class EnvoiSommationsDIsProcessor  {
@@ -53,18 +55,21 @@ public class EnvoiSommationsDIsProcessor  {
 	private final DelaisService delaisService;
 	private final DeclarationImpotService diService;
 	private final PlatformTransactionManager transactionManager;
+	private final TiersService tiersService;
 
 	public EnvoiSommationsDIsProcessor(
 			HibernateTemplate hibernateTemplate,
 			DeclarationImpotOrdinaireDAO declarationImpotOrdinaireDAO,
 			DelaisService delaisService,
 			DeclarationImpotService diService,
+			TiersService tiersService,
 			PlatformTransactionManager transactionManager
 	) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.declarationImpotOrdinaireDAO = declarationImpotOrdinaireDAO;
 		this.delaisService = delaisService;
 		this.diService = diService;
+		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
 	}
 
@@ -172,42 +177,44 @@ public class EnvoiSommationsDIsProcessor  {
 				try {
 					final List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
 					if (assujettissements == null || assujettissements.isEmpty()) {
-						final String msg = String.format(
-								"La di [id: %s] n'a pas été sommée car le contribuable [%s] n'est pas assujetti pour la période fiscale %s",
-								di.getId().toString(), di.getTiers().getNumero(), di.getPeriode().getAnnee());
+						final String msg = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] n'est pas assujetti pour la période fiscale %s",
+						                                 di.getId(), di.getTiers().getNumero(), di.getPeriode().getAnnee());
 						LOGGER.info(msg);
 						r.addNonAssujettissement(di);
 					}
 					else if (isSourcierPur(di, assujettissements)) {
-						final String msg = String.format(
-								"La di [id: %s] n'a pas été sommée car le contribuable [%s] est sourcier Pur au %s",
-								di.getId().toString(), di.getTiers().getNumero(), RegDateHelper.dateToDisplayString(di.getDateFin()));
+						final String msg = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] est sourcier Pur au %s",
+						                                 di.getId(), di.getTiers().getNumero(), RegDateHelper.dateToDisplayString(di.getDateFin()));
 						LOGGER.info(msg);
 						r.addSourcierPur(di);
 					}
 					else if (isIndigent(di,	assujettissements)) {
-						final String msg = String.format(
-									"La di [id: %s] n'a pas été sommée car le contribuable [%s] est indigent au %s",
-									di.getId().toString(), di.getTiers().getNumero(), RegDateHelper.dateToDisplayString(di.getDateFin()));
-							LOGGER.info(msg);
-							r.addIndigent(di);
+						final String msg = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] est indigent au %s",
+						                                 di.getId(), di.getTiers().getNumero(), RegDateHelper.dateToDisplayString(di.getDateFin()));
+						LOGGER.info(msg);
+						r.addIndigent(di);
 					}
 					else if (isOptionnelle(di, assujettissements)) {
-						final String msg = String.format(
-									"La di [id: %s] du contribuable [%s] n'a pas été sommée car elle était optionelle",
-									di.getId().toString(), di.getTiers().getNumero());
-							LOGGER.info(msg);
-							r.addDiOptionelle(di);
+						final String msg = String.format("La di [id: %d] du contribuable [%s] n'a pas été sommée car elle était optionelle",
+						                                 di.getId(), di.getTiers().getNumero());
+						LOGGER.info(msg);
+						r.addDiOptionelle(di);
+					}
+					else if (isSurMenageSansPersonnesPhysiques(di)) {
+						final String msg = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] est un ménage commun dont les membres sont inconnus",
+						                                 di.getId(), di.getTiers().getNumero());
+						LOGGER.warn(msg);
+						r.addError(di, msg);
 					}
 					else {
 						sommerDI(di, miseSousPliImpossible, dateTraitement);
 						LOGGER.info(String.format(
-										"La di [id: %s; ctb: %s; periode: %s; debut: %s; fin: %s] a été sommée",
-										di.getId().toString(),
-										di.getTiers().getNumero().toString(),
+										"La di [id: %d; ctb: %d; periode: %d; debut: %s; fin: %s] a été sommée",
+										di.getId(),
+										di.getTiers().getNumero(),
 										di.getPeriode().getAnnee(),
-										di.getDateDebut(),
-										di.getDateFin()));
+										RegDateHelper.dateToDisplayString(di.getDateDebut()),
+										RegDateHelper.dateToDisplayString(di.getDateFin())));
 						r.addDiSommee(di.getPeriode().getAnnee(), di);
 					}
 				}
@@ -221,9 +228,8 @@ public class EnvoiSommationsDIsProcessor  {
 					throw new RuntimeException(e);
 				}
 			} else {
-				LOGGER.info(String.format(
-								"le délai de la DI (au %s) + le délai de sommation effective (au %s) n'est pas dépassé",
-								di.getDelaiAccordeAu().toString(), finDelai.toString()));
+				LOGGER.info(String.format("le délai de la DI (au %s) + le délai de sommation effective (au %s) n'est pas dépassé",
+				                          RegDateHelper.dateToDisplayString(di.getDelaiAccordeAu()), RegDateHelper.dateToDisplayString(finDelai)));
 			}
 		}
 	}
@@ -299,10 +305,24 @@ public class EnvoiSommationsDIsProcessor  {
 	}
 
 	/**
+	 * Si la sommation doit être faite pour une DI dont le contribuable est un couple dont
+	 * on ne connait pas les membres (ce qui rend vite les choses compliquées pour les adresses...)
+	 * @param di la déclaration d'impôt à tester
+	 * @return <code>true</code> si le tiers de la DI est un ménage dont le principal est inconnu
+	 */
+	private boolean isSurMenageSansPersonnesPhysiques(DeclarationImpotOrdinaire di) {
+		final Tiers tiers = di.getTiers();
+		boolean isSurMenageIncomplet = false;
+		if (tiers instanceof MenageCommun) {
+			isSurMenageIncomplet = tiersService.getPrincipal((MenageCommun) tiers) == null;
+		}
+		return isSurMenageIncomplet;
+	}
+
+	/**
 	 * [UNIREG-1472] Verification que l'assujettissement ne soit pas indigent à la date de la fin de di
 	 */
-	protected boolean isIndigent(DeclarationImpotOrdinaire di,
-			List<Assujettissement> assujettissements) {
+	protected boolean isIndigent(DeclarationImpotOrdinaire di, List<Assujettissement> assujettissements) {
 		// [UNIREG-1472] Verification que l'assujettissement ne soit pas indigent à la date de la fin de di
 		boolean isIndigent = false;
 		for (Assujettissement a : assujettissements) {

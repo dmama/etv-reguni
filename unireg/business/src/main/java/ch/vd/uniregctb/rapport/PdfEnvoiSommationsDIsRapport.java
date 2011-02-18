@@ -9,7 +9,6 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -124,25 +123,24 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         status.setMessage("Génération du rapport terminée.");
     }
 
-	private String asCsvFileSommationDI(List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
-	    String contenu = null;
+	@SuppressWarnings({"unchecked"})
+	private String asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
+		final String content;
+		if (list.size() > 0) {
+			content = asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, AVG_LINE_LEN, new Filler<EnvoiSommationsDIsResults.Info>() {
+				public void fillHeader(StringBuilder b) {
+					b.append(list.get(0).getCsvEntete());
+				}
 
-	    if (list.size() > 0) {
-	        StringBuilder b = new StringBuilder(list.get(0).getCVSEntete());
-	        b.append("\n");
-
-	        Iterator<? extends EnvoiSommationsDIsResults.Info> iter = list.iterator();
-	        while (iter.hasNext()) {
-	            final EnvoiSommationsDIsResults.Info ligne = iter.next();
-	            b.append(ligne.getCVS());
-	            if (iter.hasNext()) {
-	                b.append("\n");
-	            }
-	        }
-	        contenu = b.toString();
-	    }
-	    return contenu;
-
+				public void fillLine(StringBuilder b, EnvoiSommationsDIsResults.Info elt) {
+					b.append(elt.getCsv());
+				}
+			});
+		}
+		else {
+			content = null;
+		}
+		return content;
 	}
 }
 

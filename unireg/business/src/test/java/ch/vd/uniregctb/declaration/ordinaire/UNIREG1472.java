@@ -20,7 +20,7 @@ public class UNIREG1472 {
 		
 	@Before
 	public void init () {
-		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null);
+		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null, null);
 	}
 	
 	@Test

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.JobResults;
@@ -53,7 +55,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 			return diDateFin;
 		}
 
-		public String getCVSEntete() {
+		public String getCsvEntete() {
 			return "Numéro de contribuable" + COMMA + "Période DI" + COMMA + "Date de début DI" + COMMA + "Date de fin DI" + appendMeEntete();
 		}
 		
@@ -61,7 +63,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 			return "";
 		}
 
-		public String getCVS() {
+		public String getCsv() {
 			final StringBuilder cvs =  new StringBuilder();
 			cvs.append(getNumeroTiers()).append(COMMA);
 			cvs.append(getAnneePeriode()).append(COMMA);
@@ -102,9 +104,8 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		
 		@Override
 		protected String appendMe() {
-			return COMMA + getCause();
+			return String.format("%s\"%s\"", COMMA, StringUtils.isNotBlank(cause) ? cause.replaceAll("[\";]", "_") : StringUtils.EMPTY);
 		}
-
 	}
 	
 	private RegDate dateTraitement;

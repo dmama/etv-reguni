@@ -393,7 +393,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	public EnvoiSommationsDIsResults envoyerSommations(final RegDate dateTraitement, final boolean miseSousPliImpossible, final Integer nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
-		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, transactionManager);
+		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager);
 		return processor.run(dateTraitement, miseSousPliImpossible, nombreMax, statusManager);
 
 
