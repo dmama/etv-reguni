@@ -95,8 +95,9 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			AuthenticationHelper.pushPrincipal(String.format("%s-recalculTaches", visa));
 		}
 
+		parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
+		setOnTheFlySynchronization(false); // on ignore toutes les modifications provoquées par la synchronisation des tâches elles-mêmes
 		try {
-			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
 
 			final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -114,6 +115,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		finally {
 
 			parent.setEnabledForThread(true);
+			setOnTheFlySynchronization(true);
 
 			if (!authenticated) {
 				// [UNIREG-2894] si on était pas autentifié et qu'on l'a fait à la volée, on resette cette autentification ici.
