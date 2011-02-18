@@ -50,7 +50,7 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 			addTableSimple(new float[]{50f, 30f}, new TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de PMs à migrer :", String.valueOf(results.total));
-					table.addLigne("Nombre de PMS migrées :", String.valueOf(results.traitees.size()));
+					table.addLigne("Nombre de PMs migrées :", String.valueOf(results.traitees.size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
 					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));

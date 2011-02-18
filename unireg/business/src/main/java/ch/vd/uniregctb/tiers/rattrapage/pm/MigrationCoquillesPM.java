@@ -147,6 +147,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 			public boolean doInTransaction(List<Long> batch, MigrationResults rapport) throws Exception {
 				status.setMessage("Traitement du lot " + batch.get(0) + " -> " + batch.get(batch.size() - 1) + " ...", percent);
 				for (Long id : batch) {
+					++ rapport.total;
 					hibernateTemplate.save(new Entreprise(id));
 					rapport.addPMTraitee(id);
 				}
