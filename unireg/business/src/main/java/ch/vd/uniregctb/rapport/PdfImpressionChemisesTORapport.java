@@ -87,30 +87,20 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 
 	private String genererErreursChemisesTO(ImpressionChemisesTOResults results, String filename, StatusManager status) {
 	    String contenu = null;
-	    final List<ImpressionChemisesTOResults.Erreur> list = results.getErreurs();
-	    final int size = list.size();
-	    if (size > 0) {
+		final List<ImpressionChemisesTOResults.Erreur> list = results.getErreurs();
+		final int size = list.size();
+		if (size > 0) {
+			contenu = asCsvFile(list, filename, status, 300, new Filler<ImpressionChemisesTOResults.Erreur>() {
+				public void fillHeader(StringBuilder b) {
+					b.append("ID_DECLARATION").append(COMMA).append("MESSAGE");
+				}
 
-	        final StringBuilder b = new StringBuilder(300 * list.size());
-	        b.append("ID Déclaration").append(COMMA).append("Message\n");
-
-	        final String message = String.format("Génération du fichier %s", filename);
-	        status.setMessage(message, 0);
-
-	        final GentilIterator<ImpressionChemisesTOResults.Erreur> iter = new GentilIterator<ImpressionChemisesTOResults.Erreur>(list);
-	        while (iter.hasNext()) {
-	            if (iter.isAtNewPercent()) {
-	                status.setMessage(message, iter.getPercent());
-	            }
-
-	            final ImpressionChemisesTOResults.Erreur ligne = iter.next();
-
-	            b.append(ligne.getIdDeclaration()).append(COMMA);
-		        b.append(escapeChars(ligne.getDetails()));
-                b.append('\n');
-	        }
-	        contenu = b.toString();
-	    }
+				public void fillLine(StringBuilder b, ImpressionChemisesTOResults.Erreur elt) {
+					b.append(elt.getIdDeclaration()).append(COMMA);
+					b.append(asCsvField(elt.getDetails()));
+				}
+			});
+		}
 	    return contenu;
 	}
 
@@ -119,35 +109,26 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	    final List<ImpressionChemisesTOResults.ChemiseTO> list = results.getChemisesImprimees();
 	    final int size = list.size();
 	    if (size > 0) {
+		    contenu = asCsvFile(list, filename, status, 300, new Filler<ImpressionChemisesTOResults.ChemiseTO>() {
+			    public void fillHeader(StringBuilder b) {
+				    b.append("OID").append(COMMA);
+				    b.append("NO_CTB").append(COMMA);
+				    b.append("NOM_CTB").append(COMMA);
+				    b.append("DATE_DEBUT_PERIODE").append(COMMA);
+				    b.append("DATE_FIN_PERIODE").append(COMMA);
+				    b.append("DATE_SOMMATION");
+			    }
 
-	        final StringBuilder b = new StringBuilder(300 * list.size());
-	        b.append("Numéro de l'office d'impôt").append(COMMA).append("Numéro de contribuable").append(COMMA + "Nom du contribuable")
-	                .append(COMMA).append("Date début période").append(COMMA).append("Date fin période").append(COMMA).append(
-	                "Date sommation\n");
-
-	        final String message = String.format("Génération du fichier %s", filename);
-	        status.setMessage(message, 0);
-
-	        final GentilIterator<ImpressionChemisesTOResults.ChemiseTO> iter = new GentilIterator<ImpressionChemisesTOResults.ChemiseTO>(
-	                list);
-	        while (iter.hasNext()) {
-	            if (iter.isAtNewPercent()) {
-	                status.setMessage(message, iter.getPercent());
-	            }
-
-	            final ImpressionChemisesTOResults.ChemiseTO ligne = iter.next();
-
-	            b.append(ligne.officeImpotID).append(COMMA);
-	            b.append(ligne.noCtb).append(COMMA);
-		        b.append(escapeChars(ligne.nomCtb)).append(COMMA);
-	            b.append(ligne.getDateDebutDi()).append(COMMA);
-	            b.append(ligne.getDateFinDi()).append(COMMA);
-	            b.append(ligne.getDateSommationDi()).append(COMMA);
-                b.append('\n');
-	        }
-	        contenu = b.toString();
+			    public void fillLine(StringBuilder b, ImpressionChemisesTOResults.ChemiseTO elt) {
+				    b.append(elt.officeImpotID).append(COMMA);
+				    b.append(elt.noCtb).append(COMMA);
+					b.append(escapeChars(elt.nomCtb)).append(COMMA);
+				    b.append(elt.getDateDebutDi().index()).append(COMMA);
+				    b.append(elt.getDateFinDi().index()).append(COMMA);
+				    b.append(elt.getDateSommationDi().index());
+			    }
+		    });
 	    }
 	    return contenu;
 	}
-	
 }
