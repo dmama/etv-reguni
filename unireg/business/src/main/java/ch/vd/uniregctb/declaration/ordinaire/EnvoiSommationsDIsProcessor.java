@@ -137,8 +137,8 @@ public class EnvoiSommationsDIsProcessor  {
 				int nombreTotal = (nombreMax == 0 || dis.size() < nombreMax ? dis.size() : nombreMax);
 				int percent = (100 * rapportFinal.getTotalDisTraitees()) / nombreTotal;
 				status.setMessage(String.format(
-						"%d sur %d des déclarations d'impôt traitées (%d%%) : (%d sommées, %d en erreur)",
-						rapportFinal.getTotalDisTraitees(), nombreTotal, percent, rapportFinal.getTotalDisSommees(), rapportFinal.getTotalSommationsEnErreur()));
+						"%d sur %d des déclarations d'impôt traitées : %d sommée(s), %d en erreur",
+						rapportFinal.getTotalDisTraitees(), nombreTotal, rapportFinal.getTotalDisSommees(), rapportFinal.getTotalSommationsEnErreur()), percent);
 			}
 		});
 
