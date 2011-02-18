@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -151,6 +152,16 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 					return null;
 				}
 			});
+		}
+		catch (HibernateSystemException e) {
+			if (e.getMessage().startsWith("a different object with the same identifier value was already associated with the session")) {
+				final String message = "\n\n"+
+						"**************************************************\n" +
+						"* !!! Problème de séquence hibernate détecté !!! *\n" +
+						"**************************************************\n";
+				LOGGER.error(message);
+			}
+			throw e;
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
