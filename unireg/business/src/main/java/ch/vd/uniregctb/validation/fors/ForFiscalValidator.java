@@ -68,8 +68,8 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 						if (!DateRangeHelper.within(ff, validiteCommune)) {
 							final String debutValiditeCommune = validiteCommune.getDateDebut() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateDebut());
 							final String finValiditeCommune = validiteCommune.getDateFin() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateFin());
-							results.addError(String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune à laquelle il est assigné (%s - %s)",
-									ff, debutValiditeCommune, finValiditeCommune));
+							results.addError(String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
+									ff, commune.getNomMinuscule(), commune.getNoOFSEtendu(), debutValiditeCommune, finValiditeCommune));
 						}
 					}
 					else {
