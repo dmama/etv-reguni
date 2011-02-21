@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.evenement.externe;
 
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -67,8 +64,7 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
 		m.setContext("evenementExterne");
-		final Node node = document.newDomNode();
-		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+		m.setBody(XmlUtils.xmlbeans2string(document));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only

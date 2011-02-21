@@ -9,8 +9,6 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIDocument;
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIEnumType;
@@ -97,8 +95,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 			m.setServiceDestination(serviceDestination);
 			m.setContext("evenementFiscal");
 			m.addHeader("noCtb", String.valueOf(evenement.getTiers().getNumero()));
-			final Node node = document.newDomNode();
-			m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+			m.setBody(XmlUtils.xmlbeans2string(document));
 
 			if (outputQueue != null) {
 				m.setServiceDestination(outputQueue); // for testing only

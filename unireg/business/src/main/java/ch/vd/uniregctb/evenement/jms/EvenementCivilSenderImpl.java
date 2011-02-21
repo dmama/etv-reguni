@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.jms;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -59,8 +56,7 @@ public class EvenementCivilSenderImpl implements EvenementCivilSender {
 		m.setBusinessCorrelationId(evenement.getId().toString());
 		m.setServiceDestination(serviceDestination);
 		m.setContext("evenementCivil");
-		final Node node = document.newDomNode();
-		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+		m.setBody(XmlUtils.xmlbeans2string(document));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only

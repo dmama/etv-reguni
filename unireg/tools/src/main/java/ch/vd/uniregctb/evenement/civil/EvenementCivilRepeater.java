@@ -3,8 +3,6 @@ package ch.vd.uniregctb.evenement.civil;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.technical.esb.EsbMessage;
@@ -65,8 +63,7 @@ public class EvenementCivilRepeater {
 				m.setContext("evenementCivil");
 
 				final EvtRegCivilDocument document = EvenementCivilSenderImpl.createDocument(data);
-				final Node node = document.newDomNode();
-				m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+				m.setBody(XmlUtils.xmlbeans2string(document));
 
 				template.send(m);
 

@@ -2,8 +2,6 @@ package ch.vd.uniregctb.editique.impl;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.editique.service.enumeration.TypeImpression;
@@ -74,8 +72,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 			}
 
 			// le document à imprimer lui-même
-			final Node node = document.newDomNode();
-			m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+			m.setBody(XmlUtils.xmlbeans2string(document));
 
 			// on envoie l'événement sous forme de message JMS à travers l'ESB
 			esbTemplate.send(m);

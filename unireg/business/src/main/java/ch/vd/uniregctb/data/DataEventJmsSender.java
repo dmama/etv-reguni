@@ -3,8 +3,6 @@ package ch.vd.uniregctb.data;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import ch.vd.fiscalite.registre.databaseEvent.DataChangeEventDocument;
 import ch.vd.fiscalite.registre.databaseEvent.DataChangeEventDocument.DataChangeEvent;
@@ -166,8 +164,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
 		m.setContext("databaseEvent");
-		final Node node = doc.newDomNode();
-		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+		m.setBody(XmlUtils.xmlbeans2string(doc));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
@@ -185,8 +182,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
 		m.setContext("databaseEvent");
-		final Node node = doc.newDomNode();
-		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+		m.setBody(XmlUtils.xmlbeans2string(doc));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
@@ -204,8 +200,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
 		m.setContext("databaseEvent");
-		final Node node = doc.newDomNode();
-		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+		m.setBody(XmlUtils.xmlbeans2string(doc));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only

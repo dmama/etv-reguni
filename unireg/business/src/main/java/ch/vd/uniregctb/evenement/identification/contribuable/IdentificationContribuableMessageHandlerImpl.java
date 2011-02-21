@@ -10,8 +10,6 @@ import org.apache.xmlbeans.XmlOptions;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
 import ch.vd.technical.esb.ErrorType;
@@ -138,8 +136,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		m.setBusinessCorrelationId(businessId);
 		m.setServiceDestination(replyTo);
 		m.setContext("identificationContribuable");
-		final Node node = identificationCtb.newDomNode();
-		m.setBody(XmlUtils.xmlbeans2Jaxb((Document) node));
+		m.setBody(XmlUtils.xmlbeans2string(identificationCtb));
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
