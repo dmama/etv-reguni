@@ -21,6 +21,7 @@ import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -69,6 +70,7 @@ public class CoupleRecapValidator implements Validator {
 		if ((typeUnion == TypeUnion.COUPLE || typeUnion == TypeUnion.SEUL) && !coupleRecapView.isNouveauCtb()) {
 			if (coupleRecapView.getNumeroTroisiemeTiers() == null) {
 				errors.rejectValue("numeroTroisiemeTiers", "error.aucun.contribuable.existant");
+				dateDebut = coupleRecapView.getDateCoupleExistant();
 			}
 			else {
 				final Tiers troisieme = tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
@@ -80,9 +82,15 @@ public class CoupleRecapValidator implements Validator {
 						errors.rejectValue("numeroTroisiemeTiers", "error.troisieme.tiers.non.valide");
 					}
 				}
+
+				if (troisieme.getNatureTiers() == NatureTiers.NonHabitant) {
+					dateDebut = troisieme.getDateDebutActivite(); // [UNIREG-3297] on ne tient pas compte de la date affichée à l'écran
+				}
+				else {
+					dateDebut = coupleRecapView.getDateCoupleExistant();
+				}
 			}
 
-			dateDebut = coupleRecapView.getDateCoupleExistant();
 			dateDebutField = "dateCoupleExistant";
 		}
 		else {

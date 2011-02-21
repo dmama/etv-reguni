@@ -33,4 +33,10 @@
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
+	<bean id="tiersInfoController" class="ch.vd.uniregctb.json.TiersInfoController">
+		<property name="viewName" value="tiers/info" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
 </beans>

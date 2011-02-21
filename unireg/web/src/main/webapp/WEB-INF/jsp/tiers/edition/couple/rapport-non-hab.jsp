@@ -38,18 +38,6 @@
 
 					<table>
 						<tr>
-							<td width="10%">&nbsp;</td>
-							<td width="150px"><fmt:message key="label.date.debut"/>&nbsp;:</td>
-							<td>
-								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-									<jsp:param name="path" value="dateCoupleExistant" />
-									<jsp:param name="id" value="dateCoupleExistant" />
-								</jsp:include>
-								<font color="#FF0000">*</font>
-							</td>
-							<td width="45%" rowspan="2" valign="top"><div id="vignetteTroisiemeTiers"/></td>
-						</tr>
-						<tr>
 							<td>&nbsp;</td>
 							<td valign="top"><fmt:message key="label.numero.contribuable"/>&nbsp;:</td>
 							<td valign="top">
@@ -58,6 +46,18 @@
 								<form:errors path="numeroTroisiemeTiers" cssClass="error"/>
 							</td>
 							<td/>
+							<td width="45%" rowspan="2" valign="top"><div id="vignetteTroisiemeTiers"/></td>
+						</tr>
+						<tr>
+							<td width="10%">&nbsp;</td>
+							<td width="150px" valign="top"><fmt:message key="label.date.debut"/>&nbsp;:</td>
+							<td valign="top">
+								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+									<jsp:param name="path" value="dateCoupleExistant" />
+									<jsp:param name="id" value="dateCoupleExistant" />
+								</jsp:include>
+								<font color="#FF0000">*</font>
+							</td>
 						</tr>
 					</table>
 
@@ -75,9 +75,13 @@
 
 	<script>
 
+		// on mémorise ce date-picker dans le context global, parce qu'on en a besoin dans un callback d'une méthode ajax, et on n'arrive pas le retrouver sans cela.
+		var datePickerCoupleExistant;
+
 		$(function() {
 			refresh_panels();
 
+			datePickerCoupleExistant = $('#dateCoupleExistant').datepicker();
 			var troisiemeTiers = $('#numeroTroisiemeTiers');
 
 			// function pour mettre-à-jour la vignette lors de tout changement du numéro du tiers remplaçant
@@ -113,10 +117,26 @@
 
 		function refresh_troisieme(id) {
 			if (id) {
+				// on rafraichit la vignette
 				$('#vignetteTroisiemeTiers').load(getContextPath() + '/tiers/vignette.do?numero=' + id + '&titre=Contribuable%20existant&showAvatar=true');
+
+				// [UNIREG-3297] on renseigne automatiquement la date de debut pour les non-habitants
+				Tiers.queryInfo(id, function(info) {
+					if ('numero' in info && info.nature == 'NonHabitant') {
+						var date = info.dateDebutActivite;
+						$('#dateCoupleExistant').val(date.day + '.' + date.month + '.' + date.year);
+						datePickerCoupleExistant.datepicker('disable');
+					}
+					else {
+						$('#dateCoupleExistant').val('');
+						datePickerCoupleExistant.datepicker('enable');
+					}
+				});
 			}
 			else {
 				$('#vignetteTroisiemeTiers').attr('innerHTML', '');
+				$('#dateCoupleExistant').val('');
+				datePickerCoupleExistant.datepicker('enable');
 			}
 			return false;
 		}

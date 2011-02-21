@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.couple.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 import org.junit.Test;
@@ -17,6 +20,7 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
@@ -36,6 +40,8 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.uniregctb.validation.EntityValidator;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,6 +55,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 	private CoupleRecapManager mngr;
 	private Validator validator;
 	private DroitAccesDAO droitAccesDAO;
+	private ValidationService validationService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -57,6 +64,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		droitAccesDAO = getBean(DroitAccesDAO.class, "droitAccesDAO");
 		validator = getBean(Validator.class, "coupleRecapValidator");
 		mngr = getBean(CoupleRecapManager.class, "coupleRecapManager");
+		validationService = getBean(ValidationService.class, "validationService");
 	}
 
 	// [UNIREG-1521]
@@ -92,6 +100,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				PersonnePhysique janine = addHabitant(noIndJanine);
 				ids.janine = janine.getNumero();
 				PersonnePhysique menage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(menage, RegDate.get(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				ids.menage = menage.getNumero();
 				return null;
 			}
@@ -110,7 +119,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				CoupleRecapView view = new CoupleRecapView();
 
 				view.setDateCoupleExistant(RegDate.get());
-				view.setDateDebut(DateHelper.getCurrentDate());
 				view.setNouveauCtb(false);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);
@@ -255,6 +263,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				final PersonnePhysique arnold = addHabitant(noIndArnold);
 				final PersonnePhysique janine = addHabitant(noIndJanine);
 				final PersonnePhysique menage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(menage, RegDate.get(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				addDroitAcces(operateurAvecDroitFerme, menage, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2005, 12, 1), date(2010, 6, 12));
 				addDroitAcces(operateurAvecDroitOuvert, menage, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2005, 12, 1), null);
 
@@ -278,7 +287,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 				final CoupleRecapView view = new CoupleRecapView();
 				view.setDateCoupleExistant(RegDate.get());
-				view.setDateDebut(DateHelper.getCurrentDate());
 				view.setNouveauCtb(false);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);
@@ -370,6 +378,10 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 			}
 		});
 
+		// on s'assure que le ménage-commun ne validera pas
+		final MenageCommunTrapValidator trap = new MenageCommunTrapValidator(ids.menage);
+		validationService.registerValidator(MenageCommun.class, trap);
+
 		// Essai de regroupement des trois personnes physiques en un ménage, avec transformation
 		// en ménage commun d'une des personnes physiques + erreur de validation sur le ménage-commun résultant
 		try {
@@ -396,11 +408,14 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 					return null;
 				}
 			});
-			fail("Le ménage-commun ne devrait pas valider à cause de son for principal qui débute avant la date du jour.");
+			fail("Le ménage-commun ne devrait pas valider à cause du validateur piégé enregistré dans le validation service.");
 		}
 		catch (Exception e) {
 			assertContains("MenageCommun #" + ids.menage + " - 1 erreur(s) - 0 warning(s):\n" +
-					" [E] Le for fiscal [ForFiscalPrincipal (01.01.1988 - ?)] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [" + ids.menage + "]\n", e.getMessage());
+					" [E] Erreur de validation bidon\n", e.getMessage());
+		}
+		finally {
+			validationService.unregisterValidator(MenageCommun.class, trap);
 		}
 
 		// On s'assure que la transaction a bien été rollée-back, c'est-à-dire que le trois tiers sont toujours des personnes physiques.
@@ -493,5 +508,22 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	private static class MenageCommunTrapValidator implements EntityValidator<MenageCommun> {
+		private final Set<Long> ids;
+
+		public MenageCommunTrapValidator(Long... ids) {
+			this.ids = new HashSet<Long>(Arrays.asList(ids));
+		}
+
+		@Override
+		public ValidationResults validate(MenageCommun entity) {
+			final ValidationResults results = new ValidationResults();
+			if (ids.contains(entity.getNumero())) {
+				results.addError("Erreur de validation bidon");
+			}
+			return results;
+		}
 	}
 }

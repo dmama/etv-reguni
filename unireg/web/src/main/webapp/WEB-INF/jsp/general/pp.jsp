@@ -18,20 +18,18 @@
 <unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" cssClass="${className}"
 	showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
-<table cellspacing="0" cellpadding="5">
-	<c:if test="${path == 'premierePersonne'}">
+<c:set var="premierePersonneErrors"><form:errors path="premierePersonne"/></c:set>
+<c:set var="secondePersonneErrors"><form:errors path="secondePersonne"/></c:set>
+
+<c:if test="${not empty premierePersonneErrors || not empty secondePersonneErrors}">
+	<table cellspacing="0" cellpadding="5">
 		<tr class="<unireg:nextRowClass/>" >
 			<td colspan="3">
-				<form:errors path="premierePersonne" cssClass="error"/>
+				<c:if test="${path == 'premierePersonne'}">${premierePersonneErrors}</c:if>
+				<c:if test="${path == 'secondePersonne'}">${secondePersonneErrors}</c:if>
 			</td>
 		</tr>
-	</c:if>
-	<c:if test="${path == 'secondePersonne'}">
-		<tr class="<unireg:nextRowClass/>" >
-			<td colspan="3">
-				<form:errors path="secondePersonne" cssClass="error"/>
-			</td>
-		</tr>
-	</c:if>
-</table>
+	</table>
+</c:if>
+
 <!-- Fin Caracteristiques generales -->

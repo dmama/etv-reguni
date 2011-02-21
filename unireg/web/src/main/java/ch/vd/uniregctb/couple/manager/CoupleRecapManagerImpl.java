@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -230,10 +231,18 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 			secondPP = null;
 		}
 
+		final Long numeroTroisiemeTiers = coupleRecapView.getNumeroTroisiemeTiers();
+		final Tiers tiers = (numeroTroisiemeTiers == null ? null : tiersService.getTiers(numeroTroisiemeTiers));
+
 		final TypeUnion typeUnion = coupleRecapView.getTypeUnion();
 		final RegDate date;
 		if ((typeUnion == TypeUnion.COUPLE || typeUnion == TypeUnion.SEUL) && !coupleRecapView.isNouveauCtb()) {
-			date = coupleRecapView.getDateCoupleExistant();
+			if (tiers.getNatureTiers() == NatureTiers.NonHabitant) {
+				date = tiers.getDateDebutActivite(); // [UNIREG-3297] on ne tient pas compte de la date affichée à l'écran
+			}
+			else {
+				date = coupleRecapView.getDateCoupleExistant();
+			}
 		}
 		else {
 			date = RegDate.get(coupleRecapView.getDateDebut());
@@ -242,9 +251,8 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 		switch (coupleRecapView.getTypeUnion()) {
 			case SEUL:
 			case COUPLE:
-				if (coupleRecapView.getNumeroTroisiemeTiers() != null) {
+				if (numeroTroisiemeTiers != null) {
 					{
-						final Tiers tiers = tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
 						if (tiers instanceof PersonnePhysique) {
 							// changement de type de NonHabitant à MenageCommun
 							final PersonnePhysique pp = (PersonnePhysique) tiers;
@@ -278,7 +286,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 					}
 
 					// rattachement des tiers au ménage
-					final MenageCommun menage = (MenageCommun) tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
+					final MenageCommun menage = (MenageCommun) tiersService.getTiers(numeroTroisiemeTiers);
 					return metierService.rattachToMenage(menage, premierPP, secondPP, date, coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil(), false, null);
 				}
 				else {

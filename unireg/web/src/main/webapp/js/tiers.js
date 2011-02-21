@@ -1,5 +1,18 @@
 
 /**
+ * Classe utilitaire pour la manipulation de données en relation avec les tiers
+ */
+var Tiers = {
+	/**
+	 * Récupère des informations générales sur un tiers (voir la classe java TiersInfoController pour le détails des données retournées)
+	 */
+	queryInfo : function(numero, callback) {
+		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero, callback);
+	}
+}
+
+
+/**
 * Efface les valeurs des criteres de recherche du Host
 */
 function effacerCriteres() {
