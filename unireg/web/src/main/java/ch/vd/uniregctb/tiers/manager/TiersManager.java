@@ -348,7 +348,7 @@ public class TiersManager implements MessageSourceAware {
 					debiteurView.setCategorieImpotSource(dpi.getCategorieImpotSource());
 					debiteurView.setPersonneContact(dpi.getPersonneContact());
 					final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
-					debiteurView.setNomCourrier(nomCourrier);					
+					debiteurView.setNomCourrier(nomCourrier);
 					debiteursView.add(debiteurView);
 				}
 			}
@@ -395,7 +395,7 @@ public class TiersManager implements MessageSourceAware {
 
 				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
 				rapportView.setToolTipMessage(toolTipMessage);
-				 if (rapportEntreTiers instanceof RepresentationLegale) {
+				if (rapportEntreTiers instanceof RepresentationLegale) {
 					setNomAutoriteTutelaire(rapportEntreTiers, rapportView);
 
 				}
@@ -499,12 +499,15 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setContribuablesAssocies(rapportsView);
 	}
 
-	protected void setLogicielView(TiersView tiersView, DebiteurPrestationImposable debiteur){
+	protected void setLogicielView(TiersView tiersView, DebiteurPrestationImposable debiteur) {
 		final Long logicielId = debiteur.getLogicielId();
-		final Logiciel logiciel = serviceInfrastructureService.getLogiciel(logicielId);
-		if(logiciel!=null){
-			tiersView.setLogiciel(new LogicielView(logiciel));
+		if (logicielId != null) {
+			final Logiciel logiciel = serviceInfrastructureService.getLogiciel(logicielId);
+			if (logiciel != null) {
+				tiersView.setLogiciel(new LogicielView(logiciel));
+			}
 		}
+
 	}
 
 	/**
@@ -578,7 +581,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 		else {
 			final StringBuilder b = new StringBuilder(noms.get(0));
-			for (int i = 1 ; i < noms.size() ; ++ i) {
+			for (int i = 1; i < noms.size(); ++i) {
 				b.append(" / ").append(noms.get(i));
 			}
 			return b.toString();
@@ -911,9 +914,9 @@ public class TiersManager implements MessageSourceAware {
 		periodiciteView.setDateDebut(periodicite.getDateDebut());
 		periodiciteView.setDateFin(periodicite.getDateFin());
 		final DebiteurPrestationImposable debiteurPrestationImposable = periodicite.getDebiteur();
-		if(debiteurPrestationImposable!=null){
+		if (debiteurPrestationImposable != null) {
 			periodiciteView.setDebiteurId(debiteurPrestationImposable.getNumero());
-		}		
+		}
 		periodiciteView.setId(periodicite.getId());
 		periodiciteView.setAnnule(periodicite.isAnnule());
 		periodiciteView.setPeriodiciteDecompte(periodicite.getPeriodiciteDecompte());
@@ -1200,10 +1203,10 @@ public class TiersManager implements MessageSourceAware {
 			}
 		}
 		//UNIREG-2120 Possibilite de créer un debiteur a partir d'une collectivite administrative
-		else if( tiers instanceof CollectiviteAdministrative){
-				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
-				allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
-				isEditable = true;				
+		else if (tiers instanceof CollectiviteAdministrative) {
+			allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
+			allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
+			isEditable = true;
 		}
 		else {//Entreprise, Etablissement ou CollectiviteAdministrative non éditables pour le moment
 			isEditable = false;
@@ -1623,7 +1626,9 @@ public class TiersManager implements MessageSourceAware {
 
 	protected static interface AdressesResolverCallback {
 		AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException;
+
 		void setAdressesView(List<AdresseView> adresses);
+
 		void onException(String message, List<AdresseView> adressesEnErreur);
 	}
 
@@ -1816,6 +1821,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 	}
+
 	/**
 	 * Crée une adresse view à partir d'une adresse générique.
 	 *
