@@ -227,6 +227,14 @@
 		 		$("#tabnav-disable").show();
 		 		$("#tabnav-enable").hide();
 		 	}
+
+		 	// [UNIREG-3290] Sélection de la vue imprimable par l'url
+			$(function() {
+				var url = document.location.toString();
+				if (url.indexOf("printview=true") != -1) {
+					showPrintView();
+				}
+			});
 	</script>
 
 	<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
