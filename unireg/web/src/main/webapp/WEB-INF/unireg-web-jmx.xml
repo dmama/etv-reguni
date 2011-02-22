@@ -53,6 +53,7 @@
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExternelistenerContainer"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCedi" value-ref="evenementCediListenerContainer"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="jmsIdentCtbListenerContainer"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIAMListenerContainer"/>
 			</map>
 		</property>
 	</bean>

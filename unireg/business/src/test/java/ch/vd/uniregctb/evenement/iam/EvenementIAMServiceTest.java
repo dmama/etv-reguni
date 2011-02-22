@@ -1,0 +1,168 @@
+package ch.vd.uniregctb.evenement.iam;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+
+import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.evenement.cedi.EvenementCediServiceImpl;
+import ch.vd.uniregctb.evenement.cedi.RetourDI;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.validation.ValidationService;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class EvenementIAMServiceTest extends BusinessTest {
+
+	private EvenementIAMServiceImpl service;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+
+		service = new EvenementIAMServiceImpl();
+		service.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		service.setValidationService(getBean(ValidationService.class, "validationService"));
+	}
+
+	@Test
+	public void testModifierInfoEmployeur() throws Exception {
+
+		// Création d'un débiteur
+		final Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
+
+				return siggenAirlines.getNumero();
+			}
+		});
+
+		// Simule la réception d'un enregistrement de debiteur
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final InfoEmployeur infoEmployeur = new InfoEmployeur();
+				infoEmployeur.setLogicielId(18L);
+				infoEmployeur.setNoEmployeur(id);
+				infoEmployeur.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+				List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+				listeEmp.add(infoEmployeur);
+				final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
+				enregistrementEmployeur.setEmployeursAMettreAJour(listeEmp);
+				service.onEnregistrementEmployeur(enregistrementEmployeur);
+				return null;
+			}
+		});
+
+		// Vérifie que les informations du débiteur ont bien été mis-à-jour
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final DebiteurPrestationImposable siggenAirlines = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id);
+				assertEquals(18L, siggenAirlines.getLogicielId().longValue());
+				assertEquals(ModeCommunication.ELECTRONIQUE, siggenAirlines.getModeCommunication());
+				return null;
+			}
+		});
+	}
+	@Test
+		public void testModifierInfo2Employeur() throws Exception {
+
+			// Création d'un débiteur 1
+			final Long id1 = (Long) doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+
+					// Un tiers tout ce quil y a de plus ordinaire
+					final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
+					siggenAirlines.setModeCommunication(ModeCommunication.SITE_WEB);
+					siggenAirlines.setLogicielId(1L);
+					return siggenAirlines.getNumero();
+				}
+			});
+
+	// Création d'un débiteur 2
+			final Long id2 = (Long) doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+
+					// Un tiers tout ce quil y a de plus ordinaire
+					final DebiteurPrestationImposable siggenHolding = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL,date(2010,1,1));
+					 siggenHolding.setModeCommunication(ModeCommunication.PAPIER);
+					return siggenHolding.getNumero();
+				}
+			});
+
+
+			// Simule la réception d'un enregistrement de debiteur
+			doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+
+					List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+
+					final InfoEmployeur infoEmployeurAirlines = new InfoEmployeur();
+					infoEmployeurAirlines.setLogicielId(18L);
+					infoEmployeurAirlines.setNoEmployeur(id1);
+					infoEmployeurAirlines.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+					listeEmp.add(infoEmployeurAirlines);
+
+
+					final InfoEmployeur infoEmployeurHolding = new InfoEmployeur();
+					infoEmployeurHolding.setLogicielId(12L);
+					infoEmployeurHolding.setNoEmployeur(id2);
+					infoEmployeurHolding.setModeCommunication(ModeCommunication.SITE_WEB);
+					listeEmp.add(infoEmployeurHolding);
+
+					final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
+					enregistrementEmployeur.setEmployeursAMettreAJour(listeEmp);
+					service.onEnregistrementEmployeur(enregistrementEmployeur);
+					return null;
+				}
+			});
+
+			// Vérifie que les informations des débiteurs ont bien été mis-à-jour
+			doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+
+					final DebiteurPrestationImposable siggenAirlines = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id1);
+					assertEquals(18L, siggenAirlines.getLogicielId().longValue());
+					assertEquals(ModeCommunication.ELECTRONIQUE, siggenAirlines.getModeCommunication());
+
+					final DebiteurPrestationImposable siggenHolding = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id2);
+					assertEquals(12L, siggenHolding.getLogicielId().longValue());
+					assertEquals(ModeCommunication.SITE_WEB, siggenHolding.getModeCommunication());
+
+					return null;
+				}
+			});
+		}
+
+
+}

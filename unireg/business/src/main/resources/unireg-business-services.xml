@@ -123,6 +123,11 @@
 		<property name="validationService" ref="validationService"/>
 	</bean>
 
+	<bean id="evenementIAMService" class="ch.vd.uniregctb.evenement.iam.EvenementIAMServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="validationService" ref="validationService"/>
+	</bean>
+
 	<bean id="rapportService" class="ch.vd.uniregctb.rapport.RapportServiceImpl">
 		<property name="docService" ref="docService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
