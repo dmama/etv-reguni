@@ -64,7 +64,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -678,42 +677,17 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
-	 * Détermine si les deux types de documents sont compatibles pour permettre une mise-à-jour d'une éventuelle déclaration d'impôt. S'ils ne sont pas compatibles, il sera nécessaire d'annuler et de
-	 * rémettre une nouvelle déclaration.
+	 * On peut mettre à jour une déclaration existante si elle est sur une période passée ou - sur la période courante - si la nouvelle fin de période n'est pas la fin de l'année (= déplacement de fin
+	 * d'assujettissement). <b>Note:</b> le test sur le type de document n'est plus nécessaire (UNIREG-3281).
 	 *
-	 * @param left  un type de contribuable
-	 * @param right un autre type de contribuable
-	 * @return <b>true</b> si les deux types sont compatibles; <b>false</b> autrement.
-	 */
-	private static boolean areTypeDocumentCompatibles(TypeDocument left, TypeDocument right) {
-
-		// cas trivial : les deux types sont identiques
-		// (dans la migration initiale de juillet 2009, le type de contribuable n'était pas toujours attribué à la DI - apparemment pas pour les mixtes)
-		if (left == right || left == null || right == null) {
-			return true;
-		}
-
-		// cas spécial : certains types, bien que différents, génèrent malgré tout des déclarations identiques
-		if (left.isOrdinaire() && right.isOrdinaire()) {
-			return true;
-		}
-
-		// cas général : les deux types ne sont pas compatibles
-		return false;
-	}
-
-	/**
-	 * On peut mettre à jour une déclaration existante sur une période passée dès que les types de contribuables sont compatibles.<br/>
-	 * Sur la période courante, il faut de plus que la nouvelle fin de période ne soit pas la fin de l'année (= déplacement de fin d'assujettissement).
-	 * @param diExistante la DI potentiellement à mettre à jour
-	 * @param periode la période d'imposition avec laquelle la DI serait mise à jour
+	 * @param diExistante   la DI potentiellement à mettre à jour
+	 * @param periode       la période d'imposition avec laquelle la DI serait mise à jour
 	 * @param anneeCourante année de la période dite "courante"
 	 * @return <code>true</code> si la mise à jour est autorisée, <code>false</code> sinon.
-	 * @see #areTypeDocumentCompatibles(ch.vd.uniregctb.type.TypeDocument,ch.vd.uniregctb.type.TypeDocument)
+	 * @see #areTypeDocumentCompatibles(ch.vd.uniregctb.type.TypeDocument, ch.vd.uniregctb.type.TypeDocument)
 	 */
 	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
-		return areTypeDocumentCompatibles(diExistante.getTypeDeclaration(), periode.getTypeDocument()) &&
-			   isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
+		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
 	}
 
 	private static boolean isDiLibreSurPeriodeCourante(DeclarationImpotOrdinaire di, int anneeCourante) {

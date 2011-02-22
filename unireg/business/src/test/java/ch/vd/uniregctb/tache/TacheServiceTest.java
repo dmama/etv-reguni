@@ -2399,8 +2399,9 @@ public class TacheServiceTest extends BusinessTest {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.DEPENSE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		// annulation et ré-envoi des DIs 2006..[année précédente] parce que les types de document ont changé
-		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheAnnulationDeclarationImpot, taches));
-		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		// [UNIREG-3281] les types de document sont mis-à-jour automatiquement dorénavant -> pas de tâche créée
+		assertEquals(0, countTaches(TypeTache.TacheAnnulationDeclarationImpot, taches));
+		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
 	/**
@@ -2998,14 +2999,12 @@ public class TacheServiceTest extends BusinessTest {
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
 
 		// On vérifie que :
-		// - la déclaration est annulée (le type de contribuable/document n'est pas compatible)
-		// - une nouvelle déclaration est créée
+		// - [UNIREG-3281] les types de document sont mis-à-jour automatiquement -> une action de mise-à-jour est créée
 		hibernateTemplate.flush();
 		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
 		assertNotNull(actions);
-		assertEquals(2, actions.size());
-		assertAddDI(date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
-		assertDeleteDI(di, false, actions.get(1));
+		assertEquals(1, actions.size());
+		assertUpdateDI(di, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
 	}
 
 	@Test
@@ -3040,7 +3039,8 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testDetermineSynchronizeActionsForDIsUneDIAvecTacheAnnulationCorrecte() throws Exception {
 
-		final int anneePrecedente = RegDate.get().year() - 1;
+		final int anneeCourante = RegDate.get().year();
+		final int anneePrecedente = anneeCourante - 1;
 
 		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
 		assertNotNull(cedi);
@@ -3049,12 +3049,12 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
-		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode);
-		// une déclaration qui est incorrecte car le type de contribuable/document est faux
-		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
+		final PeriodeFiscale periode = addPeriodeFiscale(anneeCourante);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+		// une déclaration incorrecte (mauvaise date de début) qui ne peut pas être corrigée car elle va jusqu'à la fin de l'année
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneeCourante, 5, 12), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
 
-		// une tâche d'annulation de la déclaration (correcte car le type de contribuable de la déclaration ne correspond pas à la période d'imposition)
+		// une tâche d'annulation de la déclaration
 		final TacheAnnulationDeclarationImpot tache = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, pp, cedi);
 
 		// On vérifie que :
@@ -3181,14 +3181,14 @@ public class TacheServiceTest extends BusinessTest {
 		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
 		final ModeleDocument modeleComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		final ModeleDocument modeleDepense = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode);
-		// une première déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
-		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
-		// une seconde déclaration qui couvre la période en Suisse (correct) avec un type de contribuable dépense (incorrect)
-		final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
+		// une première déclaration qui couvre la période en Suisse (correct) avec un type de contribuable dépense (incorrect)
+		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
+		// une seconde déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
+		final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
 
 		// On vérifie que :
-		// - la première déclaration est mise-à-jour (dates + type)
-		// - la deuxième déclaration est annulée (malgré le fait que les dates correspondnt parfaitement : parce le type de contribuable n'est pas compatible avec le type théorique)
+		// - la première déclaration est mise-à-jour (type)
+		// - la deuxième déclaration est annulée
 		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
 		assertNotNull(actions);
 		assertEquals(2, actions.size());
