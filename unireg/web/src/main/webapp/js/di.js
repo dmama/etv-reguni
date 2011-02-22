@@ -13,13 +13,3 @@ function effacerCriteresDI()
 function retourVisuFromDI(numero) {
 	document.location.href='../tiers/visu.do?id=' + numero ;
 }
-
-
-/*
-* Recharge la page avec un autre type de document
-*/
-function changeTypeDocument(idDI, typeDocument)
-{
-	document.location.href='impression.do?id=' + idDI + '&typeDocument=' + typeDocument;
-}
-		
