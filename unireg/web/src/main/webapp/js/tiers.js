@@ -223,6 +223,18 @@ function selectPeriodeDecompte(name) {
 	} 
 }
 
+/*
+* Selection d'un logiciel
+*/
+function selectLogiciel(name) {
+	if( name == 'PAPIER' ){
+		$('#div_logiciel_label').hide();
+		$('#div_logiciel_input').hide();
+	} else {
+		$('#div_logiciel_label').show();
+		$('#div_logiciel_input').show();
+	}
+}
 
 /**
 * Affichage des adresses actives ou pas

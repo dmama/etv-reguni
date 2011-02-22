@@ -5,7 +5,8 @@
 	<table border="0">
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.mode.communication"/>&nbsp;:</td>
-			<td width="25%"><form:select path="modeCommunication" items="${modesCommunication}" /></td>
+			<td width="25%"><form:select path="modeCommunication" items="${modesCommunication}"
+			 								onchange="selectLogiciel(this.options[this.selectedIndex].value);"/></td>
 			<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
 			<td width="25%">
 				<form:select path="categorieImpotSource" items="${categoriesImpotSource}" />
@@ -31,13 +32,18 @@
 			<td width="25%"><form:checkbox path="sansListeRecapitulative" /></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-					<td><fmt:message key="label.complement.logiciel.fournisseur" />&nbsp;:</td>
-					<td><form:select path="logicielId" items="${libellesLogiciel}" /></td>
+					<td>
+						<div id="div_logiciel_label" style="display:none;" ><fmt:message key="label.complement.logiciel.fournisseur" />&nbsp;:</div>
+					</td>
+					<td>
+						<div id="div_logiciel_input" style="display:none;" ><form:select path="logicielId" items="${libellesLogiciel}" /></div>
+					</td>
 		</tr>
 	</table>
 </fieldset>
 <script type="text/javascript">
 	selectPeriodeDecompte('${command.periodiciteCourante}');
+	selectLogiciel('${command.modeCommunication}');
 </script>
 <!-- Fin fiscal pour debiteurs impot a la source-->
 
