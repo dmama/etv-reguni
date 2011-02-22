@@ -719,30 +719,32 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private void remplitAnnexes(DIBase di, List<ModeleFeuilleDocumentEditique> annexes) {
 		final noNamespace.DIBase.Annexes annexesEditique = di.addNewAnnexes();
 		for (ModeleFeuilleDocumentEditique annexe : annexes) {
-			if (annexe.getNbreIntituleFeuille() != null) {
-				if (annexe.getNumeroFormulaire().equals("210")) {
-					annexesEditique.setAnnexe210(annexe.getNbreIntituleFeuille().toString());
+			final Integer nombreFeuilles = annexe.getNbreIntituleFeuille();
+			if (nombreFeuilles != null && nombreFeuilles > 0) {
+				final String numeroFormulaire = annexe.getNumeroFormulaire();
+				if (numeroFormulaire.equals("210")) {
+					annexesEditique.setAnnexe210(nombreFeuilles.toString());
 				}
-				else if (annexe.getNumeroFormulaire().equals("220")) {
-					annexesEditique.setAnnexe220(annexe.getNbreIntituleFeuille().toString());
+				else if (numeroFormulaire.equals("220")) {
+					annexesEditique.setAnnexe220(nombreFeuilles.toString());
 				}
-				else if (annexe.getNumeroFormulaire().equals("230")) {
-					annexesEditique.setAnnexe230(annexe.getNbreIntituleFeuille().toString());
+				else if (numeroFormulaire.equals("230")) {
+					annexesEditique.setAnnexe230(nombreFeuilles.toString());
 				}
-				else if (annexe.getNumeroFormulaire().equals("240")) {
-					annexesEditique.setAnnexe240(annexe.getNbreIntituleFeuille().toString());
+				else if (numeroFormulaire.equals("240")) {
+					annexesEditique.setAnnexe240(nombreFeuilles.toString());
 				}
-				else if (annexe.getNumeroFormulaire().equals("310")) {
-					annexesEditique.setAnnexe310(annexe.getNbreIntituleFeuille().toString());
+				else if (numeroFormulaire.equals("310")) {
+					annexesEditique.setAnnexe310(nombreFeuilles.toString());
 				}
-				else if (annexe.getNumeroFormulaire().equals("200")) {
-					annexesEditique.setAnnexe200(annexe.getNbreIntituleFeuille().toString());
+				else if (numeroFormulaire.equals("200")) {
+					annexesEditique.setAnnexe200(nombreFeuilles.toString());
 				}
-				else if (annexe.getNumeroFormulaire().equals("250")) {
-					annexesEditique.setAnnexe250(annexe.getNbreIntituleFeuille().toString());
+				else if (numeroFormulaire.equals("250")) {
+					annexesEditique.setAnnexe250(nombreFeuilles.toString());
 				}
-				else if (annexe.getNumeroFormulaire().equals("270")) {
-					annexesEditique.setAnnexe270(annexe.getNbreIntituleFeuille().toString());
+				else if (numeroFormulaire.equals("270")) {
+					annexesEditique.setAnnexe270(nombreFeuilles.toString());
 				}
 			}
 		}

@@ -492,25 +492,26 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
 		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(declaration.getPeriode().getAnnee());
-		final ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, diImpressionView.getSelectedTypeDocument());
-		declaration .setModeleDocument(modele);
+		final TypeDocument selectedTypeDocument = diImpressionView.getSelectedTypeDocument();
+		final ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, selectedTypeDocument);
+		declaration.setModeleDocument(modele);
 
 		List<ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique> annexes = null;
 
 		final List<ModeleDocumentView> modeles = diImpressionView.getModelesDocumentView();
 		for (ModeleDocumentView modeleView : modeles) {
-			if (modeleView.getTypeDocument() == diImpressionView.getSelectedTypeDocument()) {
+			if (modeleView.getTypeDocument() == selectedTypeDocument) {
 				annexes = modeleView.getModelesFeuilles();
 				break;
 			}
 		}
 
 		Audit.info(String.format("Impression d'un duplicata de DI pour le contribuable %d et la période [%s ; %s]",
-								declaration.getTiers().getNumero(),
-								RegDateHelper.dateToDashString(declaration.getDateDebut()),
-								RegDateHelper.dateToDashString(declaration.getDateFin())));
+				declaration.getTiers().getNumero(),
+				RegDateHelper.dateToDashString(declaration.getDateDebut()),
+				RegDateHelper.dateToDashString(declaration.getDateFin())));
 
-		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), diImpressionView.getSelectedTypeDocument(), annexes);
+		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), selectedTypeDocument, annexes);
 	}
 
 	/**
@@ -1053,9 +1054,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					final ModeleFeuilleDocumentEditique modeleFeuilleDocumentView = new ModeleFeuilleDocumentEditique();
 					modeleFeuilleDocumentView.setIntituleFeuille(modeleFeuilleDocument.getIntituleFeuille());
 					modeleFeuilleDocumentView.setNumeroFormulaire(modeleFeuilleDocument.getNumeroFormulaire());
-					if (enumTypeDocument == modele.getTypeDocument()) {
-						modeleFeuilleDocumentView.setNbreIntituleFeuille(nbreFeuilles);
-					}
+					modeleFeuilleDocumentView.setNbreIntituleFeuille(nbreFeuilles);
 					modelesFeuilleDocumentView.add(modeleFeuilleDocumentView);
 				}
 				final ModeleDocumentView modeleView = new ModeleDocumentView();
