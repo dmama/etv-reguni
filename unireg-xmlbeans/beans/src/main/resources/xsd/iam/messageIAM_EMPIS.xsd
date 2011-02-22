@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) by Didier Luthi (Etat de Vaud - CADEV) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
+	<xs:element name="DemandeUtilisateur">
+		<xs:annotation>
+			<xs:documentation>Demande d'un service concernant un utilisateur IAM</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="InfoIAM">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="AccountId" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>User ID de l'utilisateur</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Chvdiamuniquekey" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Identifiant unique IAM</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="RoleApplicatif" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Rôle applicatif IAM</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Nom" type="xs:string" minOccurs="0"/>
+							<xs:element name="Prenom" type="xs:string" minOccurs="0"/>
+							<xs:element name="Telephone" type="xs:string" minOccurs="0"/>
+							<xs:element name="Fax" type="xs:string" minOccurs="0"/>
+							<xs:element name="Email" type="xs:string" minOccurs="0"/>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="InfoMetier" minOccurs="0">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="DateDemande" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Date de la création de la demande (ISO 8601 / YYYY-MM-DD</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Fonction" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Fonction saisie du demandeur</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NomRespHierarchique" type="xs:string"/>
+							<xs:element name="PrenomRespHierarchique" type="xs:string"/>
+							<xs:element name="FonctionRespHierarchique" type="xs:string"/>
+							<xs:element name="TelephoneRespHierarchique" type="xs:string" minOccurs="0"/>
+							<xs:element name="Employeurs">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Employeur" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:all>
+													<xs:element name="NoEmployeur" type="xs:positiveInteger">
+														<xs:annotation>
+															<xs:documentation>Numéro de l'employeur saisi par le demandeur</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Email" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Email de correspondance de l'entreprise</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="TypeAcces" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>EF = Echange Fichiers
+SL = Saisie en ligne</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:enumeration value="EF"/>
+																<xs:enumeration value="SL"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="DesignationSaisie" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Désignation de l'entreprise saisie par le demandeur</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Designation" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Désignation de l'entreprise fournie par SIMPA-IS</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="AdresseLigne1" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Ligne adresse de l'entreprise fournie par SIMPA-IS</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="AdresseLigne2" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Ligne adresse de l'entreprise fournie par SIMPA-IS</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="NumeroPostal" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>NPA transmis par SIMPA-IS</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Localite" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Localite transmise par SIMPA_IS</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Statut">
+														<xs:annotation>
+															<xs:documentation>Information si société active,  fournie par SIMPA-IS          A = Active     I = Inactive</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:enumeration value="I"/>
+																<xs:enumeration value="A"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="IdLogiciel" type="xs:positiveInteger" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Identifiant Fidor du logiciel utilisé par l'employeur</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:all>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
