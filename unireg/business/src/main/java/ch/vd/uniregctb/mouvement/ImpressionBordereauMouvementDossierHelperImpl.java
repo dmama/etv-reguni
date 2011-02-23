@@ -109,6 +109,8 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
 				dossier.setNom1(nomPrenom.getNom());
 				dossier.setPrenom1(nomPrenom.getPrenom());
+				dossier.setNom2(null);
+				dossier.setPrenom2(null);
 			}
 			else if (ctb instanceof MenageCommun) {
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, null);
@@ -124,6 +126,10 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(conjoint);
 					dossier.setNom2(nomPrenom.getNom());
 					dossier.setPrenom2(nomPrenom.getPrenom());
+				}
+				else {
+					dossier.setNom2(null);
+					dossier.setPrenom2(null);
 				}
 			}
 			else {
@@ -151,11 +157,17 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 
 		// période fiscale
 		final TypPeriode pf = bordereauEnvoi.addNewPeriode();
+		pf.setPrefixe(PREFIXE + "PERIO");
+		pf.setOrigDuplicat("ORG");
+		pf.setHorsSuisse("");
+		pf.setHorsCanton("");
+		pf.setDateDecompte(null);
 		pf.setAnneeFiscale(Integer.toString(RegDate.get().year()));
 
 		final TypPeriode.Entete entete = pf.addNewEntete();
 		final TypPeriode.Entete.Tit titre = entete.addNewTit();
 		titre.setLibTit(TITRE);
+		titre.setPrefixe(PREFIXE + "TITIM");
 		entete.setTitArray(new TypPeriode.Entete.Tit[] {titre});
 		pf.setEntete(entete);
 		bordereauEnvoi.setPeriode(pf);

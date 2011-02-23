@@ -204,12 +204,12 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 				contrib2.setNom2(nomPrenom.getNom());
 				contrib2.setPrenom2(nomPrenom.getPrenom());
 				final RegDate dateNaissance = tiersService.getDateNaissance(conjoint);
-				final String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
+				final String displayDateNaissance = dateNaissance != null ? RegDateHelper.dateToDisplayString(dateNaissance) : null;
 				contrib2.setDateNaissance2(displayDateNaissance);
 				final String numeroFormate = FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero());
 				contrib2.setNumCTB2(numeroFormate);
 				final String navs13 = tiersService.getNumeroAssureSocial(conjoint);
-				contrib2.setNumAVS132(navs13);
+				contrib2.setNumAVS132(navs13 != null ? FormatNumeroHelper.formatNumAVS(navs13) : null);
 			}
 		}
 		else if (contribuable instanceof PersonnePhysique) {
@@ -225,17 +225,14 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 		contrib1.setNom1(nomPrenom.getNom());
 		contrib1.setPrenom1(nomPrenom.getPrenom());
 		final RegDate dateNaissance = tiersService.getDateNaissance(pp);
-		final String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
-
+		final String displayDateNaissance = dateNaissance != null ? RegDateHelper.dateToDisplayString(dateNaissance) : null;
 		contrib1.setDateNaissance1(displayDateNaissance);
 		final EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null, true);
-		if (etatCivil != null) {
-			contrib1.setCivil(etatCivil.format());
-		}
+		contrib1.setCivil(etatCivil != null ? etatCivil.format() : null);
 		final String numeroFormate = FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero());
 		contrib1.setNumCTB1(numeroFormate);
 		final String navs13 = tiersService.getNumeroAssureSocial(pp);
-		contrib1.setNumAVS131(navs13);
+		contrib1.setNumAVS131(navs13 != null ? FormatNumeroHelper.formatNumAVS(navs13) : null);
 	}
 
 	/**
@@ -251,7 +248,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 		infoDocument.setTypDoc(TYPE_DOC_CHEMISE_TO);
 		infoDocument.setCodDoc(CODE_DOC_CHEMISE_TO);
 		final CleRgp cleRgp = infoDocument.addNewCleRgp();
-		cleRgp.addNewGenreImpot();
+		cleRgp.setAnneeFiscale(Integer.toString(declaration.getPeriode().getAnnee()));
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANT);
 		infoDocument.setPopulations(POPULATIONS_PP);

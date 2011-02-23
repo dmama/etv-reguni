@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 
 import noNamespace.BVRSTDDocument.BVRSTD;
+import noNamespace.CleRgpDocument;
 import noNamespace.FichierImpressionDocument;
 import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoArchivageDocument.InfoArchivage;
@@ -225,6 +226,8 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 				break;
 		}
 		infoDocument.setCodDoc(codeDoc);
+		final CleRgpDocument.CleRgp cleRgp = infoDocument.addNewCleRgp();
+		cleRgp.setAnneeFiscale(Integer.toString(lr.getPeriode().getAnnee()));
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANT);
 		infoDocument.setPopulations(POPULATIONS_IS);

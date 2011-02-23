@@ -1,7 +1,12 @@
 package ch.vd.uniregctb.editique.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.editique.service.enumeration.TypeImpression;
@@ -25,8 +30,6 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementEditiqueSenderImpl.class);
 
-	//private static final int MAX_PRIORITY = 9;
-
 	private EsbJmsTemplate esbTemplate; // ESB template standard
 	private EsbJmsTemplate noTxEsbTemplate; // ESB template non-rattaché au transaction manager
 	private EsbMessageFactory esbMessageFactory;
@@ -45,6 +48,10 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
+
+		// tant que les documents éditiques n'ont pas de namespace, ils ne peuvent pas être validés par le framework
+		// de la message factory de l'ESB. D'après les guidelines de l'ESB, il faut donc les valider à la main...
+		validate(document);
 
 		try {
 			final EsbMessage m = esbMessageFactory.createMessage();
@@ -90,6 +97,35 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 			LOGGER.error(message, e);
 
 			throw new EditiqueException(message, e);
+		}
+	}
+
+	private static void validate(XmlObject document) {
+
+		// Endroit où on va récupérer les éventuelles erreurs
+		final XmlOptions validateOptions = new XmlOptions();
+		final List<XmlError> errorList = new ArrayList<XmlError>();
+		validateOptions.setErrorListener(errorList);
+
+		// C'est parti pour la validation !
+		final boolean isValid = document.validate(validateOptions);
+
+		// si le document n'est pas valide, on va logguer pour avoir de quoi identifier et corriger le bug ensuite
+		if (!isValid) {
+			final StringBuilder b = new StringBuilder();
+			b.append("--------------------------------------------------\n");
+			b.append("--------------------------------------------------\n");
+			b.append("Erreur de validation du message éditique en sortie\n");
+			b.append("--------------------------------------------------\n");
+			b.append("Message :\n").append(document).append('\n');
+			b.append("--------------------------------------------------\n");
+			for (XmlError error : errorList) {
+				b.append("Erreur : ").append(error.getMessage()).append('\n');
+				b.append("Localisation de l'erreur : ").append(error.getCursorLocation().xmlText()).append('\n');
+				b.append("--------------------------------------------------\n");
+			}
+			b.append("--------------------------------------------------\n");
+			Assert.fail(b.toString());
 		}
 	}
 

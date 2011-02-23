@@ -70,8 +70,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 		periode.setHorsSuisse("");
 		periode.setHorsCanton("");
 		periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
-		periode.setDateDecompte(RegDateHelper.toIndexString(params.getDi().getEtatDeclarationActif(TypeEtatDeclaration.EMISE)
-				.getDateObtention()));
+		periode.setDateDecompte(RegDateHelper.toIndexString(params.getDi().getEtatDeclarationActif(TypeEtatDeclaration.EMISE).getDateObtention()));
 		periode.setDatDerCalculAc("");
 		Entete entete = periode.addNewEntete();
 		Tit tit = entete.addNewTit();
@@ -79,8 +78,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 		tit.setLibTit("Impôt cantonal et communal / Impôt fédéral direct");
 		ImpCcn impCcn = entete.addNewImpCcn();
 		impCcn.setPrefixe(calculPrefixe() + "IMPCC");
-		impCcn.setLibImpCcn(String.format("Délai pour le dépôt de la déclaration d'impôt %s", params.getDi().getPeriode().getAnnee()
-				.toString()));
+		impCcn.setLibImpCcn(String.format("Délai pour le dépôt de la déclaration d'impôt %d", params.getDi().getPeriode().getAnnee()));
 		final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
 		confirmationDelai.setCivil(formuleAppel);
 		confirmationDelai.setOFS(editiqueHelper.getCommune(params.getDi()));
@@ -118,8 +116,8 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 	}
 
 	private InfoDocument remplitInfoDocument(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
-			InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-			String prefixe = calculPrefixe() + "DOCUM";
+			final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+			final String prefixe = calculPrefixe() + "DOCUM";
 			infoDocument.setPrefixe(prefixe);
 			infoDocument.setTypDoc("CD");
 			infoDocument.setCodDoc("CONF_DEL");
@@ -127,8 +125,6 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 			infoDocument.setLogo("CANT");
 			infoDocument.setPopulations("PP");
 			infoDocument.setIdEnvoi("");
-			CleRgp cleRgp = infoDocument.addNewCleRgp();
-			cleRgp.addNewGenreImpot();
 			return infoDocument;
 	}
 

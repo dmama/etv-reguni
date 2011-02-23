@@ -153,14 +153,14 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal);
 			contrib1.setNom1(nomPrenomPrincipal.getNom());
 			contrib1.setPrenom1(nomPrenomPrincipal.getPrenom());
-			contrib1.setDateNaissance1(RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(principal)));
+			final RegDate dateNaissance = tiersService.getDateNaissance(principal);
+			contrib1.setDateNaissance1(dateNaissance != null ? RegDateHelper.dateToDisplayString(dateNaissance) : null);
 
 			final EtatCivil etatCivil = situationFamilleService.getEtatCivil(principal, null, true);
-			if (etatCivil != null) {
-				contrib1.setCivil(etatCivil.format());
-			}
+			contrib1.setCivil(etatCivil != null ? etatCivil.format() : null);
 			contrib1.setNumCTB1(FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()));
-			contrib1.setNumAVS131(FormatNumeroHelper.formatNumAVS(tiersService.getNumeroAssureSocial(principal)));
+			final String noAvs = tiersService.getNumeroAssureSocial(principal);
+			contrib1.setNumAVS131(noAvs != null ? FormatNumeroHelper.formatNumAVS(noAvs) : null);
 
 			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 			if (conjoint != null) {
@@ -168,9 +168,11 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 				final NomPrenom nomPrenomConjoint = tiersService.getDecompositionNomPrenom(conjoint);
 				contrib2.setNom2(nomPrenomConjoint.getNom());
 				contrib2.setPrenom2(nomPrenomConjoint.getPrenom());
-				contrib2.setDateNaissance2(RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(conjoint)));
+				final RegDate dateNaissance2 = tiersService.getDateNaissance(conjoint);
+				contrib2.setDateNaissance2(dateNaissance2 != null ? RegDateHelper.dateToDisplayString(dateNaissance2) : null);
 				contrib2.setNumCTB2(FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
-				contrib2.setNumAVS132(FormatNumeroHelper.formatNumAVS(tiersService.getNumeroAssureSocial(conjoint)));
+				final String noAvs2 = tiersService.getNumeroAssureSocial(conjoint);
+				contrib2.setNumAVS132(noAvs2 != null ? FormatNumeroHelper.formatNumAVS(noAvs2) : null);
 			}
 		}
 		else if (contribuable instanceof PersonnePhysique) {
@@ -178,17 +180,17 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
 			contrib1.setNom1(nomPrenom.getNom());
 			contrib1.setPrenom1(nomPrenom.getPrenom());
-			contrib1.setDateNaissance1(RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(pp)));
+			final RegDate dateNaissance = tiersService.getDateNaissance(pp);
+			contrib1.setDateNaissance1(dateNaissance != null ? RegDateHelper.dateToDisplayString(dateNaissance) : null);
 			final EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null, true);
-			if (etatCivil != null) {
-				contrib1.setCivil(etatCivil.format());
-			}
+			contrib1.setCivil(etatCivil != null ? etatCivil.format() : null);
 			contrib1.setNumCTB1(FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-			contrib1.setNumAVS131(FormatNumeroHelper.formatNumAVS(tiersService.getNumeroAssureSocial(pp)));
+			final String noAvs = tiersService.getNumeroAssureSocial(pp);
+			contrib1.setNumAVS131(noAvs != null ? FormatNumeroHelper.formatNumAVS(noAvs) : null);
 		}
 
-		RegDate dateEdition = RegDate.get();
-		String dateEditionDisplay = String.valueOf(dateEdition.index());
+		final RegDate dateEdition = RegDate.get();
+		final String dateEditionDisplay = String.valueOf(dateEdition.index());
 		ficheOuvertureDossier.setDateEdition(dateEditionDisplay);
 
 		return ficheOuvertureDossier;
@@ -215,14 +217,11 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * @return
 	 */
 	private InfoDocument remplitInfoDocument() {
-		InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		String prefixe = calculPrefixe();
-		prefixe += DOCUM;
+		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+		final String prefixe = String.format("%s%s", calculPrefixe(), DOCUM);
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_NOUVEAU_DOSSIER);
 		infoDocument.setCodDoc(CODE_DOC_NOUVEAU_DOSSIER);
-		CleRgp cleRgp = infoDocument.addNewCleRgp();
-		cleRgp.addNewGenreImpot();
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANT);
 		infoDocument.setPopulations(POPULATIONS_PP);

@@ -202,7 +202,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 				idEnvoi = "";
 			} else {
 				final Integer officeImpotId = tiersService.getOfficeImpotId(params.getDi().getTiers());
-			if (officeImpotId != null) {
+				if (officeImpotId != null) {
 					idEnvoi = officeImpotId.toString();
 				} else {
 					LOGGER.warn("OID null");
@@ -214,8 +214,10 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + params.getDi().getTiers().getNumero(), e);
 			throw new EditiqueException(message, e);
 		}
-		CleRgp cleRgp = infoDocument.addNewCleRgp();
-		cleRgp.addNewGenreImpot();
+
+		final CleRgp cleRgp = infoDocument.addNewCleRgp();
+		cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
+
 		return infoDocument;
 	}
 

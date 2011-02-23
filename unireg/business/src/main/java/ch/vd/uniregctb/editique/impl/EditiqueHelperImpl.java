@@ -2,12 +2,12 @@ package ch.vd.uniregctb.editique.impl;
 
 import java.rmi.RemoteException;
 
-import noNamespace.TypAdresse;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
-
+import noNamespace.TypAdresse;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -28,8 +28,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-
-import org.apache.log4j.Logger;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class EditiqueHelperImpl implements EditiqueHelper {
 
@@ -72,6 +71,11 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		final Destinataire destinataire = infoEnteteDocument.addNewDestinataire();
 		final TypAdresse.Adresse adresseDestinataire = destinataire.addNewAdresse();
 		adresseDestinataire.setAdresseCourrierLigne1("Archives");
+		adresseDestinataire.setAdresseCourrierLigne2(null);
+		adresseDestinataire.setAdresseCourrierLigne3(null);
+		adresseDestinataire.setAdresseCourrierLigne4(null);
+		adresseDestinataire.setAdresseCourrierLigne5(null);
+		adresseDestinataire.setAdresseCourrierLigne6(null);
 		return destinataire;
 	}
 
@@ -139,6 +143,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		adresseExpediteur.setAdresseCourrierLigne3(ca.getNomComplet3());
 		adresseExpediteur.setAdresseCourrierLigne4(adresse.getRue());
 		adresseExpediteur.setAdresseCourrierLigne5(adresse.getNumeroPostal() + " " + adresse.getLocalite());
+		adresseExpediteur.setAdresseCourrierLigne6(null);
 		expediteur.setAdresse(adresseExpediteur);
 		expediteur.setAdrMes(ca.getAdresseEmail());
 		expediteur.setNumTelephone(ca.getNoTelephone());
@@ -205,13 +210,9 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		return commune.getNomMinuscule();
 	}
 
-
-
-		public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
-			   return remplitExpediteurACIForIS(declaration, infoEnteteDocument, traitePar,false);
-		}
-
-
+	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
+	   return remplitExpediteurACIForIS(declaration, infoEnteteDocument, traitePar,false);
+	}
 
 	/**
 	 * Alimente la partie expéditeur du document
@@ -230,6 +231,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		adresseExpediteur.setAdresseCourrierLigne3(aciImpotSource.getNomComplet3());
 		adresseExpediteur.setAdresseCourrierLigne4(adresseAciImpotSource.getRue());
 		adresseExpediteur.setAdresseCourrierLigne5(adresseAciImpotSource.getNumeroPostal() + " " + adresseAciImpotSource.getLocalite());
+		adresseExpediteur.setAdresseCourrierLigne6(null);
 		expediteur.setAdresse(adresseExpediteur);
 		expediteur.setAdrMes(aciImpotSource.getAdresseEmail());
 		expediteur.setNumTelephone(aciImpotSource.getNoTelephone());
@@ -242,17 +244,16 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		// expediteur.setSrvExp(srvExp);
 		// expediteur.setIdeUti(ideUti);
 		expediteur.setLocaliteExpedition("Lausanne");
-		RegDate dateExpedition = null;
-		if(isSommation){
-			EtatDeclarationSommee sommee =(EtatDeclarationSommee)declaration.getDernierEtat();
+		final RegDate dateExpedition;
+		if (isSommation) {
+			final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
 			dateExpedition = sommee.getDateEnvoiCourrier();
 		}
 		else{
 			dateExpedition = RegDate.get();
 		}
-		expediteur.setDateExpedition(Integer.valueOf(dateExpedition.index()).toString());
+		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-		expediteur.setVotreReference("");
 		// expediteur.setNumIBAN(numIBAN);
 		return expediteur;
 	}

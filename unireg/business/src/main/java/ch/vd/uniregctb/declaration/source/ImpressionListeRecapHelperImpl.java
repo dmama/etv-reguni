@@ -196,7 +196,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		infoDocument.setCodDoc(codeDoc);
 
 		final CleRgp cleRgp = infoDocument.addNewCleRgp();
-		cleRgp.addNewGenreImpot();
+		cleRgp.setAnneeFiscale(Integer.toString(lr.getPeriode().getAnnee()));
 
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANT);

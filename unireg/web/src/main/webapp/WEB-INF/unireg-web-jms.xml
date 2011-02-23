@@ -76,7 +76,7 @@
 		<property name="validator" ref="esbMessageFactoryValidator"/>
 	</bean>
 
-	<!-- Version sans validation parce que les XSDs de éditique n'ont pas de namespace et que ça bloque à la validation -->
+	<!-- Version sans validation parce que les XSDs de éditique n'ont pas de namespace et que ça bloque à la validation automatique -->
 	<bean id="esbMessageFactoryForEditique" class="ch.vd.technical.esb.EsbMessageFactory"/>
 
 	<bean id="esbHttpTemplate" class="ch.vd.technical.esb.http.EsbHttpTemplate">
@@ -93,7 +93,6 @@
 			<list>
 				<value>classpath:xsd/civil/**/*.xsd</value>
 				<value>classpath:xsd/database/**/*.xsd</value>
-				<value>classpath:xsd/editique/**/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:xsd/fiscal/evtQuittanceListe-v1.xsd</value>
 				<value>classpath:xsd/identification/**/*.xsd</value>

@@ -149,14 +149,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			codDoc += CODE_DOCUMENT_DEP;
 		}
 		infoDocument.setCodDoc(codDoc);
-		CleRgp cleRgp = infoDocument.addNewCleRgp();
-		// cleRgp.setAnneeFiscale(anneeFiscale);
-		// cleRgp.setGenreDecision(genreDecision);
-		/* noNamespace.GenreImpotDocument.GenreImpot genreImpot = */cleRgp.addNewGenreImpot();
-		// cleRgp.setGenreImpot(genreImpot);
-		// cleRgp.setIndicateurDENC(indicateurDENC);
-		// cleRgp.setNumeroTaxation(numeroTaxation);
-		// cleRgp.setNumeroVersion(numeroVersion);
+
+		final CleRgp cleRgp = infoDocument.addNewCleRgp();
+		cleRgp.setAnneeFiscale(Integer.toString(declaration.getPeriode().getAnnee()));
+
 		try {
 			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(declaration.getTiers(), null, TypeAdresseFiscale.COURRIER, false);
 			String idEnvoi = "";
@@ -253,25 +249,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return expediteur;
 	}
 
-	private void remplitAdresse(TypAdresse.Adresse adresseExpediteur, AdresseEnvoiDetaillee adresse) {
-		if (adresse.getLigne1() != null) {
-			adresseExpediteur.setAdresseCourrierLigne1(adresse.getLigne1());
-		}
-		if (adresse.getLigne2() != null) {
-			adresseExpediteur.setAdresseCourrierLigne2(adresse.getLigne2());
-		}
-		if (adresse.getLigne3() != null) {
-			adresseExpediteur.setAdresseCourrierLigne3(adresse.getLigne3());
-		}
-		if (adresse.getLigne4() != null) {
-			adresseExpediteur.setAdresseCourrierLigne4(adresse.getLigne4());
-		}
-		if (adresse.getLigne5() != null) {
-			adresseExpediteur.setAdresseCourrierLigne5(adresse.getLigne5());
-		}
-		if (adresse.getLigne6() != null) {
-			adresseExpediteur.setAdresseCourrierLigne6(adresse.getLigne6());
-		}
+	private static void remplitAdresse(TypAdresse.Adresse adresseExpediteur, AdresseEnvoiDetaillee adresse) {
+		adresseExpediteur.setAdresseCourrierLigne1(adresse.getLigne1());
+		adresseExpediteur.setAdresseCourrierLigne2(adresse.getLigne2());
+		adresseExpediteur.setAdresseCourrierLigne3(adresse.getLigne3());
+		adresseExpediteur.setAdresseCourrierLigne4(adresse.getLigne4());
+		adresseExpediteur.setAdresseCourrierLigne5(adresse.getLigne5());
+		adresseExpediteur.setAdresseCourrierLigne6(adresse.getLigne6());
 	}
 
 	/**
@@ -422,27 +406,17 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		adresseRetour.setADRES3RETOUR(cedi.getNomCourt() + " " + officeImpotId);
 		adresseRetour.setADRES4RETOUR(adrCedi.getNumeroPostal() + " " + adrCedi.getLocalite());
+		adresseRetour.setADRES5RETOUR(null);
+		adresseRetour.setADRES6RETOUR(null);
 	}
 
 	private void remplitAdresse(DIRetour.AdresseRetour adresseRetour, AdresseEnvoiDetaillee adresse) {
-		if (adresse.getLigne1() != null) {
-			adresseRetour.setADRES1RETOUR(adresse.getLigne1());
-		}
-		if (adresse.getLigne2() != null) {
-			adresseRetour.setADRES2RETOUR(adresse.getLigne2());
-		}
-		if (adresse.getLigne3() != null) {
-			adresseRetour.setADRES3RETOUR(adresse.getLigne3());
-		}
-		if (adresse.getLigne4() != null) {
-			adresseRetour.setADRES4RETOUR(adresse.getLigne4());
-		}
-		if (adresse.getLigne5() != null) {
-			adresseRetour.setADRES5RETOUR(adresse.getLigne5());
-		}
-		if (adresse.getLigne6() != null) {
-			adresseRetour.setADRES6RETOUR(adresse.getLigne6());
-		}
+		adresseRetour.setADRES1RETOUR(adresse.getLigne1());
+		adresseRetour.setADRES2RETOUR(adresse.getLigne2());
+		adresseRetour.setADRES3RETOUR(adresse.getLigne3());
+		adresseRetour.setADRES4RETOUR(adresse.getLigne4());
+		adresseRetour.setADRES5RETOUR(adresse.getLigne5());
+		adresseRetour.setADRES6RETOUR(adresse.getLigne6());
 	}
 
 	private CollectiviteAdministrative getRetourCollectiviteAdministrative(DeclarationImpotOrdinaire declaration) throws EditiqueException {
@@ -514,11 +488,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final List<String> nomPrenom = adresseEnvoi.getNomPrenom();
 		switch (nomPrenom.size()) {
 		case 0:
+			adresseSuite.setAdresseCourrierLigne1(null);
 			adresseSuite.setAdresseCourrierLigne2(npaLocalite);
+			adresseSuite.setAdresseCourrierLigne3(null);
 			break;
 		case 1:
 			adresseSuite.setAdresseCourrierLigne1(nomPrenom.get(0));
 			adresseSuite.setAdresseCourrierLigne2(npaLocalite);
+			adresseSuite.setAdresseCourrierLigne3(null);
 			break;
 		case 2:
 			adresseSuite.setAdresseCourrierLigne1(nomPrenom.get(0));
@@ -558,11 +535,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			throw new EditiqueException(e);
 		}
 
-		infoDI.setANNEEFISCALE(declaration.getPeriode().getAnnee().toString());
-		infoDI.setCODBARR(codbarr);
+		infoDI.setANNEEFISCALE(Integer.toString(declaration.getPeriode().getAnnee()));
+		infoDI.setDESCOM(nomCommuneGestion);
 		infoDI.setDELAIRETOUR(delaiRetour);
 		infoDI.setNOCANT(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
-		infoDI.setDESCOM(nomCommuneGestion);
 
 		final Integer numeroCA = (collectiviteAdministrative == null ? null : collectiviteAdministrative.getNumeroCollectiviteAdministrative());
 		// [UNIREG-1741] le numéro d'OID doit être renseignée en cas de retour au CEDI *ou* au CEDI-22
@@ -576,6 +552,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 				infoDI.setNOOID(String.valueOf(ServiceInfrastructureService.noACI));
 			}
 		}
+
+		infoDI.setCODBARR(codbarr);
 	}
 
 	/**
@@ -644,11 +622,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			final String noavs = calculAVS(declaration, principal);
 
 			final noNamespace.DIRetourCivil.Contrib1 contrib1 = didp.addNewContrib1();
-			contrib1.setINDDATENAISS1(displayDateNaissance);
-			if (etatCivil != null) {
-				contrib1.setINDETATCIVIL1(etatCivil.format());
-			}
+			contrib1.setINDETATCIVIL1(etatCivil != null ? etatCivil.format() : null);
 			contrib1.setINDNOMPRENOM1(indnomprenom);
+			contrib1.setINDDATENAISS1(displayDateNaissance);
 			contrib1.setNAVS13(noavs);
 		}
 
@@ -659,11 +635,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			final String noavs = calculAVS(declaration, conjoint);
 
 			final noNamespace.DIRetourCivil.Contrib2 contrib2 = didp.addNewContrib2();
-			contrib2.setINDDATENAISS2(displayDateNaissance);
-			if (etatCivil != null) {
-				contrib2.setINDETATCIVIL2(etatCivil.format());
-			}
+			contrib2.setINDETATCIVIL2(etatCivil != null ? etatCivil.format() : null);
 			contrib2.setINDNOMPRENOM2(indnomprenom);
+			contrib2.setINDDATENAISS2(displayDateNaissance);
 			contrib2.setNAVS13(noavs);
 		}
 	}
@@ -696,9 +670,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 	private String calculDateNaissance(PersonnePhysique pp) {
-		RegDate dateNaissance = tiersService.getDateNaissance(pp);
-		String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
-		return displayDateNaissance;
+		final RegDate dateNaissance = tiersService.getDateNaissance(pp);
+		return dateNaissance != null ? RegDateHelper.dateToDisplayString(dateNaissance) : null;
 	}
 
 	private String calculAVS(DeclarationImpotOrdinaire declaration, PersonnePhysique pp) {

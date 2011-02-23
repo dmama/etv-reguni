@@ -224,12 +224,6 @@
 		<property name="bvrPlusClient" ref="bvrPlusClient" />
 	</bean>
 
-	<bean id="impressionBordereauEnvoiHelper" class="ch.vd.uniregctb.mouvement.ImpressionBordereauEnvoiHelperImpl">
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />	 
-	</bean>
-
 	<bean id="activationService" class="ch.vd.uniregctb.activation.ActivationServiceImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="tacheDAO" ref="tacheDAO" />

@@ -85,7 +85,6 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		
 		// Crée la représentation XML de l'événement
 		final XmlObject document = core2xml(evenement);
-		validateXml(document);
 
 		// Envoi l'événement sous forme de message JMS à travers l'ESB
 		try {
@@ -234,28 +233,6 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		evt.setNumeroTiersEnfant(String.valueOf(evenement.getEnfant().getNumero()));
 		evt.setNumeroTechnique(evenement.getId());
 		return document;
-	}
-
-	/**
-	 * Valide une instance d'un objet XML à partir de son schéma (embeddé dans l'objet)
-	 *
-	 * @param object l'objet à valider
-	 * @throws EvenementFiscalException levée si l'objet n'est pas valide
-	 */
-	private static void validateXml(XmlObject object) throws EvenementFiscalException {
-
-		XmlOptions validateOptions = new XmlOptions();
-		ArrayList<XmlError> errorList = new ArrayList<XmlError>();
-		validateOptions.setErrorListener(errorList);
-		if (!object.validate(validateOptions)) {
-			StringBuilder builder = new StringBuilder();
-			for (XmlError error : errorList) {
-				builder.append("\n");
-				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
-				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
-			}
-			throw new EvenementFiscalException(builder.toString());
-		}
 	}
 
 	public void setEnabled(boolean enabled) {
