@@ -10,23 +10,15 @@ typDatAAAAMMJJ
 			elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="typCdata">
 		<xs:restriction base="xs:string">
-			<xs:pattern value=""/>
+			<xs:minLength value="0"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typAnnee">
 		<xs:annotation>
-			<xs:documentation> Année 2008</xs:documentation>
+			<xs:documentation>Année 2008</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
 			<xs:pattern value="[1-9]{1}[0-9]{3}"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="typAnnee_Vide">
-		<xs:annotation>
-			<xs:documentation> Année 2008 ou vide pour plan recouvrement</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:token">
-			<xs:pattern value="[1-9]{1}[0-9]{3}|.{0}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typDat">
@@ -45,14 +37,6 @@ typDatAAAAMMJJ
 			<xs:pattern value="\d{8}"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="typDatAAAAMMJJ_Vide">
-		<xs:annotation>
-			<xs:documentation> Ex : 20081231 ou vide pour plan recouvrement</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:pattern value="\d{8}|.{0}"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="typDatAAAAMMJJ_XXX">
 		<xs:annotation>
 			<xs:documentation> Ex : 20081231 et BVR XXXXXXXXX</xs:documentation>
@@ -67,6 +51,14 @@ typDatAAAAMMJJ
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:pattern value="\d{1,2} (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) \d{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typNumeroCtb">
+		<xs:annotation>
+			<xs:documentation>Exemple 10.323.13, ou 321.70, ou 21</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(\d{1,3}\.\d{3}\.\d{2})|(\d{1,3}\.\d{2})|(\d{1,2})"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typMonetaire">
@@ -101,6 +93,22 @@ typDatAAAAMMJJ
 		</xs:annotation>
 		<xs:restriction base="xs:token">
 			<xs:pattern value="[\+|\-]?['|0-9]+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typNumeroOffice">
+		<xs:annotation>
+			<xs:documentation>Numéro d'un OID</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="0?[1-9][0-9]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typNumeroAvs13">
+		<xs:annotation>
+			<xs:documentation>Numéro AVS d'une personne physique</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="\d{3}\.\d{4}\.\d{4}\.\d{2}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typPourcent">

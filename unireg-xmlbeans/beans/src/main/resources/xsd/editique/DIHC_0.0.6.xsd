@@ -5,7 +5,7 @@
 <!--Version  0.0.4  - 15.11.10 : JVO - Adresse Retour-->
 <!--Version  0.0.5  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DIRetour_0.0.2.xsd"/>
+	<xs:include schemaLocation="DIRetour_0.0.3.xsd"/>
 	<xs:element name="DIHC">
 		<!-- Description du schema pour l'impression d'une DI hors-canton -->
 		<xs:complexType>

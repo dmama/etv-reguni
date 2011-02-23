@@ -6,7 +6,7 @@
 <!--Version 0.1.1  - 26.01.10 : JVO - New Logique XSD-->
 <!--Version 0.1.2  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour-->		
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DIRetourCivil_0.0.1.xsd"/>
+	<xs:include schemaLocation="DIRetourCivil_0.0.2.xsd"/>
 	<xs:element name="DIDP">
 		<!-- Description du schema pour l'impression d'une DI dépense -->
 		<xs:complexType>
