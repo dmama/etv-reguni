@@ -8,4 +8,4 @@
 - supprimer les délais sur les déclarations
 - fusionner les adresses et les adresses d'envoi (UNIREG-2546) + ne plus exposer l'historique mais seulement les valeurs courantes
 - éventuellement fusionner les structure Tiers et TiersHisto pour ne plus garder que TiersHisto.
-- rendre possible l'appel de searchTiers avec plusieurs types de contribuables (le besoin exprimé pour le moment est "PP+MC")
+- rendre possible l'appel de searchTiers avec plusieurs types de contribuables (le besoin exprimé pour le moment est "PP+MC") (UNIREG-3315)
