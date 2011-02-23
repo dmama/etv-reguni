@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -139,19 +140,24 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		individu.addHistoriqueIndividu(histo);
 
 		// Etats civils
-		final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
+		final List<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
 		etatsCivils.add(creeEtatCivil(dateNaissance, TypeEtatCivil.CELIBATAIRE, 0, null));
 		individu.setEtatsCivils(etatsCivils);
+
 		// Adresses
-		final ArrayList<Adresse> sdresses = new ArrayList<Adresse>();
+		final List<Adresse> sdresses = new ArrayList<Adresse>();
 		individu.setAdresses(sdresses);
 
 		// Enfants
-		final ArrayList<Individu> enfants = new ArrayList<Individu>();
+		final List<Individu> enfants = new ArrayList<Individu>();
 		individu.setEnfants(enfants);
 
+		// Adoptions et reconnaissances
+		final List<AdoptionReconnaissance> adoptions = new ArrayList<AdoptionReconnaissance>();
+		individu.setAdoptionsReconnaissances(adoptions);
+
 		// Permis
-		final ArrayList<Permis> permis = new ArrayList<Permis>();
+		final List<Permis> permis = new ArrayList<Permis>();
 		individu.setPermis(permis);
 
 		add(individu);

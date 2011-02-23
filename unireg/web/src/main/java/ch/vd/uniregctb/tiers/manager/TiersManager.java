@@ -291,23 +291,25 @@ public class TiersManager implements MessageSourceAware {
 
 		// enfants adoptés / reconnus
 		final Collection<AdoptionReconnaissance> adoptions = ind.getAdoptionsReconnaissances();
-		for (AdoptionReconnaissance ar : adoptions) {
-			final Individu enfant = ar.getAdopteReconnu();
-			final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
-			final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-			if (dateDebut != null) {
-				rapportView.setDateDebut(dateDebut);
-			}
-			if (ar.getDateDesaveu() != null) {
-				rapportView.setDateFin(ar.getDateDesaveu());
-			}
+		if (adoptions != null) {
+			for (AdoptionReconnaissance ar : adoptions) {
+				final Individu enfant = ar.getAdopteReconnu();
+				final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
+				final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+				if (dateDebut != null) {
+					rapportView.setDateDebut(dateDebut);
+				}
+				if (ar.getDateDesaveu() != null) {
+					rapportView.setDateFin(ar.getDateDesaveu());
+				}
 
-			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
-			final String nomEnfant = tiersService.getNomPrenom(enfant);
-			final String toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, fermeOuAnnule ? "était" : "est", nomInd);
-			rapportView.setToolTipMessage(toolTipMessage);
+				final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
+				final String nomEnfant = tiersService.getNomPrenom(enfant);
+				final String toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, fermeOuAnnule ? "était" : "est", nomInd);
+				rapportView.setToolTipMessage(toolTipMessage);
 
-			rapportsView.add(rapportView);
+				rapportsView.add(rapportView);
+			}
 		}
 
 		// parents
