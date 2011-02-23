@@ -18,15 +18,18 @@
 <unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" cssClass="${className}"
 	showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
-<c:set var="premierePersonneErrors"><form:errors path="premierePersonne"/></c:set>
-<c:set var="secondePersonneErrors"><form:errors path="secondePersonne"/></c:set>
+<c:if test="${path == 'premierePersonne'}">
+	<c:set var="errors"><form:errors path="premierePersonne"/></c:set>
+</c:if>
+<c:if test="${path == 'secondePersonne'}">
+	<c:set var="errors"><form:errors path="secondePersonne"/></c:set>
+</c:if>
 
-<c:if test="${not empty premierePersonneErrors || not empty secondePersonneErrors}">
+<c:if test="${not empty errors}">
 	<table cellspacing="0" cellpadding="5">
 		<tr class="<unireg:nextRowClass/>" >
 			<td colspan="3">
-				<c:if test="${path == 'premierePersonne'}">${premierePersonneErrors}</c:if>
-				<c:if test="${path == 'secondePersonne'}">${secondePersonneErrors}</c:if>
+				${errors}
 			</td>
 		</tr>
 	</table>
