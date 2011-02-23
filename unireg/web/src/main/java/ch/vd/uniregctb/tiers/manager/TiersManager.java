@@ -48,6 +48,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.individu.IndividuView;
+import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -244,6 +245,19 @@ public class TiersManager implements MessageSourceAware {
 		return rapportView;
 	}
 
+	private AdoptionReconnaissance getAdoptionPourEnfant(Collection<AdoptionReconnaissance> adoptions, long noIndEnfant) {
+		AdoptionReconnaissance a = null;
+		if (adoptions != null && adoptions.size() > 0) {
+			for (AdoptionReconnaissance candidat : adoptions) {
+				if (candidat.getAdopteReconnu().getNoTechnique() == noIndEnfant) {
+					a = candidat;
+					break;
+				}
+			}
+		}
+		return a;
+	}
+
 	/**
 	 * Recupère les rapports de filiation de type PARENT ou ENFANT
 	 *
@@ -257,15 +271,36 @@ public class TiersManager implements MessageSourceAware {
 
 		final int year = RegDate.get().year();
 
-		final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS};
+		final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
 		final Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
 
 		final String nomInd = tiersService.getNomPrenom(ind);
 
-		// enfants
+		// enfants biologiques
 		final Collection<Individu> listFiliations = ind.getEnfants();
 		for (Individu enfant : listFiliations) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
+
+			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
+			final String nomEnfant = tiersService.getNomPrenom(enfant);
+			final String toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, fermeOuAnnule ? "était" : "est", nomInd);
+			rapportView.setToolTipMessage(toolTipMessage);
+
+			rapportsView.add(rapportView);
+		}
+
+		// enfants adoptés / reconnus
+		final Collection<AdoptionReconnaissance> adoptions = ind.getAdoptionsReconnaissances();
+		for (AdoptionReconnaissance ar : adoptions) {
+			final Individu enfant = ar.getAdopteReconnu();
+			final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
+			final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+			if (dateDebut != null) {
+				rapportView.setDateDebut(dateDebut);
+			}
+			if (ar.getDateDesaveu() != null) {
+				rapportView.setDateFin(ar.getDateDesaveu());
+			}
 
 			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
 			final String nomEnfant = tiersService.getNomPrenom(enfant);
@@ -280,6 +315,18 @@ public class TiersManager implements MessageSourceAware {
 		if (mere != null) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, mere, SensRapportEntreTiers.SUJET);
 
+			final Individu mereAvecAdoptions = getServiceCivilService().getIndividu(mere.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
+			final AdoptionReconnaissance ar = getAdoptionPourEnfant(mereAvecAdoptions.getAdoptionsReconnaissances(), ind.getNoTechnique());
+			if (ar != null) {
+				final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+				if (dateDebut != null) {
+					rapportView.setDateDebut(dateDebut);
+				}
+				if (ar.getDateDesaveu() != null && (rapportView.getRegDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getRegDateFin()))) {
+					rapportView.setDateFin(ar.getDateDesaveu());
+				}
+			}
+
 			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
 			final String nomMere = tiersService.getNomPrenom(mere);
 			final String toolTipMessage = String.format("%s %s la mère de %s", nomMere, fermeOuAnnule ? "était" : "est", nomInd);
@@ -290,6 +337,18 @@ public class TiersManager implements MessageSourceAware {
 		final Individu pere = ind.getPere();
 		if (pere != null) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, pere, SensRapportEntreTiers.SUJET);
+
+			final Individu pereAvecAdoptions = getServiceCivilService().getIndividu(pere.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
+			final AdoptionReconnaissance ar = getAdoptionPourEnfant(pereAvecAdoptions.getAdoptionsReconnaissances(), ind.getNoTechnique());
+			if (ar != null) {
+				final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+				if (dateDebut != null) {
+					rapportView.setDateDebut(dateDebut);
+				}
+				if (ar.getDateDesaveu() != null && (rapportView.getRegDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getRegDateFin()))) {
+					rapportView.setDateFin(ar.getDateDesaveu());
+				}
+			}
 
 			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
 			final String nomPere = tiersService.getNomPrenom(pere);
