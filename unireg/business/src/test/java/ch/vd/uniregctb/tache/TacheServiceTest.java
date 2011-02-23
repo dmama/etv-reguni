@@ -9,6 +9,7 @@ import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -5040,5 +5041,91 @@ public class TacheServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * [UNIREG-3285] Vérifie les différents cas de figure pour obtenir l'office d'impôt d'un contribuable.
+	 */
+	@Rollback
+	@Test
+	public void testGetOfficeImpot() throws Exception {
+
+		final TacheServiceImpl service = new TacheServiceImpl();
+		service.setTiersService(tiersService);
+
+		// Contribuable sans aucun for fiscal
+		try {
+			final PersonnePhysique pp = new PersonnePhysique(false);
+			pp.setNumero(22333444L);
+			service.getOfficeImpot(pp);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Impossible de trouver un for fiscal convenable pour la détermination de l'OID du contribuable n°22333444", e.getMessage());
+		}
+
+		// Contribuable avec un for fiscal vaudois ordinaire
+		{
+			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
+			addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
+			assertNotNull(officeImpot);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
+		}
+
+		// Contribuable avec un for fiscal vaudois ordinaire annulé-> le for principal (même annulé) est pris en compte à défaut d'autres fors
+		{
+			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ffp.setAnnule(true);
+			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
+			assertNotNull(officeImpot);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
+		}
+
+		// Contribuable avec un for fiscal vaudois source -> le for principal (même source) est pris en compte à défaut d'autres fors
+		{
+			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ffp.setModeImposition(ModeImposition.SOURCE);
+			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
+			assertNotNull(officeImpot);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
+		}
+
+		// Contribuable avec un for fiscal vaudois ordinaire annulé -> le for principal source (même annulé) est pris en compte à défaut d'autres fors
+		{
+			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ffp.setModeImposition(ModeImposition.SOURCE);
+			ffp.setAnnule(true);
+			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
+			assertNotNull(officeImpot);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
+		}
+
+		// Contribuable avec un for fiscal vaudois source et un autre ordinaire mais annulé -> le principal ordinaire (même annulé) primer sur le for principal source
+		{
+			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp0 = addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ffp0.setAnnule(true);
+			final ForFiscalPrincipal ffp1 = addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Morges);
+			ffp1.setModeImposition(ModeImposition.SOURCE);
+			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
+			assertNotNull(officeImpot);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
+		}
+
+		// Contribuable avec un for fiscal vaudois principal source et un for secondaire annulé -> le for secondaire (même annulé) prime sur le for principal source
+		{
+			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948, 1, 1), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Morges);
+			ffp.setModeImposition(ModeImposition.SOURCE);
+			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(1990, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+			ffs.setAnnule(true);
+			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
+			assertNotNull(officeImpot);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
+		}
 	}
 }

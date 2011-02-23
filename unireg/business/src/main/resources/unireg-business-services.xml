@@ -56,14 +56,12 @@
 
 	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">
 		<property name="tacheDAO" ref="tacheDAO" />
-		<property name="diDAO" ref="diDAO" />
 		<property name="diService" ref="diService" />
 		<property name="parametres" ref="parametreAppService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="scheduler" ref="scheduler" />
 	</bean>
 	
 	<bean id="roleService" class="ch.vd.uniregctb.role.RoleServiceImpl">

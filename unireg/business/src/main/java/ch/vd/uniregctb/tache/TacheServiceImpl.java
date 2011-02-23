@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.quartz.Scheduler;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -30,7 +29,6 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -76,8 +74,6 @@ public class TacheServiceImpl implements TacheService {
 
 	private TacheDAO tacheDAO;
 
-	private DeclarationImpotOrdinaireDAO diDAO;
-
 	private DeclarationImpotService diService;
 
 	private ParametreAppService parametres;
@@ -87,8 +83,6 @@ public class TacheServiceImpl implements TacheService {
 	private ServiceInfrastructureService serviceInfra;
 
 	private TiersService tiersService;
-
-	private Scheduler scheduler;
 
 	private PlatformTransactionManager transactionManager;
 
@@ -100,11 +94,6 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
-		this.diDAO = diDAO;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiService(DeclarationImpotService diService) {
 		this.diService = diService;
 	}
@@ -112,11 +101,6 @@ public class TacheServiceImpl implements TacheService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametres(ParametreAppService parametres) {
 		this.parametres = parametres;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setScheduler(Scheduler scheduler) {
-		this.scheduler = scheduler;
 	}
 
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
@@ -140,7 +124,7 @@ public class TacheServiceImpl implements TacheService {
 
 		if (LOGGER.isDebugEnabled() && somethingChanged) { // on évite de logger si rien n'a changé depuis le dernier appel
 			final long ms = (end - start) / 1000000;
-			
+
 			StringBuilder s = new StringBuilder();
 			s.append("Statistiques des tâches en instances par OID (récupérées en ").append(ms).append(" ms)");
 
@@ -282,7 +266,7 @@ public class TacheServiceImpl implements TacheService {
 			Assert.isEqual(forSecondaire, forsAt.secondaires.get(0));
 			genereTacheControleDossier(contribuable);
 		}
-		
+
 		// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
 	}
 
@@ -356,7 +340,7 @@ public class TacheServiceImpl implements TacheService {
 			catch (AssujettissementException e) {
 				// on ignore joyeusement cette erreur, au pire il manquera une tâche de contrôle de dossier
 			}
-			
+
 		case MAJORITE:
 		case PERMIS_C_SUISSE:
 		case ARRIVEE_HS:
@@ -684,7 +668,6 @@ public class TacheServiceImpl implements TacheService {
 	 * @param periode       la période d'imposition avec laquelle la DI serait mise à jour
 	 * @param anneeCourante année de la période dite "courante"
 	 * @return <code>true</code> si la mise à jour est autorisée, <code>false</code> sinon.
-	 * @see #areTypeDocumentCompatibles(ch.vd.uniregctb.type.TypeDocument, ch.vd.uniregctb.type.TypeDocument)
 	 */
 	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
 		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
@@ -718,23 +701,58 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
-	 * Retourne l'office d'impôt courant du contribuable. Si le contribuable ne possède logiquement pas d'office d'impôt assigné (cas du sourcier pur), la collectivité de l'ACI est retournée. Ceci permet
-	 * de résoudre les d'incohérence des données (par exemple lorsqu'un sourcier pur possède des déclarations qui doivent être annulées).
+	 * Retourne l'office d'impôt courant du contribuable.
+	 * <p>
+	 * [UNIREG-3285] Si le contribuable ne possède logiquement pas d'office d'impôt assigné (cas du sourcier pur), on retourne l'OID du dernier for fiscal (principal ou secondaire) vaudois
+	 * non-source annulé. Si finalement on a toujours rien, on retourne l'OID du dernier for fiscal vaudois indépendemment de son mode d'imposition ou de son type (principal, secondaire, autre...).
 	 *
 	 * @param contribuable un contribuable
-	 * @return l'office d'impôt du contribuable, ou <b>l'ACI</b> si le contribuable n'en possède pas.
+	 * @return l'office d'impôt du contribuable.
 	 */
-	private CollectiviteAdministrative getOfficeImpot(Contribuable contribuable) {
+	protected CollectiviteAdministrative getOfficeImpot(Contribuable contribuable) {
 		CollectiviteAdministrative collectivite = tiersService.getOfficeImpotAt(contribuable, null);
 		if (collectivite == null) {
-			collectivite = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+
+			// [UNIREG-3285] On analyse les fors fiscaux du contribuable à la recherche d'un for qui puisse être utilisé pour déterminer un OID convenable
+			ForFiscal dernierForFiscalVaudois = null;
+			ForFiscal dernierForFiscalVaudoisNonSourceAnnule = null;
+
+			final List<ForFiscal> fors = contribuable.getForsFiscauxSorted();
+			if (fors != null) {
+				for (int i = fors.size() - 1; i >= 0; --i) {
+					final ForFiscal f = fors.get(i);
+					if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						if (dernierForFiscalVaudois == null) {
+							dernierForFiscalVaudois = f;
+						}
+						if (f.isAnnule()) {
+							if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipal) f).getModeImposition() != ModeImposition.SOURCE)) {
+								dernierForFiscalVaudoisNonSourceAnnule = f;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			final ForFiscal forConvenable = (dernierForFiscalVaudoisNonSourceAnnule != null ? dernierForFiscalVaudoisNonSourceAnnule : dernierForFiscalVaudois);
+			if (forConvenable == null) {
+				throw new IllegalArgumentException("Impossible de trouver un for fiscal convenable pour la détermination de l'OID du contribuable n°" + contribuable.getNumero());
+			}
+
+			final Integer oid = tiersService.getOfficeImpotId(forConvenable.getNumeroOfsAutoriteFiscale());
+			if (oid == null) {
+				throw new IllegalArgumentException("Impossible de déterminer l'OID pour la commune avec le numéro Ofs n°" + forConvenable.getNumeroOfsAutoriteFiscale());
+			}
+			collectivite = tiersService.getCollectiviteAdministrative(oid);
 		}
+
 		Assert.notNull(collectivite);
 		return collectivite;
 	}
 
 	private List<PeriodeImposition> getPeriodesImpositionHisto(Contribuable contribuable) throws AssujettissementException {
-		
+
 		final RegDate dateCourante = RegDate.get();
 		final int anneeCourante = dateCourante.year();
 		final int anneeDebut = getPremierePeriodeFiscale();

@@ -932,6 +932,14 @@ public interface TiersService {
 	public Integer getOfficeImpotId(ForGestion forGestion);
 
 	/**
+	 * Calcul l'office d'impôt responsable d'une commune
+	 *
+	 * @param noOfsCommune le numéro Ofs de la commune
+	 * @return un id de l'office d'impôt; ou <i>null</null> l'office d'impôt ne peut pas être calculé pour une autre raison.
+	 */
+	public Integer getOfficeImpotId(int noOfsCommune);
+
+	/**
 	 * Calcule et retourne l'office d'impôt responsable d'un tiers à une date donnée.
 	 *
 	 * @param tiers le tiers dont on veut connaître l'office d'impôt

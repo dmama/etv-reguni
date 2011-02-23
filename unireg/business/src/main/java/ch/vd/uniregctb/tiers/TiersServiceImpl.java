@@ -2894,7 +2894,7 @@ public class TiersServiceImpl implements TiersService {
 		// Calcul de l'oid à la date demandée
 		final ForGestion forGestion = getDernierForGestionConnu(tiers, date);
 		if (forGestion != null) {
-			oid = getOfficeImpot(forGestion.getNoOfsCommune());
+			oid = getOfficeImpotId(forGestion.getNoOfsCommune());
 		}
 
 		// [UNIREG-1850] il ne faut pas modifier l'office d'impôt ici, car les éventuelles tâches associées doivent aussi être mises à jour (par l'intercepteur)
@@ -2922,16 +2922,10 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	public Integer getOfficeImpotId(ForGestion forGestion) {
-		return getOfficeImpot(forGestion.getNoOfsCommune());
+		return getOfficeImpotId(forGestion.getNoOfsCommune());
 	}
 
-	/**
-	 * Calcul l'office d'impôt responsable d'une commune
-	 *
-	 * @param noOfsCommune le numéro Ofs de la commune
-	 * @return un id de l'office d'impôt; ou <i>null</null> l'office d'impôt ne peut pas être calculé pour une autre raison.
-	 */
-	private Integer getOfficeImpot(int noOfsCommune) {
+	public Integer getOfficeImpotId(int noOfsCommune) {
 		Integer oid = null;
 		try {
 			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative office = serviceInfra.getOfficeImpotDeCommune(noOfsCommune);
@@ -2954,7 +2948,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final int noOfs = forGestion.getNoOfsCommune();
-		final Integer oid = getOfficeImpot(noOfs);
+		final Integer oid = getOfficeImpotId(noOfs);
 		return oid;
 	}
 
