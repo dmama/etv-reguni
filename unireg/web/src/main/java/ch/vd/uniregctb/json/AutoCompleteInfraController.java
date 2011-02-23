@@ -3,8 +3,11 @@ package ch.vd.uniregctb.json;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -126,10 +129,20 @@ public class AutoCompleteInfraController extends JsonController {
 			else {
 				final List<Localite> localites = serviceInfrastructureService.getLocaliteByCommune(Integer.parseInt(commune));
 				final List<Rue> rues = serviceInfrastructureService.getRues(localites);
+				final Map<Integer, Localite> mapLocalites = buildLocaliteMap(localites);
 				if (rues != null) {
 					for (Rue rue : rues) {
 						if (StringComparator.toLowerCaseWithoutAccent(rue.getDesignationCourrier()).startsWith(term)) {
-							list.add(new Item(rue.getDesignationCourrier(), rue.getDesignationCourrier(), String.valueOf(rue.getNoRue()), String.valueOf(rue.getNoLocalite())));
+							final Localite localite = mapLocalites.get(rue.getNoLocalite());
+							final String description;
+							if (localite == null) {
+								description = rue.getDesignationCourrier();
+							}
+							else {
+								// [UNIREG-3293] on renseigne la localité entre parenthèses pour permettre de distinguer deux rues avec le même nom
+								description = rue.getDesignationCourrier() + " (" + localite.getNPA() + " " + localite.getNomAbregeMinuscule() + ")";
+							}
+							list.add(new Item(rue.getDesignationCourrier(), description, String.valueOf(rue.getNoRue()), String.valueOf(rue.getNoLocalite())));
 						}
 					}
 				}
@@ -141,8 +154,8 @@ public class AutoCompleteInfraController extends JsonController {
 			if (localites != null) {
 				for (Localite localite : localites) {
 					if (StringComparator.toLowerCaseWithoutAccent(localite.getNomAbregeMinuscule()).startsWith(term)) {
-						list.add(new Item(localite.getNomAbregeMinuscule(), localite.getNomAbregeMinuscule() + " (" + localite.getNPA() + ")", String.valueOf(localite.getNoOrdre()),
-								String.valueOf(localite.getNoCommune())));
+						final String description = localite.getNomAbregeMinuscule() + " (" + localite.getNPA() + ")";
+						list.add(new Item(localite.getNomAbregeMinuscule(), description, String.valueOf(localite.getNoOrdre()), String.valueOf(localite.getNoCommune())));
 					}
 				}
 			}
@@ -153,7 +166,8 @@ public class AutoCompleteInfraController extends JsonController {
 			if (communes != null) {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomMinuscule()).startsWith(term)) {
-						list.add(new Item(commune.getNomMinuscule(), commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")", String.valueOf(commune.getNoOFSEtendu())));
+						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")";
+						list.add(new Item(commune.getNomMinuscule(), description, String.valueOf(commune.getNoOFSEtendu())));
 					}
 				}
 			}
@@ -164,7 +178,8 @@ public class AutoCompleteInfraController extends JsonController {
 			if (communes != null) {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomMinuscule()).startsWith(term)) {
-						list.add(new Item(commune.getNomMinuscule(), commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")", String.valueOf(commune.getNoOFSEtendu())));
+						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")";
+						list.add(new Item(commune.getNomMinuscule(), description, String.valueOf(commune.getNoOFSEtendu())));
 					}
 				}
 			}
@@ -175,7 +190,8 @@ public class AutoCompleteInfraController extends JsonController {
 			if (communes != null) {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomMinuscule()).startsWith(term)) {
-						list.add(new Item(commune.getNomMinuscule(), commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")", String.valueOf(commune.getNoOFSEtendu())));
+						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")";
+						list.add(new Item(commune.getNomMinuscule(), description, String.valueOf(commune.getNoOFSEtendu())));
 					}
 				}
 			}
@@ -186,7 +202,8 @@ public class AutoCompleteInfraController extends JsonController {
 			if (pays != null) {
 				for (Pays p : pays) {
 					if (StringComparator.toLowerCaseWithoutAccent(p.getNomMinuscule()).startsWith(term)) {
-						list.add(new Item(p.getNomMinuscule(), p.getNomMinuscule() + " (" + p.getNoOFS() + ")", String.valueOf(p.getNoOFS())));
+						final String description = p.getNomMinuscule() + " (" + p.getNoOFS() + ")";
+						list.add(new Item(p.getNomMinuscule(), description, String.valueOf(p.getNoOFS())));
 					}
 				}
 			}
@@ -229,6 +246,17 @@ public class AutoCompleteInfraController extends JsonController {
 		}
 
 		return list.toJson();
+	}
+
+	private Map<Integer, Localite> buildLocaliteMap(List<Localite> localites) {
+		if (localites == null || localites.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		final HashMap<Integer, Localite> map = new HashMap<Integer, Localite>();
+		for (Localite l : localites) {
+			map.put(l.getNoOrdre(), l);
+		}
+		return map;
 	}
 
 	private static Set<Category> parseCategories(String category) {
