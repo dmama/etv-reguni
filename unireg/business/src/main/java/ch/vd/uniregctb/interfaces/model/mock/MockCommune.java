@@ -86,23 +86,16 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		public static final MockCommune LeSechey = new Fraction(8021, "Le Séchey", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeLieu.getNoOFSEtendu());
 		public static final MockCommune LesCharbonnieres = new Fraction(8022, "Les Charbonnières", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeLieu.getNoOFSEtendu());
 
-		private final int noOFSetendu;
 		private final int noTechniqueCommuneMere;
 
 		private Fraction(int noOFSetendu, String nomMinuscule, String sigleCanton, OfficeImpot oid, int noTechniqueCommuneMere) {
-			super(0, nomMinuscule, sigleCanton, oid);
-			this.noOFSetendu = noOFSetendu;
+			super(noOFSetendu, nomMinuscule, sigleCanton, oid);
 			this.noTechniqueCommuneMere = noTechniqueCommuneMere;
 		}
 
 		@Override
 		public boolean isFraction() {
 			return true;
-		}
-
-		@Override
-		public int getNoOFSEtendu() {
-			return noOFSetendu;
 		}
 
 		@Override

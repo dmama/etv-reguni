@@ -18,7 +18,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 
@@ -108,7 +107,7 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 
 		OfficeImpot office = c.getOfficeImpot();
 		if (office != null) { // les communes hors-canton ne possèdent pas d'oid
-			oidByNoOfsCommune.put(c.getNoOFS(), office);
+			oidByNoOfsCommune.put(c.getNoOFSEtendu(), office);
 			oidByNoColAdm.put(office.getNoColAdm(), office);
 		}
 	}
