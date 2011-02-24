@@ -351,7 +351,7 @@ public class ValidationJobThread extends Thread {
 						results.addErrorAutoriteForFiscal(contribuable, f, "le pays avec le numéro Ofs " + noOfs + " n'existe pas.");
 						continue;
 					}
-					if (pays.getSigleOFS().equals(ServiceInfrastructureService.SIGLE_SUISSE)) {
+					if (pays.getSigleOFS() != null && pays.getSigleOFS().equals(ServiceInfrastructureService.SIGLE_SUISSE)) {
 						final String message = "le pays spécifié est la Suisse, mais le type d'autorité fiscale est PAYS_HS.";
 						results.addErrorAutoriteForFiscal(contribuable, f, message);
 						continue;

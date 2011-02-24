@@ -107,7 +107,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 
 		final List<Pays> payss = getPays();
 		for (Pays p : payss) {
-			if (p.getSigleOFS().equals(codePays)) {
+			if (p.getSigleOFS() != null && p.getSigleOFS().equals(codePays)) {
 				pays = p;
 				break;
 			}
