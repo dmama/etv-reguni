@@ -503,7 +503,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		// compte bancaire
 		final CompteBancaireView compteBancaire = complement.getCompteBancaire();
 		if (compteBancaire != null) {
-			String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getNumeroCompteBancaire());
+			final String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getIban());
 			if (ibanSaisi != null) {
 				tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());
 			}
