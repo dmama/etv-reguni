@@ -87,7 +87,9 @@ $.fn.bgIframe = $.fn.bgiframe = function(s) {
 					       'top:'+(s.top=='auto'?'expression(((parseInt(this.parentNode.currentStyle.borderTopWidth)||0)*-1)+\'px\')':prop(s.top))+';'+
 					       'left:'+(s.left=='auto'?'expression(((parseInt(this.parentNode.currentStyle.borderLeftWidth)||0)*-1)+\'px\')':prop(s.left))+';'+
 					       'width:'+(s.width=='auto'?'expression(this.parentNode.offsetWidth+\'px\')':prop(s.width))+';'+
-					       'height:'+(s.height=='auto'?'expression(this.parentNode.scrollHeight+\'px\')':prop(s.height))+';'+ // [UNIREG-3232] remplacé offsetHeight par scrollHeight pour obtenir l'hauteur correcte dans le cas d'un autocompletion avec scrollbars verticales.
+					       // [UNIREG-3232] remplacé offsetHeight par scrollHeight pour obtenir l'hauteur correcte dans le cas d'un autocompletion avec scrollbars verticales.
+					       // [UNIREG-3336] finalement pris le max entre offsetHeight et scrollHeight
+					       'height:'+(s.height=='auto'?'expression(Math.max(this.parentNode.offsetHeight, this.parentNode.scrollHeight)+\'px\')':prop(s.height))+';'+
 					'"/>';
 		return this.each(function() {
 			if ( $('> iframe.bgiframe', this).length == 0 )
