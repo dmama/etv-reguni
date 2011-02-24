@@ -9,6 +9,8 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private static final long serialVersionUID = -6750309642346732586L;
 
+	private final boolean valide;
+
 	public static PaysImpl get(ch.vd.infrastructure.model.Pays target) {
 		if (target == null) {
 			return null;
@@ -25,13 +27,19 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private PaysImpl(ch.vd.infrastructure.model.Pays target) {
 		super(target);
+		this.valide = true; // tous les pays retournés par host-interfaces sont valides
 	}
 
 	private PaysImpl(ch.vd.fidor.ws.v2.Pays target) {
 		super(target.getOfsId(), target.getNomCourtFr().toUpperCase(), target.getNomCourtFr(), target.getIso2Id());
+		this.valide = target.isValide();
 	}
 
 	public boolean isSuisse() {
 		return getNoOFS() == ServiceInfrastructureService.noOfsSuisse;
+	}
+
+	public boolean isValide() {
+		return valide;
 	}
 }

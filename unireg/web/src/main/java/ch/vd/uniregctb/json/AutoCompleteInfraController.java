@@ -201,9 +201,11 @@ public class AutoCompleteInfraController extends JsonController {
 			final List<Pays> pays = serviceInfrastructureService.getPays();
 			if (pays != null) {
 				for (Pays p : pays) {
-					if (StringComparator.toLowerCaseWithoutAccent(p.getNomMinuscule()).startsWith(term)) {
-						final String description = p.getNomMinuscule() + " (" + p.getNoOFS() + ")";
-						list.add(new Item(p.getNomMinuscule(), description, String.valueOf(p.getNoOFS())));
+					if (p.isValide()) { // [UNIREG-3338] on ne permet de sélectionner que les pays valides
+						if (StringComparator.toLowerCaseWithoutAccent(p.getNomMinuscule()).startsWith(term)) {
+							final String description = p.getNomMinuscule() + " (" + p.getNoOFS() + ")";
+							list.add(new Item(p.getNomMinuscule(), description, String.valueOf(p.getNoOFS())));
+						}
 					}
 				}
 			}

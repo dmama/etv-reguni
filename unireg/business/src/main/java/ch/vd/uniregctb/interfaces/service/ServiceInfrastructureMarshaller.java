@@ -32,10 +32,12 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 	private ServiceInfrastructureService hostService = null;
 	private ServiceInfrastructureService fidorService = null;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHostService(ServiceInfrastructureService hostService) {
 		this.hostService = hostService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setFidorService(ServiceInfrastructureService fidorService) {
 		this.fidorService = fidorService;
 	}
@@ -101,15 +103,15 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 	}
 
 	public List<Pays> getPays() throws InfrastructureException {
-		return hostService.getPays();
+		return fidorService.getPays();
 	}
 
 	public Pays getPays(int numeroOFS) throws InfrastructureException {
-		return hostService.getPays(numeroOFS);
+		return fidorService.getPays(numeroOFS);
 	}
 
 	public Pays getPays(String codePays) throws InfrastructureException {
-		return hostService.getPays(codePays);
+		return fidorService.getPays(codePays);
 	}
 
 	public Rue getRueByNumero(int numero) throws InfrastructureException {

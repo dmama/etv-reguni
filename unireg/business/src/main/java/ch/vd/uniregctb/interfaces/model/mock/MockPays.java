@@ -23,32 +23,34 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays EtatsUnis = new MockPays(8439, "Etats-Unis", "US");
 	public static final MockPays CoreeSud = new MockPays(8539, "Corée (Sud)", "KR");
 	public static final MockPays PaysInconnu = new MockPays(8999, "PaysInconnu", "INC");
+	public static final MockPays RDA = new MockPays(8208, "République démocratique allemande", "", false);
 
-	private String nomMinusculeOFS;
-
-	public MockPays() {
-		DefaultMockServiceInfrastructureService.addPays(this);
-	}
+	private final boolean valide;
 
 	public MockPays(int numeroOFS, String nomMiniscule) {
 		super(numeroOFS, null, nomMiniscule);
+		this.valide = true;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
 	public MockPays(int numeroOFS, String nomMiniscule, String sigleOFS) {
 		super(numeroOFS, sigleOFS, nomMiniscule);
+		this.valide = true;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
-	public String getNomMinusculeOFS() {
-		return nomMinusculeOFS;
-	}
-
-	public void setNomMinusculeOFS(String nomMinusculeOFS) {
-		this.nomMinusculeOFS = nomMinusculeOFS;
+	public MockPays(int numeroOFS, String nomMiniscule, String sigleOFS, boolean valide) {
+		super(numeroOFS, sigleOFS, nomMiniscule);
+		this.valide = valide;
+		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
 	public boolean isSuisse() {
 		return getNoOFS() == ServiceInfrastructureService.noOfsSuisse;
+	}
+
+	@Override
+	public boolean isValide() {
+		return valide;
 	}
 }

@@ -37,6 +37,7 @@
 
 	<bean id="forFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalViewValidator" >
 		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
 	<bean id="tiersForController" class="ch.vd.uniregctb.tiers.TiersForController" parent="abstractTiersController">

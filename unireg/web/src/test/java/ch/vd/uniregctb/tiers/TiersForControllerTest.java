@@ -1,16 +1,31 @@
 package ch.vd.uniregctb.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.*;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+@SuppressWarnings({"JavaDoc"})
 public class TiersForControllerTest  extends WebTest {
 
 	/**
@@ -32,9 +47,6 @@ public class TiersForControllerTest  extends WebTest {
 
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testShowForm() throws Exception {
 
@@ -56,16 +68,12 @@ public class TiersForControllerTest  extends WebTest {
 		assertNotNull(model);
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitForPrincipalMotifOuverture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(12600002));
+		Tiers tiers = tiersDAO.get((long) 12600002);
 		
 		//création d'un for principal sans motif d'ouverture
 		request.addParameter("numero", "12600002");
@@ -84,16 +92,12 @@ public class TiersForControllerTest  extends WebTest {
 		assertEquals(3, tiers.getForsFiscaux().size());
 	}
 	
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitForPrincipalMotifFermeture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(12600002));
+		Tiers tiers = tiersDAO.get((long) 12600002);
 		//création d'un for principal sans motif de fermeture
 		request.addParameter("numero", "12600002");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
@@ -111,16 +115,12 @@ public class TiersForControllerTest  extends WebTest {
 		assertEquals(3, tiers.getForsFiscaux().size());
 	}
 	
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitForPrincipalDateDebut() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(12600002));
+		Tiers tiers = tiersDAO.get((long) 12600002);
 		//création d'un for principal sans date début
 		request.addParameter("numero", "12600002");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
@@ -138,16 +138,12 @@ public class TiersForControllerTest  extends WebTest {
 		assertEquals(3, tiers.getForsFiscaux().size());
 	}
 	
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitForPrincipalDateDebutFuture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(12600002));
+		Tiers tiers = tiersDAO.get((long) 12600002);
 		//création d'un for principal avec date de début future
 		request.addParameter("numero", "12600002");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
@@ -167,16 +163,12 @@ public class TiersForControllerTest  extends WebTest {
 
 	}
 	
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitForPrincipalDateFinFuture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(12600002));
+		Tiers tiers = tiersDAO.get((long) 12600002);
 		//création d'un for principal avec date de fin future
 		request.addParameter("numero", "12600002");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
@@ -195,16 +187,12 @@ public class TiersForControllerTest  extends WebTest {
 		assertEquals(3, tiers.getForsFiscaux().size());
 	}
 	
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitForPrincipalDateError() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(12600002));
+		Tiers tiers = tiersDAO.get((long) 12600002);
 		//création d'un for principal avec date de fin avant date de début
 		request.addParameter("numero", "12600002");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
@@ -223,16 +211,12 @@ public class TiersForControllerTest  extends WebTest {
 		assertEquals(3, tiers.getForsFiscaux().size());
 	}
 	
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testOnSubmitForPrincipal() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(12600002));
+		Tiers tiers = tiersDAO.get((long) 12600002);
 		//création d'un for principal
 		request.addParameter("numero", "12600002");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
@@ -250,10 +234,104 @@ public class TiersForControllerTest  extends WebTest {
 		assertNotNull(model);
 		assertEquals(4, tiers.getForsFiscaux().size());
 	}
-	
-		/*
-		 * TODO (FDE) enrichir test ?
-		 */
+
+	/**
+	 * [UNIREG-3338] en cas de création d'un nouveau for fiscal, le pays doit être valide
+	 */
+	@Test
+	public void testAddForPrincipalSurPaysInvalide() throws Exception {
+
+		final Long id = (Long) doInNewTransactionAndSession(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
+
+		// création d'un for principal sur un pays invalide
+		request.addParameter("numero", id.toString());
+		request.addParameter("genreImpot", GenreImpot.REVENU_FORTUNE.name());
+		request.addParameter("motifRattachement", MotifRattachement.DOMICILE.name());
+		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.PAYS_HS.name());
+		request.addParameter("numeroForFiscalPays", String.valueOf(MockPays.RDA.getNoOFS()));
+		request.addParameter("dateOuverture", "01.01.2007");
+		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
+		request.addParameter("motifOuverture", MotifFor.DEPART_HS.name());
+		request.setMethod("POST");
+
+		final ModelAndView mav = controller.handleRequest(request, response);
+		final Map<?, ?> model = mav.getModel();
+		assertNotNull(model);
+
+		// On vérifie que l'ouverture du for sur le pays invalide a bien été interdit
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(1, bindingResult.getErrorCount());
+
+		final List<?> errors = bindingResult.getAllErrors();
+		final FieldError error = (FieldError) errors.get(0);
+		assertNotNull(error);
+		assertEquals("libPays", error.getField());
+		assertEquals("error.pays.non.valide", error.getCode());
+	}
+
+	/**
+	 * [UNIREG-3338] en cas de modification d'un for fiscal existant, le pays peut être invalide
+	 */
+	@Test
+	public void testFermetureForPrincipalSurPaysInvalide() throws Exception {
+
+		class Ids {
+			Long pp;
+			Long ffp;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1960, 1, 1), MotifFor.ARRIVEE_HS, MockPays.RDA);
+				ids.pp = pp.getId();
+				ids.ffp = ffp.getId();
+				return null;
+			}
+		});
+
+		// mise-à-jour des dates sur un for principal pré-existant avec un pays invalide
+		request.addParameter("id", ids.ffp.toString());
+		request.addParameter("numero", ids.pp.toString());
+		request.addParameter("genreImpot", GenreImpot.REVENU_FORTUNE.name());
+		request.addParameter("motifRattachement", MotifRattachement.DOMICILE.name());
+		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.PAYS_HS.name());
+		request.addParameter("numeroForFiscalPays", String.valueOf(MockPays.RDA.getNoOFS()));
+		request.addParameter("dateOuverture", "01.01.1960");
+		request.addParameter("dateFermeture", "01.01.1970");
+		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
+		request.addParameter("motifOuverture", MotifFor.DEPART_HS.name());
+		request.addParameter("motifFermeture", MotifFor.ARRIVEE_HS.name());
+		request.setMethod("POST");
+
+		final ModelAndView mav = controller.handleRequest(request, response);
+		final Map<?, ?> model = mav.getModel();
+		assertNotNull(model);
+
+		// On vérifie que la modification du for sur le pays invalide a autorisée
+		assertNull(getBindingResult(mav));
+
+		// Vérifie que le for fiscal a bien été mis-à-jour
+		final Tiers tiers = tiersDAO.get(ids.pp);
+		assertNotNull(tiers);
+
+		final List<ForFiscal> forsFiscaux = new ArrayList<ForFiscal>(tiers.getForsFiscaux());
+		assertEquals(1, forsFiscaux.size());
+
+		final ForFiscalPrincipal for0 = (ForFiscalPrincipal) forsFiscaux.get(0);
+		assertEquals(TypeAutoriteFiscale.PAYS_HS, for0.getTypeAutoriteFiscale());
+		assertEquals(MockPays.RDA.getNoOFS(), for0.getNumeroOfsAutoriteFiscale().intValue());
+		assertEquals(date(1970, 1, 1), for0.getDateFin());
+	}
 
 	public ForFiscalManager getForFiscalManager() {
 		return forFiscalManager;

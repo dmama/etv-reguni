@@ -9,7 +9,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -37,6 +40,7 @@ public class ForFiscalViewValidator implements Validator {
 	//private static final Logger LOGGER = Logger.getLogger(ForFiscalValidator.class);
 
 	private TiersService tiersService;
+	private ServiceInfrastructureService infraService;
 
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
@@ -189,8 +193,24 @@ public class ForFiscalViewValidator implements Validator {
 				if (forFiscalView.getNumeroForFiscalPays() == null) {
 					if (forFiscalView.getLibPays() == null) {
 						errors.rejectValue("libPays", "error.pays.vide");
-					} else {
+					}
+					else {
 						errors.rejectValue("libPays", "error.pays.non.valide");
+					}
+				}
+				else if (forFiscalView.getId() == null) { // [UNIREG-3338] en cas de création d'un nouveau for fiscal, le pays doit être valide
+					final Integer noOfsPays = forFiscalView.getNumeroAutoriteFiscale();
+					try {
+						final Pays pays = infraService.getPays(noOfsPays);
+						if (pays == null) {
+							errors.rejectValue("libPays", "error.pays.inconnu");
+						}
+						else if (!pays.isValide()) {
+							errors.rejectValue("libPays", "error.pays.non.valide");
+						}
+					}
+					catch (InfrastructureException e) {
+						throw new RuntimeException(e);
 					}
 				}
 			}
@@ -321,7 +341,7 @@ public class ForFiscalViewValidator implements Validator {
 				// nationalité suisse ou étrangère ?
 				Boolean isSuisse;
 				try {
-					isSuisse = Boolean.valueOf(tiersService.isSuisse(pp, date));
+					isSuisse = tiersService.isSuisse(pp, date);
 				}
 				catch (TiersException e) {
 					// je ne sais pas s'il est suisse ou pas...
@@ -329,7 +349,7 @@ public class ForFiscalViewValidator implements Validator {
 				}
 
 				// Suisse ?
-				if (isSuisse != null && isSuisse.booleanValue()) {
+				if (isSuisse != null && isSuisse) {
 					autorises.add(ModeImposition.INDIGENT);
 					autorises.add(ModeImposition.ORDINAIRE);
 				}
@@ -338,7 +358,7 @@ public class ForFiscalViewValidator implements Validator {
 					// permis de séjour C ou autre ?
 					Boolean isSansPermisC;
 					try {
-						isSansPermisC = Boolean.valueOf(tiersService.isEtrangerSansPermisC(pp, date));
+						isSansPermisC = tiersService.isEtrangerSansPermisC(pp, date);
 					}
 					catch (TiersException e) {
 						// on ne sait pas...
@@ -346,7 +366,7 @@ public class ForFiscalViewValidator implements Validator {
 					}
 
 					// permis C ?
-					if (isSansPermisC != null && !isSansPermisC.booleanValue()) {
+					if (isSansPermisC != null && !isSansPermisC) {
 						autorises.add(ModeImposition.INDIGENT);
 						autorises.add(ModeImposition.ORDINAIRE);
 						autorises.add(ModeImposition.DEPENSE);
@@ -365,10 +385,12 @@ public class ForFiscalViewValidator implements Validator {
 		}
 	}
 
-	/**
-	 * @param tiersService the tiersService to set
-	 */
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 }
