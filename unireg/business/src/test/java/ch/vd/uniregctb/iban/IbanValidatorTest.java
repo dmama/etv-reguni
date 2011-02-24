@@ -2,7 +2,6 @@ package ch.vd.uniregctb.iban;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,6 +25,7 @@ public class IbanValidatorTest extends BusinessTest {
 		ibanValidator.validate("CH690023000123456789A");
 		ibanValidator.validate("DE43123456780000087512");
 		ibanValidator.validate("FR4812345678901234567890123");
+		ibanValidator.validate("IT031D23FE45124123456789012");
 
 		// problème de longueur
 		try {

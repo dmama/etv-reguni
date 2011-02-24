@@ -26,6 +26,8 @@ public class IbanValidator {
 
 	private static final Logger LOGGER = Logger.getLogger(IbanValidator.class);
 
+	private static final BigInteger MODULO = BigInteger.valueOf(97L);
+
 	/**
 	 * Liste des longueurs IBAN par pays.
 	 */
@@ -151,9 +153,11 @@ public class IbanValidator {
 		}
 
 		// cas spécial de la Suisse : les positions 3 à 9 doivent être numériques
-		for (int i=2; i<9; i++) {
-			if (!Character.isDigit(ibanMajuscules.charAt(i))) {
-				throw new IbanBadFormatException("pour la Suisse, les caractères de la 3ème à la 9ème position doivent être numériques");
+		if (isSuisse(iban)) {
+			for (int i=2; i<9; i++) {
+				if (!Character.isDigit(ibanMajuscules.charAt(i))) {
+					throw new IbanBadFormatException("pour la Suisse, les caractères de la 3ème à la 9ème position doivent être numériques");
+				}
 			}
 		}
 	}
@@ -169,7 +173,7 @@ public class IbanValidator {
 	 */
 	private static void validatePlausability(String iban) throws IbanNonPlausibleException {
 		// on déplace les 4 premiers caractères à la fin de la chaine
-        final String ibanPermute = iban.substring(4) + iban.substring(0, 4);
+        final String ibanPermute = String.format("%s%s", iban.substring(4), iban.substring(0, 4));
 
         // on convertit le code IBAN en valeur numérique
         final StringBuilder ibanNumeriqueStr = new StringBuilder();
@@ -185,7 +189,7 @@ public class IbanValidator {
 
         // on teste si le modulo 97 est égal à 1
         final BigInteger ibanNumerique = new BigInteger(ibanNumeriqueStr.toString());
-        if ( ibanNumerique.mod(new BigInteger("97")).intValue() != 1) {
+        if (ibanNumerique.mod(MODULO).intValue() != 1) {
 			throw new IbanNonPlausibleException();
         }
 	}
