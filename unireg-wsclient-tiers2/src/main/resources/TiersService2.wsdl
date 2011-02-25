@@ -1,25 +1,17 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.12 -->
+<!-- version 2.12b -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
 		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2"
 				   xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-			<xs:complexType name="SearchTiers">
+			<xs:complexType name="GetTiersPeriode">
 				<xs:sequence>
 					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element minOccurs="0" name="numero" type="xs:string" />
-					<xs:element minOccurs="0" name="nomCourrier" type="xs:string" />
-					<xs:element minOccurs="0" name="localiteOuPays" type="xs:string" />
-					<xs:element minOccurs="0" name="dateNaissance" type="tns:Date" />
-					<xs:element minOccurs="0" name="numeroAVS" type="xs:string" />
-					<xs:element minOccurs="0" name="noOfsFor" type="xs:int" />
-					<xs:element minOccurs="0" name="forPrincipalActif" type="xs:boolean" />
-					<xs:element minOccurs="0" name="typeRecherche" type="tns:TypeRecherche" />
-					<xs:element minOccurs="0" name="typeTiers" type="tns:TypeTiers" />
-					<xs:element minOccurs="0" name="categorieDebiteur" type="tns:CategorieDebiteur" />
-					<xs:element minOccurs="0" name="tiersActif" type="xs:boolean" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element name="periode" type="xs:int" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="UserLogin">
@@ -28,50 +20,7 @@
 					<xs:element name="oid" type="xs:int" />
 				</xs:sequence>
 			</xs:complexType>
-			<xs:complexType name="Date">
-				<xs:sequence>
-					<xs:element name="year" type="xs:int" />
-					<xs:element name="month" type="xs:int" />
-					<xs:element name="day" type="xs:int" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="TiersInfo">
-				<xs:sequence>
-					<xs:element name="numero" type="xs:long" />
-					<xs:element minOccurs="0" name="nom1" type="xs:string" />
-					<xs:element minOccurs="0" name="nom2" type="xs:string" />
-					<xs:element minOccurs="0" name="dateNaissance" type="xs:string" />
-					<xs:element minOccurs="0" name="rue" type="xs:string" />
-					<xs:element minOccurs="0" name="npa" type="xs:string" />
-					<xs:element minOccurs="0" name="localite" type="xs:string" />
-					<xs:element minOccurs="0" name="pays" type="xs:string" />
-					<xs:element minOccurs="0" name="type" type="tns:TypeTiers" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="GetDebiteurInfo">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element name="numeroDebiteur" type="xs:long" />
-					<xs:element name="periodeFiscale" type="xs:int" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="DebiteurInfo">
-				<xs:sequence>
-					<xs:element name="numeroDebiteur" type="xs:long" />
-					<xs:element name="periodeFiscale" type="xs:int" />
-					<xs:element name="nbLRsTheorique" type="xs:int" />
-					<xs:element name="nbLRsEmises" type="xs:int" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="GetTiers">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element name="tiersNumber" type="xs:long" />
-					<xs:element name="date" type="tns:Date" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType abstract="true" name="Tiers">
+			<xs:complexType abstract="true" name="TiersHisto">
 				<xs:sequence>
 					<xs:element name="numero" type="xs:long" />
 					<xs:element minOccurs="0" name="complementNom" type="xs:string" />
@@ -86,22 +35,29 @@
 					<xs:element minOccurs="0" name="adresseCourrierElectronique" type="xs:string" />
 					<xs:element name="blocageRemboursementAutomatique" type="xs:boolean" />
 					<xs:element name="isDebiteurInactif" type="xs:boolean" />
-					<xs:element minOccurs="0" name="adresseCourrier" type="tns:Adresse" />
-					<xs:element minOccurs="0" name="adressePoursuite" type="tns:Adresse" />
-					<xs:element minOccurs="0" name="adresseRepresentation" type="tns:Adresse" />
-					<xs:element minOccurs="0" name="adresseDomicile" type="tns:Adresse" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesCourrier" type="tns:Adresse" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuite" type="tns:Adresse" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesRepresentation" type="tns:Adresse" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesDomicile" type="tns:Adresse" />
 					<xs:element minOccurs="0" name="adresseEnvoi" type="tns:AdresseEnvoi" />
 					<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="tns:AdresseEnvoi" />
 					<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="tns:AdresseEnvoi" />
 					<xs:element minOccurs="0" name="adresseDomicileFormattee" type="tns:AdresseEnvoi" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="rapportsEntreTiers" type="tns:RapportEntreTiers" />
-					<xs:element minOccurs="0" name="forFiscalPrincipal" type="tns:ForFiscal" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsFiscauxPrincipaux" type="tns:ForFiscal" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="autresForsFiscaux" type="tns:ForFiscal" />
-					<xs:element minOccurs="0" name="forGestion" type="tns:ForGestion" />
-					<xs:element minOccurs="0" name="declaration" type="tns:Declaration" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsGestions" type="tns:ForGestion" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="declarations" type="tns:Declaration" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="comptesBancaires" type="tns:CompteBancaire" />
-					<xs:element minOccurs="0" name="adressePoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
 					<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="tns:AdresseEnvoiAutreTiers" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Date">
+				<xs:sequence>
+					<xs:element name="year" type="xs:int" />
+					<xs:element name="month" type="xs:int" />
+					<xs:element name="day" type="xs:int" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="Adresse">
@@ -233,6 +189,48 @@
 					</xs:extension>
 				</xs:complexContent>
 			</xs:complexType>
+			<xs:complexType name="GetTiersHisto">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetTiersType">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="SearchTiers">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element minOccurs="0" name="numero" type="xs:string" />
+					<xs:element minOccurs="0" name="nomCourrier" type="xs:string" />
+					<xs:element minOccurs="0" name="localiteOuPays" type="xs:string" />
+					<xs:element minOccurs="0" name="dateNaissance" type="tns:Date" />
+					<xs:element minOccurs="0" name="numeroAVS" type="xs:string" />
+					<xs:element minOccurs="0" name="noOfsFor" type="xs:int" />
+					<xs:element minOccurs="0" name="forPrincipalActif" type="xs:boolean" />
+					<xs:element minOccurs="0" name="typeRecherche" type="tns:TypeRecherche" />
+					<xs:element minOccurs="0" name="typeTiers" type="tns:TypeTiers" />
+					<xs:element minOccurs="0" name="categorieDebiteur" type="tns:CategorieDebiteur" />
+					<xs:element minOccurs="0" name="tiersActif" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TiersInfo">
+				<xs:sequence>
+					<xs:element name="numero" type="xs:long" />
+					<xs:element minOccurs="0" name="nom1" type="xs:string" />
+					<xs:element minOccurs="0" name="nom2" type="xs:string" />
+					<xs:element minOccurs="0" name="dateNaissance" type="xs:string" />
+					<xs:element minOccurs="0" name="rue" type="xs:string" />
+					<xs:element minOccurs="0" name="npa" type="xs:string" />
+					<xs:element minOccurs="0" name="localite" type="xs:string" />
+					<xs:element minOccurs="0" name="pays" type="xs:string" />
+					<xs:element minOccurs="0" name="type" type="tns:TypeTiers" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:complexType name="GetBatchTiers">
 				<xs:sequence>
 					<xs:element name="login" type="tns:UserLogin" />
@@ -254,42 +252,7 @@
 					<xs:element minOccurs="0" name="exceptionType" type="tns:WebServiceExceptionType" />
 				</xs:sequence>
 			</xs:complexType>
-			<xs:complexType name="QuittancerDeclarations">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element maxOccurs="unbounded" name="demandes" type="tns:DemandeQuittancementDeclaration" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="DemandeQuittancementDeclaration">
-				<xs:sequence>
-					<xs:element name="key" type="tns:DeclarationImpotOrdinaireKey" />
-					<xs:element name="dateRetour" type="tns:Date" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="DeclarationImpotOrdinaireKey">
-				<xs:sequence>
-					<xs:element name="ctbId" type="xs:long" />
-					<xs:element name="periodeFiscale" type="xs:int" />
-					<xs:element name="numeroSequenceDI" type="xs:int" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="ReponseQuittancementDeclaration">
-				<xs:sequence>
-					<xs:element name="key" type="tns:DeclarationImpotOrdinaireKey" />
-					<xs:element name="code" type="tns:CodeQuittancement" />
-					<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
-					<xs:element minOccurs="0" name="exceptionType" type="tns:WebServiceExceptionType" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="GetTiersPeriode">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element name="tiersNumber" type="xs:long" />
-					<xs:element name="periode" type="xs:int" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType abstract="true" name="TiersHisto">
+			<xs:complexType abstract="true" name="Tiers">
 				<xs:sequence>
 					<xs:element name="numero" type="xs:long" />
 					<xs:element minOccurs="0" name="complementNom" type="xs:string" />
@@ -304,42 +267,22 @@
 					<xs:element minOccurs="0" name="adresseCourrierElectronique" type="xs:string" />
 					<xs:element name="blocageRemboursementAutomatique" type="xs:boolean" />
 					<xs:element name="isDebiteurInactif" type="xs:boolean" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesCourrier" type="tns:Adresse" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuite" type="tns:Adresse" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesRepresentation" type="tns:Adresse" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesDomicile" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adresseCourrier" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adressePoursuite" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adresseRepresentation" type="tns:Adresse" />
+					<xs:element minOccurs="0" name="adresseDomicile" type="tns:Adresse" />
 					<xs:element minOccurs="0" name="adresseEnvoi" type="tns:AdresseEnvoi" />
 					<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="tns:AdresseEnvoi" />
 					<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="tns:AdresseEnvoi" />
 					<xs:element minOccurs="0" name="adresseDomicileFormattee" type="tns:AdresseEnvoi" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="rapportsEntreTiers" type="tns:RapportEntreTiers" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsFiscauxPrincipaux" type="tns:ForFiscal" />
+					<xs:element minOccurs="0" name="forFiscalPrincipal" type="tns:ForFiscal" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="autresForsFiscaux" type="tns:ForFiscal" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsGestions" type="tns:ForGestion" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="declarations" type="tns:Declaration" />
+					<xs:element minOccurs="0" name="forGestion" type="tns:ForGestion" />
+					<xs:element minOccurs="0" name="declaration" type="tns:Declaration" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="comptesBancaires" type="tns:CompteBancaire" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
+					<xs:element minOccurs="0" name="adressePoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
 					<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="tns:AdresseEnvoiAutreTiers" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="SetTiersBlocRembAuto">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element name="tiersNumber" type="xs:long" />
-					<xs:element name="blocage" type="xs:boolean" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="GetTiersType">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element name="tiersNumber" type="xs:long" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="GetTiersHisto">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element name="tiersNumber" type="xs:long" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="AllConcreteTiersClasses">
@@ -613,22 +556,6 @@
 					</xs:extension>
 				</xs:complexContent>
 			</xs:complexType>
-			<xs:complexType name="searchEvenementsPM">
-				<xs:sequence>
-					<xs:element name="login" type="tns:UserLogin" />
-					<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
-					<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
-					<xs:element minOccurs="0" name="dateMinimale" type="tns:Date" />
-					<xs:element minOccurs="0" name="dateMaximale" type="tns:Date" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="evenementPM">
-				<xs:sequence>
-					<xs:element name="dateEvenement" type="tns:Date" />
-					<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
-					<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
-				</xs:sequence>
-			</xs:complexType>
 			<xs:complexType name="GetBatchTiersHisto">
 				<xs:sequence>
 					<xs:element name="login" type="tns:UserLogin" />
@@ -649,31 +576,79 @@
 					<xs:element minOccurs="0" name="exceptionType" type="tns:WebServiceExceptionType" />
 				</xs:sequence>
 			</xs:complexType>
-			<xs:simpleType name="TypeRecherche">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="CONTIENT" />
-					<xs:enumeration value="PHONETIQUE" />
-					<xs:enumeration value="EST_EXACTEMENT" />
-				</xs:restriction>
-			</xs:simpleType>
-			<xs:simpleType name="TypeTiers">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="PERSONNE_PHYSIQUE" />
-					<xs:enumeration value="MENAGE_COMMUN" />
-					<xs:enumeration value="DEBITEUR" />
-					<xs:enumeration value="PERSONNE_MORALE" />
-				</xs:restriction>
-			</xs:simpleType>
-			<xs:simpleType name="CategorieDebiteur">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="ADMINISTRATEURS" />
-					<xs:enumeration value="CONFERENCIERS_ARTISTES_SPORTIFS" />
-					<xs:enumeration value="CREANCIERS_HYPOTHECAIRES" />
-					<xs:enumeration value="PRESTATIONS_PREVOYANCE" />
-					<xs:enumeration value="REGULIERS" />
-					<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
-				</xs:restriction>
-			</xs:simpleType>
+			<xs:complexType name="searchEvenementsPM">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
+					<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
+					<xs:element minOccurs="0" name="dateMinimale" type="tns:Date" />
+					<xs:element minOccurs="0" name="dateMaximale" type="tns:Date" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="evenementPM">
+				<xs:sequence>
+					<xs:element name="dateEvenement" type="tns:Date" />
+					<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
+					<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="SetTiersBlocRembAuto">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element name="blocage" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="QuittancerDeclarations">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element maxOccurs="unbounded" name="demandes" type="tns:DemandeQuittancementDeclaration" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DemandeQuittancementDeclaration">
+				<xs:sequence>
+					<xs:element name="key" type="tns:DeclarationImpotOrdinaireKey" />
+					<xs:element name="dateRetour" type="tns:Date" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DeclarationImpotOrdinaireKey">
+				<xs:sequence>
+					<xs:element name="ctbId" type="xs:long" />
+					<xs:element name="periodeFiscale" type="xs:int" />
+					<xs:element name="numeroSequenceDI" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ReponseQuittancementDeclaration">
+				<xs:sequence>
+					<xs:element name="key" type="tns:DeclarationImpotOrdinaireKey" />
+					<xs:element name="code" type="tns:CodeQuittancement" />
+					<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
+					<xs:element minOccurs="0" name="exceptionType" type="tns:WebServiceExceptionType" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetTiers">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="tiersNumber" type="xs:long" />
+					<xs:element name="date" type="tns:Date" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="tns:TiersPart" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="GetDebiteurInfo">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="numeroDebiteur" type="xs:long" />
+					<xs:element name="periodeFiscale" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DebiteurInfo">
+				<xs:sequence>
+					<xs:element name="numeroDebiteur" type="xs:long" />
+					<xs:element name="periodeFiscale" type="xs:int" />
+					<xs:element name="nbLRsTheorique" type="xs:int" />
+					<xs:element name="nbLRsEmises" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:simpleType name="TiersPart">
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="ADRESSES" />
@@ -818,23 +793,36 @@
 					<xs:enumeration value="TUTELLE" />
 				</xs:restriction>
 			</xs:simpleType>
+			<xs:simpleType name="TypeTiers">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="PERSONNE_PHYSIQUE" />
+					<xs:enumeration value="MENAGE_COMMUN" />
+					<xs:enumeration value="DEBITEUR" />
+					<xs:enumeration value="PERSONNE_MORALE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeRecherche">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="CONTIENT" />
+					<xs:enumeration value="PHONETIQUE" />
+					<xs:enumeration value="EST_EXACTEMENT" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="CategorieDebiteur">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ADMINISTRATEURS" />
+					<xs:enumeration value="CONFERENCIERS_ARTISTES_SPORTIFS" />
+					<xs:enumeration value="CREANCIERS_HYPOTHECAIRES" />
+					<xs:enumeration value="PRESTATIONS_PREVOYANCE" />
+					<xs:enumeration value="REGULIERS" />
+					<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
+				</xs:restriction>
+			</xs:simpleType>
 			<xs:simpleType name="WebServiceExceptionType">
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="BUSINESS" />
 					<xs:enumeration value="ACCESS_DENIED" />
 					<xs:enumeration value="TECHNICAL" />
-				</xs:restriction>
-			</xs:simpleType>
-			<xs:simpleType name="CodeQuittancement">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="OK" />
-					<xs:enumeration value="ERREUR_CTB_INCONNU" />
-					<xs:enumeration value="ERREUR_ASSUJETTISSEMENT_CTB" />
-					<xs:enumeration value="ERREUR_CTB_DEBITEUR_INACTIF" />
-					<xs:enumeration value="ERREUR_DECLARATION_INEXISTANTE" />
-					<xs:enumeration value="ERREUR_DECLARATION_ANNULEE" />
-					<xs:enumeration value="ERREUR_DATE_RETOUR_INVALIDE" />
-					<xs:enumeration value="EXCEPTION" />
 				</xs:restriction>
 			</xs:simpleType>
 			<xs:simpleType name="Sexe">
@@ -939,14 +927,21 @@
 					<xs:enumeration value="PAYS_HS" />
 				</xs:restriction>
 			</xs:simpleType>
+			<xs:simpleType name="CodeQuittancement">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="OK" />
+					<xs:enumeration value="ERREUR_CTB_INCONNU" />
+					<xs:enumeration value="ERREUR_ASSUJETTISSEMENT_CTB" />
+					<xs:enumeration value="ERREUR_CTB_DEBITEUR_INACTIF" />
+					<xs:enumeration value="ERREUR_DECLARATION_INEXISTANTE" />
+					<xs:enumeration value="ERREUR_DECLARATION_ANNULEE" />
+					<xs:enumeration value="ERREUR_DATE_RETOUR_INVALIDE" />
+					<xs:enumeration value="EXCEPTION" />
+				</xs:restriction>
+			</xs:simpleType>
 			<xs:complexType final="#all" name="TiersInfoArray">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:TiersInfo" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType final="#all" name="ReponseQuittancementDeclarationArray">
-				<xs:sequence>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:ReponseQuittancementDeclaration" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType final="#all" name="evenementPMArray">
@@ -954,58 +949,105 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:evenementPM" />
 				</xs:sequence>
 			</xs:complexType>
-			<xs:element name="AccessDeniedException" type="tns:AccessDeniedException" />
-			<xs:complexType name="AccessDeniedException">
-				<xs:sequence />
+			<xs:complexType final="#all" name="ReponseQuittancementDeclarationArray">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:ReponseQuittancementDeclaration" />
+				</xs:sequence>
 			</xs:complexType>
 			<xs:element name="BusinessException" type="tns:BusinessException" />
 			<xs:complexType name="BusinessException">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:element name="AccessDeniedException" type="tns:AccessDeniedException" />
+			<xs:complexType name="AccessDeniedException">
 				<xs:sequence />
 			</xs:complexType>
 			<xs:element name="TechnicalException" type="tns:TechnicalException" />
 			<xs:complexType name="TechnicalException">
 				<xs:sequence />
 			</xs:complexType>
-			<xs:element name="SearchTiers" nillable="true" type="tns:SearchTiers" />
-			<xs:element name="searchTiersResponse" nillable="true" type="tns:TiersInfoArray" />
-			<xs:element name="GetDebiteurInfo" nillable="true" type="tns:GetDebiteurInfo" />
-			<xs:element name="getDebiteurInfoResponse" nillable="true" type="tns:DebiteurInfo" />
-			<xs:element name="GetTiers" nillable="true" type="tns:GetTiers" />
-			<xs:element name="getTiersResponse" nillable="true" type="tns:Tiers" />
-			<xs:element name="GetBatchTiers" nillable="true" type="tns:GetBatchTiers" />
-			<xs:element name="getBatchTiersResponse" nillable="true" type="tns:BatchTiers" />
-			<xs:element name="QuittancerDeclarations" nillable="true" type="tns:QuittancerDeclarations" />
-			<xs:element name="quittancerDeclarationsResponse" nillable="true" type="tns:ReponseQuittancementDeclarationArray" />
 			<xs:element name="GetTiersPeriode" nillable="true" type="tns:GetTiersPeriode" />
 			<xs:element name="getTiersPeriodeResponse" nillable="true" type="tns:TiersHisto" />
-			<xs:element name="SetTiersBlocRembAuto" nillable="true" type="tns:SetTiersBlocRembAuto" />
-			<xs:element name="GetTiersType" nillable="true" type="tns:GetTiersType" />
-			<xs:element name="getTiersTypeResponse" nillable="true" type="tns:TypeTiers" />
 			<xs:element name="GetTiersHisto" nillable="true" type="tns:GetTiersHisto" />
 			<xs:element name="getTiersHistoResponse" nillable="true" type="tns:TiersHisto" />
+			<xs:element name="GetTiersType" nillable="true" type="tns:GetTiersType" />
+			<xs:element name="getTiersTypeResponse" nillable="true" type="tns:TypeTiers" />
+			<xs:element name="SearchTiers" nillable="true" type="tns:SearchTiers" />
+			<xs:element name="searchTiersResponse" nillable="true" type="tns:TiersInfoArray" />
+			<xs:element name="GetBatchTiers" nillable="true" type="tns:GetBatchTiers" />
+			<xs:element name="getBatchTiersResponse" nillable="true" type="tns:BatchTiers" />
 			<xs:element name="doNothing" nillable="true" type="tns:AllConcreteTiersClasses" />
-			<xs:element name="SearchEvenementsPM" nillable="true" type="tns:searchEvenementsPM" />
-			<xs:element name="searchEvenementsPMResponse" nillable="true" type="tns:evenementPMArray" />
 			<xs:element name="GetBatchTiersHisto" nillable="true" type="tns:GetBatchTiersHisto" />
 			<xs:element name="getBatchTiersHistoResponse" nillable="true" type="tns:BatchTiersHisto" />
+			<xs:element name="SearchEvenementsPM" nillable="true" type="tns:searchEvenementsPM" />
+			<xs:element name="searchEvenementsPMResponse" nillable="true" type="tns:evenementPMArray" />
+			<xs:element name="SetTiersBlocRembAuto" nillable="true" type="tns:SetTiersBlocRembAuto" />
+			<xs:element name="QuittancerDeclarations" nillable="true" type="tns:QuittancerDeclarations" />
+			<xs:element name="quittancerDeclarationsResponse" nillable="true" type="tns:ReponseQuittancementDeclarationArray" />
+			<xs:element name="GetTiers" nillable="true" type="tns:GetTiers" />
+			<xs:element name="getTiersResponse" nillable="true" type="tns:Tiers" />
+			<xs:element name="GetDebiteurInfo" nillable="true" type="tns:GetDebiteurInfo" />
+			<xs:element name="getDebiteurInfoResponse" nillable="true" type="tns:DebiteurInfo" />
 		</xs:schema>
 	</wsdl:types>
-	<wsdl:message name="getTiersHisto">
-		<wsdl:part element="tns:GetTiersHisto" name="params">
+	<wsdl:message name="AccessDeniedException">
+		<wsdl:part element="tns:AccessDeniedException" name="AccessDeniedException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="searchEvenementsPMResponse">
+		<wsdl:part element="tns:searchEvenementsPMResponse" name="searchEvenementsPMResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="quittancerDeclarationsResponse">
+		<wsdl:part element="tns:quittancerDeclarationsResponse" name="quittancerDeclarationsResponse">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getTiersPeriode">
 		<wsdl:part element="tns:GetTiersPeriode" name="params">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="getBatchTiers">
-		<wsdl:part element="tns:GetBatchTiers" name="params">
+	<wsdl:message name="getBatchTiersHisto">
+		<wsdl:part element="tns:GetBatchTiersHisto" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="setTiersBlocRembAutoResponse">
+	</wsdl:message>
+	<wsdl:message name="getTiersHisto">
+		<wsdl:part element="tns:GetTiersHisto" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersResponse">
+		<wsdl:part element="tns:getTiersResponse" name="getTiersResponse">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="doNothingResponse">
 	</wsdl:message>
-	<wsdl:message name="getDebiteurInfo">
-		<wsdl:part element="tns:GetDebiteurInfo" name="params">
+	<wsdl:message name="getTiers">
+		<wsdl:part element="tns:GetTiers" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="searchTiers">
+		<wsdl:part element="tns:SearchTiers" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBatchTiersHistoResponse">
+		<wsdl:part element="tns:getBatchTiersHistoResponse" name="getBatchTiersHistoResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="searchTiersResponse">
+		<wsdl:part element="tns:searchTiersResponse" name="searchTiersResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersTypeResponse">
+		<wsdl:part element="tns:getTiersTypeResponse" name="getTiersTypeResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="TechnicalException">
+		<wsdl:part element="tns:TechnicalException" name="TechnicalException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBatchTiersResponse">
+		<wsdl:part element="tns:getBatchTiersResponse" name="getBatchTiersResponse">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getTiersHistoResponse">
@@ -1016,50 +1058,8 @@
 		<wsdl:part element="tns:doNothing" name="doNothing">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="TechnicalException">
-		<wsdl:part element="tns:TechnicalException" name="TechnicalException">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="searchEvenementsPMResponse">
-		<wsdl:part element="tns:searchEvenementsPMResponse" name="searchEvenementsPMResponse">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="setTiersBlocRembAuto">
-		<wsdl:part element="tns:SetTiersBlocRembAuto" name="params">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getBatchTiersHisto">
-		<wsdl:part element="tns:GetBatchTiersHisto" name="params">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="quittancerDeclarationsResponse">
-		<wsdl:part element="tns:quittancerDeclarationsResponse" name="quittancerDeclarationsResponse">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getTiersResponse">
-		<wsdl:part element="tns:getTiersResponse" name="getTiersResponse">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getTiers">
-		<wsdl:part element="tns:GetTiers" name="params">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="searchEvenementsPM">
-		<wsdl:part element="tns:SearchEvenementsPM" name="params">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="searchTiersResponse">
-		<wsdl:part element="tns:searchTiersResponse" name="searchTiersResponse">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="setTiersBlocRembAutoResponse">
-	</wsdl:message>
-	<wsdl:message name="getDebiteurInfoResponse">
-		<wsdl:part element="tns:getDebiteurInfoResponse" name="getDebiteurInfoResponse">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getTiersTypeResponse">
-		<wsdl:part element="tns:getTiersTypeResponse" name="getTiersTypeResponse">
+	<wsdl:message name="quittancerDeclarations">
+		<wsdl:part element="tns:QuittancerDeclarations" name="params">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="BusinessException">
@@ -1070,125 +1070,41 @@
 		<wsdl:part element="tns:getTiersPeriodeResponse" name="getTiersPeriodeResponse">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="AccessDeniedException">
-		<wsdl:part element="tns:AccessDeniedException" name="AccessDeniedException">
+	<wsdl:message name="getDebiteurInfoResponse">
+		<wsdl:part element="tns:getDebiteurInfoResponse" name="getDebiteurInfoResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="setTiersBlocRembAuto">
+		<wsdl:part element="tns:SetTiersBlocRembAuto" name="params">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getTiersType">
 		<wsdl:part element="tns:GetTiersType" name="params">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="getBatchTiersHistoResponse">
-		<wsdl:part element="tns:getBatchTiersHistoResponse" name="getBatchTiersHistoResponse">
+	<wsdl:message name="searchEvenementsPM">
+		<wsdl:part element="tns:SearchEvenementsPM" name="params">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="getBatchTiersResponse">
-		<wsdl:part element="tns:getBatchTiersResponse" name="getBatchTiersResponse">
+	<wsdl:message name="getBatchTiers">
+		<wsdl:part element="tns:GetBatchTiers" name="params">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="searchTiers">
-		<wsdl:part element="tns:SearchTiers" name="params">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="quittancerDeclarations">
-		<wsdl:part element="tns:QuittancerDeclarations" name="params">
+	<wsdl:message name="getDebiteurInfo">
+		<wsdl:part element="tns:GetDebiteurInfo" name="params">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:portType name="TiersPort">
-		<wsdl:operation name="searchTiers">
-			<wsdl:input message="tns:searchTiers" name="searchTiers">
-			</wsdl:input>
-			<wsdl:output message="tns:searchTiersResponse" name="searchTiersResponse">
-			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getDebiteurInfo">
-			<wsdl:input message="tns:getDebiteurInfo" name="getDebiteurInfo">
-			</wsdl:input>
-			<wsdl:output message="tns:getDebiteurInfoResponse" name="getDebiteurInfoResponse">
-			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getTiers">
-			<wsdl:input message="tns:getTiers" name="getTiers">
-			</wsdl:input>
-			<wsdl:output message="tns:getTiersResponse" name="getTiersResponse">
-			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getBatchTiers">
-			<wsdl:input message="tns:getBatchTiers" name="getBatchTiers">
-			</wsdl:input>
-			<wsdl:output message="tns:getBatchTiersResponse" name="getBatchTiersResponse">
-			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="quittancerDeclarations">
-			<wsdl:input message="tns:quittancerDeclarations" name="quittancerDeclarations">
-			</wsdl:input>
-			<wsdl:output message="tns:quittancerDeclarationsResponse" name="quittancerDeclarationsResponse">
-			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
-			</wsdl:fault>
-		</wsdl:operation>
 		<wsdl:operation name="getTiersPeriode">
 			<wsdl:input message="tns:getTiersPeriode" name="getTiersPeriode">
 			</wsdl:input>
 			<wsdl:output message="tns:getTiersPeriodeResponse" name="getTiersPeriodeResponse">
 			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
 			<wsdl:fault message="tns:BusinessException" name="BusinessException">
 			</wsdl:fault>
 			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
 			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="setTiersBlocRembAuto">
-			<wsdl:input message="tns:setTiersBlocRembAuto" name="setTiersBlocRembAuto">
-			</wsdl:input>
-			<wsdl:output message="tns:setTiersBlocRembAutoResponse" name="setTiersBlocRembAutoResponse">
-			</wsdl:output>
 			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getTiersType">
-			<wsdl:input message="tns:getTiersType" name="getTiersType">
-			</wsdl:input>
-			<wsdl:output message="tns:getTiersTypeResponse" name="getTiersTypeResponse">
-			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
 			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getTiersHisto">
@@ -1196,11 +1112,47 @@
 			</wsdl:input>
 			<wsdl:output message="tns:getTiersHistoResponse" name="getTiersHistoResponse">
 			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
 			<wsdl:fault message="tns:BusinessException" name="BusinessException">
 			</wsdl:fault>
 			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersType">
+			<wsdl:input message="tns:getTiersType" name="getTiersType">
+			</wsdl:input>
+			<wsdl:output message="tns:getTiersTypeResponse" name="getTiersTypeResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="searchTiers">
+			<wsdl:input message="tns:searchTiers" name="searchTiers">
+			</wsdl:input>
+			<wsdl:output message="tns:searchTiersResponse" name="searchTiersResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getBatchTiers">
+			<wsdl:input message="tns:getBatchTiers" name="getBatchTiers">
+			</wsdl:input>
+			<wsdl:output message="tns:getBatchTiersResponse" name="getBatchTiersResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
 			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="doNothing">
@@ -1209,123 +1161,81 @@
 			<wsdl:output message="tns:doNothingResponse" name="doNothingResponse">
 			</wsdl:output>
 		</wsdl:operation>
-		<wsdl:operation name="searchEvenementsPM">
-			<wsdl:input message="tns:searchEvenementsPM" name="searchEvenementsPM">
-			</wsdl:input>
-			<wsdl:output message="tns:searchEvenementsPMResponse" name="searchEvenementsPMResponse">
-			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:BusinessException" name="BusinessException">
-			</wsdl:fault>
-			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
-			</wsdl:fault>
-		</wsdl:operation>
 		<wsdl:operation name="getBatchTiersHisto">
 			<wsdl:input message="tns:getBatchTiersHisto" name="getBatchTiersHisto">
 			</wsdl:input>
 			<wsdl:output message="tns:getBatchTiersHistoResponse" name="getBatchTiersHistoResponse">
 			</wsdl:output>
-			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
-			</wsdl:fault>
 			<wsdl:fault message="tns:BusinessException" name="BusinessException">
 			</wsdl:fault>
 			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="searchEvenementsPM">
+			<wsdl:input message="tns:searchEvenementsPM" name="searchEvenementsPM">
+			</wsdl:input>
+			<wsdl:output message="tns:searchEvenementsPMResponse" name="searchEvenementsPMResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="setTiersBlocRembAuto">
+			<wsdl:input message="tns:setTiersBlocRembAuto" name="setTiersBlocRembAuto">
+			</wsdl:input>
+			<wsdl:output message="tns:setTiersBlocRembAutoResponse" name="setTiersBlocRembAutoResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="quittancerDeclarations">
+			<wsdl:input message="tns:quittancerDeclarations" name="quittancerDeclarations">
+			</wsdl:input>
+			<wsdl:output message="tns:quittancerDeclarationsResponse" name="quittancerDeclarationsResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiers">
+			<wsdl:input message="tns:getTiers" name="getTiers">
+			</wsdl:input>
+			<wsdl:output message="tns:getTiersResponse" name="getTiersResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getDebiteurInfo">
+			<wsdl:input message="tns:getDebiteurInfo" name="getDebiteurInfo">
+			</wsdl:input>
+			<wsdl:output message="tns:getDebiteurInfoResponse" name="getDebiteurInfoResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
 			</wsdl:fault>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="TiersServiceSoapBinding" type="tns:TiersPort">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-		<wsdl:operation name="searchTiers">
-			<soap:operation soapAction="" style="document" />
-			<wsdl:input name="searchTiers">
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="searchTiersResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="BusinessException">
-				<soap:fault name="BusinessException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="TechnicalException">
-				<soap:fault name="TechnicalException" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getDebiteurInfo">
-			<soap:operation soapAction="" style="document" />
-			<wsdl:input name="getDebiteurInfo">
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="getDebiteurInfoResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="BusinessException">
-				<soap:fault name="BusinessException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="TechnicalException">
-				<soap:fault name="TechnicalException" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getTiers">
-			<soap:operation soapAction="" style="document" />
-			<wsdl:input name="getTiers">
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="getTiersResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="BusinessException">
-				<soap:fault name="BusinessException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="TechnicalException">
-				<soap:fault name="TechnicalException" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getBatchTiers">
-			<soap:operation soapAction="" style="document" />
-			<wsdl:input name="getBatchTiers">
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="getBatchTiersResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="BusinessException">
-				<soap:fault name="BusinessException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="TechnicalException">
-				<soap:fault name="TechnicalException" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="quittancerDeclarations">
-			<soap:operation soapAction="" style="document" />
-			<wsdl:input name="quittancerDeclarations">
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="quittancerDeclarationsResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="BusinessException">
-				<soap:fault name="BusinessException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="TechnicalException">
-				<soap:fault name="TechnicalException" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
 		<wsdl:operation name="getTiersPeriode">
 			<soap:operation soapAction="" style="document" />
 			<wsdl:input name="getTiersPeriode">
@@ -1334,50 +1244,14 @@
 			<wsdl:output name="getTiersPeriodeResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
 			<wsdl:fault name="BusinessException">
 				<soap:fault name="BusinessException" use="literal" />
 			</wsdl:fault>
 			<wsdl:fault name="TechnicalException">
 				<soap:fault name="TechnicalException" use="literal" />
 			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="setTiersBlocRembAuto">
-			<soap:operation soapAction="" style="document" />
-			<wsdl:input name="setTiersBlocRembAuto">
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="setTiersBlocRembAutoResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
 			<wsdl:fault name="AccessDeniedException">
 				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="BusinessException">
-				<soap:fault name="BusinessException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="TechnicalException">
-				<soap:fault name="TechnicalException" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-		<wsdl:operation name="getTiersType">
-			<soap:operation soapAction="" style="document" />
-			<wsdl:input name="getTiersType">
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="getTiersTypeResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="BusinessException">
-				<soap:fault name="BusinessException" use="literal" />
-			</wsdl:fault>
-			<wsdl:fault name="TechnicalException">
-				<soap:fault name="TechnicalException" use="literal" />
 			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getTiersHisto">
@@ -1388,14 +1262,68 @@
 			<wsdl:output name="getTiersHistoResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
 			<wsdl:fault name="BusinessException">
 				<soap:fault name="BusinessException" use="literal" />
 			</wsdl:fault>
 			<wsdl:fault name="TechnicalException">
 				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiersType">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTiersType">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTiersTypeResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getBatchTiers">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getBatchTiers">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getBatchTiersResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="searchTiers">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="searchTiers">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="searchTiersResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
 			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="doNothing">
@@ -1415,14 +1343,14 @@
 			<wsdl:output name="getBatchTiersHistoResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
 			<wsdl:fault name="BusinessException">
 				<soap:fault name="BusinessException" use="literal" />
 			</wsdl:fault>
 			<wsdl:fault name="TechnicalException">
 				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
 			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="searchEvenementsPM">
@@ -1433,14 +1361,86 @@
 			<wsdl:output name="searchEvenementsPMResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
-			<wsdl:fault name="AccessDeniedException">
-				<soap:fault name="AccessDeniedException" use="literal" />
-			</wsdl:fault>
 			<wsdl:fault name="BusinessException">
 				<soap:fault name="BusinessException" use="literal" />
 			</wsdl:fault>
 			<wsdl:fault name="TechnicalException">
 				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="setTiersBlocRembAuto">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="setTiersBlocRembAuto">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="setTiersBlocRembAutoResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="quittancerDeclarations">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="quittancerDeclarations">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="quittancerDeclarationsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTiers">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTiers">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTiersResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getDebiteurInfo">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getDebiteurInfo">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getDebiteurInfoResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
 			</wsdl:fault>
 		</wsdl:operation>
 	</wsdl:binding>
