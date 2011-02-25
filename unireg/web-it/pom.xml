@@ -36,6 +36,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-wsclient-securite</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-tiers2</artifactId>
 			<version>2.11</version>
 		</dependency>
@@ -43,6 +48,11 @@
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-batch</artifactId>
 			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-wsclient-fiscal</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -73,12 +83,6 @@
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
 			<version>2.7</version>
-			<exclusions>
-				<exclusion>
-					<groupId>xerces</groupId>
-					<artifactId>xercesImpl</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>rhino</groupId>
@@ -125,58 +129,6 @@
 			</testResource>
 		</testResources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-codegen-plugin</artifactId>
-				<version>${cxf.version}</version>
-				<executions>
-					<execution>
-						<id>generate-sources-securite-service</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sourceRoot>
-								${basedir}/target/generated-cxf/src/main/java
-							</sourceRoot>
-							<wsdlOptions>
-								<wsdlOption>
-									<wsdl>
-										${basedir}/src/main/resources/SecuriteService.wsdl
-									</wsdl>
-								</wsdlOption>
-							</wsdlOptions>
-						</configuration>
-						<goals>
-							<goal>wsdl2java</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>generate-sources-fiscal-service</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sourceRoot>
-								${basedir}/target/generated-cxf/src/main/java
-							</sourceRoot>
-							<wsdlOptions>
-								<wsdlOption>
-									<extraargs>
-										<extraarg>-client</extraarg>
-										<extraarg>-b</extraarg>
-										<extraarg>
-											${basedir}/src/main/resources/bindingsFiscalService.xml
-										</extraarg>
-									</extraargs>
-									<wsdl>
-										${basedir}/src/main/resources/FiscalService.wsdl
-									</wsdl>
-								</wsdlOption>
-							</wsdlOptions>
-						</configuration>
-						<goals>
-							<goal>wsdl2java</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
