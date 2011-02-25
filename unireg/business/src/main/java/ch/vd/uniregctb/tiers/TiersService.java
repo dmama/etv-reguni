@@ -1297,5 +1297,18 @@ public interface TiersService {
 	 * @return
 	 */
 	boolean isHorsCanton(Contribuable contribuable, RegDate date);
+
+	/**
+	 * @return <code>true</code> si le dernier for fiscal principal du contribuable a bien été fermé pour motif "séparation", <code>false</code> sinon
+	 * @param tiers
+	 */
+	boolean isDernierForFiscalPrincipalFermePourSeparation(Tiers tiers);
+
+	/**
+	 * @param menage un ménage commun
+	 * @param date   une date
+	 * @return <b>vrai</b> si le ménage possède au moins une personne physique active à la date spécifiée; <b>faux</b> autrement.
+	 */
+	boolean isMenageActif(MenageCommun menage, RegDate date);
 }
 

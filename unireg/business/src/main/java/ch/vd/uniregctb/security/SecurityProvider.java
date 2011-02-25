@@ -44,6 +44,28 @@ public class SecurityProvider {
 	}
 
 	/**
+	 * Vérifie si l'opérateur courant possède au moins un des rôles spécifiés.
+	 * <p/>
+	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour cela, il faut utiliser la méthode {@link #getDroitAcces(Tiers)}.
+	 *
+	 * @param roles les rôles dont on veut vérifier l'allocation.
+	 * @return <b>vrai</b> si l'opérateur courant possède au moins un des rôles spécifiés; <b>faux</b> autrement.
+	 */
+	public static boolean isAnyGranted(Role... roles) {
+		final String visa = AuthenticationHelper.getCurrentPrincipal();
+		final Integer code = AuthenticationHelper.getCurrentOID();
+		if (code == null) {
+			return false;
+		}
+		for (Role role : roles) {
+			if (provider.isGranted(role, visa, code)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Vérifie que l'opérateur spécifié possède le rôle spécifié.
 	 * <p>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour

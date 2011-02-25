@@ -129,3 +129,26 @@ function AppSelect_OnChange(select) {
 		window.location.href = value;
 	}
 }
+
+/**
+ * Execute l'action spécifiée sous forme d'url.
+ * <p>
+ * Les formats d'URL suivants sont supportés:
+ *   - "goto:/some/url/" : navige à l'url spécifiée
+ *   - "post:/some/other/url?param=machin" : exécute une requête HTML de type POST
+ */
+function executeAction(url) {
+	if (/^---/.test(url)) { // pattern de non-action -> rien à faire
+		return false;
+	}
+	if (/^post:/.test(url)) { // requête de type POST
+		var u = url.replace(/^post:/, '');
+		var form = $('<form method="POST" action="' + getContextPath() + u + '"/>');
+		form.appendTo('body');
+		form.submit();
+	}
+	else if (/^goto:/.test(url)) { // requête de type GOTO
+		var u = url.replace(/^goto:/, '');
+		this.location.href=getContextPath() + u;
+	}
+}

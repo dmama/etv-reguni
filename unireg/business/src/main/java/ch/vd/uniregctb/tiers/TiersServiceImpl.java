@@ -4137,4 +4137,24 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 	}
+
+	public boolean isDernierForFiscalPrincipalFermePourSeparation(Tiers tiers) {
+		final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+		return ffp != null && ffp.getDateFin() != null && ffp.getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT;
+	}
+
+	@Override
+	public boolean isMenageActif(MenageCommun menage, RegDate date) {
+
+		final Set<RapportEntreTiers> rapports = menage.getRapportsObjet();
+		if (rapports != null) {
+			for (RapportEntreTiers rapport : rapports) {
+				if (rapport instanceof AppartenanceMenage && rapport.isValidAt(date)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 }

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -70,6 +71,21 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static AdresseService adresseService;
 	private static PlatformTransactionManager transactionManager;
 	private static ValidationService validationService;
+
+	private static final List<Action> actions;
+
+	static {
+		actions = new ArrayList<Action>();
+		actions.add(new Reindexer());
+		actions.add(new Marier());
+		actions.add(new Deceder());
+		actions.add(new Separer());
+		actions.add(new Reactiver());
+		actions.add(new AnnulerCouple());
+		actions.add(new AnnulerSeparation());
+		actions.add(new AnnulerDeces());
+		actions.add(new AnnulerTiers());
+	}
 
 	private Long numero;
 	private String titre;
@@ -333,14 +349,35 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 		s.append("</td>\n");
 
-		// Réindexation
-		if (showLinks && (SecurityProvider.isGranted(Role.TESTER) || SecurityProvider.isGranted(Role.ADMIN))) {
-			s.append("\t<td width=\"25%\">\n");
-			s.append("\t\t<form method=\"post\" style=\"text-align: right; padding-right: 1em\"");
-			s.append("action=\"").append(url("/admin/indexation.do")).append("?action=reindexTiers&id=").append(tiers.getNumero()).append("\">\n");
-			s.append("\t\t\t<input type=\"submit\" value=\"").append(message("label.bouton.forcer.reindexation")).append("\"/>");
-			s.append("\t\t</form>\n");
-			s.append("\t</td>\n");
+		// Actions
+		if (showLinks) {
+
+			final List<Action> actionsToDisplay = new ArrayList<Action>(actions.size());
+			for (Action action : actions) {
+				if (action.isGranted() && action.isValide(tiers)) {
+					actionsToDisplay.add(action);
+				}
+			}
+
+			if (actionsToDisplay.isEmpty()) {
+				// pas d'action à afficher
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+			}
+			else {
+				s.append("\t<td width=\"25%\">\n");
+				s.append("\t<div style=\"float:right;margin-right:10px;text-align:right\">\n");
+				s.append("\t\t<span>").append(message("label.actions")).append(" : </span>\n");
+				s.append("\t\t<select onchange=\"return executeAction($(this).val() + ").append(tiers.getNumero()).append(");\">\n");
+				s.append("\t\t\t<option>---</option>\n");
+
+				for (Action action : actionsToDisplay) {
+					s.append("\t\t\t<option value=\"").append(action.getActionUrl()).append("\">").append(action.getLabel()).append("</option>\n");
+				}
+
+				s.append("\t\t</select>");
+				s.append("\t</div>\n");
+				s.append("\t</td>\n");
+			}
 		}
 		else {
 			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
@@ -785,6 +822,219 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return type;
 	}
 
+	private static interface Action {
+		boolean isGranted();
+		boolean isValide(Tiers tiers);
+		String getLabel();
+		String getActionUrl();
+	}
+
+	private static class Reindexer implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.TESTER, Role.ADMIN);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return true;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Réindexer";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "post:/admin/indexation.do?action=reindexTiers&id=";
+		}
+	}
+
+	private static class Marier implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule() && tiers instanceof PersonnePhysique && !tiersService.isInMenageCommun((PersonnePhysique) tiers, null);
+		}
+
+		@Override
+		public String getLabel() {
+			return "Marier";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/couple/list-pp.do?numeroPP1=";
+		}
+	}
+
+	private static class Deceder implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule() && tiers instanceof PersonnePhysique && tiersService.getDateDeces((PersonnePhysique) tiers) == null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Enregistrer décès";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/deces/recap.do?numero=";
+		}
+	}
+
+	private static class Separer implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule() && tiers instanceof MenageCommun && tiersService.isMenageActif((MenageCommun) tiers, null);
+		}
+
+		@Override
+		public String getLabel() {
+			return "Séparer";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/separation/recap.do?numeroCple=";
+		}
+	}
+
+	private static class Reactiver implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isGranted(Role.ANNUL_TIERS);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return tiers.isAnnule();
+		}
+
+		@Override
+		public String getLabel() {
+			return "Réactiver";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/activation/reactivation/recap.do?numero=";
+		}
+	}
+
+	private static class AnnulerCouple implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule() && tiers instanceof MenageCommun && tiersService.isMenageActif((MenageCommun) tiers, null);
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler le couple";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/annulation/couple/recap.do?numeroCple=";
+		}
+	}
+
+	private static class AnnulerSeparation implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule() && tiers instanceof MenageCommun && tiersService.isDernierForFiscalPrincipalFermePourSeparation(tiers);
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler la séparation";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/annulation/separation/recap.do?numero=";
+		}
+	}
+
+	private static class AnnulerDeces implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule() && tiers instanceof PersonnePhysique && tiersService.getDateDeces((PersonnePhysique) tiers) != null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler le décès";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/annulation/deces/recap.do?numero=";
+		}
+	}
+
+	private static class AnnulerTiers implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isGranted(Role.ANNUL_TIERS);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule();
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler le tiers";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/activation/annulation/recap.do?numero=";
+		}
+	}
 }
 
 

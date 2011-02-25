@@ -147,6 +147,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 				final String idAsString = FormatNumeroHelper.removeSpaceAndDash(bean.getId());
 				final long id = Long.parseLong(idAsString);
 				indexationManager.reindexTiers(id);
+				flash("Le tiers a été réindexé.");
 				return new ModelAndView(new RedirectView("/tiers/visu.do?id=" + id, true));
 			}
 		}

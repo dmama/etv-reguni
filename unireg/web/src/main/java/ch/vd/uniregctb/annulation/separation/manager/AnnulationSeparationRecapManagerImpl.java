@@ -108,11 +108,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 	@Transactional(readOnly = true)
 	public boolean isDernierForFiscalPrincipalFermePourSeparation(long noCtb) {
 		final Tiers tiers = tiersService.getTiers(noCtb);
-		if (tiers != null) {
-			final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
-			return ffp != null && ffp.getDateFin() != null && ffp.getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT;
-		}
-		return false;
+		return tiers != null && tiersService.isDernierForFiscalPrincipalFermePourSeparation(tiers);
 	}
 
 	/**
