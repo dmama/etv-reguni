@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.12b -->
+<!-- version 2.13 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -88,6 +88,13 @@
 					<xs:element name="isSuisse" type="xs:boolean" />
 					<xs:element minOccurs="0" name="salutations" type="xs:string" />
 					<xs:element minOccurs="0" name="formuleAppel" type="xs:string" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="nomsPrenoms" type="xs:string" />
+					<xs:element minOccurs="0" name="complement" type="xs:string" />
+					<xs:element minOccurs="0" name="pourAdresse" type="xs:string" />
+					<xs:element minOccurs="0" name="rueNumero" type="xs:string" />
+					<xs:element minOccurs="0" name="casePostale" type="xs:string" />
+					<xs:element minOccurs="0" name="npaLocalite" type="xs:string" />
+					<xs:element minOccurs="0" name="pays" type="xs:string" />
 					<xs:element name="typeAffranchissement" type="tns:TypeAffranchissement" />
 				</xs:sequence>
 			</xs:complexType>
