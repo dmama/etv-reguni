@@ -826,6 +826,19 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(TypeAffranchissement.SUISSE, adresseCourrier.getTypeAffranchissement());
 		assertNull(adresseCourrier.getSalutations());
 		assertEquals("Madame, Monsieur", adresseCourrier.getFormuleAppel());
+		{
+			final List<String> nomsPrenoms = adresseCourrier.getNomsPrenoms();
+			assertEquals(3, nomsPrenoms.size());
+			assertEquals("Jal holding S.A.", trimValiPattern(nomsPrenoms.get(0)));
+			assertEquals("", trimValiPattern(nomsPrenoms.get(1)));
+			assertEquals("en liquidation", trimValiPattern(nomsPrenoms.get(2)));
+		}
+		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getComplement());
+		assertNull(adresseCourrier.getPourAdresse());
+		assertEquals("Avenue de la Gare 10", adresseCourrier.getRueNumero());
+		assertNull(adresseCourrier.getCasePostale());
+		assertEquals("1003 Lausanne", adresseCourrier.getNpaLocalite());
+		assertNull(adresseCourrier.getPays());
 
 		final AdresseEnvoi adresseDomicile = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicile);
@@ -838,5 +851,18 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertTrue(adresseDomicile.isIsSuisse());
 		assertNull(adresseDomicile.getSalutations());
 		assertEquals("Madame, Monsieur", adresseDomicile.getFormuleAppel());
+		{
+			final List<String> nomsPrenoms = adresseDomicile.getNomsPrenoms();
+			assertEquals(3, nomsPrenoms.size());
+			assertEquals("Jal holding S.A.", trimValiPattern(nomsPrenoms.get(0)));
+			assertEquals("", trimValiPattern(nomsPrenoms.get(1)));
+			assertEquals("en liquidation", trimValiPattern(nomsPrenoms.get(2)));
+		}
+		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getComplement());
+		assertNull(adresseDomicile.getPourAdresse());
+		assertEquals("Chemin Messidor 5", adresseDomicile.getRueNumero());
+		assertNull(adresseDomicile.getCasePostale());
+		assertEquals("1006 Lausanne", adresseDomicile.getNpaLocalite());
+		assertNull(adresseCourrier.getPays());
 	}
 }

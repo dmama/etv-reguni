@@ -46,10 +46,10 @@ import ch.vd.uniregctb.webservices.tiers2.TypeRecherche;
 import ch.vd.uniregctb.webservices.tiers2.TypeTiers;
 import ch.vd.uniregctb.webservices.tiers2.UserLogin;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -1061,6 +1061,19 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLigne5()));
 		assertEquals("1001 Lausanne", adresseEnvoi.getLigne6());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
+		{
+			final List<String> nomsPrenoms = adresseEnvoi.getNomsPrenoms();
+			assertEquals(3, nomsPrenoms.size());
+			assertEquals("Banque Cantonale Vaudo", trimValiPattern(nomsPrenoms.get(0)));
+			assertEquals("", trimValiPattern(nomsPrenoms.get(1)));
+			assertEquals("", trimValiPattern(nomsPrenoms.get(2)));
+		}
+		assertEquals("pa Comptabilité financière", adresseEnvoi.getComplement());
+		assertNull(adresseEnvoi.getPourAdresse());
+		assertEquals("M. Daniel Küffer / CP 300", adresseEnvoi.getRueNumero());
+		assertNull(adresseEnvoi.getCasePostale());
+		assertEquals("1001 Lausanne", adresseEnvoi.getNpaLocalite());
+		assertNull(adresseEnvoi.getPays());
 
 		// par contre, la formule d'appel est renseignée
 		assertEquals("Madame, Monsieur", adresseEnvoi.getFormuleAppel());
