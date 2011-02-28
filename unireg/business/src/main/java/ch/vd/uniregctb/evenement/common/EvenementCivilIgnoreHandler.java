@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.evenement.common;
 
+import java.util.List;
+
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-
-import java.util.List;
 
 /**
  * Classe de base des handlers d'événements civils qui ne nous intéressent pas (complètement ignorés)
@@ -30,7 +32,7 @@ public abstract class EvenementCivilIgnoreHandler extends EvenementCivilHandlerB
 	}
 
 	@Override
-	public GenericEvenementAdapter createAdapter() {
-		return new EvenementCivilIgnoreAdapter();
+	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
+		return new EvenementCivilIgnoreAdapter(event, context);
 	}
 }

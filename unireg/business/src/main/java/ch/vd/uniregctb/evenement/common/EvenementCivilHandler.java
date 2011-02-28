@@ -3,7 +3,9 @@ package ch.vd.uniregctb.evenement.common;
 import java.util.List;
 
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.engine.EvenementHandlerRegistrar;
@@ -22,9 +24,13 @@ public interface EvenementCivilHandler {
 	/**
 	 * Crée une Adapter valide pour ce Handler
 	 *
-	 * @return
+	 *
+	 *
+	 * @param event
+	 * @param context le context d'exécution de l'événement civil
+	 * @return un événement civil interne qui corresponds à l'événement civil externe reçu
 	 */
-	GenericEvenementAdapter createAdapter();
+	GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException;
 
 	/**
 	 * Validation spécifique de l'objet target passé en paramètre.

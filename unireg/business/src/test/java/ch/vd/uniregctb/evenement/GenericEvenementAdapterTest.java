@@ -12,6 +12,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.arrivee.ArriveeAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.mariage.MariageAdapter;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -24,15 +27,6 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class GenericEvenementAdapterTest extends WithoutSpringTest {
-
-	private static GenericEvenementAdapter createAdapter() {
-		return new GenericEvenementAdapter() {
-			@Override
-			protected boolean forceRefreshCacheConjoint() {
-				return true;
-			}
-		};
-	}
 
 	@Test
 	public void testInitCouple() throws Exception {
@@ -72,8 +66,8 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 		/*
 		 * Création et initialisation de l'adapter
 		 */
-		final GenericEvenementAdapter adapter = createAdapter();
-		adapter.init(evenementArriveeCouple, serviceCivil, infrastructureService, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
+		final GenericEvenementAdapter adapter = new ArriveeAdapter(evenementArriveeCouple, context);
 
 		/*
 		 * Test de la méthode init dans ce cas
@@ -120,8 +114,8 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 		final EvenementCivilData evtMariage = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, null, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
 
 		// passage dans l'init de l'adapter
-		final GenericEvenementAdapter adapter = createAdapter();
-		adapter.init(evtMariage, serviceCivil, infrastructureService, dataEventService);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, true);
+		final GenericEvenementAdapter adapter = new MariageAdapter(evtMariage, context);
 
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getTiersChanged());
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getDroitsChanged());

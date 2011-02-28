@@ -5,11 +5,9 @@ import java.util.Set;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public abstract class EvenementAdapterAvecAdresses extends GenericEvenementAdapter implements EvenementCivilAvecAdresses {
 
@@ -28,20 +26,13 @@ public abstract class EvenementAdapterAvecAdresses extends GenericEvenementAdapt
 	 */
 	private Adresse adresseCourrier;
 
-	@Override
-	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
-		super.fillRequiredParts(parts);
-		parts.add(AttributeIndividu.ADRESSES);
-	}
-
-	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
+	protected EvenementAdapterAvecAdresses(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
 		// Distinction adresse principale et adresse courrier
 		// On recupère les adresses à la date de l'événement plus 1 jour
 		try {
-			final AdressesCiviles adresses =  new AdressesCiviles(serviceCivil.getAdresses(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayAfter(), false));
+			final AdressesCiviles adresses =  new AdressesCiviles(context.getServiceCivil().getAdresses(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayAfter(), false));
 			Assert.notNull(adresses, "L'individu principal n'a pas d'adresses valide");
 
 			this.adressePrincipale = adresses.principale;
@@ -51,6 +42,12 @@ public abstract class EvenementAdapterAvecAdresses extends GenericEvenementAdapt
 		catch (DonneesCivilesException e) {
 			throw new EvenementAdapterException(e);
 		}
+	}
+
+	@Override
+	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
+		super.fillRequiredParts(parts);
+		parts.add(AttributeIndividu.ADRESSES);
 	}
 
 	public Adresse getAdressePrincipale() {

@@ -4,32 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class NaissanceAdapter extends GenericEvenementAdapter implements Naissance {
 
 	private final List<Individu> parents = new ArrayList<Individu>();
 
-	/**
-	 * Constructeur
-	 */
-	public  NaissanceAdapter() {
-		super();
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData, ch.vd.registre.civil.service.ServiceCivil, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
-	 */
-	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
+	protected NaissanceAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
 		/* Récupération des parents du nouveau né */
 		final Individu bebe = getIndividu();

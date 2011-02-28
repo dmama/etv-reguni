@@ -4,18 +4,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.changement.AbstractChangementHandler;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementIdentificateurHandler extends AbstractChangementHandler {
@@ -59,7 +62,7 @@ public class ChangementIdentificateurHandler extends AbstractChangementHandler {
 	}
 
 	@Override
-	public GenericEvenementAdapter createAdapter() {
-		return new ChangementIdentificateurAdapter();
+	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
+		return new ChangementIdentificateurAdapter(event, context);
 	}
 }

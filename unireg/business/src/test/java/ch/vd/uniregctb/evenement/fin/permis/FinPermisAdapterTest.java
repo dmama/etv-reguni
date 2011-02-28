@@ -5,6 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -84,8 +85,8 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		roberto.setNumero(NUMERO_INDIVIDU);
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU, roberto, 0L, null, 1234, null);
-		FinPermisAdapter adapter = new FinPermisAdapter();
-		adapter.init(evenementsCivils, serviceCivil, infrastructureService, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
+		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context);
 	}
 
 	@Test
@@ -94,7 +95,7 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		rosa.setNumero(NUMERO_INDIVIDU_2);
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU_2, rosa, 0L, null, 1234, null);
-		FinPermisAdapter adapter = new FinPermisAdapter();
-		adapter.init(evenementsCivils, serviceCivil, infrastructureService, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
+		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context);
 	}
 }

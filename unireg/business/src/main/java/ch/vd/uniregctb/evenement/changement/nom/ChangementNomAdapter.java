@@ -2,7 +2,10 @@ package ch.vd.uniregctb.evenement.changement.nom;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 
 /**
  * Modélise un événement de changement de nom.
@@ -53,4 +56,7 @@ public class ChangementNomAdapter extends GenericEvenementAdapter{// implements 
 		this.nouveauPrenom = nouveauPrenom;
 	}*/
 
+	protected ChangementNomAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
+	}
 }

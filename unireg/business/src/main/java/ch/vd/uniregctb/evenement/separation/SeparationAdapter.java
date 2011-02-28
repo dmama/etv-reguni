@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.evenement.separation;
 
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Adapter pour la séparation.
@@ -20,14 +18,10 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 	 * L'ancien conjoint de l'individu concerné par la séparation.
 	 */
 	private Individu ancienConjoint;
-	
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData, ch.vd.uniregctb.interfaces.service.ServiceCivilService, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
-	 */
-	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
-		
+
+	protected SeparationAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
+
 		/*
 		 * Calcul de l'année où a eu lieu l'événement
 		 */
@@ -37,8 +31,8 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 		 * Récupération des informations sur le conjoint de l'individu depuis le host.
 		 */
 		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, AttributeIndividu.CONJOINT);
-		this.ancienConjoint = serviceCivil.getConjoint(individuPrincipal.getNoTechnique(),getDate().getOneDayBefore());
+		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeEvenement, AttributeIndividu.CONJOINT);
+		this.ancienConjoint = context.getServiceCivil().getConjoint(individuPrincipal.getNoTechnique(), getDate().getOneDayBefore());
 		
 	}
 

@@ -10,7 +10,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -58,7 +60,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		}
 
 		@Override
-		public GenericEvenementAdapter createAdapter() {
+		public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
 			return null;
 		}
 

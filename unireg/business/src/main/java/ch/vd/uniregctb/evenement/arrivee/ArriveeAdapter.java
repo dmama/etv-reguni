@@ -1,20 +1,18 @@
 package ch.vd.uniregctb.evenement.arrivee;
 
-import ch.vd.uniregctb.common.DonneesCivilesException;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -37,6 +35,37 @@ public class ArriveeAdapter extends EvenementAdapterAvecAdresses implements Arri
 	private CommuneSimple nouvelleCommunePrincipale;
 
 	private CommuneSimple nouvelleCommuneSecondaire;
+
+	public ArriveeAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
+		Assert.isTrue(isEvenementArrivee(evenement.getType()));
+
+		// on récupère les nouvelles adresses (= à la date d'événement)
+		final RegDate veilleArrivee = evenement.getDateEvenement().getOneDayBefore();
+		final AdressesCiviles anciennesAdresses;
+		try {
+			anciennesAdresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), veilleArrivee, false));
+		}
+		catch (DonneesCivilesException e) {
+			throw new EvenementAdapterException(e);
+		}
+
+		this.ancienneAdressePrincipale = anciennesAdresses.principale;
+		this.ancienneAdresseSecondaire = anciennesAdresses.secondaire;
+
+		try {
+			// on récupère les nouvelles communes
+			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale());
+			this.nouvelleCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdresseSecondaire());
+
+			// on récupère les anciennes communes
+			this.ancienneCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(ancienneAdressePrincipale);
+			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire);
+		}
+		catch (InfrastructureException e) {
+			throw new EvenementAdapterException(e);
+		}
+	}
 
 	public final Adresse getAncienneAdressePrincipale() {
 		return ancienneAdressePrincipale;
@@ -68,39 +97,6 @@ public class ArriveeAdapter extends EvenementAdapterAvecAdresses implements Arri
 
 	public final CommuneSimple getNouvelleCommuneSecondaire() {
 		return nouvelleCommuneSecondaire;
-	}
-
-	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		Assert.isTrue(isEvenementArrivee(evenementCivilData.getType()));
-
-		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
-
-		// on récupère les nouvelles adresses (= à la date d'événement)
-		final RegDate veilleArrivee = evenementCivilData.getDateEvenement().getOneDayBefore();
-		final AdressesCiviles anciennesAdresses;
-		try {
-			anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(super.getNoIndividu(), veilleArrivee, false));
-		}
-		catch (DonneesCivilesException e) {
-			throw new EvenementAdapterException(e);
-		}
-
-		this.ancienneAdressePrincipale = anciennesAdresses.principale;
-		this.ancienneAdresseSecondaire = anciennesAdresses.secondaire;
-
-		try {
-			// on récupère les nouvelles communes
-			this.nouvelleCommunePrincipale = infrastructureService.getCommuneByAdresse(getNouvelleAdressePrincipale());
-			this.nouvelleCommuneSecondaire = infrastructureService.getCommuneByAdresse(getNouvelleAdresseSecondaire());
-
-			// on récupère les anciennes communes
-			this.ancienneCommunePrincipale = infrastructureService.getCommuneByAdresse(ancienneAdressePrincipale);
-			this.ancienneCommuneSecondaire = infrastructureService.getCommuneByAdresse(ancienneAdresseSecondaire);
-		}
-		catch (InfrastructureException e) {
-			throw new EvenementAdapterException(e);
-		}
 	}
 
 	@Override

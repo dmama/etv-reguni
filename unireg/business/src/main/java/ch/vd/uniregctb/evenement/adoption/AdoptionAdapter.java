@@ -4,7 +4,10 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 
 /**
  * Modélise un événement d'adoption.
@@ -19,6 +22,10 @@ public class AdoptionAdapter extends GenericEvenementAdapter implements Adoption
 	 * La date de début d'adoption.
 	 */
 	private Date dateDebutAdoption;
+
+	protected AdoptionAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
+	}
 
 	/**
 	 * @return Returns the dateDebutAdoption.

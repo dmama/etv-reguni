@@ -16,7 +16,9 @@ import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.Mouvement;
@@ -488,7 +490,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 		this.registrar = registrar;
 	}
 
-	public abstract GenericEvenementAdapter createAdapter();
+	public abstract GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException;
 	
 	/**
 	 * Permet de faire les verifications standards sur les adresses et les

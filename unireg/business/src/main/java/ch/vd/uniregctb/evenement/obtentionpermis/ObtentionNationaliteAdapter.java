@@ -5,14 +5,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Adapter pour l'obtention de nationalité.
@@ -30,19 +28,14 @@ public class ObtentionNationaliteAdapter extends EvenementAdapterAvecAdresses im
 	 * le numero OFS étendu de la commune de l'adresse principale
 	 */
 	private Integer numeroOfsEtenduCommunePrincipale;
-	
-	/*
-	 * (non-Javadoc)
-	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData, ch.vd.registre.civil.service.ServiceCivil, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
-	 */
-	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
+
+	protected ObtentionNationaliteAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
 		try {
 			// on récupère la commune de l'adresse principale en gérant les fractions
 			//à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for
-			final CommuneSimple communePrincipale = infrastructureService.getCommuneByAdresse(getAdressePrincipale());
+			final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale());
 			this.numeroOfsEtenduCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFSEtendu();
 		}
 		catch (InfrastructureException e) {

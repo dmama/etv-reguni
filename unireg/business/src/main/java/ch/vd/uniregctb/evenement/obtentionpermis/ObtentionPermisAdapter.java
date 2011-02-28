@@ -6,16 +6,14 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -38,19 +36,18 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 	 */
 	private Integer numeroOfsEtenduCommunePrincipale;
 
-	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
+	protected ObtentionPermisAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
 		try {
 			// on récupère le permis (= à la date d'événement)
-			final int anneeCourante = evenementCivilData.getDateEvenement().year();
-			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getNoIndividu(), anneeCourante);
+			final int anneeCourante = evenement.getDateEvenement().year();
+			final Collection<Permis> listePermis = context.getServiceCivil().getPermis(super.getNoIndividu(), anneeCourante);
 			if (listePermis == null) {
 				throw new EvenementAdapterException("Aucun permis trouvé dans le registre civil");
 			}
 			for (Permis permis : listePermis) {
-				if (evenementCivilData.getDateEvenement().equals(permis.getDateDebutValidite())) {
+				if (evenement.getDateEvenement().equals(permis.getDateDebutValidite())) {
 					this.permis = permis;
 					break;
 				}
@@ -70,8 +67,8 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 			// on récupère la commune de l'adresse principale en gérant les fractions
 			// à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for vaudois
 			final Adresse adressePrincipale = getAdressePrincipale();
-			if (infrastructureService.estDansLeCanton(adressePrincipale)) {
-				final CommuneSimple communePrincipale = infrastructureService.getCommuneByAdresse(adressePrincipale);
+			if (context.getServiceInfra().estDansLeCanton(adressePrincipale)) {
+				final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale);
 				if (communePrincipale == null) {
 					throw new EvenementAdapterException("Incohérence dans l'adresse principale");
 				}

@@ -3,15 +3,13 @@ package ch.vd.uniregctb.evenement.tutelle;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
@@ -44,6 +42,40 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 	 */
 	private CollectiviteAdministrative autoriteTutelaire = null;
 
+	protected TutelleAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
+
+		/*
+		 * Récupération de l'année de l'événement
+		 */
+		final int anneeEvenement = evenement.getDateEvenement().year();
+
+		/*
+		 * Récupération de la tutelle.
+		 */
+		ch.vd.uniregctb.interfaces.model.Tutelle tutelle = context.getServiceCivil().getTutelle(getNoIndividu(), anneeEvenement);
+
+		/*
+		 * Initialisation du type de tutelle.
+		 */
+		this.typeTutelle = tutelle.getTypeTutelle();
+
+		/*
+		 * Récupération du tuteur ou/et autorité tutellaire
+		 */
+		this.tuteurGeneral = tutelle.getTuteurGeneral();
+		this.tuteur = tutelle.getTuteur();
+
+		if (tutelle.getNumeroCollectiviteAutoriteTutelaire() != null) {
+			try {
+				this.autoriteTutelaire = context.getServiceInfra().getCollectivite(tutelle.getNumeroCollectiviteAutoriteTutelaire().intValue());
+			}
+			catch (InfrastructureException e) {
+				throw new EvenementAdapterException(String.format("Autorité tutélaire avec numéro %d introuvable", tutelle.getNumeroCollectiviteAutoriteTutelaire()), e);
+			}
+		}
+	}
+
 	/**
 	 * @return Returns the tuteurGeneral.
 	 */
@@ -72,48 +104,6 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 	 */
 	public CollectiviteAdministrative getAutoriteTutelaire() {
 		return autoriteTutelaire;
-	}
-
-	/*
-		 * (non-Javadoc)
-		 *
-		 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData,
-		 *      ch.vd.registre.civil.service.ServiceCivil,
-		 *      ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
-		 */
-	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
-
-		/*
-		 * Récupération de l'année de l'événement
-		 */
-		final int anneeEvenement = evenementCivilData.getDateEvenement().year();
-
-		/*
-		 * Récupération de la tutelle.
-		 */
-		ch.vd.uniregctb.interfaces.model.Tutelle tutelle = serviceCivil.getTutelle(getNoIndividu(), anneeEvenement);
-
-		/*
-		 * Initialisation du type de tutelle.
-		 */
-		this.typeTutelle = tutelle.getTypeTutelle();
-
-		/*
-		 * Récupération du tuteur ou/et autorité tutellaire
-		 */
-		this.tuteurGeneral = tutelle.getTuteurGeneral();
-		this.tuteur = tutelle.getTuteur();
-
-		if (tutelle.getNumeroCollectiviteAutoriteTutelaire() != null) {
-			try {
-				this.autoriteTutelaire = infrastructureService.getCollectivite(tutelle.getNumeroCollectiviteAutoriteTutelaire().intValue());
-			}
-			catch (InfrastructureException e) {
-				throw new EvenementAdapterException(String.format("Autorité tutélaire avec numéro %d introuvable", tutelle.getNumeroCollectiviteAutoriteTutelaire()), e);
-			}
-		}
 	}
 
 }

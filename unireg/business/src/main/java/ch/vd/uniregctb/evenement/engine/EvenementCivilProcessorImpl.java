@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +27,7 @@ import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandler;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -244,9 +244,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				return;
 			}
 
-			final GenericEvenementAdapter adapter = evenementCivilHandler.createAdapter();
-
-			adapter.init(evenementCivilData, serviceCivilService, serviceInfrastructureService, refreshCache ? dataEventService : null);
+			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, refreshCache);
+			final GenericEvenementAdapter adapter = evenementCivilHandler.createAdapter(evenementCivilData, context);
 
 			/* 2.1 - lancement de la validation par le handler */
 			evenementCivilHandler.checkCompleteness(adapter, erreurs, warnings);

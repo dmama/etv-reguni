@@ -8,9 +8,12 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -100,8 +103,8 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	}
 
 	@Override
-	public GenericEvenementAdapter createAdapter() {
-		return new ObtentionNationaliteAdapter();
+	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
+		return new ObtentionNationaliteAdapter(event, context);
 	}
 
 }

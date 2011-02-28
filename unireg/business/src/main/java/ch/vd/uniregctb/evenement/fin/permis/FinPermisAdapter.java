@@ -5,13 +5,11 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -27,19 +25,18 @@ public class FinPermisAdapter extends GenericEvenementAdapter implements FinPerm
 	/** Le permis arrivant échéance. */
 	private Permis permis;
 
-	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
+	protected FinPermisAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
 		try {
 			// on récupère le permis à partir de sa date de fin (= à la date d'événement)
-			final int anneeCourante = evenementCivilData.getDateEvenement().year();
-			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getNoIndividu(), anneeCourante);
+			final int anneeCourante = evenement.getDateEvenement().year();
+			final Collection<Permis> listePermis = context.getServiceCivil().getPermis(super.getNoIndividu(), anneeCourante);
 			if (listePermis == null) {
 				throw new EvenementAdapterException("Le permis n'a pas été trouvé dans le registre civil");
 			}
 			for (Permis permis : listePermis) {
-				if (RegDateHelper.equals(permis.getDateFinValidite(), evenementCivilData.getDateEvenement())) {
+				if (RegDateHelper.equals(permis.getDateFinValidite(), evenement.getDateEvenement())) {
 					this.permis = permis;
 					break;
 				}

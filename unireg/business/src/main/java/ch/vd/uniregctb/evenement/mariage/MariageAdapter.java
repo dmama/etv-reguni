@@ -2,16 +2,15 @@ package ch.vd.uniregctb.evenement.mariage;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Modélise un événement conjugal (mariage, pacs)
@@ -27,13 +26,8 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 	 */
 	private Individu nouveauConjoint;
 
-	/**
-	 * Récupère la commune à partir de l'adresse principale
-	 * @throws EvenementAdapterException
-	 */
-	@Override
-	public void init(EvenementCivilData evenementCivil, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenementCivil, serviceCivil, infrastructureService, dataEventService);
+	public MariageAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
 		/*
 		 * Calcul de l'année où a eu lieu l'événement
@@ -45,8 +39,8 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 		 * getIndividu().getConjoint() peut être null si mariage le 01.01
 		 */
 		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, AttributeIndividu.CONJOINT);
-		this.nouveauConjoint = getConjointValide(individuPrincipal,serviceCivil);
+		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeEvenement, AttributeIndividu.CONJOINT);
+		this.nouveauConjoint = getConjointValide(individuPrincipal, context.getServiceCivil());
 		//this.nouveauConjoint = individuPrincipal.getConjoint();
 	}
 

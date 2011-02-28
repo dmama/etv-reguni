@@ -5,6 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -43,8 +44,8 @@ public class ObtentionNationaliteAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_SUISSE);
 		EvenementCivilData
 				evenement = new EvenementCivilData(1L, TypeEvenementCivil.NATIONALITE_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_SUISSE , habitant, 0L, null, 1234, null);
-		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, false);
+		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter(evenement, context);
 	}
 
 	/**
@@ -57,8 +58,8 @@ public class ObtentionNationaliteAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_FRANCE);
 		EvenementCivilData
 				evenement = new EvenementCivilData(1L, TypeEvenementCivil.NATIONALITE_NON_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_FRANCE , habitant, 0L, null, 1234, null);
-		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, false);
+		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter(evenement, context);
 	}
 
 	// Prend le mock infrastructure par défaut

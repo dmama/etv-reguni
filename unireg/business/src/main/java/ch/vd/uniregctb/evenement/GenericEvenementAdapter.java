@@ -7,12 +7,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -38,19 +36,17 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 	// Info pour initialiser les individus de manière lazy
 	private int anneeReference;
 	private AttributeIndividu[] parts;
-	private ServiceCivilService serviceCivil;
+	protected EvenementCivilContext context;
 
 	/**
-	 * Initialise l'adresse principale et l'adresse courrier
+	 * Construit un événement civil interne sur la base d'un événement civil externe.
 	 *
-	 * @param evenement             les données brutes de l'événement
-	 * @param serviceCivil          le service civil
-	 * @param infrastructureService le service infrastructure
-	 * @param dataEventService      non null si le cache des individus doit être rafraîchi, null si ce n'est pas la peine
+	 * @param evenement un événement civil externe
+	 * @param context   le context d'exécution de l'événement
 	 * @throws EvenementAdapterException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		this.serviceCivil = serviceCivil;
+	protected GenericEvenementAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		this.context = context;
 
 		/* récupération des informations liés à l'événement civil */
 		this.type = evenement.getType();
@@ -72,16 +68,16 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
 		 */
 		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
-		if (evenement.getNumeroIndividuConjoint() != null || (dataEventService != null && forceRefreshCacheConjoint())) {
+		if (evenement.getNumeroIndividuConjoint() != null || (context.isRefreshCache() && forceRefreshCacheConjoint())) {
 			requiredParts.add(AttributeIndividu.CONJOINT);
 		}
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
 
-		if (dataEventService != null) {
+		if (context.isRefreshCache()) {
 
 			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
-			dataEventService.onIndividuChange(noIndividu);
+			context.getDataEventService().onIndividuChange(noIndividu);
 
 			// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
 			if (forceRefreshCacheConjoint()) {
@@ -98,7 +94,7 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 
 				// nettoyage du cache pour tous ces individus
 				for (Long noInd : conjoints) {
-					dataEventService.onIndividuChange(noInd);
+					context.getDataEventService().onIndividuChange(noInd);
 				}
 			}
 		}
@@ -126,7 +122,7 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 
 	public final Individu getConjoint() {
 		if (conjoint == null && noIndividuConjoint != null) { // lazy init
-			conjoint = serviceCivil.getIndividu(noIndividuConjoint, anneeReference);
+			conjoint = context.getServiceCivil().getIndividu(noIndividuConjoint, anneeReference);
 		}
 		return conjoint;
 	}
@@ -145,7 +141,7 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 
 	public Individu getIndividu() {
 		if (individuPrincipal == null && noIndividu != null) { // lazy init
-			individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeReference, parts);
+			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeReference, parts);
 		}
 		return individuPrincipal;
 	}

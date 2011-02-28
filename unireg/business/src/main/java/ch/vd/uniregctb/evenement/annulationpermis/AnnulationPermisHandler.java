@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -48,8 +51,8 @@ public class AnnulationPermisHandler extends AnnulationPermisCOuNationaliteSuiss
 	}
 	
 	@Override
-	public GenericEvenementAdapter createAdapter() {
-		return new AnnulationPermisAdapter();
+	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
+		return new AnnulationPermisAdapter(event, context);
 	}
 
 	@Override

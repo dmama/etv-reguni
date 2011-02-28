@@ -2,14 +2,12 @@ package ch.vd.uniregctb.evenement.deces;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Modélise un événement de décès.
@@ -25,12 +23,9 @@ public class DecesAdapter extends GenericEvenementAdapter implements Deces {
 	 */
 	private Individu conjointSurvivant;
 
-
-	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
-		 conjointSurvivant = serviceCivil.getConjoint(evenement.getNumeroIndividuPrincipal(),evenement.getDateEvenement().getOneDayBefore());
-
+	protected DecesAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
+		conjointSurvivant = context.getServiceCivil().getConjoint(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayBefore());
 	}
 
 	public Individu getConjointSurvivant() {

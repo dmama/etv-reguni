@@ -5,15 +5,13 @@ import org.apache.log4j.Logger;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Modélise un événement de depart.
@@ -62,26 +60,17 @@ public class DepartAdapter extends EvenementAdapterAvecAdresses implements Depar
 	 */
 	private boolean isAncienTypeDepart = false;
 
+	protected DepartAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
-
-	/**
-	 * @throws EvenementAdapterException
-	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivil,
-	 *      ch.vd.uniregctb.interfaces.service.HostCivilService, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
-	 */
-	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-
-		if (evenementCivilData.getNumeroIndividuConjoint()!=null) {
+		if (evenement.getNumeroIndividuConjoint()!=null) {
 			isAncienTypeDepart = true;
 		}
-
-		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
 
 		// on récupère les anciennes adresses (= à la date d'événement)
 		final AdressesCiviles adresses;
 		try {
-			adresses = new AdressesCiviles(serviceCivil.getAdresses(super.getNoIndividu(), evenementCivilData.getDateEvenement(), false));
+			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), evenement.getDateEvenement(), false));
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementAdapterException(e);
@@ -93,15 +82,15 @@ public class DepartAdapter extends EvenementAdapterAvecAdresses implements Depar
 
 		try {
 			// on récupère la commune de l'adresse principale avant le départ
-			this.ancienneCommunePrincipale = infrastructureService.getCommuneByAdresse(ancienneAdressePrincipale);
+			this.ancienneCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(ancienneAdressePrincipale);
 
 			// on récupère la commune de l'adresse principale avant le départ
-			this.ancienneCommuneSecondaire = infrastructureService.getCommuneByAdresse(ancienneAdresseSecondaire);
+			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire);
 
 			// on récupère la commune de la nouvelle adresse principal
-			this.nouvelleCommunePrincipale = infrastructureService.getCommuneByAdresse(getNouvelleAdressePrincipale());
+			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale());
 
-			this.paysInconnu = infrastructureService.getPaysInconnu();
+			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		}
 		catch (InfrastructureException e) {
 			throw new EvenementAdapterException(e);

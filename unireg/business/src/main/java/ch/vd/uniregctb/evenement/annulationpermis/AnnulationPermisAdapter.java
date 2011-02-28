@@ -6,14 +6,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -29,9 +27,8 @@ public class AnnulationPermisAdapter extends GenericEvenementAdapter implements 
 	/** Le permis obtenu. */
 	private Permis permis;
 
-	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
+	protected AnnulationPermisAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+		super(evenement, context);
 
 		try {
 			final Collection<Permis> listePermis = super.getIndividu().getPermis();
@@ -55,7 +52,7 @@ public class AnnulationPermisAdapter extends GenericEvenementAdapter implements 
 			throw new EvenementAdapterException(e.getMessage(), e);
 		}
 	}
-	
+
 	public TypePermis getTypePermis() {
 		return permis.getTypePermis();
 	}

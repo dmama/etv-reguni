@@ -5,6 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -80,8 +81,8 @@ public class ArriveeAdapterTest extends WithoutSpringTest {
 			}
 		};
 
-		ArriveeAdapter adapter = new ArriveeAdapter();
-		adapter.init(evenement, serviceCivil, infrastructureService, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
+		ArriveeAdapter adapter = new ArriveeAdapter(evenement, context);
 
 		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdressePrincipale().getLocalite());
 		assertEquals(MockCommune.Cossonay.getNomMinuscule(), adapter.getNouvelleCommunePrincipale().getNomMinuscule());
