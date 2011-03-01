@@ -408,7 +408,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test départ individu seul...");
 		MockDepart depart = createValidDepart(1234, DATE_EVENEMENT, true);
-		evenementCivilHandler.checkCompleteness(depart, erreurs, warnings);
+		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu seul : OK");
 
@@ -426,7 +426,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test départ individu marié seul...");
 
 		MockDepart depart = createValidDepart(1235, DATE_EVENEMENT, true);
-		evenementCivilHandler.checkCompleteness(depart, erreurs, warnings);
+		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu marié seul : OK");
 
@@ -444,7 +444,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test départ individu marié ...");
 
 		MockDepart depart = createValidDepart(1236, DATE_EVENEMENT, true);
-		evenementCivilHandler.checkCompleteness(depart, erreurs, warnings);
+		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu marié  : OK");
 	}
@@ -510,6 +510,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			depart.setNumeroOfsCommuneAnnonce(communeSecondaire.getNoOFS());
 		}
 
+		depart.setHandler(evenementCivilHandler);
 		return depart;
 	}
 
@@ -539,7 +540,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		warnings.clear();
 
 		depart.setDate(DATE_ANTERIEURE_ADRESSE_ACTUELLE);
-		evenementCivilHandler.validate(depart, erreurs, warnings);
+		depart.validate(erreurs, warnings);
 
 		Assert.assertTrue("Le départ est antérieur à la date de fin de validité de l'adresse actuelle, une erreur aurait du être déclenchée", findMessage(erreurs, "La date de départ est différente"));
 		LOGGER.debug("Test départ antérieur à la date de fin de validité de l'adresse actuelle : OK");
@@ -563,7 +564,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		final MockCommune nouvelleCommune = MockCommune.Cossonay;
 		depart.setNouvelleCommunePrincipale(nouvelleCommune);
 
-		evenementCivilHandler.validate(depart, erreurs, warnings);
+		depart.validate(erreurs, warnings);
 		Assert.assertTrue("La nouvelle commune est dans le canton de Vaud, une erreur aurait du être déclenchée", findMessage(erreurs, "est toujours dans le canton de Vaud"));
 		LOGGER.debug("Test nouvelle commune hors canton : OK");
 
@@ -583,7 +584,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		erreurs.clear();
 		warnings.clear();
 		depart.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
-		evenementCivilHandler.validate(depart, erreurs, warnings);
+		depart.validate(erreurs, warnings);
 		Assert.assertTrue("La commune d'anonce et differente de celle de la dernière adresse, une erreur aurait du être déclenchée", findMessage(erreurs, "La commune d'annonce"));
 		LOGGER.debug("Test commune d'annonce principale : OK");
 
@@ -1413,8 +1414,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private void handleDepart(Depart depart, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
-		evenementCivilHandler.checkCompleteness(depart, erreurs, warnings);
-		evenementCivilHandler.validate(depart, erreurs, warnings);
-		evenementCivilHandler.handle(depart, warnings);
+		depart.checkCompleteness(erreurs, warnings);
+		depart.validate(erreurs, warnings);
+		depart.handle(warnings);
 	}
 }

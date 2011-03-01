@@ -108,9 +108,9 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, 2009);
 				final Mariage mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
 
-				evenementCivilHandler.checkCompleteness(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.validate(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.handle(mariage, lists.warnings);
+				mariage.checkCompleteness(lists.erreurs, lists.warnings);
+				mariage.validate(lists.erreurs, lists.warnings);
+				mariage.handle(lists.warnings);
 				return null;
 			}
 		});
@@ -161,9 +161,9 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 				Individu seul = serviceCivil.getIndividu(UNI_SEUL, 2007);
 				Mariage mariage = createValidMariage(seul, null, DATE_UNION_SEUL);
 
-				evenementCivilHandler.checkCompleteness(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.validate(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.handle(mariage, lists.warnings);
+				mariage.checkCompleteness(lists.erreurs, lists.warnings);
+				mariage.validate(lists.erreurs, lists.warnings);
+				mariage.handle(lists.warnings);
 				return null;
 			}
 		});
@@ -244,9 +244,9 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 				Individu conjoint = serviceCivil.getIndividu(UNI_HETERO_CONJOINT, 2007);
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HETERO);
 
-				evenementCivilHandler.checkCompleteness(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.validate(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.handle(mariage, lists.warnings);
+				mariage.checkCompleteness(lists.erreurs, lists.warnings);
+				mariage.validate(lists.erreurs, lists.warnings);
+				mariage.handle(lists.warnings);
 				return null;
 			}
 		});
@@ -347,9 +347,9 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 				Individu conjoint = serviceCivil.getIndividu(UNI_HOMO_CONJOINT, 2007);
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HOMO);
 
-				evenementCivilHandler.checkCompleteness(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.validate(mariage, lists.erreurs, lists.warnings);
-				evenementCivilHandler.handle(mariage, lists.warnings);
+				mariage.checkCompleteness(lists.erreurs, lists.warnings);
+				mariage.validate(lists.erreurs, lists.warnings);
+				mariage.handle(lists.warnings);
 				return null;
 			}
 		});
@@ -431,7 +431,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		mariage.setNumeroOfsCommuneAnnonce(5586);
 		mariage.setDate(dateMariage);
 		mariage.init(tiersDAO);
-
+		mariage.setHandler(evenementCivilHandler);
 		return mariage;
 	}
 

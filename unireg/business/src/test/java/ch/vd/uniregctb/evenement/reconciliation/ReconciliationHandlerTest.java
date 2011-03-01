@@ -80,13 +80,13 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransaction(new TransactionCallback(){
 
 			public Object doInTransaction(TransactionStatus status) {
-				evenementCivilHandler.checkCompleteness(reconciliation, erreurs, warnings);
+				reconciliation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
 
-				evenementCivilHandler.validate(reconciliation, erreurs, warnings);
+				reconciliation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
 
-				evenementCivilHandler.handle(reconciliation, warnings);
+				reconciliation.handle(warnings);
 
 				return null;
 			}
@@ -136,13 +136,13 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransaction(new TransactionCallback(){
 
 			public Object doInTransaction(TransactionStatus status) {
-				evenementCivilHandler.checkCompleteness(reconciliation, erreurs, warnings);
+				reconciliation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
 
-				evenementCivilHandler.validate(reconciliation, erreurs, warnings);
+				reconciliation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
 
-				evenementCivilHandler.handle(reconciliation, warnings);
+				reconciliation.handle(warnings);
 
 				return null;
 			}
@@ -198,10 +198,10 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransaction(new TransactionCallback(){
 
 			public Object doInTransaction(TransactionStatus status) {
-				evenementCivilHandler.checkCompleteness(reconciliation, erreurs, warnings);
+				reconciliation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
 
-				evenementCivilHandler.validate(reconciliation, erreurs, warnings);
+				reconciliation.validate(erreurs, warnings);
 
 				return null;
 			}
@@ -240,6 +240,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		}
 		reconciliation.setNumeroOfsCommuneAnnonce(5586);
 		reconciliation.setDate(date);
+		reconciliation.setHandler(evenementCivilHandler);
 		return reconciliation;
 	}
 

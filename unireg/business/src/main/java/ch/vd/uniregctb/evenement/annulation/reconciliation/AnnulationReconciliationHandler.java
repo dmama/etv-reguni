@@ -27,7 +27,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -60,7 +59,6 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Cas d'annulation de réconciliation
 		AnnulationReconciliation annulation = (AnnulationReconciliation) evenement;
@@ -86,7 +84,7 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new AnnulationReconciliationAdapter(event, context);
+		return new AnnulationReconciliationAdapter(event, context, this);
 	}
 
 }

@@ -26,7 +26,6 @@ import ch.vd.uniregctb.type.TypePermis;
 
 public class CorrectionDebutValiditePermisHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -34,7 +33,6 @@ public class CorrectionDebutValiditePermisHandler extends EvenementCivilHandlerB
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Individu individu = evenement.getIndividu();
@@ -91,7 +89,7 @@ public class CorrectionDebutValiditePermisHandler extends EvenementCivilHandlerB
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new CorrectionDebutValiditePermisAdapter(event, context);
+		return new CorrectionDebutValiditePermisAdapter(event, context, this);
 	}
 
 }

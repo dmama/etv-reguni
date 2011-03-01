@@ -80,7 +80,6 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		this.serviceCivilService = serviceCivilService;
 	}
 
-	@Override
 	public void checkCompleteness(EvenementCivil evenement, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
 		final Arrivee arrivee = (Arrivee) evenement;
@@ -285,7 +284,6 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		final Arrivee arrivee = (Arrivee) evenement;
 
@@ -1344,7 +1342,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ArriveeAdapter(event, context);
+		return new ArriveeAdapter(event, context, this);
 	}
 
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -11,6 +12,8 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -165,5 +168,22 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 
 	public Integer getNumeroOfsCommuneAnnonce() {
 		return numeroOfsCommuneAnnonce;
+	}
+
+	/**
+	 * @param noIndividu le numéro d'individu
+	 * @param errors     la collection des erreurs qui sera remplie automatiquement si l'habitant n'existe pas
+	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu, ou <b>null<b> si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
+	 */
+	protected PersonnePhysique getPersonnePhysiqueOrFillErrors(Long noIndividu, List<EvenementCivilErreur> errors) {
+		final PersonnePhysique habitant = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		if (habitant == null) {
+			errors.add(new EvenementCivilErreur("L'habitant avec le numéro d'individu = " + noIndividu + " n'existe pas dans le registre."));
+		}
+		return habitant;
+	}
+
+	public TiersService getService() {
+		return context.getTiersService();
 	}
 }

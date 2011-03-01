@@ -35,7 +35,6 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
  */
 public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -52,7 +51,6 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Cas d'annulation de mariage
 		final AnnulationMariage annulation = (AnnulationMariage) evenement;
@@ -116,7 +114,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new AnnulationMariageAdapter(event, context);
+		return new AnnulationMariageAdapter(event, context, this);
 	}
 
 	@Override

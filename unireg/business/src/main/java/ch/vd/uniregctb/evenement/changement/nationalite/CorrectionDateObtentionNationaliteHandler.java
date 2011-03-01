@@ -18,7 +18,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionDateObtentionNationaliteHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -26,7 +25,6 @@ public class CorrectionDateObtentionNationaliteHandler extends EvenementCivilHan
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		if (evenement.getType() == TypeEvenementCivil.CORREC_DATE_OBTENTION_NATIONALITE_SUISSE) {
 			// TODO (PBO) CorrectionDateObtentionNationaliteHandler.handle
@@ -46,7 +44,7 @@ public class CorrectionDateObtentionNationaliteHandler extends EvenementCivilHan
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new CorrectionDateObtentionNationaliteAdapter(event, context);
+		return new CorrectionDateObtentionNationaliteAdapter(event, context, this);
 	}
 
 }

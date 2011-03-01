@@ -1,19 +1,24 @@
 package ch.vd.uniregctb.evenement.obtentionpermis;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -36,8 +41,11 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 	 */
 	private Integer numeroOfsEtenduCommunePrincipale;
 
-	protected ObtentionPermisAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+	private ObtentionPermisHandler handler;
+
+	protected ObtentionPermisAdapter(EvenementCivilData evenement, EvenementCivilContext context, ObtentionPermisHandler handler) throws EvenementAdapterException {
 		super(evenement, context);
+		this.handler = handler;
 
 		try {
 			// on récupère le permis (= à la date d'événement)
@@ -99,5 +107,20 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 		super.fillRequiredParts(parts);
 		parts.add(AttributeIndividu.PERMIS);
+	}
+
+	@Override
+	public void checkCompleteness(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.checkCompleteness(this, erreurs, warnings);
+	}
+
+	@Override
+	public void validate(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.validate(this, erreurs, warnings);
+	}
+
+	@Override
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+		return handler.handle(this, warnings);
 	}
 }

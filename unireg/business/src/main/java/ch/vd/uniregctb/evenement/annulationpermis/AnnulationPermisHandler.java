@@ -24,7 +24,6 @@ import ch.vd.uniregctb.type.TypePermis;
  */
 public class AnnulationPermisHandler extends AnnulationPermisCOuNationaliteSuisseHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil evenement, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		// rien à faire
 	}
@@ -52,7 +51,7 @@ public class AnnulationPermisHandler extends AnnulationPermisCOuNationaliteSuiss
 	
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new AnnulationPermisAdapter(event, context);
+		return new AnnulationPermisAdapter(event, context, this);
 	}
 
 	@Override

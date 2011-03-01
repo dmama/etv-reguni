@@ -81,13 +81,13 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationLeveeTutelle, erreurs, warnings);
+		annulationLeveeTutelle.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de levée de tutelle.", erreurs);
 
-		evenementCivilHandler.validate(annulationLeveeTutelle, erreurs, warnings);
+		annulationLeveeTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", erreurs);
 
-		evenementCivilHandler.handle(annulationLeveeTutelle, warnings);
+		annulationLeveeTutelle.handle(warnings);
 
 		// Récupération du tiers pupille
 		PersonnePhysique tiersPupille = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);
@@ -123,15 +123,15 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationLeveeTutelle, erreurs, warnings);
+		annulationLeveeTutelle.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de levée de tutelle.", erreurs);
 
-		evenementCivilHandler.validate(annulationLeveeTutelle, erreurs, warnings);
+		annulationLeveeTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", erreurs);
 
 		boolean errorFound = false;
 		try {
-			evenementCivilHandler.handle(annulationLeveeTutelle, warnings);
+			annulationLeveeTutelle.handle(warnings);
 		}
 		catch (EvenementCivilHandlerException eche) {
 			errorFound = true;
@@ -144,6 +144,7 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 		annulationLeveeTutelle.setIndividu(pupille);
 		annulationLeveeTutelle.setNumeroOfsCommuneAnnonce(4848);
 		annulationLeveeTutelle.setDate(DATE_ANNULATION_TUTELLE);
+		annulationLeveeTutelle.setHandler(evenementCivilHandler);
 		return annulationLeveeTutelle;
 	}
 }

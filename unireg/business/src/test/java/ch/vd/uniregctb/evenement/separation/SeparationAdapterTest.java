@@ -35,8 +35,8 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
-		SeparationAdapter adapter = new SeparationAdapter(evenementsCivils, context);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		SeparationAdapter adapter = new SeparationAdapter(evenementsCivils, context, null);
 		assertNull("le conjoint d'un marié seul ne doit pas exister", adapter.getAncienConjoint());
 	}
 	
@@ -46,8 +46,8 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 		momo.setNumero(INDIVIDU_MARIE);
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, 0L, null, 1234, null );
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
-		SeparationAdapter adapter = new SeparationAdapter(evenementsCivils, context);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		SeparationAdapter adapter = new SeparationAdapter(evenementsCivils, context, null);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getAncienConjoint());
 	}
 	
@@ -57,8 +57,8 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 		david.setNumero(INDIVIDU_PACSE);
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, 0L, null, 1234, null );
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
-		SeparationAdapter adapter = new SeparationAdapter(evenementsCivils, context);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		SeparationAdapter adapter = new SeparationAdapter(evenementsCivils, context, null);
 		assertNotNull("le conjoint d'un pacsé doit exister", adapter.getAncienConjoint());
 	}
 }

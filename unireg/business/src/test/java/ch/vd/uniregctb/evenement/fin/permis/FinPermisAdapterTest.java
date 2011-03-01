@@ -85,8 +85,8 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		roberto.setNumero(NUMERO_INDIVIDU);
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU, roberto, 0L, null, 1234, null);
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
-		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context, null);
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		rosa.setNumero(NUMERO_INDIVIDU_2);
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU_2, rosa, 0L, null, 1234, null);
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, false);
-		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context, null);
 	}
 }

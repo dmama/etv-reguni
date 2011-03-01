@@ -46,7 +46,6 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
  */
 public class DepartHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		Audit.info(target.getNumeroEvenement(), "Verification de la cohérence du départ");
 		Depart depart = (Depart) target;
@@ -71,7 +70,6 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		final Depart depart = (Depart) evenement;
 
@@ -325,7 +323,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new DepartAdapter(event, context);
+		return new DepartAdapter(event, context, this);
 	}
 
 	protected final void validateDepartAdressePrincipale(Depart depart, List<EvenementCivilErreur> erreurs) {

@@ -31,7 +31,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class CorrectionDateArriveeHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -103,7 +102,6 @@ public class CorrectionDateArriveeHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		// le dernier for principal doit voir sa date d'ouverture modifiée à la date de l'événement
@@ -135,7 +133,7 @@ public class CorrectionDateArriveeHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new CorrectionDateArriveeAdapter(event, context);
+		return new CorrectionDateArriveeAdapter(event, context, this);
 	}
 
 }

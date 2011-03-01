@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -120,11 +119,6 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.evenement.common.www#checkCompleteness(ch.vd.uniregctb.evenement.EvenementCivil, java.util.List, java.util.List)
-	 */
-	public abstract void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings);
-
-	/**
 	 * Validation commune l'objet target passé en paramètre.
 	 *
 	 * @param target
@@ -141,11 +135,6 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 			validateSpecific(target, erreurs, warnings);
 		}
 	}
-
-	/**
-	 * @see ch.vd.uniregctb.evenement.common.www#handle(ch.vd.uniregctb.evenement.EvenementCivil)
-	 */
-	public abstract Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException;
 
 	private void validateCommon(EvenementCivil evenement, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 

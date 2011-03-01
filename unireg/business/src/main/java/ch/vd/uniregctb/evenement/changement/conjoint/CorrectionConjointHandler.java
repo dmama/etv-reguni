@@ -27,7 +27,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil evenement, List<EvenementCivilErreur> errors, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -83,7 +82,6 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 		
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Individu individu = evenement.getIndividu();
@@ -185,7 +183,7 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new CorrectionConjointAdapter(event, context);
+		return new CorrectionConjointAdapter(event, context, this);
 	}
 
 }

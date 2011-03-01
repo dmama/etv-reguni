@@ -26,7 +26,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class RemiseBlancDateFinNationaliteHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		// rien à faire
 	}
@@ -47,7 +46,6 @@ public class RemiseBlancDateFinNationaliteHandler extends EvenementCivilHandlerB
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// rien à faire
 		return null;
@@ -63,7 +61,7 @@ public class RemiseBlancDateFinNationaliteHandler extends EvenementCivilHandlerB
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new RemiseBlancDateFinNationaliteAdapter(event, context);
+		return new RemiseBlancDateFinNationaliteAdapter(event, context, this);
 	}
 
 }

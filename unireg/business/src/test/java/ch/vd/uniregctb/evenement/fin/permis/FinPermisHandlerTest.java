@@ -74,13 +74,13 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(finPermis, erreurs, warnings);
+		finPermis.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
-		evenementCivilHandler.validate(finPermis, erreurs, warnings);
+		finPermis.validate(erreurs, warnings);
 		assertTrue("La fin de permis C devrait être ignorée", erreurs.size() == 0);
 
-		evenementCivilHandler.handle(finPermis, warnings);
+		finPermis.handle(warnings);
 	}
 
 	@Test
@@ -94,13 +94,13 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(finPermis, erreurs, warnings);
+		finPermis.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
-		evenementCivilHandler.validate(finPermis, erreurs, warnings);
+		finPermis.validate(erreurs, warnings);
 		assertTrue("La fin de permis C devrait passer en traitement manuel", erreurs.size() == 1);
 
-		evenementCivilHandler.handle(finPermis, warnings);
+		finPermis.handle(warnings);
 	}
 
 	@Test
@@ -114,13 +114,13 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(finPermis, erreurs, warnings);
+		finPermis.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
-		evenementCivilHandler.validate(finPermis, erreurs, warnings);
+		finPermis.validate(erreurs, warnings);
 		assertTrue("La fin de permis non C devrait être ignorée", erreurs.size() == 0);
 
-		evenementCivilHandler.handle(finPermis, warnings);
+		finPermis.handle(warnings);
 
 	}
 
@@ -131,6 +131,7 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		finPermis.setDate(dateFinNationalite);
 		finPermis.setNumeroOfsCommuneAnnonce(5652);
 		finPermis.setTypePermis(TypePermis.ETABLISSEMENT);
+		finPermis.setHandler(evenementCivilHandler);
 		return finPermis;
 	}
 
@@ -141,6 +142,8 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		finPermis.setDate(dateFinNationalite);
 		finPermis.setNumeroOfsCommuneAnnonce(5652);
 		finPermis.setTypePermis(TypePermis.COURTE_DUREE);
+		finPermis.setHandler(evenementCivilHandler);
+		finPermis.setHandler(evenementCivilHandler);
 		return finPermis;
 	}
 }

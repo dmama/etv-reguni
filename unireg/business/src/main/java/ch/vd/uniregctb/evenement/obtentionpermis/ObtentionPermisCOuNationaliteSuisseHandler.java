@@ -93,7 +93,6 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 	 * Traite l'événement passé en paramètre.
 	 *
 	 */
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = evenement.getIndividu();

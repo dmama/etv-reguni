@@ -82,18 +82,19 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
+				final MockAnnulationDeces annulation = createValidAnnulationDeces(ind);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+				annulation.setHandler(evenementCivilHandler);
+				annulation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
-				evenementCivilHandler.validate(annulation, erreurs, warnings);
+				annulation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
 
-				evenementCivilHandler.handle(annulation, warnings);
+				annulation.handle(warnings);
 				return null;
 			}
 		});
@@ -165,18 +166,19 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
-				final AnnulationDeces annulation = createValidAnnulationDeces(individu);
+				final MockAnnulationDeces annulation = createValidAnnulationDeces(individu);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+				annulation.setHandler(evenementCivilHandler);
+				annulation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
-				evenementCivilHandler.validate(annulation, erreurs, warnings);
+				annulation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
 
-				evenementCivilHandler.handle(annulation, warnings);
+				annulation.handle(warnings);
 				return null;
 			}
 		});
@@ -276,18 +278,19 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, 2008);
-				final AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
+				final MockAnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+				annulation.setHandler(evenementCivilHandler);
+				annulation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
-				evenementCivilHandler.validate(annulation, erreurs, warnings);
+				annulation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
 
-				evenementCivilHandler.handle(annulation, warnings);
+				annulation.handle(warnings);
 				return null;
 			}
 		});

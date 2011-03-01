@@ -63,9 +63,9 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(naissance, erreurs, warnings);
-		evenementCivilHandler.validate(naissance, erreurs, warnings);
-		evenementCivilHandler.handle(naissance, warnings);
+		naissance.checkCompleteness(erreurs, warnings);
+		naissance.validate(erreurs, warnings);
+		naissance.handle(warnings);
 
 		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de la naissance");
 
@@ -93,9 +93,9 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(naissance, erreurs, warnings);
-		evenementCivilHandler.validate(naissance, erreurs, warnings);
-		evenementCivilHandler.handle(naissance, warnings);
+		naissance.checkCompleteness(erreurs, warnings);
+		naissance.validate(erreurs, warnings);
+		naissance.handle(warnings);
 
 		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de la naissance");
 
@@ -122,9 +122,9 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(naissance, erreurs, warnings);
-		evenementCivilHandler.validate(naissance, erreurs, warnings);
-		evenementCivilHandler.handle(naissance, warnings);
+		naissance.checkCompleteness(erreurs, warnings);
+		naissance.validate(erreurs, warnings);
+		naissance.handle(warnings);
 
 		Assert.isTrue(!erreurs.isEmpty(), "Une erreur aurait du survenir puisque l'individu est majeur");
 	}
@@ -135,7 +135,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 
 		naissance.setNumeroOfsCommuneAnnonce(4848);
 		naissance.setDate(individu.getDateNaissance());
-
+		naissance.setHandler(evenementCivilHandler);
 		return naissance;
 	}
 
@@ -191,15 +191,15 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(naissance, erreurs, warnings);
+				naissance.checkCompleteness(erreurs, warnings);
 				assertEmpty(erreurs);
 				assertEmpty(warnings);
 
-				evenementCivilHandler.validate(naissance, erreurs, warnings);
+				naissance.validate(erreurs, warnings);
 				assertEmpty(erreurs);
 				assertEmpty(warnings);
 
-				final Pair<PersonnePhysique, PersonnePhysique> res = evenementCivilHandler.handle(naissance, warnings);
+				final Pair<PersonnePhysique, PersonnePhysique> res = naissance.handle(warnings);
 				assertEmpty(erreurs);
 				assertEmpty(warnings);
 

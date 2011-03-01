@@ -66,16 +66,16 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-		
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de mariage", erreurs);
 		
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
+		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", erreurs);
 		
 		boolean errorFound = false;
 		try {
-			evenementCivilHandler.handle(annulation, warnings);
+			annulation.handle(warnings);
 		}
 		catch (Exception ex) {
 			errorFound = true;
@@ -94,13 +94,13 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de mariage", erreurs);
 		
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
+		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", erreurs);
 
-		evenementCivilHandler.handle(annulation, warnings);
+		annulation.handle(warnings);
 		
 		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
 		assertNotNull("Le tiers n'as pas été trouvé", pierre);
@@ -142,13 +142,13 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de mariage", erreurs);
 		
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
+		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", erreurs);
 
-		evenementCivilHandler.handle(annulation, warnings);
+		annulation.handle(warnings);
 
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE);
 		assertNotNull("Le tiers n'as pas été trouvé", momo);
@@ -200,6 +200,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		annulation.setIndividu(individu);
 		annulation.setNumeroOfsCommuneAnnonce(5652);
 		annulation.setDate(date);
+		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}
 

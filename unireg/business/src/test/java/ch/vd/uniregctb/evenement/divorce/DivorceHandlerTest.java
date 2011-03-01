@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.divorce;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +16,10 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Test du handler de divorce:
@@ -101,10 +101,10 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(divorce, erreurs, warnings);
+		divorce.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 
-		evenementCivilHandler.validate(divorce, erreurs, warnings);
+		divorce.validate(erreurs, warnings);
 		assertEquals("l'événement aurait du être en erreur car personne non marié", erreurs.isEmpty(), false);
 		
 	}
@@ -119,13 +119,13 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(divorce, erreurs, warnings);
+		divorce.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 		
-		evenementCivilHandler.validate(divorce, erreurs, warnings);
+		divorce.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate du divorce.", erreurs);
 		
-		evenementCivilHandler.handle(divorce, warnings);
+		divorce.handle(warnings);
 		
 		PersonnePhysique habitantDivorce = tiersDAO.getHabitantByNumeroIndividu(INDIVIDU_MARIE_SEUL);
 		assertNotNull("le tiers correspondant au divorcé n'a pas été trouvé", habitantDivorce);
@@ -169,13 +169,13 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(divorce, erreurs, warnings);
+		divorce.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 		
-		evenementCivilHandler.validate(divorce, erreurs, warnings);
+		divorce.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate du divorce.", erreurs);
 		
-		evenementCivilHandler.handle(divorce, warnings);
+		divorce.handle(warnings);
 		
 		/*
 		 * Test de récupération du tiers qui divorce
@@ -236,10 +236,10 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(divorce, erreurs, warnings);
+		divorce.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 		
-		evenementCivilHandler.validate(divorce, erreurs, warnings);
+		divorce.validate(erreurs, warnings);
 		assertEquals("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", erreurs.isEmpty(), false);
 		
 	}
@@ -255,13 +255,13 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(divorce, erreurs, warnings);
+		divorce.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 		
-		evenementCivilHandler.validate(divorce, erreurs, warnings);
+		divorce.validate(erreurs, warnings);
 		assertEquals("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", erreurs.isEmpty(), false);
 		
-		evenementCivilHandler.handle(divorce, warnings);
+		divorce.handle(warnings);
 
 		/*
 		 * Test de récupération du tiers qui divorce
@@ -292,6 +292,7 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		divorce.setNumeroOfsCommuneAnnonce(5652);
 		divorce.setDate(DATE_DIVORCE);
 
+		divorce.setHandler(evenementCivilHandler);
 		return divorce;
 	
 	}

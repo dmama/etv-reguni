@@ -34,6 +34,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -53,6 +54,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private EvenementCivilDAO evenementCivilDAO;
 	private TiersDAO tiersDAO;
 	private DataEventService dataEventService;
+	private TiersService tiersService;
 
 	/**
 	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
@@ -244,18 +246,18 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				return;
 			}
 
-			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, refreshCache);
+			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, refreshCache);
 			final GenericEvenementAdapter adapter = evenementCivilHandler.createAdapter(evenementCivilData, context);
 
 			/* 2.1 - lancement de la validation par le handler */
-			evenementCivilHandler.checkCompleteness(adapter, erreurs, warnings);
+			adapter.checkCompleteness(erreurs, warnings);
 
 			/* 2.2 - lancement de la validation par le handler */
 			if (erreurs.isEmpty()) {
-				evenementCivilHandler.validate(adapter, erreurs, warnings);
+				adapter.validate(erreurs, warnings);
 				/* 2.3 - lancement du traitement par le handler */
 				if (erreurs.isEmpty()) {
-					final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = evenementCivilHandler.handle(adapter, warnings);
+					final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = adapter.handle(warnings);
 
 					// adaptation des données dans l'événement civil en cas de création de nouveaux habitants
 					if (nouveauxHabitants != null) {
@@ -394,5 +396,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 }

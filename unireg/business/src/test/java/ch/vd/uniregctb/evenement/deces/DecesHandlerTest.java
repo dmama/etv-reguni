@@ -113,9 +113,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(deces, erreurs, warnings);
-		evenementCivilHandler.validate(deces, erreurs, warnings);
-		evenementCivilHandler.handle(deces, warnings);
+		deces.checkCompleteness(erreurs, warnings);
+		deces.validate(erreurs, warnings);
+		deces.handle(warnings);
 
 		assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
 
@@ -158,9 +158,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(deces, erreurs, warnings);
-				evenementCivilHandler.validate(deces, erreurs, warnings);
-				evenementCivilHandler.handle(deces, warnings);
+				deces.checkCompleteness(erreurs, warnings);
+				deces.validate(erreurs, warnings);
+				deces.handle(warnings);
 
 				assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
 				return null;
@@ -253,9 +253,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(deces, erreurs, warnings);
-				evenementCivilHandler.validate(deces, erreurs, warnings);
-				evenementCivilHandler.handle(deces, warnings);
+				deces.checkCompleteness(erreurs, warnings);
+				deces.validate(erreurs, warnings);
+				deces.handle(warnings);
 
 				assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
 				return null;
@@ -335,6 +335,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		deces.setNumeroOfsCommuneAnnonce(5652);
 		deces.setDate(dateDeces);
 		deces.init(tiersDAO);
+		deces.setHandler(evenementCivilHandler);
 
 		return deces;
 	}
@@ -386,9 +387,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(deces, erreurs, warnings);
-				evenementCivilHandler.validate(deces, erreurs, warnings);
-				evenementCivilHandler.handle(deces, warnings);
+				deces.checkCompleteness(erreurs, warnings);
+				deces.validate(erreurs, warnings);
+				deces.handle(warnings);
 
 				assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
 				return null;

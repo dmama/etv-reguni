@@ -5,6 +5,7 @@ import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.depart.DepartAdapter;
+import ch.vd.uniregctb.evenement.depart.DepartHandler;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -18,8 +19,8 @@ public class MockDepartAdapter extends DepartAdapter {
 	private Individu individu;
 	private RegDate date;
 
-	protected MockDepartAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
-		super(evenement, context);
+	protected MockDepartAdapter(EvenementCivilData evenement, EvenementCivilContext context, DepartHandler handler) throws EvenementAdapterException {
+		super(evenement, context, handler);
 	}
 
 	@Override

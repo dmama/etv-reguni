@@ -34,7 +34,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class AnnulationArriveeHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -43,7 +42,6 @@ public class AnnulationArriveeHandler extends EvenementCivilHandlerBase {
 		getPersonnePhysiqueOrFillErrors(target.getNoIndividu(), erreurs);
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		// [UNIREG-3017] si le CTB PP est mineur (ou le couple à la date de l'événement CTB MC a deux individus mineurs) et n'a aucun for (du tout) ou que tous sont annulés -> Traiter l'événement tout droit
@@ -89,6 +87,6 @@ public class AnnulationArriveeHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new AnnulationArriveeAdapter(event, context);
+		return new AnnulationArriveeAdapter(event, context, this);
 	}
 }

@@ -114,11 +114,11 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 	
-		evenementCivilHandler.checkCompleteness(veuvage, erreurs, warnings);
+		veuvage.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		evenementCivilHandler.validate(veuvage, erreurs, warnings);
+		veuvage.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		evenementCivilHandler.handle(veuvage, warnings);
+		veuvage.handle(warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		
 		/*
@@ -169,11 +169,11 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 	
-		evenementCivilHandler.checkCompleteness(veuvage, erreurs, warnings);
+		veuvage.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		evenementCivilHandler.validate(veuvage, erreurs, warnings);
+		veuvage.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		evenementCivilHandler.handle(veuvage, warnings);
+		veuvage.handle(warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		
 		/*
@@ -224,9 +224,9 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(veuvage, erreurs, warnings);
+		veuvage.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		evenementCivilHandler.validate(veuvage, erreurs, warnings);
+		veuvage.validate(erreurs, warnings);
 		assertTrue("Le validate doit échouer car l'individu est marié", erreurs.size() > 0);
 		
 	}
@@ -242,9 +242,9 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(veuvage, erreurs, warnings);
+		veuvage.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		evenementCivilHandler.validate(veuvage, erreurs, warnings);
+		veuvage.validate(erreurs, warnings);
 		assertTrue("Le validate doit échouer car l'individu possède un for principal ouvert après la date de veuvage.", erreurs.size() > 0);
 	}
 	
@@ -253,7 +253,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		veuvage.setIndividu(individu);
 		veuvage.setNumeroOfsCommuneAnnonce(5652);
 		veuvage.setDate(DATE_VEUVAGE);
-		
+		veuvage.setHandler(evenementCivilHandler);
 		return veuvage;
 	}
 }

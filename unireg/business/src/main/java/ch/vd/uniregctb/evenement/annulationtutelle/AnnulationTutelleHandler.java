@@ -25,7 +25,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class AnnulationTutelleHandler extends AbstractTutelleHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -33,7 +32,6 @@ public class AnnulationTutelleHandler extends AbstractTutelleHandler {
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		
 		AnnulationTutelle annulationTutelle = (AnnulationTutelle) evenement;
@@ -61,7 +59,7 @@ public class AnnulationTutelleHandler extends AbstractTutelleHandler {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new AnnulationTutelleAdapter(event, context);
+		return new AnnulationTutelleAdapter(event, context, this);
 	}
 
 }

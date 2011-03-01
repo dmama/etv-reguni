@@ -85,9 +85,9 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.validate(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.handle(obtentionPermis, warnings);
+		obtentionPermis.checkCompleteness(erreurs, warnings);
+		obtentionPermis.validate(erreurs, warnings);
+		obtentionPermis.handle(warnings);
 
 		/*
 		 * Test de la présence d'une erreur
@@ -125,9 +125,9 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.validate(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.handle(obtentionPermis, warnings);
+		obtentionPermis.checkCompleteness(erreurs, warnings);
+		obtentionPermis.validate(erreurs, warnings);
+		obtentionPermis.handle(warnings);
 
 		/*
 		 * Test de la présence d'une erreur
@@ -165,9 +165,9 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.validate(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.handle(obtentionPermis, warnings);
+		obtentionPermis.checkCompleteness(erreurs, warnings);
+		obtentionPermis.validate(erreurs, warnings);
+		obtentionPermis.handle(warnings);
 
 		/*
 		 * Test de la présence d'une erreur
@@ -230,9 +230,9 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.validate(obtentionPermis, erreurs, warnings);
-		evenementCivilHandler.handle(obtentionPermis, warnings);
+		obtentionPermis.checkCompleteness(erreurs, warnings);
+		obtentionPermis.validate(erreurs, warnings);
+		obtentionPermis.handle(warnings);
 
 		/*
 		 * Test de la présence d'une erreur
@@ -310,7 +310,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		obtentionPermis.setNumeroOfsEtenduCommunePrincipale(noOfsCommunePrincipale);
 		obtentionPermis.setDate( dateObtentionPermis );
 		obtentionPermis.setTypePermis( TypePermis.ETABLISSEMENT);
-
+		obtentionPermis.setHandler(evenementCivilHandler);
 		return obtentionPermis;
 	}
 
@@ -331,7 +331,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		obtentionPermis.setNumeroOfsEtenduCommunePrincipale(noOfsCommunePrincipale);
 		obtentionPermis.setDate(dateObtentionPermis);
 		obtentionPermis.setTypePermis(typePermis);
-
+		obtentionPermis.setHandler(evenementCivilHandler);
 		return obtentionPermis;
 	}
 
@@ -371,15 +371,15 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(obtentionPermis, erreurs, warnings);
+				obtentionPermis.checkCompleteness(erreurs, warnings);
 				org.junit.Assert.assertTrue(erreurs.isEmpty());
 				org.junit.Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.validate(obtentionPermis, erreurs, warnings);
+				obtentionPermis.validate(erreurs, warnings);
 				org.junit.Assert.assertTrue(erreurs.isEmpty());
 				org.junit.Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.handle(obtentionPermis, warnings);
+				obtentionPermis.handle(warnings);
 				org.junit.Assert.assertTrue(warnings.isEmpty());
 
 				return null;
@@ -433,15 +433,15 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(obtentionPermis, erreurs, warnings);
+				obtentionPermis.checkCompleteness(erreurs, warnings);
 				org.junit.Assert.assertTrue(erreurs.isEmpty());
 				org.junit.Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.validate(obtentionPermis, erreurs, warnings);
+				obtentionPermis.validate(erreurs, warnings);
 				org.junit.Assert.assertTrue(erreurs.isEmpty());
 				org.junit.Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.handle(obtentionPermis, warnings);
+				obtentionPermis.handle(warnings);
 				org.junit.Assert.assertTrue(warnings.isEmpty());
 
 				return null;

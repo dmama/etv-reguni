@@ -29,7 +29,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
 	}
@@ -82,7 +81,7 @@ public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new CorrectionDateNaissanceAdapter(event, context);
+		return new CorrectionDateNaissanceAdapter(event, context, this);
 	}
 
 	@Override

@@ -75,13 +75,13 @@ public class LeveeTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(leveeTutelle, erreurs, warnings);
+		leveeTutelle.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la levée de tutelle.", erreurs);
 
-		evenementCivilHandler.validate(leveeTutelle, erreurs, warnings);
+		leveeTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de la levée de tutelle.", erreurs);
 
-		evenementCivilHandler.handle(leveeTutelle, warnings);
+		leveeTutelle.handle(warnings);
 
 		/*
 		 * Récupération du tiers pupille
@@ -113,6 +113,7 @@ public class LeveeTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		leveeTutelle.setIndividu(pupille);
 		leveeTutelle.setNumeroOfsCommuneAnnonce(4848);
 		leveeTutelle.setDate(DATE_LEVEE_TUTELLE);
+		leveeTutelle.setHandler(evenementCivilHandler);
 		return leveeTutelle;
 	}
 

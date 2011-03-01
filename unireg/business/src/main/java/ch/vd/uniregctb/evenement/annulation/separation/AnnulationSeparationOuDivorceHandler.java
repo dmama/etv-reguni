@@ -5,14 +5,16 @@ import java.util.List;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivilHandlerBase {
+
+	public abstract void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings);
 
 	@Override
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
@@ -41,7 +43,6 @@ public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivi
 		}
 	}
 	
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Récupération du tiers principal.
 		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());

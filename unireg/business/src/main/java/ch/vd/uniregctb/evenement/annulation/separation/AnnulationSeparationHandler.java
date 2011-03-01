@@ -33,7 +33,7 @@ public class AnnulationSeparationHandler extends AnnulationSeparationOuDivorceHa
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new AnnulationSeparationAdapter(event, context);
+		return new AnnulationSeparationAdapter(event, context, this);
 	}
 
 }

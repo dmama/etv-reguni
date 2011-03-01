@@ -74,13 +74,13 @@ public class AnnulationTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationTutelle, erreurs, warnings);
+		annulationTutelle.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de tutelle.", erreurs);
 
-		evenementCivilHandler.validate(annulationTutelle, erreurs, warnings);
+		annulationTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de tutelle.", erreurs);
 
-		evenementCivilHandler.handle(annulationTutelle, warnings);
+		annulationTutelle.handle(warnings);
 
 		// Récupération du tiers pupille
 		PersonnePhysique tiersPupille = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);
@@ -105,6 +105,7 @@ public class AnnulationTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		annulationTutelle.setIndividu(pupille);
 		annulationTutelle.setNumeroOfsCommuneAnnonce(4848);
 		annulationTutelle.setDate(DATE_ANNULATION_TUTELLE);
+		annulationTutelle.setHandler(evenementCivilHandler);
 		return annulationTutelle;
 	}
 }

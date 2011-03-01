@@ -84,13 +84,13 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de veuvage", erreurs);
 
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
+		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de veuvage", erreurs);
 
-		evenementCivilHandler.handle(annulation, warnings);
+		annulation.handle(warnings);
 
 		PersonnePhysique andre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
 		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", andre);
@@ -142,10 +142,10 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de veuvage", erreurs);
 
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
+		annulation.validate(erreurs, warnings);
 		assertEquals("Une erreur aurait dû se produire lors du validate de l'annulation.", 1, erreurs.size());
 	}
 
@@ -155,6 +155,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		annulation.setIndividu(individu);
 		annulation.setNumeroOfsCommuneAnnonce(5652);
 		annulation.setDate(DATE_VEUVAGE);
+		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}
 

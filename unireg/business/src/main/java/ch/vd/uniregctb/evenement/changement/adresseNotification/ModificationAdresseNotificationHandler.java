@@ -48,7 +48,6 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 		this.infraService = infraService;
 	}
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -148,7 +147,7 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ModificationAdresseNotificationAdapter(event, context);
+		return new ModificationAdresseNotificationAdapter(event, context, this);
 	}
 
 	@Override

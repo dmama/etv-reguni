@@ -18,7 +18,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class TestingHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
 		if (target.getNumeroEvenement().equals(121L)) {
@@ -40,7 +39,6 @@ public class TestingHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		return null;
 	}
@@ -51,7 +49,7 @@ public class TestingHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new TestingAdapter(event, context);
+		return new TestingAdapter(event, context, this);
 	}
 
 	@Override

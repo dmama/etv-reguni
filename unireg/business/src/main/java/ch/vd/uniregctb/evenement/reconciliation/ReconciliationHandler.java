@@ -28,7 +28,6 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 
 	private static final Logger LOGGER = Logger.getLogger(ReconciliationHandler.class);
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -91,7 +90,6 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Reconciliation reconciliation = (Reconciliation) evenement;
@@ -118,7 +116,7 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ReconciliationAdapter(event, context);
+		return new ReconciliationAdapter(event, context, this);
 	}
 
 }

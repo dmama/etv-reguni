@@ -36,7 +36,6 @@ import ch.vd.uniregctb.type.TypeTutelle;
  */
 public class TutelleHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		/* rien à faire ici, un seul événement unitaire pour le pupille */
 	}
@@ -57,7 +56,6 @@ public class TutelleHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Tutelle tutelle = (Tutelle) evenement;
@@ -212,7 +210,7 @@ public class TutelleHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new TutelleAdapter(event, context);
+		return new TutelleAdapter(event, context, this);
 	}
 
 }

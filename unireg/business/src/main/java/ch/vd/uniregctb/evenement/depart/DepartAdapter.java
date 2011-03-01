@@ -1,17 +1,23 @@
 package ch.vd.uniregctb.evenement.depart;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
  * Modélise un événement de depart.
@@ -60,8 +66,11 @@ public class DepartAdapter extends EvenementAdapterAvecAdresses implements Depar
 	 */
 	private boolean isAncienTypeDepart = false;
 
-	protected DepartAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+	private DepartHandler handler;
+
+	protected DepartAdapter(EvenementCivilData evenement, EvenementCivilContext context, DepartHandler handler) throws EvenementAdapterException {
 		super(evenement, context);
+		this.handler = handler;
 
 		if (evenement.getNumeroIndividuConjoint()!=null) {
 			isAncienTypeDepart = true;
@@ -141,5 +150,20 @@ public class DepartAdapter extends EvenementAdapterAvecAdresses implements Depar
 	public boolean isAncienTypeDepart() {
 
 		return isAncienTypeDepart;
+	}
+
+	@Override
+	public void checkCompleteness(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.checkCompleteness(this, erreurs, warnings);
+	}
+
+	@Override
+	public void validate(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.validate(this, erreurs, warnings);
+	}
+
+	@Override
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+		return handler.handle(this, warnings);
 	}
 }

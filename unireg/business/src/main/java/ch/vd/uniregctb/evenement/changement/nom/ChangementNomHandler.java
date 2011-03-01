@@ -24,7 +24,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementNomHandler extends AbstractChangementHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		/* Rien de spécial pour le changement de nom */
 
@@ -70,6 +69,6 @@ public class ChangementNomHandler extends AbstractChangementHandler {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ChangementNomAdapter(event, context);
+		return new ChangementNomAdapter(event, context, this);
 	}
 }

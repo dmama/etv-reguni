@@ -18,7 +18,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionFinValiditePermisHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -26,7 +25,6 @@ public class CorrectionFinValiditePermisHandler extends EvenementCivilHandlerBas
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// TODO (PBO) CorrectionFinValiditePermisHandler.handle
 		throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");

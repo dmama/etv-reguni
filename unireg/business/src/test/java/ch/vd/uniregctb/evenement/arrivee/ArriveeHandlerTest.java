@@ -72,13 +72,13 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		// 1er test : individu seul
 		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		MockArrivee arrivee = createValidArrivee(individuSeul);
-		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		arrivee.checkCompleteness(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
 
 		// 2ème test : individu marié seul
 		final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
 		arrivee = createValidArrivee(individuMarieSeul);
-		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		arrivee.checkCompleteness(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
 	}
 
@@ -96,7 +96,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		// 1er test : événement avec une date dans le futur
 		MockArrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setDate(DATE_FUTURE);
-		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs, "Une date future pour l'événement aurait dû renvoyer une erreur");
 
 		// 2ème test : arrivée antérieur à la date de début de validité de
@@ -112,7 +112,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee.setAncienneAdressePrincipale(ancienneAdresse);
 		arrivee.setAncienneCommunePrincipale(ancienneCommune);
 		arrivee.setDate(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
-		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs,
 				"L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
 
@@ -122,7 +122,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
 		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Neuchatel.getNoOFSEtendu());
-		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs, "L'arrivée est hors canton, une erreur aurait du être déclenchée");
 
 		// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
@@ -131,7 +131,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setNouvelleCommunePrincipale(MockCommune.Fraction.LeSentier);
 		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.LeChenit.getNoOFSEtendu());
-		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(warnings.size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
 	}
 
@@ -155,7 +155,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		MockArrivee arrivee = createValidArrivee(inconnu);
 		arrivee.setAdresseCourrier(null);
 		arrivee.setAdressePrincipale(null);
-		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
 		/*
@@ -169,7 +169,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee = createValidArrivee(individu);
 		arrivee.setAdresseCourrier(null);
 		arrivee.setAdressePrincipale(null);
-		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
 	}
@@ -184,9 +184,9 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
-		evenementCivilHandler.validate(arrivee, erreurs, warnings);
-		evenementCivilHandler.handle(arrivee, warnings);
+		arrivee.checkCompleteness(erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
+		arrivee.handle(warnings);
 
 		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de l'arrivée");
 
@@ -237,6 +237,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee.setNumeroOfsCommuneAnnonce(commune.getNoOFSEtendu());
 		arrivee.setDate(DATE_VALIDE);
 		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
+		arrivee.setHandler(evenementCivilHandler);
 
 		return arrivee;
 	}

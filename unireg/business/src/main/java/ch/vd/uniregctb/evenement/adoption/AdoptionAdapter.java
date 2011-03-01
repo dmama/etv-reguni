@@ -1,13 +1,19 @@
 package ch.vd.uniregctb.evenement.adoption;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
  * Modélise un événement d'adoption.
@@ -42,4 +48,18 @@ public class AdoptionAdapter extends GenericEvenementAdapter implements Adoption
 		this.dateDebutAdoption = dateDebutAdoption;
 	}
 
+	@Override
+	public void checkCompleteness(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void validate(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+		throw new NotImplementedException();
+	}
 }

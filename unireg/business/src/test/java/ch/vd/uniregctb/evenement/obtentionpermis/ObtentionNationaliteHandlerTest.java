@@ -92,9 +92,9 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
-		evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
-		evenementCivilHandler.handle(obtentionNationalite, warnings);
+		obtentionNationalite.checkCompleteness(erreurs, warnings);
+		obtentionNationalite.validate(erreurs, warnings);
+		obtentionNationalite.handle(warnings);
 
 		/*
 		 * Test de la présence d'une erreur
@@ -130,9 +130,9 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
-		evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
-		evenementCivilHandler.handle(obtentionNationalite, warnings);
+		obtentionNationalite.checkCompleteness(erreurs, warnings);
+		obtentionNationalite.validate(erreurs, warnings);
+		obtentionNationalite.handle(warnings);
 
 		/*
 		 * Test de la présence d'une erreur
@@ -172,9 +172,9 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 				Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, 2007);
 				ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
 
-				evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
-				evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
-				evenementCivilHandler.handle(obtentionNationalite, warnings);
+				obtentionNationalite.checkCompleteness(erreurs, warnings);
+				obtentionNationalite.validate(erreurs, warnings);
+				obtentionNationalite.handle(warnings);
 				return null;
 			}
 		});
@@ -238,9 +238,9 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
-		evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
-		evenementCivilHandler.handle(obtentionNationalite, warnings);
+		obtentionNationalite.checkCompleteness(erreurs, warnings);
+		obtentionNationalite.validate(erreurs, warnings);
+		obtentionNationalite.handle(warnings);
 
 		/*
 		 * Test de la présence d'une erreur
@@ -315,7 +315,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(numeroOfsCommunePrincipale);
 		obtentionNationalite.setDate(dateObtentionNationalite);
 		obtentionNationalite.setType(TypeEvenementCivil.NATIONALITE_SUISSE);
-
+		obtentionNationalite.setHandler(evenementCivilHandler);
 		return obtentionNationalite;
 	}
 
@@ -335,7 +335,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(numeroOfsCommunePrincipale);
 		obtentionNationalite.setDate(dateObtentionNationalite);
 		obtentionNationalite.setType(TypeEvenementCivil.NATIONALITE_NON_SUISSE);
-
+		obtentionNationalite.setHandler(evenementCivilHandler);
 		return obtentionNationalite;
 	}
 
@@ -373,15 +373,15 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
+				obtentionNationalite.checkCompleteness(erreurs, warnings);
 				Assert.assertTrue(erreurs.isEmpty());
 				Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
+				obtentionNationalite.validate(erreurs, warnings);
 				Assert.assertTrue(erreurs.isEmpty());
 				Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.handle(obtentionNationalite, warnings);
+				obtentionNationalite.handle(warnings);
 				Assert.assertTrue(warnings.isEmpty());
 
 				return null;
@@ -433,15 +433,15 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
+				obtentionNationalite.checkCompleteness(erreurs, warnings);
 				Assert.assertTrue(erreurs.isEmpty());
 				Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
+				obtentionNationalite.validate(erreurs, warnings);
 				Assert.assertTrue(erreurs.isEmpty());
 				Assert.assertTrue(warnings.isEmpty());
 
-				evenementCivilHandler.handle(obtentionNationalite, warnings);
+				obtentionNationalite.handle(warnings);
 				Assert.assertTrue(warnings.isEmpty());
 
 				return null;

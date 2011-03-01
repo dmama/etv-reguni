@@ -61,10 +61,10 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(remiseBlancFinNationalite, erreurs, warnings);
+		remiseBlancFinNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
-		evenementCivilHandler.validate(remiseBlancFinNationalite, erreurs, warnings);
+		remiseBlancFinNationalite.validate(erreurs, warnings);
 		assertTrue("La mise à blanc de la date de fin de nationalité suisse devrait être traitée manuellement", erreurs.size() == 1);
 	}
 
@@ -79,10 +79,10 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(remiseBlancFinNationalite, erreurs, warnings);
+		remiseBlancFinNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
-		evenementCivilHandler.validate(remiseBlancFinNationalite, erreurs, warnings);
+		remiseBlancFinNationalite.validate(erreurs, warnings);
 		assertTrue("La mise à blanc de la date de fin de nationalité non suisse devrait être ignorée", erreurs.size() == 0);
 	}
 
@@ -92,6 +92,7 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 		finNationalite.setType(TypeEvenementCivil.ANNUL_DATE_FIN_NATIONALITE_SUISSE);
 		finNationalite.setDate(date);
 		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}
 
@@ -101,6 +102,7 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 		finNationalite.setType(TypeEvenementCivil.ANNUL_DATE_FIN_NATIONALITE_NON_SUISSE);
 		finNationalite.setDate(date);
 		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}
 }

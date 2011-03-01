@@ -7,14 +7,14 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
  * Règles métiers permettant de traiter les événements suivants :
@@ -29,7 +29,6 @@ public abstract class AnnulationPermisCOuNationaliteSuisseHandler extends Evenem
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase#handle(ch.vd.uniregctb.evenement.EvenementCivil)
 	 */
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		Individu individu = evenement.getIndividu();

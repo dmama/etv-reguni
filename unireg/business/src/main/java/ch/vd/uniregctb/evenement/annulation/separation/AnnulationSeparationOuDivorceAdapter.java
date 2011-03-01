@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.changement.identificateur;
+package ch.vd.uniregctb.evenement.annulation.separation;
 
 import java.util.List;
 
@@ -11,13 +11,24 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class ChangementIdentificateurAdapter extends GenericEvenementAdapter {
+/**
+ * Adapter pour l'annulation de séparation.
+ *
+ * @author Pavel BLANCO
+ *
+ */
+public class AnnulationSeparationOuDivorceAdapter extends GenericEvenementAdapter implements AnnulationSeparation {
 
-	private ChangementIdentificateurHandler handler;
+	private AnnulationSeparationOuDivorceHandler handler;
 
-	protected ChangementIdentificateurAdapter(EvenementCivilData evenement, EvenementCivilContext context, ChangementIdentificateurHandler handler) throws EvenementAdapterException {
+	protected AnnulationSeparationOuDivorceAdapter(EvenementCivilData evenement, EvenementCivilContext context, AnnulationSeparationOuDivorceHandler handler) throws EvenementAdapterException {
 		super(evenement, context);
 		this.handler = handler;
+	}
+
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
 	}
 
 	@Override

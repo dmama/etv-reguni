@@ -81,13 +81,14 @@ public class ChangementIdentificateurHandlerTest  extends AbstractEvenementHandl
 		chgtIdentificateur.setDate(RegDate.get());
 		chgtIdentificateur.setNumeroOfsCommuneAnnonce(4848);
 		chgtIdentificateur.init(tiersDAO);
+		chgtIdentificateur.setHandler(evenementCivilHandler);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(chgtIdentificateur, erreurs, warnings); // ne fait rien
-		evenementCivilHandler.validate(chgtIdentificateur, erreurs, warnings);// Valider la conformite sexe et numavs
-		evenementCivilHandler.handle(chgtIdentificateur, warnings);
+		chgtIdentificateur.checkCompleteness(erreurs, warnings); // ne fait rien
+		chgtIdentificateur.validate(erreurs, warnings);// Valider la conformite sexe et numavs
+		chgtIdentificateur.handle(warnings);
 
 		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du changement d' identificateur");
 

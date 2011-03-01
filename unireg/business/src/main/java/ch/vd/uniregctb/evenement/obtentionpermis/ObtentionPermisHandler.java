@@ -29,7 +29,6 @@ public class ObtentionPermisHandler extends ObtentionPermisCOuNationaliteSuisseH
 
 	//private static final Logger LOGGER =  Logger.getLogger(ObtentionPermisHandler.class);
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		// Obsolète dans cet handler, l'obtention de permis est un événement ne concernant qu'un seul individu.
 	}
@@ -69,7 +68,7 @@ public class ObtentionPermisHandler extends ObtentionPermisCOuNationaliteSuisseH
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ObtentionPermisAdapter(event, context);
+		return new ObtentionPermisAdapter(event, context, this);
 	}
 
 }

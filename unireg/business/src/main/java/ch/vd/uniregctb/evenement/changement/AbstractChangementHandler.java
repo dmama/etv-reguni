@@ -21,7 +21,6 @@ public abstract class AbstractChangementHandler extends EvenementCivilHandlerBas
 
 	private GlobalTiersIndexer indexer;
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		// si on n'a pas de contribuable correspondant à l'événement, on ne pourra pas l'indexer, mais c'est tout, ce n'est

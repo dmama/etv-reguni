@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.separation;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +22,10 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Test du handler de séparation:
@@ -94,13 +94,13 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(separation, erreurs, warnings);
+		separation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
-		evenementCivilHandler.validate(separation, erreurs, warnings);
+		separation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de la séparation.", erreurs);
 		
-		evenementCivilHandler.handle(separation, warnings);
+		separation.handle(warnings);
 		
 		PersonnePhysique habitantSepare = tiersDAO.getHabitantByNumeroIndividu(INDIVIDU_MARIE_SEUL);
 		assertNotNull("le tiers correspondant au séparé n'a pas été trouvé", habitantSepare);
@@ -145,13 +145,13 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(separation, erreurs, warnings);
+		separation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
-		evenementCivilHandler.validate(separation, erreurs, warnings);
+		separation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de la séparation.", erreurs);
 		
-		evenementCivilHandler.handle(separation, warnings);
+		separation.handle(warnings);
 		
 		/*
 		 * Test de récupération du tiers qui se sépare
@@ -214,10 +214,10 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(separation, erreurs, warnings);
+		separation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
-		evenementCivilHandler.validate(separation, erreurs, warnings);
+		separation.validate(erreurs, warnings);
 		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());
 		
 	}
@@ -257,14 +257,14 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(separation, erreurs, warnings);
+		separation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
-		evenementCivilHandler.validate(separation, erreurs, warnings);
+		separation.validate(erreurs, warnings);
 		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());
 
 		try {
-			evenementCivilHandler.handle(separation, warnings);
+			separation.handle(warnings);
 			Assert.fail("Le traitement de l'événement aurait dû lancer une exception");
 		}
 		catch (RuntimeException e) {
@@ -280,6 +280,7 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		separation.setAncienConjoint(conjoint);
 		separation.setNumeroOfsCommuneAnnonce(5652);
 		separation.setDate(DATE_SEPARATION);
+		separation.setHandler(evenementCivilHandler);
 		return separation;
 	}
 }

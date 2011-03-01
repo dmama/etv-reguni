@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.fin.nationalite;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +12,8 @@ import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+
+import static org.junit.Assert.assertTrue;
 
 public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 	
@@ -45,10 +45,10 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(finNationalite, erreurs, warnings);
+		finNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
-		evenementCivilHandler.validate(finNationalite, erreurs, warnings);
+		finNationalite.validate(erreurs, warnings);
 		assertTrue("La fin de nationalité suisse devrait être traitée manuellement", erreurs.size() == 1);
 	}
 
@@ -63,10 +63,10 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(finNationalite, erreurs, warnings);
+		finNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
-		evenementCivilHandler.validate(finNationalite, erreurs, warnings);
+		finNationalite.validate(erreurs, warnings);
 		assertTrue("La fin de nationalité non suisse devrait être ignorée", erreurs.size() == 0);
 	}
 
@@ -76,6 +76,7 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 		finNationalite.setType(TypeEvenementCivil.FIN_NATIONALITE_SUISSE);
 		finNationalite.setDate(dateFinNationalite);
 		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}	
 
@@ -85,6 +86,7 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 		finNationalite.setType(TypeEvenementCivil.FIN_NATIONALITE_NON_SUISSE);
 		finNationalite.setDate(dateFinNationalite);
 		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}
 }

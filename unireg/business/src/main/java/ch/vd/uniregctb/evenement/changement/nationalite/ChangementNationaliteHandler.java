@@ -17,11 +17,9 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementNationaliteHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		return null;
 	}
@@ -37,7 +35,7 @@ public class ChangementNationaliteHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ChangementNationaliteAdapter(event, context);
+		return new ChangementNationaliteAdapter(event, context, this);
 	}
 
 }

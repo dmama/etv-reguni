@@ -26,7 +26,6 @@ import ch.vd.uniregctb.type.TypePermis;
  */
 public class FinPermisHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil evenement, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		
 	}
@@ -65,7 +64,6 @@ public class FinPermisHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// rien à faire tout ce passe dans le validateSpecific
 		return null;
@@ -80,7 +78,7 @@ public class FinPermisHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new FinPermisAdapter(event, context);
+		return new FinPermisAdapter(event, context, this);
 	}
 
 }

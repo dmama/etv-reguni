@@ -81,13 +81,14 @@ public class ChangementSexeHandlerTest  extends AbstractEvenementHandlerTest {
 		chgtSexe.setDate(RegDate.get());
 		chgtSexe.setNumeroOfsCommuneAnnonce(4848);
 		chgtSexe.init(tiersDAO);
+		chgtSexe.setHandler(evenementCivilHandler);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(chgtSexe, erreurs, warnings); // ne fait rien
-		evenementCivilHandler.validate(chgtSexe, erreurs, warnings);// Valider la conformite sexe et numavs
-		evenementCivilHandler.handle(chgtSexe, warnings);
+		chgtSexe.checkCompleteness(erreurs, warnings); // ne fait rien
+		chgtSexe.validate(erreurs, warnings);// Valider la conformite sexe et numavs
+		chgtSexe.handle(warnings);
 
 		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du changement de sexe");
 

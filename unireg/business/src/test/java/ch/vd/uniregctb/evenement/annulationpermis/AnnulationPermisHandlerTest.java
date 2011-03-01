@@ -119,10 +119,10 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationPermis, erreurs, warnings);
+		annulationPermis.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.", erreurs);
 
-		evenementCivilHandler.validate(annulationPermis, erreurs, warnings);
+		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
 	}
 
@@ -136,13 +136,13 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationPermis, erreurs, warnings);
+		annulationPermis.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.", erreurs);
 
-		evenementCivilHandler.validate(annulationPermis, erreurs, warnings);
+		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
 
-		evenementCivilHandler.handle(annulationPermis, warnings);
+		annulationPermis.handle(warnings);
 
 		// Test de récupération du Tiers
 		PersonnePhysique julie  = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
@@ -168,15 +168,15 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationPermis, erreurs, warnings);
+		annulationPermis.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.validate(annulationPermis, erreurs, warnings);
+		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.handle(annulationPermis, warnings);
+		annulationPermis.handle(warnings);
 
 		// Test de récupération du Tiers
 		PersonnePhysique andre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
@@ -224,15 +224,15 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationPermis, erreurs, warnings);
+		annulationPermis.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.validate(annulationPermis, erreurs, warnings);
+		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.handle(annulationPermis, warnings);
+		annulationPermis.handle(warnings);
 
 		// Test de récupération du Tiers
 		PersonnePhysique roger = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_MARIE);
@@ -290,6 +290,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		annulationPermis.setNumeroOfsCommuneAnnonce(5586);
 		annulationPermis.setDate(dateObtentionPermis);
 		annulationPermis.setTypePermis(TypePermis.ETABLISSEMENT);
+		annulationPermis.setHandler(evenementCivilHandler);
 		return annulationPermis;
 	}
 
@@ -299,6 +300,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 		annulationPermis.setNumeroOfsCommuneAnnonce(5586);
 		annulationPermis.setDate(dateObtentionPermis);
 		annulationPermis.setTypePermis(TypePermis.COURTE_DUREE);
+		annulationPermis.setHandler(evenementCivilHandler);
 		return annulationPermis;
 	}
 }

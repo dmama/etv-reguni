@@ -39,7 +39,6 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
  */
 public class DemenagementHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -87,7 +86,6 @@ public class DemenagementHandler extends EvenementCivilHandlerBase {
 	 * Traite l'événement passé en paramètre.
 	 *
 	 */
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		Demenagement demenagement = (Demenagement) evenement;
@@ -219,7 +217,7 @@ public class DemenagementHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new DemenagementAdapter(event, context);
+		return new DemenagementAdapter(event, context, this);
 	}
 
 }

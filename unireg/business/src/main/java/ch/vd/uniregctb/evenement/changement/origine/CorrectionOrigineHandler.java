@@ -22,7 +22,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionOrigineHandler extends AbstractChangementHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -39,7 +38,7 @@ public class CorrectionOrigineHandler extends AbstractChangementHandler {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new CorrectionOrigineAdapter(event, context);
+		return new CorrectionOrigineAdapter(event, context, this);
 	}
 
 	@Override

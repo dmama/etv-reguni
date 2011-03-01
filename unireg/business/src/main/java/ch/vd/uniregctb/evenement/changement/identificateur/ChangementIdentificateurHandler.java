@@ -23,7 +23,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementIdentificateurHandler extends AbstractChangementHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
 	}
@@ -63,6 +62,6 @@ public class ChangementIdentificateurHandler extends AbstractChangementHandler {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ChangementIdentificateurAdapter(event, context);
+		return new ChangementIdentificateurAdapter(event, context, this);
 	}
 }

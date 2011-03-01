@@ -1,9 +1,14 @@
 package ch.vd.uniregctb.evenement.common;
 
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -21,6 +26,8 @@ public class MockEvenementCivil implements EvenementCivil {
 	private TypeEvenementCivil type;
 	private RegDate date;
 
+	private EvenementCivilHandler handler;
+
 	public void init(TiersDAO tiersDAO) {
 		if (individu != null) {
 			principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), false);
@@ -28,6 +35,14 @@ public class MockEvenementCivil implements EvenementCivil {
 		if (conjoint != null) {
 			conjointPPId = tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), false);
 		}
+	}
+
+	public EvenementCivilHandler getHandler() {
+		return handler;
+	}
+
+	public void setHandler(EvenementCivilHandler handler) {
+		this.handler = handler;
 	}
 
 	public Adresse getAdresseCourrier() {
@@ -130,4 +145,18 @@ public class MockEvenementCivil implements EvenementCivil {
 		return false;
 	}
 
+	@Override
+	public void checkCompleteness(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.checkCompleteness(this, erreurs, warnings);
+	}
+
+	@Override
+	public void validate(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.validate(this, erreurs, warnings);
+	}
+
+	@Override
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+		return handler.handle(this, warnings);
+	}
 }

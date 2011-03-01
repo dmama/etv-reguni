@@ -1,18 +1,24 @@
 package ch.vd.uniregctb.evenement.arrivee;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -25,19 +31,17 @@ public class ArriveeAdapter extends EvenementAdapterAvecAdresses implements Arri
 	protected static Logger LOGGER = Logger.getLogger(ArriveeAdapter.class);
 
 	private Adresse ancienneAdressePrincipale;
-
 	private Adresse ancienneAdresseSecondaire;
-
 	private CommuneSimple ancienneCommunePrincipale;
-
 	private CommuneSimple ancienneCommuneSecondaire;
-
 	private CommuneSimple nouvelleCommunePrincipale;
-
 	private CommuneSimple nouvelleCommuneSecondaire;
 
-	public ArriveeAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+	private ArriveeHandler handler;
+
+	public ArriveeAdapter(EvenementCivilData evenement, EvenementCivilContext context, ArriveeHandler handler) throws EvenementAdapterException {
 		super(evenement, context);
+		this.handler = handler;
 		Assert.isTrue(isEvenementArrivee(evenement.getType()));
 
 		// on récupère les nouvelles adresses (= à la date d'événement)
@@ -118,6 +122,21 @@ public class ArriveeAdapter extends EvenementAdapterAvecAdresses implements Arri
 
 		}
 		return isPresent;
+	}
+
+	@Override
+	public void checkCompleteness(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.checkCompleteness(this, erreurs, warnings);
+	}
+
+	@Override
+	public void validate(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.validate(this, erreurs, warnings);
+	}
+
+	@Override
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+		return handler.handle(this, warnings);
 	}
 
 }

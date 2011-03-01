@@ -165,7 +165,8 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 		return true;
 	}
 
-	@Override
+	public abstract void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings);
+
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		long numeroIndividu = evenement.getNoIndividu();

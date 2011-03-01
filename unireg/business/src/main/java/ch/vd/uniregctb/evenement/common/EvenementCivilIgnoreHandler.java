@@ -15,7 +15,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
  */
 public abstract class EvenementCivilIgnoreHandler extends EvenementCivilHandlerBase {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		// pas de validation
 	}
@@ -25,7 +24,6 @@ public abstract class EvenementCivilIgnoreHandler extends EvenementCivilHandlerB
 		// pas de validation
 	}
 
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// simplement ignoré
 		return null;

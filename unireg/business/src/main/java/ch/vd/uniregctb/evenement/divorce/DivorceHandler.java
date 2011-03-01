@@ -21,7 +21,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class DivorceHandler extends SeparationOuDivorceHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
@@ -34,6 +33,6 @@ public class DivorceHandler extends SeparationOuDivorceHandler {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new DivorceAdapter(event, context);
+		return new DivorceAdapter(event, context, this);
 	}
 }

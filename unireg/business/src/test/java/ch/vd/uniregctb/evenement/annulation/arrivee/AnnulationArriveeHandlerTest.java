@@ -11,7 +11,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
-import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
@@ -29,7 +28,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
-	private EvenementCivil createValideAnnulationArrivee(Individu individu) {
+	private MockEvenementCivil createValideAnnulationArrivee(Individu individu) {
 		final MockEvenementCivil evt = new MockEvenementCivil();
 		evt.setType(TypeEvenementCivil.SUP_ARRIVEE_DANS_COMMUNE);
 		evt.setIndividu(individu);
@@ -70,22 +69,23 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 	 * @return la liste des warnings reçus
 	 * @throws ErrorFoundException si des erreurs ont été levées dans les méthode checkCompleteness ou validate du handler
 	 */
-	private List<EvenementCivilErreur> sendEvent(EvenementCivil evt) throws ErrorFoundException {
+	private List<EvenementCivilErreur> sendEvent(MockEvenementCivil evt) throws ErrorFoundException {
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(evt, erreurs, warnings);
+		evt.setHandler(evenementCivilHandler);
+		evt.checkCompleteness(erreurs, warnings);
 		if (!erreurs.isEmpty()) {
 			throw new ErrorFoundException(ErrorLocation.CHECK_COMPLETENESS, erreurs, warnings);
 		}
 
-		evenementCivilHandler.validate(evt, erreurs, warnings);
+		evt.validate(erreurs, warnings);
 		if (!erreurs.isEmpty()) {
 			throw new ErrorFoundException(ErrorLocation.VALIDATE, erreurs, warnings);
 		}
 
-		evenementCivilHandler.handle(evt, warnings);
+		evt.handle(warnings);
 		return warnings;
 	}
 
@@ -111,7 +111,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
@@ -146,7 +146,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
@@ -180,7 +180,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais il a un for non-annulé!");
@@ -221,7 +221,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
@@ -268,7 +268,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
@@ -314,7 +314,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais il a un for non-annulé!");
@@ -366,7 +366,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
@@ -420,7 +420,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
@@ -473,7 +473,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur (et son conjoint aussi), mais il a un for non-annulé sur le ménage!");
@@ -529,7 +529,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais son conjoint ne l'est pas!");
@@ -588,7 +588,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais son conjoint ne l'est pas!");
@@ -646,7 +646,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais son conjoint ne l'est pas!");
@@ -694,7 +694,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est majeur!");
@@ -733,7 +733,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est majeur!");
@@ -771,7 +771,7 @@ public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final EvenementCivil evt = createValideAnnulationArrivee(individu);
+		final MockEvenementCivil evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est majeur avec en plus un for non-annulé!");

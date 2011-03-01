@@ -1,16 +1,22 @@
 package ch.vd.uniregctb.evenement.mariage;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
  * Modélise un événement conjugal (mariage, pacs)
@@ -26,8 +32,11 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 	 */
 	private Individu nouveauConjoint;
 
-	public MariageAdapter(EvenementCivilData evenement, EvenementCivilContext context) throws EvenementAdapterException {
+	private MariageHandler handler;
+
+	public MariageAdapter(EvenementCivilData evenement, EvenementCivilContext context, MariageHandler handler) throws EvenementAdapterException {
 		super(evenement, context);
+		this.handler = handler;
 
 		/*
 		 * Calcul de l'année où a eu lieu l'événement
@@ -89,4 +98,18 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 		return false;
 	}
 
+	@Override
+	public void checkCompleteness(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.checkCompleteness(this, erreurs, warnings);
+	}
+
+	@Override
+	public void validate(List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+		handler.validate(this, erreurs, warnings);
+	}
+
+	@Override
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+		return handler.handle(this, warnings);
+	}
 }

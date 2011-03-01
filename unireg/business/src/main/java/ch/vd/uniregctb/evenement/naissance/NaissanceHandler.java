@@ -42,7 +42,6 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 * il y a suspicion de séparation fiscale).
 	 * Les éventuels événements manquants de déménagement des enfants sont ignorés.
 	 */
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		/* Rien de spécial pour la naissance */
 	}
@@ -62,7 +61,6 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 *
 	 * @throws EvenementCivilHandlerException
 	 */
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenementCivil, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		LOGGER.debug("Traitement de la naissance de l'individu : " + evenementCivil.getNoIndividu() );
 
@@ -112,7 +110,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new NaissanceAdapter(event, context);
+		return new NaissanceAdapter(event, context, this);
 	}
 
 }

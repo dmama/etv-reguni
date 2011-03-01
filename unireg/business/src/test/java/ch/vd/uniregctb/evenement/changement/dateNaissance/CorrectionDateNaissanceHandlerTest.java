@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.evenement.changement.dateNaissance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -37,6 +32,11 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -111,11 +111,11 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(correctionDateNaissane, erreurs, warnings);
+				correctionDateNaissane.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de correction de date de naissance.", erreurs);
-				evenementCivilHandler.validate(correctionDateNaissane, erreurs, warnings);
+				correctionDateNaissane.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", erreurs);
-				evenementCivilHandler.handle(correctionDateNaissane, warnings);
+				correctionDateNaissane.handle(warnings);
 
 				return null;
 			}
@@ -173,11 +173,11 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 					final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 					final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-					evenementCivilHandler.checkCompleteness(correctionDateNaissane, erreurs, warnings);
+					correctionDateNaissane.checkCompleteness(erreurs, warnings);
 					assertEmpty("Une erreur est survenue lors du checkCompleteness de correction de date de naissance.", erreurs);
-					evenementCivilHandler.validate(correctionDateNaissane, erreurs, warnings);
+					correctionDateNaissane.validate(erreurs, warnings);
 					assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", erreurs);
-					evenementCivilHandler.handle(correctionDateNaissane, warnings);
+					correctionDateNaissane.handle(warnings);
 
 					return null;
 				}
@@ -197,6 +197,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 		correctionDateNaissane.setType(TypeEvenementCivil.CORREC_DATE_NAISSANCE);
 		correctionDateNaissane.setNumeroOfsCommuneAnnonce(5652);
 		correctionDateNaissane.init(tiersDAO);
+		correctionDateNaissane.setHandler(evenementCivilHandler);
 
 		return correctionDateNaissane;
 	}
@@ -263,11 +264,11 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(correctionDateNaissane, erreurs, warnings);
+				correctionDateNaissane.checkCompleteness(erreurs, warnings);
 				assertEmpty(erreurs);
-				evenementCivilHandler.validate(correctionDateNaissane, erreurs, warnings);
+				correctionDateNaissane.validate(erreurs, warnings);
 				assertEmpty(erreurs);
-				evenementCivilHandler.handle(correctionDateNaissane, warnings);
+				correctionDateNaissane.handle(warnings);
 				return null;
 			}
 		});
@@ -331,11 +332,11 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 					final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 					final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-					evenementCivilHandler.checkCompleteness(correctionDateNaissane, erreurs, warnings);
+					correctionDateNaissane.checkCompleteness(erreurs, warnings);
 					assertEmpty(erreurs);
-					evenementCivilHandler.validate(correctionDateNaissane, erreurs, warnings);
+					correctionDateNaissane.validate(erreurs, warnings);
 					assertEmpty(erreurs);
-					evenementCivilHandler.handle(correctionDateNaissane, warnings);
+					correctionDateNaissane.handle(warnings);
 					return null;
 				}
 			});

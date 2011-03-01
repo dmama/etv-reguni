@@ -33,7 +33,6 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	 */
 	//private static final Logger LOGGER =  Logger.getLogger(ObtentionNationaliteHandler.class);
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		// Obsolète dans cet handler, l'obtention de nationalité est un événement ne concernant qu'un seul individu.
 	}
@@ -104,7 +103,7 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new ObtentionNationaliteAdapter(event, context);
+		return new ObtentionNationaliteAdapter(event, context, this);
 	}
 
 }

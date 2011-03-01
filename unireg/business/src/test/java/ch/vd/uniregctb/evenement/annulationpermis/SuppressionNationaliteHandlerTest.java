@@ -93,13 +93,13 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationNationalite, erreurs, warnings);
+		annulationNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.", erreurs);
 
-		evenementCivilHandler.validate(annulationNationalite, erreurs, warnings);
+		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
 
-		evenementCivilHandler.handle(annulationNationalite, warnings);
+		annulationNationalite.handle(warnings);
 
 		 // Test de récupération du Tiers
 		PersonnePhysique julie = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
@@ -123,15 +123,15 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationNationalite, erreurs, warnings);
+		annulationNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.validate(annulationNationalite, erreurs, warnings);
+		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.handle(annulationNationalite, warnings);
+		annulationNationalite.handle(warnings);
 
 		// Test de récupération du Tiers
 		PersonnePhysique julie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
@@ -157,15 +157,15 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationNationalite, erreurs, warnings);
+		annulationNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.validate(annulationNationalite, erreurs, warnings);
+		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.handle(annulationNationalite, warnings);
+		annulationNationalite.handle(warnings);
 
 		// Test de récupération du Tiers
 		PersonnePhysique pierre = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
@@ -213,15 +213,15 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(annulationNationalite, erreurs, warnings);
+		annulationNationalite.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.validate(annulationNationalite, erreurs, warnings);
+		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
 				erreurs);
 
-		evenementCivilHandler.handle(annulationNationalite, warnings);
+		annulationNationalite.handle(warnings);
 
 		// Test de récupération du Tiers
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE);
@@ -279,6 +279,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		annulationNationalite.setDate(dateObtentionNationalite);
 		annulationNationalite.setNationaliteSuisse(true);
 		annulationNationalite.setType(TypeEvenementCivil.SUP_NATIONALITE_SUISSE);
+		annulationNationalite.setHandler(evenementCivilHandler);
 		return annulationNationalite;
 	}
 
@@ -289,6 +290,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		annulationNationalite.setDate(dateObtentionNationalite);
 		annulationNationalite.setNationaliteSuisse(false);
 		annulationNationalite.setType(TypeEvenementCivil.SUP_NATIONALITE_NON_SUISSE);
+		annulationNationalite.setHandler(evenementCivilHandler);
 		return annulationNationalite;
 	}
 

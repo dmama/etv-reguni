@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.changement.nom;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -26,6 +22,10 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -101,13 +101,14 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 				chgtNom.setDate(RegDate.get());
 				chgtNom.setNumeroOfsCommuneAnnonce(4848);
 				chgtNom.init(tiersDAO);
+				chgtNom.setHandler(evenementCivilHandler);
 
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(chgtNom, erreurs, warnings); // ne fait rien
-				evenementCivilHandler.validate(chgtNom, erreurs, warnings);// ne fait rien
-				evenementCivilHandler.handle(chgtNom, warnings);
+				chgtNom.checkCompleteness(erreurs, warnings); // ne fait rien
+				chgtNom.validate(erreurs, warnings);// ne fait rien
+				chgtNom.handle(warnings);
 
 				Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
 				return null;
@@ -201,13 +202,14 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 				chgtNom.setDate(RegDate.get());
 				chgtNom.setNumeroOfsCommuneAnnonce(4848);
 				chgtNom.init(tiersDAO);
+				chgtNom.setHandler(evenementCivilHandler);
 
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(chgtNom, erreurs, warnings); // ne fait rien
-				evenementCivilHandler.validate(chgtNom, erreurs, warnings);// ne fait rien
-				evenementCivilHandler.handle(chgtNom, warnings);
+				chgtNom.checkCompleteness(erreurs, warnings); // ne fait rien
+				chgtNom.validate(erreurs, warnings);// ne fait rien
+				chgtNom.handle(warnings);
 
 				Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
 				return null;

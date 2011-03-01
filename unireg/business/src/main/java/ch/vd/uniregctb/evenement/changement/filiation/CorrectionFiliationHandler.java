@@ -22,7 +22,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionFiliationHandler extends AbstractChangementHandler {
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
 	}

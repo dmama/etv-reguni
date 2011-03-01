@@ -38,7 +38,6 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 	/** Un logger. */
 	private static final Logger LOGGER = Logger.getLogger(MariageHandler.class);
 
-	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		// Rien a vérifier, un seul événement est envoyé pour l'un des 2 individus
 	}
@@ -113,7 +112,6 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 	 * Traite l'événement passé en paramètre.
 	 *
 	 */
-	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		Mariage mariage = (Mariage) evenement;
 
@@ -165,7 +163,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public GenericEvenementAdapter createAdapter(EvenementCivilData event, EvenementCivilContext context) throws EvenementAdapterException {
-		return new MariageAdapter(event, context);
+		return new MariageAdapter(event, context, this);
 	}
 
 }

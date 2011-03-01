@@ -94,7 +94,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		warnings.clear();
 		MockDemenagement demenagement = createValidDemenagement(new MockIndividu(), DATE_VALIDE);
 		demenagement.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs, "Le déménagement est hors canton, une erreur aurait du être déclenchée");
 		LOGGER.debug("Test déménagement hors canton : OK");
 
@@ -105,7 +105,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		warnings.clear();
 		demenagement = createValidDemenagement(new MockIndividu(), DATE_VALIDE);
 		demenagement.setDate(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs,
 				"Le déménagement est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
 		LOGGER.debug("Test déménagement antérieur à la date de début de validité de l'ancienne adresse : OK");
@@ -121,9 +121,9 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
-		evenementCivilHandler.handle(demenagement, warnings);
+		demenagement.checkCompleteness(erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
+		demenagement.handle(warnings);
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
@@ -145,9 +145,9 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
-		evenementCivilHandler.handle(demenagement, warnings);
+		demenagement.checkCompleteness(erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
+		demenagement.handle(warnings);
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
@@ -168,9 +168,9 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
-		evenementCivilHandler.handle(demenagement, warnings);
+		demenagement.checkCompleteness(erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
+		demenagement.handle(warnings);
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
@@ -209,9 +209,9 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
-		evenementCivilHandler.handle(demenagement, warnings);
+		demenagement.checkCompleteness(erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
+		demenagement.handle(warnings);
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
@@ -251,9 +251,9 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
-		evenementCivilHandler.handle(demenagement, warnings);
+		demenagement.checkCompleteness(erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
+		demenagement.handle(warnings);
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
@@ -283,9 +283,9 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		evenementCivilHandler.validate(demenagement, erreurs, warnings);
-		evenementCivilHandler.handle(demenagement, warnings);
+		demenagement.checkCompleteness(erreurs, warnings);
+		demenagement.validate(erreurs, warnings);
+		demenagement.handle(warnings);
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
@@ -338,6 +338,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		demenagement.setDate(dateEvenement);
 		demenagement.setNumeroEvenement(12345L);
 		demenagement.init(tiersDAO);
+		demenagement.setHandler(evenementCivilHandler);
 		
 		return demenagement;
 	}

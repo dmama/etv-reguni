@@ -56,13 +56,13 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de séparation", erreurs);
 		
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
+		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de séparation", erreurs);
 
-		evenementCivilHandler.handle(annulation, warnings);
+		annulation.handle(warnings);
 		
 		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(noIndividu);
 		assertNotNull("Pierre n'as pas été trouvé", pierre);
@@ -92,13 +92,13 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de séparation", erreurs);
 		
-		evenementCivilHandler.validate(annulation, erreurs, warnings);
+		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de séparation", erreurs);
 
-		evenementCivilHandler.handle(annulation, warnings);
+		annulation.handle(warnings);
 		
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(noIndividuMarie);
 		assertNotNull("Maurice n'as pas été trouvé", momo);
@@ -131,13 +131,13 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		
-		evenementCivilHandler.checkCompleteness(annulation, erreurs, warnings);
+		annulation.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de séparation", erreurs);
 		
 		boolean errorFound = false;
 		String errorMessage = null;
 		try {
-			evenementCivilHandler.validate(annulation, erreurs, warnings);
+			annulation.validate(erreurs, warnings);
 		}
 		catch (Exception ex) {
 			errorFound = true;
@@ -152,6 +152,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		annulation.setIndividu(individu);
 		annulation.setNumeroOfsCommuneAnnonce(5652);
 		annulation.setDate(date);
+		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}
 	

@@ -95,9 +95,9 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(tutelle, erreurs, warnings);
-				evenementCivilHandler.validate(tutelle, erreurs, warnings);
-				evenementCivilHandler.handle(tutelle, warnings);
+				tutelle.checkCompleteness(erreurs, warnings);
+				tutelle.validate(erreurs, warnings);
+				tutelle.handle(warnings);
 				Assert.assertTrue("Une erreur est survenue lors du traitement de la mise sous tutelle", erreurs.isEmpty());
 				return null;
 			}
@@ -165,9 +165,9 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-				evenementCivilHandler.checkCompleteness(tutelle, erreurs, warnings);
-				evenementCivilHandler.validate(tutelle, erreurs, warnings);
-				evenementCivilHandler.handle(tutelle, warnings);
+				tutelle.checkCompleteness(erreurs, warnings);
+				tutelle.validate(erreurs, warnings);
+				tutelle.handle(warnings);
 
 				Assert.assertTrue("Une erreur est survenue lors du traitement de la mise sous tutelle", erreurs.isEmpty());
 				return null;
@@ -228,6 +228,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		tutelle.setTuteurGeneral(tuteurGeneral);
 		tutelle.setAutoriteTutelaire(autoriteTutelaire);
 		tutelle.init(tiersDAO);
+		tutelle.setHandler(evenementCivilHandler);
 		return tutelle;
 	}
 

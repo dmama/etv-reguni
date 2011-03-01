@@ -62,11 +62,12 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 	protected void launchEvent(final MockEvenementCivil evtCivil, final List<EvenementCivilErreur> erreurs, final List<EvenementCivilErreur> warnings) throws Exception {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				evenementCivilHandler.checkCompleteness(evtCivil, erreurs, warnings);
+				evtCivil.setHandler(evenementCivilHandler);
+				evtCivil.checkCompleteness(erreurs, warnings);
 				if (erreurs.isEmpty()) {
-					evenementCivilHandler.validate(evtCivil, erreurs, warnings);
+					evtCivil.validate(erreurs, warnings);
 					if (erreurs.isEmpty()) {
-						evenementCivilHandler.handle(evtCivil, warnings);
+						evtCivil.handle(warnings);
 					}
 				}
 				return null;
