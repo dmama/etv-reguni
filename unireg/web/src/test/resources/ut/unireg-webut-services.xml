@@ -11,4 +11,6 @@
 
 	<bean id="servletService" class="ch.vd.uniregctb.servlet.MockServletService"/>
 
+	<bean id="extractionService" class="ch.vd.uniregctb.extraction.MockExtractionService"/>
+
 </beans>
