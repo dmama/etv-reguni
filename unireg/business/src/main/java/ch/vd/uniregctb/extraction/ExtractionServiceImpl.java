@@ -29,6 +29,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
@@ -36,7 +37,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TimeHelper;
 
 /**
- * Implémentation du service asynchrone d'extractions
+ * Implémentation du service d'extractions asynchrones
  */
 public class ExtractionServiceImpl implements ExtractionService, ExtractionServiceMonitoring, InitializingBean, DisposableBean {
 
@@ -211,10 +212,6 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 			return duration;
 		}
 
-		public Date getCreationDate() {
-			return creationDate;
-		}
-
 		public boolean isExpired() {
 			return endTimestamp != null && (System.nanoTime() - endTimestamp) / NANOS_IN_DAY > expiration;
 		}
@@ -359,6 +356,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 				LOGGER.info(String.format("Démarrage du thread d'extractions asynchrones %s", getName()));
 			}
 
+			AuthenticationHelper.pushPrincipal(getName());
 			try {
 				while (!stopping) {
 					final JobInfo job = queue.poll(1, TimeUnit.SECONDS);
@@ -373,7 +371,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 							result = job.getExtractor().run();
 						}
 						catch (Exception e) {
-							LOGGER.error("Le job d'extraction %s a lancé une exception", e);
+							LOGGER.error(String.format("Le job d'extraction %s a lancé une exception", job.getKey()), e);
 							result = new ExtractionResultError(e);
 						}
 						finally {
@@ -394,6 +392,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info(String.format("Arrêt du thread d'extractions asynchrones %s", getName()));
 				}
+				AuthenticationHelper.popPrincipal();
 			}
 		}
 
@@ -477,6 +476,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 
 	/**
 	 * @param extractor extracteur
+	 * @param rapportFinal le rapport final de l'extraction
 	 * @param <E> classe des éléments en entrée du découpage en lots
 	 * @param <R> classe de résultat de chacun des lots
 	 * @return le code qui sera exécuté pour chaque lot

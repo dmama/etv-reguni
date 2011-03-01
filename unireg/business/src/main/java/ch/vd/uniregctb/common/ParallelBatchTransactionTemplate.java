@@ -204,7 +204,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		public void run() {
 			AuthenticationHelper.pushPrincipal(principal);
 			try {
-				BatchTransactionTemplate<E, R> template = new BatchTransactionTemplate<E, R>(iterator, behavior, transactionManager, statusManager, hibernateTemplate);
+				final BatchTransactionTemplate<E, R> template = new BatchTransactionTemplate<E, R>(iterator, behavior, transactionManager, statusManager, hibernateTemplate);
 				template.setReadonly(readonly);
 				interruptedItself = !template.execute(rapportFinal, action);
 			}
