@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.evenement.tutelle;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
@@ -18,36 +20,29 @@ public class MockTutelle extends MockEvenementCivil implements Tutelle {
 	private TypeTutelle typeTutelle;
 	private CollectiviteAdministrative autoriteTutelaire;
 
-	public Individu getTuteur() {
-		return tuteur;
+	public MockTutelle(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, Individu tuteur, TuteurGeneral tuteurGeneral,
+	                   TypeTutelle typeTutelle, CollectiviteAdministrative autoriteTutelaire) {
+		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.MESURE_TUTELLE, date, numeroOfsCommuneAnnonce);
+		this.tuteur = tuteur;
+		this.tuteurGeneral = tuteurGeneral;
+		this.typeTutelle = typeTutelle;
+		this.autoriteTutelaire = autoriteTutelaire;
 	}
 
-	public void setTuteur(Individu tuteur) {
-		this.tuteur = tuteur;
+	public Individu getTuteur() {
+		return tuteur;
 	}
 
 	public TuteurGeneral getTuteurGeneral() {
 		return tuteurGeneral;
 	}
 
-	public void setTuteurGeneral(TuteurGeneral tuteurGeneral) {
-		this.tuteurGeneral = tuteurGeneral;
-	}
-
 	public TypeTutelle getTypeTutelle() {
 		return typeTutelle;
 	}
 
-	public void setTypeTutelle(TypeTutelle typeTutelle) {
-		this.typeTutelle = typeTutelle;
-	}
-
 	public CollectiviteAdministrative getAutoriteTutelaire() {
 		return autoriteTutelaire;
-	}
-
-	public void setAutoriteTutelaire(CollectiviteAdministrative autoriteTutelaire) {
-		this.autoriteTutelaire = autoriteTutelaire;
 	}
 
 	public boolean isContribuablePresentBefore() {

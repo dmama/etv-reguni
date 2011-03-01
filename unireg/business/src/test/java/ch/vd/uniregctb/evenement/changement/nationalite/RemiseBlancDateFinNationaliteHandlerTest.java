@@ -13,7 +13,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertTrue;
@@ -87,21 +86,13 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 	}
 
 	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteSuisse(Individu individu, RegDate date) {
-		MockRemiseBlancDateFinNationalite finNationalite = new MockRemiseBlancDateFinNationalite();
-		finNationalite.setIndividu(individu);
-		finNationalite.setType(TypeEvenementCivil.ANNUL_DATE_FIN_NATIONALITE_SUISSE);
-		finNationalite.setDate(date);
-		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		MockRemiseBlancDateFinNationalite finNationalite = new MockRemiseBlancDateFinNationalite(individu, null, date, 5652, true);
 		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}
 
 	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteNonSuisse(Individu individu, RegDate date) {
-		MockRemiseBlancDateFinNationalite finNationalite = new MockRemiseBlancDateFinNationalite();
-		finNationalite.setIndividu(individu);
-		finNationalite.setType(TypeEvenementCivil.ANNUL_DATE_FIN_NATIONALITE_NON_SUISSE);
-		finNationalite.setDate(date);
-		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		MockRemiseBlancDateFinNationalite finNationalite = new MockRemiseBlancDateFinNationalite(individu, null, date, 5652, false);
 		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}

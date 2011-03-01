@@ -151,10 +151,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 
 	private AnnulationVeuvage createValidAnnulationVeuvage(Individu individu) {
 
-		MockAnnulationVeuvage annulation = new MockAnnulationVeuvage();
-		annulation.setIndividu(individu);
-		annulation.setNumeroOfsCommuneAnnonce(5652);
-		annulation.setDate(DATE_VEUVAGE);
+		MockAnnulationVeuvage annulation = new MockAnnulationVeuvage(individu, null, DATE_VEUVAGE, 5652);
 		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}

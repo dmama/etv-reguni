@@ -19,7 +19,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
@@ -273,23 +272,13 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 
 	private SuppressionNationalite createValidAnnulationNationalite(Individu individu, RegDate dateObtentionNationalite) {
 
-		MockSuppressionNationalite annulationNationalite = new MockSuppressionNationalite();
-		annulationNationalite.setIndividu(individu);
-		annulationNationalite.setNumeroOfsCommuneAnnonce(5586);
-		annulationNationalite.setDate(dateObtentionNationalite);
-		annulationNationalite.setNationaliteSuisse(true);
-		annulationNationalite.setType(TypeEvenementCivil.SUP_NATIONALITE_SUISSE);
+		MockSuppressionNationalite annulationNationalite = new MockSuppressionNationalite(individu, null, dateObtentionNationalite, 5586, true);
 		annulationNationalite.setHandler(evenementCivilHandler);
 		return annulationNationalite;
 	}
 
 	private SuppressionNationalite createValidAnnulationNationatieNonSuisse(Individu individu, RegDate dateObtentionNationalite) {
-		MockSuppressionNationalite annulationNationalite = new MockSuppressionNationalite();
-		annulationNationalite.setIndividu(individu);
-		annulationNationalite.setNumeroOfsCommuneAnnonce(5586);
-		annulationNationalite.setDate(dateObtentionNationalite);
-		annulationNationalite.setNationaliteSuisse(false);
-		annulationNationalite.setType(TypeEvenementCivil.SUP_NATIONALITE_NON_SUISSE);
+		MockSuppressionNationalite annulationNationalite = new MockSuppressionNationalite(individu, null, dateObtentionNationalite, 5586, false);
 		annulationNationalite.setHandler(evenementCivilHandler);
 		return annulationNationalite;
 	}

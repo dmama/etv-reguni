@@ -24,7 +24,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -232,14 +231,10 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 			});
 		}
 
-		final MockReconciliation reconciliation = new MockReconciliation();
-		reconciliation.setType(TypeEvenementCivil.RECONCILIATION);
-		reconciliation.setIndividu(serviceCivil.getIndividu(noIndividu, date.year()));
-		if (noIndividuConjoint != null) {
-			reconciliation.setConjoint(serviceCivil.getIndividu(noIndividuConjoint, date.year()));
-		}
-		reconciliation.setNumeroOfsCommuneAnnonce(5586);
-		reconciliation.setDate(date);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, date.year());
+		final Individu conjoint = (noIndividuConjoint == null ? null : serviceCivil.getIndividu(noIndividuConjoint, date.year()));
+
+		final MockReconciliation reconciliation = new MockReconciliation(individu, conjoint, date, 5586);
 		reconciliation.setHandler(evenementCivilHandler);
 		return reconciliation;
 	}

@@ -358,17 +358,11 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private MockAnnulationDeces createValidAnnulationDeces(Individu individu) {
-		final MockAnnulationDeces annulation = new MockAnnulationDeces();
-		annulation.setIndividu(individu);
-		annulation.setNumeroOfsCommuneAnnonce(5652);
-		annulation.setDate(DATE_DECES);
-		annulation.init(tiersDAO);
-		return annulation;
+		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
+		return new MockAnnulationDeces(individu, principalPPId, null, null, DATE_DECES, 5652);
 	}
 
 	private MockAnnulationDeces createValidAnnulationDeces(Individu individu, Individu conjoint) {
-		final MockAnnulationDeces annulation = createValidAnnulationDeces(individu);
-		annulation.setConjointSurvivant(conjoint);
-		return annulation;
+		return new MockAnnulationDeces(individu, conjoint, DATE_DECES, 5652);
 	}
 }

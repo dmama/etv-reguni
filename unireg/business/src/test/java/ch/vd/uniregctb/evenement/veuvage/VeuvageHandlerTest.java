@@ -249,10 +249,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 	}
 	
 	protected Veuvage createVeuvage(Individu individu) {
-		MockVeuvage veuvage = new MockVeuvage();
-		veuvage.setIndividu(individu);
-		veuvage.setNumeroOfsCommuneAnnonce(5652);
-		veuvage.setDate(DATE_VEUVAGE);
+		MockVeuvage veuvage = new MockVeuvage(individu, null, DATE_VEUVAGE, 5652);
 		veuvage.setHandler(evenementCivilHandler);
 		return veuvage;
 	}

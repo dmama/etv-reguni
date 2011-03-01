@@ -11,7 +11,6 @@ import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertTrue;
 
@@ -71,21 +70,13 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private FinNationalite createValidFinNationaliteSuisse(Individu individu, RegDate dateFinNationalite) {
-		MockFinNationalite finNationalite = new MockFinNationalite();
-		finNationalite.setIndividu(individu);
-		finNationalite.setType(TypeEvenementCivil.FIN_NATIONALITE_SUISSE);
-		finNationalite.setDate(dateFinNationalite);
-		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		MockFinNationalite finNationalite = new MockFinNationalite(individu, null, dateFinNationalite, 5652, true);
 		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}	
 
 	private FinNationalite createValidFinNationaliteNonSuisse(Individu individu, RegDate dateFinNationalite) {
-		MockFinNationalite finNationalite = new MockFinNationalite();
-		finNationalite.setIndividu(individu);
-		finNationalite.setType(TypeEvenementCivil.FIN_NATIONALITE_NON_SUISSE);
-		finNationalite.setDate(dateFinNationalite);
-		finNationalite.setNumeroOfsCommuneAnnonce(5652);
+		MockFinNationalite finNationalite = new MockFinNationalite(individu, null, dateFinNationalite, 5652, false);
 		finNationalite.setHandler(evenementCivilHandler);
 		return finNationalite;
 	}

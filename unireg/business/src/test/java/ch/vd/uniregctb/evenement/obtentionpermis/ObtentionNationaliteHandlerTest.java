@@ -29,7 +29,6 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
@@ -307,14 +306,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 	 * @return
 	 */
 	private ObtentionNationalite createValidObtentionNationalite(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
-
-		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite();
-		obtentionNationalite.setIndividu(individu);
-
-		obtentionNationalite.setNumeroOfsCommuneAnnonce(5586);
-		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(numeroOfsCommunePrincipale);
-		obtentionNationalite.setDate(dateObtentionNationalite);
-		obtentionNationalite.setType(TypeEvenementCivil.NATIONALITE_SUISSE);
+		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, true);
 		obtentionNationalite.setHandler(evenementCivilHandler);
 		return obtentionNationalite;
 	}
@@ -327,14 +319,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 	 * @return
 	 */
 	private ObtentionNationalite createValidObtentionNationaliteNonSuisse(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
-
-		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite();
-		obtentionNationalite.setIndividu(individu);
-
-		obtentionNationalite.setNumeroOfsCommuneAnnonce(5586);
-		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(numeroOfsCommunePrincipale);
-		obtentionNationalite.setDate(dateObtentionNationalite);
-		obtentionNationalite.setType(TypeEvenementCivil.NATIONALITE_NON_SUISSE);
+		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, false);
 		obtentionNationalite.setHandler(evenementCivilHandler);
 		return obtentionNationalite;
 	}

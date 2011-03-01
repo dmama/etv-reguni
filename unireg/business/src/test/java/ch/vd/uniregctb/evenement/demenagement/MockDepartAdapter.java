@@ -68,7 +68,7 @@ public class MockDepartAdapter extends DepartAdapter {
 	public Adresse getAncienneAdresseCourrier() {
 		return ancienneAdresseCourrier;
 	}
-	
+
 	public void setAncienneCommunePrincipale(CommuneSimple amcienneCommunePrincipale) {
 		this.ancienneCommunePrincipale = amcienneCommunePrincipale;
 	}

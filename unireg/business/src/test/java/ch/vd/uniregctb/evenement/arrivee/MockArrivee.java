@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.evenement.arrivee;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class MockArrivee extends MockEvenementCivil implements Arrivee, Cloneable {
 
@@ -14,45 +17,40 @@ public class MockArrivee extends MockEvenementCivil implements Arrivee, Cloneabl
 	private Commune ancienneCommuneSecondaire;
 	private Adresse adressePrincipale;
 	private Adresse adresseSecondaire;
-	private String etat;
 
-
-	public void setNouvelleAdressePrincipale(Adresse nouvelleAdressePrincipale) {
-		this.adressePrincipale = nouvelleAdressePrincipale;
-	}
-
-	public void setNouvelleCommunePrincipale(Commune nouvelleCommune) {
-		this.nouvelleCommunePrincipale = nouvelleCommune;
-	}
-
-	public void setAncienneCommunePrincipale(Commune ancienneCommunePrincipale) {
+	public MockArrivee(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate date, Integer numeroOfsCommuneAnnonce, Commune ancienneCommunePrincipale,
+	                   Commune nouvelleCommunePrincipale,
+	                   Commune ancienneCommuneSecondaire, Commune nouvelleCommuneSecondaire) {
+		super(individu, conjoint, type, date, numeroOfsCommuneAnnonce);
+		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
+		this.nouvelleCommuneSecondaire = nouvelleCommuneSecondaire;
 		this.ancienneCommunePrincipale = ancienneCommunePrincipale;
-	}
-
-	public void setAncienneCommuneSecondaire(Commune ancienneCommuneSecondaire) {
 		this.ancienneCommuneSecondaire = ancienneCommuneSecondaire;
 	}
 
-	public void setEtat(String etat) {
-		this.etat = etat;
+	public MockArrivee(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate date, Integer numeroOfsCommuneAnnonce, Commune ancienneCommunePrincipale,
+	                   Commune nouvelleCommunePrincipale, Adresse ancienneAdressePrincipale, Adresse nouvelleAdressePrincipale) {
+		super(individu, conjoint, type, date, numeroOfsCommuneAnnonce);
+		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
+		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
+		this.ancienneCommunePrincipale = ancienneCommunePrincipale;
+		this.adressePrincipale = nouvelleAdressePrincipale;
 	}
 
-	public void setNouvelleAdresseSecondaire(Adresse nouvelleAdresseSecondaire) {
+	public MockArrivee(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate date, Integer numeroOfsCommuneAnnonce, Commune ancienneCommunePrincipale,
+	                   Commune nouvelleCommunePrincipale, Adresse ancienneAdressePrincipale, Adresse nouvelleAdressePrincipale, Commune ancienneCommuneSecondaire, Commune nouvelleCommuneSecondaire,
+	                   Adresse ancienneAdresseSecondaire, Adresse nouvelleAdresseSecondaire) {
+		super(individu, conjoint, type, date, numeroOfsCommuneAnnonce);
+		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
+		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
+		this.ancienneAdresseSecondaire = ancienneAdresseSecondaire;
+		this.nouvelleCommuneSecondaire = nouvelleCommuneSecondaire;
+		this.ancienneCommunePrincipale = ancienneCommunePrincipale;
+		this.ancienneCommuneSecondaire = ancienneCommuneSecondaire;
+		this.adressePrincipale = nouvelleAdressePrincipale;
 		this.adresseSecondaire = nouvelleAdresseSecondaire;
 	}
 
-	public void setNouvelleCommuneSecondaire(Commune nouvelleCommuneSecondaire) {
-		this.nouvelleCommuneSecondaire = nouvelleCommuneSecondaire;
-	}
-	
-	public void setAncienneAdresseSecondaire(Adresse ancienneAdresseSecondaire) {
-		this.ancienneAdresseSecondaire = ancienneAdresseSecondaire;
-	}
-
-	public void setAncienneAdressePrincipale(Adresse ancienneAdressePrincipale) {
-		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
-	}
-	
 	public Adresse getNouvelleAdressePrincipale() {
 		return adressePrincipale;
 	}
@@ -83,10 +81,6 @@ public class MockArrivee extends MockEvenementCivil implements Arrivee, Cloneabl
 
 	public Commune getAncienneCommuneSecondaire() {
 		return ancienneCommuneSecondaire;
-	}
-
-	public String getEtat() {
-		return etat;
 	}
 
 	@Override

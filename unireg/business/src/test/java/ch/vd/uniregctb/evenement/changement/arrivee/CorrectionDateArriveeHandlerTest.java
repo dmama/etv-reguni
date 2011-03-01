@@ -1,10 +1,8 @@
 package ch.vd.uniregctb.evenement.changement.arrivee;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 import junit.framework.Assert;
 import org.junit.Test;
@@ -15,8 +13,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -27,7 +25,6 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
@@ -42,8 +39,6 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 	private static final long NO_IND_MARIE = 8L;
 	private static final long NO_IND_CELIBATAIRE = 9L;
 	private static final long NO_IND_INCONNU = 9999L;
-
-	private static AtomicLong noEvenement = new AtomicLong(0L);
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -72,13 +67,8 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 	}
 
 	private MockEvenementCivil createValidEvenement(long noIndividu, int ofsCommune, Long principalId) {
-		final MockEvenementCivil evt = new MockEvenementCivil();
-		evt.setIndividu(serviceCivil.getIndividu(noIndividu, 2400));
-		evt.setType(TypeEvenementCivil.CORREC_DATE_ARRIVEE);
-		evt.setDate(DATE_EVT);
-		evt.setNumeroOfsCommuneAnnonce(ofsCommune);
-		evt.setNumeroEvenement(noEvenement.incrementAndGet());
-		evt.setPrincipalPPId(principalId);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final MockEvenementCivil evt = new MockCorrectionDateArrivee(individu, principalId, null, null, DATE_EVT, ofsCommune);
 		return evt;
 	}
 

@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class AnnulationArriveeAdapter extends GenericEvenementAdapter {
+public class AnnulationArriveeAdapter extends GenericEvenementAdapter implements AnnulationArrivee {
 
 	private AnnulationArriveeHandler handler;
 

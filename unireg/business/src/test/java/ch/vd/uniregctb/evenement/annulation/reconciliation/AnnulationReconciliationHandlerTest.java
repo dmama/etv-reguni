@@ -213,17 +213,14 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 	}
 	
 	private MockAnnulationReconciliation createAnnulationReconciliation(Individu individu, RegDate date) {
-		MockAnnulationReconciliation annulation = new MockAnnulationReconciliation();
-		annulation.setIndividu(individu);
-		annulation.setNumeroOfsCommuneAnnonce(5652);
-		annulation.setDate(date);
+		MockAnnulationReconciliation annulation = new MockAnnulationReconciliation(individu, null, date, 5652);
 		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}
 
 	private MockAnnulationReconciliation createAnnulationReconciliation(Individu individu, Individu conjoint, RegDate date) {
-		MockAnnulationReconciliation annulation = createAnnulationReconciliation(individu, date);
-		annulation.setConjoint(conjoint);
+		MockAnnulationReconciliation annulation = new MockAnnulationReconciliation(individu, conjoint, date, 5652);
+		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}
 }

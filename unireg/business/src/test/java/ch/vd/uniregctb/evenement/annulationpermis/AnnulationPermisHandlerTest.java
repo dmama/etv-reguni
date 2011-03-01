@@ -285,21 +285,13 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private MockAnnulationPermis createValidAnnulationPermis(Individu individu, RegDate dateObtentionPermis) {
-		MockAnnulationPermis annulationPermis = new MockAnnulationPermis();
-		annulationPermis.setIndividu(individu);
-		annulationPermis.setNumeroOfsCommuneAnnonce(5586);
-		annulationPermis.setDate(dateObtentionPermis);
-		annulationPermis.setTypePermis(TypePermis.ETABLISSEMENT);
+		MockAnnulationPermis annulationPermis = new MockAnnulationPermis(individu, null, dateObtentionPermis, 5586, TypePermis.ETABLISSEMENT);
 		annulationPermis.setHandler(evenementCivilHandler);
 		return annulationPermis;
 	}
 
 	private MockAnnulationPermis createValidAnnulationPermisNonC(Individu individu, RegDate dateObtentionPermis) {
-		MockAnnulationPermis annulationPermis = new MockAnnulationPermis();
-		annulationPermis.setIndividu(individu);
-		annulationPermis.setNumeroOfsCommuneAnnonce(5586);
-		annulationPermis.setDate(dateObtentionPermis);
-		annulationPermis.setTypePermis(TypePermis.COURTE_DUREE);
+		MockAnnulationPermis annulationPermis = new MockAnnulationPermis(individu, null, dateObtentionPermis, 5586, TypePermis.COURTE_DUREE);
 		annulationPermis.setHandler(evenementCivilHandler);
 		return annulationPermis;
 	}

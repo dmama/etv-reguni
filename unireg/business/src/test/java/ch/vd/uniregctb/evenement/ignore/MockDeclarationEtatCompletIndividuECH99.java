@@ -6,12 +6,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class MockDeclarationEtatCompletIndividuECH99 extends MockEvenementCivil {
 
 	public MockDeclarationEtatCompletIndividuECH99() {
-		super();
-		super.setType(TypeEvenementCivil.ETAT_COMPLET);
-	}
-
-	@Override
-	public void setType(TypeEvenementCivil type) {
-		throw new RuntimeException("Type is immutable");
+		super(null, null,TypeEvenementCivil.ETAT_COMPLET,null, null);
 	}
 }

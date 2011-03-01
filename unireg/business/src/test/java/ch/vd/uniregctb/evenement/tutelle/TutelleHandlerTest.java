@@ -219,15 +219,8 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private MockTutelle createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral, ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative autoriteTutelaire) {
-		MockTutelle tutelle = new MockTutelle();
-		tutelle.setIndividu(pupille);
-		tutelle.setNumeroOfsCommuneAnnonce(4848);
-		tutelle.setDate(DATE_TUTELLE);
-		tutelle.setTypeTutelle(TypeTutelle.TUTELLE);
-		tutelle.setTuteur(tuteur);
-		tutelle.setTuteurGeneral(tuteurGeneral);
-		tutelle.setAutoriteTutelaire(autoriteTutelaire);
-		tutelle.init(tiersDAO);
+		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(pupille.getNoTechnique(), true);
+		MockTutelle tutelle = new MockTutelle(pupille, principalPPId, null, null, DATE_TUTELLE, 4848, tuteur, tuteurGeneral, TypeTutelle.TUTELLE, autoriteTutelaire);
 		tutelle.setHandler(evenementCivilHandler);
 		return tutelle;
 	}

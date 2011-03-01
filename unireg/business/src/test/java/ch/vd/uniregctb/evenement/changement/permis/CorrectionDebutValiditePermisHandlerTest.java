@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.changement.permis;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
@@ -12,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -24,16 +24,9 @@ import ch.vd.uniregctb.type.TypePermis;
 
 public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementHandlerTest {
 
-	private static AtomicLong noEvenement = new AtomicLong(0L);
-
 	private MockEvenementCivil createEvt(long noIndividu, int ofsCommune, RegDate date, Long principalId) {
-		final MockEvenementCivil evt = new MockCorrectionDebutValiditePermis();
-		evt.setIndividu(serviceCivil.getIndividu(noIndividu, 2400, AttributeIndividu.PERMIS));
-		evt.setDate(date);
-		evt.setNumeroOfsCommuneAnnonce(ofsCommune);
-		evt.setNumeroEvenement(noEvenement.incrementAndGet());
-		evt.setPrincipalPPId(principalId);
-		return evt;
+		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400, AttributeIndividu.PERMIS);
+		return new MockCorrectionDebutValiditePermis(individu, principalId, null, null, date, ofsCommune);
 	}
 
 	@Test

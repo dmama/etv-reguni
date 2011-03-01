@@ -21,7 +21,6 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -94,13 +93,8 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				final MockChangementNom chgtNom = new MockChangementNom();
-				chgtNom.setIndividu(individu);
-				chgtNom.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
-				chgtNom.setNumeroEvenement(1452L);
-				chgtNom.setDate(RegDate.get());
-				chgtNom.setNumeroOfsCommuneAnnonce(4848);
-				chgtNom.init(tiersDAO);
+				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
+				final MockChangementNom chgtNom = new MockChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848);
 				chgtNom.setHandler(evenementCivilHandler);
 
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
@@ -195,12 +189,8 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				final MockChangementNom chgtNom = new MockChangementNom();
-				chgtNom.setIndividu(individu);
-				chgtNom.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
-				chgtNom.setNumeroEvenement(1453L);
-				chgtNom.setDate(RegDate.get());
-				chgtNom.setNumeroOfsCommuneAnnonce(4848);
+				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
+				final MockChangementNom chgtNom = new MockChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848);
 				chgtNom.init(tiersDAO);
 				chgtNom.setHandler(evenementCivilHandler);
 

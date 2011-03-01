@@ -329,12 +329,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 			}
 		});
 
-		final MockDeces deces = new MockDeces();
-		deces.setIndividu(ppal);
-		deces.setConjointSurvivant(conjoint);
-		deces.setNumeroOfsCommuneAnnonce(5652);
-		deces.setDate(dateDeces);
-		deces.init(tiersDAO);
+		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(ppal.getNoTechnique(), true);
+		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
+		final MockDeces deces = new MockDeces(ppal, principalPPId, conjoint, conjointPPId, dateDeces, 5652);
 		deces.setHandler(evenementCivilHandler);
 
 		return deces;

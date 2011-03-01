@@ -13,7 +13,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertTrue;
@@ -125,23 +124,13 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private FinPermis createValidFinPermisC(Individu individu, RegDate dateFinNationalite) {
-		MockFinPermis finPermis = new MockFinPermis();
-		finPermis.setIndividu(individu);
-		finPermis.setType(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER);
-		finPermis.setDate(dateFinNationalite);
-		finPermis.setNumeroOfsCommuneAnnonce(5652);
-		finPermis.setTypePermis(TypePermis.ETABLISSEMENT);
+		MockFinPermis finPermis = new MockFinPermis(individu, null, dateFinNationalite, 5652, TypePermis.ETABLISSEMENT);
 		finPermis.setHandler(evenementCivilHandler);
 		return finPermis;
 	}
 
 	private FinPermis createValidFinPermisNonC(Individu individu, RegDate dateFinNationalite) {
-		MockFinPermis finPermis = new MockFinPermis();
-		finPermis.setIndividu(individu);
-		finPermis.setType(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER);
-		finPermis.setDate(dateFinNationalite);
-		finPermis.setNumeroOfsCommuneAnnonce(5652);
-		finPermis.setTypePermis(TypePermis.COURTE_DUREE);
+		MockFinPermis finPermis = new MockFinPermis(individu, null, dateFinNationalite, 5652, TypePermis.COURTE_DUREE);
 		finPermis.setHandler(evenementCivilHandler);
 		finPermis.setHandler(evenementCivilHandler);
 		return finPermis;

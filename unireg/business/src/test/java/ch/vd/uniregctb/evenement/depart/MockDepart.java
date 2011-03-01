@@ -3,35 +3,45 @@ package ch.vd.uniregctb.evenement.depart;
 import java.util.Collection;
 import java.util.Iterator;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 public class MockDepart extends MockEvenementCivil implements Depart, Cloneable {
 
+	private Adresse nouvelleAdressePrincipale;
+
 	private Adresse ancienneAdressePrincipale;
 	private Commune nouvelleCommunePrincipale;
+	private Adresse nouvelleAdresseCourrier;
 	private Commune ancienneCommunePrincipale;
 	private Adresse ancienneAdresseCourrier;
 	private Adresse ancienneAdresseSecondaire;
 	private Commune ancienneCommuneSecondaire;
 
-	private final boolean isAncienTypeDepart = false;
-
-	public void setAncienneAdresseCourrier(Adresse adresseCourrier) {
-		this.ancienneAdresseCourrier = adresseCourrier;
-	}
-
-	public void setAncienneAdressePrincipale(Adresse adressePrincipale) {
-		this.ancienneAdressePrincipale = adressePrincipale;
+	public MockDepart(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Commune ancienneCommunePrincipale, Commune nouvelleCommunePrincipale,
+	                  Adresse ancienneAdressePrincipale, Adresse nouvelleAdressePrincipale, Adresse ancienneAdresseCourrier, Adresse nouvelleAdresseCourrier, Commune ancienneCommuneSecondaire,
+	                  Adresse ancienneAdresseSecondaire, boolean departPrincipal) {
+		super(individu, conjoint, (departPrincipal ? TypeEvenementCivil.DEPART_COMMUNE : TypeEvenementCivil.DEPART_SECONDAIRE), date, numeroOfsCommuneAnnonce);
+		this.nouvelleAdressePrincipale = nouvelleAdressePrincipale;
+		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
+		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
+		this.nouvelleAdresseCourrier = nouvelleAdresseCourrier;
+		this.ancienneCommunePrincipale = ancienneCommunePrincipale;
+		this.ancienneAdresseCourrier = ancienneAdresseCourrier;
+		this.ancienneAdresseSecondaire = ancienneAdresseSecondaire;
+		this.ancienneCommuneSecondaire = ancienneCommuneSecondaire;
 	}
 
 	public Adresse getNouvelleAdressePrincipale() {
-		return getAdressePrincipale();
+		return nouvelleAdressePrincipale;
 	}
 
 	public Adresse getAncienneAdressePrincipale() {
@@ -39,7 +49,7 @@ public class MockDepart extends MockEvenementCivil implements Depart, Cloneable 
 	}
 
 	public Adresse getNouvelleAdresseCourrier() {
-		return getAdresseCourrier();
+		return nouvelleAdresseCourrier;
 	}
 
 	public Adresse getAncienneAdresseCourrier() {
@@ -60,10 +70,6 @@ public class MockDepart extends MockEvenementCivil implements Depart, Cloneable 
 
 	public Commune getAncienneCommunePrincipale() {
 		return ancienneCommunePrincipale;
-	}
-
-	public void setAncienneCommunePrincipale(Commune communePrincipale) {
-		this.ancienneCommunePrincipale = communePrincipale;
 	}
 
 	public static boolean findEvenementFermetureFor(Collection<EvenementFiscal> lesEvenements,Depart depart) {
@@ -103,7 +109,6 @@ public class MockDepart extends MockEvenementCivil implements Depart, Cloneable 
 	}
 
 	public boolean isAncienTypeDepart() {
-		// TODO Auto-generated method stub
-		return isAncienTypeDepart;
+		return false;
 	}
 }

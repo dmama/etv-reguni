@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class CorrectionDateArriveeAdapter extends GenericEvenementAdapter {
+public class CorrectionDateArriveeAdapter extends GenericEvenementAdapter implements CorrectionDateArrivee {
 
 	private CorrectionDateArriveeHandler handler;
 

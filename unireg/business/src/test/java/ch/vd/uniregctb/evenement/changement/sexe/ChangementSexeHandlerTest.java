@@ -17,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementSexeHandlerTest  extends AbstractEvenementHandlerTest {
 	private static final long NUMERO_CONTRIBUABLE = 6791L;
@@ -74,13 +73,7 @@ public class ChangementSexeHandlerTest  extends AbstractEvenementHandlerTest {
 
 
 		// déclenchement de l'événement
-		MockChangementSexe chgtSexe = new MockChangementSexe();
-		chgtSexe.setIndividu(individu);
-		chgtSexe.setType(TypeEvenementCivil.CHGT_SEXE);
-		chgtSexe.setNumeroEvenement(1452L);
-		chgtSexe.setDate(RegDate.get());
-		chgtSexe.setNumeroOfsCommuneAnnonce(4848);
-		chgtSexe.init(tiersDAO);
+		MockChangementSexe chgtSexe = new MockChangementSexe(individu, tiersDAO.getNumeroPPByNumeroIndividu(NO_INDIVIDU, true), null, null, RegDate.get(), 4848);
 		chgtSexe.setHandler(evenementCivilHandler);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();

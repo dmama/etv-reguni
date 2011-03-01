@@ -16,7 +16,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementIdentificateurHandlerTest  extends AbstractEvenementHandlerTest {
 	private static final long NUMERO_CONTRIBUABLE = 6791L;
@@ -72,15 +71,9 @@ public class ChangementIdentificateurHandlerTest  extends AbstractEvenementHandl
 		historiqueIndividu.setNoAVS("7561261400563");
 
 
-
 		// déclenchement de l'événement
-		MockChangementIdentificateur chgtIdentificateur = new MockChangementIdentificateur();
-		chgtIdentificateur.setIndividu(individu);
-		chgtIdentificateur.setType(TypeEvenementCivil.CHGT_CORREC_IDENTIFICATION);
-		chgtIdentificateur.setNumeroEvenement(1452L);
-		chgtIdentificateur.setDate(RegDate.get());
-		chgtIdentificateur.setNumeroOfsCommuneAnnonce(4848);
-		chgtIdentificateur.init(tiersDAO);
+		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
+		MockChangementIdentificateur chgtIdentificateur = new MockChangementIdentificateur(individu, principalPPId, null, null, RegDate.get(), 4848);
 		chgtIdentificateur.setHandler(evenementCivilHandler);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();

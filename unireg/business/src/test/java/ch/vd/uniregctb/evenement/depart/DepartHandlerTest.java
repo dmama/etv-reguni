@@ -41,7 +41,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -351,8 +350,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
-		MockDepart departCharles = createValidDepart(noIndCharles, dateDepart, true);
-		MockDepart departGeorgette = createValidDepart(noIndGeorgette, dateDepart, true);
+		MockDepart departCharles = createValidDepart(noIndCharles, dateDepart, true, null);
+		MockDepart departGeorgette = createValidDepart(noIndGeorgette, dateDepart, true, null);
 
 		handleDepartSimple(departCharles);
 		handleDepartSimple(departGeorgette);
@@ -383,7 +382,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			}
 		});
 		
-		final MockDepart depart = createValidDepart(NO_IND_ADRIEN, RegDate.get(2007, 6, 30), false);
+		final MockDepart depart = createValidDepart(NO_IND_ADRIEN, RegDate.get(2007, 6, 30), false, null);
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -407,7 +406,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 		LOGGER.debug("Test départ individu seul...");
-		MockDepart depart = createValidDepart(1234, DATE_EVENEMENT, true);
+		MockDepart depart = createValidDepart(1234, DATE_EVENEMENT, true, null);
 		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu seul : OK");
@@ -425,7 +424,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test départ individu marié seul...");
 
-		MockDepart depart = createValidDepart(1235, DATE_EVENEMENT, true);
+		MockDepart depart = createValidDepart(1235, DATE_EVENEMENT, true, null);
 		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu marié seul : OK");
@@ -443,72 +442,95 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test départ individu marié ...");
 
-		MockDepart depart = createValidDepart(1236, DATE_EVENEMENT, true);
+		MockDepart depart = createValidDepart(1236, DATE_EVENEMENT, true, null);
 		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu marié  : OK");
 	}
 
-	/**
-	 * Teste les différents scénarios devant échouer à la validation.
-	 */
-	private MockDepart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale) throws Exception {
+	private MockDepart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale, Integer overrideNoOfsCommuneAnnonce) throws Exception {
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 0);
 
-		final MockDepart depart = new MockDepart();
-		if (principale) {
-			depart.setType(TypeEvenementCivil.DEPART_COMMUNE);
-		}
-		else {
-			depart.setType(TypeEvenementCivil.DEPART_SECONDAIRE);
-		}
-
-		depart.setIndividu(individu);
-
 		// Adresse actuelle
 		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));
-
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
 		if (principale && adressePrincipale != null) {
 			// Initialisation d'une date de fin de validité pour la résidence principale
 			adressePrincipale.setDateFinValidite(dateEvenement);
 		}
 
-		// Adresse principale
-		depart.setAncienneAdressePrincipale(adressePrincipale);
-		depart.setAncienneAdresseCourrier(adresseVaud.courrier);
-
-		// Commune dans vd
+		// Ancienne commune
 		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
-		depart.setAncienneCommunePrincipale(communeVd);
+		int noOFS;
 		if (communeVd != null) {
-			depart.setNumeroOfsCommuneAnnonce(communeVd.getNoOFS());
+			noOFS = communeVd.getNoOFS();
 		}
 		else {
 			// j'ai mis "Croy", j'aurais pu mettre autre chose...
-			depart.setNumeroOfsCommuneAnnonce(MockCommune.Croy.getNoOFSEtendu());
+			noOFS = MockCommune.Croy.getNoOFSEtendu();
 		}
+
 
 		// Nouvelles adresses
 		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false));
-
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
-		depart.setAdressePrincipale(nouvelleAdresse);
 
-		// Commune hors vd
+		// Nouvelle commune
 		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse);
-		depart.setNouvelleCommunePrincipale(communeHorsVd);
-		depart.setDate(dateEvenement);
 
 		// En cas de depart d'une residence secondaire
+		final MockCommune communeSecondaire ;
+		final MockAdresse adresseSecondaire;
 		if (!principale && adresseVaud.secondaire != null) {
-			MockAdresse adresseSecondaire = (MockAdresse) adresseVaud.secondaire;
-			depart.setAncienneAdresseSecondaire(adresseSecondaire);
-			MockCommune communeSecondaire = (MockCommune) serviceInfra.getCommuneByAdresse(adresseSecondaire);
-			depart.setAncienneCommuneSecondaire(communeSecondaire);
-			depart.setNumeroOfsCommuneAnnonce(communeSecondaire.getNoOFS());
+			adresseSecondaire = (MockAdresse) adresseVaud.secondaire;
+			communeSecondaire = (MockCommune) serviceInfra.getCommuneByAdresse(adresseSecondaire);
+			noOFS = communeSecondaire.getNoOFS();
 		}
+		else {
+			communeSecondaire = null;
+			adresseSecondaire = null;
+		}
+
+		if (overrideNoOfsCommuneAnnonce != null) {
+			noOFS = overrideNoOfsCommuneAnnonce;
+		}
+
+		final MockDepart depart =
+				new MockDepart(individu, null, dateEvenement, noOFS, communeVd, communeHorsVd, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, communeSecondaire, adresseSecondaire,
+						principale);
+
+		depart.setHandler(evenementCivilHandler);
+		return depart;
+	}
+
+	private MockDepart createValidDepart(long noIndividu, RegDate dateEvenement, MockCommune nouvelleCommune) throws Exception {
+
+		final Individu individu = serviceCivil.getIndividu(noIndividu, 0);
+
+		// Adresse actuelle
+		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));
+		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
+		if (adressePrincipale != null) {
+			// Initialisation d'une date de fin de validité pour la résidence principale
+			adressePrincipale.setDateFinValidite(dateEvenement);
+		}
+
+		// Ancienne commune
+		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
+		final int noOFS = communeVd.getNoOFS();
+
+
+		// Nouvelles adresses
+		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false));
+		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
+
+		// En cas de depart d'une residence secondaire
+
+
+		final MockDepart depart =
+				new MockDepart(individu, null, dateEvenement, noOFS, communeVd, nouvelleCommune, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, null, null,
+						true);
 
 		depart.setHandler(evenementCivilHandler);
 		return depart;
@@ -531,20 +553,32 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testValidateDepartAnterieurPrincipale() throws Exception {
 		LOGGER.debug("Test départ antérieur à la date de fin de validité de l'adresse actuelle...");
+
+		// mise-en-place des données à DATE_EVENEMENT
+		final Individu individu = serviceCivil.getIndividu((long) 1234, 0);
+		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT, false));
+		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
+		adressePrincipale.setDateFinValidite(DATE_EVENEMENT);
+
+		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
+		int noOFS = communeVd.getNoOFS();
+		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT.getOneDayAfter(), false));
+		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
+		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse);
+
+		// création d'un événement à DATE_ANTERIEURE_ADRESSE_ACTUELLE
+		final MockDepart depart =
+				new MockDepart(individu, null, DATE_ANTERIEURE_ADRESSE_ACTUELLE, noOFS, communeVd, communeHorsVd, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, null, null,
+						true);
+
+		depart.setHandler(evenementCivilHandler);
+
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-		// initialisation de la date de fin de validité
-		MockDepart depart = createValidDepart(1234, DATE_EVENEMENT, true);
-
-		erreurs.clear();
-		warnings.clear();
-
-		depart.setDate(DATE_ANTERIEURE_ADRESSE_ACTUELLE);
 		depart.validate(erreurs, warnings);
 
 		Assert.assertTrue("Le départ est antérieur à la date de fin de validité de l'adresse actuelle, une erreur aurait du être déclenchée", findMessage(erreurs, "La date de départ est différente"));
 		LOGGER.debug("Test départ antérieur à la date de fin de validité de l'adresse actuelle : OK");
-
 	}
 
 	/**
@@ -557,12 +591,9 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		MockDepart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true);
+		MockDepart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, MockCommune.Cossonay);
 		erreurs.clear();
 		warnings.clear();
-
-		final MockCommune nouvelleCommune = MockCommune.Cossonay;
-		depart.setNouvelleCommunePrincipale(nouvelleCommune);
 
 		depart.validate(erreurs, warnings);
 		Assert.assertTrue("La nouvelle commune est dans le canton de Vaud, une erreur aurait du être déclenchée", findMessage(erreurs, "est toujours dans le canton de Vaud"));
@@ -580,10 +611,9 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		MockDepart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true);
+		MockDepart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true, MockCommune.Lausanne.getNoOFS());
 		erreurs.clear();
 		warnings.clear();
-		depart.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
 		depart.validate(erreurs, warnings);
 		Assert.assertTrue("La commune d'anonce et differente de celle de la dernière adresse, une erreur aurait du être déclenchée", findMessage(erreurs, "La commune d'annonce"));
 		LOGGER.debug("Test commune d'annonce principale : OK");
@@ -599,7 +629,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
-		MockDepart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true);
+		MockDepart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true, null);
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
@@ -623,7 +653,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
-		MockDepart depart = createValidDepart(NO_IND_PAUL, DATE_EVENEMENT, true);
+		MockDepart depart = createValidDepart(NO_IND_PAUL, DATE_EVENEMENT, true, null);
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
@@ -640,7 +670,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 	@Test
 	public void testHandleDepartHCFinAnnee() throws Exception {
-		final MockDepart depart = createValidDepart(NO_IND_ALBERT, DATE_EVENEMENT_FIN_ANNEE, true);
+		final MockDepart depart = createValidDepart(NO_IND_ALBERT, DATE_EVENEMENT_FIN_ANNEE, true, null);
 		final ForFiscalPrincipal ffp = handleDepart(depart);
 		Assert.assertEquals("Le for HC aurait dû être ouvert encore l'année du départ", DATE_EVENEMENT_FIN_ANNEE.getOneDayAfter(), ffp.getDateDebut());
 	}
@@ -654,7 +684,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de départ d'une residence secondaire vaudoise.");
 
-		MockDepart depart = createValidDepart(1241, DATE_EVENEMENT, false);
+		MockDepart depart = createValidDepart(1241, DATE_EVENEMENT, false, null);
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 
@@ -681,7 +711,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testHandleDepartSecondaireVaudois() throws Exception {
 
-		MockDepart depart = createValidDepart(NO_IND_RAMONA, DATE_EVENEMENT, false);
+		MockDepart depart = createValidDepart(NO_IND_RAMONA, DATE_EVENEMENT, false, null);
 
 		final ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 
@@ -742,7 +772,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testDateDeFermetureFinDeMois() throws Exception {
 
-		MockDepart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, true);
+		MockDepart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, true, null);
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		assertNotNull(forFiscalPrincipal);
@@ -765,8 +795,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testDateDeFermetureNeuchatelDebutMois() throws Exception {
 
-		MockDepart depart = createValidDepart(1240, DATE_EVENEMENT_DEBUT_MOIS, true);
-		depart.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
+		MockDepart depart = createValidDepart(1240, DATE_EVENEMENT_DEBUT_MOIS, MockCommune.Neuchatel);
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		assertNotNull(forFiscalPrincipal);
 
@@ -789,8 +818,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testDateDeFermetureNeuchatelFinMois() throws Exception {
 
-		MockDepart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, true);
-		depart.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
+		MockDepart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, MockCommune.Neuchatel);
 
 		// [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
 		// RegDate dateAttendu = depart.getDate().getLastDayOfTheMonth();
@@ -838,7 +866,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		// 1. l'événement de déménagement de Bussigny à Echallens est déjà arrivé
 		// 2. nous allons maintenant recevoir un événement de départ secondaire depuis Echallens
 		// 3. il ne faudrait pas créer un deuxième for principal sur Echallens (cas de UNIREG-1921)
-		final Depart depart = createValidDepart(noIndividu, dateDepart, false);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -883,7 +911,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		// envoi de l'événement de départ
-		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -924,7 +952,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		// envoi de l'événement de départ
-		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -969,7 +997,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		// envoi de l'événement de départ
-		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		try {
@@ -1025,7 +1053,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		// envoi de l'événement de départ
-		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		try {
@@ -1084,7 +1112,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		// envoi de l'événement de départ
-		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 		try {
@@ -1155,7 +1183,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		// envoi de l'événement de départ
-		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -1213,7 +1241,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		// résumons-nous :
 		// 1. nous allons maintenant recevoir un événement de départ secondaire depuis Echallens
 		// 2. il faudrait que le for principal soit fermé et passe à Genève
-		final Depart depart = createValidDepart(noIndividu, dateDepart, false);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -1261,7 +1289,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			}
 		});
 
-		final Depart depart = createValidDepart(noIndividu, dateDepart, false);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -1308,7 +1336,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			}
 		});
 
-		final Depart depart = createValidDepart(noIndividu, dateDepart, false);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -1351,7 +1379,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 			}
 		});
 
-		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);

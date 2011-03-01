@@ -196,10 +196,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		// il faut modifier l'individu directement dans le registre civil
 		final Individu individu = annuleMariage(noIndividu);
 
-		final MockAnnulationMariage annulation = new MockAnnulationMariage();
-		annulation.setIndividu(individu);
-		annulation.setNumeroOfsCommuneAnnonce(5652);
-		annulation.setDate(date);
+		final MockAnnulationMariage annulation = new MockAnnulationMariage(individu, null, date, 5652);
 		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}

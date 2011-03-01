@@ -109,10 +109,7 @@ public class LeveeTutelleHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private MockLeveeTutelle createLeveeTutelle(Individu pupille) {
-		MockLeveeTutelle leveeTutelle = new MockLeveeTutelle();
-		leveeTutelle.setIndividu(pupille);
-		leveeTutelle.setNumeroOfsCommuneAnnonce(4848);
-		leveeTutelle.setDate(DATE_LEVEE_TUTELLE);
+		MockLeveeTutelle leveeTutelle = new MockLeveeTutelle(pupille, null, DATE_LEVEE_TUTELLE, 4848);
 		leveeTutelle.setHandler(evenementCivilHandler);
 		return leveeTutelle;
 	}

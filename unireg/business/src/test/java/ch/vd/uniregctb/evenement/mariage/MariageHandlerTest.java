@@ -425,12 +425,10 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 
 	private MockMariage createValidMariage(Individu individu, Individu conjoint, RegDate dateMariage) {
 
-		MockMariage mariage = new MockMariage();
-		mariage.setIndividu(individu);
-		mariage.setNouveauConjoint(conjoint);
-		mariage.setNumeroOfsCommuneAnnonce(5586);
-		mariage.setDate(dateMariage);
-		mariage.init(tiersDAO);
+		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
+		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
+
+		MockMariage mariage = new MockMariage(individu, principalPPId, conjoint, conjointPPId, dateMariage, 5586);
 		mariage.setHandler(evenementCivilHandler);
 		return mariage;
 	}

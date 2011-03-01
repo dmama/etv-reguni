@@ -148,10 +148,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 	}
 	
 	private MockAnnulationSeparation createAnnulationSeparation(Individu individu, RegDate date) {
-		MockAnnulationSeparation annulation = new MockAnnulationSeparation();
-		annulation.setIndividu(individu);
-		annulation.setNumeroOfsCommuneAnnonce(5652);
-		annulation.setDate(date);
+		MockAnnulationSeparation annulation = new MockAnnulationSeparation(individu, null, date, 5652);
 		annulation.setHandler(evenementCivilHandler);
 		return annulation;
 	}

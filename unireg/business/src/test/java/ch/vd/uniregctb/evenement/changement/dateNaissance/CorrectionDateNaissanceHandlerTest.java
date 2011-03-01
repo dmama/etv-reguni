@@ -31,7 +31,6 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -191,12 +190,8 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 
 	private MockCorrectionDateNaissance createValidCorrectionDateNaissane(Individu individu, RegDate dateNaissanceCorrigee) {
 
-		MockCorrectionDateNaissance correctionDateNaissane = new MockCorrectionDateNaissance();
-		correctionDateNaissane.setIndividu(individu);
-		correctionDateNaissane.setDate(dateNaissanceCorrigee);
-		correctionDateNaissane.setType(TypeEvenementCivil.CORREC_DATE_NAISSANCE);
-		correctionDateNaissane.setNumeroOfsCommuneAnnonce(5652);
-		correctionDateNaissane.init(tiersDAO);
+		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
+		MockCorrectionDateNaissance correctionDateNaissane = new MockCorrectionDateNaissance(individu, principalPPId, null, null, dateNaissanceCorrigee, 5652);
 		correctionDateNaissane.setHandler(evenementCivilHandler);
 
 		return correctionDateNaissane;

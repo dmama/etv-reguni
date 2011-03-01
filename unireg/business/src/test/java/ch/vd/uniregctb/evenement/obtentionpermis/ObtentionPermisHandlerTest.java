@@ -303,13 +303,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 	 */
 	private ObtentionPermis createValidObtentionPermis(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale) {
 
-		final MockObtentionPermis obtentionPermis = new MockObtentionPermis();
-		obtentionPermis.setIndividu(individu);
-
-		obtentionPermis.setNumeroOfsCommuneAnnonce(5586);
-		obtentionPermis.setNumeroOfsEtenduCommunePrincipale(noOfsCommunePrincipale);
-		obtentionPermis.setDate( dateObtentionPermis );
-		obtentionPermis.setTypePermis( TypePermis.ETABLISSEMENT);
+		final MockObtentionPermis obtentionPermis = new MockObtentionPermis(individu, null, dateObtentionPermis, 5586, noOfsCommunePrincipale, TypePermis.ETABLISSEMENT);
 		obtentionPermis.setHandler(evenementCivilHandler);
 		return obtentionPermis;
 	}
@@ -323,14 +317,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 	 * @return
 	 */
 	private ObtentionPermis createValidObtentionPermisNonC(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale, TypePermis typePermis) {
-
-		final MockObtentionPermis obtentionPermis = new MockObtentionPermis();
-		obtentionPermis.setIndividu(individu);
-
-		obtentionPermis.setNumeroOfsCommuneAnnonce(4848);
-		obtentionPermis.setNumeroOfsEtenduCommunePrincipale(noOfsCommunePrincipale);
-		obtentionPermis.setDate(dateObtentionPermis);
-		obtentionPermis.setTypePermis(typePermis);
+		final MockObtentionPermis obtentionPermis = new MockObtentionPermis(individu, null, dateObtentionPermis, 4848, noOfsCommunePrincipale, typePermis);
 		obtentionPermis.setHandler(evenementCivilHandler);
 		return obtentionPermis;
 	}

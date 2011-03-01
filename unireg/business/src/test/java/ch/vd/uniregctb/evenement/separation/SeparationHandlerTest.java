@@ -272,14 +272,10 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 			assertEquals("On ne peut fermer le rapport d'appartenance ménage avant sa date de début", message);
 		}
 	}
-	
+
 	private Separation createValidSeparation(Individu individu, Individu conjoint) {
-		
-		final MockSeparation separation = new MockSeparation();
-		separation.setIndividu(individu);
-		separation.setAncienConjoint(conjoint);
-		separation.setNumeroOfsCommuneAnnonce(5652);
-		separation.setDate(DATE_SEPARATION);
+
+		final MockSeparation separation = new MockSeparation(individu, conjoint, DATE_SEPARATION, 5652);
 		separation.setHandler(evenementCivilHandler);
 		return separation;
 	}

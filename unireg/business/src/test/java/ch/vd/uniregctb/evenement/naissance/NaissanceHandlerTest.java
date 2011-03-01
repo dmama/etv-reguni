@@ -130,11 +130,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private MockNaissance createValidNaissance(Individu individu) {
-		MockNaissance naissance = new MockNaissance();
-		naissance.setIndividu(individu);
-
-		naissance.setNumeroOfsCommuneAnnonce(4848);
-		naissance.setDate(individu.getDateNaissance());
+		MockNaissance naissance = new MockNaissance(individu, null, individu.getDateNaissance(), 4848, null);
 		naissance.setHandler(evenementCivilHandler);
 		return naissance;
 	}

@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.evenement.obtentionpermis;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -13,12 +16,15 @@ public class MockObtentionPermis extends MockEvenementCivil implements Obtention
 	private Integer numeroOfsEtenduCommunePrincipale;
 	private TypePermis typePermis;
 
-	public boolean isContribuablePresentBefore() {
-		return false;
+	public MockObtentionPermis(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsEtenduCommunePrincipale,
+	                           TypePermis typePermis) {
+		super(individu, conjoint, TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, date, numeroOfsCommuneAnnonce);
+		this.numeroOfsEtenduCommunePrincipale = numeroOfsEtenduCommunePrincipale;
+		this.typePermis = typePermis;
 	}
 
-	public void setTypePermis(TypePermis typePermis) {
-		this.typePermis = typePermis;
+	public boolean isContribuablePresentBefore() {
+		return false;
 	}
 
 	public TypePermis getTypePermis() {
@@ -27,9 +33,5 @@ public class MockObtentionPermis extends MockEvenementCivil implements Obtention
 
 	public Integer getNumeroOfsEtenduCommunePrincipale() {
 		return numeroOfsEtenduCommunePrincipale;
-	}
-
-	public void setNumeroOfsEtenduCommunePrincipale(Integer numeroOfsEtenduCommunePrincipale) {
-		this.numeroOfsEtenduCommunePrincipale = numeroOfsEtenduCommunePrincipale;
 	}
 }

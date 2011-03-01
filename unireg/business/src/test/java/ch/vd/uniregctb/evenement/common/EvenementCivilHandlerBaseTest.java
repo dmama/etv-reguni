@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -173,21 +174,16 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 	public void testValidateCommon() {
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400);
 
 		//test OK
-		final MockEvenementCivil even = new MockEvenementCivil();
-		even.setIndividu(serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400));
-		even.setDate(RegDate.get(1990, 7, 1));
-		even.setNumeroOfsCommuneAnnonce(356);
+		final MockEvenementCivil even = new MockEvenementCivil(individu, null, null, RegDate.get(1990, 7, 1),356);
 		handler.validate(even, erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 
 		//test KO date null
-		final MockEvenementCivil evenDateNull = new MockEvenementCivil();
-		evenDateNull.setIndividu(serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400));
-		evenDateNull.setDate(null);
-		evenDateNull.setNumeroOfsCommuneAnnonce(356);
+		final MockEvenementCivil evenDateNull = new MockEvenementCivil(individu, null, null, null, 356);
 		handler.validate(evenDateNull, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -196,10 +192,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		warnings.clear();
 
 		//test KO date future
-		final MockEvenementCivil evenDateFuture = new MockEvenementCivil();
-		evenDateFuture.setIndividu(serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400));
-		evenDateFuture.setDate(RegDate.get(2012, 7, 1));
-		evenDateFuture.setNumeroOfsCommuneAnnonce(356);
+		final MockEvenementCivil evenDateFuture = new MockEvenementCivil(individu, null, null, RegDate.get().addYears(2), 356);
 		handler.validate(evenDateFuture, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -208,10 +201,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		warnings.clear();
 
 		//test KO numéro OFS null
-		final MockEvenementCivil evenOFSNull = new MockEvenementCivil();
-		evenOFSNull.setIndividu(serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400));
-		evenOFSNull.setDate(RegDate.get(1990, 7, 1));
-		evenOFSNull.setNumeroOfsCommuneAnnonce(null);
+		final MockEvenementCivil evenOFSNull = new MockEvenementCivil(individu, null, null, RegDate.get(1990, 7, 1), null);
 		handler.validate(evenOFSNull, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -220,10 +210,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		warnings.clear();
 
 		//test OK numéro OFS commune du sentier
-		final MockEvenementCivil evenOFSSentier = new MockEvenementCivil();
-		evenOFSSentier.setIndividu(serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400));
-		evenOFSSentier.setDate(RegDate.get(1990, 7, 1));
-		evenOFSSentier.setNumeroOfsCommuneAnnonce(8000);
+		final MockEvenementCivil evenOFSSentier = new MockEvenementCivil(individu, null, null, RegDate.get(1990, 7, 1), 8000);
 		handler.validate(evenOFSSentier, erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());

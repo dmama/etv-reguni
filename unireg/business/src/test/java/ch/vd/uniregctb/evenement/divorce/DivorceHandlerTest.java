@@ -284,14 +284,7 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 	}
 	
 	private Divorce createValidDivorce(Individu individu, Individu conjoint) {
-
-		MockDivorce divorce = new MockDivorce();
-		divorce.setIndividu(individu);
-		divorce.setAncienConjoint(conjoint);
-		
-		divorce.setNumeroOfsCommuneAnnonce(5652);
-		divorce.setDate(DATE_DIVORCE);
-
+		MockDivorce divorce = new MockDivorce(individu, conjoint, DATE_DIVORCE, 5652);
 		divorce.setHandler(evenementCivilHandler);
 		return divorce;
 	

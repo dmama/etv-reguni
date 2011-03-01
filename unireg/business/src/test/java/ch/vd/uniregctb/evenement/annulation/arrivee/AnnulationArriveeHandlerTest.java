@@ -24,18 +24,12 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class AnnulationArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 	private MockEvenementCivil createValideAnnulationArrivee(Individu individu) {
-		final MockEvenementCivil evt = new MockEvenementCivil();
-		evt.setType(TypeEvenementCivil.SUP_ARRIVEE_DANS_COMMUNE);
-		evt.setIndividu(individu);
-		evt.setDate(RegDate.get());
-		evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
-		evt.init(tiersDAO);
-		return evt;
+		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
+		return new MockAnnulationArrivee(individu, principalPPId, null, null, RegDate.get(), MockCommune.Lausanne.getNoOFSEtendu());
 	}
 
 	private static enum ErrorLocation {

@@ -101,10 +101,7 @@ public class AnnulationTutelleHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	private MockAnnulationTutelle createAnnulationTutelle(Individu pupille) {
-		MockAnnulationTutelle annulationTutelle = new MockAnnulationTutelle();
-		annulationTutelle.setIndividu(pupille);
-		annulationTutelle.setNumeroOfsCommuneAnnonce(4848);
-		annulationTutelle.setDate(DATE_ANNULATION_TUTELLE);
+		MockAnnulationTutelle annulationTutelle = new MockAnnulationTutelle(pupille, null, DATE_ANNULATION_TUTELLE, 4848);
 		annulationTutelle.setHandler(evenementCivilHandler);
 		return annulationTutelle;
 	}
