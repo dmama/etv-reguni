@@ -52,11 +52,15 @@
 <table border="0">
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
-		<td width="25%">
-			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>
-		</td>
-		<td width="25%">
-			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" /></div>
+		<td width="50%" style="text-align: center;">
+			<input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/>
+			&nbsp;
+			<input type="submit" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" />
+			<!-- désactivé pour le moment -->
+			<c:if test="${false && command.resultSize > 0}">
+				&nbsp;
+				<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>
+			</c:if>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

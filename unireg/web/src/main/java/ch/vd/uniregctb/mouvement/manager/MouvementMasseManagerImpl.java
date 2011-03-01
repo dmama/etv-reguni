@@ -1,8 +1,13 @@
 package ch.vd.uniregctb.mouvement.manager;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.mutable.MutableLong;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +16,19 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.extraction.BatchableExtractor;
+import ch.vd.uniregctb.extraction.ExtractionKey;
+import ch.vd.uniregctb.extraction.ExtractionService;
+import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAO;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -27,6 +41,7 @@ import ch.vd.uniregctb.mouvement.ReceptionDossierClassementGeneral;
 import ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView;
 import ch.vd.uniregctb.mouvement.view.BordereauEnvoiView;
 import ch.vd.uniregctb.mouvement.view.BordereauListElementView;
+import ch.vd.uniregctb.mouvement.view.ContribuableView;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -39,12 +54,21 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	private BordereauMouvementDossierDAO bordereauDAO;
 
+	private ExtractionService extractionService;
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementService(MouvementService mouvementService) {
 		this.mouvementService = mouvementService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setBordereauDAO(BordereauMouvementDossierDAO bordereauDAO) {
 		this.bordereauDAO = bordereauDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setExtractionService(ExtractionService extractionService) {
+		this.extractionService = extractionService;
 	}
 
 	private long getIdCollAdmFromNumeroCA(int noCa) {
@@ -59,6 +83,21 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			return null;
 		}
 
+		final MouvementDossierCriteria criteria = createCoreCriteria(view, noCollAdmInitiatrice);
+		final long count = getMouvementDossierDAO().count(criteria);
+		if (total != null) {
+			total.setValue(count);
+		}
+		if (count > 0) {
+			final List<MouvementDossier> liste = getMouvementDossierDAO().find(criteria, paramPagination);
+			return getViews(liste, false);
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
+	private MouvementDossierCriteria createCoreCriteria(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice) {
 		final DateRange range = new DateRangeHelper.Range(RegDate.get(view.getDateMouvementMin()), RegDate.get(view.getDateMouvementMax()));
 		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
 		criteria.setNoCtb(view.getNoCtb());
@@ -86,18 +125,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		if (noCollAdmInitiatrice != null) {
 			criteria.setIdCollAdministrativeInitiatrice(getIdCollAdmFromNumeroCA(noCollAdmInitiatrice));
 		}
-
-		final long count = getMouvementDossierDAO().count(criteria);
-		if (total != null) {
-			total.setValue(count);
-		}
-		if (count > 0) {
-			final List<MouvementDossier> liste = getMouvementDossierDAO().find(criteria, paramPagination);
-			return getViews(liste, false);
-		}
-		else {
-			return Collections.emptyList();
-		}
+		return criteria;
 	}
 
 	@Transactional(readOnly = true)
@@ -261,6 +289,156 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	private void changeEtat(EtatMouvementDossier nouvelEtat, MouvementDossier mvt) {
 		if (mvt != null && nouvelEtat != null && mvt.getEtat() != nouvelEtat) {
 			mvt.setEtat(nouvelEtat);
+		}
+	}
+
+	@Override
+	public ExtractionKey exportListeRecherchee(MouvementMasseCriteriaView criteria, Integer noCollAdmInitiatrice, ParamSorting sorting) {
+		final MouvementDossierCriteria coreCriteria = createCoreCriteria(criteria, noCollAdmInitiatrice);
+		final MouvementDossierExtractor extractor = new MouvementDossierExtractor(coreCriteria, sorting);
+		final String visa = AuthenticationHelper.getCurrentPrincipal();
+		return extractionService.postExtractionQuery(visa, extractor);
+	}
+
+	/**
+	 * Extracteur de mouvements de dossiers répondants à certains critères
+	 */
+	public class MouvementDossierExtractor extends BaseExtractorImpl implements BatchableExtractor<Long, MouvementDossierExtractionResult> {
+
+		private final MouvementDossierCriteria criteria;
+		private final ParamSorting sorting;
+
+		public MouvementDossierExtractor(MouvementDossierCriteria criteria, ParamSorting sorting) {
+			this.criteria = criteria;
+			this.sorting = sorting;
+		}
+
+		@Override
+		public MouvementDossierExtractionResult createRapport(boolean rapportFinal) {
+			return new MouvementDossierExtractionResult();
+		}
+
+		@Override
+		public BatchTransactionTemplate.Behavior getBatchBehavior() {
+			return BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE;
+		}
+
+		@Override
+		public List<Long> buildElementList() {
+			getStatusManager().setMessage("Recherche des mouvements à extraire...");
+			try {
+				return getMouvementDossierDAO().findIds(criteria, sorting);
+			}
+			finally {
+				getStatusManager().setMessage("Extraction des mouvements...", 0);
+			}
+		}
+
+		@Override
+		public int getBatchSize() {
+			return 100;
+		}
+
+		@Override
+		public boolean doBatchExtraction(List<Long> batch, MouvementDossierExtractionResult rapport) throws Exception {
+
+			// extraction des ID de la liste vers un tableau
+			final long[] ids = new long[batch.size()];
+			int index = 0;
+			for (Long id : batch) {
+				if (id != null) {
+					ids[index ++] = id;
+				}
+			}
+
+			// rien à faire si aucun mouvement n'est en fait sélectionné
+			if (index > 0) {
+
+				// le dao ne garantit pas de retourner les éléments dans l'ordre des ids indiqués
+				// -> afin de garantir l'ordre de tri dans l'extraction, je dois donc repasser par la liste initiale
+				final List<MouvementDossier> mvts = getMouvementDossierDAO().get(ids);
+				final Map<Long, MouvementDossier> map = new HashMap<Long, MouvementDossier>(mvts.size());
+				for (MouvementDossier mvt : mvts) {
+					map.put(mvt.getId(), mvt);
+				}
+
+				// nouvelle liste des mouvements triés dans le même ordre que la liste initiale des ids
+				final List<MouvementDossier> mvtsTries = new ArrayList<MouvementDossier>(mvts.size());
+				for (Long id : batch) {
+					if (id != null) {
+						final MouvementDossier mvt = map.get(id);
+						if (mvt != null) {
+							mvtsTries.add(mvt);
+						}
+					}
+				}
+
+				if (mvtsTries.size() > 0) {
+					final List<MouvementDetailView> infos = getViews(mvtsTries, false);
+					rapport.addMouvements(infos);
+				}
+			}
+
+			return !isInterrupted();
+		}
+
+		@Override
+		public InputStream getStreamForExtraction(MouvementDossierExtractionResult rapportFinal) throws IOException {
+			final String contenu = buildCvs(rapportFinal.mvts);
+			return CsvHelper.getInputStream(contenu);
+		}
+
+		@Override
+		public void afterTransactionCommit(MouvementDossierExtractionResult rapportFinal, int percentProgression) {
+			getStatusManager().setMessage("Extraction des mouvements...", percentProgression);
+		}
+
+		@Override
+		public String toString() {
+			return "Mouvements de dossiers";
+		}
+	}
+
+	private static String buildCvs(List<MouvementDetailView> mvts) {
+		return CsvHelper.asCsvFile(mvts, "mvts.csv", null, 150, new CsvHelper.Filler<MouvementDetailView>() {
+			@Override
+			public void fillHeader(StringBuilder b) {
+				b.append("CTB_ID").append(CsvHelper.COMMA);
+				b.append("NOM_RAISON_SOCIALE").append(CsvHelper.COMMA);
+				b.append("TYPE_MOUVEMENT").append(CsvHelper.COMMA);
+				b.append("ETAT").append(CsvHelper.COMMA);
+				b.append("COLL_ADM").append(CsvHelper.COMMA);
+				b.append("DESTINATION");
+			}
+
+			@Override
+			public void fillLine(StringBuilder b, MouvementDetailView elt) {
+				final ContribuableView ctb = elt.getContribuable();
+				b.append(ctb.getNumero()).append(CsvHelper.COMMA);
+				b.append(CsvHelper.asCsvField(ctb.getNomPrenom())).append(CsvHelper.COMMA);
+				b.append(elt.getTypeMouvement()).append(CsvHelper.COMMA);
+				b.append(elt.getEtatMouvement()).append(CsvHelper.COMMA);
+				b.append(CsvHelper.escapeChars(elt.getCollectiviteAdministrative())).append(CsvHelper.COMMA);
+				b.append(CsvHelper.escapeChars(elt.getDestinationUtilisateur()));
+			}
+		});
+	}
+
+	public static class MouvementDossierExtractionResult implements BatchResults<Long, MouvementDossierExtractionResult> {
+
+		private final List<MouvementDetailView> mvts = new LinkedList<MouvementDetailView>();
+
+		@Override
+		public void addErrorException(Long element, Exception e) {
+		}
+
+		@Override
+		public void addAll(MouvementDossierExtractionResult right) {
+			this.mvts.addAll(right.mvts);
+		}
+
+		public void addMouvements(List<MouvementDetailView> mvts) {
+			this.mvts.addAll(mvts);
 		}
 	}
 }

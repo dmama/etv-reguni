@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.ParamSorting;
 
 public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> {
 
@@ -24,6 +25,14 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	 * @return Liste de mouvements trouvés
 	 */
 	List<MouvementDossier> find(MouvementDossierCriteria criteria, ParamPagination paramPagination);
+
+	/**
+	 * Recherche les ID de tous les mouvements de dossiers qui correspondent aux critères donnés
+	 * @param criteria critères de recherche
+	 * @param sorting indication du tri à utiliser
+	 * @return liste des ID des mouvements trouvés
+	 */
+	List<Long> findIds(MouvementDossierCriteria criteria, ParamSorting sorting);
 
 	/**
 	 * Renvoie le nombre de mouvements de dossiers qui correspondent aux critères donnés

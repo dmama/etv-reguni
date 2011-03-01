@@ -34,6 +34,7 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
@@ -88,6 +89,10 @@
 	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">
 		<property name="storageService" ref="retourImpressionStorageService"/>
 		<property name="callerTimeout" value="${editique.locale.attente.timeout}"/>
+	</bean>
+
+	<bean name="extractionServiceJmxBean" class="ch.vd.uniregctb.jmx.ExtractionServiceJmxBeanImpl">
+		<property name="extractionService" ref="extractionService"/>
 	</bean>
 
 	<bean name="othersPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">

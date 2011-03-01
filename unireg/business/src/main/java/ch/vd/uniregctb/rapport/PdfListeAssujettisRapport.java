@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
@@ -97,11 +98,11 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 	}
 
 	private static String buildContenuAssujettis(List<ListeAssujettisResults.InfoCtbAssujetti> liste, StatusManager status, String filename) {
-		return asCsvFile(liste, filename, status, 70, new Filler<ListeAssujettisResults.InfoCtbAssujetti>() {
+		return CsvHelper.asCsvFile(liste, filename, status, 70, new CsvHelper.Filler<ListeAssujettisResults.InfoCtbAssujetti>() {
 			public void fillHeader(StringBuilder b) {
 				b.append("NO_CTB").append(COMMA).append("TYPE_ASSUJETTISSEMENT").append(COMMA)
-					.append("DATE_DEBUT").append(COMMA).append("DATE_FIN").append(COMMA)
-					.append("MOTIF_FRAC_DEBUT").append(COMMA).append("MOTIF_FRAC_FIN").append(COMMA);
+						.append("DATE_DEBUT").append(COMMA).append("DATE_FIN").append(COMMA)
+						.append("MOTIF_FRAC_DEBUT").append(COMMA).append("MOTIF_FRAC_FIN").append(COMMA);
 			}
 
 			public void fillLine(StringBuilder b, ListeAssujettisResults.InfoCtbAssujetti elt) {
@@ -116,7 +117,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 	}
 
 	private static String buildContenuIgnores(List<ListeAssujettisResults.InfoCtbIgnore> liste, String filename, StatusManager status) {
-		return asCsvFile(liste, filename, status, 30, new Filler<ListeAssujettisResults.InfoCtbIgnore>() {
+		return CsvHelper.asCsvFile(liste, filename, status, 30, new CsvHelper.Filler<ListeAssujettisResults.InfoCtbIgnore>() {
 			public void fillHeader(StringBuilder b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON");
 			}
@@ -129,7 +130,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 	}
 
 	private static String buildContenuErreurs(List<ListeAssujettisResults.Erreur> results, String filename, StatusManager status) {
-		return asCsvFile(results, filename, status, 100, new Filler<ListeAssujettisResults.Erreur>() {
+		return CsvHelper.asCsvFile(results, filename, status, 100, new CsvHelper.Filler<ListeAssujettisResults.Erreur>() {
 			public void fillHeader(StringBuilder b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON").append(COMMA).append("DETAILS");
 			}

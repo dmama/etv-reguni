@@ -54,6 +54,7 @@
 	<bean id="mouvementMasseManager" class="ch.vd.uniregctb.mouvement.manager.MouvementMasseManagerImpl" parent="abstractMouvementManager">
 		<property name="mouvementService" ref="mouvementService"/>
 		<property name="bordereauDAO" ref="bordereauMouvementDossierDAO"/>
+		<property name="extractionService" ref="extractionService" />
 	</bean>
 
 	<bean id="mouvementMasseConsultationValidator" class="ch.vd.uniregctb.mouvement.validator.MouvementMasseConsultationValidator"/>

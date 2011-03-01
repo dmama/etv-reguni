@@ -10,7 +10,6 @@ import java.util.List;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.*;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.lowagie.text.Cell;
@@ -36,7 +35,7 @@ public abstract class PdfRapport extends Document {
 	private static final Font WARNING_FONT = new Font(Font.HELVETICA, 12, Font.BOLD);
 	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static final int AVG_LINE_LEN = 384; // longueur moyenne d'une ligne d'un fichier CVS (d'après relevé sur le batch d'ouverture des fors)
-	public static final char COMMA = ';';
+	public static final char COMMA = CsvHelper.COMMA;
 	public static final String EMPTY = "";
 
 	private final Logger LOGGER = Logger.getLogger(PdfRapport.class);
@@ -233,60 +232,10 @@ public abstract class PdfRapport extends Document {
 	}
 
 	/**
-	 * Interface implémentée par le code spécifique au remplissage d'un fichier CSV
-	 * @param <T>
-	 */
-	protected static interface Filler<T> {
-		/**
-		 * Remplissage de la ligne d'entête (sans le CR final)
-		 * @param b destination du remplissage
-		 */
-		void fillHeader(StringBuilder b);
-
-		/**
-		 * Remplissage de chacune des lignes (sans le CR final)
-		 * @param b destination du remplissage
-		 * @param elt source de l'information à utiliser pour le remplissage
-		 */
-		void fillLine(StringBuilder b, T elt);
-	}
-
-	protected static <T> String asCsvFile(List<T> list, String fileName, StatusManager status, int avgLineLength, Filler<T> filler) {
-		String contenu = null;
-		final int size = list.size();
-		final String CR = "\n";
-		if (size > 0) {
-			final StringBuilder b = new StringBuilder((avgLineLength + CR.length()) * size);
-			filler.fillHeader(b);
-			b.append(CR);
-
-			final String message = String.format("Génération du fichier %s", fileName);
-			status.setMessage(message, 0);
-
-			final GentilIterator<T> iter = new GentilIterator<T>(list);
-			while (iter.hasNext()) {
-				final T info = iter.next();
-				if (iter.isAtNewPercent()) {
-					status.setMessage(message, iter.getPercent());
-				}
-
-				final int sizeBefore = b.length();
-				filler.fillLine(b, info);
-				if (sizeBefore < b.length()) {
-					b.append(CR);
-				}
-			}
-
-			contenu = b.toString();
-		}
-		return contenu;
-	}
-
-	/**
 	 * Construit le contenu du fichier détaillé des contribuables traités
 	 */
 	protected static String ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
-		return asCsvFile(ctbsTraites, filename, status, 10, new Filler<Long>() {
+		return CsvHelper.asCsvFile(ctbsTraites, filename, status, 10, new CsvHelper.Filler<Long>() {
 			public void fillHeader(StringBuilder b) {
 				b.append("NO_CTB");
 			}
@@ -301,7 +250,7 @@ public abstract class PdfRapport extends Document {
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
 	protected static <T extends JobResults.Info> String asCsvFile(List<T> list, String filename, StatusManager status) {
-		return asCsvFile(list, filename, status, AVG_LINE_LEN, new Filler<T>() {
+		return CsvHelper.asCsvFile(list, filename, status, AVG_LINE_LEN, new CsvHelper.Filler<T>() {
 			public void fillHeader(StringBuilder b) {
 				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")
 						.append(COMMA).append("RAISON").append(COMMA).append("COMMENTAIRE");
@@ -324,7 +273,7 @@ public abstract class PdfRapport extends Document {
 	 * mais les éventuels caractères interdits (" et ;) sont supprimés.
 	 */
 	protected static String asCsvField(String lignes) {
-		return asCsvField(lignes.split("\n"));
+		return CsvHelper.asCsvField(lignes);
 	}
 
 	/**
@@ -333,7 +282,7 @@ public abstract class PdfRapport extends Document {
 	 * @return
 	 */
 	protected static String escapeChars(String ligne) {
-		return StringUtils.isBlank(ligne) ? EMPTY : ligne.trim().replaceAll("[\";]", EMPTY);
+		return CsvHelper.escapeChars(ligne);
 	}
 
 	/**
@@ -341,31 +290,7 @@ public abstract class PdfRapport extends Document {
 	 * sont supprimés.
 	 */
 	protected static String asCsvField(String[] lignes) {
-		final StringBuilder b = new StringBuilder();
-		b.append("\"");
-		final int length = lignes.length;
-
-		// compte les lignes non-vides
-		int nbLignesNonVides = 0;
-		for (int i = 0 ; i < length ; ++ i) {
-			if (!StringUtils.isBlank(lignes[i])) {
-				++ nbLignesNonVides;
-			}
-		}
-
-		// construit la chaîne de caractères
-		for (int i = 0; i < length; ++i) {
-			final String ligne = lignes[i];
-			if (!StringUtils.isBlank(ligne)) {
-				b.append(escapeChars(ligne));
-				-- nbLignesNonVides;
-				if (nbLignesNonVides > 0) {
-					b.append("\n");
-				}
-			}
-		}
-		b.append("\"");
-		return b.toString();
+		return CsvHelper.asCsvField(lignes);
 	}
 
 
@@ -402,54 +327,6 @@ public abstract class PdfRapport extends Document {
 	 * @return une string représentant la durée sous forme humaine.
 	 */
 	protected static String formatDureeExecution(long milliseconds) {
-		final int seconds = (int) ((milliseconds / 1000) % 60);
-		final int minutes = (int) ((milliseconds / 1000) / 60) % 60;
-		final int hours = (int) ((milliseconds / 1000) / 3600) % 24;
-		final int days = (int) ((milliseconds / 1000) / (3600 * 24));
-
-		return formatDureeExecution(days, hours, minutes, seconds);
-	}
-
-	/**
-	 * Formatte une durée d'exécution d'un rapport sous la forme <i>1 jour, 0 heure, 23 minutes et 1 seconde</i>.
-	 *
-	 * @param days    le nombre de jours
-	 * @param hours   le nombre d'heures (0-23)
-	 * @param minutes le nombre de minutes (0-59)
-	 * @param seconds le nombre de secondes (0-59)
-	 * @return une string représentant la durée sous forme humaine.
-	 */
-	protected static String formatDureeExecution(int days, int hours, int minutes, int seconds) {
-
-		final StringBuilder s = new StringBuilder();
-
-		if (days > 0) {
-			s.append(days).append(' ').append(pluralize(days, "jour")).append(", ");
-		}
-		if (days > 0 || hours > 0) {
-			s.append(hours).append(' ').append(pluralize(hours, "heure")).append(", ");
-		}
-		if (days > 0 || hours > 0 || minutes > 0) {
-			s.append(minutes).append(' ').append(pluralize(minutes, "minute")).append(" et ");
-		}
-		s.append(seconds).append(' ').append(pluralize(seconds, "seconde"));
-
-		return s.toString();
-	}
-
-	/**
-	 * Implémentation très stupide de la méthode pluralize (inspirée de Ruby on Rails) qui ajoute un 's' à la fin du mot singulier lorsque count > 1.
-	 *
-	 * @param count    le nombre d'occurences
-	 * @param singular la version au singulier du mot
-	 * @return la version au singulier ou au pluriel du mot en fonction du nombre d'occurences.
-	 */
-	protected static String pluralize(int count, String singular) {
-		if (count > 1) {
-			return singular + 's';
-		}
-		else {
-			return singular;
-		}
+		return TimeHelper.formatDuree(milliseconds);
 	}
 }

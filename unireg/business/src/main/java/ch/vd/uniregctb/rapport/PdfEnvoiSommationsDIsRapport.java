@@ -2,6 +2,7 @@ package ch.vd.uniregctb.rapport;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
 import com.lowagie.text.DocumentException;
@@ -127,7 +128,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
 	private String asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
 		final String content;
 		if (list.size() > 0) {
-			content = asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, AVG_LINE_LEN, new Filler<EnvoiSommationsDIsResults.Info>() {
+			content = CsvHelper.asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, AVG_LINE_LEN, new CsvHelper.Filler<EnvoiSommationsDIsResults.Info>() {
 				public void fillHeader(StringBuilder b) {
 					b.append(list.get(0).getCsvEntete());
 				}

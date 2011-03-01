@@ -16,4 +16,11 @@
 	<bean id="servletService" class="ch.vd.uniregctb.servlet.ServletServiceImpl">
 	</bean>
 
+	<bean id="extractionService" class="ch.vd.uniregctb.extraction.ExtractionServiceImpl">
+		<property name="expiration" value="7"/>
+		<property name="threadPoolSize" value="1"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
 </beans>

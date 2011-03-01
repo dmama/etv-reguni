@@ -18,6 +18,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.type.TypeMouvement;
 
 public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Long> implements MouvementDossierDAO {
@@ -49,16 +50,21 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 	/**
 	 * Construit une requête HQL qui récupère les mouvements de dossiers correspondant aux critères donnés
-	 * @param criteria
-	 * @param paramPagination
+	 *
+	 * @param criteria critères de sélection des mouvements à récupérer
+	 * @param idsOnly si <code>true</code>, la requête n'ira chercher que des ID, si <code>false</code>, des objets métier seront renvoyés
+	 * @param sorting indications sur le tri souhaité des résultats de la recherche
 	 * @param params Paramètres à remplir
 	 * @return Requête HQL
 	 */
-	private static String buildFindHql(MouvementDossierCriteria criteria, ParamPagination paramPagination, List<Object> params) {
+	private static String buildFindHql(MouvementDossierCriteria criteria, boolean idsOnly, ParamSorting sorting, List<Object> params) {
 		final StringBuilder b = new StringBuilder("SELECT mvt");
+		if (idsOnly) {
+			b.append(".id");
+		}
 		buildFromClause(criteria, b);
 		buildWhereClause(criteria, b, params);
-		buildOrderByClause(paramPagination, b);
+		buildOrderByClause(sorting, b);
 		return b.toString();
 	}
 
@@ -69,10 +75,10 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		return b.toString();
 	}
 
-	private static void buildOrderByClause(ParamPagination paramPagination, StringBuilder b) {
-		if (paramPagination != null && !StringUtils.isBlank(paramPagination.getChamp())) {
-			b.append(" ORDER BY mvt.").append(paramPagination.getChamp());
-			if (!paramPagination.isSensAscending()) {
+	private static void buildOrderByClause(ParamSorting sorting, StringBuilder b) {
+		if (sorting != null && !StringUtils.isBlank(sorting.getField())) {
+			b.append(" ORDER BY mvt.").append(sorting.getField());
+			if (!sorting.isAscending()) {
 				b.append(" DESC");
 			}
 		}
@@ -257,7 +263,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	public List<MouvementDossier> find(MouvementDossierCriteria criteria, final ParamPagination paramPagination) {
 
 		final List<Object> params = new ArrayList<Object>();
-		final String hql = buildFindHql(criteria, paramPagination, params);
+		final String hql = buildFindHql(criteria, false, paramPagination != null ? paramPagination.getSorting() : null, params);
 		return (List<MouvementDossier>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 			public List<MouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 
@@ -270,6 +276,22 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 					final int maxResult = paramPagination.getTaillePage();
 					query.setFirstResult(firstResult);
 					query.setMaxResults(maxResult);
+				}
+				return query.list();
+			}
+		});
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public List<Long> findIds(MouvementDossierCriteria criteria, ParamSorting sorting) {
+		final List<Object> params = new ArrayList<Object>();
+		final String hql = buildFindHql(criteria, true, sorting, params);
+		return (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			@Override
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery(hql);
+				for (int i = 0 ; i < params.size() ; ++ i) {
+					query.setParameter(i, params.get(i));
 				}
 				return query.list();
 			}

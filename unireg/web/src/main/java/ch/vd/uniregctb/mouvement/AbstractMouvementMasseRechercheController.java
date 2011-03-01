@@ -4,13 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableLong;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.extraction.ExtractionKey;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 
@@ -21,6 +21,8 @@ import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 public abstract class AbstractMouvementMasseRechercheController extends AbstractMouvementMasseController {
 
 	protected static final String EFFACER = "effacer";
+
+	protected static final String EXPORTER = "exporter";
 
 	private static final int PAGE_SIZE = 25;
 
@@ -41,12 +43,7 @@ public abstract class AbstractMouvementMasseRechercheController extends Abstract
 	}
 
 	protected static WebParamPagination getParamPagination(HttpServletRequest request) {
-		final WebParamPagination param = new WebParamPagination(request, TABLE_ID, PAGE_SIZE);
-		if (StringUtils.isBlank(param.getChamp())) {
-			param.setChamp("contribuable.numero");
-			param.setSensAscending(true);
-		}
-		return param;
+		return new WebParamPagination(request, TABLE_ID, PAGE_SIZE, "contribuable.numero", true);
 	}
 
 	@Override
@@ -77,8 +74,15 @@ public abstract class AbstractMouvementMasseRechercheController extends Abstract
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		final MouvementMasseCriteriaView view = (MouvementMasseCriteriaView) command;
 		final String effacer = request.getParameter(EFFACER);
+		final String exporter = request.getParameter(EXPORTER);
 		if (effacer != null) {
 			initView(view);
+		}
+		else if (exporter != null) {
+			final WebParamPagination pagination = getParamPagination(request);
+			final Integer noCollAdmInitiatrice = getNoCollAdmFiltree();
+			final ExtractionKey key = getMouvementManager().exportListeRecherchee(view, noCollAdmInitiatrice, pagination.getSorting());
+			flash(String.format("Demande d'export enregistrée (%s)", key.getUuid()));
 		}
 		else {
 			doFind(request, view);

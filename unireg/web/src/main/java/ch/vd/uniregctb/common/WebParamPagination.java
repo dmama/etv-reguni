@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 
@@ -17,16 +18,16 @@ public class WebParamPagination extends ParamPagination {
 	}
 
 	public WebParamPagination(HttpServletRequest request, String tableId, int taillePage, String defaultChamp, boolean defaultSensAscending) {
-		ParamEncoder encoder = new ParamEncoder(tableId);
-		setNumeroPage(decodeTaillePage(request, encoder));
-		setTaillePage(taillePage);
-		setChamp(decodeChamp(request, encoder, defaultChamp));
-		setSensAscending(decodeSensAscending(request, encoder, defaultSensAscending));
+		this(request, new ParamEncoder(tableId), taillePage, defaultChamp, defaultSensAscending);
+	}
+
+	private WebParamPagination(HttpServletRequest request, ParamEncoder encoder, int taillePage, String defaultChamp, boolean defaultSensAscending) {
+		super(decodePage(request, encoder), taillePage, decodeChamp(request, encoder, defaultChamp), decodeSensAscending(request, encoder, defaultSensAscending));
 	}
 
 	private static boolean decodeSensAscending(HttpServletRequest request, ParamEncoder encoder, boolean defaultValue) {
-		String sOrder = request.getParameter(encoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER));
-		if (sOrder == null) {
+		final String sOrder = request.getParameter(encoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER));
+		if (StringUtils.isBlank(sOrder)) {
 			return defaultValue;
 		}
 		else {
@@ -35,8 +36,8 @@ public class WebParamPagination extends ParamPagination {
 	}
 
 	private static String decodeChamp(HttpServletRequest request, ParamEncoder encoder, String defaultValue) {
-		String nomAttribut = request.getParameter(encoder.encodeParameterName(TableTagParameters.PARAMETER_SORT));
-		if (nomAttribut == null) {
+		final String nomAttribut = request.getParameter(encoder.encodeParameterName(TableTagParameters.PARAMETER_SORT));
+		if (StringUtils.isBlank(nomAttribut)) {
 			return defaultValue;
 		}
 		else {
@@ -44,8 +45,8 @@ public class WebParamPagination extends ParamPagination {
 		}
 	}
 
-	private static int decodeTaillePage(HttpServletRequest request, ParamEncoder encoder) {
-		String sPage = request.getParameter(encoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE));
+	private static int decodePage(HttpServletRequest request, ParamEncoder encoder) {
+		final String sPage = request.getParameter(encoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE));
 		int page;
 		try {
 			page = Integer.valueOf(sPage);

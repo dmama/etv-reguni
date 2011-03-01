@@ -68,11 +68,7 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		identificationContribuableCriteria.setPrioriteEmetteur("NON_PRIORITAIRE");
 		identificationContribuableCriteria.setTypeMessage("ssk-3001-000101");
 
-		ParamPagination paramPagination = new ParamPagination();
-		paramPagination.setNumeroPage(1);
-		paramPagination.setSensAscending(true);
-		paramPagination.setTaillePage(100);
-
+		ParamPagination paramPagination = new ParamPagination(1, 100, null, true);
 		List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false,false, TypeDemande.MELDEWESEN);
 		assertNotNull(list);
 		assertEquals(1, list.size());

@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.extraction.ExtractionKey;
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierCriteria;
 import ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView;
@@ -32,6 +34,15 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 */
 	@Transactional(readOnly = true)
 	List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws InfrastructureException;
+
+	/**
+	 * Demande l'export de la liste retournée par les critères donné
+	 * @param view la vue où les critères de recherche sont remplis
+	 * @param noCollAdmInitiatrice si non vide, la recherche ne s'effectue que sur les mouvements initiés par cette collectivité administrative
+	 * @param sorting ordre de tri à utiliser
+	 * @return clé générée pour la demande d'export asynchrone
+	 */
+	ExtractionKey exportListeRecherchee(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamSorting sorting);
 
 	/**
 	 * Trouve tous les mouvements de dossiers qui satisfont aux critères donnés

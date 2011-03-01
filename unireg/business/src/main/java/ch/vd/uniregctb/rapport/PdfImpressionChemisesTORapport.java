@@ -2,7 +2,7 @@ package ch.vd.uniregctb.rapport;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
 import com.lowagie.text.DocumentException;
@@ -90,7 +90,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 		final List<ImpressionChemisesTOResults.Erreur> list = results.getErreurs();
 		final int size = list.size();
 		if (size > 0) {
-			contenu = asCsvFile(list, filename, status, 300, new Filler<ImpressionChemisesTOResults.Erreur>() {
+			contenu = CsvHelper.asCsvFile(list, filename, status, 300, new CsvHelper.Filler<ImpressionChemisesTOResults.Erreur>() {
 				public void fillHeader(StringBuilder b) {
 					b.append("ID_DECLARATION").append(COMMA).append("MESSAGE");
 				}
@@ -109,7 +109,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	    final List<ImpressionChemisesTOResults.ChemiseTO> list = results.getChemisesImprimees();
 	    final int size = list.size();
 	    if (size > 0) {
-		    contenu = asCsvFile(list, filename, status, 300, new Filler<ImpressionChemisesTOResults.ChemiseTO>() {
+		    contenu = CsvHelper.asCsvFile(list, filename, status, 300, new CsvHelper.Filler<ImpressionChemisesTOResults.ChemiseTO>() {
 			    public void fillHeader(StringBuilder b) {
 				    b.append("OID").append(COMMA);
 				    b.append("NO_CTB").append(COMMA);
