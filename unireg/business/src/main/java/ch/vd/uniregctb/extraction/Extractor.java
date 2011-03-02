@@ -32,4 +32,9 @@ public interface Extractor {
 	 * @return StatusManager lié à cet extracteur
 	 */
 	StatusManager getStatusManager();
+
+	/**
+	 * @return Un nom qui décrit le type d'extraction
+	 */
+	String getExtractionName();
 }

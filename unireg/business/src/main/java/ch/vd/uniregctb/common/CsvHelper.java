@@ -17,6 +17,7 @@ public abstract class CsvHelper {
 	public static final char DOUBLE_QUOTE = '"';
 	public static final String EMPTY = StringUtils.EMPTY;
 	public static final String CHARSET = "ISO-8859-15";
+	public static final String MIME_TYPE = "text/csv";
 
 	/**
 	 * Interface implémentée par le code spécifique au remplissage d'un fichier CSV

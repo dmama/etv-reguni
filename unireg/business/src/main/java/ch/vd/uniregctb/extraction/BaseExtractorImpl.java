@@ -67,4 +67,9 @@ public abstract class BaseExtractorImpl implements Extractor {
 		}
 		return statusManager;
 	}
+
+	@Override
+	public String toString() {
+		return getExtractionName();
+	}
 }

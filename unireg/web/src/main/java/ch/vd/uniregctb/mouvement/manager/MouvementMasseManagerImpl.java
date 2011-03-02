@@ -25,10 +25,10 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
 import ch.vd.uniregctb.extraction.ExtractionKey;
 import ch.vd.uniregctb.extraction.ExtractionService;
-import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAO;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -389,12 +389,17 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 
 		@Override
+		public String getMimeType() {
+			return CsvHelper.MIME_TYPE;
+		}
+
+		@Override
 		public void afterTransactionCommit(MouvementDossierExtractionResult rapportFinal, int percentProgression) {
 			getStatusManager().setMessage("Extraction des mouvements...", percentProgression);
 		}
 
 		@Override
-		public String toString() {
+		public String getExtractionName() {
 			return "Mouvements de dossiers";
 		}
 	}

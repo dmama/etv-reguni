@@ -55,10 +55,4 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 	public List<String> getRunningJobs() {
 		return extractionService.getExtractionsEnCours();
 	}
-
-	@ManagedAttribute
-	@Override
-	public List<String> getAvailableResults() {
-		return extractionService.getResultatsDisponibles();
-	}
 }

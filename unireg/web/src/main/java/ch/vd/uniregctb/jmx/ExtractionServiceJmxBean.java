@@ -26,7 +26,4 @@ public interface ExtractionServiceJmxBean {
 
 	@ManagedAttribute(description = "Liste des demandes en cours de traitement")
 	List<String> getRunningJobs();
-
-	@ManagedAttribute(description = "Liste des résultats disponibles")
-	List<String> getAvailableResults();
 }

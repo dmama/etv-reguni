@@ -13,4 +13,6 @@
 
 	<bean id="extractionService" class="ch.vd.uniregctb.extraction.MockExtractionService"/>
 
+	<bean id="inboxService" class="ch.vd.uniregctb.inbox.MockInboxService"/>
+
 </beans>

@@ -36,9 +36,4 @@ public interface ExtractionServiceMonitoring {
 	 * @return Extraction des jobs d'extraction actuellement en cours
 	 */
 	List<String> getExtractionsEnCours();
-
-	/**
-	 * @return Extraction des jobs d'extraction terminés et de leurs résultats encore disponibles
-	 */
-	List<String> getResultatsDisponibles();
 }

@@ -8,10 +8,12 @@ import java.io.InputStream;
 public class ExtractionResultOk extends ExtractionResult {
 
 	private final InputStream stream;
+	private final String mimeType;
 	private final boolean interrupted;
 
-	public ExtractionResultOk(InputStream stream, boolean interrupted) {
+	public ExtractionResultOk(InputStream stream, String mimeType, boolean interrupted) {
 		this.stream = stream;
+		this.mimeType = mimeType;
 		this.interrupted = interrupted;
 	}
 
@@ -22,6 +24,10 @@ public class ExtractionResultOk extends ExtractionResult {
 
 	public InputStream getStream() {
 		return stream;
+	}
+
+	public String getMimeType() {
+		return mimeType;
 	}
 
 	public boolean isInterrupted() {

@@ -59,4 +59,9 @@ public interface BatchableExtractor<E, R extends BatchResults<E, R>> extends Ext
 	 * @throws IOException en cas de problème avec le flux
 	 */
 	InputStream getStreamForExtraction(R rapportFinal) throws IOException;
+
+	/**
+	 * @return le MIME-type du document renvoyé dans le stream
+	 */
+	String getMimeType();
 }

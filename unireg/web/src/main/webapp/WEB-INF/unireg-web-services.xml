@@ -17,10 +17,13 @@
 	</bean>
 
 	<bean id="extractionService" class="ch.vd.uniregctb.extraction.ExtractionServiceImpl">
-		<property name="expiration" value="7"/>
-		<property name="threadPoolSize" value="1"/>
+		<property name="expiration" value="1"/>
+		<property name="threadPoolSize" value="2"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="inboxService" ref="inboxService"/>
 	</bean>
+
+	<bean id="inboxService" class="ch.vd.uniregctb.inbox.InboxServiceImpl"/>
 
 </beans>

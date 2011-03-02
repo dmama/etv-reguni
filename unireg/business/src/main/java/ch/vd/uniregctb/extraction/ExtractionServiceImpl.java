@@ -6,12 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +32,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.uniregctb.inbox.InboxService;
 
 /**
  * Implémentation du service d'extractions asynchrones
@@ -43,14 +41,12 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 
 	private static final Logger LOGGER = Logger.getLogger(ExtractionServiceImpl.class);
 
-	private static final long NANOS_IN_DAY = TimeUnit.DAYS.toNanos(1);
-
 	private static final long NANOS_IN_MILLI = TimeUnit.MILLISECONDS.toNanos(1);
 
 	/**
 	 * Valeur, en jours, de l'expiration de l'extraction...
 	 */
-	private int expiration = 7;
+	private int expiration = 3;
 
 	/**
 	 * Taille du pool de threads des exécuteurs
@@ -68,6 +64,11 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	private HibernateTemplate hibernateTemplate;
 
 	/**
+	 * Service de gestion des documents une fois l'extraction terminée
+	 */
+	private InboxService inboxService;
+
+	/**
 	 * Liste des exécuteurs
 	 */
 	private List<Executor> executors;
@@ -78,7 +79,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	private final BlockingQueue<JobInfo> queue = new LinkedBlockingQueue<JobInfo>();
 
 	/**
-	 * Container des extractions demandées, en cours ou terminée
+	 * Container des extractions demandées et en cours
 	 */
 	private final Map<ExtractionKey, JobInfo> jobs = new HashMap<ExtractionKey, JobInfo>();
 
@@ -86,11 +87,6 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	 * Nombre de jobs terminés depuis le démarrage du service
 	 */
 	private final AtomicInteger nbJobsTermines = new AtomicInteger(0);
-
-	/**
-	 * Timer utilisé pour le nettoyage des vieilles extractions
-	 */
-	private final Timer cleaningTimer = new Timer("Extraction-Cleaner");
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setExpiration(int expiration) {
@@ -110,6 +106,11 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setInboxService(InboxService inboxService) {
+		this.inboxService = inboxService;
 	}
 
 	private static enum JobState {
@@ -212,16 +213,17 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 			return duration;
 		}
 
-		public boolean isExpired() {
-			return endTimestamp != null && (System.nanoTime() - endTimestamp) / NANOS_IN_DAY > expiration;
-		}
-
 		public String toString() {
 			return String.format("{key=%s, extractor=%s, state=%s, result=%s}", key, extractor, state, result);
 		}
 
-		public String toDisplayString() {
-			return String.format("Extraction '%s (%s)' demandée par %s en date du %s", extractor, key.getUuid(), key.getVisa(), DateHelper.dateTimeToDisplayString(creationDate));
+		public String toDisplayString(boolean avecVisa) {
+			if (avecVisa) {
+				return String.format("Extraction '%s (%s)' demandée par %s en date du %s", extractor, key.getUuid(), key.getVisa(), DateHelper.dateTimeToDisplayString(creationDate));
+			}
+			else {
+				return String.format("Extraction '%s (%s)' demandée en date du %s", extractor, key.getUuid(), DateHelper.dateTimeToDisplayString(creationDate));
+			}
 		}
 	}
 
@@ -264,6 +266,10 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 
 		public String toString() {
 			return extractor.toString();
+		}
+
+		public String getExtractionName() {
+			return extractor.getExtractionName();
 		}
 	}
 
@@ -315,29 +321,6 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	}
 
 	/**
-	 * Nettoyeur
-	 */
-	private final class Nettoyeur extends TimerTask {
-		@Override
-		public void run() {
-			synchronized (jobs) {
-				final Iterator<Map.Entry<ExtractionKey, JobInfo>> iter = jobs.entrySet().iterator();
-				while (iter.hasNext()) {
-					final Map.Entry<ExtractionKey, JobInfo> entry = iter.next();
-					final JobInfo job = entry.getValue();
-					if (job.isExpired()) {
-						iter.remove();
-
-						if (LOGGER.isInfoEnabled()) {
-							LOGGER.info(String.format("Discarded expired job %s", entry.getKey()));
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Classe d'exécution
 	 */
 	private final class Executor extends Thread {
@@ -363,12 +346,13 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 					if (job != null && !stopping) {
 						currentJob = job;
 						ExtractionResult result = null;
-						job.onStart();
+						final ExtractorLauncher extractor = job.getExtractor();
 						try {
+							job.onStart();
 							if (LOGGER.isInfoEnabled()) {
-								LOGGER.info(String.format("Démarrage du job d'extraction %s (%s)", job.getKey(), job.getExtractor()));
+								LOGGER.info(String.format("Démarrage du job d'extraction %s (%s)", job.getKey(), extractor));
 							}
-							result = job.getExtractor().run();
+							result = extractor.run();
 						}
 						catch (Exception e) {
 							LOGGER.error(String.format("Le job d'extraction %s a lancé une exception", job.getKey()), e);
@@ -378,9 +362,23 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 							currentJob = null;
 							job.onStop(result);
 							nbJobsTermines.incrementAndGet();
-							if (LOGGER.isInfoEnabled()) {
-								LOGGER.info(String.format("Arrêt du job d'extraction %s (%d ms) : %s", job.getKey(), job.getDuration(), result));
-							}
+						}
+
+						if (LOGGER.isInfoEnabled()) {
+							LOGGER.info(String.format("Arrêt du job d'extraction %s (%d ms) : %s", job.getKey(), job.getDuration(), result));
+						}
+
+						// à la fin du job, il faut envoyer ses résultats dans l'inbox du demandeur
+						try {
+							sendDocumentToInbox(job);
+						}
+						catch (Exception e) {
+							LOGGER.error(String.format("Impossible d'envoyer le résultat de l'extraction %s dans l'inbox correpondante", job.getKey()), e);
+						}
+
+						// et finalement, le job disparaît de la liste
+						synchronized (jobs) {
+							jobs.remove(job.getKey());
 						}
 					}
 				}
@@ -408,6 +406,28 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		}
 	}
 
+	private void sendDocumentToInbox(JobInfo job) throws IOException {
+		final String visa = job.key.getVisa();
+		final String docName = job.extractor.getExtractionName();
+		final String descriptionBase = job.toDisplayString(false);
+		final String description;
+		InputStream in = null;
+		String mimeType = null;
+		final ExtractionResult result = job.getResult();
+		if (result != null) {
+			description = String.format("%s, %s", descriptionBase, result);
+			if (result instanceof ExtractionResultOk) {
+				final ExtractionResultOk resultOk = (ExtractionResultOk) result;
+				in = resultOk.getStream();
+				mimeType = resultOk.getMimeType();
+			}
+		}
+		else {
+			description = descriptionBase;
+		}
+		inboxService.addDocument(visa, docName, description, mimeType, in, expiration * 24);
+	}
+
 	/**
 	 * Interface pour pouvoir factoriser le code de lancement des extractions mono-threads et multi-threads
 	 * @param <E> classe des éléments en entrée du découpage en lots
@@ -433,7 +453,8 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		final List<E> elements = getElements(extractor);
 		action.run(extractor, rapportFinal, elements);
 		final InputStream stream = extractor.getStreamForExtraction(rapportFinal);
-		return new ExtractionResultOk(stream, extractor.isInterrupted());
+		final String mimeType = extractor.getMimeType();
+		return new ExtractionResultOk(stream, mimeType, extractor.isInterrupted());
 	}
 
 	/**
@@ -557,21 +578,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	}
 
 	@Override
-	public ExtractionResult getExtractionResult(ExtractionKey key) {
-		synchronized(jobs) {
-			final JobInfo job = jobs.get(key);
-			if (job != null) {
-				return job.getResult();
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public void destroy() throws Exception {
-
-		// on arrête le nettoyeur
-		cleaningTimer.cancel();
 
 		// on demande l'arrêt de tous les exécuteurs
 		for (Executor exec : executors) {
@@ -603,10 +610,6 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 			exec.start();
 		}
 
-		// et enfin on lance le timer du nettoyeur
-		final long sixHours = TimeUnit.HOURS.toMillis(6);
-		cleaningTimer.schedule(new Nettoyeur(), sixHours, sixHours);      // toutes les 6 heures...
-
 		LOGGER.info(String.format("Service d'extractions asychrones démarré avec %d exécuteur(s)", threadPoolSize));
 	}
 
@@ -627,7 +630,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		if (extraction.size() > 0) {
 			descriptions = new ArrayList<String>(extraction.size());
 			for (JobInfo info : extraction) {
-				descriptions.add(info.toDisplayString());
+				descriptions.add(info.toDisplayString(true));
 			}
 		}
 		else {
@@ -664,28 +667,15 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 					if (percent != null) {
 						progress.append(" (").append(percent).append("%)");
 					}
-					liste.add(String.format("%s, en cours depuis %s.%s", enCours.toDisplayString(), TimeHelper.formatDuree(duree), progress.toString()));
+					liste.add(String.format("%s, en cours depuis %s.%s", enCours.toDisplayString(true), TimeHelper.formatDuree(duree), progress.toString()));
 				}
 				else {
 					// devrait être rare (si je job est en cours, il devrait avoir une durée...), mais
 					// on peut avoir le currentJob setté alors que le onStart() n'a pas encore été appelé, donc...
-					liste.add(enCours.toDisplayString());
+					liste.add(enCours.toDisplayString(true));
 				}
 			}
 		}
 		return liste;
-	}
-
-	@Override
-	public List<String> getResultatsDisponibles() {
-		synchronized(jobs) {
-			final List<String> liste = new ArrayList<String>(jobs.size());
-			for (JobInfo info : jobs.values()) {
-				if (info.result != null) {
-					liste.add(String.format("%s : %s", info.toDisplayString(), info.result));
-				}
-			}
-			return liste;
-		}
 	}
 }
