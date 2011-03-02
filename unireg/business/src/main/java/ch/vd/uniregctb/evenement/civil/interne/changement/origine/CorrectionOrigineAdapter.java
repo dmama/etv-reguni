@@ -7,16 +7,16 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementAdapterBase;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class CorrectionOrigineAdapter extends EvenementCivilInterneBase {
+public class CorrectionOrigineAdapter extends ChangementAdapterBase {
 
 	private CorrectionOrigineHandler handler;
 
 	protected CorrectionOrigineAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, CorrectionOrigineHandler handler) throws EvenementCivilInterneException {
-		super(evenement, context);
+		super(evenement, context, handler);
 		this.handler = handler;
 	}
 
@@ -26,8 +26,8 @@ public class CorrectionOrigineAdapter extends EvenementCivilInterneBase {
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validate(this, erreurs, warnings);
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		handler.validateSpecific(this, erreurs, warnings);
 	}
 
 	@Override

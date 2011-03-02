@@ -247,7 +247,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				return;
 			}
 
-			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, refreshCache);
+			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, null, refreshCache);
 			final EvenementCivilInterneBase adapter = evenementCivilHandler.createAdapter(evenementCivilExterne, context);
 
 			/* 2.1 - lancement de la validation par le handler */

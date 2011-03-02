@@ -54,7 +54,7 @@ public class AdoptionAdapter extends EvenementCivilInterneBase implements Adopti
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 		throw new NotImplementedException();
 	}
 

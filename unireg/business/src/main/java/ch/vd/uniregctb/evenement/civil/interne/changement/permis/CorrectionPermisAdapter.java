@@ -22,7 +22,7 @@ public class CorrectionPermisAdapter extends EvenementCivilInterneBase {
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 	}
 
 	@Override

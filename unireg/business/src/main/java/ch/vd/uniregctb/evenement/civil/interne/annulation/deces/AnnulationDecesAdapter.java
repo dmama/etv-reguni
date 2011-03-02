@@ -61,8 +61,8 @@ public class AnnulationDecesAdapter extends EvenementCivilInterneBase implements
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validate(this, erreurs, warnings);
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		handler.validateSpecific(this, erreurs, warnings);
 	}
 
 	@Override

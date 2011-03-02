@@ -82,7 +82,7 @@ public class ArriveeAdapterTest extends WithoutSpringTest {
 			}
 		};
 
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, false);
 		ArriveeAdapter adapter = new ArriveeAdapter(evenement, context, null);
 
 		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdressePrincipale().getLocalite());

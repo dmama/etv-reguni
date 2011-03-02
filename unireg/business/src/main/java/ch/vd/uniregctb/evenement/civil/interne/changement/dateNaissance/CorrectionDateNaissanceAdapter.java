@@ -8,16 +8,16 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementAdapterBase;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class CorrectionDateNaissanceAdapter extends EvenementCivilInterneBase implements CorrectionDateNaissance {
+public class CorrectionDateNaissanceAdapter extends ChangementAdapterBase implements CorrectionDateNaissance {
 
 	private CorrectionDateNaissanceHandler handler;
 
 	protected CorrectionDateNaissanceAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, CorrectionDateNaissanceHandler handler) throws EvenementCivilInterneException {
-		super(evenement, context);
+		super(evenement, context, handler);
 		this.handler = handler;
 	}
 
@@ -31,8 +31,8 @@ public class CorrectionDateNaissanceAdapter extends EvenementCivilInterneBase im
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validate(this, erreurs, warnings);
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		handler.validateSpecific(this, erreurs, warnings);
 	}
 
 	@Override

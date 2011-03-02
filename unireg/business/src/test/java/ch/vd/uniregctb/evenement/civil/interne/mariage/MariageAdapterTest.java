@@ -69,7 +69,7 @@ public class MariageAdapterTest extends WithoutSpringTest {
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, false);
 		MariageAdapter adapter = new MariageAdapter(evenementsCivils, context, null);
 		assertNull("le conjoint d'un marié seul ne doit pas exister", adapter.getConjoint());
 	}
@@ -82,7 +82,7 @@ public class MariageAdapterTest extends WithoutSpringTest {
 		bea.setNumero(INDIVIDU_MARIE_CONJOINT);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, INDIVIDU_MARIE_CONJOINT, bea, 1234, null );
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, false);
 		MariageAdapter adapter = new MariageAdapter(evenementsCivils, context, null);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getConjoint());
 	}
@@ -95,7 +95,7 @@ public class MariageAdapterTest extends WithoutSpringTest {
 		julien.setNumero(INDIVIDU_PACSE_CONJOINT);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, INDIVIDU_PACSE_CONJOINT, julien, 1234, null );
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, false);
 		MariageAdapter adapter = new MariageAdapter(evenementsCivils, context, null);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getConjoint());
 	}

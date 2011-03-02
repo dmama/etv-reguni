@@ -9,8 +9,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementAdapterBase;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
@@ -18,14 +18,14 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
  *
  * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
-public class ChangementNomAdapter extends EvenementCivilInterneBase {// implements ChangementNom {
+public class ChangementNomAdapter extends ChangementAdapterBase {
 
 	protected static Logger LOGGER = Logger.getLogger(ChangementNomAdapter.class);
 
 	private ChangementNomHandler handler;
 
 	protected ChangementNomAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, ChangementNomHandler handler) throws EvenementCivilInterneException {
-		super(evenement, context);
+		super(evenement, context, handler);
 		this.handler = handler;
 	}
 
@@ -35,8 +35,8 @@ public class ChangementNomAdapter extends EvenementCivilInterneBase {// implemen
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validate(this, erreurs, warnings);
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		handler.validateSpecific(this, erreurs, warnings);
 	}
 
 	@Override

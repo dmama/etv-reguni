@@ -43,7 +43,7 @@ public class CorrectionFiliationHandler extends AbstractChangementHandler {
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new CorrectionFiliationAdapter(event, context);
+		return new CorrectionFiliationAdapter(event, context, this);
 	}
 
 	@Override

@@ -105,6 +105,75 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 		}
 	}
 
+	public final void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		validateCommon(erreurs);
+		if (erreurs.isEmpty()) {
+			validateSpecific(erreurs, warnings);
+		}
+	}
+
+	/**
+	 * Validation commune l'objet target passé en paramètre.
+	 *
+	 * @param erreurs les éventuelles erreurs trouvées (out)
+	 * @param warnings les éventuels warnings trouvés (out)
+	 */
+	protected abstract void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings);
+
+	private void validateCommon(List<EvenementCivilExterneErreur> erreurs) {
+
+		/*
+		 * Vérifie que les éléments de base sont renseignés
+		 */
+		if (getDate() == null) {
+			erreurs.add(new EvenementCivilExterneErreur("L'événement n'est pas daté"));
+			return;
+		}
+
+		if (getNumeroOfsCommuneAnnonce() == null) {
+			erreurs.add(new EvenementCivilExterneErreur("La commune d'annonce n'est pas renseignée"));
+			return;
+		}
+
+		/*
+		 * La date de l'événement se situe dans le futur.
+		 */
+		if (getDate().isAfter(RegDate.get())) {
+			erreurs.add(new EvenementCivilExterneErreur("La date de l'événement est dans le futur"));
+		}
+
+		/*
+		 * Cas particulier de l'arrivée ou de la naissance : le ou les contribuables ne sont en principe pas présents.
+		 */
+		if (isContribuableObligatoirementConnuAvantTraitement()) {
+			/*
+			 * Il n’existe pas de tiers contribuable correspondant à l’individu, assujetti ou non (mineur, conjoint) correspondant à
+			 * l’individu.
+			 */
+			if (getPrincipalPPId() == null) {
+				erreurs.add(new EvenementCivilExterneErreur("Aucun tiers contribuable ne correspond au numero d'individu " + getNoIndividu()));
+			}
+
+			/*
+			 * Il n’existe pas de tiers contribuable correspondant au conjoint, assujetti ou non (mineur, conjoint) correspondant à
+			 * l’individu.
+			 */
+			if (getNoIndividuConjoint() != null && getConjointPPId() == null) {
+				erreurs.add(new EvenementCivilExterneErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + getNoIndividuConjoint()));
+			}
+		}
+
+		// en tout cas, l'individu devrait exister dans le registre civil !
+		final Individu individu = getIndividu();
+		if (individu == null) {
+			erreurs.add(new EvenementCivilExterneErreur("L'individu est introuvable dans le registre civil!"));
+		}
+	}
+
+	protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+		return isContribuablePresentBefore();
+	}
+
 	protected boolean forceRefreshCacheConjoint() {
 		return false;
 	}

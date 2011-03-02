@@ -9,15 +9,15 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementAdapterBase;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class CorrectionFiliationAdapter extends EvenementCivilInterneBase {
+public class CorrectionFiliationAdapter extends ChangementAdapterBase {
 
-	protected CorrectionFiliationAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected CorrectionFiliationAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, CorrectionFiliationHandler handler) throws EvenementCivilInterneException {
+		super(evenement, context, handler);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class CorrectionFiliationAdapter extends EvenementCivilInterneBase {
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 		//les événements de correction de filiation n'ont aucun impact sur le fiscal ==> rien à faire
 	}
 

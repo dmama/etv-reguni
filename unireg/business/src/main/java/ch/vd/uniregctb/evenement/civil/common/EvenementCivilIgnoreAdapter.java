@@ -26,7 +26,7 @@ public class EvenementCivilIgnoreAdapter extends EvenementCivilInterneBase {
 	}
 
 	@Override
-	public void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 		// pas de validation
 	}
 
