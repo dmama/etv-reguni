@@ -69,7 +69,7 @@ public class AnnulationTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de tutelle avec un tuteur.");
 
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2008);
-		AnnulationTutelle annulationTutelle = createAnnulationTutelle(pupille);
+		AnnulationTutelleAdapter annulationTutelle = createAnnulationTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -100,9 +100,7 @@ public class AnnulationTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		}
 	}
 
-	private MockAnnulationTutelle createAnnulationTutelle(Individu pupille) {
-		MockAnnulationTutelle annulationTutelle = new MockAnnulationTutelle(pupille, null, DATE_ANNULATION_TUTELLE, 4848);
-		annulationTutelle.setHandler(evenementCivilHandler);
-		return annulationTutelle;
+	private AnnulationTutelleAdapter createAnnulationTutelle(Individu pupille) {
+		return new AnnulationTutelleAdapter(pupille, null, DATE_ANNULATION_TUTELLE, 4848, context);
 	}
 }

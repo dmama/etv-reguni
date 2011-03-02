@@ -118,7 +118,7 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 
 		// passage dans l'init de l'adapter
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, null, true);
-		final EvenementCivilInterneBase adapter = new MariageAdapter(evtMariage, context, null);
+		final EvenementCivilInterneBase adapter = new MariageAdapter(evtMariage, context);
 
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getTiersChanged());
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getDroitsChanged());

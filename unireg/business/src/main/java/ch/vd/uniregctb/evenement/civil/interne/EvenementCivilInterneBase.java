@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -120,6 +121,27 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 		this.conjoint = conjoint;
 		this.noIndividuConjoint = (conjoint == null ? null : conjoint.getNoTechnique());
 		this.conjointPPId = conjointPPId;
+
+		this.type = typeEvenementCivil;
+		this.date = dateEvenement;
+		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
+	}
+
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected EvenementCivilInterneBase(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
+	                                 EvenementCivilContext context) {
+		this.context = context;
+
+		this.individuPrincipal = individu;
+		this.noIndividu = (individu == null ? null : individu.getNoTechnique());
+		this.principalPPId = (individu == null ? null : context.getTiersDAO().getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true));
+
+		this.conjoint = conjoint;
+		this.noIndividuConjoint = (conjoint == null ? null : conjoint.getNoTechnique());
+		this.conjointPPId = (conjoint == null ? null : context.getTiersDAO().getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
 
 		this.type = typeEvenementCivil;
 		this.date = dateEvenement;
@@ -271,6 +293,32 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 		final PersonnePhysique habitant = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		if (habitant == null) {
 			errors.add(new EvenementCivilExterneErreur("L'habitant avec le numéro d'individu = " + noIndividu + " n'existe pas dans le registre."));
+		}
+		return habitant;
+	}
+
+	/**
+	 * @param noIndividu un numéro d'individu
+	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu.
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException
+	 *          si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
+	 */
+	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu) throws EvenementCivilHandlerException {
+		return getPersonnePhysiqueOrThrowException(noIndividu, false);
+	}
+
+	/**
+	 * @param noIndividu     un numéro d'individu
+	 * @param doNotAutoFlush si vrai, les modifications courantes de la session hibernate ne sont pas flushées dans le base (évite d'incrémenter le numéro de version, mais si l'habitant vient d'être créé
+	 *                       et n'existe pas encore en base, il ne sera pas trouvé).
+	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu.
+	 * @throws EvenementCivilHandlerException si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
+	 */
+	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu, boolean doNotAutoFlush) throws EvenementCivilHandlerException {
+		final PersonnePhysique habitant = context.getTiersDAO().getPPByNumeroIndividu(noIndividu, doNotAutoFlush);
+		if (habitant == null) {
+			throw new EvenementCivilHandlerException("L'habitant avec le numéro d'individu = " + noIndividu
+					+ " n'existe pas dans le registre.");
 		}
 		return habitant;
 	}

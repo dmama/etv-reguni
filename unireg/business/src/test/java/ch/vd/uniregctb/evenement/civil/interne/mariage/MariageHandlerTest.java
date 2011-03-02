@@ -106,7 +106,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, 2009);
-				final Mariage mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
+				final MariageAdapter mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
 
 				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
@@ -159,7 +159,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu seul = serviceCivil.getIndividu(UNI_SEUL, 2007);
-				Mariage mariage = createValidMariage(seul, null, DATE_UNION_SEUL);
+				MariageAdapter mariage = createValidMariage(seul, null, DATE_UNION_SEUL);
 
 				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
@@ -242,7 +242,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu individu = serviceCivil.getIndividu(UNI_HETERO, 2007);
 				Individu conjoint = serviceCivil.getIndividu(UNI_HETERO_CONJOINT, 2007);
-				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HETERO);
+				MariageAdapter mariage = createValidMariage(individu, conjoint, DATE_UNION_HETERO);
 
 				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
@@ -345,7 +345,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu individu = serviceCivil.getIndividu(UNI_HOMO, 2007);
 				Individu conjoint = serviceCivil.getIndividu(UNI_HOMO_CONJOINT, 2007);
-				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HOMO);
+				MariageAdapter mariage = createValidMariage(individu, conjoint, DATE_UNION_HOMO);
 
 				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
@@ -423,14 +423,12 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
-	private MockMariage createValidMariage(Individu individu, Individu conjoint, RegDate dateMariage) {
+	private MariageAdapter createValidMariage(Individu individu, Individu conjoint, RegDate dateMariage) {
 
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
 		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
 
-		MockMariage mariage = new MockMariage(individu, principalPPId, conjoint, conjointPPId, dateMariage, 5586);
-		mariage.setHandler(evenementCivilHandler);
-		return mariage;
+		return new MariageAdapter(individu, principalPPId, conjoint, conjointPPId, dateMariage, 5586, context);
 	}
 
 }

@@ -109,7 +109,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un suisse marié seul.");
 		
 		Individu veufSuisse = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, 2008);
-		Veuvage veuvage = createVeuvage(veufSuisse);
+		VeuvageAdapter veuvage = createVeuvage(veufSuisse);
 	
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -164,7 +164,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un non suisse marié seul.");
 		
 		Individu veufEtranger = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008);
-		Veuvage veuvage = createVeuvage(veufEtranger);
+		VeuvageAdapter veuvage = createVeuvage(veufEtranger);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -219,7 +219,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un habitant marié.");
 		
 		Individu veufMarie = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_MARIE, 2008);
-		Veuvage veuvage = createVeuvage(veufMarie);
+		VeuvageAdapter veuvage = createVeuvage(veufMarie);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -237,7 +237,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un habitant marié seul ayant un for fiscal principal ouvert après la date de veuvage.");
 		
 		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_AVEC_FOR, 2008);
-		Veuvage veuvage = createVeuvage(veuf);
+		VeuvageAdapter veuvage = createVeuvage(veuf);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -248,9 +248,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		assertTrue("Le validate doit échouer car l'individu possède un for principal ouvert après la date de veuvage.", erreurs.size() > 0);
 	}
 	
-	protected Veuvage createVeuvage(Individu individu) {
-		MockVeuvage veuvage = new MockVeuvage(individu, null, DATE_VEUVAGE, 5652);
-		veuvage.setHandler(evenementCivilHandler);
-		return veuvage;
+	protected VeuvageAdapter createVeuvage(Individu individu) {
+		return new VeuvageAdapter(individu, null, DATE_VEUVAGE, 5652, context);
 	}
 }
