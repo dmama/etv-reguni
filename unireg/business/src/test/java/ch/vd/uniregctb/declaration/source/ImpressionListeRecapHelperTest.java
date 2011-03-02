@@ -81,11 +81,14 @@ public class ImpressionListeRecapHelperTest extends BusinessTest {
 		Expediteur expediteur = infoEnteteDocument.getExpediteur();
 		Adresse adresseExpediteur = expediteur.getAdresse();
 		assertEquals("Administration cantonale des impôts", adresseExpediteur.getAdresseCourrierLigne1());
-		assertEquals("IMPOT A LA SOURCE", adresseExpediteur.getAdresseCourrierLigne2());
+		assertEquals("Impôt à la source", adresseExpediteur.getAdresseCourrierLigne2());
 		assertEquals(null, adresseExpediteur.getAdresseCourrierLigne3());
-		assertEquals("Rue Caroline 9bis", adresseExpediteur.getAdresseCourrierLigne4());
+		assertEquals("Route de Berne 46", adresseExpediteur.getAdresseCourrierLigne4());
 		assertEquals("1014 Lausanne Adm cant", adresseExpediteur.getAdresseCourrierLigne5());
 		assertNull( adresseExpediteur.getAdresseCourrierLigne6());
+		final String numeroTelCAT = serviceInfra.getCAT().getNoTelephone();
+		final String numeroExpediteur = expediteur.getNumTelephone();
+		assertEquals(numeroTelCAT,numeroExpediteur);
 
 		Date date = DateHelper.getCurrentDate();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

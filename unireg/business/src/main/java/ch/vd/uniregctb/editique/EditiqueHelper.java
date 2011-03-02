@@ -91,39 +91,32 @@ public interface EditiqueHelper {
 	public Destinataire remplitDestinataireArchives(InfoEnteteDocument infoEnteteDocument);
 
 	/**
-	 * Alimente la partie expéditeur du document
-	 *
-	 * @param infoEnteteDocument
-	 * @param traitePar
-	 * @return
-	 * @throws InfrastructureException
-	 * @throws RemoteException
-	 * @throws InfrastructureException
-	 * @throws InfrastructureException
-	 */
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
-
-	/**
-	 * Alimente la partie expéditeur du document en indiquant si le document est une sommation
-	 *
-	 * @param declaration
-	 * @param infoEnteteDocument
-	 * @param traitePar
-	 * @param isSommation
-	 * @return
-	 * @throws InfrastructureException
-	 * @throws RemoteException
-	 * @throws InfrastructureException
-	 * @throws InfrastructureException
-	 */
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar, boolean isSommation) throws InfrastructureException;
-
-	/**
 	 * Retrouve le nom de la commune à mettre dans le champs OFS des documents de sommation de DI et de confirmation de délai.
 	 *
 	 * @param di - la di concernée par la sommation ou la demande de délai
 	 * @return le nom de la commune
 	 */
 	public String getCommune(Declaration di) throws EditiqueException;
+
+
+	/**
+	 *  Renseigne la partie expediteur avec les données et régles spécifiques
+	 * à l'envoi de sommation de lR
+	 *  @param declaration
+	 * @param infoEnteteDocument
+	 * @param traitePar
+	 * @throws InfrastructureException
+	 */
+	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
+
+	/**  Renseigne la partie expediteur avec les données et régles spécifiques
+	 * à l'envoi de lR
+	 * @param declaration
+	 * @param infoEnteteDocument
+	 * @param traitePar
+	 * @return
+	 * @throws InfrastructureException
+	 */
+	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
 
 }

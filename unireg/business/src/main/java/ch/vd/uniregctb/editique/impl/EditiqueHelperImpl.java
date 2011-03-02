@@ -210,14 +210,10 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		return commune.getNomMinuscule();
 	}
 
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
-	   return remplitExpediteurACIForIS(declaration, infoEnteteDocument, traitePar,false);
-	}
-
 	/**
-	 * Alimente la partie expéditeur du document
+	 * Alimente la partie expéditeur d'une sommation de LR
 	 */
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar, boolean isSommation) throws InfrastructureException {
+	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
 		//
 		// Expediteur
 		//
@@ -239,27 +235,54 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		if (traitePar != null) {
 			expediteur.setTraitePar(traitePar);
 		}
-		//
-		// expediteur.setSrvExp(srvExp);
-		// expediteur.setIdeUti(ideUti);
 		expediteur.setLocaliteExpedition("Lausanne");
 		final RegDate dateExpedition;
-		if (isSommation) {
-			final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
-			dateExpedition = sommee.getDateEnvoiCourrier();
-			//UNIREG-3309
-			//Il faut que pour les sommations de LR ( et UNIQUEMENT les sommations de LR )
-			// Modifier le n° de téléphone pour mettre celui du CAT. (le n° de fax doit rester inchangé).
-			expediteur.setNumTelephone(infraService.getCAT().getNoTelephone());
-
-		}
-		else{
-			dateExpedition = RegDate.get();
-			expediteur.setNumTelephone(aciImpotSource.getNoTelephone());
-		}
+		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
+		dateExpedition = sommee.getDateEnvoiCourrier();
+		//UNIREG-3309
+		//Il faut que pour les sommations de LR ( et UNIQUEMENT les sommations de LR )
+		// Modifier le n° de téléphone pour mettre celui du CAT. (le n° de fax doit rester inchangé).
+		expediteur.setNumTelephone(infraService.getCAT().getNoTelephone());
 		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-		// expediteur.setNumIBAN(numIBAN);
+
+		return expediteur;
+	}
+
+
+		/**
+	 * Alimente la partie expéditeur d'une LR
+	 */
+	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
+		//
+		// Expediteur
+		//
+		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aci =  infraService.getACI();
+		ch.vd.uniregctb.interfaces.model.Adresse aciAdresse = aci.getAdresse();
+
+		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
+		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
+		adresseExpediteur.setAdresseCourrierLigne1(aci.getNomComplet1());
+		adresseExpediteur.setAdresseCourrierLigne2(IMPOT_A_LA_SOURCE_MIN);
+		adresseExpediteur.setAdresseCourrierLigne3(aci.getNomComplet3());
+		adresseExpediteur.setAdresseCourrierLigne4(aciAdresse.getRue());
+		adresseExpediteur.setAdresseCourrierLigne5(aciAdresse.getNumeroPostal() + " " + aciAdresse.getLocalite());
+		adresseExpediteur.setAdresseCourrierLigne6(null);
+		expediteur.setAdresse(adresseExpediteur);
+		expediteur.setAdrMes(aci.getAdresseEmail());
+		expediteur.setNumFax(aci.getNoFax());
+		expediteur.setNumCCP(aci.getNoCCP());
+		if (traitePar != null) {
+			expediteur.setTraitePar(traitePar);
+		}
+
+		expediteur.setLocaliteExpedition("Lausanne");
+		final RegDate dateExpedition;
+		dateExpedition = RegDate.get();
+		expediteur.setNumTelephone(infraService.getCAT().getNoTelephone());
+		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
+		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
+
 		return expediteur;
 	}
 

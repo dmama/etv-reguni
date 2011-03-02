@@ -234,7 +234,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-		Expediteur expediteur = editiqueHelper.remplitExpediteurACIForIS(declaration, infoEnteteDocument, traitePar);
+		Expediteur expediteur = editiqueHelper.remplitExpediteurPourEnvoiLR(declaration, infoEnteteDocument, traitePar);
 		infoEnteteDocument.setExpediteur(expediteur);
 
 		Destinataire destinataire = editiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);
