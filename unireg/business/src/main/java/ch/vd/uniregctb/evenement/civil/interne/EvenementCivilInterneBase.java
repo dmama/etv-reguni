@@ -104,6 +104,27 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 			}
 		}
 	}
+	
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected EvenementCivilInterneBase(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
+	                                    Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		this.context = context;
+
+		this.individuPrincipal = individu;
+		this.noIndividu = (individu == null ? null : individu.getNoTechnique());
+		this.principalPPId = principalPPId;
+
+		this.conjoint = conjoint;
+		this.noIndividuConjoint = (conjoint == null ? null : conjoint.getNoTechnique());
+		this.conjointPPId = conjointPPId;
+
+		this.type = typeEvenementCivil;
+		this.date = dateEvenement;
+		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
+	}
 
 	public final void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 		validateCommon(erreurs);

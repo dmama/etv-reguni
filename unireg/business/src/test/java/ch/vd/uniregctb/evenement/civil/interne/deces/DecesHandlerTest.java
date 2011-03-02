@@ -108,7 +108,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, 2008);
-		final Deces deces = createValidDeces(celibataire, null, DATE_DECES);
+		final DecesAdapter deces = createValidDeces(celibataire, null, DATE_DECES);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -153,7 +153,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, 2008);
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, 2008);
-				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
+				final DecesAdapter deces = createValidDeces(marie, conjoint, DATE_DECES);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -248,7 +248,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, 2008);
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008, AttributeIndividu.ADRESSES);
-				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
+				final DecesAdapter deces = createValidDeces(marie, conjoint, DATE_DECES);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -321,7 +321,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
-	private Deces createValidDeces(Individu ppal, Individu conjoint, final RegDate dateDeces) {
+	private DecesAdapter createValidDeces(Individu ppal, Individu conjoint, final RegDate dateDeces) {
 
 		doModificationIndividu(ppal.getNoTechnique(), new IndividuModification() {
 			public void modifyIndividu(MockIndividu individu) {
@@ -331,10 +331,8 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(ppal.getNoTechnique(), true);
 		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
-		final MockDeces deces = new MockDeces(ppal, principalPPId, conjoint, conjointPPId, dateDeces, 5652);
-		deces.setHandler(evenementCivilHandler);
 
-		return deces;
+		return new DecesAdapter(ppal, principalPPId, conjoint, conjointPPId, dateDeces, 5652, context);
 	}
 
 	/**
@@ -379,7 +377,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Individu ind = serviceCivil.getIndividu(noIndividu, 2400);
-				final Deces deces = createValidDeces(ind, null, dateDeces);
+				final DecesAdapter deces = createValidDeces(ind, null, dateDeces);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
