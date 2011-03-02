@@ -18,6 +18,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="dataEventService" ref="dataEventService"/>
+		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
 	<!-- Les Handlers d'evt civils -->

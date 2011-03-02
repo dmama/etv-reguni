@@ -28,7 +28,7 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new DefaultMockServiceCivil();
-	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, null, false);
+	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, null, null, false);
 
 	@Test
 	public void testGetAncienConjointMariageSeul() throws Exception {

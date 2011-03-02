@@ -18,6 +18,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StatusManager;
@@ -57,6 +58,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private DataEventService dataEventService;
 	private TiersService tiersService;
 	private MetierService metierService;
+	private AdresseService adresseService;
 
 	/**
 	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
@@ -250,7 +252,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			}
 
 			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, null, metierService, tiersDAO,
-					refreshCache);
+					adresseService, refreshCache);
 			final EvenementCivilInterneBase adapter = evenementCivilHandler.createAdapter(evenementCivilExterne, context);
 
 			/* 2.1 - lancement de la validation par le handler */
@@ -408,5 +410,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 }

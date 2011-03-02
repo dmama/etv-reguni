@@ -83,7 +83,7 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 		}
 	};
 
-	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, null, false);
+	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, null, null, false);
 
 	@Test
 	public void testAnnulationPermisC() throws Exception {

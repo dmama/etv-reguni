@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.common;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -18,9 +19,10 @@ public class EvenementCivilContext {
 	private TiersDAO tiersDAO;
 	private GlobalTiersIndexer indexer;
 	private MetierService metierService;
+	private AdresseService adresseService;
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             MetierService metierService, TiersDAO tiersDAO, boolean refreshCache) {
+	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, boolean refreshCache) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
@@ -28,6 +30,7 @@ public class EvenementCivilContext {
 		this.indexer = indexer;
 		this.metierService = metierService;
 		this.tiersDAO = tiersDAO;
+		this.adresseService = adresseService;
 		this.refreshCache = refreshCache;
 	}
 
@@ -61,5 +64,9 @@ public class EvenementCivilContext {
 
 	public TiersDAO getTiersDAO() {
 		return tiersDAO;
+	}
+
+	public AdresseService getAdresseService() {
+		return adresseService;
 	}
 }
