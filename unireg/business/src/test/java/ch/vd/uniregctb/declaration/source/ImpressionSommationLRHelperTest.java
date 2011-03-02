@@ -60,6 +60,13 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 
 		InfoEnteteDocument infoEnteteDocument = impressionSommationLRHelper.remplitEnteteDocument(lr);
 		Expediteur expediteur = infoEnteteDocument.getExpediteur();
+		final String numeroTelCAT = serviceInfra.getCAT().getNoTelephone();
+		final String numeroExpediteur = expediteur.getNumTelephone();
+		assertEquals(numeroTelCAT,numeroExpediteur);
+
+		final String numeroFaxACISource = serviceInfra.getACIImpotSource().getNoFax();
+		final String numeroFaxExpediteur = expediteur.getNumFax();
+		assertEquals(numeroFaxACISource,numeroFaxExpediteur);
 
 		Date date = dateEnvoiCourrier.asJavaDate();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

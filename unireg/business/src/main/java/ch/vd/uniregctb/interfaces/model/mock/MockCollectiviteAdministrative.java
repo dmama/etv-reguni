@@ -19,10 +19,10 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 
 	public static MockCollectiviteAdministrative OTG = new MockCollectiviteAdministrative(ServiceInfrastructureService.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
 	public static MockCollectiviteAdministrative CEDI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null, "CEDI");
-	public static MockCollectiviteAdministrative CAT = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCAT, null, "Administration cantonale des impôts", null, null, "CAT");
+	public static MockCollectiviteAdministrative CAT = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCAT, null, "Administration cantonale des impôts", null, null, "CAT","0213160000","0213162140");
 	public static MockCollectiviteAdministrative ACI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACI, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null, null, "ACI");
 	public static MockCollectiviteAdministrative ACISUCCESSIONS = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts SUCCESSIONS","SUCCESSIONS", null, "ACI-SUCCESSIONS");
-	public static MockCollectiviteAdministrative ACIIMPOTSOURCE = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACIImpotSource, new MockAdresse("Rue Caroline 9bis", "9bis", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts","IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE");
+	public static MockCollectiviteAdministrative ACIIMPOTSOURCE = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACIImpotSource, new MockAdresse("Rue Caroline 9bis", "9bis", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts","IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE","0213162065","0213162898");
 	public static final class JusticePaix {
 		public static MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud = 
 				new MockCollectiviteAdministrative(970, new MockAdresse("Rue du Pré", "2", "Case Postale 693", "1400", "Yverdon-les-Bains"), "Justice de Paix des districts du",
@@ -49,6 +49,21 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	private boolean isValide;
 
 	public MockCollectiviteAdministrative() {
+	}
+
+	public MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt,String noTelephone,String noFax) {
+		super();
+		this.noColAdm = noColAdm;
+		this.adresse = adresse;
+		this.nomComplet1 = nomComplet1;
+		this.nomComplet2 = nomComplet2;
+		this.nomComplet3 = nomComplet3;
+		this.nomCourt = nomCourt;
+		this.noTelephone =noTelephone;
+		this.noFax = noFax;
+
+		DefaultMockServiceInfrastructureService.addColAdm(this);
+		all.add(this);
 	}
 
 	public MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt) {

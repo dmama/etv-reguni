@@ -234,7 +234,6 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		adresseExpediteur.setAdresseCourrierLigne6(null);
 		expediteur.setAdresse(adresseExpediteur);
 		expediteur.setAdrMes(aciImpotSource.getAdresseEmail());
-		expediteur.setNumTelephone(aciImpotSource.getNoTelephone());
 		expediteur.setNumFax(aciImpotSource.getNoFax());
 		expediteur.setNumCCP(aciImpotSource.getNoCCP());
 		if (traitePar != null) {
@@ -248,9 +247,15 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		if (isSommation) {
 			final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
 			dateExpedition = sommee.getDateEnvoiCourrier();
+			//UNIREG-3309
+			//Il faut que pour les sommations de LR ( et UNIQUEMENT les sommations de LR )
+			// Modifier le n° de téléphone pour mettre celui du CAT. (le n° de fax doit rester inchangé).
+			expediteur.setNumTelephone(infraService.getCAT().getNoTelephone());
+
 		}
 		else{
 			dateExpedition = RegDate.get();
+			expediteur.setNumTelephone(aciImpotSource.getNoTelephone());
 		}
 		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
