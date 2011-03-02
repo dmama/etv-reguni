@@ -2,13 +2,13 @@ package ch.vd.uniregctb.evenement.manager;
 
 import java.util.List;
 
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.evenement.EvenementCriteria;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
 import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.evenement.view.EvenementView;
@@ -63,6 +63,6 @@ public interface EvenementManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int count(EvenementCriteria criterion);
+	public int count(EvenementCivilExterneCriteria criterion);
 
 }

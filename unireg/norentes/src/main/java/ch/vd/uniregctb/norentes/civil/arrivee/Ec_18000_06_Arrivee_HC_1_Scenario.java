@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -97,8 +97,8 @@ public class Ec_18000_06_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
 		PersonnePhysique habAntoine = tiersDAO.getHabitantByNumeroIndividu(noIndAntoine);
 		assertNotNull(habAntoine,"Le tiers Antoine n'as pas été créé dans le registre fiscal");
 		{
-			List<EvenementCivilData> list = evtDAO.getAll();
-			for (EvenementCivilData evt : list) {
+			List<EvenementCivilExterne> list = evtExterneDAO.getAll();
+			for (EvenementCivilExterne evt : list) {
 				assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat(), "");
 			}
 		}

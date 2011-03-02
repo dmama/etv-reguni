@@ -49,7 +49,7 @@
 
 	<bean id="tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />

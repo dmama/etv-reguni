@@ -5,7 +5,7 @@ import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -221,7 +221,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 
 	@Check(id=4, descr="Vérifie que le mariage a été bien annulé")
 	public void check5() {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabSylvie);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabSylvie);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement d'annulation de mariage devrait être traité");
 
 		checkHabitantApresAnnulation((PersonnePhysique) tiersDAO.get(noHabSylvie), dateArriveeSylvie, MotifFor.ARRIVEE_HC, null);

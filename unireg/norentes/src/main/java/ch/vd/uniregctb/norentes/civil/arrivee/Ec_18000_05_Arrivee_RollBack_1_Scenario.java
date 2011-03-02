@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -86,8 +86,8 @@ public class Ec_18000_05_Arrivee_RollBack_1_Scenario extends EvenementCivilScena
 	public void check4() throws Exception {
 		PersonnePhysique alain = tiersDAO.getHabitantByNumeroIndividu(noIndAlain);
 		assertNull(alain, "Alain ne devrait pas être dans le registre");
-		List<EvenementCivilData> list = evtDAO.getAll();
-		for (EvenementCivilData evt : list) {
+		List<EvenementCivilExterne> list = evtExterneDAO.getAll();
+		for (EvenementCivilExterne evt : list) {
 			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "");
 		}
 

@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,9 +8,13 @@ import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author
@@ -23,14 +24,14 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 
 	protected static final Logger LOGGER = Logger.getLogger(EvenementCivilDAOTest.class);
 
-	private static final String DAO_NAME = "evenementCivilDAO";
+	private static final String DAO_NAME = "evenementCivilExterneDAO";
 
 	private static final String DB_UNIT_DATA_FILE = "EvenementCivilDAOTest.xml";
 
 	/**
 	 * Le DAO.
 	 */
-	EvenementCivilDAO dao;
+	EvenementCivilExterneDAO dao;
 
 	public EvenementCivilDAOTest() throws Exception {
 
@@ -44,7 +45,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		dao = getBean(EvenementCivilDAO.class, DAO_NAME);
+		dao = getBean(EvenementCivilExterneDAO.class, DAO_NAME);
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
@@ -55,7 +56,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	@Test
 	public void testGetAll() throws Exception {
 
-		List<EvenementCivilData> list = dao.getAll();
+		List<EvenementCivilExterne> list = dao.getAll();
 		assertNotNull(list);
 		assertEquals(2, list.size());
 	}
@@ -70,7 +71,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		for (Long id : list) {
-			final EvenementCivilData evt = dao.get(id);
+			final EvenementCivilExterne evt = dao.get(id);
 			Assert.isTrue( !evt.getEtat().isTraite(), "un évenement traité a été récupéré");
 		}
 	}
@@ -82,15 +83,15 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	@Test
 	public void testFind() throws Exception {
 
-		EvenementCriteria evenementCriteria = new EvenementCriteria();
+		EvenementCivilExterneCriteria evenementCriteria = new EvenementCivilExterneCriteria();
 		evenementCriteria.setType(TypeEvenementCivil.MARIAGE);
 		ParamPagination pagination = new ParamPagination(1, 50, "dateEvenement", true);
-		List<EvenementCivilData> list = dao.find(evenementCriteria, pagination);
+		List<EvenementCivilExterne> list = dao.find(evenementCriteria, pagination);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 
 		// Evt
-		EvenementCivilData evt = list.get(0);
+		EvenementCivilExterne evt = list.get(0);
 		assertEquals(new Long(12345L), evt.getNumeroIndividuPrincipal());
 		assertEquals(new Long(23456L), evt.getNumeroIndividuConjoint());
 

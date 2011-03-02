@@ -2,9 +2,10 @@ package ch.vd.uniregctb.norentes.civil.annulation.veuvage;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -117,11 +118,11 @@ public class Ec_10001_02_AnnulationVeuvage_NonMarie_Scenario extends EvenementCi
 
 	@Check(id = 2, descr = "Vérifie que l'événement civil est en erreur")
 	public void check2() {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement d'annulation de veuvage devrait être en erreur car l'individu n'est pas veuf");
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir exactement une erreur");
 
-		final EvenementCivilErreur erreur = evt.getErreurs().iterator().next();
+		final EvenementCivilExterneErreur erreur = evt.getErreurs().iterator().next();
 		assertEquals("L'événement d'annulation veuvage ne peut pas s'appliquer à une personne mariée.", erreur.getMessage(), "L'erreur n'est pas la bonne");
 	}
 

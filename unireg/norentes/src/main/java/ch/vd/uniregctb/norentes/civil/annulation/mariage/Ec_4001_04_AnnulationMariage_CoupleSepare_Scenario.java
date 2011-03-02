@@ -2,9 +2,10 @@ package ch.vd.uniregctb.norentes.civil.annulation.mariage;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -137,11 +138,11 @@ public class Ec_4001_04_AnnulationMariage_CoupleSepare_Scenario extends Evenemen
 
 	@Check(id=2, descr="Vérifie que l'événement civil est en erreur")
 	public void check2() {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabBea);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabBea);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement d'annulation de mariage devrait être en erreur car le couple est séparé");
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir exactement une erreur");
 
-		final EvenementCivilErreur erreur = evt.getErreurs().iterator().next();
+		final EvenementCivilExterneErreur erreur = evt.getErreurs().iterator().next();
 		assertNotNull(erreur, "Il me manque une erreur...");
 		assertTrue(erreur.getMessage().contains("Il y a eu d'autres opérations après le mariage/réconciliation"), "Mauvaise erreur");
 	}

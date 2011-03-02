@@ -39,8 +39,8 @@
 		<value>ch.vd.uniregctb.evenement.EvenementFiscalLR</value>
 		<value>ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale</value>
 		<value>ch.vd.uniregctb.evenement.EvenementFiscalNaissance</value>
-		<value>ch.vd.uniregctb.evenement.EvenementCivilData</value>
-		<value>ch.vd.uniregctb.evenement.EvenementCivilErreur</value>
+		<value>ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne</value>
+		<value>ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur</value>
 		<value>ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>

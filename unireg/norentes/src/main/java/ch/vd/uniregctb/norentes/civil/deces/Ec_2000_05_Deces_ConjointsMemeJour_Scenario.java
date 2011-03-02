@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -173,7 +173,7 @@ public class Ec_2000_05_Deces_ConjointsMemeJour_Scenario extends EvenementCivilS
 	@Check(id = 2, descr = "Vérification que le for est bien fermé sur Lausanne après le décès, et que les remboursements automatiques sont bien bloqués")
 	public void check2() {
 
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabHeidi);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabHeidi);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
@@ -225,7 +225,7 @@ public class Ec_2000_05_Deces_ConjointsMemeJour_Scenario extends EvenementCivilS
 	@Check(id = 3, descr = "Vérification que le for de Hamlet est fermé après le décès")
 	public void check3() {
 
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabHamlet);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabHamlet);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		// dernier for annulé sur le deuxième défunt, les autres fermés

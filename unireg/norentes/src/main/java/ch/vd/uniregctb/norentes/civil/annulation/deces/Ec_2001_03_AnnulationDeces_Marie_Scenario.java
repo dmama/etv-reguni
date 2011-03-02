@@ -2,8 +2,9 @@ package ch.vd.uniregctb.norentes.civil.annulation.deces;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -132,7 +133,7 @@ public class Ec_2001_03_AnnulationDeces_Marie_Scenario extends EvenementCivilSce
 	@Check(id=2, descr="Vérification des fors fiscaux et de la situation de famille")
 	public void check2() {
 
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil devrait être traité");
 
 		{

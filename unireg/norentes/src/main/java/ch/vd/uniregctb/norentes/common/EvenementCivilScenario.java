@@ -3,10 +3,10 @@ package ch.vd.uniregctb.norentes.common;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilDAO;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.EvenementCriteria;
-import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -24,7 +24,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 
 	protected EvenementCivilProcessor evenementCivilProcessor;
 
-	protected EvenementCivilDAO evtDAO;
+	protected EvenementCivilExterneDAO evtExterneDAO;
 
 	protected TacheDAO tacheDAO;
 
@@ -57,7 +57,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 
 
 	protected long addEvenementCivil(TypeEvenementCivil type, long numeroIndividuPrincipal,Long numeroIndividuConjoint, RegDate date, int ofs) {
-		EvenementCivilData evt = new EvenementCivilData();
+		EvenementCivilExterne evt = new EvenementCivilExterne();
 		evt.setId(nextEvtId);
 		evt.setDateEvenement(date);
 		evt.setEtat(EtatEvenementCivil.A_TRAITER);
@@ -71,18 +71,18 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		evt.setNumeroOfsCommuneAnnonce(ofs);
 
 
-		evtDAO.save(evt);
+		evtExterneDAO.save(evt);
 
 		nextEvtId++;
 
 		return evt.getId();
 	}
 
-	protected EvenementCivilData getEvenementCivilRegoupeForHabitant(long id) {
-		List<EvenementCivilData> list = evtDAO.getAll();
+	protected EvenementCivilExterne getEvenementCivilRegoupeForHabitant(long id) {
+		List<EvenementCivilExterne> list = evtExterneDAO.getAll();
 
-		EvenementCivilData evt = null;
-		for (EvenementCivilData e : list) {
+		EvenementCivilExterne evt = null;
+		for (EvenementCivilExterne e : list) {
 			Long h1 = e.getHabitantPrincipalId();
 			if (h1 != null) {
 				if (h1.equals(id)) {
@@ -101,18 +101,18 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		return evt;
 	}
 
-	protected List<EvenementCivilData> getEvenementsCivils(long habitant, TypeEvenementCivil type) {
-		final EvenementCriteria criterion = new EvenementCriteria();
+	protected List<EvenementCivilExterne> getEvenementsCivils(long habitant, TypeEvenementCivil type) {
+		final EvenementCivilExterneCriteria criterion = new EvenementCivilExterneCriteria();
 		criterion.setNumeroIndividu(habitant);
 		criterion.setType(type);
-		return evtDAO.find(criterion, null);
+		return evtExterneDAO.find(criterion, null);
 	}
 
 	protected void checkEtatEvtCivils(int nb, EtatEvenementCivil etat) {
-		List<EvenementCivilData> evts =  evtDAO.getAll();
+		List<EvenementCivilExterne> evts =  evtExterneDAO.getAll();
 		assertNotNull(evts, "aucun événement en base");
 		assertEquals(nb, evts.size(), "pas le bon nombre d'événement");
-		for (EvenementCivilData evt : evts) {
+		for (EvenementCivilExterne evt : evts) {
 			assertEquals(etat, evt.getEtat(), "pas le bon état");
 		}
 	}
@@ -122,8 +122,8 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
-	public void setEvtDAO(EvenementCivilDAO evtDAO) {
-		this.evtDAO = evtDAO;
+	public void setEvtExterneDAO(EvenementCivilExterneDAO evtExterneDAO) {
+		this.evtExterneDAO = evtExterneDAO;
 	}
 
 	public void setTacheDAO(TacheDAO tacheDAO) {

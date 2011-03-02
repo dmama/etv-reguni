@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.common;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,9 +20,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.PeriodiciteDAO;
-import ch.vd.uniregctb.evenement.EvenementCivil;
-import ch.vd.uniregctb.evenement.EvenementCivilDAO;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
@@ -55,7 +53,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	private MouvementDossierDAO mouvementDossierDAO;
 	private TacheDAO tacheDAO;
 	private DroitAccesDAO droitAccesDAO;
-	private EvenementCivilDAO evenementCivilDAO;
+	private EvenementCivilExterneDAO evenementCivilExterneDAO;
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
 	private PlatformTransactionManager transactionManager;
@@ -139,8 +137,8 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 					return fillConsultLogView(droitAcces);
 				}
 				else if (nature.equals(NATURE_EVENEMENT_PARAMETER_VALUE)) {
-					EvenementCivilData evenementCivilData = evenementCivilDAO.get(id);
-					return fillConsultLogView(evenementCivilData);
+					EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(id);
+					return fillConsultLogView(evenementCivilExterne);
 				}
 				else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
 					IdentificationContribuable message  = identCtbDAO.get(id);
@@ -225,12 +223,12 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 		this.transactionManager = transactionManager;
 	}
 
-	public EvenementCivilDAO getEvenementCivilDAO() {
-		return evenementCivilDAO;
+	public EvenementCivilExterneDAO getEvenementCivilExterneDAO() {
+		return evenementCivilExterneDAO;
 	}
 
-	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
-		this.evenementCivilDAO = evenementCivilDAO;
+	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
+		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
 	}
 
 	public IdentCtbDAO getIdentCtbDAO() {

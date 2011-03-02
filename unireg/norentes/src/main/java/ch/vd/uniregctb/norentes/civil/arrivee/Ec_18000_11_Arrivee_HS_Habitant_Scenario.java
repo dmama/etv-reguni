@@ -2,7 +2,8 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -61,7 +62,7 @@ public class Ec_18000_11_Arrivee_HS_Habitant_Scenario extends EvenementCivilScen
 
 	@Check(id = 2, descr = "Vérifie que l'évenement est bien en erreur")
 	public void check1() throws Exception {
-		final EvenementCivilData evenement = evtDAO.get(evenementId);
+		final EvenementCivilExterne evenement = evtExterneDAO.get(evenementId);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evenement.getEtat(), "L'événement civil devrait être en erreur.");
 	}
 }

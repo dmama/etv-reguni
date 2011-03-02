@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -164,7 +164,7 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 	@Check(id=2, descr="Vérifie que l'événement est bien en erreur")
 	public void check2() {
 
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabChristelle);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabChristelle);
 
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement de mariage devrait être en erreur car le couple existe déjà");
 

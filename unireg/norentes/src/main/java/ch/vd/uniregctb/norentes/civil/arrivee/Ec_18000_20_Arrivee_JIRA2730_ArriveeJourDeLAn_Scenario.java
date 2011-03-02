@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -29,7 +29,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * Le principe de ce test est le suivant ; dans le cas jira UNIREG-2730, une arrivée HS au 1.01.2007
  * trouvait deux candidats non-habitant, dont un qui, bien qu'ayant la bonne date de naissance,
  * n'avait rien en commun dans le nom (cela était dû au fait que l'année de référence dans la
- * classe {@link ch.vd.uniregctb.evenement.GenericEvenementAdapter} était l'année de la veille
+ * classe {@link ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase} était l'année de la veille
  * de la date de l'événement (= 2006, pas d'historique individu connu dans le host avant 2007, donc
  * impossible de trouver le nom de l'individu, donc recherche dans l'indexeur avec une date de naissance
  * seulement, pas de nom...))
@@ -164,7 +164,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 	public void check2() throws Exception {
 
 		// si l'événement a été traité, c'est qu'il n'y avait qu'un seul candidat (ou aucun)
-		final List<EvenementCivilData> evts = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
+		final List<EvenementCivilExterne> evts = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
 		assertNotNull(evts, "Pas d'événements civils ?");
 		assertEquals(1, evts.size(), "Où est passé l'événement civil d'arrivée ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evts.get(0).getEtat(), "Aurait dû être traité, non ?");

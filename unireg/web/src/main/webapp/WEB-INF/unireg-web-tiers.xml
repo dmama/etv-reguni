@@ -154,7 +154,7 @@
 		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
-		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 		<property name="formView" value="common/consult-log" />
 		<property name="successView" value="common/refresh-parent" />
 		<property name="transactionManager" ref="transactionManager" />

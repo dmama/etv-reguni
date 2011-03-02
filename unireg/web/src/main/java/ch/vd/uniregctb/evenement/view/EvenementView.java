@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.view;
 import java.util.List;
 
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.individu.IndividuView;
 
 /**
@@ -13,7 +13,7 @@ import ch.vd.uniregctb.individu.IndividuView;
  */
 public class EvenementView {
 
-	private EvenementCivilData evenement;
+	private EvenementCivilExterne evenement;
 
 	private IndividuView individuPrincipal;
 
@@ -27,11 +27,11 @@ public class EvenementView {
 
 	private AdresseEnvoi adresseConjoint;
 
-	public EvenementCivilData getEvenement() {
+	public EvenementCivilExterne getEvenement() {
 		return evenement;
 	}
 
-	public void setEvenement(EvenementCivilData evenement) {
+	public void setEvenement(EvenementCivilExterne evenement) {
 		this.evenement = evenement;
 	}
 

@@ -46,10 +46,10 @@
 
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender"/>
 
-	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessorImpl">
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessorImpl">
 		<property name="delaiPriseEnCompte" value="1"/>
 		<property name="fetchAwaitingEventsOnStart" value="false"/>
-		<property name="evenementCivilDAO" ref="evenementCivilDAO"/>
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>

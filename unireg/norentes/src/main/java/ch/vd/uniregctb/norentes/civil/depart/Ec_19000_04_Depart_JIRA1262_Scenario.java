@@ -15,7 +15,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
@@ -186,7 +186,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 		// On check que le contribuable est parti
 		{
-			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabSebastien);
+			final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabSebastien);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "Etat invalide");
 
 			final PersonnePhysique sebastien = (PersonnePhysique) tiersDAO.get(noHabSebastien);

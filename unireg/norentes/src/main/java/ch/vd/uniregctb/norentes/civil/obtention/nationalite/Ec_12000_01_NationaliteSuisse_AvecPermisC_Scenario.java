@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -101,7 +101,7 @@ public class Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario extends Evenemen
 
 	@Check(id=2, descr="Vérification des fors fiscaux & que l'événement civil est traité")
 	public void check2() {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement devrait être traité");
 		assertEquals(0, evt.getErreurs().size(), "Il ne devrait pas y avoir aucune erreur");
 

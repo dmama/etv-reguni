@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -121,7 +121,7 @@ public class Ec_16000_01_ObtentionPermis_MarieADeuxSansForPrincipal_Scenario ext
 
 	@Check(id=2, descr="Vérifie qu'aucun for n'a été ouvert")
 	public void check2() {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 		check1();

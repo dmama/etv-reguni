@@ -5,7 +5,7 @@ import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -129,7 +129,7 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 	@Check(id=3, descr="Vérifie que les fors des habitants précédemment créés ont été annulés, le ménage commun créé et qu'il a un for ouvert")
 	public void check3() throws Exception {
 
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMaria);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabMaria);
 
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement de mariage devrait être traité");
 

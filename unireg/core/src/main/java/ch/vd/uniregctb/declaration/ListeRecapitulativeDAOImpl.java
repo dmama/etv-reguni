@@ -2,10 +2,7 @@ package ch.vd.uniregctb.declaration;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -53,8 +50,8 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 						criterion, parameters), buildOrderClause(paramPagination));
 
 				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("EvenementCriteria Query: " + query);
-					LOGGER.debug("EvenementCriteria Table size: " + parameters.size());
+					LOGGER.debug("EvenementCivilExterneCriteria Query: " + query);
+					LOGGER.debug("EvenementCivilExterneCriteria Table size: " + parameters.size());
 				}
 
 				final Query queryObject = session.createQuery(query);

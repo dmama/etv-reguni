@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.evenement;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -14,6 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
 import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -48,7 +49,7 @@ public class EvenementListController extends AbstractEvenementController {
 
 		if (bean == null || isAppuiSurEffacer(request)) {
 	 		bean = (EvenementCriteriaView) super.formBackingObject(request);
-			bean.setTypeRechercheDuNom(EvenementCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
+			bean.setTypeRechercheDuNom(EvenementCivilExterneCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
 			bean.setEtat(EtatEvenementCivil.A_VERIFIER);
 			session.setAttribute(EVENEMENT_CRITERIA_NAME, bean);
 		}
@@ -84,7 +85,7 @@ public class EvenementListController extends AbstractEvenementController {
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, getEvenementManager().count(bean));
 		}
 		else {
-			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, new ArrayList<EvenementCivilData>());
+			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, new ArrayList<EvenementCivilExterne>());
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, 0);
 		}
 

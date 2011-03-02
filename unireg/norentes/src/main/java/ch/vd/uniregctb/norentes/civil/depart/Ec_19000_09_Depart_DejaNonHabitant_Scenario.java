@@ -5,7 +5,7 @@ import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -132,7 +132,7 @@ public class Ec_19000_09_Depart_DejaNonHabitant_Scenario extends DepartScenario 
 	@Check(id=3, descr="Vérifie les fors et adresse d'envoi")
 	public void check3() throws Exception {
 
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
 		assertNotNull(evt, "Où est l'événement civil d'arrivée de Charles ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil devrait être en traité.");
 

@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -93,7 +93,7 @@ public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends Evene
 
 	@Check(id=2, descr="Vérification que l'événement a bien été mis en erreur")
 	public void check2() throws Exception {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement ne devrait pas être en erreur");
 	}
 }

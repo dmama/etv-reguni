@@ -6,8 +6,8 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -133,13 +133,13 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 	@Check(id = 2, descr = "Vérification que l'événement est en erreur et qu'aucune modification n'a été apportée sur le ménage commun")
 	public void check2() throws Exception {
 
-		final EvenementCivilData evenement = evtDAO.get(evenementId);
+		final EvenementCivilExterne evenement = evtExterneDAO.get(evenementId);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evenement.getEtat(), "L'événement civil devrait être en erreur.");
 
-		final Set<EvenementCivilErreur> erreurs = evenement.getErreurs();
+		final Set<EvenementCivilExterneErreur> erreurs = evenement.getErreurs();
 		assertEquals(1, erreurs.size(), "Il devrait y avoir exactement 1 erreur");
 
-		final EvenementCivilErreur erreur = erreurs.iterator().next();
+		final EvenementCivilExterneErreur erreur = erreurs.iterator().next();
 		final String messageAttendu = String.format("L'individu principal [%d] est en ménage commun avec une personne [%d] dans le fiscal alors qu'il est marié seul dans le civil", noCtbGeorgette, noCtbJean);
 		assertEquals(messageAttendu, erreur.getMessage(), "L'exception levée n'est pas la bonne.");
 

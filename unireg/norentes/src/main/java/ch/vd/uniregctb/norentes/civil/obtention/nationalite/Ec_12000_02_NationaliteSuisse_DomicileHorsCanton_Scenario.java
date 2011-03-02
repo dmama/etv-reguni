@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -115,7 +115,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 
 	@Check(id=2, descr="Vérification des fors fiscaux & que l'événement civil est traité")
 	public void check2() {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
 
 		assertEquals(0, ((MockEvenementFiscalSender) evenementFiscalSender).count, "Aucun événement fiscal ne doit avoir été envoyé");
 

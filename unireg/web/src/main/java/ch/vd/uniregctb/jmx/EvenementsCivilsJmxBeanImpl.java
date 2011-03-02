@@ -5,7 +5,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessor;
+import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 
 @ManagedResource

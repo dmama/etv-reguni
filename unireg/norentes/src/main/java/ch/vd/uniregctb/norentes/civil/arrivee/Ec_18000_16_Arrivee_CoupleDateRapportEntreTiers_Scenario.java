@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -89,11 +89,11 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 		final PersonnePhysique anneLaure = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndAnneLaure);
 		assertNotNull(anneLaure, "L'habitant Anne-Laure n'a pas été créé ?");
 
-		final EvenementCivilData evenementAntonio = getEvenementCivilRegoupeForHabitant(antonio.getNumero());
+		final EvenementCivilExterne evenementAntonio = getEvenementCivilRegoupeForHabitant(antonio.getNumero());
 		assertNotNull(evenementAntonio, "Où est l'événement civil d'arrivée d'Antonio ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementAntonio.getEtat(), "L'événement civil devrait être en traité.");
 
-		final EvenementCivilData evenementAnneLaure = getEvenementCivilRegoupeForHabitant(anneLaure.getNumero());
+		final EvenementCivilExterne evenementAnneLaure = getEvenementCivilRegoupeForHabitant(anneLaure.getNumero());
 		assertNotNull(evenementAnneLaure, "Où est l'événement civil d'arrivée d'Anne-Laure ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementAnneLaure.getEtat(), "L'événement civil devrait être en traité.");
 

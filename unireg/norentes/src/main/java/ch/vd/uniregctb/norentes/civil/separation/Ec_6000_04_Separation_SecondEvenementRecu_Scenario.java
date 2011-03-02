@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -194,7 +194,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 	public void check2() {
 
 		// comme il y a fermeture d'un for secondaire, l'événement doit être dans l'état "A_VERIFIER"
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabBea);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabBea);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 		{
@@ -259,13 +259,13 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 
 		// l'événement envoyé pour Béa est toujours dans l'état "à vérifier"
 		{
-			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabBea);
+			final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabBea);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
 
 		// l'événement envoyé pour Momo est traité (en fait, il n'avait rien à faire!)
 		{
-			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+			final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
 

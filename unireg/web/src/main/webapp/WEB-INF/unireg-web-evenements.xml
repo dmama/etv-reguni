@@ -26,7 +26,7 @@
 	</bean>
 	
 	<bean id="evenementManager" class="ch.vd.uniregctb.evenement.manager.EvenementManagerImpl" >
-		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
 		<property name="hostCivilService" ref="hostCivilService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />

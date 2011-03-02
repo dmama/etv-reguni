@@ -13,7 +13,7 @@
 	<bean id="norentesFrameworkTestScenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.common.NorentesFrameworkTestScenario" />
 
 	<bean id="ec_0_01_Ech99Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.ignore.Ec_0_01_Ech99_Scenario">
-		<property name="evtCivilDAO" ref="evenementCivilDAO" />
+		<property name="evtCivilExterneDAO" ref="evenementCivilExterneDAO" />
 	</bean>
 
 	<bean id="ec_1000_01_NaissanceScenario" parent="evenementCivilScenario"

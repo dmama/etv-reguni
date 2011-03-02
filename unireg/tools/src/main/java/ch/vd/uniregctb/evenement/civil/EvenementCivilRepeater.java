@@ -10,8 +10,8 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.jms.EvenementCivilSenderImpl;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.jms.EvenementCivilSenderImpl;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -53,7 +53,7 @@ public class EvenementCivilRepeater {
 			int index = 0;
 			for (LogFileExtractor.EvenementRecu evt : extractor.getEvenementsRecus()) {
 
-				final EvenementCivilData data = new EvenementCivilData(evt.id, evt.type, EtatEvenementCivil.A_TRAITER, evt.dateEvement, evt.noIndividu, null, null, null, evt.ofsAnnonce, null);
+				final EvenementCivilExterne externe = new EvenementCivilExterne(evt.id, evt.type, EtatEvenementCivil.A_TRAITER, evt.dateEvement, evt.noIndividu, null, null, null, evt.ofsAnnonce, null);
 
 				final EsbMessage m = messageFactory.createMessage();
 				m.setBusinessId(Long.toString(evt.id));
@@ -62,7 +62,7 @@ public class EvenementCivilRepeater {
 				m.setServiceDestination(QUEUE);
 				m.setContext("evenementCivil");
 
-				final EvtRegCivilDocument document = EvenementCivilSenderImpl.createDocument(data);
+				final EvtRegCivilDocument document = EvenementCivilSenderImpl.createDocument(externe);
 				m.setBody(XmlUtils.xmlbeans2string(document));
 
 				template.send(m);

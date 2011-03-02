@@ -41,8 +41,8 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	
-	<bean id="evenementService" class="ch.vd.uniregctb.evenement.EvenementServiceImpl">
-		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
+	<bean id="evenementService" class="ch.vd.uniregctb.evenement.civil.externe.EvenementServiceImpl">
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 	</bean>
 	
 	<bean id="scheduler" class="ch.vd.uniregctb.scheduler.OverrideSchedulerFactoryBean">

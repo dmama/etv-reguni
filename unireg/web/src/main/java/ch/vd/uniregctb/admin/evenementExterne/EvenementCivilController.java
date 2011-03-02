@@ -17,8 +17,8 @@ import org.springmodules.xt.ajax.web.servlet.AjaxModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.SelectContainerValue;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.jms.EvenementCivilSender;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.jms.EvenementCivilSender;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.web.xt.AbstractEnhancedSimpleFormController;
 
@@ -91,7 +91,7 @@ public class EvenementCivilController extends AbstractEnhancedSimpleFormControll
 
 		CivilUnitaireView view = (CivilUnitaireView) event.getCommandObject();
 		try {
-			EvenementCivilData evt= createEvenement(view);
+			EvenementCivilExterne evt= createEvenement(view);
 
 			sendEvent(evt);
 			response.addAction( new ReplaceContentAction("error.global", new TaggedText("événement envoyé", TaggedText.Tag.DIV)));
@@ -104,8 +104,8 @@ public class EvenementCivilController extends AbstractEnhancedSimpleFormControll
 	}
 
 
-	public EvenementCivilData createEvenement(CivilUnitaireView view) {
-		EvenementCivilData evenement = new EvenementCivilData();
+	public EvenementCivilExterne createEvenement(CivilUnitaireView view) {
+		EvenementCivilExterne evenement = new EvenementCivilExterne();
 		evenement.setId(Long.parseLong(view.getNoTechnique()));
 		evenement.setNumeroOfsCommuneAnnonce(Integer.parseInt(view.getNumeroOFS()));
 		evenement.setNumeroIndividuPrincipal(Long.parseLong(view.getNoIndividu()));
@@ -114,7 +114,7 @@ public class EvenementCivilController extends AbstractEnhancedSimpleFormControll
 		return evenement;
 	}
 
-	private void sendEvent(EvenementCivilData evtRegCivil) throws Exception {
+	private void sendEvent(EvenementCivilExterne evtRegCivil) throws Exception {
 		if (evtRegCivil == null) {
 			throw new IllegalArgumentException("Argument evtRegCivil ne peut être null.");
 		}

@@ -53,8 +53,8 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.EvenementCivilDAO;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -108,7 +108,7 @@ public class TiersServiceImpl implements TiersService {
 	private TiersDAO tiersDAO;
 	private EvenementFiscalService evenementFiscalService;
 	private GlobalTiersSearcher tiersSearcher;
-	private EvenementCivilDAO evenementCivilDAO;
+	private EvenementCivilExterneDAO evenementCivilExterneDAO;
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
 	private TacheService tacheService;
@@ -1425,8 +1425,8 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
-	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
-		this.evenementCivilDAO = evenementCivilDAO;
+	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
+		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
 	}
 
 	private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
@@ -3978,13 +3978,13 @@ public class TiersServiceImpl implements TiersService {
 		return menageCommun;
 	}
 
-	public List<EvenementCivilData> getEvenementsCivilsNonTraites(Tiers tiers) {
+	public List<EvenementCivilExterne> getEvenementsCivilsNonTraites(Tiers tiers) {
 		final Set<Long> noTiers = new HashSet<Long>(1);
 		noTiers.add(tiers.getNumero());
 		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
-		final List<EvenementCivilData> liste;
+		final List<EvenementCivilExterne> liste;
 		if (nosIndividus.size() > 0) {
-			liste = evenementCivilDAO.getEvenementsCivilsNonTraites(nosIndividus);
+			liste = evenementCivilExterneDAO.getEvenementsCivilsNonTraites(nosIndividus);
 		}
 		else {
 			liste = Collections.emptyList();

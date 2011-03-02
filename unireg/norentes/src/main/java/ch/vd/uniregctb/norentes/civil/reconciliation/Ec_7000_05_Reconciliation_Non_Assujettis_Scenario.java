@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -159,7 +159,7 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 
 	@Check(id = 2, descr = "Vérifie que l'événement civil est traité mais qu'aucun for n'a bougé")
 	public void check2() {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(),
 				"L'événement de réconciliation devrait être traité car le couple est bien séparé");
 		check1();

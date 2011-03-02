@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -146,7 +146,7 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 		assertNotNull(couple.getConjoint(), "Le couple n'a pas été reconstitué ?");
 		assertEquals(alex.getNumero(), couple.getConjoint().getNumero(), "Le couple n'a pas été reconstitué entre les bons contribuable");
 
-		final EvenementCivilData evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
+		final EvenementCivilExterne evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
 		assertNotNull(evenementOlivier, "Où est l'événement civil d'arrivée d'Olivier ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementOlivier.getEtat(), "L'événement civil devrait être en traité.");
 

@@ -4,8 +4,8 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -96,11 +96,11 @@ public class Ec_43000_02_CorrectionAdresse_CommuneDifferente_Scenario extends Ev
 
 	@Check(id=2, descr="Vérification que l'événement a bien été mis en erreur")
 	public void check2() throws Exception {
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement devrait être en erreur");
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir une erreur");
 
-		final EvenementCivilErreur erreur = evt.getErreurs().iterator().next();
+		final EvenementCivilExterneErreur erreur = evt.getErreurs().iterator().next();
 		assertEquals("Evénement de correction d'adresse avec changement de commune", erreur.getMessage(), "Ce n'est pas l'erreur attendue");
 
 		check1();

@@ -7,7 +7,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -151,7 +151,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 
 		// On check que Alain  est parti
 		{
-			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabAlain);
+			final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabAlain);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 			final PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabAlain);

@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -133,7 +133,7 @@ public class Ec_2000_08_Deces_CivilApresFiscal_Difference1Jour_Scenario extends 
 	public void check3() {
 
 		// vérification que le
-		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabGuillaume);
+		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabGuillaume);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été bien traité");
 
 		// le reste pareil qu'après l'étape 2

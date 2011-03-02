@@ -8,9 +8,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.common.EvenementCivilHandler;
-import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandler;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.MockEvenementCivil;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -59,7 +60,7 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		return getBean(EvenementFiscalService.class,"evenementFiscalService");
 	}
 
-	protected void launchEvent(final MockEvenementCivil evtCivil, final List<EvenementCivilErreur> erreurs, final List<EvenementCivilErreur> warnings) throws Exception {
+	protected void launchEvent(final MockEvenementCivil evtCivil, final List<EvenementCivilExterneErreur> erreurs, final List<EvenementCivilExterneErreur> warnings) throws Exception {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				evtCivil.setHandler(evenementCivilHandler);
@@ -76,21 +77,21 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 	}
 
 	protected void assertSansErreurNiWarning(MockEvenementCivil evt) throws Exception {
-		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		launchEvent(evt, erreurs, warnings);
 		Assert.assertEquals(0, erreurs.size());
 		Assert.assertEquals(0, warnings.size());
 	}
 
 	protected void assertErreurs(MockEvenementCivil evt, List<String> messagesErreurs) throws Exception {
-		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		try {
 			launchEvent(evt, erreurs, warnings);
 		}
 		catch (EvenementCivilHandlerException e) {
-			erreurs.add(new EvenementCivilErreur(e));
+			erreurs.add(new EvenementCivilExterneErreur(e));
 		}
 
 		Assert.assertEquals(messagesErreurs.size(), erreurs.size());
@@ -98,7 +99,7 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 
 		for (int i = 0 ; i < messagesErreurs.size() ; ++ i) {
 			final String expected = messagesErreurs.get(i);
-			final EvenementCivilErreur erreurTrouvee = erreurs.get(i);
+			final EvenementCivilExterneErreur erreurTrouvee = erreurs.get(i);
 			Assert.assertEquals("Index " + i, expected, erreurTrouvee.getMessage());
 		}
 	}
