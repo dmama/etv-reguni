@@ -43,7 +43,7 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		metierService = getBean(MetierService.class, "metierService");
 		eventSender.count = 0;
 
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, indexer, metierService, false);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, indexer, metierService, tiersDAO, false);
 	}
 
 	@Override

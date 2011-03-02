@@ -5,6 +5,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class EvenementCivilContext {
@@ -14,17 +15,19 @@ public class EvenementCivilContext {
 	private DataEventService dataEventService;
 	private boolean refreshCache;
 	private TiersService tiersService;
+	private TiersDAO tiersDAO;
 	private GlobalTiersIndexer indexer;
 	private MetierService metierService;
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             MetierService metierService, boolean refreshCache) {
+	                             MetierService metierService, TiersDAO tiersDAO, boolean refreshCache) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
 		this.tiersService = tiersService;
 		this.indexer = indexer;
 		this.metierService = metierService;
+		this.tiersDAO = tiersDAO;
 		this.refreshCache = refreshCache;
 	}
 
@@ -54,5 +57,9 @@ public class EvenementCivilContext {
 
 	public MetierService getMetierService() {
 		return metierService;
+	}
+
+	public TiersDAO getTiersDAO() {
+		return tiersDAO;
 	}
 }

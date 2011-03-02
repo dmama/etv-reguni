@@ -68,7 +68,7 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 		/*
 		 * Création et initialisation de l'adapter
 		 */
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, null, false);
 		final EvenementCivilInterneBase adapter = new ArriveeAdapter(evenementArriveeCouple, context, null);
 
 		/*
@@ -117,7 +117,7 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 				evtMariage = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, null, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
 
 		// passage dans l'init de l'adapter
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, true);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, null, true);
 		final EvenementCivilInterneBase adapter = new MariageAdapter(evtMariage, context, null);
 
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getTiersChanged());
