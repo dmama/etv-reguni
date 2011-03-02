@@ -51,7 +51,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR , habitant, 0L, null, 1234, null);
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, null, false);
 		TutelleAdapter adapter = new  TutelleAdapter(evenement, context, null);
 		Assert.notNull( adapter.getTuteur(), "le tuteur n'a pas pu être récupéré");
 		Assert.isNull( adapter.getTuteurGeneral(), "le tuteur general ne devrait pas exister");
@@ -68,7 +68,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL , habitant, 0L, null, 1234, null);
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, null, false);
 		TutelleAdapter adapter = new  TutelleAdapter(evenement, context, null);
 		Assert.isNull( adapter.getTuteur(), "le tuteur ne devrait pas exister");
 		Assert.notNull( adapter.getTuteurGeneral(), "le tuteur general n'a pas pu être récupéré");
@@ -85,7 +85,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_TUTELLE);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_TUTELLE , habitant, 0L, null, 1234, null);
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, null, false);
 		TutelleAdapter adapter = new  TutelleAdapter(evenement, context, null);
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.TUTELLE, "le type de tutelle n'a pas été correctement récupéré");
 	}
@@ -100,7 +100,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_CURATELLE);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CURATELLE , habitant, 0L, null, 1234, null);
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, null, false);
 		TutelleAdapter adapter = new  TutelleAdapter(evenement, context, null);
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.CURATELLE, "le type de tutelle n'a pas été correctement récupéré");
 	}
@@ -115,7 +115,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL , habitant, 0L, null, 1234, null);
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, false);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, null, false);
 		TutelleAdapter adapter = new  TutelleAdapter(evenement, context, null);
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.CONSEIL_LEGAL, "le type de tutelle n'a pas été correctement récupéré");
 	}

@@ -32,6 +32,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -55,6 +56,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private TiersDAO tiersDAO;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
+	private MetierService metierService;
 
 	/**
 	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
@@ -247,7 +249,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				return;
 			}
 
-			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, null, refreshCache);
+			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, null, metierService, refreshCache);
 			final EvenementCivilInterneBase adapter = evenementCivilHandler.createAdapter(evenementCivilExterne, context);
 
 			/* 2.1 - lancement de la validation par le handler */
@@ -401,5 +403,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setMetierService(MetierService metierService) {
+		this.metierService = metierService;
 	}
 }

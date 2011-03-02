@@ -400,7 +400,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 		return habitant;
 	}
 
-	protected static void addValidationResults(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings, ValidationResults resultat) {
+	public static void addValidationResults(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings, ValidationResults resultat) {
 		if (resultat.hasErrors()) {
 			for (String erreur : resultat.getErrors()) {
 				errors.add(new EvenementCivilExterneErreur(erreur));

@@ -16,6 +16,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="metierService" ref="metierService" />
 		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 

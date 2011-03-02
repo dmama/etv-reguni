@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandler;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.MockEvenementCivil;
@@ -15,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.metier.MetierService;
 
 public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 
@@ -27,6 +29,9 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 
 	protected GlobalTiersIndexer indexer;
 	protected MockEvenementFiscalSender eventSender;
+	protected MetierService metierService;
+
+	protected EvenementCivilContext context;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -35,7 +40,10 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		evenementCivilHandler = getBean(EvenementCivilHandler.class, getHandlerBeanName());
 		indexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 		eventSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
+		metierService = getBean(MetierService.class, "metierService");
 		eventSender.count = 0;
+
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, indexer, metierService, false);
 	}
 
 	@Override

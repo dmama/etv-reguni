@@ -4,6 +4,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class EvenementCivilContext {
@@ -14,14 +15,16 @@ public class EvenementCivilContext {
 	private boolean refreshCache;
 	private TiersService tiersService;
 	private GlobalTiersIndexer indexer;
+	private MetierService metierService;
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             boolean refreshCache) {
+	                             MetierService metierService, boolean refreshCache) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
 		this.tiersService = tiersService;
 		this.indexer = indexer;
+		this.metierService = metierService;
 		this.refreshCache = refreshCache;
 	}
 
@@ -47,5 +50,9 @@ public class EvenementCivilContext {
 
 	public TiersService getTiersService() {
 		return tiersService;
+	}
+
+	public MetierService getMetierService() {
+		return metierService;
 	}
 }
