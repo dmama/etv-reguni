@@ -79,7 +79,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de veuvage d'un marié seul.");
 
 		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
-		AnnulationVeuvage annulation = createValidAnnulationVeuvage(veuf);
+		AnnulationVeuvageAdapter annulation = createValidAnnulationVeuvage(veuf);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -137,7 +137,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de veuvage d'une personne non veuve.");
 
 		Individu fauxVeuf = serviceCivil.getIndividu(NO_INDIVIDU_NON_VEUF, 2008);
-		AnnulationVeuvage annulation = createValidAnnulationVeuvage(fauxVeuf);
+		AnnulationVeuvageAdapter annulation = createValidAnnulationVeuvage(fauxVeuf);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -149,11 +149,8 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals("Une erreur aurait dû se produire lors du validate de l'annulation.", 1, erreurs.size());
 	}
 
-	private AnnulationVeuvage createValidAnnulationVeuvage(Individu individu) {
-
-		MockAnnulationVeuvage annulation = new MockAnnulationVeuvage(individu, null, DATE_VEUVAGE, 5652);
-		annulation.setHandler(evenementCivilHandler);
-		return annulation;
+	private AnnulationVeuvageAdapter createValidAnnulationVeuvage(Individu individu) {
+		return new AnnulationVeuvageAdapter(individu, null, DATE_VEUVAGE, 5652, context);
 	}
 
 }

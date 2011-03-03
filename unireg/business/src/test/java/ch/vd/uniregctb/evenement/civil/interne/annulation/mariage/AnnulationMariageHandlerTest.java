@@ -62,7 +62,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de mariage d'une personne non mariée (cas d'erreur).");
 		
 		final RegDate dateFictive = RegDate.get(2008, 1, 1);
-		AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_CELIBATAIRE, dateFictive);
+		AnnulationMariageAdapter annulation = createAnnulationMariage(NO_INDIVIDU_CELIBATAIRE, dateFictive);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -89,7 +89,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de mariage d'un marié seul.");
 		
 		final RegDate dateMariage = RegDate.get(1986, 4, 8);
-		AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_MARIE_SEUL, dateMariage);
+		AnnulationMariageAdapter annulation = createAnnulationMariage(NO_INDIVIDU_MARIE_SEUL, dateMariage);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -137,7 +137,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de mariage d'une personne mariée.");
 		
 		final RegDate dateMariage = RegDate.get(1986, 4, 8);
-		final AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_MARIE, NO_INDIVIDU_MARIE_CONJOINT, dateMariage);
+		final AnnulationMariageAdapter annulation = createAnnulationMariage(NO_INDIVIDU_MARIE, NO_INDIVIDU_MARIE_CONJOINT, dateMariage);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -191,17 +191,15 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
 	}
 
-	private MockAnnulationMariage createAnnulationMariage(long noIndividu, RegDate date) {
+	private AnnulationMariageAdapter createAnnulationMariage(long noIndividu, RegDate date) {
 
 		// il faut modifier l'individu directement dans le registre civil
 		final Individu individu = annuleMariage(noIndividu);
 
-		final MockAnnulationMariage annulation = new MockAnnulationMariage(individu, null, date, 5652);
-		annulation.setHandler(evenementCivilHandler);
-		return annulation;
+		return new AnnulationMariageAdapter(individu, null, date, 5652, context);
 	}
 
-	private AnnulationMariage createAnnulationMariage(long noIndividu, long noConjoint, RegDate dateMariage) {
+	private AnnulationMariageAdapter createAnnulationMariage(long noIndividu, long noConjoint, RegDate dateMariage) {
 		annuleMariage(noConjoint);
 		return createAnnulationMariage(noIndividu, dateMariage);
 	}

@@ -96,7 +96,7 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne seule.");
 		Individu celibataire = serviceCivil.getIndividu(INDIVIDU_CELIBATAIRE, 2008);
-		Divorce divorce = createValidDivorce(celibataire, null);
+		DivorceAdapter divorce = createValidDivorce(celibataire, null);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -114,7 +114,7 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 	
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne mariée seule.");
 		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, 2008);
-		Divorce divorce = createValidDivorce(marieSeul, null);
+		DivorceAdapter divorce = createValidDivorce(marieSeul, null);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -164,7 +164,7 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne mariée avec un suisse ou étranger avec permis C.");
 		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE, 2008);
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, 2008);
-		Divorce divorce = createValidDivorce(marie, conjoint);
+		DivorceAdapter divorce = createValidDivorce(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -231,7 +231,7 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne de nationalité inconnue.");
 		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
-		Divorce divorce = createValidDivorce(marie, conjoint);
+		DivorceAdapter divorce = createValidDivorce(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -250,7 +250,7 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne déjà séparée.");
 		Individu separe = serviceCivil.getIndividu(INDIVIDU_SEPARE, 2008);
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_SEPARE_CONJOINT, 2008);
-		Divorce divorce = createValidDivorce(separe, conjoint);
+		DivorceAdapter divorce = createValidDivorce(separe, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -283,10 +283,8 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(conjointDivorce).size());
 	}
 	
-	private Divorce createValidDivorce(Individu individu, Individu conjoint) {
-		MockDivorce divorce = new MockDivorce(individu, conjoint, DATE_DIVORCE, 5652);
-		divorce.setHandler(evenementCivilHandler);
-		return divorce;
+	private DivorceAdapter createValidDivorce(Individu individu, Individu conjoint) {
+		return new DivorceAdapter(individu, conjoint, DATE_DIVORCE, 5652, context);
 	
 	}
 	

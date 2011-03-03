@@ -91,7 +91,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test déménagement hors canton...");
 		erreurs.clear();
 		warnings.clear();
-		MockDemenagement demenagement = createValidDemenagement(new MockIndividu(), null, DATE_VALIDE, MockCommune.Neuchatel);
+		DemenagementAdapter demenagement = createValidDemenagement(new MockIndividu(), null, DATE_VALIDE, MockCommune.Neuchatel);
 		demenagement.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs, "Le déménagement est hors canton, une erreur aurait du être déclenchée");
 		LOGGER.debug("Test déménagement hors canton : OK");
@@ -114,7 +114,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu seul.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
-		MockDemenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
+		DemenagementAdapter demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -138,7 +138,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement fin décembre individu seul.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
-		MockDemenagement demenagement = createValidDemenagement(individu, null, DATE_LIMITE, MockCommune.Fraction.LePont);
+		DemenagementAdapter demenagement = createValidDemenagement(individu, null, DATE_LIMITE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -161,7 +161,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	public void testIndividuMarieSeulHandle() throws Exception {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié seul.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
-		MockDemenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
+		DemenagementAdapter demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -198,7 +198,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié .");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE1, 2000);
 		final Individu individu2 = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE2, 2000);
-		MockDemenagement demenagement = createValidDemenagement(individu, individu2, DATE_VALIDE, MockCommune.Fraction.LePont);
+		DemenagementAdapter demenagement = createValidDemenagement(individu, individu2, DATE_VALIDE, MockCommune.Fraction.LePont);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -235,7 +235,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	public void testDemenagementVaudoisSansChangementOfficeImpot() {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
-		MockDemenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
+		DemenagementAdapter demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -267,7 +267,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	public void testDemenagementVaudoisAvecChangementOfficeImpot() {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
-		MockDemenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
+		DemenagementAdapter demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -301,7 +301,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 
-	private MockDemenagement createValidDemenagement(Individu individu, Individu conjoint, RegDate dateEvenement, MockCommune nouvelleCommune) {
+	private DemenagementAdapter createValidDemenagement(Individu individu, Individu conjoint, RegDate dateEvenement, MockCommune nouvelleCommune) {
 
 		// Anciennes adresses
 		MockAdresse ancienneAdresse = new MockAdresse();
@@ -320,10 +320,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
 		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
 
-		MockDemenagement demenagement = new MockDemenagement(individu, principalPPId, conjoint, conjointPPId, dateEvenement, nouvelleCommune.getNoOFSEtendu(), nouvelleCommune, ancienneAdresse, nouvelleAdresse);
-		demenagement.setHandler(evenementCivilHandler);
-
-		return demenagement;
+		return new DemenagementAdapter(individu, principalPPId, conjoint, conjointPPId, dateEvenement, nouvelleCommune.getNoOFSEtendu(), nouvelleCommune, ancienneAdresse, nouvelleAdresse, context);
 	}
 
 	private boolean existTacheControlePourAncienOID(List<Tache> mesTaches,CollectiviteAdministrative collectiviteAttendue){

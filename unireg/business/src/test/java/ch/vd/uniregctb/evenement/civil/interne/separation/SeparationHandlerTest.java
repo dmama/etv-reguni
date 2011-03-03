@@ -89,7 +89,7 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne mariée seule.");
 		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, 2008);
-		Separation separation = createValidSeparation(marieSeul, null);
+		SeparationAdapter separation = createValidSeparation(marieSeul, null);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -140,7 +140,7 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne mariée avec un suisse ou étranger avec permis C.");
 		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE, 2008);
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, 2008);
-		Separation separation = createValidSeparation(marie, conjoint);
+		SeparationAdapter separation = createValidSeparation(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -209,7 +209,7 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne de nationalité inconnue.");
 		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
-		Separation separation = createValidSeparation(marie, conjoint);
+		SeparationAdapter separation = createValidSeparation(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -252,7 +252,7 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 
 		final Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
 		final Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
-		final Separation separation = createValidSeparation(marie, conjoint);
+		final SeparationAdapter separation = createValidSeparation(marie, conjoint);
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -273,10 +273,7 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		}
 	}
 
-	private Separation createValidSeparation(Individu individu, Individu conjoint) {
-
-		final MockSeparation separation = new MockSeparation(individu, conjoint, DATE_SEPARATION, 5652);
-		separation.setHandler(evenementCivilHandler);
-		return separation;
+	private SeparationAdapter createValidSeparation(Individu individu, Individu conjoint) {
+		return new SeparationAdapter(individu, conjoint, DATE_SEPARATION, 5652, context);
 	}
 }

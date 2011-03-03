@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandler;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
@@ -32,6 +33,7 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 	protected MetierService metierService;
 
 	protected EvenementCivilContext context;
+	protected DataEventService dataEventService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -41,9 +43,10 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		indexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 		eventSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierService.class, "metierService");
+		dataEventService = getBean(DataEventService.class, "dataEventService");
 		eventSender.count = 0;
 
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, indexer, metierService, tiersDAO, null, false);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, null, false);
 	}
 
 	@Override
