@@ -6,23 +6,30 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdressesBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour l'obtention de nationalité.
  *
  * @author <a href="mailto:ludovic.bertin@oosphere.com">Ludovic BERTIN</a>
  */
-public class ObtentionNationaliteAdapter extends EvenementCivilInterneAvecAdressesBase implements ObtentionNationalite {
+public class ObtentionNationaliteAdapter extends ObtentionPermisCOuNationaliteSuisseAdapter {
 
 	/**
 	 * LOGGER log4J
@@ -34,11 +41,8 @@ public class ObtentionNationaliteAdapter extends EvenementCivilInterneAvecAdress
 	 */
 	private Integer numeroOfsEtenduCommunePrincipale;
 
-	private ObtentionNationaliteHandler handler;
-
-	protected ObtentionNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, ObtentionNationaliteHandler handler) throws EvenementCivilInterneException {
+	protected ObtentionNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
 
 		try {
 			// on récupère la commune de l'adresse principale en gérant les fractions
@@ -50,7 +54,17 @@ public class ObtentionNationaliteAdapter extends EvenementCivilInterneAvecAdress
 			throw new EvenementCivilInterneException(e);
 		}
 	}
-	
+
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected ObtentionNationaliteAdapter(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsEtenduCommunePrincipale, boolean nationaliteSuisse,
+	                                   EvenementCivilContext context) {
+		super(individu, conjoint, nationaliteSuisse ? TypeEvenementCivil.NATIONALITE_SUISSE : TypeEvenementCivil.NATIONALITE_NON_SUISSE, date, numeroOfsCommuneAnnonce, null, null, null, context);
+		this.numeroOfsEtenduCommunePrincipale = numeroOfsEtenduCommunePrincipale;
+	}
+
 	public Integer getNumeroOfsEtenduCommunePrincipale() {
 		return numeroOfsEtenduCommunePrincipale;
 	}
@@ -63,16 +77,52 @@ public class ObtentionNationaliteAdapter extends EvenementCivilInterneAvecAdress
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
+		// Obsolète dans cet handler, l'obtention de nationalité est un événement ne concernant qu'un seul individu.
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
+
+		if (TypeEvenementCivil.NATIONALITE_SUISSE == getType()) {
+			super.validateSpecific(erreurs, warnings);
+		}
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+
+		// quelque soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
+		// il faut mettre à jour la nationalité chez nous
+		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		if (pp != null && !pp.isHabitantVD()) {
+			if (getType() == TypeEvenementCivil.NATIONALITE_SUISSE) {
+				pp.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
+			}
+			else {
+				for (Nationalite nationalite : getIndividu().getNationalites()) {
+					if (getDate().equals(nationalite.getDateDebutValidite())) {
+						pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
+						Audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
+								getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), nationalite.getPays().getNomMinuscule()));
+						break;
+					}
+				}
+			}
+		}
+
+		switch (getType()) {
+			case NATIONALITE_SUISSE:
+				return super.handle(warnings);
+
+			case NATIONALITE_NON_SUISSE:
+				/* Seul l'obtention de nationalité suisse est traitée */
+				Audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");
+				break;
+
+			default:
+				Assert.fail();
+		}
+
+		return null;
 	}
 }

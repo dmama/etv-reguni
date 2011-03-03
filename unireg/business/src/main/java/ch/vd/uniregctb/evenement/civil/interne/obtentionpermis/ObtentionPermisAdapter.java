@@ -7,18 +7,23 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdressesBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.CategorieEtranger;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -26,26 +31,20 @@ import ch.vd.uniregctb.type.TypePermis;
  *
  * @author <a href="mailto:ludovic.bertin@oosphere.com">Ludovic BERTIN</a>
  */
-public class ObtentionPermisAdapter extends EvenementCivilInterneAvecAdressesBase implements ObtentionPermis {
+public class ObtentionPermisAdapter extends ObtentionPermisCOuNationaliteSuisseAdapter {
 
 	/** LOGGER log4J */
 	protected static Logger LOGGER = Logger.getLogger(ObtentionPermisAdapter.class);
-
-	/**
-	 * Le permis obtenu.
-	 */
-	private Permis permis;
 
 	/**
 	 * le numero OFS étendu de la commune vaudoise de l'adresse principale
 	 */
 	private Integer numeroOfsEtenduCommunePrincipale;
 
-	private ObtentionPermisHandler handler;
+	private TypePermis typePermis;
 
-	protected ObtentionPermisAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, ObtentionPermisHandler handler) throws EvenementCivilInterneException {
+	protected ObtentionPermisAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
 
 		try {
 			// on récupère le permis (= à la date d'événement)
@@ -56,13 +55,13 @@ public class ObtentionPermisAdapter extends EvenementCivilInterneAvecAdressesBas
 			}
 			for (Permis permis : listePermis) {
 				if (evenement.getDateEvenement().equals(permis.getDateDebutValidite())) {
-					this.permis = permis;
+					this.typePermis = permis.getTypePermis();
 					break;
 				}
 			}
 
 			// si le permis n'a pas été trouvé, on lance une exception
-			if ( this.permis == null ) {
+			if ( this.typePermis == null ) {
 				throw new EvenementCivilInterneException("Aucun permis trouvé dans le registre civil");
 			}
 		}
@@ -91,12 +90,46 @@ public class ObtentionPermisAdapter extends EvenementCivilInterneAvecAdressesBas
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see ch.vd.uniregctb.evenement.obtentionpermis.ObtentionPermis#getTypePermis()
+	/**
+	 * Pour le testing uniquement.
 	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected ObtentionPermisAdapter(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsEtenduCommunePrincipale,
+	                              TypePermis typePermis, EvenementCivilContext context) {
+		super(individu, conjoint, TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, date, numeroOfsCommuneAnnonce, null, null, null, context);
+		this.numeroOfsEtenduCommunePrincipale = numeroOfsEtenduCommunePrincipale;
+		this.typePermis = typePermis;
+	}
+
+	@Override
+	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		// Obsolète dans cet handler, l'obtention de permis est un événement ne concernant qu'un seul individu.
+	}
+
+	@Override
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+
+		// quelque soit le permis, si l'individu correspond à un non-habitant (= ancien habitant)
+		// il faut mettre à jour le permis chez nous
+		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		if (pp != null && !pp.isHabitantVD()) {
+			pp.setCategorieEtranger(CategorieEtranger.enumToCategorie(getTypePermis()));
+			Audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant le permis '%s'",
+					getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), getTypePermis().name()));
+		}
+
+		/* Seul le permis C a une influence */
+		if (getTypePermis() != TypePermis.ETABLISSEMENT) {
+			Audit.info(getNumeroEvenement(), "Permis non C : ignoré fiscalement");
+			return null;
+		}
+		else {
+			return super.handle(warnings);
+		}
+	}
+
 	public TypePermis getTypePermis() {
-		return permis.getTypePermis();
+		return typePermis;
 	}
 
 	public Integer getNumeroOfsEtenduCommunePrincipale() {
@@ -107,20 +140,5 @@ public class ObtentionPermisAdapter extends EvenementCivilInterneAvecAdressesBas
 	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 		super.fillRequiredParts(parts);
 		parts.add(AttributeIndividu.PERMIS);
-	}
-
-	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
-	}
-
-	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
-	}
-
-	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
 	}
 }

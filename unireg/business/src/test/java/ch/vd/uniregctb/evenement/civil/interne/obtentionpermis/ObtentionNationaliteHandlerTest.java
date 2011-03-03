@@ -86,7 +86,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
+		ObtentionNationaliteAdapter obtentionNationalite = createValidObtentionNationalite(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -124,7 +124,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité non suisse de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-		ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
+		ObtentionNationaliteAdapter obtentionNationalite = createValidObtentionNationaliteNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -169,7 +169,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 			public Object execute(TransactionStatus status) throws Exception {
 
 				Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, 2007);
-				ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
+				ObtentionNationaliteAdapter obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
 
 				obtentionNationalite.checkCompleteness(erreurs, warnings);
 				obtentionNationalite.validate(erreurs, warnings);
@@ -232,7 +232,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, 2007);
-		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieADeux, DATE_OBTENTION_NATIONALITE, 5586);
+		ObtentionNationaliteAdapter obtentionNationalite = createValidObtentionNationalite(marieADeux, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -298,30 +298,12 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		Assert.assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 	}
 
-	/**
-	 *
-	 * @param numeroOfsCommunePrincipale
-	 * @param individu
-	 * @param dateobtentionNationalite
-	 * @return
-	 */
-	private ObtentionNationalite createValidObtentionNationalite(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
-		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, true);
-		obtentionNationalite.setHandler(evenementCivilHandler);
-		return obtentionNationalite;
+	private ObtentionNationaliteAdapter createValidObtentionNationalite(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
+		return new ObtentionNationaliteAdapter(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, true, context);
 	}
 
-	/**
-	 *
-	 * @param numeroOfsCommunePrincipale
-	 * @param individu
-	 * @param dateobtentionNationalite
-	 * @return
-	 */
-	private ObtentionNationalite createValidObtentionNationaliteNonSuisse(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
-		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, false);
-		obtentionNationalite.setHandler(evenementCivilHandler);
-		return obtentionNationalite;
+	private ObtentionNationaliteAdapter createValidObtentionNationaliteNonSuisse(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
+		return new ObtentionNationaliteAdapter(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, false, context);
 	}
 
 	@Test
@@ -353,7 +335,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-				final ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
+				final ObtentionNationaliteAdapter obtentionNationalite = createValidObtentionNationalite(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -413,7 +395,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007, AttributeIndividu.NATIONALITE);
-				final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
+				final ObtentionNationaliteAdapter obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

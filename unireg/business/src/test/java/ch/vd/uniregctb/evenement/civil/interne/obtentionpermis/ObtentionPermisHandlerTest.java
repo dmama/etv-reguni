@@ -80,7 +80,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(celibataire, DATE_OBTENTION_PERMIS, 5586);
+		ObtentionPermisAdapter obtentionPermis = createValidObtentionPermis(celibataire, DATE_OBTENTION_PERMIS, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -120,7 +120,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-		ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(celibataire, DATE_OBTENTION_PERMIS, 4848, TypePermis.COURTE_DUREE);
+		ObtentionPermisAdapter obtentionPermis = createValidObtentionPermisNonC(celibataire, DATE_OBTENTION_PERMIS, 4848, TypePermis.COURTE_DUREE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -160,7 +160,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, 2007);
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieSeul, DATE_OBTENTION_PERMIS, 5586);
+		ObtentionPermisAdapter obtentionPermis = createValidObtentionPermis(marieSeul, DATE_OBTENTION_PERMIS, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -225,7 +225,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, 2007);
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieADeux, DATE_OBTENTION_PERMIS, 5586);
+		ObtentionPermisAdapter obtentionPermis = createValidObtentionPermis(marieADeux, DATE_OBTENTION_PERMIS, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -294,32 +294,12 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
-	/**
-	 *
-	 * @param individu
-	 * @param dateObtentionPermis
-	 * @param noOfsCommunePrincipale
-	 * @return
-	 */
-	private ObtentionPermis createValidObtentionPermis(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale) {
-
-		final MockObtentionPermis obtentionPermis = new MockObtentionPermis(individu, null, dateObtentionPermis, 5586, noOfsCommunePrincipale, TypePermis.ETABLISSEMENT);
-		obtentionPermis.setHandler(evenementCivilHandler);
-		return obtentionPermis;
+	private ObtentionPermisAdapter createValidObtentionPermis(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale) {
+		return new ObtentionPermisAdapter(individu, null, dateObtentionPermis, 5586, noOfsCommunePrincipale, TypePermis.ETABLISSEMENT, context);
 	}
 
-	/**
-	 *
-	 * @param individu
-	 * @param dateObtentionPermis
-	 * @param noOfsCommunePrincipale
-	 * @param typePermis
-	 * @return
-	 */
-	private ObtentionPermis createValidObtentionPermisNonC(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale, TypePermis typePermis) {
-		final MockObtentionPermis obtentionPermis = new MockObtentionPermis(individu, null, dateObtentionPermis, 4848, noOfsCommunePrincipale, typePermis);
-		obtentionPermis.setHandler(evenementCivilHandler);
-		return obtentionPermis;
+	private ObtentionPermisAdapter createValidObtentionPermisNonC(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale, TypePermis typePermis) {
+		return new ObtentionPermisAdapter(individu, null, dateObtentionPermis, 4848, noOfsCommunePrincipale, typePermis, context);
 	}
 
 	@Test
@@ -353,7 +333,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS());
+				final ObtentionPermisAdapter obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS());
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -415,7 +395,7 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.ANNUEL);
+				final ObtentionPermisAdapter obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.ANNUEL);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

@@ -61,7 +61,7 @@
 	<bean id="mariageHandler" class="ch.vd.uniregctb.evenement.civil.interne.mariage.MariageHandler" parent="evenementHandler" />
 	<bean id="naissanceHandler" class="ch.vd.uniregctb.evenement.civil.interne.naissance.NaissanceHandler" parent="evenementHandler" />
 	
-	<bean id="obtentionPermisCOuNationaliteSuisseHandler" class="ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisCOuNationaliteSuisseHandler" parent="evenementHandler" abstract="true">
+	<bean id="obtentionPermisCOuNationaliteSuisseHandler" class="ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisCOuNationaliteSuisseAdapter" parent="evenementHandler" abstract="true">
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 	<bean id="obtentionPermisHandler" class="ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisHandler" parent="obtentionPermisCOuNationaliteSuisseHandler" />

@@ -44,7 +44,7 @@ public class ObtentionNationaliteAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_SUISSE);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.NATIONALITE_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_SUISSE , habitant, 0L, null, 1234, null);
-		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter(evenement, context, null);
+		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter(evenement, context);
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class ObtentionNationaliteAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_FRANCE);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.NATIONALITE_NON_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_FRANCE , habitant, 0L, null, 1234, null);
-		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter(evenement, context, null);
+		ObtentionNationaliteAdapter adapter = new ObtentionNationaliteAdapter(evenement, context);
 	}
 
 	// Prend le mock infrastructure par défaut

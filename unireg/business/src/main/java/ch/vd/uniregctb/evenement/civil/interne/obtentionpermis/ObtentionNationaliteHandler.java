@@ -4,10 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
@@ -15,8 +13,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -34,7 +30,7 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	//private static final Logger LOGGER =  Logger.getLogger(ObtentionNationaliteHandler.class);
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// Obsolète dans cet handler, l'obtention de nationalité est un événement ne concernant qu'un seul individu.
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -42,12 +38,7 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	 */
 	@Override
 	public void validateSpecific(EvenementCivilInterne evenementCivil, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-
-		final ObtentionNationalite obtentionNationalite = (ObtentionNationalite) evenementCivil;
-
-		if (TypeEvenementCivil.NATIONALITE_SUISSE == obtentionNationalite.getType()) {
-			super.validateSpecific(obtentionNationalite, erreurs, warnings);
-		}
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -56,41 +47,7 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	 */
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		final ObtentionNationalite obtentionNationalite = (ObtentionNationalite) evenement;
-
-		// quelque soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
-		// il faut mettre à jour la nationalité chez nous
-		final PersonnePhysique pp = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());
-		if (pp != null && !pp.isHabitantVD()) {
-			if (obtentionNationalite.getType() == TypeEvenementCivil.NATIONALITE_SUISSE) {
-				pp.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
-			}
-			else {
-				for (Nationalite nationalite : evenement.getIndividu().getNationalites()) {
-					if (evenement.getDate().equals(nationalite.getDateDebutValidite())) {
-						pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
-						Audit.info(evenement.getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
-																				evenement.getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), nationalite.getPays().getNomMinuscule()));
-						break;
-					}
-				}
-			}
-		}
-
-		switch (obtentionNationalite.getType()) {
-			case NATIONALITE_SUISSE:
-				return super.handle(evenement, warnings);
-
-			case NATIONALITE_NON_SUISSE:
-				/* Seul l'obtention de nationalité suisse est traitée */
-				Audit.info(obtentionNationalite.getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");
-				break;
-
-			default:
-				Assert.fail();
-		}
-
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -103,7 +60,7 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new ObtentionNationaliteAdapter(event, context, this);
+		return new ObtentionNationaliteAdapter(event, context);
 	}
 
 }

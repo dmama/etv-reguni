@@ -427,4 +427,29 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 	protected void closeForFiscalPrincipal(Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) {
 		context.getTiersService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 	}
+
+	/**
+	 * Ouvre un nouveau for fiscal principal.
+	 * <p>
+	 * Cette méthode est une version spécialisée pour les événements fiscaux qui assume que:
+	 * <ul>
+	 * <li>le type d'autorité fiscale est toujours une commune vaudoise</li>
+	 * <li>le motif de rattachement est toujours domicile/séjour</li>
+	 * <li>le mode d'imposition est toujours ordinaire</li>
+	 * </ul>
+	 *
+	 * @param contribuable
+	 *            le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture
+	 *            la date à laquelle le nouveau for est ouvert
+	 * @param numeroOfsAutoriteFiscale
+	 *            le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param changeHabitantFlag
+	 * @return le nouveau for fiscal principal
+	 */
+	protected ForFiscalPrincipal openForFiscalPrincipalDomicileVaudoisOrdinaire(Contribuable contribuable, final RegDate dateOuverture,
+			int numeroOfsAutoriteFiscale, MotifFor motifOuverture, boolean changeHabitantFlag) {
+		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale,
+				MotifRattachement.DOMICILE, motifOuverture, ModeImposition.ORDINAIRE, changeHabitantFlag);
+	}
 }
