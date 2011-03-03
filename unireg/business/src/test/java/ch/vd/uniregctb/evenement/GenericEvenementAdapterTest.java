@@ -69,7 +69,7 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 		 * Création et initialisation de l'adapter
 		 */
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, null, null, false);
-		final EvenementCivilInterneBase adapter = new ArriveeAdapter(evenementArriveeCouple, context, null);
+		final EvenementCivilInterneBase adapter = new ArriveeAdapter(evenementArriveeCouple, context);
 
 		/*
 		 * Test de la méthode init dans ce cas

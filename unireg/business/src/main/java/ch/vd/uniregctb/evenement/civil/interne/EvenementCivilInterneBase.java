@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -16,15 +17,25 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Implémentation des événement civils en provenance du host.
  */
 public abstract class EvenementCivilInterneBase implements EvenementCivilInterne {
+
+	public static long NO_OFS_FRACTION = 0;
+	public static long NO_OFS_FRACTION_SENTIER = 8000;
+	public static long NO_OFS_L_ABBAYE = 5871;
+	public static long NO_OFS_LE_CHENIT = 5872;
 
 	// L'individu principal.
 	private Long noIndividu;
@@ -126,6 +137,7 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 
 		this.type = typeEvenementCivil;
 		this.date = dateEvenement;
+		this.numeroEvenement = 0L;
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 	}
 
@@ -147,6 +159,7 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 
 		this.type = typeEvenementCivil;
 		this.date = dateEvenement;
+		this.numeroEvenement = 0L;
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 	}
 
@@ -346,5 +359,72 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 				fermeAdresseTiersTemporaire(pp, date);
 			}
 		}
+	}
+
+	/**
+	 * Ouvre un nouveau for fiscal principal.
+	 *
+	 * @param contribuable
+	 *            le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture
+	 *            la date à laquelle le nouveau for est ouvert
+	 * @param numeroOfsAutoriteFiscale
+	 *            le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param changeHabitantFlag
+	 * @return le nouveau for fiscal principal
+	 */
+	protected ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
+			TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
+			MotifFor motifOuverture, ModeImposition modeImposition, boolean changeHabitantFlag) {
+		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+		return getService().openForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale,
+				typeAutoriteFiscale, modeImposition, motifOuverture, changeHabitantFlag);
+	}
+
+	/**
+	 * Met-à-jour (= ferme l'ancien et ouvre un nouveau) le for fiscal principal d'un contribuable lors d'un changement de commune. Aucun changement n'est enregistré si la nouvelle commune n'est pas
+	 * différente de la commune actuelle.
+	 *
+	 * @param contribuable             le contribuable en question.
+	 * @param dateChangement           la date de début de validité du nouveau for.
+	 * @param numeroOfsAutoriteFiscale le numéro OFS étendue de l'autorité fiscale du nouveau for.
+	 * @param motifFermetureOuverture  le motif de fermeture du for existant et le motif d'ouverture du nouveau for
+	 * @param typeAutorite             le type d'autorité fiscale
+	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.
+	 * @param changeHabitantFlag
+	 * @return le nouveau for fiscal principal
+	 */
+	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, int numeroOfsAutoriteFiscale, MotifFor motifFermetureOuverture,
+	                                                      TypeAutoriteFiscale typeAutorite, ModeImposition modeImposition, boolean changeHabitantFlag) {
+
+		ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
+		Assert.notNull(forFiscalPrincipal);
+		final Integer numeroOfsActuel = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
+
+		// On ne ferme et ouvre les fors que si nécessaire
+		if (numeroOfsActuel == null || !numeroOfsActuel.equals(numeroOfsAutoriteFiscale)) {
+			closeForFiscalPrincipal(contribuable, dateChangement.getOneDayBefore(), motifFermetureOuverture);
+			if (modeImposition == null) {
+				modeImposition = forFiscalPrincipal.getModeImposition();
+			}
+			forFiscalPrincipal = openForFiscalPrincipal(contribuable, dateChangement, typeAutorite, numeroOfsAutoriteFiscale, forFiscalPrincipal.getMotifRattachement(), motifFermetureOuverture,
+					modeImposition, changeHabitantFlag);
+		}
+		return forFiscalPrincipal;
+	}
+
+	/**
+	 * Ferme le for fiscal principal d'un contribuable.
+	 * <p>
+	 * Note: cette méthode est définie à ce niveau par soucis de symétrie avec les méthodes openForFiscalPrincipal et
+	 * updateForFiscalPrincipal.
+	 *
+	 * @param contribuable
+	 *            le contribuable concerné
+	 * @param dateFermeture
+	 *            la date de fermeture du for
+	 */
+	protected void closeForFiscalPrincipal(Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) {
+		context.getTiersService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 	}
 }

@@ -72,7 +72,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		// 1er test : individu seul
 		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
-		MockArrivee arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
+		ArriveeAdapter arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
 		arrivee.checkCompleteness(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
 
@@ -95,7 +95,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
 		// 1er test : événement avec une date dans le futur
-		MockArrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), DATE_FUTURE);
+		ArriveeAdapter arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), DATE_FUTURE);
 		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs, "Une date future pour l'événement aurait dû renvoyer une erreur");
 
@@ -116,9 +116,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
 
-		arrivee = new MockArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
-				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFSEtendu(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse);
-		arrivee.setHandler(evenementCivilHandler);
+		arrivee = new ArriveeAdapter(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
+				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFSEtendu(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs,
 				"L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
@@ -156,8 +155,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		inconnu.setDateNaissance(RegDate.get(1953, 11, 2));
 		inconnu.setNoTechnique(NUMERO_INDIVIDU_INCONNU);
 		final MockCommune commune = MockCommune.Lausanne;
-		MockArrivee arrivee = new MockArrivee(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, (Adresse)null);
-		arrivee.setHandler(evenementCivilHandler);
+		ArriveeAdapter arrivee = new ArriveeAdapter(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, (Adresse)null, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -169,8 +167,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		MockIndividu individu = new MockIndividu();
 		individu.setConjoint(inconnu);
 		individu.setDateNaissance(RegDate.get(1953, 11, 2));
-		arrivee = new MockArrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, (Adresse)null);
-		arrivee.setHandler(evenementCivilHandler);
+		arrivee = new ArriveeAdapter(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, (Adresse)null, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -182,7 +179,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
-		Arrivee arrivee = createValidArrivee(individu, DATE_VALIDE);
+		ArriveeAdapter arrivee = createValidArrivee(individu, DATE_VALIDE);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -216,7 +213,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tiers).size());
 	}
 
-	private MockArrivee createValidArrivee(Individu individu, RegDate dateArrivee) {
+	private ArriveeAdapter createValidArrivee(Individu individu, RegDate dateArrivee) {
 
 		// Anciennes adresses
 		/*MockAdresse ancienneAdresse = new MockAdresse();
@@ -230,26 +227,18 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		return createValidArrivee(individu, commune, dateArrivee);
 	}
 
-	private MockArrivee createValidArrivee(Individu individu, MockCommune commune, RegDate dateArrivee) {
+	private ArriveeAdapter createValidArrivee(Individu individu, MockCommune commune, RegDate dateArrivee) {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-
-		final MockArrivee arrivee = new MockArrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdresse);
-		arrivee.setHandler(evenementCivilHandler);
-
-		return arrivee;
+		return new ArriveeAdapter(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdresse, context);
 	}
 
-	private MockArrivee createValidArrivee(Individu individu, MockCommune communeAnnonce, MockCommune nouvelleCommune) {
+	private ArriveeAdapter createValidArrivee(Individu individu, MockCommune communeAnnonce, MockCommune nouvelleCommune) {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(DATE_VALIDE);
 
-
-		final MockArrivee arrivee = new MockArrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, communeAnnonce.getNoOFSEtendu(), null, nouvelleCommune, null, nouvelleAdresse);
-		arrivee.setHandler(evenementCivilHandler);
-
-		return arrivee;
+		return new ArriveeAdapter(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, communeAnnonce.getNoOFSEtendu(), null, nouvelleCommune, null, nouvelleAdresse, context);
 	}
 
 	/**
@@ -258,8 +247,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testFindNonHabitants() throws Exception {
 
-		final ArriveeHandler handler = new ArriveeHandler();
-		handler.setService(tiersService);
+		final ArriveeAdapter arrivee = new ArriveeAdapter(null, null, null, null, null, null, null, null, null, context);
 
 		class Ids {
 			Long jeanNomPrenom;
@@ -355,21 +343,21 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
 		// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
 		{
-			final List<PersonnePhysique> list = handler.findNonHabitants(civil.jean, true);
+			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.jean, true);
 			assertEquals(4, list.size());
 			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti);
 		}
 
 		// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
 		{
-			final List<PersonnePhysique> list = handler.findNonHabitants(civil.jacques, true);
+			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.jacques, true);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
 		}
 
 		// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
 		{
-			final List<PersonnePhysique> list = handler.findNonHabitants(civil.roger, true);
+			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.roger, true);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
 		}
@@ -377,7 +365,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
 		// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
 		{
-			final List<PersonnePhysique> list = handler.findNonHabitants(civil.cedric, true);
+			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.cedric, true);
 			assertEmpty(list);
 		}
 	}

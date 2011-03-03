@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne;
 
 import java.util.Set;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -9,6 +10,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public abstract class EvenementCivilInterneAvecAdressesBase extends EvenementCivilInterneBase implements EvenementCivilInterneAvecAdresses {
 
@@ -43,6 +46,30 @@ public abstract class EvenementCivilInterneAvecAdressesBase extends EvenementCiv
 		catch (DonneesCivilesException e) {
 			throw new EvenementCivilInterneException(e);
 		}
+	}
+
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected EvenementCivilInterneAvecAdressesBase(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
+	                                                Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
+		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		this.adressePrincipale = adressePrincipale;
+		this.adresseSecondaire = adresseSecondaire;
+		this.adresseCourrier = adresseCourrier;
+	}
+
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected EvenementCivilInterneAvecAdressesBase(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
+	                                                Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
+		super(individu, principalPPId, conjoint, conjointPPId, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		this.adressePrincipale = adressePrincipale;
+		this.adresseSecondaire = adresseSecondaire;
+		this.adresseCourrier = adresseCourrier;
 	}
 
 	@Override
