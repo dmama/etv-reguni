@@ -4,9 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
@@ -27,28 +26,16 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class FinNationaliteHandler extends EvenementCivilHandlerBase {
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// rien à faire
+		throw new NotImplementedException();
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		FinNationalite finNationalite = (FinNationalite) target;
-		switch (finNationalite.getType()) {
-		case FIN_NATIONALITE_SUISSE:
-			Audit.info(finNationalite.getNumeroEvenement(), "Nationalité suisse : passage en traitement manuel");
-			erreurs.add(new EvenementCivilExterneErreur("La fin de la nationalité suisse doit être traitée manuellement"));
-			break;
-		case FIN_NATIONALITE_NON_SUISSE:
-			Audit.info(finNationalite.getNumeroEvenement(), "Nationalité non suisse : ignorée");
-			break;
-		default:
-			Assert.fail();
-		}
+		throw new NotImplementedException();
 	}
 
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		// rien à faire
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -61,6 +48,6 @@ public class FinNationaliteHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new FinNationaliteAdapter(event, context, this);
+		return new FinNationaliteAdapter(event, context);
 	}
 }

@@ -96,7 +96,7 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
-		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter(evenement, context, null);
+		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter(evenement, context);
 		assertEquals(TypePermis.ETABLISSEMENT, adapter.getTypePermis());
 	}
 
@@ -111,7 +111,7 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU_2, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
-		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter(evenement, context, null);
+		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter(evenement, context);
 		assertEquals(TypePermis.FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
 	}
 

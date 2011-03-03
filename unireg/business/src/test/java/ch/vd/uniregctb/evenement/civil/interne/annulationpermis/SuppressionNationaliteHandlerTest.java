@@ -87,7 +87,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-		SuppressionNationalite annulationNationalite = createValidAnnulationNationalite(celibataire, DATE_OBTENTION_NATIONALITE);
+		SuppressionNationaliteAdapter annulationNationalite = createValidAnnulationNationalite(celibataire, DATE_OBTENTION_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -117,7 +117,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité non suisse de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-		SuppressionNationalite annulationNationalite = createValidAnnulationNationatieNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE);
+		SuppressionNationaliteAdapter annulationNationalite = createValidAnnulationNationatieNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -151,7 +151,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
-		SuppressionNationalite annulationNationalite = createValidAnnulationNationalite(marieSeul, DATE_OBTENTION_NATIONALITE);
+		SuppressionNationaliteAdapter annulationNationalite = createValidAnnulationNationalite(marieSeul, DATE_OBTENTION_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -207,7 +207,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2007);
-		SuppressionNationalite annulationNationalite = createValidAnnulationNationalite(marieADeux, DATE_OBTENTION_NATIONALITE);
+		SuppressionNationaliteAdapter annulationNationalite = createValidAnnulationNationalite(marieADeux, DATE_OBTENTION_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -270,17 +270,11 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 				forCommun.getMotifFermeture());
 	}
 
-	private SuppressionNationalite createValidAnnulationNationalite(Individu individu, RegDate dateObtentionNationalite) {
-
-		MockSuppressionNationalite annulationNationalite = new MockSuppressionNationalite(individu, null, dateObtentionNationalite, 5586, true);
-		annulationNationalite.setHandler(evenementCivilHandler);
-		return annulationNationalite;
+	private SuppressionNationaliteAdapter createValidAnnulationNationalite(Individu individu, RegDate dateObtentionNationalite) {
+		return new SuppressionNationaliteAdapter(individu, null, dateObtentionNationalite, 5586, true, context);
 	}
 
-	private SuppressionNationalite createValidAnnulationNationatieNonSuisse(Individu individu, RegDate dateObtentionNationalite) {
-		MockSuppressionNationalite annulationNationalite = new MockSuppressionNationalite(individu, null, dateObtentionNationalite, 5586, false);
-		annulationNationalite.setHandler(evenementCivilHandler);
-		return annulationNationalite;
+	private SuppressionNationaliteAdapter createValidAnnulationNationatieNonSuisse(Individu individu, RegDate dateObtentionNationalite) {
+		return new SuppressionNationaliteAdapter(individu, null, dateObtentionNationalite, 5586, false, context);
 	}
-
 }

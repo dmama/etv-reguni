@@ -76,7 +76,7 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 		LOGGER.debug("Test de traitement d'un événement d'annulation de levée de tutelle avec un tuteur.");
 
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2008);
-		AnnulationLeveeTutelle annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
+		AnnulationLeveeTutelleAdapter annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -118,7 +118,7 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 		LOGGER.debug("Test de traitement d'un événement d'annulation de levée de tutelle avec des données erronées.");
 
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_ERREUR, 2008);
-		AnnulationLeveeTutelle annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
+		AnnulationLeveeTutelleAdapter annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -139,9 +139,7 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 		assertTrue("Une erreur aurait dû se produire", errorFound);
 	}
 
-	private MockAnnulationLeveeTutelle createAnnulationLeveeTutelle(Individu pupille) {
-		MockAnnulationLeveeTutelle annulationLeveeTutelle = new MockAnnulationLeveeTutelle(pupille, null, DATE_ANNULATION_TUTELLE, 4848);
-		annulationLeveeTutelle.setHandler(evenementCivilHandler);
-		return annulationLeveeTutelle;
+	private AnnulationLeveeTutelleAdapter createAnnulationLeveeTutelle(Individu pupille) {
+		return new AnnulationLeveeTutelleAdapter(pupille, null, DATE_ANNULATION_TUTELLE, 4848, context);
 	}
 }

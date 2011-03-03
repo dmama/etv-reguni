@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class CorrectionDateEtatCivilAdapter extends EvenementCivilInterneBase implements CorrectionDateEtatCivil {
+public class CorrectionDateEtatCivilAdapter extends EvenementCivilInterneBase {
 
 	protected CorrectionDateEtatCivilAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
@@ -23,10 +23,12 @@ public class CorrectionDateEtatCivilAdapter extends EvenementCivilInterneBase im
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		// TODO (PBO) CorrectionDateEtatCivilHandler.validateSpecific
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+		// TODO (PBO) CorrectionDateEtatCivilHandler.handle
 		throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");
 	}
 }

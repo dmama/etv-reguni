@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
@@ -14,7 +15,6 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypePermis;
 
 /**
  * Règles métiers permettant de traiter les événements d'annulation de permis C.
@@ -25,33 +25,22 @@ import ch.vd.uniregctb.type.TypePermis;
 public class AnnulationPermisHandler extends AnnulationPermisCOuNationaliteSuisseHandler {
 
 	public void checkCompleteness(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// rien à faire
+		throw new NotImplementedException();
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// rien à faire
+		throw new NotImplementedException();
 	}
 	
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.evenement.annulationpermis.AnnulationPermisCOuNationaliteSuisseHandler#handle(ch.vd.uniregctb.evenement.EvenementCivilInterne, java.util.List)
-	 */
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		AnnulationPermis annulationPermis = (AnnulationPermis) evenement;
-		if (isAnnulationPermisC(annulationPermis)) {
-			return super.handle(annulationPermis, warnings);
-		}
-		return null;
+		throw new NotImplementedException();
 	}
 
-	private boolean isAnnulationPermisC(AnnulationPermis annulationPermis) {
-		return annulationPermis.getTypePermis() == TypePermis.ETABLISSEMENT;
-	}
-	
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new AnnulationPermisAdapter(event, context, this);
+		return new AnnulationPermisAdapter(event, context);
 	}
 
 	@Override

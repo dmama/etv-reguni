@@ -2,14 +2,19 @@ package ch.vd.uniregctb.evenement.civil.interne.fin.nationalite;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour la fin obtention d'une nationalité.
@@ -17,27 +22,43 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
  * @author Pavel BLANCO
  *
  */
-public class FinNationaliteAdapter extends EvenementCivilInterneBase implements FinNationalite {
+public class FinNationaliteAdapter extends EvenementCivilInterneBase {
 
-	private FinNationaliteHandler handler;
-
-	protected FinNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, FinNationaliteHandler handler) throws EvenementCivilInterneException {
+	protected FinNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
+	}
+
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected FinNationaliteAdapter(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, boolean nationaliteSuisse, EvenementCivilContext context) {
+		super(individu, conjoint, nationaliteSuisse ? TypeEvenementCivil.FIN_NATIONALITE_SUISSE : TypeEvenementCivil.FIN_NATIONALITE_NON_SUISSE, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
+		// rien à faire
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
+		switch (getType()) {
+		case FIN_NATIONALITE_SUISSE:
+			Audit.info(getNumeroEvenement(), "Nationalité suisse : passage en traitement manuel");
+			erreurs.add(new EvenementCivilExterneErreur("La fin de la nationalité suisse doit être traitée manuellement"));
+			break;
+		case FIN_NATIONALITE_NON_SUISSE:
+			Audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée");
+			break;
+		default:
+			Assert.fail();
+		}
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+		// rien à faire
+		return null;
 	}
 }

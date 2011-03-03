@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
@@ -19,16 +20,16 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class CorrectionDateEtatCivilHandler extends EvenementCivilHandlerBase {
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		throw new NotImplementedException();
 	}
 	
 	@Override
 	protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// TODO (PBO) CorrectionDateEtatCivilHandler.validateSpecific
+		throw new NotImplementedException();
 	}
 
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		// TODO (PBO) CorrectionDateEtatCivilHandler.handle
-		throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");
+		throw new NotImplementedException();
 	}
 
 	@Override

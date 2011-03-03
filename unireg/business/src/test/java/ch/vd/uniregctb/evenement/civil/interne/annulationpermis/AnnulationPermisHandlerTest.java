@@ -114,7 +114,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis C de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-		AnnulationPermis annulationPermis = createValidAnnulationPermis(celibataire, DATE_OBTENTION_PERMIS);
+		AnnulationPermisAdapter annulationPermis = createValidAnnulationPermis(celibataire, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -131,7 +131,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis non C de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-		AnnulationPermis annulationPermis = createValidAnnulationPermisNonC(celibataire, DATE_OBTENTION_PERMIS);
+		AnnulationPermisAdapter annulationPermis = createValidAnnulationPermisNonC(celibataire, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -163,7 +163,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
-		AnnulationPermis annulationPermis = createValidAnnulationPermisNonC(marieSeul, DATE_OBTENTION_PERMIS);
+		AnnulationPermisAdapter annulationPermis = createValidAnnulationPermisNonC(marieSeul, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -219,7 +219,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié à deux.");
 		Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
-		AnnulationPermis annulationPermis = createValidAnnulationPermis(marie, DATE_OBTENTION_PERMIS);
+		AnnulationPermisAdapter annulationPermis = createValidAnnulationPermis(marie, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -284,15 +284,11 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 				forCommun.getModeImposition(), ModeImposition.SOURCE);
 	}
 
-	private MockAnnulationPermis createValidAnnulationPermis(Individu individu, RegDate dateObtentionPermis) {
-		MockAnnulationPermis annulationPermis = new MockAnnulationPermis(individu, null, dateObtentionPermis, 5586, TypePermis.ETABLISSEMENT);
-		annulationPermis.setHandler(evenementCivilHandler);
-		return annulationPermis;
+	private AnnulationPermisAdapter createValidAnnulationPermis(Individu individu, RegDate dateObtentionPermis) {
+		return new AnnulationPermisAdapter(individu, null, dateObtentionPermis, 5586, TypePermis.ETABLISSEMENT, context);
 	}
 
-	private MockAnnulationPermis createValidAnnulationPermisNonC(Individu individu, RegDate dateObtentionPermis) {
-		MockAnnulationPermis annulationPermis = new MockAnnulationPermis(individu, null, dateObtentionPermis, 5586, TypePermis.COURTE_DUREE);
-		annulationPermis.setHandler(evenementCivilHandler);
-		return annulationPermis;
+	private AnnulationPermisAdapter createValidAnnulationPermisNonC(Individu individu, RegDate dateObtentionPermis) {
+		return new AnnulationPermisAdapter(individu, null, dateObtentionPermis, 5586, TypePermis.COURTE_DUREE, context);
 	}
 }

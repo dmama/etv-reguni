@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
@@ -25,12 +25,12 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class SuppressionNationaliteHandler extends AnnulationPermisCOuNationaliteSuisseHandler {
 
 	public void checkCompleteness(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// rien à faire
+		throw new NotImplementedException();
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// rien à faire
+		throw new NotImplementedException();
 	}
 
 	/* (non-Javadoc)
@@ -38,24 +38,12 @@ public class SuppressionNationaliteHandler extends AnnulationPermisCOuNationalit
 	 */
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		
-		final SuppressionNationalite suppressionNationalite = (SuppressionNationalite) evenement;
-		switch (suppressionNationalite.getType()) {
-		case SUP_NATIONALITE_SUISSE:
-			return super.handle(suppressionNationalite, warnings);
-
-		case SUP_NATIONALITE_NON_SUISSE:
-			/* Seul l'obtention de nationalité suisse est traitée */
-			break;
-		default:
-			Assert.fail();
-		}
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new SuppressionNationaliteAdapter(event, context, this);
+		return new SuppressionNationaliteAdapter(event, context);
 	}
 
 	@Override
@@ -65,5 +53,4 @@ public class SuppressionNationaliteHandler extends AnnulationPermisCOuNationalit
 		types.add(TypeEvenementCivil.SUP_NATIONALITE_NON_SUISSE);
 		return types;
 	}
-
 }

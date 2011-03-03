@@ -39,7 +39,7 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de fin de nationalité suisse.");
 
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
-		FinNationalite finNationalite = createValidFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
+		FinNationaliteAdapter finNationalite = createValidFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -57,7 +57,7 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de fin de nationalité non suisse.");
 
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
-		FinNationalite finNationalite = createValidFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
+		FinNationaliteAdapter finNationalite = createValidFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -69,15 +69,11 @@ public class FinNationaliteHandlerTest extends AbstractEvenementHandlerTest {
 		assertTrue("La fin de nationalité non suisse devrait être ignorée", erreurs.size() == 0);
 	}
 
-	private FinNationalite createValidFinNationaliteSuisse(Individu individu, RegDate dateFinNationalite) {
-		MockFinNationalite finNationalite = new MockFinNationalite(individu, null, dateFinNationalite, 5652, true);
-		finNationalite.setHandler(evenementCivilHandler);
-		return finNationalite;
+	private FinNationaliteAdapter createValidFinNationaliteSuisse(Individu individu, RegDate dateFinNationalite) {
+		return new FinNationaliteAdapter(individu, null, dateFinNationalite, 5652, true, context);
 	}	
 
-	private FinNationalite createValidFinNationaliteNonSuisse(Individu individu, RegDate dateFinNationalite) {
-		MockFinNationalite finNationalite = new MockFinNationalite(individu, null, dateFinNationalite, 5652, false);
-		finNationalite.setHandler(evenementCivilHandler);
-		return finNationalite;
+	private FinNationaliteAdapter createValidFinNationaliteNonSuisse(Individu individu, RegDate dateFinNationalite) {
+		return new FinNationaliteAdapter(individu, null, dateFinNationalite, 5652, false, context);
 	}
 }
