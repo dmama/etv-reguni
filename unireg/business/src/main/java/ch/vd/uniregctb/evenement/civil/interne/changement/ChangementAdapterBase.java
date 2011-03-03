@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne.changement;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -10,21 +11,31 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public abstract class ChangementAdapterBase extends EvenementCivilInterneBase {
 
 	/**
 	 * Construit un événement civil interne sur la base d'un événement civil externe.
 	 *
-	 *
 	 * @param evenement un événement civil externe
 	 * @param context   le context d'exécution de l'événement
 	 * @throws ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException
 	 *          si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
-	protected ChangementAdapterBase(EvenementCivilExterne evenement, EvenementCivilContext context, AbstractChangementHandler handler) throws EvenementCivilInterneException {
+	protected ChangementAdapterBase(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
+	}
+
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected ChangementAdapterBase(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
+	                                Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, principalPPId, conjoint, conjointPPId, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
 	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {

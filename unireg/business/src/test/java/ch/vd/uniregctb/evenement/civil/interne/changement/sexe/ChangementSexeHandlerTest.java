@@ -73,8 +73,7 @@ public class ChangementSexeHandlerTest  extends AbstractEvenementHandlerTest {
 
 
 		// déclenchement de l'événement
-		MockChangementSexe chgtSexe = new MockChangementSexe(individu, tiersDAO.getNumeroPPByNumeroIndividu(NO_INDIVIDU, true), null, null, RegDate.get(), 4848);
-		chgtSexe.setHandler(evenementCivilHandler);
+		ChangementSexeAdapter chgtSexe = new ChangementSexeAdapter(individu, tiersDAO.getNumeroPPByNumeroIndividu(NO_INDIVIDU, true), null, null, RegDate.get(), 4848, context);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

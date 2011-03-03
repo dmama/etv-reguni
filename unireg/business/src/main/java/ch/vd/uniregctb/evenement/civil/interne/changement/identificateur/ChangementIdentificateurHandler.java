@@ -7,8 +7,8 @@ import java.util.Set;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
@@ -17,40 +17,24 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.interne.changement.AbstractChangementHandler;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementIdentificateurHandler extends AbstractChangementHandler {
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-
+		throw new NotImplementedException();
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-
-		final long noIndividu = evenement.getNoIndividu();
-		Audit.info(evenement.getNumeroEvenement(), String.format("Traitement du changement d'identificateur de l'individu : %d", noIndividu));
-
-		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(noIndividu, true);
-		if (pp != null && !pp.isHabitantVD()) {
-			// pour les non-habitants, il faut recharger les données, non?
-			// quelles sont les données à recharger ? NAVS13 pour sûr !
-			final Individu individu = getService().getIndividu(pp);
-			final String navs13Registre = individu.getNouveauNoAVS();
-			if (navs13Registre != null && navs13Registre.trim().length() > 0) {
-				pp.setNumeroAssureSocial(individu.getNouveauNoAVS().trim());
-			}
-		}
-
-		return super.handle(evenement, warnings);
+		throw new NotImplementedException();
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		/* l'existance de l'individu est vérifié dans validateCommon */
+		throw new NotImplementedException();
 	}
 
 	@Override

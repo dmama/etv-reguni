@@ -19,6 +19,7 @@
 		<property name="metierService" ref="metierService" />
 		<property name="dataEventService" ref="dataEventService"/>
 		<property name="adresseService" ref="adresseService"/>
+		<property name="indexer" ref="globalTiersIndexer" />
 	</bean>
 
 	<!-- Les Handlers d'evt civils -->

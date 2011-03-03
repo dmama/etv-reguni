@@ -30,6 +30,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -59,6 +60,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private TiersService tiersService;
 	private MetierService metierService;
 	private AdresseService adresseService;
+	private GlobalTiersIndexer indexer;
 
 	/**
 	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
@@ -251,7 +253,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				return;
 			}
 
-			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, null, metierService, tiersDAO,
+			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO,
 					adresseService, refreshCache);
 			final EvenementCivilInterneBase adapter = evenementCivilHandler.createAdapter(evenementCivilExterne, context);
 
@@ -414,5 +416,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setIndexer(GlobalTiersIndexer indexer) {
+		this.indexer = indexer;
 	}
 }

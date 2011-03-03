@@ -105,7 +105,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
-				final MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
+				final CorrectionDateNaissanceAdapter correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -167,7 +167,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 				public Object execute(TransactionStatus status) throws Exception {
 					// déclenchement de l'événement
 					final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, 2008);
-					MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE_ERREUR);
+					CorrectionDateNaissanceAdapter correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE_ERREUR);
 
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -188,11 +188,10 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 		}
 	}
 
-	private MockCorrectionDateNaissance createValidCorrectionDateNaissane(Individu individu, RegDate dateNaissanceCorrigee) {
+	private CorrectionDateNaissanceAdapter createValidCorrectionDateNaissane(Individu individu, RegDate dateNaissanceCorrigee) {
 
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		MockCorrectionDateNaissance correctionDateNaissane = new MockCorrectionDateNaissance(individu, principalPPId, null, null, dateNaissanceCorrigee, 5652);
-		correctionDateNaissane.setHandler(evenementCivilHandler);
+		CorrectionDateNaissanceAdapter correctionDateNaissane = new CorrectionDateNaissanceAdapter(individu, principalPPId, null, null, dateNaissanceCorrigee, 5652, context);
 
 		return correctionDateNaissane;
 	}
@@ -254,7 +253,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final Individu individu = serviceCivil.getIndividu(noIndJean, 2008);
-				MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
+				CorrectionDateNaissanceAdapter correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -322,7 +321,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 				public Object execute(TransactionStatus status) throws Exception {
 
 					final Individu individu = serviceCivil.getIndividu(noIndHuguette, 2008);
-					MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
+					CorrectionDateNaissanceAdapter correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

@@ -17,7 +17,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 public class CorrectionFiliationAdapter extends ChangementAdapterBase {
 
 	protected CorrectionFiliationAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, CorrectionFiliationHandler handler) throws EvenementCivilInterneException {
-		super(evenement, context, handler);
+		super(evenement, context);
 	}
 
 	@Override

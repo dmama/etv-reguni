@@ -73,8 +73,7 @@ public class ChangementIdentificateurHandlerTest  extends AbstractEvenementHandl
 
 		// déclenchement de l'événement
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		MockChangementIdentificateur chgtIdentificateur = new MockChangementIdentificateur(individu, principalPPId, null, null, RegDate.get(), 4848);
-		chgtIdentificateur.setHandler(evenementCivilHandler);
+		ChangementIdentificateurAdapter chgtIdentificateur = new ChangementIdentificateurAdapter(individu, principalPPId, null, null, RegDate.get(), 4848, context);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

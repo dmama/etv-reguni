@@ -15,6 +15,8 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -325,5 +327,24 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 
 	public TiersService getService() {
 		return context.getTiersService();
+	}
+
+	/**
+	 * Ferme les adresses temporaires du tiers, ou des tiers s'il s'agit d'un ménage commun.
+	 *
+	 * @param contribuable un contribuable
+	 * @param date date de fermeture des adresses temporaires trouvées
+	 */
+	protected void fermeAdresseTiersTemporaire(Contribuable contribuable, RegDate date) {
+
+		context.getTiersService().fermeAdresseTiersTemporaire(contribuable, date);
+
+		// fermeture des adresses des tiers
+		if (contribuable instanceof MenageCommun) {
+			final Set<PersonnePhysique> pps = context.getTiersService().getPersonnesPhysiques((MenageCommun) contribuable);
+			for (PersonnePhysique pp : pps) {
+				fermeAdresseTiersTemporaire(pp, date);
+			}
+		}
 	}
 }

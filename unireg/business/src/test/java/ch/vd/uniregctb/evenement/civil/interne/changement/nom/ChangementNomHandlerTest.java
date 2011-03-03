@@ -94,8 +94,7 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
 				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-				final MockChangementNom chgtNom = new MockChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848);
-				chgtNom.setHandler(evenementCivilHandler);
+				final ChangementNomAdapter chgtNom = new ChangementNomAdapter(individu, principalPPId, null, null, RegDate.get(), 4848, context);
 
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -190,9 +189,7 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
 				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-				final MockChangementNom chgtNom = new MockChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848);
-				chgtNom.init(tiersDAO);
-				chgtNom.setHandler(evenementCivilHandler);
+				final ChangementNomAdapter chgtNom = new ChangementNomAdapter(individu, principalPPId, null, null, RegDate.get(), 4848, context);
 
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
