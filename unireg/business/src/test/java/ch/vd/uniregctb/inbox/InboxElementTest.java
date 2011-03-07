@@ -92,9 +92,11 @@ public class InboxElementTest extends WithoutSpringTest {
 	public void testUuidGeneration() throws Exception {
 		final InboxElement eltSans = new InboxElement("Bidon", "Elément bidon", "text/plain", buildInputStream(), 0);
 		Assert.assertNotNull(eltSans.getUuid());
+		eltSans.onDiscard();
 
 		final UUID uuid = UUID.randomUUID();
 		final InboxElement eltAvec = new InboxElement(uuid, "Bidon 2", "Deuxième élément bidon", "text/plain", buildInputStream(), 0);
 		Assert.assertEquals(uuid, eltAvec.getUuid());
+		eltAvec.onDiscard();
 	}
 }

@@ -5,10 +5,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -78,11 +76,6 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	 * Queue partagée par les exécuteurs
 	 */
 	private final BlockingQueue<JobInfo> queue = new LinkedBlockingQueue<JobInfo>();
-
-	/**
-	 * Container des extractions demandées et en cours
-	 */
-	private final Map<ExtractionKey, JobInfo> jobs = new HashMap<ExtractionKey, JobInfo>();
 
 	/**
 	 * Nombre de jobs terminés depuis le démarrage du service
@@ -376,11 +369,6 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 						catch (Exception e) {
 							LOGGER.error(String.format("Impossible d'envoyer le résultat de l'extraction %s dans l'inbox correpondante", job.getKey()), e);
 						}
-
-						// et finalement, le job disparaît de la liste
-						synchronized (jobs) {
-							jobs.remove(job.getKey());
-						}
 					}
 				}
 			}
@@ -565,15 +553,10 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 
 		// puis on poste la demande d'exécution dans la queue
 		final JobInfo jobInfo = new JobInfo(key, launcher);
-		synchronized(jobs) {
-			jobs.put(key, jobInfo);
-		}
-
+		queue.add(jobInfo);
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Job d'extraction %s enregistré (%s)", key, launcher));
 		}
-
-		queue.add(jobInfo);
 
 		// et enfin on retourne la clé
 		return key;

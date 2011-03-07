@@ -90,7 +90,6 @@ public class ExtractionServiceTest extends BusinessTest {
 		final InputStream in = elt.getContent();
 		Assert.assertNotNull(in);
 		try {
-
 			final byte[] buffer = new byte[MyPlainExtractor.REPONSE.length() * 3];
 			final int read = in.read(buffer);
 			Assert.assertEquals(MyPlainExtractor.REPONSE, new String(buffer, 0, read));
@@ -105,7 +104,7 @@ public class ExtractionServiceTest extends BusinessTest {
 
 		class MyResult implements BatchResults<Long, MyResult> {
 
-			List<Long> liste = new LinkedList<Long>();
+			private final List<Long> liste = new LinkedList<Long>();
 
 			@Override
 			public void addErrorException(Long element, Exception e) {
@@ -215,7 +214,7 @@ public class ExtractionServiceTest extends BusinessTest {
 
 		class MyResult implements BatchResults<Long, MyResult> {
 
-			List<Long> liste = new LinkedList<Long>();
+			private final List<Long> liste = new LinkedList<Long>();
 
 			@Override
 			public void addErrorException(Long element, Exception e) {
