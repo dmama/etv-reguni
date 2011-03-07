@@ -1263,8 +1263,10 @@ public class TiersManager implements MessageSourceAware {
 				isEditable = true;
 			}
 		}
-		//UNIREG-2120 Possibilite de créer un debiteur a partir d'une collectivite administrative
-		else if (tiers instanceof CollectiviteAdministrative) {
+
+		// UNIREG-2120 Possibilite de créer un debiteur à partir d'une collectivité administrative
+	    // UNIREG-3362 Création de débiteur à partir d'une PM
+		else if (tiers instanceof CollectiviteAdministrative || tiers instanceof Entreprise) {
 			allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
 			allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
 			isEditable = true;
