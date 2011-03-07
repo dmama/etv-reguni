@@ -44,7 +44,7 @@ public class InboxServiceTest extends WithoutSpringTest {
 
 		// on doit voir le document pour ce visa
 		{
-			final List<InboxElement> liste = service.getContent("LUI");
+			final List<InboxElement> liste = service.getInboxContent("LUI");
 			Assert.assertNotNull(liste);
 			Assert.assertEquals(1, liste.size());
 
@@ -54,7 +54,7 @@ public class InboxServiceTest extends WithoutSpringTest {
 
 		// mais pas pour un autre visa
 		{
-			final List<InboxElement> liste = service.getContent("ELLE");
+			final List<InboxElement> liste = service.getInboxContent("ELLE");
 			Assert.assertNotNull(liste);
 			Assert.assertEquals(0, liste.size());
 		}
@@ -63,14 +63,14 @@ public class InboxServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDocumentExpiration() throws Exception {
 		buildService(100);      // nettoyage toutes les 100 millisecondes
-		final InboxElement element = new InboxElement("Mon impression qui va expirer", "text/plain", buildInputStream(), 500);
+		final InboxElement element = new InboxElement("Mon impression qui va expirer", null, "text/plain", buildInputStream(), 500);
 		service.addElement("MOI", element);
 
 		Thread.sleep(300);
 
 		// pour l'instant, le document est encore là
 		{
-			final List<InboxElement> liste = service.getContent("MOI");
+			final List<InboxElement> liste = service.getInboxContent("MOI");
 			Assert.assertNotNull(liste);
 			Assert.assertEquals(1, liste.size());
 
@@ -82,29 +82,9 @@ public class InboxServiceTest extends WithoutSpringTest {
 
 		// il devrait maintenant avoir disparu
 		{
-			final List<InboxElement> liste = service.getContent("MOI");
+			final List<InboxElement> liste = service.getInboxContent("MOI");
 			Assert.assertNotNull(liste);
 			Assert.assertEquals(0, liste.size());
 		}
-	}
-
-	@Test
-	public void testDocumentOrdering() throws Exception {
-		buildService(0);
-
-		final InboxElement un = new InboxElement("UN", null, null, 0);
-		service.addElement("MOI", un);
-
-		Thread.sleep(100);
-
-		final InboxElement deux = new InboxElement("DEUX", null, null, 0);
-		service.addElement("MOI", deux);
-
-		// dans quel ordre sont-il rendus ?
-		final List<InboxElement> liste = service.getContent("MOI");
-		Assert.assertNotNull(liste);
-		Assert.assertEquals(2, liste.size());
-		Assert.assertEquals("DEUX", liste.get(0).getName());
-		Assert.assertEquals("UN", liste.get(1).getName());
 	}
 }

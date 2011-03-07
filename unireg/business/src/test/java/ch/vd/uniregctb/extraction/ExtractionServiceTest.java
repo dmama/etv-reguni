@@ -79,7 +79,7 @@ public class ExtractionServiceTest extends BusinessTest {
 		Thread.sleep(1000L);
 
 		// normalement, on devrait trouver la bonne réponse dans le service d'inbox
-		final List<InboxElement> content = inboxService.getContent("MOI");
+		final List<InboxElement> content = inboxService.getInboxContent("MOI");
 		Assert.assertNotNull(content);
 		Assert.assertEquals("Pas attendu assez longtemps ou réel problème ?", 1, content.size());
 
@@ -184,7 +184,7 @@ public class ExtractionServiceTest extends BusinessTest {
 		Thread.sleep(1000L);
 
 		// normalement, on devrait trouver la bonne réponse dans le service d'inbox
-		final List<InboxElement> content = inboxService.getContent("MOI");
+		final List<InboxElement> content = inboxService.getInboxContent("MOI");
 		Assert.assertNotNull(content);
 		Assert.assertEquals("Pas attendu assez longtemps ou réel problème ?", 1, content.size());
 
@@ -300,7 +300,7 @@ public class ExtractionServiceTest extends BusinessTest {
 		Thread.sleep(2000L);
 
 		// normalement, on devrait trouver la bonne réponse dans le service d'inbox
-		final List<InboxElement> content = inboxService.getContent("MOI");
+		final List<InboxElement> content = inboxService.getInboxContent("MOI");
 		Assert.assertNotNull(content);
 		Assert.assertEquals("Pas attendu assez longtemps ou réel problème ?", 1, content.size());
 

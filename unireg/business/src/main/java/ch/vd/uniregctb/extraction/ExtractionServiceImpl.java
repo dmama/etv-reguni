@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -408,6 +409,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 
 	private void sendDocumentToInbox(JobInfo job) throws IOException {
 		final String visa = job.key.getVisa();
+		final UUID uuid = job.key.getUuid();
 		final String docName = job.extractor.getExtractionName();
 		final String descriptionBase = job.toDisplayString(false);
 		final String description;
@@ -425,7 +427,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		else {
 			description = descriptionBase;
 		}
-		inboxService.addDocument(visa, docName, description, mimeType, in, expiration * 24);
+		inboxService.addDocument(uuid, visa, docName, description, mimeType, in, expiration * 24);
 	}
 
 	/**

@@ -2,18 +2,12 @@ package ch.vd.uniregctb.inbox;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,9 +21,9 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 	private static final Logger LOGGER = Logger.getLogger(InboxServiceImpl.class);
 
 	/**
-	 * Contenu de l'inbox, indexé par visa utilisateur
+	 * Contenu de l'inbox
 	 */
-	private final Map<String, List<InboxElement>> content = new HashMap<String, List<InboxElement>>();
+	private final InboxContainer container = new InboxContainer();
 
 	/**
 	 * Timer utilisé pour le nettoyage des vieux éléments
@@ -44,90 +38,43 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 		public void run() {
 			// On passe en revue le contenu de toutes les inbox existantes
 			// si un élément a expiré, il saute.
-			cleanup(true);
-		}
-	}
-
-	private void cleanup(boolean onlyExpired) {
-
-		synchronized (content) {
-			for (Map.Entry<String, List<InboxElement>> entry : content.entrySet()) {
-				final List<InboxElement> content = entry.getValue();
-				if (content != null && content.size() > 0) {
-					final Iterator<InboxElement> iter = content.iterator();
-					while (iter.hasNext()) {
-						final InboxElement element = iter.next();
-						final boolean isExpired = element != null && element.isExpired();
-						if (!onlyExpired || isExpired || element == null) {
-							iter.remove();
-							if (element != null) {
-								element.onDiscard();
-							}
-
-							if (LOGGER.isInfoEnabled()) {
-								LOGGER.info(String.format("Discarded%s inbox element %s for user %s", (isExpired ? " expired" : StringUtils.EMPTY), element, entry.getKey()));
-							}
-						}
-					}
-				}
-			}
+			container.cleanup(true);
 		}
 	}
 
 	@Override
-	public List<InboxElement> getContent(String visa) {
-		final List<InboxElement> list;
-		synchronized (content) {
-			list = getListePourVisa(visa, true, false);
-		}
-		Collections.sort(list);
-		return list;
+	public List<InboxElement> getInboxContent(String visa) {
+		return container.getInboxContent(visa);
+	}
+
+	@Override
+	public InboxElement getInboxElement(UUID uuid) {
+		return container.get(uuid);
 	}
 
 	@Override
 	public void addDocument(String visa, String docName, String description, String mimeType, InputStream document, int hoursUntilExpiration) throws IOException {
-		final InboxElement element = new InboxElement(docName, mimeType, document, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
+		final InboxElement element = new InboxElement(docName, description, mimeType, document, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
+		addElement(visa, element);
+	}
+
+	@Override
+	public void addDocument(UUID uuid, String visa, String docName, String description, String mimeType, InputStream document, int hoursUntilExpiration) throws IOException {
+		final InboxElement element = new InboxElement(uuid, docName, description, mimeType, document, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
 		addElement(visa, element);
 	}
 
 	/**
-	 * Ajout d'un document déjà formé à l'inbox du visa donné
+	 * Ajout d'un document déjà formé à l'inbox du visa donné (méthode déportée de la méthode publique {@link #addDocument(String, String, String, String, java.io.InputStream, int) addDocument}
+	 * pour permettre le test spécifique d'éléments créés spécifiquement
 	 * @param visa visa dont on doit utiliser l'inbox
 	 * @param element élément arrivé
 	 */
 	protected void addElement(String visa, InboxElement element) {
-		synchronized (content) {
-			final List<InboxElement> liste = getListePourVisa(visa, false, true);
-			liste.add(element);
-		}
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Arrivée d'un nouveau document dans l'inbox de l'utilisateur %s : %s", visa, element));
 		}
-	}
-
-	/**
-	 * Renvoie le contenu de l'inbox de l'utilisateur dont le visa est donné.<p/>
-	 * Cette méthode <b>doit</b> être appelée dans un contexte synchronisé sur l'élément {@link #content} !
-	 * @param visa le visa de l'utilisateur dont on veut récupérer la liste des éléments
-	 * @param copie <code>true</code> si une copie (= un instantané) de la liste doit être renvoyée, <code>false</code> si on veut la liste originale
-	 * @param createIfNecessary <code>true</code> si une nouvelle liste doit être créée s'il n'y en a pas, <code>false</code> si on doit renvoyer <code>null</code> dans ce cas
-	 * @return la liste du contenu de l'inbox demandé
-	 */
-	private List<InboxElement> getListePourVisa(String visa, boolean copie, boolean createIfNecessary) {
-		List<InboxElement> liste = content.get(visa);
-		if (liste == null && createIfNecessary) {
-			liste = new LinkedList<InboxElement>();
-			content.put(visa, liste);
-		}
-		if (copie) {
-			if (liste == null || liste.size() == 0) {
-				liste = Collections.emptyList();
-			}
-			else {
-				liste = new ArrayList<InboxElement>(liste);
-			}
-		}
-		return liste;
+		container.addElement(visa, element);
 	}
 
 	@Override
@@ -156,6 +103,6 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 		}
 
 		// on efface tout
-		cleanup(false);
+		container.cleanup(false);
 	}
 }
