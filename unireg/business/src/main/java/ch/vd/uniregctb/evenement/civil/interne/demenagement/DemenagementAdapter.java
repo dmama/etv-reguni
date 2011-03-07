@@ -12,11 +12,11 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdressesBase;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -137,7 +137,7 @@ public class DemenagementAdapter extends EvenementCivilInterneAvecAdressesBase {
 		 * Pour les communes du Sentier, il n'est pas possible de déterminer automatiquement le for principal. Un traitement
 		 * manuel est nécessaire.
 		 */
-		if (nouvelleCommune != null && nouvelleCommune.getNoOFSEtendu() == EvenementCivilHandlerBase.NO_OFS_FRACTION_SENTIER) {
+		if (nouvelleCommune != null && nouvelleCommune.getNoOFSEtendu() == EvenementCivilInterneBase.NO_OFS_FRACTION_SENTIER) {
 			warnings.add(new EvenementCivilExterneErreur("déménagement dans la fraction de commune du Sentier: " +
 					"veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
 		}

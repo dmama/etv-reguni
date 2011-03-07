@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -62,7 +61,7 @@ public class CorrectionConjointAdapter extends EvenementCivilInterneBase {
 
 		if (coupleHabitant != null && coupleConjoint != null) {
 			ValidationResults validationResults = context.getMetierService().validateFusion(coupleHabitant.getMenage(), coupleConjoint.getMenage());
-			EvenementCivilHandlerBase.addValidationResults(errors, warnings, validationResults);
+			addValidationResults(errors, warnings, validationResults);
 		}
 		else if (coupleHabitant != null) {
 			if (coupleHabitant.estComposeDe(habitant, conjoint)) {
@@ -70,7 +69,7 @@ public class CorrectionConjointAdapter extends EvenementCivilInterneBase {
 			}
 			else {
 				ValidationResults validationResults = context.getMetierService().validateReconstitution(coupleHabitant.getMenage(), conjoint, date);
-				EvenementCivilHandlerBase.addValidationResults(errors, warnings, validationResults);
+				addValidationResults(errors, warnings, validationResults);
 			}
 		}
 		else if (coupleConjoint != null) {
@@ -79,7 +78,7 @@ public class CorrectionConjointAdapter extends EvenementCivilInterneBase {
 			}
 			else {
 				ValidationResults validationResults = context.getMetierService().validateReconstitution(coupleConjoint.getMenage(), habitant, date);
-				EvenementCivilHandlerBase.addValidationResults(errors, warnings, validationResults);
+				addValidationResults(errors, warnings, validationResults);
 			}
 		}
 		else {

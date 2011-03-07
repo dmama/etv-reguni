@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
@@ -464,6 +465,19 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 		if (context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu) != null) {
 			throw new EvenementCivilHandlerException("Le tiers existe déjà avec cet individu " + noIndividu
 					+ " alors que c'est une naissance");
+		}
+	}
+
+	public static void addValidationResults(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings, ValidationResults resultat) {
+		if (resultat.hasErrors()) {
+			for (String erreur : resultat.getErrors()) {
+				errors.add(new EvenementCivilExterneErreur(erreur));
+			}
+		}
+		if (resultat.hasWarnings()) {
+			for (String warning : resultat.getWarnings()) {
+				warnings.add(new EvenementCivilExterneErreur(warning));
+			}
 		}
 	}
 }

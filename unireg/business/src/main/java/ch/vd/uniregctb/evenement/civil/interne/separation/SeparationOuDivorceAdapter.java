@@ -9,7 +9,6 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -158,7 +157,7 @@ public abstract class SeparationOuDivorceAdapter extends EvenementCivilInterneBa
 				 * validation d'après le MetierService
 				 */
 				ValidationResults validationResults = context.getMetierService().validateSeparation(menageComplet.getMenage(), date);
-				EvenementCivilHandlerBase.addValidationResults(erreurs, warnings, validationResults);
+				addValidationResults(erreurs, warnings, validationResults);
 			}
 			catch (NullPointerException npe) {
 				erreurs.add(new EvenementCivilExterneErreur("Le ménage commun de l'habitant n°" + habitant.getNumero() + " n'existe pas"));

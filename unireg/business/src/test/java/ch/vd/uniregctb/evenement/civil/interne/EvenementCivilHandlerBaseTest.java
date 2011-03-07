@@ -1,9 +1,8 @@
-package ch.vd.uniregctb.evenement.civil.common;
+package ch.vd.uniregctb.evenement.civil.interne;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -11,11 +10,9 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -42,31 +39,6 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 	private TiersDAO tiersDAO;
 	private EvenementCivilContext context;
 	
-	private final EvenementCivilHandlerBase handler = new EvenementCivilHandlerBase() {
-
-		public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		}
-
-		@Override
-		protected Set<TypeEvenementCivil> getHandledType() {
-			return null;
-		}
-
-		public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-			return null;
-		}
-
-		@Override
-		protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		}
-
-		@Override
-		public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-			return null;
-		}
-
-	};
-
 	private class DummyEvenementCivilInterne extends EvenementCivilInterneBase {
 
 		protected DummyEvenementCivilInterne(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
@@ -88,6 +60,8 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		}
 	}
 
+	private DummyEvenementCivilInterne dummyEvent;
+
 	private static final long NUMERO_INDIVIDU = 54321L;
 
 	@Override
@@ -96,9 +70,9 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		handler.setService(tiersService);
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, null, null, tiersDAO, null, null, true);
+		dummyEvent = new DummyEvenementCivilInterne(null, null, null, null, null, context);
 
 		doInNewTransaction(new TxCallback(){
 			@Override
@@ -120,7 +94,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		habitant.setNumeroIndividu(NUMERO_INDIVIDU);
 		habitant = (PersonnePhysique)tiersDAO.save(habitant);
 
-		handler.openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateInitiale, MockCommune.Cossonay.getNoOFSEtendu(), MotifFor.ARRIVEE_HC, true);
+		dummyEvent.openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateInitiale, MockCommune.Cossonay.getNoOFSEtendu(), MotifFor.ARRIVEE_HC, true);
 		assertEquals(1, habitant.getForsFiscaux().size());
 		final ForFiscalPrincipal forInitial = (ForFiscalPrincipal) habitant.getForsFiscauxSorted().get(0);
 
@@ -132,7 +106,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			handler.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.Cossonay.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
+			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.Cossonay.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
 					true
 			);
 			assertEquals(1, habitant.getForsFiscaux().size());
@@ -144,7 +118,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			handler.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.LesClees.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
+			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.LesClees.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
 					true
 			);
 			assertEquals(2, habitant.getForsFiscaux().size());
@@ -173,7 +147,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		habitant = (PersonnePhysique)tiersDAO.save(habitant);
 
 		// déménagement sur Lausanne
-		handler.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), MockCommune.Lausanne.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, true);
+		dummyEvent.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), MockCommune.Lausanne.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, true);
 
 		// on vérifie que le type d'autorité fiscale, le motif de rattachement et le mode d'imposition restent inchangés
 		final List<ForFiscal> fors = habitant.getForsFiscauxSorted();

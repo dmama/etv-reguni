@@ -9,7 +9,6 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -93,7 +92,7 @@ public class ReconciliationAdapter extends EvenementCivilInterneBase {
 		 * Validations métier
 		 */
 		ValidationResults results = context.getMetierService().validateReconciliation(habitant, habitantConjoint, getDate());
-		EvenementCivilHandlerBase.addValidationResults(erreurs, warnings, results);
+		addValidationResults(erreurs, warnings, results);
 	}
 
 	private void validateEtatCivil(PersonnePhysique habitant, RegDate date, List<EvenementCivilExterneErreur> erreurs) {

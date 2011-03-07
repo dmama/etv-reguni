@@ -9,7 +9,6 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -176,7 +175,7 @@ public class MariageAdapter extends EvenementCivilInterneBase {
 		}
 
 		final ValidationResults resultat = context.getMetierService().validateMariage(getDate(), habitant, habitantConjoint);
-		EvenementCivilHandlerBase.addValidationResults(erreurs, warnings, resultat);
+		addValidationResults(erreurs, warnings, resultat);
 	}
 
 	@Override

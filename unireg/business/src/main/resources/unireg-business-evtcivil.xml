@@ -24,27 +24,17 @@
 	</bean>
 
 	<!-- Les Handlers d'evt civils -->
-	<bean id="evenementHandler" class="ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandler" abstract="true">
-		<property name="service" ref="tiersService" />
-		<property name="metier" ref="metierService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="serviceCivil" ref="serviceCivilService"/>
-		<property name="dataEventService" ref="dataEventService"/>
-		<property name="evenementFiscalService" ref="evenementFiscalService" />
+	<bean id="evenementHandler" class="ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase" abstract="true">
 		<property name="registrar" ref="evenementCivilProcessor" />
 	</bean>
 	
-	<bean id="abstractChangementHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.AbstractChangementHandler" parent="evenementHandler" abstract="true">
-		<property name="indexer" ref="globalTiersIndexer" />
-	</bean>
-	
+	<bean id="abstractChangementHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.AbstractChangementHandler" parent="evenementHandler" abstract="true"/>
+
 	<!-- Gestionnaire d'evenements: les differents handlers -->
 	<!--
 	<bean id="adoptionHandler" class="ch.vd.uniregctb.evenement.adoption.AdoptionHandler" parent="evenementHandler" />
 	-->
-	<bean id="arriveeHandler" class="ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeHandler" parent="evenementHandler">
-		<property name="serviceCivilService" ref="serviceCivilService"/>
-	</bean>
+	<bean id="arriveeHandler" class="ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeHandler" parent="evenementHandler" />
 	<bean id="changementNomHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNomHandler" parent="abstractChangementHandler" />
 	<bean id="changementSexeHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.sexe.ChangementSexeHandler" parent="abstractChangementHandler" />
 	<bean id="correctionDateNaissanceHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.dateNaissance.CorrectionDateNaissanceHandler" parent="abstractChangementHandler" />
@@ -62,9 +52,7 @@
 	<bean id="mariageHandler" class="ch.vd.uniregctb.evenement.civil.interne.mariage.MariageHandler" parent="evenementHandler" />
 	<bean id="naissanceHandler" class="ch.vd.uniregctb.evenement.civil.interne.naissance.NaissanceHandler" parent="evenementHandler" />
 	
-	<bean id="obtentionPermisCOuNationaliteSuisseHandler" class="ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisCOuNationaliteSuisseAdapter" parent="evenementHandler" abstract="true">
-		<property name="adresseService" ref="adresseService" />
-	</bean>
+	<bean id="obtentionPermisCOuNationaliteSuisseHandler" class="ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisCOuNationaliteSuisseHandler" parent="evenementHandler" abstract="true" />
 	<bean id="obtentionPermisHandler" class="ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisHandler" parent="obtentionPermisCOuNationaliteSuisseHandler" />
 	<bean id="obtentionNationaliteHandler" class="ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionNationaliteHandler" parent="obtentionPermisCOuNationaliteSuisseHandler"/>
 	
@@ -76,10 +64,7 @@
 	<bean id="finPermisHandler" class="ch.vd.uniregctb.evenement.civil.interne.fin.permis.FinPermisHandler" parent="evenementHandler" />
 	<bean id="remiseBlancDateFinNationaliteHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.nationalite.RemiseBlancDateFinNationaliteHandler" parent="evenementHandler" />
 	<bean id="correctionOrigineHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.origine.CorrectionOrigineHandler" parent="abstractChangementHandler" />
-	<bean id="modificationAdresseNotificationHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationHandler" parent="abstractChangementHandler" >
-		<property name="adresseService" ref="adresseService" />
-		<property name="infraService" ref="serviceInfrastructureService" />
-	</bean>
+	<bean id="modificationAdresseNotificationHandler" class="ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationHandler" parent="abstractChangementHandler" />
 
 	<!-- handlers d'annulation -->
 	<bean id="suppressionNationaliteHandler" class="ch.vd.uniregctb.evenement.civil.interne.annulationpermis.SuppressionNationaliteHandler" parent="evenementHandler" />
