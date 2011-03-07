@@ -2,14 +2,12 @@ package ch.vd.uniregctb.evenement.civil.interne.annulation.separation;
 
 import java.util.List;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivilHandlerBase {
@@ -18,39 +16,11 @@ public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivi
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// Obtention du tiers correspondant au conjoint principal.
-		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(target.getNoIndividu());
-		// Récupération de l'ensemble tiers couple
-		EnsembleTiersCouple menageComplet = getService().getEnsembleTiersCouple(principal, target.getDate().getOneDayBefore());
-		// Récupération du tiers MenageCommun
-		MenageCommun menage = null;
-		if (menageComplet != null) {
-			menage = menageComplet.getMenage();
-		}
-		// Si le tiers MenageCommun n'est pas trouvé, la base fiscale est inconsistente => mise en erreur de l'événement
-		if (menage == null) {
-			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
-		}
-		PersonnePhysique conjoint = null;
-		final Individu individuConjoint = getServiceCivil().getConjoint(target.getNoIndividu(), target.getDate());
-		if (individuConjoint != null) {
-			// Obtention du tiers correspondant au conjoint.
-			conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
-		}
-		// Vérification de la cohérence
-		if (!menageComplet.estComposeDe(principal, conjoint)) {
-			throw new EvenementCivilHandlerException("Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");
-		}
+		throw new NotImplementedException();
 	}
 	
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		// Récupération du tiers principal.
-		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());
-		// Récupération du menage du tiers
-		MenageCommun menage = getService().getEnsembleTiersCouple(principal, evenement.getDate().getOneDayBefore()).getMenage();
-		// Traitement de l'annulation de séparation
-		getMetier().annuleSeparation(menage, evenement.getDate(), evenement.getNumeroEvenement());
-		return null;
+		throw new NotImplementedException();
 	}
 
 }

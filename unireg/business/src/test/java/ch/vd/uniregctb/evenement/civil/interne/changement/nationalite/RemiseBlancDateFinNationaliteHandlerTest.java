@@ -55,7 +55,7 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 		LOGGER.debug("Test de traitement d'un événement de mise à blanc de la date de fin de nationalité suisse.");
 
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
-		RemiseBlancDateFinNationalite remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
+		RemiseBlancDateFinNationaliteAdapter remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -73,7 +73,7 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 		LOGGER.debug("Test de traitement d'un événement de mise à blanc de la date de fin de nationalité non suisse.");
 
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
-		RemiseBlancDateFinNationalite remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
+		RemiseBlancDateFinNationaliteAdapter remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -85,15 +85,11 @@ public class RemiseBlancDateFinNationaliteHandlerTest extends AbstractEvenementH
 		assertTrue("La mise à blanc de la date de fin de nationalité non suisse devrait être ignorée", erreurs.size() == 0);
 	}
 
-	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteSuisse(Individu individu, RegDate date) {
-		MockRemiseBlancDateFinNationalite finNationalite = new MockRemiseBlancDateFinNationalite(individu, null, date, 5652, true);
-		finNationalite.setHandler(evenementCivilHandler);
-		return finNationalite;
+	private RemiseBlancDateFinNationaliteAdapter createRemiseBlancDateFinNationaliteSuisse(Individu individu, RegDate date) {
+		return new RemiseBlancDateFinNationaliteAdapter(individu, null, date, 5652, true, context);
 	}
 
-	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteNonSuisse(Individu individu, RegDate date) {
-		MockRemiseBlancDateFinNationalite finNationalite = new MockRemiseBlancDateFinNationalite(individu, null, date, 5652, false);
-		finNationalite.setHandler(evenementCivilHandler);
-		return finNationalite;
+	private RemiseBlancDateFinNationaliteAdapter createRemiseBlancDateFinNationaliteNonSuisse(Individu individu, RegDate date) {
+		return new RemiseBlancDateFinNationaliteAdapter(individu, null, date, 5652, false, context);
 	}
 }

@@ -13,7 +13,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public abstract class EvenementCivilInterneAvecAdressesBase extends EvenementCivilInterneBase implements EvenementCivilInterneAvecAdresses {
+public abstract class EvenementCivilInterneAvecAdressesBase extends EvenementCivilInterneBase {
 
 	/**
 	 * L'adresse principale de l'individu .

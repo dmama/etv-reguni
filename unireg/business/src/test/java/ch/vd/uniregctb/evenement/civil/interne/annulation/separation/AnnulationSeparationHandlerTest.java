@@ -51,7 +51,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		final long noIndividu = 12345;
 		
 		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
-		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateSeparation);
+		AnnulationSeparationAdapter annulation = createAnnulationSeparation(individu, dateSeparation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -87,7 +87,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		final long noIndividuConjoint = 23456; // béa
 		
 		Individu individu = serviceCivil.getIndividu(noIndividuMarie, 2008);
-		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateSeparation);
+		AnnulationSeparationAdapter annulation = createAnnulationSeparation(individu, dateSeparation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -126,7 +126,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		final long noIndividu = 6789;
 		
 		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
-		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateFictive);
+		AnnulationSeparationAdapter annulation = createAnnulationSeparation(individu, dateFictive);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -146,13 +146,11 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 		assertTrue("Une erreur aurait dû se produire car cette personne n'est pas séparée", errorFound);
 		assertEquals("L'erreur n'est pas la bonne", "Le tiers ménage commun n'a pu être trouvé", errorMessage);
 	}
-	
-	private MockAnnulationSeparation createAnnulationSeparation(Individu individu, RegDate date) {
-		MockAnnulationSeparation annulation = new MockAnnulationSeparation(individu, null, date, 5652);
-		annulation.setHandler(evenementCivilHandler);
-		return annulation;
+
+	private AnnulationSeparationAdapter createAnnulationSeparation(Individu individu, RegDate date) {
+		return new AnnulationSeparationAdapter(individu, null, date, 5652, context);
 	}
-	
+
 	private void checkContribuableApresAnnulation(Contribuable contribuable, RegDate dateSeparation) {
 		// Vérification des fors fiscaux du contribuable
 		int nbForAnnules = 0;

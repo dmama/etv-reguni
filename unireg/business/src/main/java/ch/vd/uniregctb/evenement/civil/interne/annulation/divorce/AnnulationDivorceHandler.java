@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class AnnulationDivorceHandler extends AnnulationSeparationOuDivorceHandler {
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		throw new NotImplementedException();
 	}
 	
 	@Override
@@ -33,7 +35,7 @@ public class AnnulationDivorceHandler extends AnnulationSeparationOuDivorceHandl
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new AnnulationDivorceAdapter(event, context, this);
+		return new AnnulationDivorceAdapter(event, context);
 	}
 
 }

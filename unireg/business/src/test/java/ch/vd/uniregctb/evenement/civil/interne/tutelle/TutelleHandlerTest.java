@@ -90,7 +90,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2007);
 				Individu tuteur = serviceCivil.getIndividu(NO_INDIVIDU_TUTEUR, 2007);
-				Tutelle tutelle = createTutelle(pupille, tuteur, null, MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
+				TutelleAdapter tutelle = createTutelle(pupille, tuteur, null, MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
 
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -161,7 +161,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL, 2007);
-				Tutelle tutelle = createTutelle(pupille, null, new MockTuteurGeneral(), MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
+				TutelleAdapter tutelle = createTutelle(pupille, null, new MockTuteurGeneral(), MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -218,11 +218,9 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		}
 	}
 
-	private MockTutelle createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral, ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative autoriteTutelaire) {
+	private TutelleAdapter createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral, ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative autoriteTutelaire) {
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(pupille.getNoTechnique(), true);
-		MockTutelle tutelle = new MockTutelle(pupille, principalPPId, null, null, DATE_TUTELLE, 4848, tuteur, tuteurGeneral, TypeTutelle.TUTELLE, autoriteTutelaire);
-		tutelle.setHandler(evenementCivilHandler);
-		return tutelle;
+		return new TutelleAdapter(pupille, principalPPId, null, null, DATE_TUTELLE, 4848, tuteur, tuteurGeneral, TypeTutelle.TUTELLE, autoriteTutelaire, context);
 	}
 
 }

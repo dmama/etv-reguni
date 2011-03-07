@@ -10,9 +10,9 @@ import ch.vd.uniregctb.evenement.civil.interne.annulation.separation.AnnulationS
  * 
  * @author Pavel BLANCO
  */
-public class AnnulationDivorceAdapter extends AnnulationSeparationOuDivorceAdapter implements AnnulationDivorce {
+public class AnnulationDivorceAdapter extends AnnulationSeparationOuDivorceAdapter {
 
-	protected AnnulationDivorceAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, AnnulationDivorceHandler handler) throws EvenementCivilInterneException {
-		super(evenement, context, handler);
+	protected AnnulationDivorceAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
+		super(evenement, context);
 	}
 }
