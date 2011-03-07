@@ -31,7 +31,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * 
  * @author Pavel BLANCO
  */
-public class SeparationOuDivorceAdapter extends EvenementCivilInterneBase {
+public abstract class SeparationOuDivorceAdapter extends EvenementCivilInterneBase {
 
 	/**
 	 * L'ancien conjoint de l'individu concerné par la séparation.

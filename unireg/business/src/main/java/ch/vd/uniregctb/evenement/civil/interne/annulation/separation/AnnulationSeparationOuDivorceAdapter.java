@@ -22,7 +22,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * @author Pavel BLANCO
  *
  */
-public class AnnulationSeparationOuDivorceAdapter extends EvenementCivilInterneBase {
+public abstract class AnnulationSeparationOuDivorceAdapter extends EvenementCivilInterneBase {
 
 	protected AnnulationSeparationOuDivorceAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
