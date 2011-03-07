@@ -51,7 +51,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		final long noIndividu = 12345;
 		
 		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
-		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateReconciliation);
+		AnnulationReconciliationAdapter annulation = createAnnulationReconciliation(individu, dateReconciliation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -116,7 +116,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		
 		Individu individu = serviceCivil.getIndividu(noIndividuMarie, 2008);
 		Individu conjoint = serviceCivil.getIndividu(noIndividuConjoint, 2008);
-		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, conjoint, dateReconciliation);
+		AnnulationReconciliationAdapter annulation = createAnnulationReconciliation(individu, conjoint, dateReconciliation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -191,7 +191,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		final long noIndividu = 6789;
 		
 		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
-		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateFictive);
+		AnnulationReconciliationAdapter annulation = createAnnulationReconciliation(individu, dateFictive);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -212,15 +212,11 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		assertEquals("L'erreur n'est pas la bonne", "Le tiers ménage commun n'a pu être trouvé", errorMessage);
 	}
 	
-	private MockAnnulationReconciliation createAnnulationReconciliation(Individu individu, RegDate date) {
-		MockAnnulationReconciliation annulation = new MockAnnulationReconciliation(individu, null, date, 5652);
-		annulation.setHandler(evenementCivilHandler);
-		return annulation;
+	private AnnulationReconciliationAdapter createAnnulationReconciliation(Individu individu, RegDate date) {
+		return new AnnulationReconciliationAdapter(individu, null, date, 5652, context);
 	}
 
-	private MockAnnulationReconciliation createAnnulationReconciliation(Individu individu, Individu conjoint, RegDate date) {
-		MockAnnulationReconciliation annulation = new MockAnnulationReconciliation(individu, conjoint, date, 5652);
-		annulation.setHandler(evenementCivilHandler);
-		return annulation;
+	private AnnulationReconciliationAdapter createAnnulationReconciliation(Individu individu, Individu conjoint, RegDate date) {
+		return new AnnulationReconciliationAdapter(individu, conjoint, date, 5652, context);
 	}
 }

@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
@@ -13,17 +18,18 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class NaissanceAdapter extends EvenementCivilInterneBase implements Naissance {
+public class NaissanceAdapter extends EvenementCivilInterneBase {
+
+	private static final Logger LOGGER = Logger.getLogger(NaissanceAdapter.class);
 
 	private final List<Individu> parents = new ArrayList<Individu>();
 
-	private NaissanceHandler handler;
-
-	protected NaissanceAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, NaissanceHandler handler) throws EvenementCivilInterneException {
+	protected NaissanceAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
 
 		/* Récupération des parents du nouveau né */
 		final Individu bebe = getIndividu();
@@ -37,6 +43,17 @@ public class NaissanceAdapter extends EvenementCivilInterneBase implements Naiss
 		}
 	}
 
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected NaissanceAdapter(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, List<Individu> parents, EvenementCivilContext context) {
+		super(individu, conjoint, TypeEvenementCivil.NAISSANCE, date, numeroOfsCommuneAnnonce, context);
+		if (parents != null) {
+			this.parents.addAll(parents);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.evenement.EvenementCivilInterneBase#isContribuablePresentBefore()
 	 */
@@ -44,13 +61,6 @@ public class NaissanceAdapter extends EvenementCivilInterneBase implements Naiss
 	public boolean isContribuablePresentBefore() {
 		/* Le contribuable n'existe pas à l'arrivée d'un événement naissance */
 		return false;
-	}
-
-	/**
-	 * Retourne les parents du nouveau né.
-	 */
-	public List<Individu> getParents() {
-		return parents;
 	}
 
 	@Override
@@ -61,16 +71,53 @@ public class NaissanceAdapter extends EvenementCivilInterneBase implements Naiss
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
+		/* Rien de spécial pour la naissance */
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
+		if ( FiscalDateHelper.isMajeurAt(getIndividu(), RegDate.get()) ) {
+			erreurs.add(new EvenementCivilExterneErreur("L'individu ne devrait pas être majeur à la naissance"));
+		}
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+		LOGGER.debug("Traitement de la naissance de l'individu : " + getNoIndividu() );
+
+		try {
+			/*
+			 * Transtypage de l'événement en naissance
+			 */
+			final Individu individu = getIndividu();
+			final RegDate dateEvenement = getDate();
+
+			/*
+			 * Vérifie qu'aucun tiers n'existe encore rattaché à cet individu
+			 */
+			verifieNonExistenceTiers(individu.getNoTechnique());
+
+			/*
+			 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
+			 */
+			PersonnePhysique bebe = new PersonnePhysique(true);
+			bebe.setNumeroIndividu(individu.getNoTechnique());
+			bebe = (PersonnePhysique) context.getTiersDAO().save(bebe);
+			Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ")");
+
+			context.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
+
+			// [UNIREG-3244] on envoie les fairs-parts de naissance
+			final Contribuable parent = context.getTiersService().getAutoriteParentaleDe(bebe, dateEvenement);
+			if (parent != null) {
+				context.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
+			}
+
+			return new Pair<PersonnePhysique, PersonnePhysique>(bebe, null);
+		}
+		catch (Exception e) {
+			LOGGER.debug("Erreur lors de la sauvegarde du nouveau tiers", e);
+			throw new EvenementCivilHandlerException(e.getMessage(), e);
+		}
 	}
 }

@@ -87,7 +87,7 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		roberto.setNumero(NUMERO_INDIVIDU);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU, roberto, 0L, null, 1234, null);
-		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context, null);
+		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context);
 	}
 
 	@Test
@@ -96,6 +96,6 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		rosa.setNumero(NUMERO_INDIVIDU_2);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU_2, rosa, 0L, null, 1234, null);
-		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context, null);
+		FinPermisAdapter adapter = new FinPermisAdapter(evenementsCivils, context);
 	}
 }

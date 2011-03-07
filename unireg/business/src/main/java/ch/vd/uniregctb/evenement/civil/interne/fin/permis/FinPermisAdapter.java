@@ -5,16 +5,20 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -23,18 +27,14 @@ import ch.vd.uniregctb.type.TypePermis;
  * @author Pavel BLANCO
  *
  */
-public class FinPermisAdapter extends EvenementCivilInterneBase implements FinPermis {
+public class FinPermisAdapter extends EvenementCivilInterneBase {
 
 	private final static Logger LOGGER = Logger.getLogger(FinPermisAdapter.class);
 
-	/** Le permis arrivant échéance. */
-	private Permis permis;
+	private TypePermis typePermis;
 
-	private FinPermisHandler handler;
-
-	protected FinPermisAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, FinPermisHandler handler) throws EvenementCivilInterneException {
+	protected FinPermisAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
 
 		try {
 			// on récupère le permis à partir de sa date de fin (= à la date d'événement)
@@ -45,13 +45,13 @@ public class FinPermisAdapter extends EvenementCivilInterneBase implements FinPe
 			}
 			for (Permis permis : listePermis) {
 				if (RegDateHelper.equals(permis.getDateFinValidite(), evenement.getDateEvenement())) {
-					this.permis = permis;
+					this.typePermis = permis.getTypePermis();
 					break;
 				}
 			}
 
 			// si le permis n'a pas été trouvé, on lance une exception
-			if ( this.permis == null ) {
+			if ( this.typePermis == null ) {
 				throw new EvenementCivilInterneException("Le permis n'a pas été trouvé dans le registre civil");
 			}
 		}
@@ -61,22 +61,59 @@ public class FinPermisAdapter extends EvenementCivilInterneBase implements FinPe
 		}
 	}
 
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected FinPermisAdapter(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, TypePermis typePermis, EvenementCivilContext context) {
+		super(individu, conjoint, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, date, numeroOfsCommuneAnnonce, context);
+		this.typePermis = typePermis;
+	}
+
 	public TypePermis getTypePermis() {
-		return permis.getTypePermis();
+		return typePermis;
 	}
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
+		/* Seulement le permis C est traité */
+		if (getTypePermis() == TypePermis.ETABLISSEMENT) {
+
+			PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(getNoIndividu(), erreurs);
+			if (habitant == null) {
+				return;
+			}
+
+			boolean isSuisse = false;
+			// vérification si la nationalité suisse a été obtenue
+			try {
+				isSuisse = context.getTiersService().isSuisse(habitant, getDate().getOneDayAfter());
+			}
+			catch (Exception e) {
+				erreurs.add(new EvenementCivilExterneErreur(e.getMessage()));
+				return;
+			}
+
+			if (isSuisse) {
+				Audit.info(getNumeroEvenement(), "Permis C : l'habitant a obtenu la nationalité suisse, rien à faire");
+			}
+			else {
+				Audit.info(getNumeroEvenement(), "Permis C : l'habitant n'a pas obtenu la nationalité suisse, passage en traitement manuel");
+				erreurs.add(new EvenementCivilExterneErreur("La fin du permis C doit être traitée manuellement"));
+			}
+		}
+		else {
+			Audit.info(getNumeroEvenement(), "Permis non C : ignoré");
+		}
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+		// rien à faire tout ce passe dans le validateSpecific
+		return null;
 	}
 }

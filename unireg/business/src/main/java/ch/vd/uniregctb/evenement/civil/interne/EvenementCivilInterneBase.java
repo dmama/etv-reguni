@@ -452,4 +452,18 @@ public abstract class EvenementCivilInterneBase implements EvenementCivilInterne
 		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale,
 				MotifRattachement.DOMICILE, motifOuverture, ModeImposition.ORDINAIRE, changeHabitantFlag);
 	}
+
+	/**
+	 * Vérifie la non-existence d'un Tiers.
+	 *
+	 * @param noIndividu
+	 * @throws EvenementCivilHandlerException
+	 *             si un ou plusieurs tiers sont trouvés
+	 */
+	protected void verifieNonExistenceTiers(Long noIndividu) throws EvenementCivilHandlerException {
+		if (context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu) != null) {
+			throw new EvenementCivilHandlerException("Le tiers existe déjà avec cet individu " + noIndividu
+					+ " alors que c'est une naissance");
+		}
+	}
 }

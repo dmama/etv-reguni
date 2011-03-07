@@ -70,7 +70,7 @@ public class LeveeTutelleHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de levée de tutelle avec un tuteur.");
 
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2008);
-		LeveeTutelle leveeTutelle = createLeveeTutelle(pupille);
+		LeveeTutelleAdapter leveeTutelle = createLeveeTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -108,10 +108,8 @@ public class LeveeTutelleHandlerTest extends AbstractEvenementHandlerTest {
 
 	}
 
-	private MockLeveeTutelle createLeveeTutelle(Individu pupille) {
-		MockLeveeTutelle leveeTutelle = new MockLeveeTutelle(pupille, null, DATE_LEVEE_TUTELLE, 4848);
-		leveeTutelle.setHandler(evenementCivilHandler);
-		return leveeTutelle;
+	private LeveeTutelleAdapter createLeveeTutelle(Individu pupille) {
+		return new LeveeTutelleAdapter(pupille, null, DATE_LEVEE_TUTELLE, 4848, context);
 	}
 
 }

@@ -68,7 +68,7 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de fin de permis C d'un individu ayant obtenu la nationalité suisse.");
 
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, DATE_FIN_PERMIS .year());
-		FinPermis finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
+		FinPermisAdapter finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -88,7 +88,7 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de fin de permis C d'un individu n'ayant pas obtenu la nationalité suisse.");
 
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_2, DATE_FIN_PERMIS .year());
-		FinPermis finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
+		FinPermisAdapter finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -108,7 +108,7 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de fin de permis autre que C.");
 
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_PERMIS_L, DATE_FIN_PERMIS .year());
-		FinPermis finPermis = createValidFinPermisNonC(individu, DATE_FIN_PERMIS );
+		FinPermisAdapter finPermis = createValidFinPermisNonC(individu, DATE_FIN_PERMIS );
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -123,16 +123,11 @@ public class FinPermisHandlerTest extends AbstractEvenementHandlerTest {
 
 	}
 
-	private FinPermis createValidFinPermisC(Individu individu, RegDate dateFinNationalite) {
-		MockFinPermis finPermis = new MockFinPermis(individu, null, dateFinNationalite, 5652, TypePermis.ETABLISSEMENT);
-		finPermis.setHandler(evenementCivilHandler);
-		return finPermis;
+	private FinPermisAdapter createValidFinPermisC(Individu individu, RegDate dateFinNationalite) {
+		return new FinPermisAdapter(individu, null, dateFinNationalite, 5652, TypePermis.ETABLISSEMENT, context);
 	}
 
-	private FinPermis createValidFinPermisNonC(Individu individu, RegDate dateFinNationalite) {
-		MockFinPermis finPermis = new MockFinPermis(individu, null, dateFinNationalite, 5652, TypePermis.COURTE_DUREE);
-		finPermis.setHandler(evenementCivilHandler);
-		finPermis.setHandler(evenementCivilHandler);
-		return finPermis;
+	private FinPermisAdapter createValidFinPermisNonC(Individu individu, RegDate dateFinNationalite) {
+		return new FinPermisAdapter(individu, null, dateFinNationalite, 5652, TypePermis.COURTE_DUREE, context);
 	}
 }

@@ -59,7 +59,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		}
 
 		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE, 2007);
-		Naissance naissance = createValidNaissance(bebe);
+		NaissanceAdapter naissance = createValidNaissance(bebe);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -89,7 +89,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		}
 
 		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_FIN_ANNEE, 2007);
-		Naissance naissance = createValidNaissance(bebe);
+		NaissanceAdapter naissance = createValidNaissance(bebe);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -118,7 +118,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de naissance.");
 
 		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_MAJEUR, 2007);
-		Naissance naissance = createValidNaissance(bebe);
+		NaissanceAdapter naissance = createValidNaissance(bebe);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
@@ -129,10 +129,8 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.isTrue(!erreurs.isEmpty(), "Une erreur aurait du survenir puisque l'individu est majeur");
 	}
 
-	private MockNaissance createValidNaissance(Individu individu) {
-		MockNaissance naissance = new MockNaissance(individu, null, individu.getDateNaissance(), 4848, null);
-		naissance.setHandler(evenementCivilHandler);
-		return naissance;
+	private NaissanceAdapter createValidNaissance(Individu individu) {
+		return new NaissanceAdapter(individu, null, individu.getDateNaissance(), 4848, null, context);
 	}
 
 	/**
@@ -182,7 +180,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu fils = serviceCivil.getIndividu(indFils, 2010);
-				final Naissance naissance = createValidNaissance(fils);
+				final NaissanceAdapter naissance = createValidNaissance(fils);
 
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

@@ -71,7 +71,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 	public void testReconciliationMarieSeul() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un individu marié seul.");
-		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_SEUL, null, DATE_RECONCILIATION);
+		final ReconciliationAdapter reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_SEUL, null, DATE_RECONCILIATION);
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -127,7 +127,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 	public void testReconciliationMariesADeux() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
-		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION);
+		final ReconciliationAdapter reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION);
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -189,7 +189,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 
 		RegDate DATE_RECONCILIATION_FUTURE = RegDate.get(2080, 1, 1);
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
-		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION_FUTURE);
+		final ReconciliationAdapter reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION_FUTURE);
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -212,7 +212,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals("L'erreur n'est pas la bonne", "La date de l'événement est dans le futur", erreur.getMessage());
 	}
 
-	private Reconciliation createReconciliation(final Long noIndividu, final Long noIndividuConjoint, final RegDate date) {
+	private ReconciliationAdapter createReconciliation(final Long noIndividu, final Long noIndividuConjoint, final RegDate date) {
 		/*
 		 * Simulation de séparation
 		 */
@@ -234,9 +234,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		final Individu individu = serviceCivil.getIndividu(noIndividu, date.year());
 		final Individu conjoint = (noIndividuConjoint == null ? null : serviceCivil.getIndividu(noIndividuConjoint, date.year()));
 
-		final MockReconciliation reconciliation = new MockReconciliation(individu, conjoint, date, 5586);
-		reconciliation.setHandler(evenementCivilHandler);
-		return reconciliation;
+		return new ReconciliationAdapter(individu, conjoint, date, 5586, context);
 	}
 
 	private EtatCivil createEtatCivilSeparation(Individu individu, Long noIndConjoint, RegDate dateSeparation) {

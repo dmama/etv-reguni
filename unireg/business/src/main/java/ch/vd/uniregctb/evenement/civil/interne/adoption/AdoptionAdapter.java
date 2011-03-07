@@ -20,7 +20,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
  * 
  * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
-public class AdoptionAdapter extends EvenementCivilInterneBase implements Adoption {
+public class AdoptionAdapter extends EvenementCivilInterneBase {
 
 	protected static Logger LOGGER = Logger.getLogger(AdoptionAdapter.class);
 

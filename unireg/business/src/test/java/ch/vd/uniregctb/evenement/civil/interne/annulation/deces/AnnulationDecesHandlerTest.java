@@ -82,12 +82,11 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-				final MockAnnulationDeces annulation = createValidAnnulationDeces(ind);
+				final AnnulationDecesAdapter annulation = createValidAnnulationDeces(ind);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				annulation.setHandler(evenementCivilHandler);
 				annulation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
@@ -166,12 +165,11 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
-				final MockAnnulationDeces annulation = createValidAnnulationDeces(individu);
+				final AnnulationDecesAdapter annulation = createValidAnnulationDeces(individu);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				annulation.setHandler(evenementCivilHandler);
 				annulation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
@@ -278,12 +276,11 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, 2008);
-				final MockAnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
+				final AnnulationDecesAdapter annulation = createValidAnnulationDeces(individu, conjoint);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				annulation.setHandler(evenementCivilHandler);
 				annulation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
@@ -357,12 +354,12 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 		});
 	}
 
-	private MockAnnulationDeces createValidAnnulationDeces(Individu individu) {
+	private AnnulationDecesAdapter createValidAnnulationDeces(Individu individu) {
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		return new MockAnnulationDeces(individu, principalPPId, null, null, DATE_DECES, 5652);
+		return new AnnulationDecesAdapter(individu, principalPPId, null, null, DATE_DECES, 5652, context);
 	}
 
-	private MockAnnulationDeces createValidAnnulationDeces(Individu individu, Individu conjoint) {
-		return new MockAnnulationDeces(individu, conjoint, DATE_DECES, 5652);
+	private AnnulationDecesAdapter createValidAnnulationDeces(Individu individu, Individu conjoint) {
+		return new AnnulationDecesAdapter(individu, conjoint, DATE_DECES, 5652, context);
 	}
 }

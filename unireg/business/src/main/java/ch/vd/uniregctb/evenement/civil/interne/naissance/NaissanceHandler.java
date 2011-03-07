@@ -4,12 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
-import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
@@ -18,8 +14,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -31,8 +25,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class NaissanceHandler extends EvenementCivilHandlerBase {
 
-	private static final Logger LOGGER = Logger.getLogger(NaissanceHandler.class);
-
 	/**
 	 * Vérifie que les informations sont complètes.
 	 * Pour un événement de déménagement, de séparation  ou de divorce (sans séparation préalable),
@@ -43,7 +35,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 * Les éventuels événements manquants de déménagement des enfants sont ignorés.
 	 */
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		/* Rien de spécial pour la naissance */
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -51,9 +43,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 */
 	@Override
 	protected void validateSpecific(EvenementCivilInterne evenementCivil, List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings) {
-		if ( FiscalDateHelper.isMajeurAt(evenementCivil.getIndividu(), RegDate.get()) ) {
-			errors.add( new EvenementCivilExterneErreur("L'individu ne devrait pas être majeur à la naissance"));
-		}
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -62,43 +52,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 * @throws EvenementCivilHandlerException
 	 */
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenementCivil, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		LOGGER.debug("Traitement de la naissance de l'individu : " + evenementCivil.getNoIndividu() );
-
-		try {
-			/*
-			 * Transtypage de l'événement en naissance
-			 */
-			final Naissance naissance = (Naissance) evenementCivil;
-			final Individu individu = naissance.getIndividu();
-			final RegDate dateEvenement = evenementCivil.getDate();
-
-			/*
-			 * Vérifie qu'aucun tiers n'existe encore rattaché à cet individu
-			 */
-			verifieNonExistenceTiers(individu.getNoTechnique());
-
-			/*
-			 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
-			 */
-			PersonnePhysique bebe = new PersonnePhysique(true);
-			bebe.setNumeroIndividu(individu.getNoTechnique());
-			bebe = (PersonnePhysique)getTiersDAO().save(bebe);
-			Audit.info(naissance.getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: "+bebe.getNumero()+")");
-
-			this.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
-
-			// [UNIREG-3244] on envoie les fairs-parts de naissance
-			final Contribuable parent = this.getService().getAutoriteParentaleDe(bebe, dateEvenement);
-			if (parent != null) {
-				this.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
-			}
-			
-			return new Pair<PersonnePhysique, PersonnePhysique>(bebe, null);
-		}
-		catch (Exception e) {
-			LOGGER.debug("Erreur lors de la sauvegarde du nouveau tiers", e);
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
-		}
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -110,7 +64,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new NaissanceAdapter(event, context, this);
+		return new NaissanceAdapter(event, context);
 	}
 
 }
