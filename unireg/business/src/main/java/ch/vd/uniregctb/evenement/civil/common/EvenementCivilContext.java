@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.common;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -11,18 +12,32 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public class EvenementCivilContext {
 
-	private ServiceCivilService serviceCivil;
-	private ServiceInfrastructureService serviceInfra;
-	private DataEventService dataEventService;
-	private boolean refreshCache;
-	private TiersService tiersService;
-	private TiersDAO tiersDAO;
-	private GlobalTiersIndexer indexer;
-	private MetierService metierService;
-	private AdresseService adresseService;
+	private final ServiceCivilService serviceCivil;
+	private final ServiceInfrastructureService serviceInfra;
+	private final DataEventService dataEventService;
+	private final boolean refreshCache;
+	private final TiersService tiersService;
+	private final TiersDAO tiersDAO;
+	private final GlobalTiersIndexer indexer;
+	private final MetierService metierService;
+	private final AdresseService adresseService;
+	private final EvenementFiscalService evenementFiscalService;
+
+	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra) {
+		this.serviceCivil = serviceCivil;
+		this.serviceInfra = serviceInfra;
+		this.dataEventService = null;
+		this.tiersService = null;
+		this.indexer = null;
+		this.metierService = null;
+		this.tiersDAO = null;
+		this.adresseService = null;
+		this.evenementFiscalService = null;
+		this.refreshCache = false;
+	}
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, boolean refreshCache) {
+	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService, boolean refreshCache) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
@@ -31,6 +46,7 @@ public class EvenementCivilContext {
 		this.metierService = metierService;
 		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;
+		this.evenementFiscalService = evenementFiscalService;
 		this.refreshCache = refreshCache;
 	}
 
@@ -68,5 +84,9 @@ public class EvenementCivilContext {
 
 	public AdresseService getAdresseService() {
 		return adresseService;
+	}
+
+	public EvenementFiscalService getEvenementFiscalService() {
+		return evenementFiscalService;
 	}
 }

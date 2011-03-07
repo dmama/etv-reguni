@@ -30,6 +30,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -61,6 +62,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private MetierService metierService;
 	private AdresseService adresseService;
 	private GlobalTiersIndexer indexer;
+	private EvenementFiscalService evenementFiscalService;
 
 	/**
 	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
@@ -254,7 +256,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			}
 
 			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO,
-					adresseService, refreshCache);
+					adresseService, evenementFiscalService, refreshCache);
 			final EvenementCivilInterneBase adapter = evenementCivilHandler.createAdapter(evenementCivilExterne, context);
 
 			/* 2.1 - lancement de la validation par le handler */
@@ -418,7 +420,13 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		this.adresseService = adresseService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIndexer(GlobalTiersIndexer indexer) {
 		this.indexer = indexer;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		this.evenementFiscalService = evenementFiscalService;
 	}
 }

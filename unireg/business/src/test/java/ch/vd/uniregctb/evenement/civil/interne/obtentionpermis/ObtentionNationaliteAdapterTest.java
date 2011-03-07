@@ -97,5 +97,5 @@ public class ObtentionNationaliteAdapterTest extends WithoutSpringTest {
 		}
 	};
 
-	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, null, null, null, null, null, null, false);
+	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService);
 }

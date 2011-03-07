@@ -79,7 +79,7 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		}
 	};
 
-	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, null, null, null, null, null, null, false);
+	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
 
 	@Test
 	public void testPermisCAvecNationalite() throws Exception {

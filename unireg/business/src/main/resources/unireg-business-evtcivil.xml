@@ -20,6 +20,7 @@
 		<property name="dataEventService" ref="dataEventService"/>
 		<property name="adresseService" ref="adresseService"/>
 		<property name="indexer" ref="globalTiersIndexer" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
 	</bean>
 
 	<!-- Les Handlers d'evt civils -->

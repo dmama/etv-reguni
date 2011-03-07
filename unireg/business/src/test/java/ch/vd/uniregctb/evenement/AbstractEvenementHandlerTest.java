@@ -34,6 +34,7 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 
 	protected EvenementCivilContext context;
 	protected DataEventService dataEventService;
+	protected EvenementFiscalService evenementFiscalService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -44,9 +45,10 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		eventSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierService.class, "metierService");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
+		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		eventSender.count = 0;
 
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, null, false);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, null, evenementFiscalService, false);
 	}
 
 	@Override
