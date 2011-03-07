@@ -35,7 +35,7 @@ public class ChangementNationaliteHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new ChangementNationaliteAdapter(event, context, this);
+		return new ChangementNationaliteAdapter(event, context);
 	}
 
 }

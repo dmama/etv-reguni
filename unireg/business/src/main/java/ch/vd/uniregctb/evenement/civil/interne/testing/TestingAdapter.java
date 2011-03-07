@@ -13,25 +13,37 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class TestingAdapter extends EvenementCivilInterneBase {
 
-	private TestingHandler handler;
-
-	protected TestingAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, TestingHandler handler) throws EvenementCivilInterneException {
+	protected TestingAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
 	}
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
+		if (getNumeroEvenement().equals(121L)) {
+			// On ne fait rien
+		}
+		if (getNumeroEvenement().equals(122L)) {
+			// a faire
+		}
+		if (getNumeroEvenement().equals(123L)) {
+			// On throw une Exception
+			throw new RuntimeException("L'événement n'est pas complet");
+		}
+		if (getNumeroEvenement().equals(124L)) {
+			erreurs.add(new EvenementCivilExterneErreur("Check completeness erreur"));
+			erreurs.add(new EvenementCivilExterneErreur("Again"));
+		}
+		if (getNumeroEvenement().equals(125L)) {
+			warnings.add(new EvenementCivilExterneErreur("Check completeness warn"));
+		}
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+		return null;
 	}
 }

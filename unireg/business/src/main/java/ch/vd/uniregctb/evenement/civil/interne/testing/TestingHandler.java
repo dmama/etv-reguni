@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
@@ -19,37 +20,21 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class TestingHandler extends EvenementCivilHandlerBase {
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-
-		if (target.getNumeroEvenement().equals(121L)) {
-			// On ne fait rien
-		}
-		if (target.getNumeroEvenement().equals(122L)) {
-			// a faire
-		}
-		if (target.getNumeroEvenement().equals(123L)) {
-			// On throw une Exception
-			throw new RuntimeException("L'événement n'est pas complet");
-		}
-		if (target.getNumeroEvenement().equals(124L)) {
-			erreurs.add(new EvenementCivilExterneErreur("Check completeness erreur"));
-			erreurs.add(new EvenementCivilExterneErreur("Again"));
-		}
-		if (target.getNumeroEvenement().equals(125L)) {
-			warnings.add(new EvenementCivilExterneErreur("Check completeness warn"));
-		}
+		throw new NotImplementedException();
 	}
 
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new TestingAdapter(event, context, this);
+		return new TestingAdapter(event, context);
 	}
 
 	@Override

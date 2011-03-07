@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.nationalite;
 
 import java.util.List;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
@@ -13,25 +14,22 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class ChangementNationaliteAdapter extends EvenementCivilInterneBase {
 
-	private ChangementNationaliteHandler handler;
-
-	protected ChangementNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, ChangementNationaliteHandler handler) throws EvenementCivilInterneException {
+	protected ChangementNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
 	}
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+		throw new NotImplementedException();
 	}
 }

@@ -10,28 +10,29 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionDateFinNationaliteAdapter extends EvenementCivilInterneBase {
 
-	private CorrectionDateFinNationaliteHandler handler;
-
-	protected CorrectionDateFinNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, CorrectionDateFinNationaliteHandler handler) throws EvenementCivilInterneException {
+	protected CorrectionDateFinNationaliteAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
 	}
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+		if (getType() == TypeEvenementCivil.CORREC_DATE_FIN_NATIONALITE_SUISSE) {
+			// TODO (PBO) CorrectionDateFinNationaliteHandler.handle
+			throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");
+		}
+		//else CORREC_DATE_FIN_NATIONALITE_NON_SUISSE rien à faire
+		return null;
 	}
 }

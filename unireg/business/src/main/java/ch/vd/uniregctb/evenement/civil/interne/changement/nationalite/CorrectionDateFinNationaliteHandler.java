@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
@@ -25,19 +26,16 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class CorrectionDateFinNationaliteHandler extends EvenementCivilHandlerBase {
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		throw new NotImplementedException();
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		throw new NotImplementedException();
 	}
 
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		if (evenement.getType() == TypeEvenementCivil.CORREC_DATE_FIN_NATIONALITE_SUISSE) {
-			// TODO (PBO) CorrectionDateFinNationaliteHandler.handle
-			throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");
-		}
-		//else CORREC_DATE_FIN_NATIONALITE_NON_SUISSE rien à faire
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -50,7 +48,7 @@ public class CorrectionDateFinNationaliteHandler extends EvenementCivilHandlerBa
 
 	@Override
 	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new CorrectionDateFinNationaliteAdapter(event, context, this);
+		return new CorrectionDateFinNationaliteAdapter(event, context);
 	}
 
 }

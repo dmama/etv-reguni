@@ -209,13 +209,13 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 
 		//test OK
 		final EvenementCivilInterneBase even = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1),356, context);
-		handler.validate(even, erreurs, warnings);
+		even.validate(erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 
 		//test KO date null
 		final EvenementCivilInterneBase evenDateNull = new DummyEvenementCivilInterne(individu, null, null, null, 356, context);
-		handler.validate(evenDateNull, erreurs, warnings);
+		evenDateNull.validate(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		assertContent(Arrays.asList("L'événement n'est pas daté"), erreurs);
@@ -224,7 +224,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 
 		//test KO date future
 		final EvenementCivilInterneBase evenDateFuture = new DummyEvenementCivilInterne(individu, null, null, RegDate.get().addYears(2), 356, context);
-		handler.validate(evenDateFuture, erreurs, warnings);
+		evenDateFuture.validate(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		assertContent(Arrays.asList("La date de l'événement est dans le futur"), erreurs);
@@ -233,7 +233,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 
 		//test KO numéro OFS null
 		final EvenementCivilInterneBase evenOFSNull = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1), null, context);
-		handler.validate(evenOFSNull, erreurs, warnings);
+		evenOFSNull.validate(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		assertContent(Arrays.asList("La commune d'annonce n'est pas renseignée"), erreurs);
@@ -242,7 +242,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 
 		//test OK numéro OFS commune du sentier
 		final EvenementCivilInterneBase evenOFSSentier = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1), 8000, context);
-		handler.validate(evenOFSSentier, erreurs, warnings);
+		evenOFSSentier.validate(erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		erreurs.clear();
