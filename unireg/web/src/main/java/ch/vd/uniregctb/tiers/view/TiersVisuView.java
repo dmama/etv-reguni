@@ -1,14 +1,12 @@
 package ch.vd.uniregctb.tiers.view;
 
-import java.util.List;
-
 /**
  * Structure model pour l'ecran de visualisation des Tiers
  *
  * @author xcikce
  *
  */
-public class TiersVisuView extends TiersView{
+public class TiersVisuView extends TiersView {
 
 	public static final String MODIF_FISCAL = "FISCAL";
 	public static final String MODIF_CIVIL = "CIVIL";
@@ -20,23 +18,11 @@ public class TiersVisuView extends TiersView{
 	public static final String MODIF_DI = "DI";
 	public static final String MODIF_MOUVEMENT = "MVT";
 
-	private boolean isAllowed;
-
 	private boolean adressesHisto;
-
 
 	private boolean adressesHistoCiviles;
 
 	private boolean adressesHistoCivilesConjoint;
-	@Override
-	public boolean isAllowed() {
-		return isAllowed;
-	}
-
-	@Override
-	public void setAllowed(boolean isAllowed) {
-		this.isAllowed = isAllowed;
-	}
 
 	public boolean isAdressesHisto() {
 		return adressesHisto;
