@@ -6,19 +6,20 @@ import java.util.List;
 import org.junit.Test;
 
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilIgnoreAdapter;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class DeclarationEtatCompletIndividuECH99HandlerTest extends AbstractEvenementHandlerTest {
 
 	@Test
 	public void testCompleteness() {
-		final EvenementCivilInterne evt = new MockDeclarationEtatCompletIndividuECH99();
-		final DeclarationEtatCompletIndividuECH99Handler handler = new DeclarationEtatCompletIndividuECH99Handler();
+		final EvenementCivilInterne evt = new EvenementCivilIgnoreAdapter(TypeEvenementCivil.ETAT_COMPLET, context);
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		handler.checkCompleteness(evt, erreurs, warnings);
+		evt.checkCompleteness(erreurs, warnings);
 
 		assertEmpty(erreurs);
 		assertEmpty(warnings);
@@ -26,11 +27,10 @@ public class DeclarationEtatCompletIndividuECH99HandlerTest extends AbstractEven
 
 	@Test
 	public void testHandle() {
-		final EvenementCivilInterne evt = new MockDeclarationEtatCompletIndividuECH99();
-		final DeclarationEtatCompletIndividuECH99Handler handler = new DeclarationEtatCompletIndividuECH99Handler();
+		final EvenementCivilInterne evt = new EvenementCivilIgnoreAdapter(TypeEvenementCivil.ETAT_COMPLET, context);
 
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		handler.handle(evt, warnings);
+		evt.handle(warnings);
 
 		assertEmpty(warnings);
 	}

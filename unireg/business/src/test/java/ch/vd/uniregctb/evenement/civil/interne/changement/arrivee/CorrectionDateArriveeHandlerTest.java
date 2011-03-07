@@ -13,7 +13,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
-import ch.vd.uniregctb.evenement.civil.common.MockEvenementCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -66,10 +65,9 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 		});
 	}
 
-	private MockEvenementCivil createValidEvenement(long noIndividu, int ofsCommune, Long principalId) {
+	private CorrectionDateArriveeAdapter createValidEvenement(long noIndividu, int ofsCommune, Long principalId) {
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
-		final MockEvenementCivil evt = new MockCorrectionDateArrivee(individu, principalId, null, null, DATE_EVT, ofsCommune);
-		return evt;
+		return new CorrectionDateArriveeAdapter(individu, principalId, null, null, DATE_EVT, ofsCommune, context);
 	}
 
 	@Test
@@ -84,7 +82,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_MINEUR, 123454, ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_MINEUR, 123454, ppId);
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
@@ -111,7 +109,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_MAJEUR_SANS_FOR, 123454, ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_MAJEUR_SANS_FOR, 123454, ppId);
 		assertErreurs(evt, Arrays.asList("L'individu n'a pas de for fiscal principal connu."));
 	}
 
@@ -128,7 +126,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_HS, 123454, ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_HS, 123454, ppId);
 		assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
 	}
 
@@ -145,7 +143,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_MAUVAISE_COMMUNE, MockCommune.Aubonne.getNoOFS(), ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_MAUVAISE_COMMUNE, MockCommune.Aubonne.getNoOFS(), ppId);
 		assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
 	}
 
@@ -163,7 +161,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
 		final String msg = String.format("Le dernier for principal sur le contribuable %s n'a pas été ouvert pour un motif d'arrivée (trouvé : %s).",
 										FormatNumeroHelper.numeroCTBToDisplay(ppId), MotifFor.CHGT_MODE_IMPOSITION.getDescription(true));
 		assertErreurs(evt, Arrays.asList(msg));
@@ -182,7 +180,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
 		assertErreurs(evt, Arrays.asList("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
 	}
 
@@ -199,7 +197,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_DEJA_BONNE_DATE, MockCommune.Cossonay.getNoOFS(), ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_DEJA_BONNE_DATE, MockCommune.Cossonay.getNoOFS(), ppId);
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
@@ -227,7 +225,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
@@ -279,7 +277,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_MARIE, MockCommune.Cossonay.getNoOFS(), ids.ppal);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_MARIE, MockCommune.Cossonay.getNoOFS(), ids.ppal);
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
@@ -320,7 +318,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 			}
 		});
 
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
@@ -358,7 +356,7 @@ public class CorrectionDateArriveeHandlerTest extends AbstractEvenementHandlerTe
 	@Test
 	@NotTransactional
 	public void testIndividuInconnu() throws Exception {
-		final MockEvenementCivil evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
+		final CorrectionDateArriveeAdapter evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
 		assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", NO_IND_INCONNU)));
 	}
 }

@@ -2,36 +2,79 @@ package ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class AnnulationArriveeAdapter extends EvenementCivilInterneBase implements AnnulationArrivee {
+public class AnnulationArriveeAdapter extends EvenementCivilInterneBase {
 
-	private AnnulationArriveeHandler handler;
-
-	protected AnnulationArriveeAdapter(EvenementCivilExterne evenement, EvenementCivilContext context, AnnulationArriveeHandler handler) throws EvenementCivilInterneException {
+	protected AnnulationArriveeAdapter(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
 		super(evenement, context);
-		this.handler = handler;
+	}
+
+	/**
+	 * Pour le testing uniquement.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected AnnulationArriveeAdapter(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.SUP_ARRIVEE_DANS_COMMUNE, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.checkCompleteness(this, erreurs, warnings);
 	}
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		handler.validateSpecific(this, erreurs, warnings);
+		getPersonnePhysiqueOrFillErrors(getNoIndividu(), erreurs);
 	}
 
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		return handler.handle(this, warnings);
+
+		// [UNIREG-3017] si le CTB PP est mineur (ou le couple à la date de l'événement CTB MC a deux individus mineurs) et n'a aucun for (du tout) ou que tous sont annulés -> Traiter l'événement tout droit
+		final Individu individu = getIndividu();
+		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		final EnsembleTiersCouple couple = context.getTiersService().getEnsembleTiersCouple(pp, getDate());
+		final boolean mineur;
+		if (couple == null) {
+			mineur = individu.isMineur(getDate());
+		}
+		else {
+			final boolean mineurPpal = individu.isMineur(getDate());
+			final PersonnePhysique conjoint = couple.getConjoint(pp);
+			final boolean mineurConjoint = conjoint == null || context.getTiersService().isMineur(conjoint, getDate());
+			mineur = mineurPpal && mineurConjoint;
+		}
+
+		boolean erreur = true;
+		if (mineur) {
+			final Contribuable ctb = couple != null ? couple.getMenage() : pp;
+			final List<ForFiscal> fors = ctb.getForsFiscauxNonAnnules(false);
+			if (fors == null || fors.size() == 0) {
+				Audit.info(getNumeroEvenement(), String.format("Aucun for non-annulé existant sur le contribuable %s (%s) : rien à faire",
+						FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()),
+						couple != null ? "ménage de personnes physiques mineures" : "mineur"));
+				erreur = false;
+			}
+		}
+
+		if (erreur) {
+			throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");
+		}
+		return null;
 	}
 }

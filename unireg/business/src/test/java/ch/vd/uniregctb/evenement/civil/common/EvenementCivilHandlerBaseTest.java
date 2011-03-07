@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
@@ -38,8 +39,9 @@ import static junit.framework.Assert.assertTrue;
 
 public class EvenementCivilHandlerBaseTest extends BusinessTest {
 
-	private TiersService tiersService;
 	private TiersDAO tiersDAO;
+	private EvenementCivilContext context;
+	
 	private final EvenementCivilHandlerBase handler = new EvenementCivilHandlerBase() {
 
 		public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
@@ -65,16 +67,45 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 
 	};
 
+	private class DummyEvenementCivilInterne extends EvenementCivilInterneBase {
+
+		protected DummyEvenementCivilInterne(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
+		                                     EvenementCivilContext context) {
+			super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		}
+
+		@Override
+		protected void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		}
+
+		@Override
+		public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		}
+
+		@Override
+		public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+			return null;
+		}
+	}
+
 	private static final long NUMERO_INDIVIDU = 54321L;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		tiersService = getBean(TiersService.class, "tiersService");
+		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		handler.setService(tiersService);
 		serviceCivil.setUp(new DefaultMockServiceCivil());
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, null, null, tiersDAO, null, null, true);
+
+		doInNewTransaction(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				return addHabitant(NUMERO_INDIVIDU);
+			}
+		});
 	}
 
 	@Test
@@ -177,13 +208,13 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400);
 
 		//test OK
-		final MockEvenementCivil even = new MockEvenementCivil(individu, null, null, RegDate.get(1990, 7, 1),356);
+		final EvenementCivilInterneBase even = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1),356, context);
 		handler.validate(even, erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 
 		//test KO date null
-		final MockEvenementCivil evenDateNull = new MockEvenementCivil(individu, null, null, null, 356);
+		final EvenementCivilInterneBase evenDateNull = new DummyEvenementCivilInterne(individu, null, null, null, 356, context);
 		handler.validate(evenDateNull, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -192,7 +223,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		warnings.clear();
 
 		//test KO date future
-		final MockEvenementCivil evenDateFuture = new MockEvenementCivil(individu, null, null, RegDate.get().addYears(2), 356);
+		final EvenementCivilInterneBase evenDateFuture = new DummyEvenementCivilInterne(individu, null, null, RegDate.get().addYears(2), 356, context);
 		handler.validate(evenDateFuture, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -201,7 +232,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		warnings.clear();
 
 		//test KO numéro OFS null
-		final MockEvenementCivil evenOFSNull = new MockEvenementCivil(individu, null, null, RegDate.get(1990, 7, 1), null);
+		final EvenementCivilInterneBase evenOFSNull = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1), null, context);
 		handler.validate(evenOFSNull, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -210,7 +241,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		warnings.clear();
 
 		//test OK numéro OFS commune du sentier
-		final MockEvenementCivil evenOFSSentier = new MockEvenementCivil(individu, null, null, RegDate.get(1990, 7, 1), 8000);
+		final EvenementCivilInterneBase evenOFSSentier = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1), 8000, context);
 		handler.validate(evenOFSSentier, erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());

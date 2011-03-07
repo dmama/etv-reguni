@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
-import ch.vd.uniregctb.evenement.civil.common.MockEvenementCivil;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -24,9 +23,9 @@ import ch.vd.uniregctb.type.TypePermis;
 
 public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementHandlerTest {
 
-	private MockEvenementCivil createEvt(long noIndividu, int ofsCommune, RegDate date, Long principalId) {
+	private CorrectionDebutValiditePermisAdapter createEvt(long noIndividu, int ofsCommune, RegDate date, Long principalId) {
 		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400, AttributeIndividu.PERMIS);
-		return new MockCorrectionDebutValiditePermis(individu, principalId, null, null, date, ofsCommune);
+		return new CorrectionDebutValiditePermisAdapter(individu, principalId, null, null, date, ofsCommune, context);
 	}
 
 	@Test
@@ -47,7 +46,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, null);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, null);
 		assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", noIndividu)));
 	}
 
@@ -77,7 +76,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -108,7 +107,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -139,7 +138,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -170,7 +169,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -202,7 +201,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -234,7 +233,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 	}
 
@@ -270,7 +269,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 	}
 
@@ -310,7 +309,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 	}
 
@@ -349,7 +348,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -389,7 +388,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 	}
 
@@ -419,7 +418,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -450,7 +449,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertSansErreurNiWarning(evt);
 	}
 
@@ -481,7 +480,7 @@ public class CorrectionDebutValiditePermisHandlerTest extends AbstractEvenementH
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		final MockEvenementCivil evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+		final CorrectionDebutValiditePermisAdapter evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
 		assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 	}
 }

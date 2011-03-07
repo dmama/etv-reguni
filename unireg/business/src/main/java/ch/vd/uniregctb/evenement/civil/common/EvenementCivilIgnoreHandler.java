@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.common;
 
 import java.util.List;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -16,17 +17,16 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 public abstract class EvenementCivilIgnoreHandler extends EvenementCivilHandlerBase {
 
 	public void checkCompleteness(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// pas de validation
+		throw new NotImplementedException();
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivilInterne target, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// pas de validation
+		throw new NotImplementedException();
 	}
 
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		// simplement ignoré
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override

@@ -12,8 +12,8 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandler;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.MockEvenementCivil;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -73,10 +73,9 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		return getBean(EvenementFiscalService.class,"evenementFiscalService");
 	}
 
-	protected void launchEvent(final MockEvenementCivil evtCivil, final List<EvenementCivilExterneErreur> erreurs, final List<EvenementCivilExterneErreur> warnings) throws Exception {
+	protected void launchEvent(final EvenementCivilInterne evtCivil, final List<EvenementCivilExterneErreur> erreurs, final List<EvenementCivilExterneErreur> warnings) throws Exception {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				evtCivil.setHandler(evenementCivilHandler);
 				evtCivil.checkCompleteness(erreurs, warnings);
 				if (erreurs.isEmpty()) {
 					evtCivil.validate(erreurs, warnings);
@@ -89,7 +88,7 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		});
 	}
 
-	protected void assertSansErreurNiWarning(MockEvenementCivil evt) throws Exception {
+	protected void assertSansErreurNiWarning(EvenementCivilInterne evt) throws Exception {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		launchEvent(evt, erreurs, warnings);
@@ -97,7 +96,7 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		Assert.assertEquals(0, warnings.size());
 	}
 
-	protected void assertErreurs(MockEvenementCivil evt, List<String> messagesErreurs) throws Exception {
+	protected void assertErreurs(EvenementCivilInterne evt, List<String> messagesErreurs) throws Exception {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		try {
