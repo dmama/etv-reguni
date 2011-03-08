@@ -29,8 +29,8 @@
 	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.DynamicXAMCF">
 		<property name="jdbcProfile" value="oracle" />
 		<property name="oracleServerName" value="sso0209v" />
-		<property name="oraclePortNumber" value="1525" />
-		<property name="oracleDatabaseName" value="FURI" />
+		<property name="oraclePortNumber" value="1526" />
+		<property name="oracleDatabaseName" value="FUNIREGI" />
 		<property name="oracleUserName" value="UNIREGI2" />
 		<property name="oraclePassword" value="uniregi2_082" />
 		<property name="postgresqlServerName" value="${testprop.postgresql.jdbc.server}" />
