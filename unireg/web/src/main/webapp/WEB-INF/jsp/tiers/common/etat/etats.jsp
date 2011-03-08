@@ -24,12 +24,7 @@
 			</c:if>
 		</display:column>
 		<display:column style="action">
-			<c:if test="${!etat.annule}">
-				<img src="../images/consult_off.gif" title="${etat.logModifUser}-<fmt:formatDate value="${etat.logModifDate}" pattern="dd.MM.yyyy HH:mm:ss"/>" />
-			</c:if>
-			<c:if test="${etat.annule}">
-				<img src="../images/consult_off.gif" title="${etat.annulationUser}-<fmt:formatDate value="${etat.annulationDate}" pattern="dd.MM.yyyy HH:mm:ss"/>" />
-			</c:if>
+			<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
 		</display:column>
 	<display:setProperty name="paging.banner.all_items_found" value=""/>
 	<display:setProperty name="paging.banner.one_item_found" value=""/>

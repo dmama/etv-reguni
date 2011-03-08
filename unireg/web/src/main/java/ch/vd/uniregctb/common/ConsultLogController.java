@@ -17,6 +17,8 @@ import ch.vd.uniregctb.adresse.AdresseTiersDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationDAO;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.PeriodiciteDAO;
@@ -56,6 +58,8 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	private EvenementCivilExterneDAO evenementCivilExterneDAO;
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
+	private EtatDeclarationDAO etatDeclarationDAO;
+
 	private PlatformTransactionManager transactionManager;
 
 	public final static String ID_PARAMETER_NAME = "id";
@@ -67,7 +71,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	public final static String NATURE_DI_PARAMETER_VALUE = "DI";
 	public final static String NATURE_LR_PARAMETER_VALUE = "LR";
 	public final static String NATURE_DELAI_PARAMETER_VALUE = "Delai";
-	public final static String NATURE_ETAT_PARAMETER_VALUE = "Etat";
+	public final static String NATURE_ETAT_PARAMETER_VALUE = "EtatDeclaration";
 	public final static String NATURE_TIERS_PARAMETER_VALUE = "Tiers";
 	public final static String NATURE_MOUVEMENT_PARAMETER_VALUE = "MouvementDossier";
 	public final static String NATURE_TACHE_PARAMETER_VALUE = "Tache";
@@ -147,6 +151,10 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 				else if (nature.equals(NATURE_PERIODICITE_PARAMETER_VALUE)) {
 					Periodicite periodicite= periodiciteDAO.get(id);
 					return fillConsultLogView(periodicite);
+				}
+				else if (nature.equals(NATURE_ETAT_PARAMETER_VALUE)) {
+					EtatDeclaration etatDeclaration= etatDeclarationDAO.get(id);
+					return fillConsultLogView(etatDeclaration);
 				}
 				return null;
 			}
@@ -245,5 +253,9 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 
 	public void setPeriodiciteDAO(PeriodiciteDAO periodiciteDAO) {
 		this.periodiciteDAO = periodiciteDAO;
+	}
+
+	public void setEtatDeclarationDAO(EtatDeclarationDAO etatDeclarationDAO) {
+		this.etatDeclarationDAO = etatDeclarationDAO;
 	}
 }

@@ -71,6 +71,8 @@
 
 	<bean id="periodiciteDAO" class="ch.vd.uniregctb.declaration.PeriodiciteDAOImpl" parent="hibernateDaoSupport"/>
 
+	<bean id="etatDeclarationDAO" class="ch.vd.uniregctb.declaration.EtatDeclarationDAOImpl" parent="hibernateDaoSupport"/>
+
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDaoSupport">
