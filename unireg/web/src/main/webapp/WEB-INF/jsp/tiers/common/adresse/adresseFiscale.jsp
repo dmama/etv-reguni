@@ -12,7 +12,7 @@
 
 <c:if test="${not empty adresses}">	
 <display:table name="${adresses}" id="adresse" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-		<display:column  sortable ="true" titleKey="label.utilisationAdresse">
+		<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 			<fmt:message key="option.usage.${adresse.usage}" />
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">

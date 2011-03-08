@@ -93,3 +93,15 @@ td.action {
 	text-align: center;
 }
 
+td.usage {
+	width: 10%
+}
+td.localite {
+	width: 20%
+}
+
+td.pays {
+	width: 20%
+}
+
+

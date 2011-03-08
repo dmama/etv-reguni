@@ -8,7 +8,7 @@
 		<c:when test="${membre == 'principal'}">
 			<c:if test="${command.exceptionAdresseCiviles == null}">
 				<display:table name="${command.historiqueAdressesCiviles}" id="adresseCivile" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator">
-					<display:column  sortable ="true" titleKey="label.utilisationAdresse">
+					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 						<fmt:message key="option.usage.civil.${adresseCivile.usageCivil}" />
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
@@ -31,17 +31,6 @@
 							<unireg:infra entityId="${adresseCivile.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
 						</c:if>
 					</display:column>
-					<display:column sortable ="true" titleKey="label.adresse.permanente" >
-						<c:if test="${!adresseCivile.annule}">
-							<c:if test="${adresseCivile.id != null}">
-								<input type="checkbox" <c:if test="${adresseCivile.permanente}">checked</c:if> disabled="disabled" />
-							</c:if>
-						</c:if>
-					</display:column>
-					<display:column sortable ="true" titleKey="label.adresse.source">
-							<fmt:message key="option.source.${adresseCivile.source}" />
-							<c:if test="${adresseCivile.default}">(<fmt:message key="option.source.default.tag" />)</c:if>
-					</display:column>
 					<display:column style="action">
 						<c:if test="${page == 'visu' }">
 							<c:if test="${adresseCivile.id != null}">
@@ -61,7 +50,7 @@
 		<c:when test="${membre == 'conjoint'}">
 			<c:if test="${command.exceptionAdresseCivilesConjoint == null}">
 				<display:table name="${command.historiqueAdressesCivilesConjoint}" id="adresseCivileConjoint" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator">
-					<display:column  sortable ="true" titleKey="label.utilisationAdresse">
+					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 						<fmt:message key="option.usage.civil.${adresseCivileConjoint.usageCivil}" />
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
@@ -83,17 +72,6 @@
 						<c:if test="${adresseCivileConjoint.paysOFS != null }">
 							<unireg:infra entityId="${adresseCivileConjoint.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
 						</c:if>
-					</display:column>
-					<display:column sortable ="true" titleKey="label.adresse.permanente" >
-						<c:if test="${!adresseCivileConjoint.annule}">
-							<c:if test="${adresseCivileConjoint.id != null}">
-								<input type="checkbox" <c:if test="${adresseCivileConjoint.permanente}">checked</c:if> disabled="disabled" />
-							</c:if>
-						</c:if>
-					</display:column>
-					<display:column sortable ="true" titleKey="label.adresse.source">
-							<fmt:message key="option.source.${adresseCivileConjoint.source}" />
-							<c:if test="${adresseCivileConjoint.default}">(<fmt:message key="option.source.default.tag" />)</c:if>
 					</display:column>
 					<display:column style="action">
 						<c:if test="${page == 'visu' }">
