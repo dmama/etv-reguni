@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -51,7 +52,7 @@ public class TutelleTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR , habitant, 0L, null, 1234, null);
-		Tutelle adapter = new Tutelle(evenement, context);
+		Tutelle adapter = new Tutelle(evenement, context, options);
 		Assert.notNull( adapter.getTuteur(), "le tuteur n'a pas pu être récupéré");
 		Assert.isNull( adapter.getTuteurGeneral(), "le tuteur general ne devrait pas exister");
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.CONSEIL_LEGAL, "le type de tutelle n'a pas été correctement récupéré");
@@ -67,7 +68,7 @@ public class TutelleTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL , habitant, 0L, null, 1234, null);
-		Tutelle adapter = new Tutelle(evenement, context);
+		Tutelle adapter = new Tutelle(evenement, context, options);
 		Assert.isNull( adapter.getTuteur(), "le tuteur ne devrait pas exister");
 		Assert.notNull( adapter.getTuteurGeneral(), "le tuteur general n'a pas pu être récupéré");
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.TUTELLE, "le type de tutelle n'a pas été correctement récupéré");
@@ -83,7 +84,7 @@ public class TutelleTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_TUTELLE);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_TUTELLE , habitant, 0L, null, 1234, null);
-		Tutelle adapter = new Tutelle(evenement, context);
+		Tutelle adapter = new Tutelle(evenement, context, options);
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.TUTELLE, "le type de tutelle n'a pas été correctement récupéré");
 	}
 
@@ -97,7 +98,7 @@ public class TutelleTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_CURATELLE);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CURATELLE , habitant, 0L, null, 1234, null);
-		Tutelle adapter = new Tutelle(evenement, context);
+		Tutelle adapter = new Tutelle(evenement, context, options);
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.CURATELLE, "le type de tutelle n'a pas été correctement récupéré");
 	}
 
@@ -111,7 +112,7 @@ public class TutelleTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL);
 		EvenementCivilExterne
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL , habitant, 0L, null, 1234, null);
-		Tutelle adapter = new Tutelle(evenement, context);
+		Tutelle adapter = new Tutelle(evenement, context, options);
 		Assert.isTrue(adapter.getTypeTutelle() == TypeTutelle.CONSEIL_LEGAL, "le type de tutelle n'a pas été correctement récupéré");
 	}
 
@@ -163,4 +164,5 @@ public class TutelleTest extends WithoutSpringTest {
 	};
 
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService);
+	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 }

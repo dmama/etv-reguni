@@ -7,6 +7,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
@@ -24,8 +25,8 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class AnnulationTutelle extends EvenementCivilInterne {
 
-	protected AnnulationTutelle(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected AnnulationTutelle(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+		super(evenement, context, options);
 	}
 
 	/**

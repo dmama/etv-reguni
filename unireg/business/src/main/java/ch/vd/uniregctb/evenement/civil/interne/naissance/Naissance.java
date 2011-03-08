@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
@@ -28,8 +29,8 @@ public class Naissance extends EvenementCivilInterne {
 
 	private final List<Individu> parents = new ArrayList<Individu>();
 
-	protected Naissance(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected Naissance(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+		super(evenement, context, options);
 
 		/* Récupération des parents du nouveau né */
 		final Individu bebe = getIndividu();

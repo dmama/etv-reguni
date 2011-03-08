@@ -8,6 +8,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
@@ -16,8 +17,8 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class CorrectionFiliation extends ChangementBase {
 
-	protected CorrectionFiliation(EvenementCivilExterne evenement, EvenementCivilContext context, CorrectionFiliationTranslationStrategy handler) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected CorrectionFiliation(EvenementCivilExterne evenement, EvenementCivilContext context, CorrectionFiliationTranslationStrategy handler, EvenementCivilOptions options) throws EvenementCivilInterneException {
+		super(evenement, context, options);
 	}
 
 	@Override

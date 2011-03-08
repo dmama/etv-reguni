@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
@@ -53,8 +54,8 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	 */
 	private CommuneSimple nouvelleCommunePrincipale;
 
-	protected Demenagement(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected Demenagement(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+		super(evenement, context, options);
 
 		// il faut récupérer les adresses actuelles, ce seront les nouvelles
 		// adresses

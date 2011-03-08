@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.evenement.civil.interne.mariage.Mariage;
@@ -68,7 +69,8 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		 * Création et initialisation de l'adapter
 		 */
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
-		final EvenementCivilInterne adapter = new Arrivee(evenementArriveeCouple, context);
+		final EvenementCivilOptions options = new EvenementCivilOptions(false);
+		final EvenementCivilInterne adapter = new Arrivee(evenementArriveeCouple, context, options);
 
 		/*
 		 * Test de la méthode init dans ce cas
@@ -116,8 +118,9 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				evtMariage = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, null, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
 
 		// passage dans l'init de l'adapter
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, null, null, null, true);
-		final EvenementCivilInterne adapter = new Mariage(evtMariage, context);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, null, null, null);
+		final EvenementCivilOptions options = new EvenementCivilOptions(true);
+		final EvenementCivilInterne adapter = new Mariage(evtMariage, context, options);
 
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getTiersChanged());
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getDroitsChanged());

@@ -5,6 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -29,6 +30,7 @@ public class SeparationTest extends WithoutSpringTest {
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new DefaultMockServiceCivil();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Test
 	public void testGetAncienConjointMariageSeul() throws Exception {
@@ -36,7 +38,7 @@ public class SeparationTest extends WithoutSpringTest {
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
-		Separation adapter = new Separation(evenementsCivils, context, null);
+		Separation adapter = new Separation(evenementsCivils, context, null, options);
 		assertNull("le conjoint d'un marié seul ne doit pas exister", adapter.getAncienConjoint());
 	}
 	
@@ -46,7 +48,7 @@ public class SeparationTest extends WithoutSpringTest {
 		momo.setNumero(INDIVIDU_MARIE);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, 0L, null, 1234, null );
-		Separation adapter = new Separation(evenementsCivils, context, null);
+		Separation adapter = new Separation(evenementsCivils, context, null, options);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getAncienConjoint());
 	}
 	
@@ -56,7 +58,7 @@ public class SeparationTest extends WithoutSpringTest {
 		david.setNumero(INDIVIDU_PACSE);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, 0L, null, 1234, null );
-		Separation adapter = new Separation(evenementsCivils, context, null);
+		Separation adapter = new Separation(evenementsCivils, context, null, options);
 		assertNotNull("le conjoint d'un pacsé doit exister", adapter.getAncienConjoint());
 	}
 }

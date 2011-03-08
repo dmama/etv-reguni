@@ -11,6 +11,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
@@ -28,6 +29,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	protected EvenementCivilContext context;
 	protected DataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
+	protected EvenementCivilOptions options;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -40,7 +42,8 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		eventSender.count = 0;
 
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, null, evenementFiscalService, false);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, null, evenementFiscalService);
+		options = new EvenementCivilOptions(false);
 	}
 
 	@Override

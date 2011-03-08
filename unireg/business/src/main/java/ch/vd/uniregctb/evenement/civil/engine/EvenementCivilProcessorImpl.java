@@ -16,26 +16,19 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -49,16 +42,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorImpl.class);
 
 	private PlatformTransactionManager transactionManager;
-	private ServiceCivilService serviceCivilService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private EvenementCivilExterneDAO evenementCivilExterneDAO;
 	private TiersDAO tiersDAO;
-	private DataEventService dataEventService;
-	private TiersService tiersService;
-	private MetierService metierService;
-	private AdresseService adresseService;
-	private GlobalTiersIndexer indexer;
-	private EvenementFiscalService evenementFiscalService;
 
 	private EvenementCivilTranslator evenementCivilTranslator;
 
@@ -242,17 +228,16 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				evenementCivilExterne.setHabitantConjointId(conjointID);
 			}
 
-			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO,
-					adresseService, evenementFiscalService, refreshCache);
-			final EvenementCivilInterne event = evenementCivilTranslator.toInterne(evenementCivilExterne, context);
+			final EvenementCivilOptions options = new EvenementCivilOptions(refreshCache);
+			final EvenementCivilInterne event = evenementCivilTranslator.toInterne(evenementCivilExterne, options);
 
-			/* 2.1 - lancement de la validation par le handler */
+			/* 2.1 - lancement de la validation */
 			event.checkCompleteness(erreurs, warnings);
 
-			/* 2.2 - lancement de la validation par le handler */
+			/* 2.2 - lancement de la validation */
 			if (erreurs.isEmpty()) {
 				event.validate(erreurs, warnings);
-				/* 2.3 - lancement du traitement par le handler */
+				/* 2.3 - lancement du traitement */
 				if (erreurs.isEmpty()) {
 					final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = event.handle(warnings);
 
@@ -378,39 +363,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		this.transactionManager = transactionManager;
 	}
 
-	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
-		this.serviceCivilService = serviceCivilService;
-	}
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
-	}
-
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
-
-	public void setMetierService(MetierService metierService) {
-		this.metierService = metierService;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setIndexer(GlobalTiersIndexer indexer) {
-		this.indexer = indexer;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
-		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

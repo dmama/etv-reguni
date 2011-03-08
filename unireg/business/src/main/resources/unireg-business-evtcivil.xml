@@ -5,21 +5,23 @@
 
 	<!-- Dispatcher des handlers des evenements civil -->
 	<bean id="evenementCivilProcessor" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilProcessorImpl">
-		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
-		<property name="serviceCivilService" ref="serviceCivilService" />
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="metierService" ref="metierService" />
-		<property name="dataEventService" ref="dataEventService"/>
-		<property name="adresseService" ref="adresseService"/>
-		<property name="indexer" ref="globalTiersIndexer" />
-		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="evenementCivilTranslator" ref="evenementCivilTranslator" />
 	</bean>
 
 	<bean id="evenementCivilTranslator" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilTranslatorImpl">
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="tiersService" ref="tiersService" />
+		<property name="metierService" ref="metierService" />
+		<property name="adresseService" ref="adresseService"/>
+		<property name="indexer" ref="globalTiersIndexer" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
 	</bean>
 
 </beans>

@@ -14,6 +14,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -63,11 +64,13 @@ public abstract class EvenementCivilInterne {
 	/**
 	 * Construit un événement civil interne sur la base d'un événement civil externe.
 	 *
+	 *
 	 * @param evenement un événement civil externe
 	 * @param context   le context d'exécution de l'événement
+	 * @param options
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
-	protected EvenementCivilInterne(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
+	protected EvenementCivilInterne(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
 		this.context = context;
 
 		/* récupération des informations liés à l'événement civil */
@@ -90,13 +93,13 @@ public abstract class EvenementCivilInterne {
 		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
 		 */
 		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
-		if (evenement.getNumeroIndividuConjoint() != null || (context.isRefreshCache() && forceRefreshCacheConjoint())) {
+		if (evenement.getNumeroIndividuConjoint() != null || (options.isRefreshCache() && forceRefreshCacheConjoint())) {
 			requiredParts.add(AttributeIndividu.CONJOINT);
 		}
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
 
-		if (context.isRefreshCache()) {
+		if (options.isRefreshCache()) {
 
 			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
 			context.getDataEventService().onIndividuChange(noIndividu);

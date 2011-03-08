@@ -15,7 +15,6 @@ public class EvenementCivilContext {
 	private final ServiceCivilService serviceCivil;
 	private final ServiceInfrastructureService serviceInfra;
 	private final DataEventService dataEventService;
-	private final boolean refreshCache;
 	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;
 	private final GlobalTiersIndexer indexer;
@@ -33,11 +32,10 @@ public class EvenementCivilContext {
 		this.tiersDAO = null;
 		this.adresseService = null;
 		this.evenementFiscalService = null;
-		this.refreshCache = false;
 	}
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService, boolean refreshCache) {
+	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
@@ -47,7 +45,6 @@ public class EvenementCivilContext {
 		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;
 		this.evenementFiscalService = evenementFiscalService;
-		this.refreshCache = refreshCache;
 	}
 
 	public final ServiceCivilService getServiceCivil() {
@@ -64,10 +61,6 @@ public class EvenementCivilContext {
 
 	public GlobalTiersIndexer getIndexer() {
 		return indexer;
-	}
-
-	public final boolean isRefreshCache() {
-		return refreshCache;
 	}
 
 	public TiersService getTiersService() {

@@ -5,6 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -84,6 +85,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 	};
 
 	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+	final EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Test
 	public void testAnnulationPermisC() throws Exception {
@@ -96,7 +98,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
-		AnnulationPermis adapter = new AnnulationPermis(evenement, context);
+		AnnulationPermis adapter = new AnnulationPermis(evenement, context, options);
 		assertEquals(TypePermis.ETABLISSEMENT, adapter.getTypePermis());
 	}
 
@@ -111,7 +113,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU_2, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
-		AnnulationPermis adapter = new AnnulationPermis(evenement, context);
+		AnnulationPermis adapter = new AnnulationPermis(evenement, context, options);
 		assertEquals(TypePermis.FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
 	}
 

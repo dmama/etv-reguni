@@ -9,6 +9,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
@@ -32,8 +33,8 @@ public class AnnulationDeces extends EvenementCivilInterne {
 	 */
 	private Individu conjointSurvivant;
 
-	protected AnnulationDeces(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected AnnulationDeces(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+		super(evenement, context, options);
 		conjointSurvivant = context.getServiceCivil().getConjoint(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayBefore());
 	}
 

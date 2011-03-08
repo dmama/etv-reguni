@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -43,8 +44,8 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 
 	private TypePermis typePermis;
 
-	protected ObtentionPermis(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected ObtentionPermis(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+		super(evenement, context, options);
 
 		try {
 			// on récupère le permis (= à la date d'événement)

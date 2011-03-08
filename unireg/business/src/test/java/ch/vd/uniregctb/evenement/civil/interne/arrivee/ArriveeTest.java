@@ -124,7 +124,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		};
 
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
-		Arrivee adapter = new Arrivee(evenement, context);
+		Arrivee adapter = new Arrivee(evenement, context, options);
 
 		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdressePrincipale().getLocalite());
 		assertEquals(MockCommune.Cossonay.getNomMinuscule(), adapter.getNouvelleCommunePrincipale().getNomMinuscule());

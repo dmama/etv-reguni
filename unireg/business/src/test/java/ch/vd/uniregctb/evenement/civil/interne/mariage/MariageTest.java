@@ -5,6 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -63,6 +64,7 @@ public class MariageTest extends WithoutSpringTest {
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new DefaultMockServiceCivil();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Test
 	public void testGetConjointMariageSeul() throws Exception {
@@ -70,7 +72,7 @@ public class MariageTest extends WithoutSpringTest {
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
-		Mariage adapter = new Mariage(evenementsCivils, context);
+		Mariage adapter = new Mariage(evenementsCivils, context, options);
 		assertNull("le conjoint d'un marié seul ne doit pas exister", adapter.getConjoint());
 	}
 
@@ -82,7 +84,7 @@ public class MariageTest extends WithoutSpringTest {
 		bea.setNumero(INDIVIDU_MARIE_CONJOINT);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, INDIVIDU_MARIE_CONJOINT, bea, 1234, null );
-		Mariage adapter = new Mariage(evenementsCivils, context);
+		Mariage adapter = new Mariage(evenementsCivils, context, options);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getConjoint());
 	}
 
@@ -94,7 +96,7 @@ public class MariageTest extends WithoutSpringTest {
 		julien.setNumero(INDIVIDU_PACSE_CONJOINT);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, INDIVIDU_PACSE_CONJOINT, julien, 1234, null );
-		Mariage adapter = new Mariage(evenementsCivils, context);
+		Mariage adapter = new Mariage(evenementsCivils, context, options);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getConjoint());
 	}
 }

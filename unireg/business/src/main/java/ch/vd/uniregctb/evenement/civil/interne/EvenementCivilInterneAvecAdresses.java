@@ -8,6 +8,7 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -31,8 +32,8 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 	 */
 	private Adresse adresseCourrier;
 
-	protected EvenementCivilInterneAvecAdresses(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
-		super(evenement, context);
+	protected EvenementCivilInterneAvecAdresses(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+		super(evenement, context, options);
 
 		// Distinction adresse principale et adresse courrier
 		// On recupère les adresses à la date de l'événement plus 1 jour

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne.divorce;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.separation.SeparationOuDivorceTranslationStrategy;
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.evenement.civil.interne.separation.SeparationOuDivorceTra
 public class DivorceTranslationStrategy extends SeparationOuDivorceTranslationStrategy {
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilException {
-		return new Divorce(event, context, this);
+	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		return new Divorce(event, context, this, options);
 	}
 }

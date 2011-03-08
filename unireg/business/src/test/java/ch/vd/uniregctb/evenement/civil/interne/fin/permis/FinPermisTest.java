@@ -5,6 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -80,6 +81,7 @@ public class FinPermisTest extends WithoutSpringTest {
 	};
 
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Test
 	public void testPermisCAvecNationalite() throws Exception {
@@ -87,7 +89,7 @@ public class FinPermisTest extends WithoutSpringTest {
 		roberto.setNumero(NUMERO_INDIVIDU);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU, roberto, 0L, null, 1234, null);
-		FinPermis adapter = new FinPermis(evenementsCivils, context);
+		FinPermis adapter = new FinPermis(evenementsCivils, context, options);
 	}
 
 	@Test
@@ -96,6 +98,6 @@ public class FinPermisTest extends WithoutSpringTest {
 		rosa.setNumero(NUMERO_INDIVIDU_2);
 		EvenementCivilExterne evenementsCivils = new EvenementCivilExterne(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU_2, rosa, 0L, null, 1234, null);
-		FinPermis adapter = new FinPermis(evenementsCivils, context);
+		FinPermis adapter = new FinPermis(evenementsCivils, context, options);
 	}
 }

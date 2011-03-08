@@ -3,8 +3,13 @@ package ch.vd.uniregctb.evenement.civil.engine;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
+
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee.AnnulationArriveeTranslationStrategy;
@@ -55,12 +60,19 @@ import ch.vd.uniregctb.evenement.civil.interne.testing.TestingTranslationStrateg
 import ch.vd.uniregctb.evenement.civil.interne.tutelle.LeveeTutelleTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.tutelle.TutelleTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.veuvage.VeuvageTranslationStrategy;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator {
-	
+public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, InitializingBean {
+
 	private static final Map<TypeEvenementCivil, EvenementCivilTranslationStrategy> strategies = new HashMap<TypeEvenementCivil, EvenementCivilTranslationStrategy>();
-	
+
 	static {
 		strategies.put(TypeEvenementCivil.ANNUL_ARRIVEE_SECONDAIRE, new AnnulationArriveeTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, new AnnulationPermisTranslationStrategy());
@@ -126,12 +138,72 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator {
 		strategies.put(TypeEvenementCivil.VEUVAGE, new VeuvageTranslationStrategy());
 	}
 
+	private ServiceCivilService serviceCivilService;
+	private ServiceInfrastructureService serviceInfrastructureService;
+	private TiersDAO tiersDAO;
+	private DataEventService dataEventService;
+	private TiersService tiersService;
+	private MetierService metierService;
+	private AdresseService adresseService;
+	private GlobalTiersIndexer indexer;
+	private EvenementFiscalService evenementFiscalService;
+
+	private EvenementCivilContext context;
+
 	@Override
-	public EvenementCivilInterne toInterne(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilException {
+	public EvenementCivilInterne toInterne(EvenementCivilExterne event, EvenementCivilOptions options) throws EvenementCivilException {
 		final EvenementCivilTranslationStrategy strategy = strategies.get(event.getType());
 		if (strategy == null) {
 			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement de type = [" + event.getType() + "]");
 		}
-		return strategy.create(event, context);
+		return strategy.create(event, context, options);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		context =
+				new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
+	}
+
+	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
+		this.serviceCivilService = serviceCivilService;
+	}
+
+	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
+		this.serviceInfrastructureService = serviceInfrastructureService;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setMetierService(MetierService metierService) {
+		this.metierService = metierService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setIndexer(GlobalTiersIndexer indexer) {
+		this.indexer = indexer;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	public void setContext(EvenementCivilContext context) {
+		this.context = context;
 	}
 }

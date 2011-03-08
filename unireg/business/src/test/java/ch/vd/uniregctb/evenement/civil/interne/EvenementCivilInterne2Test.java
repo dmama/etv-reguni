@@ -71,7 +71,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		serviceCivil.setUp(new DefaultMockServiceCivil());
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, null, null, tiersDAO, null, null, true);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, null, null, tiersDAO, null, null);
 		dummyEvent = new DummyEvenementCivilInterne(null, null, null, null, null, context);
 
 		doInNewTransaction(new TxCallback(){
