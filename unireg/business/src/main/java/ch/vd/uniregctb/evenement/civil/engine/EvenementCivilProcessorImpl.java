@@ -2,10 +2,8 @@ package ch.vd.uniregctb.evenement.civil.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -24,12 +22,11 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandler;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -40,15 +37,14 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
- * Moteur de règle permettant d'appliquer les règles métiers. Le moteur contient une liste de EvenementCivilHandler capables de gérer les
- * événements en entrée. Pour chaque événement recu, il invoque les EvenementCivilHandler capables de gérer cet événements.
+ * Moteur de règle permettant d'appliquer les règles métiers. Le moteur contient une liste de EvenementCivilTranslationStrategy capables de gérer les
+ * événements en entrée. Pour chaque événement recu, il invoque les EvenementCivilTranslationStrategy capables de gérer cet événements.
  *
  * @author Akram BEN AISSI <mailto:akram.ben-aissi@vd.ch>
  */
-public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, EvenementHandlerRegistrar {
+public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorImpl.class);
 
@@ -64,10 +60,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
 
-	/**
-	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
-	 */
-	private final Map<TypeEvenementCivil, EvenementCivilHandler> eventsHandlers = new HashMap<TypeEvenementCivil, EvenementCivilHandler>();
+	private EvenementCivilTranslator evenementCivilTranslator;
 
 	/**
 	 * {@inheritDoc}
@@ -249,25 +242,19 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				evenementCivilExterne.setHabitantConjointId(conjointID);
 			}
 
-			final EvenementCivilHandler evenementCivilHandler = eventsHandlers.get(evenementCivilExterne.getType());
-			if (evenementCivilHandler == null) {
-				erreurs.add(new EvenementCivilExterneErreur("Aucun handler défini pour ce type d'événement"));
-				return;
-			}
-
 			final EvenementCivilContext context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO,
 					adresseService, evenementFiscalService, refreshCache);
-			final EvenementCivilInterne adapter = evenementCivilHandler.createAdapter(evenementCivilExterne, context);
+			final EvenementCivilInterne event = evenementCivilTranslator.toInterne(evenementCivilExterne, context);
 
 			/* 2.1 - lancement de la validation par le handler */
-			adapter.checkCompleteness(erreurs, warnings);
+			event.checkCompleteness(erreurs, warnings);
 
 			/* 2.2 - lancement de la validation par le handler */
 			if (erreurs.isEmpty()) {
-				adapter.validate(erreurs, warnings);
+				event.validate(erreurs, warnings);
 				/* 2.3 - lancement du traitement par le handler */
 				if (erreurs.isEmpty()) {
-					final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = adapter.handle(warnings);
+					final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = event.handle(warnings);
 
 					// adaptation des données dans l'événement civil en cas de création de nouveaux habitants
 					if (nouveauxHabitants != null) {
@@ -290,14 +277,14 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 					}
 				}
 				else {
-					Audit.error(adapter.getNumeroEvenement(), "l'événement n'est pas valide");
+					Audit.error(event.getNumeroEvenement(), "l'événement n'est pas valide");
 				}
 			}
 			else {
-				Audit.error(adapter.getNumeroEvenement(), "l'événement est incomplet");
+				Audit.error(event.getNumeroEvenement(), "l'événement est incomplet");
 			}
 		}
-		catch (EvenementCivilInterneException e) {
+		catch (EvenementCivilException e) {
 			LOGGER.debug("Impossible d'adapter l'événement civil : " + evenementCivilExterne.getId(), e);
 			erreurs.add(new EvenementCivilExterneErreur(e));
 			Audit.error(evenementCivilExterne.getId(), e);
@@ -387,10 +374,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		this.tiersDAO = tiersDAO;
 	}
 
-	public void register(TypeEvenementCivil type, EvenementCivilHandler handler) {
-		eventsHandlers.put(type, handler);
-	}
-
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
@@ -428,5 +411,10 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementCivilTranslator(EvenementCivilTranslator evenementCivilTranslator) {
+		this.evenementCivilTranslator = evenementCivilTranslator;
 	}
 }

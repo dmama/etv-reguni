@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.divorce;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.separation.AnnulationSeparationOuDivorce;
 
 /**

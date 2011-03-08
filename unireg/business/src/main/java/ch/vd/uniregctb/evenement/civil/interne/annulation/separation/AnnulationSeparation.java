@@ -2,8 +2,8 @@ package ch.vd.uniregctb.evenement.civil.interne.annulation.separation;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 

@@ -7,9 +7,9 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -17,9 +17,9 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementIdentificateur extends ChangementBase {
 
-	private ChangementIdentificateurHandler handler;
+	private ChangementIdentificateurTranslationStrategy handler;
 
-	protected ChangementIdentificateur(EvenementCivilExterne evenement, EvenementCivilContext context, ChangementIdentificateurHandler handler) throws EvenementCivilInterneException {
+	protected ChangementIdentificateur(EvenementCivilExterne evenement, EvenementCivilContext context, ChangementIdentificateurTranslationStrategy handler) throws EvenementCivilInterneException {
 		super(evenement, context);
 		this.handler = handler;
 	}

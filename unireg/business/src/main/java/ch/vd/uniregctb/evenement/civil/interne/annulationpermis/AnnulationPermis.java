@@ -11,9 +11,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
@@ -29,7 +29,7 @@ import ch.vd.uniregctb.type.TypePermis;
  */
 public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 
-	private static final Log LOGGER = LogFactory.getLog(AnnulationPermisHandler.class);
+	private static final Log LOGGER = LogFactory.getLog(AnnulationPermisTranslationStrategy.class);
 
 	/** Le type de permis obtenu. */
 	private TypePermis typePermis;

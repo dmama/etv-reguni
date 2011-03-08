@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilIgnore;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;

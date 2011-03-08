@@ -4,8 +4,8 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.interne.separation.SeparationOuDivorce;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -19,7 +19,7 @@ public class Divorce extends SeparationOuDivorce {
 
 	protected static Logger LOGGER = Logger.getLogger(Divorce.class);
 
-	protected Divorce(EvenementCivilExterne evenement, EvenementCivilContext context, DivorceHandler handler) throws EvenementCivilInterneException {
+	protected Divorce(EvenementCivilExterne evenement, EvenementCivilContext context, DivorceTranslationStrategy handler) throws EvenementCivilInterneException {
 		super(evenement, context);
 	}
 

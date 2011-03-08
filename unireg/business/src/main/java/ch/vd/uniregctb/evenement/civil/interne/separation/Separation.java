@@ -2,8 +2,8 @@ package ch.vd.uniregctb.evenement.civil.interne.separation;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -14,7 +14,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class Separation extends SeparationOuDivorce {
 
-	protected Separation(EvenementCivilExterne evenement, EvenementCivilContext context, SeparationHandler handler) throws EvenementCivilInterneException {
+	protected Separation(EvenementCivilExterne evenement, EvenementCivilContext context, SeparationTranslationStrategy handler) throws EvenementCivilInterneException {
 		super(evenement, context);
 	}
 

@@ -5,10 +5,10 @@ import java.util.List;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class CorrectionDateEtatCivil extends EvenementCivilInterne {
@@ -23,12 +23,12 @@ public class CorrectionDateEtatCivil extends EvenementCivilInterne {
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// TODO (PBO) CorrectionDateEtatCivilHandler.validateSpecific
+		// TODO (PBO) CorrectionDateEtatCivilTranslationStrategy.validateSpecific
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
-		// TODO (PBO) CorrectionDateEtatCivilHandler.handle
+		// TODO (PBO) CorrectionDateEtatCivilTranslationStrategy.handle
 		throw new EvenementCivilHandlerException("Veuillez effectuer cette opération manuellement");
 	}
 }

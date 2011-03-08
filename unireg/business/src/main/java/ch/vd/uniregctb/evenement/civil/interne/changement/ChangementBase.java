@@ -7,10 +7,10 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -22,7 +22,7 @@ public abstract class ChangementBase extends EvenementCivilInterne {
 	 *
 	 * @param evenement un événement civil externe
 	 * @param context   le context d'exécution de l'événement
-	 * @throws ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException
 	 *          si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
 	protected ChangementBase(EvenementCivilExterne evenement, EvenementCivilContext context) throws EvenementCivilInterneException {
