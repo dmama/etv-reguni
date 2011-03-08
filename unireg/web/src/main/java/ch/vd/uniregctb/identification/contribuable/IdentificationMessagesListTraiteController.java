@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +19,9 @@ import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
 
 public class IdentificationMessagesListTraiteController extends AbstractIdentificationController {
 
@@ -30,7 +32,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 	private static final String EFFACER_PARAMETER_VALUE = "effacer";
 	public static final String IDENTIFICATION_CRITERIA_NAME = "identificationCriteria";
 	public static final String RESULT_SIZE_NAME = "resultSize";
-	public static final Integer PAGE_SIZE = new Integer(25);
+	public static final Integer PAGE_SIZE = 25;
 	public static final String IDENTIFICATION_LIST_ATTRIBUTE_NAME = "identifications";
 	public static final String IDENTIFICATION_LIST_ATTRIBUTE_SIZE = "identificationsSize";
 	private static final String TABLE_IDENTIFICATION_ID = "message";
@@ -51,7 +53,12 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 		LOGGER.debug("Start of IdentificationMessagesListTraiteController:formBackingObject");
 
-		HttpSession session = request.getSession();
+		// on doit avoir les droits de visualisation pour ça...
+		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
+		}
+
+		final HttpSession session = request.getSession();
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 		String parametreEtat = request.getParameter(ETAT_PARAMETER_NAME);
 		String parametrePeriode = request.getParameter(PERIODE_PARAMETER_NAME);
@@ -109,11 +116,11 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.MELDEWESEN);
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(identificationMessagesListManager.count(bean, false, true, false, TypeDemande.MELDEWESEN)));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.MELDEWESEN));
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(0));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, 0);
 		}
 		mav.addObject(IDENTIFICATION_EN_COURS_MESSAGE, false);
 
@@ -183,5 +190,4 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		return identificationMapHelper.initMapPeriodeFiscale(true);
 
 	}
-
 }

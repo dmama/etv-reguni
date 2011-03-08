@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +19,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
+import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 
@@ -36,7 +36,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	private static final String EFFACER_PARAMETER_VALUE = "effacer";
 	public static final String IDENTIFICATION_CRITERIA_NAME = "identificationCriteria";
 	public static final String RESULT_SIZE_NAME = "resultSize";
-	public static final Integer PAGE_SIZE = new Integer(25);
+	public static final Integer PAGE_SIZE = 25;
 	public static final String IDENTIFICATION_LIST_ATTRIBUTE_NAME = "identifications";
 	public static final String IDENTIFICATION_LIST_ATTRIBUTE_SIZE = "identificationsSize";
 	private static final String TABLE_IDENTIFICATION_ID = "message";
@@ -56,6 +56,11 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 
 		LOGGER.debug("Start of IdentificationMessagesListEnCoursController:formBackingObject");
+
+		// on doit avoir les droits de visualisation pour ça...
+		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
+		}
 
 		HttpSession session = request.getSession();
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
@@ -117,16 +122,16 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
 
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true, TypeDemande.MELDEWESEN);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean, false, false, true, TypeDemande.MELDEWESEN));
+				nombreElements = identificationMessagesListManager.count(bean, false, false, true, TypeDemande.MELDEWESEN);
 
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, true, false, false, TypeDemande.MELDEWESEN);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean, true, false, false, TypeDemande.MELDEWESEN));
+				nombreElements = identificationMessagesListManager.count(bean, true, false, false, TypeDemande.MELDEWESEN);
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.MELDEWESEN));
+				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.MELDEWESEN);
 			}
 
 
@@ -136,7 +141,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(0));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, 0);
 		}
 
 		mav.addObject(IDENTIFICATION_EN_COURS_MESSAGE, true);
@@ -229,6 +234,4 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		return identificationMapHelper.initMapPeriodeFiscale(false);
 
 	}
-
-
 }

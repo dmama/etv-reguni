@@ -16,6 +16,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
 
 public class IdentificationMessagesStatsController extends AbstractIdentificationController {
 
@@ -45,6 +48,12 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		LOGGER.debug("Start of IdentificationMessagesStatController:formBackingObject");
+
+		// on doit avoir les droits administrateurs pour ça
+		if (!SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
+		}
+
 		HttpSession session = request.getSession();
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 
