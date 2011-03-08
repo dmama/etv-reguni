@@ -5,7 +5,7 @@ import java.util.Set;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -18,8 +18,8 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class SuppressionNationaliteHandler extends AnnulationPermisCOuNationaliteSuisseHandler {
 
 	@Override
-	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new SuppressionNationaliteAdapter(event, context);
+	public EvenementCivilInterne createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
+		return new SuppressionNationalite(event, context);
 	}
 
 	@Override

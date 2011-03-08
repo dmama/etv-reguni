@@ -5,7 +5,7 @@ import java.util.Set;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.separation.AnnulationSeparationOuDivorceHandler;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -26,8 +26,8 @@ public class AnnulationDivorceHandler extends AnnulationSeparationOuDivorceHandl
 	}
 
 	@Override
-	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new AnnulationDivorceAdapter(event, context);
+	public EvenementCivilInterne createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
+		return new AnnulationDivorce(event, context);
 	}
 
 }

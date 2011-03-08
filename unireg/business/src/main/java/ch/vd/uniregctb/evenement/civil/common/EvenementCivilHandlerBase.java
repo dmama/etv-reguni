@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.evenement.civil.engine.EvenementHandlerRegistrar;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -55,5 +55,5 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 		this.registrar = registrar;
 	}
 
-	public abstract EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException;
+	public abstract EvenementCivilInterne createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException;
 }

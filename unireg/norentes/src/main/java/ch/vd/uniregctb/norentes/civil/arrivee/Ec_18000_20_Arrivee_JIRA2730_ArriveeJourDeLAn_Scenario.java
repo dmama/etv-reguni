@@ -29,7 +29,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * Le principe de ce test est le suivant ; dans le cas jira UNIREG-2730, une arrivée HS au 1.01.2007
  * trouvait deux candidats non-habitant, dont un qui, bien qu'ayant la bonne date de naissance,
  * n'avait rien en commun dans le nom (cela était dû au fait que l'année de référence dans la
- * classe {@link ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase} était l'année de la veille
+ * classe {@link ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne} était l'année de la veille
  * de la date de l'événement (= 2006, pas d'historique individu connu dans le host avant 2007, donc
  * impossible de trouver le nom de l'individu, donc recherche dans l'indexeur avec une date de naissance
  * seulement, pas de nom...))

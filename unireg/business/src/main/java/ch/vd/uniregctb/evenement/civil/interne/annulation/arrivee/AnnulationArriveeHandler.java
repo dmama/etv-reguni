@@ -6,7 +6,7 @@ import java.util.Set;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneBase;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneException;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -31,7 +31,7 @@ public class AnnulationArriveeHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public EvenementCivilInterneBase createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
-		return new AnnulationArriveeAdapter(event, context);
+	public EvenementCivilInterne createAdapter(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilInterneException {
+		return new AnnulationArrivee(event, context);
 	}
 }
