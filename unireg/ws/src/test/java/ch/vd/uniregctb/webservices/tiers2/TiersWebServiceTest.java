@@ -392,7 +392,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertNotNull(tiia);
 
 			assertNotNull(tiia.adresseCourrier);
-			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adresseCourrier);
+			assertAdresse(new Date(2009, 7, 8), null, "Place Saint-François", "Lausanne", tiia.adresseCourrier); // [UNIREG-3025] les adresses surchargées priment sur toutes les autres adresses
 			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adresseRepresentation);
 			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adresseDomicile);
 			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressePoursuite);
@@ -401,9 +401,9 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 			assertEquals("Madame", tiia.adresseEnvoi.ligne1);
 			assertEquals("Tiia Tauxe", tiia.adresseEnvoi.ligne2);
-			assertEquals("p.a. Sylvie Tauxe", tiia.adresseEnvoi.ligne3);
-			assertEquals("Place Saint-François", tiia.adresseEnvoi.ligne4);
-			assertEquals("1000 Lausanne", tiia.adresseEnvoi.ligne5);
+			assertEquals("Place Saint-François", tiia.adresseEnvoi.ligne3);
+			assertEquals("1000 Lausanne", tiia.adresseEnvoi.ligne4);
+			assertNull(tiia.adresseEnvoi.ligne5);
 			assertNull(tiia.adresseEnvoi.ligne6);
 
 			assertEquals("Madame", tiia.adresseRepresentationFormattee.ligne1);
@@ -446,10 +446,11 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertNotNull(tiia);
 
 			assertNotNull(tiia.adressesCourrier);
-			assertEquals(3, tiia.adressesCourrier.size());
+			assertEquals(4, tiia.adressesCourrier.size());
 			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesCourrier.get(0));
 			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesCourrier.get(1));
-			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesCourrier.get(2));
+			assertAdresse(new Date(2009, 2, 1), new Date(2009, 7, 7), "Place Saint-François", "Lausanne", tiia.adressesCourrier.get(2));
+			assertAdresse(new Date(2009, 7, 8), null, "Place Saint-François", "Lausanne", tiia.adressesCourrier.get(3));
 
 			assertNotNull(tiia.adressesRepresentation);
 			assertEquals(3, tiia.adressesRepresentation.size());

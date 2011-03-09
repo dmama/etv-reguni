@@ -2050,6 +2050,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 	/**
 	 * [UNIREG-2927] Cas d'une personne avec une adresse tiers surchargée et sous tutelle pendant une certaine période.
+	 * [UNIREG-3025] L'adresse tiers surchargée est maintenant prioritaire sur l'adresse induite par la tutelle
 	 * <p/>
 	 * <pre>
 	 *                               +-------------------------------------------------------------------------------------------------------
@@ -2071,11 +2072,11 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Rapport-entre-tiers:          ¦                            ¦                            | Tutelle                    |
 	 *                               ¦                            ¦                            +----------------------------+
 	 *                               ¦                            ¦                            ¦- 2004.01.01    2007.12.31 -¦
-	 *                               ¦                            ¦                            ¦                            ¦
-	 *                               +----------------------------+----------------------------+----------------------------+-----------------
-	 * Adresse courrier résultante:  | Lausanne                   | Renens                     | Cossonay-Ville             | Renens
-	 *                               +----------------------------+----------------------------+----------------------------+------------------
-	 *                               ¦- 2000.01.01    2001.12.31 -¦- 2002.01.01    2003.12.31 -¦- 2004.01.01    2007.12.31 -¦- 2008.01.01
+	 *                               ¦                            ¦
+	 *                               +----------------------------+---------------------------------------------------------------------------
+	 * Adresse courrier résultante:  | Lausanne                   | Renens
+	 *                               +----------------------------+----------------------------------------------------------------------------
+	 *                               ¦- 2000.01.01    2001.12.31 -¦- 2002.01.01
 	 * </pre>
 	 */
 	@Test
@@ -2131,13 +2132,10 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(pupille, false);
 			assertNotNull(adresses);
 
-			assertEquals(4, adresses.courrier.size());
+			assertEquals(2, adresses.courrier.size());
 			assertAdresse(date(2000, 1, 1), date(2001, 12, 31), "Lausanne", Source.CIVILE, false, adresses.courrier.get(0));
-			assertAdresse(date(2002, 1, 1), date(2003, 12, 31), "Renens VD", Source.FISCALE, false, adresses.courrier.get(1));
+			assertAdresse(date(2002, 1, 1), null, "Renens VD", Source.FISCALE, false, adresses.courrier.get(1));
 			assertEquals(ids.adresse, adresses.courrier.get(1).getId());
-			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Cossonay-Ville", Source.TUTELLE, false, adresses.courrier.get(2));
-			assertAdresse(date(2008, 1, 1), null, "Renens VD", Source.FISCALE, false, adresses.courrier.get(3));
-			assertEquals(ids.adresse, adresses.courrier.get(3).getId());
 		}
 	}
 
@@ -5614,6 +5612,75 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
+	 * [UNIREG-3025] Vérifie qu'une adresse spécifique de poursuite est plus prioritaire qu'une tutelle (ou curatelle ou conseil légal)
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableSousTutelleAvecAdresseSpecifiquePoursuite() throws Exception {
+
+		final long noTiers = 60510843;
+		final long noIndividu = 750946;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Lopes", "Anabela", false);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// un contribuable sous tutelle avec l'OTG (Lausanne) comme tuteur et avec une adresse spécifique de poursuite renseignée
+		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
+		addAdresseSuisse(ctb, TypeAdresseTiers.POURSUITE, date(2000,1,1), null, MockRue.Bussigny.RueDeLIndustrie);
+
+		final CollectiviteAdministrative tuteur = addCollAdm(ServiceInfrastructureService.noTuteurGeneral);
+		final CollectiviteAdministrative autoriteTutelaire = addCollAdm(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
+		addTutelle(ctb, tuteur, autoriteTutelaire, date(2000, 1, 1), null);
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", Source.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.TUTELLE, false, adresses.courrier); // adresse du tuteur
+		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", Source.FISCALE, false, adresses.poursuite); // adresse spécifique de poursuite
+		assertAdresse(date(2000, 1, 1), null, "Echallens", Source.CIVILE, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", Source.FISCALE, false, adresses.poursuiteAutreTiers); // adresse spécifique de poursuite
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
+		assertEquals("Madame", domicile.getLigne1());
+		assertEquals("Anabela Lopes", domicile.getLigne2());
+		assertEquals("Grand Rue", domicile.getLigne3());
+		assertEquals("1040 Echallens", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
+		assertEquals("Madame", courrier.getLigne1());
+		assertEquals("Anabela Lopes", courrier.getLigne2());
+		assertEquals("p.a. OTG", courrier.getLigne3());
+		assertEquals("Chemin de Mornex 32", courrier.getLigne4());
+		assertEquals("1014 Lausanne", courrier.getLigne5());
+		assertNull(courrier.getLigne6());
+
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
+
+		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false);
+		assertEquals("Madame", poursuite.getLigne1());
+		assertEquals("Anabela Lopes", poursuite.getLigne2());
+		assertEquals("Rue de l'Industrie", poursuite.getLigne3());
+		assertEquals("1030 Bussigny-près-Lausanne", poursuite.getLigne4());
+		assertNull(poursuite.getLigne5());
+		assertNull(poursuite.getLigne6());
+
+		final AdresseEnvoiDetaillee poursuiteAutreTiers = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS, false);
+		assertEquals("Madame", poursuiteAutreTiers.getLigne1());
+		assertEquals("Anabela Lopes", poursuiteAutreTiers.getLigne2());
+		assertEquals("Rue de l'Industrie", poursuiteAutreTiers.getLigne3());
+		assertEquals("1030 Bussigny-près-Lausanne", poursuiteAutreTiers.getLigne4());
+		assertNull(poursuiteAutreTiers.getLigne5());
+		assertNull(poursuiteAutreTiers.getLigne6());
+		assertEquals(Source.FISCALE, poursuiteAutreTiers.getSource());
+	}
+
+	/**
 	 * Vérifie que les rapports entre tiers annulés ne sont pas pris en compte.
 	 */
 	@Test
@@ -5717,7 +5784,7 @@ public class AdresseServiceTest extends BusinessTest {
 		{
 			final AdressesFiscales adresses = adresseService.getAdressesFiscales(tiia, null, true);
 			assertNotNull(adresses);
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CURATELLE, false, adresses.courrier);
+			assertAdresse(date(2009, 7, 8), null, "Lausanne", Source.FISCALE, false, adresses.courrier); // [UNIREG-3025] les adresses surchargées priment sur toutes les autres adresses dorénavant
 			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adresses.representation);
 			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adresses.domicile);
 			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adresses.poursuite);
@@ -5728,10 +5795,11 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiia, true);
 			assertNotNull(adressesHisto);
 
-			assertEquals(3, adressesHisto.courrier.size());
+			assertEquals(4, adressesHisto.courrier.size());
 			assertAdresse(null, date(2006, 9, 24), "Moudon", Source.CURATELLE, false, adressesHisto.courrier.get(0));
 			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", Source.CURATELLE, false, adressesHisto.courrier.get(1));
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CURATELLE, false, adressesHisto.courrier.get(2));
+			assertAdresse(date(2009, 2, 1), date(2009, 7, 7), "Lausanne", Source.CURATELLE, false, adressesHisto.courrier.get(2));
+			assertAdresse(date(2009, 7, 8), null, "Lausanne", Source.FISCALE, false, adressesHisto.courrier.get(3));
 
 			assertEquals(3, adressesHisto.representation.size());
 			assertAdresse(null, date(2006, 9, 24), "Moudon", Source.CIVILE, false, adressesHisto.representation.get(0));
@@ -6112,6 +6180,7 @@ public class AdresseServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-2792] Un contribuable avec une représentation qui commence (1er janvier 2009) avant la date de début de son adresse courrier (8 juillet 2009) : l'adresse courrier définie doit être
 	 * complétement masquée par l'adresse du représentant <b>mais</b> elle doit quand même être utilisée pour calculer les défauts des adresses domicile, poursuite, ...
+	 * [UNIREG-3025] L'adresse tiers surchargée est maintenant prioritaire sur l'adresse induite par la représentation conventionnelle
 	 */
 	@Test
 	public void testGetAdressesContribuableAvecRepresentationQuiCommenceAvantSonAdresseCourrier() throws Exception {
@@ -6125,20 +6194,21 @@ public class AdresseServiceTest extends BusinessTest {
 		addRepresentationConventionnelle(sophie, anne, date(2009, 1, 1), false);
 
 		// adresses du jour
-		assertAdresse(date(2009, 1, 1), null, "Moudon", Source.REPRESENTATION, false, adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.COURRIER, null, true));
+		assertAdresse(date(2009, 7, 8), null, "Zurich", Source.FISCALE, false, adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.COURRIER, null, true));
 		final AdresseGenerique domicile = adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.DOMICILE, null, true);
 		assertAdresse(date(2009, 7, 8), null, "Zurich", Source.FISCALE, true, domicile);
 		assertAdressesEquals(domicile, adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.POURSUITE, null, true));
 		assertAdressesEquals(domicile, adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.REPRESENTATION, null, true));
-		
+
 		// adresses historiques
 		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(sophie, true);
 		assertNotNull(adresses);
-		assertEquals(1, adresses.courrier.size());
+		assertEquals(2, adresses.courrier.size());
 		assertEquals(1, adresses.domicile.size());
 		assertEquals(1, adresses.poursuite.size());
 		assertEquals(1, adresses.representation.size());
-		assertAdresse(date(2009, 1, 1), null, "Moudon", Source.REPRESENTATION, false, adresses.courrier.get(0));
+		assertAdresse(date(2009, 1, 1), date(2009, 7, 7), "Moudon", Source.REPRESENTATION, false, adresses.courrier.get(0));
+		assertAdresse(date(2009, 7, 8), null, "Zurich", Source.FISCALE, false, adresses.courrier.get(1));
 		assertAdresse(date(2009, 7, 8), null, "Zurich", Source.FISCALE, true, adresses.domicile.get(0));
 		assertAdressesEquals(adresses.domicile.get(0), adresses.poursuite.get(0));
 		assertAdressesEquals(adresses.domicile.get(0), adresses.representation.get(0));

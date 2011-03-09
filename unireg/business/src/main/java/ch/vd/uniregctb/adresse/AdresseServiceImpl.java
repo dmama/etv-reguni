@@ -236,49 +236,55 @@ public class AdresseServiceImpl implements AdresseService {
 
 		if (type == TypeAdresseFiscale.POURSUITE) {
 
-			if (TiersHelper.estSousTutelle(tiers, date)) {
-				// [UNIREG-1808] dans le cas de l'adresse de poursuite d'un contribuable sous tutelle, le destinaire de l'adresse de poursuite est l'autorité tutelaire.
-				final Tiers autoriteTutelaire = getRepresentant(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, date);
-				if (autoriteTutelaire != null) {
-					data = new EnvoiInfo(autoriteTutelaire, autoriteTutelaire, false, TypeAdresseFiscale.REPRESENTATION, Source.TUTELLE);
-				}
-				else {
-					// (msi 10.03.2010) Précision de Thierry: dans le cas d'un contribuable sous tutuelle sans autorité tutelaire renseignée, l'adresse de poursuite est simplement
-					// l'adresse de domicile du contribuable. L'office de poursuite sera donc déterminé par SIPF à partir de l'adresse de domicile, ce qui est le meilleure choix
-					// possible sans information plus spécifique.
-				}
-			}
+			if (TiersHelper.getAdresseTiers(tiers, TypeAdresseTiers.POURSUITE, date) == null) { // [UNIREG-3025] l'adresse spécifique de poursuite est prioritaire sur toutes les autres
 
-			if (TiersHelper.possedeRepresentantAvecExecutionForcee(tiers, date)) {
-				// [UNIREG-1808] dans le cas de l'adresse de poursuite d'un contribuable qui possède un représentant avec exécution forcée, le destinaire de l'adresse de poursuite est le représentant.
-				final Tiers representant = getRepresentant(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, date);
-				if (representant != null) {
-					data = new EnvoiInfo(representant, representant, false, TypeAdresseFiscale.REPRESENTATION, Source.REPRESENTATION);
+				if (TiersHelper.estSousTutelle(tiers, date)) {
+					// [UNIREG-1808] dans le cas de l'adresse de poursuite d'un contribuable sous tutelle, le destinaire de l'adresse de poursuite est l'autorité tutelaire.
+					final Tiers autoriteTutelaire = getRepresentant(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, date);
+					if (autoriteTutelaire != null) {
+						data = new EnvoiInfo(autoriteTutelaire, autoriteTutelaire, false, TypeAdresseFiscale.REPRESENTATION, Source.TUTELLE);
+					}
+					else {
+						// (msi 10.03.2010) Précision de Thierry: dans le cas d'un contribuable sous tutuelle sans autorité tutelaire renseignée, l'adresse de poursuite est simplement
+						// l'adresse de domicile du contribuable. L'office de poursuite sera donc déterminé par SIPF à partir de l'adresse de domicile, ce qui est le meilleure choix
+						// possible sans information plus spécifique.
+					}
+				}
+
+				if (TiersHelper.possedeRepresentantAvecExecutionForcee(tiers, date)) {
+					// [UNIREG-1808] dans le cas de l'adresse de poursuite d'un contribuable qui possède un représentant avec exécution forcée, le destinaire de l'adresse de poursuite est le représentant.
+					final Tiers representant = getRepresentant(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, date);
+					if (representant != null) {
+						data = new EnvoiInfo(representant, representant, false, TypeAdresseFiscale.REPRESENTATION, Source.REPRESENTATION);
+					}
 				}
 			}
 		}
 
 		if (type == TypeAdresseFiscale.POURSUITE_AUTRE_TIERS) {
-			// [UNIREG-1808] dans le cas de l'adresse de poursuite autre tiers, le destinataire est toujours le tuteur/curateur/conseiller légal/repésesentant.
 
-			final Tiers representant = getRepresentant(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, date);
-			if (representant != null) {
-				data = new EnvoiInfo(representant, representant, false, TypeAdresseFiscale.REPRESENTATION, Source.REPRESENTATION);
-			}
+			if (TiersHelper.getAdresseTiers(tiers, TypeAdresseTiers.POURSUITE, date) == null) { // [UNIREG-3025] l'adresse spécifique de poursuite est prioritaire sur toutes les autres
 
-			final Tiers conseiller = getRepresentant(tiers, TypeAdresseRepresentant.CONSEIL_LEGAL, date);
-			if (conseiller != null) {
-				data = new EnvoiInfo(conseiller, conseiller, false, TypeAdresseFiscale.REPRESENTATION, Source.CONSEIL_LEGAL);
-			}
+				// [UNIREG-1808] dans le cas de l'adresse de poursuite autre tiers, le destinataire est toujours le tuteur/curateur/conseiller légal/repésesentant.
+				final Tiers representant = getRepresentant(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, date);
+				if (representant != null) {
+					data = new EnvoiInfo(representant, representant, false, TypeAdresseFiscale.REPRESENTATION, Source.REPRESENTATION);
+				}
 
-			final Tiers curateur = getRepresentant(tiers, TypeAdresseRepresentant.CURATELLE, date);
-			if (curateur != null) {
-				data = new EnvoiInfo(curateur, curateur, false, TypeAdresseFiscale.REPRESENTATION, Source.CURATELLE);
-			}
+				final Tiers conseiller = getRepresentant(tiers, TypeAdresseRepresentant.CONSEIL_LEGAL, date);
+				if (conseiller != null) {
+					data = new EnvoiInfo(conseiller, conseiller, false, TypeAdresseFiscale.REPRESENTATION, Source.CONSEIL_LEGAL);
+				}
 
-			final Tiers tuteur = getRepresentant(tiers, TypeAdresseRepresentant.TUTELLE, date);
-			if (tuteur != null) {
-				data = new EnvoiInfo(tuteur, tuteur, false, TypeAdresseFiscale.REPRESENTATION, Source.TUTELLE);
+				final Tiers curateur = getRepresentant(tiers, TypeAdresseRepresentant.CURATELLE, date);
+				if (curateur != null) {
+					data = new EnvoiInfo(curateur, curateur, false, TypeAdresseFiscale.REPRESENTATION, Source.CURATELLE);
+				}
+
+				final Tiers tuteur = getRepresentant(tiers, TypeAdresseRepresentant.TUTELLE, date);
+				if (tuteur != null) {
+					data = new EnvoiInfo(tuteur, tuteur, false, TypeAdresseFiscale.REPRESENTATION, Source.TUTELLE);
+				}
 			}
 		}
 
@@ -1072,18 +1078,11 @@ public class AdresseServiceImpl implements AdresseService {
 				final AdressesFiscalesHisto adressesContribuable = getAdressesFiscalHisto(contribuable, true, callDepth + 1, strict);
 
 				adresses.courrier = surchargeAdressesHisto(adresses.courrier, adressesContribuable.courrier, Source.CONTRIBUABLE, true);
-				adresses.representation = surchargeAdressesHisto(adresses.representation, adressesContribuable.representation,
-						Source.CONTRIBUABLE, true);
+				adresses.representation = surchargeAdressesHisto(adresses.representation, adressesContribuable.representation, Source.CONTRIBUABLE, true);
 				adresses.poursuite = surchargeAdressesHisto(adresses.poursuite, adressesContribuable.poursuite, Source.CONTRIBUABLE, true);
 				adresses.domicile = surchargeAdressesHisto(adresses.domicile, adressesContribuable.domicile, Source.CONTRIBUABLE, true);
 			}
 		}
-
-		final AdressesTiersHisto adressesTiers = TiersHelper.getAdressesTiersHisto(tiers);
-		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, null, null, callDepth + 1, strict);
-		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, null, null, callDepth + 1, strict);
-		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, null, null, callDepth + 1, strict);
-		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, null, null, callDepth + 1, strict);
 
 		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
 		appliqueDefautsAdressesFiscalesHisto(adresses);
@@ -1114,12 +1113,22 @@ public class AdresseServiceImpl implements AdresseService {
 			adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesAutoriteTutelaire, null, null);
 
 			// [UNIREG-1808]
-			adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, null, null, callDepth + 1, strict);
 			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
 			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesConseil), null, null); // [UNIREG-3203]
 			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesCuratelle), null, null);
 			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesTuteur), null, null);
 		}
+
+		// [UNIREG-3025] les adresses spécifiques sont toujours prioritaires sur les adresses de représentation
+		final AdressesTiersHisto adressesTiers = TiersHelper.getAdressesTiersHisto(tiers);
+		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, null, null, callDepth + 1, strict);
+		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, null, null, callDepth + 1, strict);
+		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, null, null, callDepth + 1, strict);
+		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, null, null, callDepth + 1, strict);
+		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, null, null, callDepth + 1, strict);
+
+		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
+		appliqueDefautsAdressesFiscalesHisto(adresses);
 
 		return adresses;
 	}
@@ -1181,6 +1190,10 @@ public class AdresseServiceImpl implements AdresseService {
 			for (AdresseGenerique a : defaults) {
 				if (a.isAnnule()) {
 					// on ne prend pas en compte les adresses annulées comme défaut
+					continue;
+				}
+				if (a.getSource().isRepresentation()) {
+					// [UNIREG-3025] on ne prend pas en compte les adresse de représentation comme défaut
 					continue;
 				}
 				// met le flag 'defaut' à vrai

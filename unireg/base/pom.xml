@@ -741,7 +741,7 @@
 		<jstl.version>1.1.2</jstl.version>
 
 		<!-- Framework dependency versions -->
-		<shared-base.version>1.2.21</shared-base.version>
+		<shared-base.version>1.2.22</shared-base.version>
 		<spring.version>2.5.6</spring.version>
 		<spring-modules.version>0.9</spring-modules.version>
 		<acegi.version>1.0.4</acegi.version>

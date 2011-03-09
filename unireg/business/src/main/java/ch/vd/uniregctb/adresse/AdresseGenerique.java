@@ -14,21 +14,34 @@ import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommune {
 
 	public static enum Source {
-		CIVILE,
-		FISCALE,
-		REPRESENTATION,
-		TUTELLE,
-		CURATELLE,
+		CIVILE(false),
+		FISCALE(false),
+		REPRESENTATION(true),
+		TUTELLE(true),
+		CURATELLE(true),
 		/** = cas d'un ménage commun sans adresse propre (l'adresse du principal est utilisée comme source) */
-		PRINCIPAL,
+		PRINCIPAL(false),
 		/** = cas d'un ménage commun avec principal sous tutelle (l'adresse du conjoint prime sur celle du tuteur) */
-		CONJOINT,
-		CONSEIL_LEGAL,
-		PM,
+		CONJOINT(true),
+		CONSEIL_LEGAL(true),
+		PM(false),
 		/**
 		 * Cas du contribuable associé à un débiteur
 		 */
-		CONTRIBUABLE
+		CONTRIBUABLE(false);
+
+		private boolean representation;
+
+		Source(boolean representation) {
+			this.representation = representation;
+		}
+
+		/**
+		 * @return <b>vrai</b> si la source représente une adresse de représentation.
+		 */
+		public boolean isRepresentation() {
+			return representation;
+		}
 	}
 
 	/**
