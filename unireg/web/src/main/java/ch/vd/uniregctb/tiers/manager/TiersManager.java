@@ -26,7 +26,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
+import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -1768,7 +1768,7 @@ public class TiersManager implements MessageSourceAware {
 				for (AdresseTiers a : are.getAdresse()) {
 					AdresseView view = adresseManager.getAdresseView(a.getId());
 					view.setUsage(a.getUsage());
-					view.setSource(Source.FISCALE);
+					view.setSource(SourceType.FISCALE);
 					adresses.add(view);
 				}
 			}
@@ -1904,7 +1904,7 @@ public class TiersManager implements MessageSourceAware {
 		adresseView.setLocalite(AdresseServiceImpl.buildNpaEtLocalite(adresse));
 		adresseView.setUsage(type);
 		adresseView.setPaysOFS(adresse.getNoOfsPays());
-		adresseView.setSource(adresse.getSource());
+		adresseView.setSource(adresse.getSource().getType());
 		adresseView.setDefault(adresse.isDefault());
 		adresseView.setComplements(adresse.getComplement());
 		adresseView.setActive(adresse.isValidAt(RegDate.get()));
@@ -1921,7 +1921,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @throws DonneesCivilesException si l'adresse civile est incohérente
 	 */
 	public AdresseView createAdresseView(Adresse adresse, TypeAdresseCivil type) throws DonneesCivilesException {
-		AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, false, getServiceInfrastructureService());
+		AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, (Tiers) null, false, getServiceInfrastructureService());
 		AdresseView adresseView = createAdresseView(adrGen, null);
 		adresseView.setUsageCivil(type);
 		return adresseView;
@@ -1942,7 +1942,7 @@ public class TiersManager implements MessageSourceAware {
 		for (AdresseView view : adresses) {
 			//UNIREG-1813 L'adresse domicile est retiré du bloc fiscal
 			if (TypeAdresseTiers.DOMICILE != view.getUsage()) {
-				if (view.getDateFin() == null || Source.CIVILE != view.getSource()) {
+				if (view.getDateFin() == null || AdresseGenerique.SourceType.CIVILE != view.getSource()) {
 					resultat.add(view);
 				}
 

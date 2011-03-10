@@ -1,26 +1,26 @@
 package ch.vd.uniregctb.adresse;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
+import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public abstract class AdresseTestCase {
 
 	/**
 	 * Asserte le contenu d'une adresse.
 	 */
-	public static void assertAdresse(RegDate dateDebut, RegDate dateFin, String localite, Source source, boolean isDefault,
+	public static void assertAdresse(RegDate dateDebut, RegDate dateFin, String localite, SourceType source, boolean isDefault,
 			AdresseGenerique adresse) {
 		assertNotNull(adresse);
 		assertEquals(dateDebut, adresse.getDateDebut());
 		assertEquals(dateFin, adresse.getDateFin());
 		assertEquals(localite, adresse.getLocalite());
-		assertEquals(source, adresse.getSource());
+		assertEquals(source, adresse.getSource().getType());
 		assertEquals(isDefault, adresse.isDefault());
 	}
 
@@ -32,8 +32,7 @@ public abstract class AdresseTestCase {
 			assertNull(actual);
 		}
 		else {
-			assertAdresse(expected.getDateDebut(), expected.getDateFin(), expected.getLocalite(), expected.getSource(), expected
-					.isDefault(), actual);
+			assertAdresse(expected.getDateDebut(), expected.getDateFin(), expected.getLocalite(), expected.getSource().getType(), expected.isDefault(), actual);
 		}
 	}
 

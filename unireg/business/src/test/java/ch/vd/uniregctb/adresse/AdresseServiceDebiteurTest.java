@@ -122,8 +122,8 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1982 = adresseService.getAdressesFiscales(debiteur, date(1982, 1, 1), false);
 				assertNotNull(adresses1982);
-				assertAdresse(date(1980, 1, 1), date(1989, 12, 31), "Lausanne", AdresseGenerique.Source.CONTRIBUABLE, true, adresses1982.courrier);
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.CONTRIBUABLE, true, adresses1982.representation);
+				assertAdresse(date(1980, 1, 1), date(1989, 12, 31), "Lausanne", AdresseGenerique.SourceType.CONTRIBUABLE, true, adresses1982.courrier);
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.CONTRIBUABLE, true, adresses1982.representation);
 				assertAdressesEquals(adresses1982.representation, adresses1982.poursuite);
 				assertAdressesEquals(adresses1982.representation, adresses1982.domicile);
 
@@ -133,8 +133,8 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1990 = adresseService.getAdressesFiscales(debiteur, date(1990, 1, 1), false);
 				assertNotNull(adresses1990);
-				assertAdresse(date(1990, 1, 1), null, "Cossonay-Ville", AdresseGenerique.Source.FISCALE, false, adresses1990.courrier);
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.CONTRIBUABLE, true, adresses1990.poursuite);
+				assertAdresse(date(1990, 1, 1), null, "Cossonay-Ville", AdresseGenerique.SourceType.FISCALE, false, adresses1990.courrier);
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.CONTRIBUABLE, true, adresses1990.poursuite);
 				assertAdressesEquals(adresses1990.poursuite, adresses1990.representation);
 				assertAdressesEquals(adresses1990.poursuite, adresses1990.domicile);
 
@@ -148,11 +148,11 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 				assertNotNull(adresses);
 
 				assertEquals(2, adresses.courrier.size());
-				assertAdresse(date(1980, 1, 1), date(1989, 12, 31), "Lausanne", AdresseGenerique.Source.CONTRIBUABLE, true, adresses.courrier.get(0));
-				assertAdresse(date(1990, 1, 1), null, "Cossonay-Ville", AdresseGenerique.Source.FISCALE, false, adresses.courrier.get(1));
+				assertAdresse(date(1980, 1, 1), date(1989, 12, 31), "Lausanne", AdresseGenerique.SourceType.CONTRIBUABLE, true, adresses.courrier.get(0));
+				assertAdresse(date(1990, 1, 1), null, "Cossonay-Ville", AdresseGenerique.SourceType.FISCALE, false, adresses.courrier.get(1));
 
 				assertEquals(1, adresses.poursuite.size());
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.CONTRIBUABLE, true, adresses.poursuite.get(0));
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.CONTRIBUABLE, true, adresses.poursuite.get(0));
 				assertAdressesEquals(adresses.poursuite, adresses.representation);
 				assertAdressesEquals(adresses.poursuite, adresses.domicile);
 			}
@@ -190,10 +190,10 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			assertEquals(1, adresses.poursuite.size());
 			assertEquals(1, adresses.representation.size());
 
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.Source.FISCALE, true, adresses.courrier.get(0));
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.Source.FISCALE, true, adresses.domicile.get(0));
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.Source.FISCALE, false, adresses.poursuite.get(0));
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.Source.FISCALE, true, adresses.representation.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses.courrier.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses.domicile.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, false, adresses.poursuite.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses.representation.get(0));
 
 			// Les adresses d'envoi
 			final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, true);
@@ -266,7 +266,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1982 = adresseService.getAdressesFiscales(debiteur, date(1982, 1, 1), false);
 				assertNotNull(adresses1982);
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.CONTRIBUABLE, true, adresses1982.courrier);
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.CONTRIBUABLE, true, adresses1982.courrier);
 				assertAdressesEquals(adresses1982.courrier, adresses1982.representation);
 				assertAdressesEquals(adresses1982.courrier, adresses1982.poursuite);
 				assertAdressesEquals(adresses1982.courrier, adresses1982.domicile);
@@ -281,7 +281,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 				assertNotNull(adresses);
 
 				assertEquals(1, adresses.courrier.size());
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.CONTRIBUABLE, true, adresses.courrier.get(0));
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.CONTRIBUABLE, true, adresses.courrier.get(0));
 
 				assertAdressesEquals(adresses.courrier, adresses.representation);
 				assertAdressesEquals(adresses.courrier, adresses.poursuite);
@@ -329,8 +329,8 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1982 = adresseService.getAdressesFiscales(debiteur, date(1982, 1, 1), false);
 				assertNotNull(adresses1982);
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.FISCALE, false, adresses1982.courrier);
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.FISCALE, true, adresses1982.representation);
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.FISCALE, false, adresses1982.courrier);
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses1982.representation);
 				assertAdressesEquals(adresses1982.representation, adresses1982.poursuite);
 				assertAdressesEquals(adresses1982.representation, adresses1982.domicile);
 
@@ -344,8 +344,8 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 				assertNotNull(adresses);
 
 				assertEquals(1, adresses.courrier.size());
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.FISCALE, false, adresses.courrier.get(0));
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.Source.FISCALE, true, adresses.representation.get(0));
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.FISCALE, false, adresses.courrier.get(0));
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses.representation.get(0));
 				assertAdressesEquals(adresses.representation, adresses.poursuite);
 				assertAdressesEquals(adresses.representation, adresses.domicile);
 			}

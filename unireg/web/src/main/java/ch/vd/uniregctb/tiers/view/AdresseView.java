@@ -34,9 +34,9 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	private boolean permanente;
 
 	/**
-	 * Source de l'adresse (civile ou fiscale)
+	 * SourceType de l'adresse (civile ou fiscale)
 	 */
-	private AdresseGenerique.Source source;
+	private AdresseGenerique.SourceType source;
 
 	// Suisse
 	private Integer numeroRue;
@@ -316,11 +316,11 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 		this.usage = usage;
 	}
 
-	public AdresseGenerique.Source getSource() {
+	public AdresseGenerique.SourceType getSource() {
 		return source;
 	}
 
-	public void setSource(AdresseGenerique.Source source) {
+	public void setSource(AdresseGenerique.SourceType source) {
 		this.source = source;
 	}
 

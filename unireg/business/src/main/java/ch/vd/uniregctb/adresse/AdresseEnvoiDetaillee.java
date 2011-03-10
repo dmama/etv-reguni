@@ -23,9 +23,9 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	private String npaEtLocalite;
 	private String pays;
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
-	private AdresseGenerique.Source source;
+	private AdresseGenerique.SourceType source;
 
-	public AdresseEnvoiDetaillee(AdresseGenerique.Source source) {
+	public AdresseEnvoiDetaillee(AdresseGenerique.SourceType source) {
 		this.source = source;
 	}
 
@@ -117,7 +117,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 		addLine(ligne, optionalite);
 	}
 
-	public AdresseGenerique.Source getSource() {
+	public AdresseGenerique.SourceType getSource() {
 		return source;
 	}
 

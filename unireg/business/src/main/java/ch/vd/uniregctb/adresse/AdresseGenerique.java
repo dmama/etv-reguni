@@ -2,8 +2,10 @@ package ch.vd.uniregctb.adresse;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.Loggable;
 import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
+import ch.vd.uniregctb.tiers.Tiers;
 
 /**
  * Interface générique permettant de représenter aussi bien une adresses civile et qu'une adresse fiscale.
@@ -13,7 +15,35 @@ import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
  */
 public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommune {
 
-	public static enum Source {
+	/**
+	 * Représente la source (type et tiers) d'une adresse générique
+	 */
+	public static class Source {
+		private final SourceType type;
+		private final Tiers tiers;
+
+		public Source(SourceType type, Tiers tiers) {
+			Assert.notNull(type);
+			this.type = type;
+			this.tiers = tiers;
+		}
+
+		/**
+		 * @return le type de source (CIVILE, FISCALE, ...) d'une adresse
+		 */
+		public SourceType getType() {
+			return type;
+		}
+
+		/**
+		 * @return le tiers à la source d'une adresse
+		 */
+		public Tiers getTiers() {
+			return tiers;
+		}
+	}
+
+	public static enum SourceType {
 		CIVILE(false),
 		FISCALE(false),
 		REPRESENTATION(true),
@@ -32,7 +62,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 
 		private boolean representation;
 
-		Source(boolean representation) {
+		SourceType(boolean representation) {
 			this.representation = representation;
 		}
 

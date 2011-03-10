@@ -172,13 +172,13 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 			final AdresseGenerique domicileAvant = histoDomicile.get(0);
 			assertNull(domicileAvant.getDateDebut(), "Qui a trouvé une date de début à l'adresse avant déménagement?");
 			assertTrue(domicileAvant.getLocalite().contains("Bex"), "L'adresse de domicile avant déménagement devrait être à Bex");
-			assertEquals(AdresseGenerique.Source.CIVILE, domicileAvant.getSource(), "Adresse de domicile d'une autre source?");
+			assertEquals(AdresseGenerique.SourceType.CIVILE, domicileAvant.getSource().getType(), "Adresse de domicile d'une autre source?");
 
 			final AdresseGenerique domicileApres = histoDomicile.get(1);
 			assertEquals(dateArriveeLausanne, domicileApres.getDateDebut(), "Mauvaise date de début");
 			assertNull(domicileApres.getDateFin(), "Qui a trouvé une date de fin à l'adresse après déménagement?");
 			assertTrue(domicileApres.getLocalite().contains("Lausanne"), "L'adresse de domicile avant déménagement devrait être à Lausanne");
-			assertEquals(AdresseGenerique.Source.CIVILE, domicileApres.getSource(), "Adresse de domicile d'une autre source?");
+			assertEquals(AdresseGenerique.SourceType.CIVILE, domicileApres.getSource().getType(), "Adresse de domicile d'une autre source?");
 		}
 
 		// courrier
@@ -191,13 +191,13 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 			assertNull(courrierAvant.getDateDebut(), "Qui a trouvé une date de début à l'adresse de courrier d'avant la surcharge?");
 			assertEquals(date(2009, 7, 7), courrierAvant.getDateFin(), "Mauvaise date de fin");
 			assertTrue(courrierAvant.getLocalite().contains("Bex"), "L'adresse de domicile avant déménagement devrait être à Bex");
-			assertEquals(AdresseGenerique.Source.CIVILE, courrierAvant.getSource(), "Adresse de courier d'une autre source?");
+			assertEquals(AdresseGenerique.SourceType.CIVILE, courrierAvant.getSource().getType(), "Adresse de courier d'une autre source?");
 
 			final AdresseGenerique courrierSurcharge = histoCourrier.get(1);
 			assertNull(courrierSurcharge.getDateFin(), "Qui a trouvé une date de fin à l'adresse de courrier surchargée?");
 			assertEquals(date(2009, 7, 8), courrierSurcharge.getDateDebut(), "Mauvaise date de début de la surcharge");
 			assertTrue(courrierSurcharge.getLocalite().contains("Vallorbe"), "L'adresse de courrier surchargée est à Vallorbe");
-			assertEquals(AdresseGenerique.Source.FISCALE, courrierSurcharge.getSource(), "Adresse de courier surchargée d'une autre source?");
+			assertEquals(AdresseGenerique.SourceType.FISCALE, courrierSurcharge.getSource().getType(), "Adresse de courier surchargée d'une autre source?");
 		}
 	}
 }

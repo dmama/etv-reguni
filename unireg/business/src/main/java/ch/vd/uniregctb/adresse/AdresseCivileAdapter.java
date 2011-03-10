@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /*
@@ -29,18 +30,19 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	/**
 	 * @param adresse   l'adresse civile à adapter
+	 * @param tiers     le tiers a qui l'adresse civil appartient
 	 * @param isDefault vrai si l'adresse représente une adresse par défaut
 	 * @param service   le service infrastructure
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données du service civil
 	 */
-	public AdresseCivileAdapter(Adresse adresse, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
+	public AdresseCivileAdapter(Adresse adresse, Tiers tiers, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
 		super(service);
 		Assert.notNull(adresse);
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		this.source = Source.CIVILE;
+		this.source = new Source(SourceType.CIVILE, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 
@@ -64,6 +66,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
+		Assert.notNull(source);
 		this.source = source;
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
@@ -76,6 +79,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	/**
 	 * @param adresse   l'adresse civile à adapter
+	 * @param tiers     le tiers a qui l'adresse civil appartient
 	 * @param debut     (option) une nouvelle adresse de début
 	 * @param fin       (option) une nouvelle adresse de fin
 	 * @param isDefault vrai si l'adresse représente une adresse par défaut
@@ -83,13 +87,13 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données du service civil
 	 */
-	public AdresseCivileAdapter(Adresse adresse, RegDate debut, RegDate fin, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
+	public AdresseCivileAdapter(Adresse adresse, Tiers tiers, RegDate debut, RegDate fin, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
 		super(service);
 		Assert.notNull(adresse);
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = debut;
 		this.finValiditeSurcharge = fin;
-		this.source = Source.CIVILE;
+		this.source = new Source(SourceType.CIVILE, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 
@@ -115,6 +119,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = debut;
 		this.finValiditeSurcharge = fin;
+		Assert.notNull(source);
 		this.source = source;
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
@@ -284,7 +289,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 			return (this.debutValiditeSurcharge == null ? right.debutValiditeSurcharge == null : this.debutValiditeSurcharge.equals(right.debutValiditeSurcharge))
 					&& (this.finValiditeSurcharge == null ? right.finValiditeSurcharge == null : this.finValiditeSurcharge.equals(right.finValiditeSurcharge))
 					&& this.adresse == right.adresse
-					&& this.source == right.source
+					&& this.source.getType() == right.source.getType()
 					&& this.isDefault == right.isDefault;
 		}
 		else {

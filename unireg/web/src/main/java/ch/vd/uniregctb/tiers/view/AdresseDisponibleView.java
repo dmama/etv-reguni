@@ -17,14 +17,14 @@ public class AdresseDisponibleView {
 	private String rue;
 	private String localite;
 	private String paysNpa;
-	private AdresseGenerique.Source source;
+	private AdresseGenerique.SourceType source;
 	private Long representantId;
 
-	public AdresseGenerique.Source getSource() {
+	public AdresseGenerique.SourceType getSource() {
 		return source;
 	}
 
-	public void setSource(AdresseGenerique.Source source) {
+	public void setSource(AdresseGenerique.SourceType source) {
 		this.source = source;
 	}
 

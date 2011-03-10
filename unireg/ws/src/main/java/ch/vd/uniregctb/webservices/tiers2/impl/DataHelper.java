@@ -9,16 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.webservices.tiers2.data.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +17,12 @@ import org.springframework.util.Assert;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
 import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
@@ -35,11 +30,24 @@ import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
+import ch.vd.uniregctb.webservices.tiers2.data.AdresseAutreTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers2.data.AdresseEnvoiAutreTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
+import ch.vd.uniregctb.webservices.tiers2.data.TypeAdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
 
@@ -446,7 +454,7 @@ public class DataHelper {
 		return new AdresseEnvoiAutreTiers(adressePoursuite);
 	}
 
-	public static TypeAdresseAutreTiers source2type(AdresseGenerique.Source source) {
+	public static TypeAdresseAutreTiers source2type(AdresseGenerique.SourceType source) {
 
 		if (source == null) {
 			return null;

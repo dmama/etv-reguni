@@ -8,10 +8,10 @@ public class IdentificationAdresseTooltipView {
 	private String complements;
 	private String localite;
 	private String pays;
-	private AdresseGenerique.Source source;
+	private AdresseGenerique.SourceType source;
 	private String errorMessage;
 
-	public void init(String rue, String complements, String localite, String pays, AdresseGenerique.Source source) {
+	public void init(String rue, String complements, String localite, String pays, AdresseGenerique.SourceType source) {
 		this.rue = rue;
 		this.complements = complements;
 		this.localite = localite;
@@ -54,7 +54,7 @@ public class IdentificationAdresseTooltipView {
 		return pays;
 	}
 
-	public AdresseGenerique.Source getSource() {
+	public AdresseGenerique.SourceType getSource() {
 		return source;
 	}
 

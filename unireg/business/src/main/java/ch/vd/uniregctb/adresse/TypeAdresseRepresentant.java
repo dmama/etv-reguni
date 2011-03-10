@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.adresse;
 
-import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
+import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tutelle;
@@ -11,8 +11,8 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public enum TypeAdresseRepresentant {
 
-	REPRESENTATION(TypeRapportEntreTiers.REPRESENTATION, Source.REPRESENTATION),
-	REPRESENTATION_AVEC_EXECUTION_FORCEE(TypeRapportEntreTiers.REPRESENTATION, Source.REPRESENTATION) {
+	REPRESENTATION(TypeRapportEntreTiers.REPRESENTATION, SourceType.REPRESENTATION),
+	REPRESENTATION_AVEC_EXECUTION_FORCEE(TypeRapportEntreTiers.REPRESENTATION, SourceType.REPRESENTATION) {
 		@Override
 		public Long getRepresentantId(RapportEntreTiers rapport) {
 			// cas spécial de la représentation conventionnelle avec exécution forcée : on ignore les représentations sans ce flag
@@ -24,20 +24,20 @@ public enum TypeAdresseRepresentant {
 				return null;
 			}
 		}},
-	TUTELLE(TypeRapportEntreTiers.TUTELLE, Source.TUTELLE),
-	AUTORITE_TUTELAIRE(TypeRapportEntreTiers.TUTELLE, Source.TUTELLE) {
+	TUTELLE(TypeRapportEntreTiers.TUTELLE, SourceType.TUTELLE),
+	AUTORITE_TUTELAIRE(TypeRapportEntreTiers.TUTELLE, SourceType.TUTELLE) {
 		@Override
 		public Long getRepresentantId(RapportEntreTiers rapport) {
 			// cas spécial de l'autorité tutelaire dont le représentant se trouve sur un attribut spécifique.
 			return ((Tutelle) rapport).getAutoriteTutelaireId();
 		}},
-	CURATELLE(TypeRapportEntreTiers.CURATELLE, Source.CURATELLE),
-	CONSEIL_LEGAL(TypeRapportEntreTiers.CONSEIL_LEGAL, Source.CONSEIL_LEGAL);
+	CURATELLE(TypeRapportEntreTiers.CURATELLE, SourceType.CURATELLE),
+	CONSEIL_LEGAL(TypeRapportEntreTiers.CONSEIL_LEGAL, SourceType.CONSEIL_LEGAL);
 
 	final TypeRapportEntreTiers typeRapport;
-	final Source typeSource;
+	final SourceType typeSource;
 
-	private TypeAdresseRepresentant(TypeRapportEntreTiers typeRapport, Source typeSource) {
+	private TypeAdresseRepresentant(TypeRapportEntreTiers typeRapport, SourceType typeSource) {
 		this.typeRapport = typeRapport;
 		this.typeSource = typeSource;
 	}
@@ -46,7 +46,7 @@ public enum TypeAdresseRepresentant {
 		return typeRapport;
 	}
 
-	public Source getTypeSource() {
+	public SourceType getTypeSource() {
 		return typeSource;
 	}
 
@@ -66,7 +66,7 @@ public enum TypeAdresseRepresentant {
 	 * @param source la source
 	 * @return le type d'adresse représentant trouvé; ou <b>null</b> si la source ne correspond à aucun type.
 	 */
-	public static TypeAdresseRepresentant getTypeAdresseRepresentantFromSource(Source source) {
+	public static TypeAdresseRepresentant getTypeAdresseRepresentantFromSource(SourceType source) {
 		for (TypeAdresseRepresentant typeAdresseRepresentant : values()) {
 			if (typeAdresseRepresentant.getTypeSource() == source) {
 				return typeAdresseRepresentant;

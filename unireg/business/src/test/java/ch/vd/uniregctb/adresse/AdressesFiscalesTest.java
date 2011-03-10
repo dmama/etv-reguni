@@ -1,5 +1,4 @@
 package ch.vd.uniregctb.adresse;
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
@@ -8,7 +7,10 @@ import org.junit.runner.RunWith;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(JUnit4ClassRunner.class)
@@ -19,11 +21,11 @@ public class AdressesFiscalesTest {
 	@Test
 	public void testOfType() throws Exception {
 
-		final AdresseCivileAdapter adresseCourrier = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
-		final AdresseCivileAdapter adresseRepresentation = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
-		final AdresseCivileAdapter adresseDomicile = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
-		final AdresseCivileAdapter adressePoursuite = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
-		final AdresseCivileAdapter adressePoursuiteAutreTiers = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
+		final AdresseCivileAdapter adresseCourrier = new AdresseCivileAdapter(new MockAdresse(), (Tiers) null, false, serviceInfra);
+		final AdresseCivileAdapter adresseRepresentation = new AdresseCivileAdapter(new MockAdresse(), (Tiers) null, false, serviceInfra);
+		final AdresseCivileAdapter adresseDomicile = new AdresseCivileAdapter(new MockAdresse(), (Tiers) null, false, serviceInfra);
+		final AdresseCivileAdapter adressePoursuite = new AdresseCivileAdapter(new MockAdresse(), (Tiers) null, false, serviceInfra);
+		final AdresseCivileAdapter adressePoursuiteAutreTiers = new AdresseCivileAdapter(new MockAdresse(), (Tiers) null, false, serviceInfra);
 
 		AdressesFiscales adresses = new AdressesFiscales();
 		adresses.courrier = adresseCourrier;

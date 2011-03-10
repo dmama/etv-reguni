@@ -26,6 +26,6 @@ public class AdresseAutreTiers extends Adresse {
 	public AdresseAutreTiers(AdresseGenerique adresse, ServiceInfrastructureService serviceInfra) throws
 			BusinessException {
 		super(adresse, serviceInfra);
-		this.type = DataHelper.source2type(adresse.getSource());
+		this.type = DataHelper.source2type(adresse.getSource().getType());
 	}
 }

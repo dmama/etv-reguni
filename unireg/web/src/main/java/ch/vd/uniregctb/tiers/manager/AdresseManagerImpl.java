@@ -17,7 +17,6 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -544,7 +543,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	private AdresseDisponibleView createAdresseDisponibleViewFromAdresseCivil(Adresse addIndividu) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
 
-		addDispoView.setSource(Source.CIVILE);
+		addDispoView.setSource(AdresseGenerique.SourceType.CIVILE);
 		addDispoView.setLocalite(addIndividu.getLocalite());
 		addDispoView.setNumeroCasePostale(addIndividu.getNumeroOrdrePostal());
 

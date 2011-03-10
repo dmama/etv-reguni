@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Entreprise;
 
 /*
  * Cette classe permet d'adapter une adresse personne morale à l'interface d'adresse générique, optionnellement en surchargeant ses dates de début/fin de validité.
@@ -22,17 +23,16 @@ public class AdressePMAdapter implements AdresseGenerique {
 	private final Source source;
 	private final boolean isDefault;
 
-	public AdressePMAdapter(AdresseEntreprise adresse, boolean isDefault) {
+	public AdressePMAdapter(AdresseEntreprise adresse, Entreprise entreprise, boolean isDefault) {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		this.source = Source.PM;
+		this.source = new Source(SourceType.PM, entreprise);
 		this.isDefault = isDefault;
 		DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
 	}
 
-	public AdressePMAdapter(AdresseEntreprise adresse, RegDate debutValiditeSurcharge, RegDate finValiditeSurcharge, Source source,
-			boolean isDefault) {
+	public AdressePMAdapter(AdresseEntreprise adresse, RegDate debutValiditeSurcharge, RegDate finValiditeSurcharge, Source source, boolean isDefault) {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = debutValiditeSurcharge;
 		this.finValiditeSurcharge = finValiditeSurcharge;

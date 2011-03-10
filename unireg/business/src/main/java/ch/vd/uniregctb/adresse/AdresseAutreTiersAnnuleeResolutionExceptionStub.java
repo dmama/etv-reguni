@@ -15,10 +15,12 @@ import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseGenerique {
 
 	private AdresseAutreTiers target;
+	private Source source;
 
 	public AdresseAutreTiersAnnuleeResolutionExceptionStub(AdresseAutreTiers target) {
 		Assert.isTrue(target.isAnnule()); // si l'adresse autre tiers n'est pas annulée, l'exception de résolution des adresses doit être remontée !
 		this.target = target;
+		this.source = new Source(SourceType.FISCALE, null);
 	}
 
 	public Long getId() {
@@ -26,7 +28,7 @@ public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseG
 	}
 
 	public Source getSource() {
-		return Source.FISCALE;
+		return source;
 	}
 
 	public boolean isDefault() {

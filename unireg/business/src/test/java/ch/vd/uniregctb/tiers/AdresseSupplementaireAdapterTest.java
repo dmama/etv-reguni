@@ -1,15 +1,12 @@
 package ch.vd.uniregctb.tiers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
-import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -18,6 +15,9 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 
@@ -38,7 +38,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		adresse.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
 		adresse.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
 
-		final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(adresse, false, serviceInfra);
+		final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(adresse, null, false, serviceInfra);
 		assertEquals(adresse, adapter.getAdresse());
 		assertEquals("Case Postale 1234", adapter.getCasePostale());
 
@@ -55,7 +55,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		assertNull(adapter.getNumeroPostalComplementaire());
 		assertEquals(ServiceInfrastructureService.noOfsSuisse, adapter.getNoOfsPays().intValue());
 		assertEquals("Av de Beaulieu", adapter.getRue());
-		assertEquals(Source.FISCALE, adapter.getSource());
+		assertEquals(SourceType.FISCALE, adapter.getSource().getType());
 		assertEquals("complement", adapter.getComplement());
 	}
 
@@ -86,7 +86,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		adresse.setComplementLocalite("K.");
 		adresse.setNumeroOfsPays(MockPays.Danemark.getNoOFS());
 
-		final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(adresse, false, serviceInfra);
+		final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(adresse, null, false, serviceInfra);
 		assertEquals(adresse, adapter.getAdresse());
 		assertNull(adapter.getCasePostale());
 		assertEquals(RegDate.get(1995, 1, 1), adapter.getDateDebut());
@@ -102,7 +102,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		assertEquals("", adapter.getNumeroPostalComplementaire());
 		assertEquals(MockPays.Danemark.getNoOFS(), adapter.getNoOfsPays().intValue());
 		assertEquals("Larsbjornsstraede", adapter.getRue());
-		assertEquals(Source.FISCALE, adapter.getSource());
+		assertEquals(SourceType.FISCALE, adapter.getSource().getType());
 		assertEquals("Google Denmark ApS", adapter.getComplement());
 	}
 }

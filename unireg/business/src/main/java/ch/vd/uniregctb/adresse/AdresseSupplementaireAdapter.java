@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TexteCasePostale;
 
 /*
@@ -29,8 +30,9 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	private final AdresseEtrangere adresseEtrangere;
 
 	private final boolean isDefault;
+	private final Source source;
 
-	public AdresseSupplementaireAdapter(AdresseSupplementaire adresse, boolean isDefault, ServiceInfrastructureService service) {
+	public AdresseSupplementaireAdapter(AdresseSupplementaire adresse, Tiers tiers, boolean isDefault, ServiceInfrastructureService service) {
 
 		super(service);
 		Assert.notNull(adresse);
@@ -48,6 +50,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		if (!adresse.isAnnule()) {
 			DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
 		}
+		this.source = new Source(SourceType.FISCALE, tiers);
 	}
 
 	/**
@@ -192,7 +195,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	}
 
 	public Source getSource() {
-		return Source.FISCALE;
+		return source;
 	}
 
 	public boolean isDefault() {

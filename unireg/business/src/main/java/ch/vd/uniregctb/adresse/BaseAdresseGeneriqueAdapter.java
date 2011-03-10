@@ -268,7 +268,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	public Long getId() {
-		if (source == Source.FISCALE) {
+		if (source.getType() == SourceType.FISCALE) {
 			// [UNIREG-2927] dans le cas où l'adresse est de source fiscale, on expose l'id de manière à permettre l'édition de l'adresse dans la GUI
 			return target.getId();
 		}
@@ -278,7 +278,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	public boolean isPermanente() {
-		return source == Source.FISCALE && target.isPermanente();
+		return source.getType() == SourceType.FISCALE && target.isPermanente();
 	}
 
 	public CommuneSimple getCommuneAdresse() {

@@ -1,6 +1,23 @@
 package ch.vd.uniregctb.webservices.tiers2.mock;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.ResourceUtils;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -9,22 +26,46 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers2.data.*;
+import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
+import ch.vd.uniregctb.webservices.tiers2.data.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers2.data.Assujettissement;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.Capital;
+import ch.vd.uniregctb.webservices.tiers2.data.CompteBancaire;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.EtatPM;
+import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
+import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
+import ch.vd.uniregctb.webservices.tiers2.data.FormeJuridique;
+import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
+import ch.vd.uniregctb.webservices.tiers2.data.PersonneMoraleHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.Range;
+import ch.vd.uniregctb.webservices.tiers2.data.RegimeFiscal;
+import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
+import ch.vd.uniregctb.webservices.tiers2.data.Siege;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
-import ch.vd.uniregctb.webservices.tiers2.params.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.ResourceUtils;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
+import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersType;
+import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchEvenementsPM;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
 /**
  * Classe qui retourne des données bouchonnées concernant les personnes morales. Les appels concernant les personnes physiques sont simplement délégués plus loin.
@@ -448,7 +489,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	}
 
 	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.Source.PM);
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.PM);
 
 		if (pm.designationAbregee != null) {
 			adresse.addNomPrenom(pm.designationAbregee);
