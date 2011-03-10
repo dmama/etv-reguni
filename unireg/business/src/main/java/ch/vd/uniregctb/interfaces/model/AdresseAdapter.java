@@ -83,4 +83,14 @@ public class AdresseAdapter implements Adresse {
 	public CommuneSimple getCommuneAdresse() {
 		return target.getCommuneAdresse();
 	}
+
+	@Override
+	public Long getEgid() {
+		return target.getEgid();
+	}
+
+	@Override
+	public Long getEwid() {
+		return target.getEwid();
+	}
 }

@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.interfaces;
 
+import java.util.Collection;
+
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -15,7 +19,7 @@ public class ServiceCivilTest extends BusinessItTest {
 
 	private ServiceCivilService service;
 
-	@Override                             
+	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
@@ -86,8 +90,24 @@ public class ServiceCivilTest extends BusinessItTest {
 	   //Remarié
 		assertNotNull(conjoint);
 		assertEquals(387602,conjoint.getNoTechnique());
-		
+
 	}
 
+	@Test
+	public void testGetAdressesAvecEgidEtEwid() {
 
+		final Individu ind0 = service.getIndividu(1015956, 2010, AttributeIndividu.ADRESSES);
+		assertNotNull(ind0);
+
+		final Collection<Adresse> adresses = ind0.getAdresses();
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		for (Adresse adresse : adresses) {
+			if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
+				assertEquals(Long.valueOf(3037134), adresse.getEgid());
+				assertEquals(Long.valueOf(3), adresse.getEwid());
+			}
+		}
+	}
 }

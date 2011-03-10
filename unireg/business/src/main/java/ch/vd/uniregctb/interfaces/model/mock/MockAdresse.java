@@ -193,6 +193,16 @@ public class MockAdresse implements Adresse {
 		communeAdresse = c;
 	}
 
+	@Override
+	public Long getEgid() {
+		return null;
+	}
+
+	@Override
+	public Long getEwid() {
+		return null;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

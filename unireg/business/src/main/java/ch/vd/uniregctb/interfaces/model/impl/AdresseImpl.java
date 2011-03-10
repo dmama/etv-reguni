@@ -3,6 +3,8 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -31,6 +33,8 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final String titre;
 	private final TypeAdresseCivil typeAdresse;
 	private final CommuneSimple communeAdresse;
+	private final Long egid;
+	private final Long ewid;
 
 	public static AdresseImpl get(ch.vd.common.model.Adresse target) {
 		if (target == null) {
@@ -62,6 +66,18 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.titre = target.getTitre();
 		this.typeAdresse = TypeAdresseCivil.get(target.getTypeAdresse());
 		this.communeAdresse = CommuneSimpleImpl.get(target.getCommuneAdresse());
+		this.egid = string2long(target.getEgid());
+		this.ewid = string2long(target.getEwid());
+	}
+
+	private static Long string2long(String string) {
+		string = StringUtils.trimToNull(string);
+		if (string == null) {
+			return null;
+		}
+		else {
+			return Long.parseLong(string);
+		}
 	}
 
 	public String getCasePostale() {
@@ -122,6 +138,16 @@ public class AdresseImpl implements Adresse, Serializable {
 
 	public CommuneSimple getCommuneAdresse() {
 		return communeAdresse;
+	}
+
+	@Override
+	public Long getEgid() {
+		return egid;
+	}
+
+	@Override
+	public Long getEwid() {
+		return ewid;
 	}
 
 	/**
