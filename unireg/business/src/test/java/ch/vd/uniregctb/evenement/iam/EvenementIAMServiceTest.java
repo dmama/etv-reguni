@@ -7,31 +7,14 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediServiceImpl;
-import ch.vd.uniregctb.evenement.cedi.RetourDI;
-import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class EvenementIAMServiceTest extends BusinessTest {
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<DemandeUtilisateur xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/iam/messageIAM_EMPIS.xsd">
+<DemandeUtilisateur xmlns="http://www.vd.ch/fiscalite/empaci/DemandeUtilisateur-v2">
 	<InfoIAM>
 		<RoleApplicatif>fiscalite - empaci - employeur</RoleApplicatif>
 		<Nom>Schibli</Nom>
