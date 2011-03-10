@@ -2,6 +2,8 @@ package ch.vd.uniregctb.webservices.tiers2.perfs;
 
 import javax.xml.ws.BindingProvider;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,6 +87,7 @@ public class PerfsClient {
 		final Integer threadsCount = Integer.valueOf(line.getOptionValue("threads", "1"));
 		final String ctbIdAsString = line.getOptionValue("ctb");
 		final String accessFilename = line.getOptionValue("accessFile");
+		final String outputFilename = line.getOptionValue("outputFile");
 		final String dateAsString = line.getOptionValue("date");
 		final String periodeAsString = line.getOptionValue("periode");
 		final boolean histo = line.hasOption("histo");
@@ -113,20 +116,22 @@ public class PerfsClient {
 				queriesCount = null;
 			}
 
+			final FileWriter outputFile = openOutputFile(outputFilename);
+
 			final Query query;
 			if (dateAsString != null) {
 				Date date = parseDate(dateAsString);
-				query = new DateQuery(date, operateur, oid);
+				query = new DateQuery(date, operateur, oid, outputFile);
 			}
 			else if (periodeAsString != null) {
 				int annee = Integer.valueOf(periodeAsString);
-				query = new PeriodeQuery(annee, operateur, oid);
+				query = new PeriodeQuery(annee, operateur, oid, outputFile);
 			}
 			else if (histo) {
-				query = new HistoQuery(operateur, oid);
+				query = new HistoQuery(operateur, oid, outputFile);
 			}
 			else {
-				query = new SearchQuery(operateur, oid);
+				query = new SearchQuery(operateur, oid, outputFile);
 			}
 
 			if (partsAsString != null) {
@@ -159,6 +164,10 @@ public class PerfsClient {
 			});
 
 			client.run();
+
+			if (outputFile != null) {
+				outputFile.close();
+			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -235,8 +244,20 @@ public class PerfsClient {
 		// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
 		context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
 		context.put("set-jaxb-validation-event-handler", false);
-		
+
 		return service;
+	}
+
+	private static FileWriter openOutputFile(String outputFilename) {
+		if (StringUtils.isBlank(outputFilename)) {
+			return null;
+		}
+		try {
+			return new FileWriter(outputFilename, false);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void run() {
@@ -319,6 +340,8 @@ public class PerfsClient {
 			Option ctb = OptionBuilder.withArgName("id").hasArg().withDescription("numéro du contribuable à récupérer").create("ctb");
 			Option accessFile = OptionBuilder.withArgName("filename").hasArg().withDescription(
 					"fichier avec les numéros des contribuables et les temps d'accès (format host-interface)").create("accessFile");
+			Option outputFile = OptionBuilder.withArgName("filename").hasArg().withDescription(
+					"fichier de sortie avec le log des données récupérées").create("outputFile");
 			Option date = OptionBuilder.withArgName("yyyymmdd").hasArg().withDescription("retourne un tiers à une date précise").create(
 					"date");
 			Option periode = OptionBuilder.withArgName("annee").hasArg().withDescription("retourne un tiers pour une période fiscale")
@@ -349,6 +372,7 @@ public class PerfsClient {
 			options.addOption(help);
 			options.addOption(ctb);
 			options.addOption(accessFile);
+			options.addOption(outputFile);
 			options.addOption(date);
 			options.addOption(periode);
 			options.addOption(histo);

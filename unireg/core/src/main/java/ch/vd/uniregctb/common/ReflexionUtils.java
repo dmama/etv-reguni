@@ -5,8 +5,12 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,5 +51,102 @@ public abstract class ReflexionUtils {
 		}
 
 		return pds;
+	}
+
+	/**
+	 * Converti un objet en une string. Cette méthode utilise la réflexion pour découvrir les propriétés de l'objet.
+	 * <p/>
+	 * <b>Exemple:</b> <pre>GetTiersHisto{login=UserLogin{oid=22, userId="PerfsClient"}, parts=[ADRESSES, ADRESSES_ENVOI], tiersNumber=10722347}</pre>
+	 *
+	 * @param o        un objet, qui peut être nul.
+	 * @param showNull <b>vrai</b> si les propriétés nulles (et les collections vides) doivent apparaîtrent dans la string; <b>faux</b> si elles doivent être ignorées.
+	 * @return la représentation string de l'objet spécifié.
+	 */
+	public static String toString(Object o, boolean showNull) {
+		if (o == null) {
+			return "null";
+		}
+
+		// Cas triviaux
+		if (o instanceof Collection) {
+			return toString((Collection<?>) o, showNull);
+		}
+		else if (o instanceof Number || o instanceof Boolean || o instanceof Enum || o instanceof Character) {
+			return o.toString();
+		}
+		else if (o instanceof String) {
+			return String.format("\"%s\"", o);
+		}
+		else if (o instanceof Class) {
+			return ((Class) o).getName();
+		}
+
+		// Cas généraux : on passe par la réflexion java
+		try {
+			final Map<String, PropertyDescriptor> descriptors = getPropertyDescriptors(o.getClass());
+			final List<PropertyDescriptor> list = new ArrayList<PropertyDescriptor>(descriptors.values());
+			Collections.sort(list, new Comparator<PropertyDescriptor>() {
+				@Override
+				public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
+
+			final StringBuilder s = new StringBuilder();
+			s.append(o.getClass().getSimpleName()).append('{');
+
+			boolean first = true;
+			for (int i = 0, listSize = list.size(); i < listSize; i++) {
+				final PropertyDescriptor descriptor = list.get(i);
+				if ("class".equals(descriptor.getName())) {
+					continue;
+				}
+				final Object value = descriptor.getReadMethod().invoke(o);
+				if (!showNull && (value == null || (value instanceof Collection && ((Collection) value).isEmpty()))) {
+					continue;
+				}
+				if (first) {
+					first = false;
+				}
+				else {
+					s.append(", ");
+				}
+				s.append(descriptor.getName()).append("=").append(toString(value, showNull));
+			}
+			s.append('}');
+
+			return s.toString();
+		}
+		catch (IntrospectionException e) {
+			throw new RuntimeException(e);
+		}
+		catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static String toString(Collection<?> coll, boolean showNull) {
+		if (coll == null) {
+			return "null";
+		}
+
+		final StringBuilder s = new StringBuilder();
+		s.append('[');
+		boolean first = true;
+		for (Object o : coll) {
+			if (first) {
+				first = false;
+			}
+			else {
+				s.append(", ");
+			}
+			s.append(toString(o, showNull));
+		}
+		s.append(']');
+
+		return s.toString();
 	}
 }

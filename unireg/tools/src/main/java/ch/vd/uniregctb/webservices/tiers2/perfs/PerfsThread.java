@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers2.perfs;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +11,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
 import ch.vd.uniregctb.webservices.tiers2.AccessDeniedException_Exception;
 import ch.vd.uniregctb.webservices.tiers2.BatchTiers;
@@ -25,6 +28,7 @@ import ch.vd.uniregctb.webservices.tiers2.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers2.SearchTiers;
 import ch.vd.uniregctb.webservices.tiers2.TechnicalException_Exception;
 import ch.vd.uniregctb.webservices.tiers2.Tiers;
+import ch.vd.uniregctb.webservices.tiers2.TiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.TiersPort;
 import ch.vd.uniregctb.webservices.tiers2.TypeRecherche;
@@ -55,8 +59,10 @@ public class PerfsThread extends Thread {
 		protected UserLogin login = new UserLogin();
 
 		protected Set<TiersPart> parts = null;
+		protected final FileWriter outputFilename;
 
-		public Query(String operateur, int oid) {
+		public Query(String operateur, int oid, FileWriter outputFilename) {
+			this.outputFilename = outputFilename;
 			login.setUserId(operateur);
 			login.setOid(oid);
 		}
@@ -94,13 +100,26 @@ public class PerfsThread extends Thread {
 				return s;
 			}
 		}
+
+		protected void logToOutput(Object params, Object results) {
+			if (outputFilename != null) {
+				StringBuilder s = new StringBuilder();
+				s.append(ReflexionUtils.toString(params, false)).append(" => ").append(ReflexionUtils.toString(results, false)).append('\n');
+				try {
+					outputFilename.write(s.toString());
+				}
+				catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
 	}
 
 	public static class DateQuery extends Query {
 		private final Date date;
 
-		public DateQuery(Date date, String operateur, int oid) {
-			super(operateur, oid);
+		public DateQuery(Date date, String operateur, int oid, FileWriter outputFilename) {
+			super(operateur, oid, outputFilename);
 			this.date = date;
 		}
 
@@ -145,8 +164,8 @@ public class PerfsThread extends Thread {
 	public static class PeriodeQuery extends Query {
 		private final int annee;
 
-		public PeriodeQuery(int annee, String operateur, int oid) {
-			super(operateur, oid);
+		public PeriodeQuery(int annee, String operateur, int oid, FileWriter outputFilename) {
+			super(operateur, oid, outputFilename);
 			this.annee = annee;
 		}
 
@@ -162,7 +181,9 @@ public class PerfsThread extends Thread {
 				params.getParts().addAll(parts);
 			}
 
-			return port.getTiersPeriode(params);
+			final TiersHisto tiersPeriode = port.getTiersPeriode(params);
+			logToOutput(params, tiersPeriode);
+			return tiersPeriode;
 		}
 
 		@Override
@@ -178,8 +199,8 @@ public class PerfsThread extends Thread {
 
 	public static class HistoQuery extends Query {
 
-		public HistoQuery(String operateur, int oid) {
-			super(operateur, oid);
+		public HistoQuery(String operateur, int oid, FileWriter outputFilename) {
+			super(operateur, oid, outputFilename);
 		}
 
 		@Override
@@ -193,7 +214,9 @@ public class PerfsThread extends Thread {
 				params.getParts().addAll(parts);
 			}
 
-			return port.getTiersHisto(params);
+			final TiersHisto tiersHisto = port.getTiersHisto(params);
+			logToOutput(params, tiersHisto);
+			return tiersHisto;
 		}
 
 		@Override
@@ -206,7 +229,8 @@ public class PerfsThread extends Thread {
 				params.getParts().addAll(parts);
 			}
 
-			BatchTiersHisto batch = port.getBatchTiersHisto(params);
+			final BatchTiersHisto batch = port.getBatchTiersHisto(params);
+			logToOutput(params, batch);
 			return batch.getEntries();
 		}
 
@@ -218,8 +242,8 @@ public class PerfsThread extends Thread {
 
 	public static class SearchQuery extends Query {
 
-		public SearchQuery(String operateur, int oid) {
-			super(operateur, oid);
+		public SearchQuery(String operateur, int oid, FileWriter outputFilename) {
+			super(operateur, oid, outputFilename);
 		}
 
 		@Override
