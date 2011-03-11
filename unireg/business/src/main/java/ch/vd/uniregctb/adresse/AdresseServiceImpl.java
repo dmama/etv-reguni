@@ -138,11 +138,12 @@ public class AdresseServiceImpl implements AdresseService {
 
 		// Détermine les informations de l'adresse d'envoi
 		final EnvoiInfo envoi = determineEnvoiInfo(tiers, type, adresseDestination);
+		final Tiers tiersPourAdresse = (envoi.avecPourAdresse ? envoi.destination : null);
 
+		// Remplis l'adresse d'envoi
 		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(envoi.sourceType);
-
-		fillDestinataire(adresseEnvoi, envoi.destinataire, date, true);
-		fillDestination(adresseEnvoi, adresseDestination, envoi.destination, envoi.avecPourAdresse);
+		fillDestinataire(adresseEnvoi, envoi.destinataire, tiersPourAdresse, date, true);
+		fillDestination(adresseEnvoi, adresseDestination);
 
 		return adresseEnvoi;
 	}
@@ -273,10 +274,11 @@ public class AdresseServiceImpl implements AdresseService {
 	 *
 	 * @param adresse              l'adresse d'envoi détaillée à remplir
 	 * @param tiers                le tiers destinataire
+	 * @param tiersPourAdresse     le tiers utilisée pour renseigner un "pour adresse"; <b>null</b> s'il n'y a pas de "pour adresse".
 	 * @param date                 la date de validité de l'adresse
 	 * @param fillFormulePolitesse s'il faut remplir la formule de politesse ou non
 	 */
-	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date, boolean fillFormulePolitesse) {
+	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, Tiers tiersPourAdresse, RegDate date, boolean fillFormulePolitesse) {
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique personne = (PersonnePhysique) tiers;
@@ -334,23 +336,20 @@ public class AdresseServiceImpl implements AdresseService {
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
 		}
+
+		if (tiersPourAdresse != null) {
+			adresse.addPourAdresse(getPourAdresse(tiersPourAdresse));
+		}
 	}
 
 	/**
 	 * Remplis les lignes correspondant à la destination géographique d'une adresse d'envoi.
 	 *
-	 *
 	 * @param adresse            l'adresse d'envoi détaillée à remplir
 	 * @param adresseDestination l'adresse générique pré-calculée
-	 * @param destination        le tiers chez qui l'envoi est adressé
-	 * @param avecPourAdresse    <b>vrai</b> s'il faut ajouter un préfixe "p.a." avant la destination
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination, Tiers destination, boolean avecPourAdresse) throws AdresseException {
-
-		if (avecPourAdresse) {
-			adresse.addPourAdresse(getPourAdresse(destination));
-		}
+	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination) throws AdresseException {
 
 		if (adresseDestination != null) {
 			fillAdresseEnvoi(adresse, adresseDestination);
@@ -1966,7 +1965,7 @@ public class AdresseServiceImpl implements AdresseService {
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
 		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null);
-		fillDestinataire(adresse, tiers, date, false);
+		fillDestinataire(adresse, tiers, null, date, false);
 
 		List<String> list = adresse.getNomPrenom();
 
