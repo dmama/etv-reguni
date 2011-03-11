@@ -386,7 +386,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 		@Override
 		public InputStream getStreamForExtraction(MouvementDossierExtractionResult rapportFinal) throws IOException {
-			final String contenu = buildCvs(rapportFinal.mvts);
+			final String contenu = buildCsv(rapportFinal.mvts);
 			return CsvHelper.getInputStream(contenu);
 		}
 
@@ -420,6 +420,9 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			if (criteria.getNoCtb() != null) {
 				b.append(" du contribuable ").append(FormatNumeroHelper.numeroCTBToDisplay(criteria.getNoCtb()));
 			}
+			if (criteria.getIdCollAdministrativeDestinataire() != null) {
+				b.append(" vers la collectivité administrative ").append(criteria.getIdCollAdministrativeDestinataire());
+			}
 			final Collection<EtatMouvementDossier> etatsMouvement = criteria.getEtatsMouvement();
 			if (etatsMouvement != null && etatsMouvement.size() > 0) {
 				b.append(" dans l'état ");
@@ -442,7 +445,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
-	private static String buildCvs(List<MouvementDetailView> mvts) {
+	private static String buildCsv(List<MouvementDetailView> mvts) {
 		return CsvHelper.asCsvFile(mvts, "mvts.csv", null, 150, new CsvHelper.Filler<MouvementDetailView>() {
 			@Override
 			public void fillHeader(StringBuilder b) {
