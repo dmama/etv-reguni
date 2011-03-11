@@ -131,4 +131,16 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @return
 	 */
 	public List<IdentificationContribuable.Etat> getListeEtatsMessagesTraites();
+
+
+	/**Retourne la liste des types de priorité des messages non traitées
+	 *
+	 */
+	public List<Demande.PrioriteEmetteur> getListePrioriteMessagesNonTraites();
+
+
+	/**Retourne la liste des types de priorité des messages traitées
+	 *
+	 */
+	public List<Demande.PrioriteEmetteur> getListePrioriteMessagesTraites();
 }

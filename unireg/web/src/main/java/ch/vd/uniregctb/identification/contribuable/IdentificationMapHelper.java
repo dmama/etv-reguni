@@ -59,11 +59,31 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur() {
+	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur(final boolean isTraite) {
 
-		mapPrioriteEmetteur = initMapEnum(ApplicationConfig.masterKeyPrioriteEmetteur, PrioriteEmetteur.class);
+	final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<PrioriteEmetteur, String>();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final List<PrioriteEmetteur> listesPriorites = (List<PrioriteEmetteur>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				if(isTraite){
+					return identCtbDAO.getListePrioriteMessagesTraites();
+				}
+				else{
+					return identCtbDAO.getListePrioriteMessagesNonTraites();
+				}
 
-		return mapPrioriteEmetteur;
+			}
+		});
+
+		Iterator<PrioriteEmetteur> itPriorite = listesPriorites.iterator();
+		while (itPriorite.hasNext()) {
+			PrioriteEmetteur prioriteEmetteur = itPriorite.next();
+			final String libellePriorite = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur +prioriteEmetteur);
+			allPrioriteEmetteur .put(prioriteEmetteur, libellePriorite);
+		}
+
+		return allPrioriteEmetteur;
 	}
 
 	/**
@@ -312,6 +332,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		return allPeriodeFiscale;
 	}
+
+
+
 
 		/**
 	 * Initialise la map des periodes fiscales

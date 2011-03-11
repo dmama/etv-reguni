@@ -27,6 +27,9 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	private static final String TOUS = "TOUS";
 
+	private static final  String clauseMessagesNonTraites = " where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+	private static final String clauseMessagesTraitees = " where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT')";
+
 	public IdentCtbDAOImpl() {
 		super(IdentificationContribuable.class);
 	}
@@ -115,15 +118,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	public List<String> getTypesMessageEtatsNonTraites() {
 			String query = " select distinct identificationContribuable.demande.typeMessage" +
-				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 				return getHibernateTemplate().find(query);
 	}
 
 	public List<String> getTypesMessageEtatsTraites() {
 		String query = " select distinct identificationContribuable.demande.typeMessage" +
-				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT') ";
+				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
 		return getHibernateTemplate().find(query);
 	}
 
@@ -152,8 +153,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	public List<String> getEmetteursIdEtatsNonTraites() {
 		String query = " select distinct identificationContribuable.demande.emetteurId" +
-				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 		return getHibernateTemplate().find(query);
 	}
 
@@ -161,15 +161,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	public List<String> getEmetteursIdEtatsTraites() {
 		String query = " select distinct identificationContribuable.demande.emetteurId" +
-				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT') ";
+				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
 		return getHibernateTemplate().find(query);
 	}
 
 	public List<Integer> getPeriodeEtatsTraites() {
 		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
-				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT') ";
+				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
 		return getHibernateTemplate().find(query);
 	}
 
@@ -179,9 +177,10 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 	public List<Integer> getPeriodeEtatsNonTraites() {
+
 		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
 				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+				clauseMessagesNonTraites;
 		return getHibernateTemplate().find(query);
 	}
 
@@ -194,15 +193,34 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	public List<Etat> getListeEtatsMessagesNonTraites() {
 		String query = " select distinct identificationContribuable.etat" +
-				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 		return getHibernateTemplate().find(query);
 	}
 
 	public List<Etat> getListeEtatsMessagesTraites() {
 		String query = " select distinct identificationContribuable.etat" +
-				" from IdentificationContribuable identificationContribuable" +
-				" where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT')";
+				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
+		return getHibernateTemplate().find(query);
+	}
+
+	@Override
+	public List<PrioriteEmetteur> getListePrioriteMessagesNonTraites() {
+	String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
+			"from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
+		return getHibernateTemplate().find(query);
+	}
+
+	@Override
+	public List<PrioriteEmetteur> getListePrioriteMessagesTraites() {
+		String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
+			"from IdentificationContribuable identificationContribuable" +  clauseMessagesTraitees;
+		return getHibernateTemplate().find(query);
+	}
+
+	public List<PrioriteEmetteur> getListePriorite() {
+	String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
+			"from IdentificationContribuable identificationContribuable"
+			;
 		return getHibernateTemplate().find(query);
 	}
 

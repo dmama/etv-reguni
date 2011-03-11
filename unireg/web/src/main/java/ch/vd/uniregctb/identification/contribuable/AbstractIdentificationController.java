@@ -22,6 +22,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.tache.TacheMapHelper;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -81,7 +82,7 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId());
 		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
 		data.put(TYPE_MESSAGE_MAP_NAME, initMapTypeMessage());
-		data.put(PRIORITE_EMETTEUR_MAP_NAME, identificationMapHelper.initMapPrioriteEmetteur());
+		data.put(PRIORITE_EMETTEUR_MAP_NAME, initMapPrioriteEmetteur());
 		data.put(ERREUR_MESSAGE_MAP_NAME, identificationMapHelper.initErreurMessage());
 		data.put(TRAITEMENT_USER_MAP_NAME, identificationMapHelper.initMapUser());
 		return data;
@@ -117,6 +118,16 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 	 * @return une map
 	 */
 	protected Map<String, String> initMapTypeMessage() {
+		return null;
+
+	}
+
+		/**
+	 * Initialise la map des prioritées du message en fonction des etats et du type de controleur
+	 *
+	 * @return une map
+	 */
+	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 		return null;
 
 	}

@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
@@ -190,4 +191,9 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		return identificationMapHelper.initMapPeriodeFiscale(true);
 
 	}
+
+		@Override
+	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur(){
+		return identificationMapHelper.initMapPrioriteEmetteur(true);
+	};
 }
