@@ -358,6 +358,13 @@
 	</tag>
 
 	<tag>
+		<name>devEnv</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagDevEnv</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher du contenu uniquement dans l'environnement de développement</description>
+	</tag>
+
+	<tag>
 		<name>norentes</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagNorentes</tag-class>
 		<body-content>JSP</body-content>

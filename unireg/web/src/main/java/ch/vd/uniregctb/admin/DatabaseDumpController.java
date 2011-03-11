@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.admin;
 
-import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -31,6 +30,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
  * Controller spring qui permet de dumper la base de données dans un fichier XML
@@ -52,6 +52,11 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 
 		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+		}
+
+		if (!UniregModeHelper.getEnvironnement().equals("Developpement")) {
+			flashError("Cette fonctionalité n'est disponible qu'en développement !");
+			return new ModelAndView(new RedirectView("tiersImport.do"));
 		}
 
 		final String action = request.getParameter("action");

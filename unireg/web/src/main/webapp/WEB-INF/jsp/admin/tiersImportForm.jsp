@@ -36,9 +36,6 @@ function submit(url, methodType, delegateName){
 							<br>
 							<form:radiobutton path="mode" id="mode-delete-all" value="DELETE_ALL"/>
 							<fmt:message key="label.admin.modeDBUnit.DELETE_ALL"/>
-							<br>
-							<form:radiobutton path="mode" id="mode-delete-all" value="INSERT_APPEND"/>
-							<fmt:message key="label.admin.modeDBUnit.INSERT_APPEND"/>
 						</td>
 					</tr>
 					<tr class="odd" >

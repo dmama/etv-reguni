@@ -164,6 +164,11 @@ public class TiersImportController extends AbstractSimpleFormController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
+		if (!UniregModeHelper.getEnvironnement().equals("Developpement")) {
+			flashError("Cette fonctionalité n'est disponible qu'en développement !");
+			return new ModelAndView(new RedirectView("tiersImport.do"));
+		}
+
 		// recupere la vue de confirmation
 		ModelAndView successView = super.onSubmit(request, response, command, errors);
 
