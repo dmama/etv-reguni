@@ -804,5 +804,54 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>duration</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagDuration</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une durée donnée en millisecondes dans un format plus 'lisible'</description>
+		<attribute>
+			<name>msDuration</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Durée en millisecondes</description>
+		</attribute>
+		<attribute>
+			<name>isNullDuration</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Indique si la durée doit être considérée comme non-spécifiée</description>
+		</attribute>
+		<attribute>
+			<name>rounded</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche une version arrondie de la durée (6 heures) au lieu d'une longue (5 heures et 52 minutes)</description>
+		</attribute>
+		<attribute>
+			<name>zeroDisplay</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Si assigné à une valeur non-nulle, valeur à afficher pour une durée égale à 0</description>
+		</attribute>
+		<attribute>
+			<name>nullDisplay</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher pour une durée non spécifiée (nulle)</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>documentIcon</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagDocumentIcon</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche l'icône correspondant à un MIME-type donné</description>
+		<attribute>
+			<name>mimeType</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>MIME-type dont on veut afficher une icône</description>
+		</attribute>
+	</tag>
 
 </taglib>

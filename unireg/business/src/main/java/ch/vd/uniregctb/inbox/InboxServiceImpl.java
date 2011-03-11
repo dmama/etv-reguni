@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.inbox;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -53,20 +52,19 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 	}
 
 	@Override
-	public void addDocument(String visa, String docName, String description, String mimeType, InputStream document, int hoursUntilExpiration) throws IOException {
-		final InboxElement element = new InboxElement(docName, description, mimeType, document, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
+	public void addDocument(String visa, String docName, String description, InboxAttachment attachment, int hoursUntilExpiration) throws IOException {
+		final InboxElement element = new InboxElement(docName, description, attachment, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
 		addElement(visa, element);
 	}
 
 	@Override
-	public void addDocument(UUID uuid, String visa, String docName, String description, String mimeType, InputStream document, int hoursUntilExpiration) throws IOException {
-		final InboxElement element = new InboxElement(uuid, docName, description, mimeType, document, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
+	public void addDocument(UUID uuid, String visa, String docName, String description, InboxAttachment attachment, int hoursUntilExpiration) throws IOException {
+		final InboxElement element = new InboxElement(uuid, docName, description, attachment, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
 		addElement(visa, element);
 	}
 
 	/**
-	 * Ajout d'un document déjà formé à l'inbox du visa donné (méthode déportée de la méthode publique {@link #addDocument(String, String, String, String, java.io.InputStream, int) addDocument}
-	 * pour permettre le test spécifique d'éléments créés spécifiquement
+	 * Ajout d'un document déjà formé à l'inbox du visa donné
 	 * @param visa visa dont on doit utiliser l'inbox
 	 * @param element élément arrivé
 	 */

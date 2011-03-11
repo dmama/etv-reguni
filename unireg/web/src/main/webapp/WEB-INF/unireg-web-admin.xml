@@ -30,6 +30,18 @@
 		<property name="requestURI" value="/admin/performance.do" />
 	</bean>
 
+	<!-- Accès à l'inbox -->
+	<bean id="inboxController" class="ch.vd.uniregctb.admin.inbox.InboxController">
+		<property name="viewName" value="admin/inbox" />
+		<property name="inboxService" ref="inboxService"/>
+		<property name="extractionService" ref="extractionService"/>
+	</bean>
+
+	<!-- Accès au contenu des fichiers attachés des éléments de l'inbox -->
+	<bean id="inboxContentController" class="ch.vd.uniregctb.admin.inbox.InboxContentController">
+		<property name="inboxService" ref="inboxService"/>
+	</bean>
+
 	<!-- Gestion des batchs  -->
 	<bean id="gestionBatchController" class="ch.vd.uniregctb.admin.GestionBatchController">
 		<property name="sessionForm" value="true" />

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.inbox;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,15 +25,15 @@ public interface InboxService {
 
 	/**
 	 * Ajoute à l'inbox de l'utilisateur le document donné
+	 *
 	 * @param visa visa de l'utilisateur dans l'inbox duquel le document doit être ajouté
 	 * @param docName nom associé au document
 	 * @param description petite description associée au document
-	 * @param mimeType MIME-type du document à ajouter
-	 * @param document contenu du document
-	 * @param hoursUntilExpiration la durée minimale (en heures) pendant laquelle le document doit être conservé (0 pour une conservation jusqu'au prochain arrêt de l'application)    @throws java.io.IOException en cas de problème d'accès au document
-	 * @throws IOException en cas d'erreur à la lecture du document donné
+	 * @param attachment (optionel) attachement au document reçu
+	 * @param hoursUntilExpiration la durée minimale (en heures) pendant laquelle le document doit être conservé (0 pour une conservation jusqu'au prochain arrêt de l'application)
+	 * @throws java.io.IOException en cas de problème d'accès au document  @throws IOException en cas d'erreur à la lecture du document donné
 	 */
-	void addDocument(String visa, String docName, String description, String mimeType, InputStream document, int hoursUntilExpiration) throws IOException;
+	void addDocument(String visa, String docName, String description, InboxAttachment attachment, int hoursUntilExpiration) throws IOException;
 
 	/**
 	 * Ajoute à l'inbox de l'utilisateur le document donné
@@ -42,10 +41,9 @@ public interface InboxService {
 	 * @param visa visa de l'utilisateur dans l'inbox duquel le document doit être ajouté
 	 * @param docName nom associé au document
 	 * @param description petite description associée au document
-	 * @param mimeType MIME-type du document à ajouter
-	 * @param document contenu du document
+	 * @param attachment (optionel) attachement au document reçu
 	 * @param hoursUntilExpiration la durée minimale (en heures) pendant laquelle le document doit être conservé (0 pour une conservation jusqu'au prochain arrêt de l'application)    @throws java.io.IOException en cas de problème d'accès au document
 	 * @throws IOException en cas d'erreur à la lecture du document donné
 	 */
-	void addDocument(UUID uuid, String visa, String docName, String description, String mimeType, InputStream document, int hoursUntilExpiration) throws IOException;
+	void addDocument(UUID uuid, String visa, String docName, String description, InboxAttachment attachment, int hoursUntilExpiration) throws IOException;
 }

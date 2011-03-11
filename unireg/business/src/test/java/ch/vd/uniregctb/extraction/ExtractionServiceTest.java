@@ -19,6 +19,7 @@ import org.junit.Test;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
 import ch.vd.uniregctb.inbox.InboxService;
 import ch.vd.uniregctb.inbox.MockInboxService;
@@ -61,7 +62,7 @@ public class ExtractionServiceTest extends BusinessTest {
 			@Override
 			public ExtractionResult doExtraction() {
 				final InputStream in = new ByteArrayInputStream(REPONSE.getBytes());
-				return new ExtractionResultOk(in, "text/plain", isInterrupted());
+				return new ExtractionResultOk(in, "text/plain", "tip.txt", isInterrupted());
 			}
 
 			@Override
@@ -85,9 +86,13 @@ public class ExtractionServiceTest extends BusinessTest {
 
 		final InboxElement elt = content.get(0);
 		Assert.assertNotNull(elt);
-		Assert.assertEquals("text/plain", elt.getMimeType());
 
-		final InputStream in = elt.getContent();
+		final InboxAttachment attachment = elt.getAttachment();
+		Assert.assertNotNull(attachment);
+		Assert.assertEquals("text/plain", attachment.getMimeType());
+		Assert.assertEquals("tip.txt", attachment.getFilename());
+
+		final InputStream in = attachment.getContent();
 		Assert.assertNotNull(in);
 		try {
 			final byte[] buffer = new byte[MyPlainExtractor.REPONSE.length() * 3];
@@ -169,6 +174,11 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
+			public String getFilename() {
+				return "data";
+			}
+
+			@Override
 			public String getExtractionName() {
 				return getClass().getSimpleName();
 			}
@@ -189,9 +199,13 @@ public class ExtractionServiceTest extends BusinessTest {
 
 		final InboxElement elt = content.get(0);
 		Assert.assertNotNull(elt);
-		Assert.assertEquals("application/octet-stream", elt.getMimeType());
 
-		final InputStream in = elt.getContent();
+		final InboxAttachment attachment = elt.getAttachment();
+		Assert.assertNotNull(attachment);
+		Assert.assertEquals("application/octet-stream", attachment.getMimeType());
+		Assert.assertEquals("data", attachment.getFilename());
+
+		final InputStream in = attachment.getContent();
 		Assert.assertNotNull(in);
 		try {
 			final ObjectInputStream oin = new ObjectInputStream(in);
@@ -285,6 +299,11 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
+			public String getFilename() {
+				return "data";
+			}
+
+			@Override
 			public String getExtractionName() {
 				return getClass().getSimpleName();
 			}
@@ -305,9 +324,13 @@ public class ExtractionServiceTest extends BusinessTest {
 
 		final InboxElement elt = content.get(0);
 		Assert.assertNotNull(elt);
-		Assert.assertEquals("application/octet-stream", elt.getMimeType());
 
-		final InputStream in = elt.getContent();
+		final InboxAttachment attachment = elt.getAttachment();
+		Assert.assertNotNull(attachment);
+		Assert.assertEquals("application/octet-stream", attachment.getMimeType());
+		Assert.assertEquals("data", attachment.getFilename());
+
+		final InputStream in = attachment.getContent();
 		Assert.assertNotNull(in);
 		try {
 			final ObjectInputStream oin = new ObjectInputStream(in);

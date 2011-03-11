@@ -78,6 +78,9 @@ function ouvrirAide(url) {
 				<tiles:getAsString name='links' ignore='true'/>
 				<ul>
 					<li><a href="<c:url value='/tiers/list.do'/>"><fmt:message key="title.rechercher" /></a></li>
+
+					<li><a href="<c:url value='/admin/inbox.do'/>"><fmt:message key="title.inbox"/></a></li>
+
 					<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB, ROLE_CREATE_AC, ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_NONHAB_INACTIF">
 						<li><fmt:message key="label.action.creation" />
 							<ul>

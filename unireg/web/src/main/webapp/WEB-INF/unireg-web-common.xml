@@ -55,6 +55,7 @@
                 <prop key="/admin/evenementExterne/civilunitaire.do">civilUnitaireController</prop>
                 <prop key="/admin/batch.do">gestionBatchController</prop>
                 <prop key="/admin/status.do">infoController</prop>
+				<prop key="/admin/inbox.do">inboxController</prop>
                 <prop key="/admin/norentes.do">norentesController</prop>
             </props>
         </property>

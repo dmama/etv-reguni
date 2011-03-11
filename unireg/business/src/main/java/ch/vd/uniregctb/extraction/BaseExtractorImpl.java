@@ -72,4 +72,9 @@ public abstract class BaseExtractorImpl implements Extractor {
 	public String toString() {
 		return getExtractionName();
 	}
+
+	@Override
+	public String getExtractionDescription() {
+		return getExtractionName();
+	}
 }

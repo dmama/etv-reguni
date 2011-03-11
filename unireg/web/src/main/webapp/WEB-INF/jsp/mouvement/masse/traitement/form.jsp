@@ -56,8 +56,7 @@
 			<input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/>
 			&nbsp;
 			<input type="submit" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" />
-			<!-- désactivé pour le moment -->
-			<c:if test="${false && command.resultSize > 0}">
+			<c:if test="${command.resultSize > 0}">
 				&nbsp;
 				<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>
 			</c:if>

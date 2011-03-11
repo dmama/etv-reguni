@@ -18,9 +18,10 @@ public interface ExtractionServiceMonitoring {
 	int getNbExecutors();
 
 	/**
+	 * @param visa (optionnel) ne fournit que les jobs demandé par le visa donné
 	 * @return Extraction du contenu de la queue des demandes en attente
 	 */
-	List<String> getQueueContent();
+	List<ExtractionJob> getQueueContent(String visa);
 
 	/**
 	 * @return Nombre de demandes d'extraction actuellement en attente
@@ -33,7 +34,8 @@ public interface ExtractionServiceMonitoring {
 	int getNbExecutedQueries();
 
 	/**
+	 * @param visa (optionnel) ne fournit que les jobs demandé par le visa donné
 	 * @return Extraction des jobs d'extraction actuellement en cours
 	 */
-	List<String> getExtractionsEnCours();
+	List<ExtractionJob> getExtractionsEnCours(String visa);
 }

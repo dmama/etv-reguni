@@ -3,9 +3,8 @@ package ch.vd.uniregctb.extraction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -30,7 +29,7 @@ import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxService;
 
 /**
@@ -75,7 +74,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	/**
 	 * Queue partagée par les exécuteurs
 	 */
-	private final BlockingQueue<JobInfo> queue = new LinkedBlockingQueue<JobInfo>();
+	private final BlockingQueue<ExtractionJobImpl> queue = new LinkedBlockingQueue<ExtractionJobImpl>();
 
 	/**
 	 * Nombre de jobs terminés depuis le démarrage du service
@@ -132,7 +131,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	/**
 	 * Classe de description d'un job tout au long de sa vie
 	 */
-	private final class JobInfo {
+	private final class ExtractionJobImpl implements ExtractionJob {
 
 		private final ExtractionKey key;
 		private final ExtractorLauncher extractor;
@@ -142,7 +141,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		private JobState state;
 		private ExtractionResult result;
 
-		public JobInfo(ExtractionKey key, ExtractorLauncher extractor) {
+		public ExtractionJobImpl(ExtractionKey key, ExtractorLauncher extractor) {
 			this.key = key;
 			this.extractor = extractor;
 			this.state = JobState.WAITING_FOR_START;
@@ -185,6 +184,10 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 			return state == JobState.RUNNING;
 		}
 
+		public Date getCreationDate() {
+			return creationDate;
+		}
+
 		/**
 		 * @return la durée d'exécution du job en millisecondes depuis son démarrage jusqu'à sa fin (ou, s'il n'est pas terminé, jusqu'à maintenant) ; <code>null</code> si le job n'est pas commencé
 		 */
@@ -211,13 +214,23 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 			return String.format("{key=%s, extractor=%s, state=%s, result=%s}", key, extractor, state, result);
 		}
 
-		public String toDisplayString(boolean avecVisa) {
-			if (avecVisa) {
-				return String.format("Extraction '%s (%s)' demandée par %s en date du %s", extractor, key.getUuid(), key.getVisa(), DateHelper.dateTimeToDisplayString(creationDate));
-			}
-			else {
-				return String.format("Extraction '%s (%s)' demandée en date du %s", extractor, key.getUuid(), DateHelper.dateTimeToDisplayString(creationDate));
-			}
+		public String toDisplayString() {
+			return String.format("Extraction '%s (%s)' demandée par %s en date du %s", extractor, key.getUuid(), key.getVisa(), DateHelper.dateTimeToDisplayString(creationDate));
+		}
+
+		@Override
+		public String getRunningMessage() {
+			return extractor.getRunningMessage();
+		}
+
+		@Override
+		public Integer getPercentProgression() {
+			return extractor.getPercentProgression();
+		}
+
+		@Override
+		public String getDescription() {
+			return extractor.getExtractionDescription();
 		}
 	}
 
@@ -254,16 +267,28 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 
 		protected abstract ExtractionResult doRun() throws Exception;
 
-		public void interrupt() {
+		public final void interrupt() {
 			extractor.interrupt();
 		}
 
-		public String toString() {
+		public final String toString() {
 			return extractor.toString();
 		}
 
-		public String getExtractionName() {
+		public final String getExtractionName() {
 			return extractor.getExtractionName();
+		}
+
+		public final String getRunningMessage() {
+			return extractor.getRunningMessage();
+		}
+
+		public final Integer getPercentProgression() {
+			return extractor.getPercentProgression();
+		}
+
+		public final String getExtractionDescription() {
+			return extractor.getExtractionDescription();
 		}
 	}
 
@@ -320,7 +345,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	private final class Executor extends Thread {
 
 		private boolean stopping = false;
-		private JobInfo currentJob = null;
+		private ExtractionJobImpl currentJob = null;
 
 		public Executor(int index) {
 			super(String.format("Extraction-%d", index));
@@ -336,7 +361,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 			AuthenticationHelper.pushPrincipal(getName());
 			try {
 				while (!stopping) {
-					final JobInfo job = queue.poll(1, TimeUnit.SECONDS);
+					final ExtractionJobImpl job = queue.poll(1, TimeUnit.SECONDS);
 					if (job != null && !stopping) {
 						currentJob = job;
 						ExtractionResult result = null;
@@ -388,34 +413,37 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		 */
 		public void end() {
 			stopping = true;
-			final JobInfo job = currentJob;
+			final ExtractionJobImpl job = currentJob;
 			if (job != null) {
 				job.getExtractor().interrupt();
 			}
 		}
 	}
 
-	private void sendDocumentToInbox(JobInfo job) throws IOException {
+	private void sendDocumentToInbox(ExtractionJobImpl job) throws IOException {
 		final String visa = job.key.getVisa();
 		final UUID uuid = job.key.getUuid();
 		final String docName = job.extractor.getExtractionName();
-		final String descriptionBase = job.toDisplayString(false);
+		final String descriptionBase = String.format("%s, commande du %s", job.getDescription(), DateHelper.dateTimeToDisplayString(job.getCreationDate()));
 		final String description;
-		InputStream in = null;
-		String mimeType = null;
+		InboxAttachment attachment = null;
 		final ExtractionResult result = job.getResult();
 		if (result != null) {
 			description = String.format("%s, %s", descriptionBase, result);
 			if (result instanceof ExtractionResultOk) {
 				final ExtractionResultOk resultOk = (ExtractionResultOk) result;
-				in = resultOk.getStream();
-				mimeType = resultOk.getMimeType();
+				final InputStream in = resultOk.getStream();
+				if (in != null) {
+					final String mimeType = resultOk.getMimeType();
+					final String filename = resultOk.getFilename();
+					attachment = new InboxAttachment(mimeType, in, filename);
+				}
 			}
 		}
 		else {
 			description = descriptionBase;
 		}
-		inboxService.addDocument(uuid, visa, docName, description, mimeType, in, expiration * 24);
+		inboxService.addDocument(uuid, visa, docName, description, attachment, expiration * 24);
 	}
 
 	/**
@@ -444,7 +472,8 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		action.run(extractor, rapportFinal, elements);
 		final InputStream stream = extractor.getStreamForExtraction(rapportFinal);
 		final String mimeType = extractor.getMimeType();
-		return new ExtractionResultOk(stream, mimeType, extractor.isInterrupted());
+		final String filename = extractor.getFilename();
+		return new ExtractionResultOk(stream, mimeType, filename, extractor.isInterrupted());
 	}
 
 	/**
@@ -552,7 +581,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		final ExtractionKey key = new ExtractionKey(visa);
 
 		// puis on poste la demande d'exécution dans la queue
-		final JobInfo jobInfo = new JobInfo(key, launcher);
+		final ExtractionJobImpl jobInfo = new ExtractionJobImpl(key, launcher);
 		queue.add(jobInfo);
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Job d'extraction %s enregistré (%s)", key, launcher));
@@ -609,19 +638,18 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	}
 
 	@Override
-	public List<String> getQueueContent() {
-		final List<JobInfo> extraction = new LinkedList<JobInfo>(queue);
-		final List<String> descriptions;
-		if (extraction.size() > 0) {
-			descriptions = new ArrayList<String>(extraction.size());
-			for (JobInfo info : extraction) {
-				descriptions.add(info.toDisplayString(true));
+	public List<ExtractionJob> getQueueContent(String visa) {
+		final List<ExtractionJob> liste = new ArrayList<ExtractionJob>(queue);
+		if (visa != null) {
+			final Iterator<ExtractionJob> iterator = liste.iterator();
+			while (iterator.hasNext()) {
+				final ExtractionJob job = iterator.next();
+				if (!visa.equals(job.getKey().getVisa())) {
+					iterator.remove();
+				}
 			}
 		}
-		else {
-			descriptions = Collections.emptyList();
-		}
-		return descriptions;
+		return liste;
 	}
 
 	@Override
@@ -635,29 +663,13 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	}
 
 	@Override
-	public List<String> getExtractionsEnCours() {
-		final List<String> liste = new ArrayList<String>(threadPoolSize);
+	public List<ExtractionJob> getExtractionsEnCours(String visa) {
+		final List<ExtractionJob> liste = new ArrayList<ExtractionJob>(threadPoolSize);
 		for (Executor executor : executors) {
-			final JobInfo enCours = executor.currentJob;
+			final ExtractionJob enCours = executor.currentJob;
 			if (enCours != null) {
-				final Long duree = enCours.getDuration();
-				if (duree != null) {
-					final StringBuilder progress = new StringBuilder();
-					final Extractor extractor = enCours.getExtractor().extractor;
-					final String msg = extractor.getRunningMessage();
-					final Integer percent = extractor.getPercentProgression();
-					if (StringUtils.isNotBlank(msg)) {
-						progress.append(' ').append(msg);
-					}
-					if (percent != null) {
-						progress.append(" (").append(percent).append("%)");
-					}
-					liste.add(String.format("%s, en cours depuis %s.%s", enCours.toDisplayString(true), TimeHelper.formatDuree(duree), progress.toString()));
-				}
-				else {
-					// devrait être rare (si je job est en cours, il devrait avoir une durée...), mais
-					// on peut avoir le currentJob setté alors que le onStart() n'a pas encore été appelé, donc...
-					liste.add(enCours.toDisplayString(true));
+				if (visa == null || visa.equals(enCours.getKey().getVisa())) {
+					liste.add(enCours);
 				}
 			}
 		}

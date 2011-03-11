@@ -36,6 +36,10 @@
 				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController"/>
 				<entry key="/tiers/info.do" value-ref="tiersInfoController"/>
 
+				<!-- Accès à l'inbox -->
+				<entry key="/admin/inbox.do" value-ref="inboxController"/>
+				<entry key="/admin/inbox-content.do" value-ref="inboxContentController"/>
+
 				<!-- Identification de contribuable -->
 				<entry key="/identification/tooltip/adresse.do" value-ref="identificationAdresseTooltipController"/>
 				<entry key="/identification/tooltip/individu.do" value-ref="identificationIndividuTooltipController"/>

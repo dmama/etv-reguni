@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.inbox;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,14 +16,9 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	private final UUID uuid;
 	private final String name;
 	private final String description;
-	private final String mimeType;
-	private final TempFileInputStreamProvider contentProvider;
+	private final InboxAttachment attachment;
 	private final Date incomingDate;
 	private final long expirationDate;
-
-	/**
-	 * Flag qui indique si la méthode {@link #getContent()} a déjà été appelée sur cet objet
-	 */
 	private boolean read;
 
 	/**
@@ -32,37 +26,31 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	 * @param uuid identifiant unique de l'élément
 	 * @param name nom de l'élément
 	 * @param description petite description du contenu
-	 * @param mimeType mime-type du contenu
-	 * @param content input stream depuis lequel le contenu peut-être lu (il sera lu directement dans le constructeur, et le stream sera fermé)
+	 * @param attachement (optionel) attachement à l'élément de l'inbox
 	 * @param msUntilExpiration délai d'expiration de l'élément en millisecondes (0 = aucune expiration)
 	 * @throws IOException en cas de problème à la lecture de l'input stream fourni
 	 */
-	public InboxElement(UUID uuid, String name, String description, String mimeType, InputStream content, long msUntilExpiration) throws IOException {
+	public InboxElement(UUID uuid, String name, String description, InboxAttachment attachement, long msUntilExpiration) throws IOException {
 		this.uuid = uuid;
 		this.name = name;
 		this.description = description;
-		this.mimeType = mimeType;
-		this.contentProvider = content != null ? new TempFileInputStreamProvider("ur-inbox-elt-", content) : null;
+		this.attachment = attachement;
 		this.incomingDate = DateHelper.getCurrentDate();
 		this.expirationDate = msUntilExpiration <= 0 ? Long.MAX_VALUE : this.incomingDate.getTime() + msUntilExpiration;
 		this.read = false;
-		if (content != null) {
-			content.close();
-		}
 	}
 
 	/**
 	 * Constructeur d'un objet InboxElement pour lequel la génération de l'identifiant unique est laissée à l'implémentation
 	 * @param name nom de l'élément
 	 * @param description petite description du contenu
-	 * @param mimeType mime-type du contenu
-	 * @param content input stream depuis lequel le contenu peut-être lu (il sera lu directement dans le constructeur, et le stream sera fermé)
+	 * @param attachement (optionel) attachement à l'élément de l'inbox
 	 * @param msUntilExpiration délai d'expiration de l'élément en millisecondes (0 = aucune expiration)
 	 * @throws IOException en cas de problème à la lecture de l'input stream fourni
 	 * @see UUID#randomUUID()
 	 */
-	public InboxElement(String name, String description, String mimeType, InputStream content, long msUntilExpiration) throws IOException {
-		this(UUID.randomUUID(), name, description, mimeType, content, msUntilExpiration);
+	public InboxElement(String name, String description, InboxAttachment attachement, long msUntilExpiration) throws IOException {
+		this(UUID.randomUUID(), name, description, attachement, msUntilExpiration);
 	}
 
 	public UUID getUuid() {
@@ -77,13 +65,8 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 		return description;
 	}
 
-	public String getMimeType() {
-		return mimeType;
-	}
-
-	public InputStream getContent() throws IOException {
-		read = true;
-		return contentProvider != null ? contentProvider.getInputStream() : null;
+	public InboxAttachment getAttachment() {
+		return attachment;
 	}
 
 	public Date getIncomingDate() {
@@ -91,11 +74,33 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	}
 
 	public boolean isExpired() {
-		return DateHelper.getCurrentDate().getTime() > expirationDate;
+		final Long tte = getTimeToExpiration();
+		return tte != null && tte == 0L;
+	}
+
+	public Long getTimeToExpiration() {
+		final Long timeToExpiration;
+		if (expirationDate == Long.MAX_VALUE) {
+			timeToExpiration = null;
+		}
+		else {
+			final long computedTimeToExpiration = expirationDate - DateHelper.getCurrentDate().getTime();
+			if (computedTimeToExpiration > 0) {
+				timeToExpiration = computedTimeToExpiration;
+			}
+			else {
+				timeToExpiration = 0L;
+			}
+		}
+		return timeToExpiration;
 	}
 
 	public boolean isRead() {
 		return read;
+	}
+
+	public void setRead(boolean read) {
+		this.read = read;
 	}
 
 	/**
@@ -103,8 +108,8 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	 * et d'éventuels nettoyages)
 	 */
 	public void onDiscard() {
-		if (contentProvider != null) {
-			contentProvider.close();
+		if (attachment != null) {
+			attachment.onDiscard();
 		}
 	}
 

@@ -126,7 +126,7 @@ public class GestionJobTest extends WithoutSpringTest {
 
 			GestionJob job = new GestionJob(def);
 			assertEquals(DateHelper.dateTimeToDisplayString(dateStart), job.getLastStart());
-			assertEquals("27h 46m 40s", job.getDuration());
+			assertEquals("1j 03h 46m 40s", job.getDuration());
 		}
 	}
 

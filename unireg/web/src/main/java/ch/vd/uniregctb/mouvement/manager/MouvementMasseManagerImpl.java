@@ -3,6 +3,7 @@ package ch.vd.uniregctb.mouvement.manager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -394,6 +396,11 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 
 		@Override
+		public String getFilename() {
+			return "mouvements.csv";
+		}
+
+		@Override
 		public void afterTransactionCommit(MouvementDossierExtractionResult rapportFinal, int percentProgression) {
 			getStatusManager().setMessage("Extraction des mouvements...", percentProgression);
 		}
@@ -401,6 +408,37 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		@Override
 		public String getExtractionName() {
 			return "Mouvements de dossiers";
+		}
+
+		@Override
+		public String getExtractionDescription() {
+			final StringBuilder b = new StringBuilder();
+			b.append("Extraction des mouvements de dossiers");
+			if (criteria.getTypeMouvement() != null) {
+				b.append(" de type ").append(criteria.getTypeMouvement() == TypeMouvement.EnvoiDossier ? "ENVOI" : "RECEPTION");
+			}
+			if (criteria.getNoCtb() != null) {
+				b.append(" du contribuable ").append(FormatNumeroHelper.numeroCTBToDisplay(criteria.getNoCtb()));
+			}
+			final Collection<EtatMouvementDossier> etatsMouvement = criteria.getEtatsMouvement();
+			if (etatsMouvement != null && etatsMouvement.size() > 0) {
+				b.append(" dans l'état ");
+				final int size = etatsMouvement.size();
+				final List<EtatMouvementDossier> etats = new ArrayList<EtatMouvementDossier>(etatsMouvement);
+				for (int i = 0 ; i < size; ++ i) {
+					if (i > 0) {
+						if (i < size - 1) {
+							b.append(", ");
+						}
+						else {
+							b.append(" ou ");
+						}
+					}
+					final EtatMouvementDossier etat = etats.get(i);
+					b.append(etat);
+				}
+			}
+			return b.toString();
 		}
 	}
 

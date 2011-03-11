@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.inbox;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -33,14 +33,14 @@ public class InboxServiceTest extends WithoutSpringTest {
 		service.afterPropertiesSet();
 	}
 
-	private InputStream buildInputStream() {
-		return new ByteArrayInputStream(CONTENT.getBytes());
+	private InboxAttachment buildAttachment() throws IOException {
+		return new InboxAttachment("text/plain", new ByteArrayInputStream(CONTENT.getBytes()), "text.txt");
 	}
 
 	@Test
 	public void testDocumentReception() throws Exception {
 		buildService(0);
-		service.addDocument("LUI", "Impression...", null, "text/plain", buildInputStream(), 1);
+		service.addDocument("LUI", "Impression...", null, buildAttachment(), 1);
 
 		// on doit voir le document pour ce visa
 		{
@@ -63,7 +63,7 @@ public class InboxServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDocumentExpiration() throws Exception {
 		buildService(100);      // nettoyage toutes les 100 millisecondes
-		final InboxElement element = new InboxElement("Mon impression qui va expirer", null, "text/plain", buildInputStream(), 500);
+		final InboxElement element = new InboxElement("Mon impression qui va expirer", null, buildAttachment(), 500);
 		service.addElement("MOI", element);
 
 		Thread.sleep(300);

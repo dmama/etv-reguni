@@ -64,4 +64,9 @@ public interface BatchableExtractor<E, R extends BatchResults<E, R>> extends Ext
 	 * @return le MIME-type du document renvoyé dans le stream
 	 */
 	String getMimeType();
+
+	/**
+	 * @return un nom de fichier qui irait bien avec le contenu du résultat
+	 */
+	String getFilename();
 }

@@ -37,4 +37,9 @@ public interface Extractor {
 	 * @return Un nom qui décrit le type d'extraction
 	 */
 	String getExtractionName();
+
+	/**
+	 * @return Une description textuelle (présentable dans une IHM) de l'extraction demandée
+	 */
+	String getExtractionDescription();
 }

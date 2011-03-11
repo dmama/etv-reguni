@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.inbox;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,25 +16,32 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	private static final String CONTENT = "Lorem ipsum dolor sit amet";
 
-	private InputStream buildInputStream() {
-		return new ByteArrayInputStream(CONTENT.getBytes());
+	private InboxAttachment buildAttachment() throws IOException {
+		return new InboxAttachment("text/plain", new ByteArrayInputStream(CONTENT.getBytes()), "doloris.txt");
 	}
 
 	@Test
 	public void testStreamContent() throws Exception {
-		final InputStream src = buildInputStream();
-		final InboxElement elt = new InboxElement("Mon nom à moi", "Ma description", "text/plain", src, 100);
+		final InboxElement elt = new InboxElement("Mon nom à moi", "Ma description", buildAttachment(), 100);
 		Assert.assertFalse(elt.isExpired());
 		Assert.assertEquals("Mon nom à moi", elt.getName());
 		Assert.assertEquals("Ma description", elt.getDescription());
-		Assert.assertEquals("text/plain", elt.getMimeType());
+
+		final InboxAttachment attachment = elt.getAttachment();
+		Assert.assertNotNull(attachment);
+		Assert.assertEquals("text/plain", attachment.getMimeType());
+		Assert.assertEquals("doloris.txt", attachment.getFilename());
+
 		Assert.assertNotNull(elt.getIncomingDate());
 		Assert.assertFalse(elt.isRead());
 
 		final byte[] bytes = new byte[CONTENT.length() + 10];
-		final int read = elt.getContent().read(bytes);
+		final int read = attachment.getContent().read(bytes);
 		Assert.assertEquals(CONTENT.getBytes().length, read);
 		Assert.assertEquals(CONTENT, new String(bytes, 0, read));
+		Assert.assertFalse(elt.isRead());
+
+		elt.setRead(true);
 		Assert.assertTrue(elt.isRead());
 
 		elt.onDiscard();
@@ -42,8 +49,7 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testExpiration() throws Exception {
-		final InputStream src = buildInputStream();
-		final InboxElement elt = new InboxElement("Mon nom à moi", null, "text/plain", src, 100);
+		final InboxElement elt = new InboxElement("Mon nom à moi", null, buildAttachment(), 100);
 		Assert.assertFalse(elt.isExpired());
 		Thread.sleep(200);
 		Assert.assertTrue(elt.isExpired());
@@ -53,8 +59,7 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testNoExpiration() throws Exception {
-		final InputStream src = buildInputStream();
-		final InboxElement elt = new InboxElement("Mon nom à moi", null, "text/plain", src, 0);
+		final InboxElement elt = new InboxElement("Mon nom à moi", null, buildAttachment(), 0);
 		Assert.assertFalse(elt.isExpired());
 		Thread.sleep(200);
 		Assert.assertFalse(elt.isExpired());
@@ -64,11 +69,9 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testNaturalOrdering() throws Exception {
-		final InputStream src1 = buildInputStream();
-		final InboxElement elt1 = new InboxElement("Un", null, "text/plain", src1, 0);
+		final InboxElement elt1 = new InboxElement("Un", null, buildAttachment(), 0);
 		Thread.sleep(50);
-		final InputStream src2 = buildInputStream();
-		final InboxElement elt2 = new InboxElement("Deux", null, "text/plain", src2, 0);
+		final InboxElement elt2 = new InboxElement("Deux", null, buildAttachment(), 0);
 
 		final List<InboxElement> list = new ArrayList<InboxElement>(2);
 		list.add(elt1);
@@ -82,20 +85,20 @@ public class InboxElementTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testNullInputStream() throws Exception {
-		final InboxElement elt = new InboxElement("Rien", null, "text/csv", null, 0);
-		Assert.assertNull(elt.getContent());
+	public void testSansAttachement() throws Exception {
+		final InboxElement elt = new InboxElement("Rien", null, null, 0);
+		Assert.assertNull(elt.getAttachment());
 		elt.onDiscard();
 	}
 
 	@Test
 	public void testUuidGeneration() throws Exception {
-		final InboxElement eltSans = new InboxElement("Bidon", "Elément bidon", "text/plain", buildInputStream(), 0);
+		final InboxElement eltSans = new InboxElement("Bidon", "Elément bidon", buildAttachment(), 0);
 		Assert.assertNotNull(eltSans.getUuid());
 		eltSans.onDiscard();
 
 		final UUID uuid = UUID.randomUUID();
-		final InboxElement eltAvec = new InboxElement(uuid, "Bidon 2", "Deuxième élément bidon", "text/plain", buildInputStream(), 0);
+		final InboxElement eltAvec = new InboxElement(uuid, "Bidon 2", "Deuxième élément bidon", buildAttachment(), 0);
 		Assert.assertEquals(uuid, eltAvec.getUuid());
 		eltAvec.onDiscard();
 	}

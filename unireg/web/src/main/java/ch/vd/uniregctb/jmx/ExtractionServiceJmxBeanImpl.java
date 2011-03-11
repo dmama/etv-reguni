@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.jmx;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.extraction.ExtractionServiceMonitoring;
 
 /**
@@ -35,7 +40,19 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 	@ManagedAttribute
 	@Override
 	public List<String> getQueueContent() {
-		return extractionService.getQueueContent();
+		final List<ExtractionJob> extraction = extractionService.getQueueContent(null);
+		final List<String> descriptions;
+		if (extraction.size() > 0) {
+			descriptions = new ArrayList<String>(extraction.size());
+			for (ExtractionJob info : extraction) {
+				descriptions.add(info.toDisplayString());
+			}
+		}
+		else {
+			descriptions = Collections.emptyList();
+		}
+		return descriptions;
+
 	}
 
 	@ManagedAttribute
@@ -53,6 +70,30 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 	@ManagedAttribute
 	@Override
 	public List<String> getRunningJobs() {
-		return extractionService.getExtractionsEnCours();
+		final List<ExtractionJob> liste = extractionService.getExtractionsEnCours(null);
+		final List<String> strs = new ArrayList<String>(liste.size());
+		for (ExtractionJob enCours : liste) {
+			if (enCours != null) {
+				final Long duree = enCours.getDuration();
+				if (duree != null) {
+					final StringBuilder progress = new StringBuilder();
+					final String msg = enCours.getRunningMessage();
+					final Integer percent = enCours.getPercentProgression();
+					if (StringUtils.isNotBlank(msg)) {
+						progress.append(' ').append(msg);
+					}
+					if (percent != null) {
+						progress.append(" (").append(percent).append("%)");
+					}
+					strs.add(String.format("%s, en cours depuis %s.%s", enCours.toDisplayString(), TimeHelper.formatDuree(duree), progress.toString()));
+				}
+				else {
+					// devrait être rare (si je job est en cours, il devrait avoir une durée...), mais
+					// on peut avoir le currentJob setté alors que le onStart() n'a pas encore été appelé, donc...
+					strs.add(enCours.toDisplayString());
+				}
+			}
+		}
+		return strs;
 	}
 }

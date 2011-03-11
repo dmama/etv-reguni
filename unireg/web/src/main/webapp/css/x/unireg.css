@@ -318,3 +318,15 @@ div.flash-error {
 .ui-autocomplete-loading {
 	background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat;
 }
+
+/**
+ * Inbox / boîte de réception
+ */
+
+.inbox tr.unread td {
+	font-weight: bold;
+}
+
+.inbox tr.read td {
+	font-weight: normal;
+}
