@@ -121,6 +121,8 @@ public class TiersImportControllerTest extends WebTest {
 	@NotTransactional
 	public void testOnSubmit() throws Exception {
 
+		new UniregModeHelper().setEnvironnement("Hudson");
+
 		request.setMethod("POST");
 		request.addParameter("scriptFileName", DB_UNIT_FILE);
 		request.addParameter("mode", "CLEAN_INSERT");
