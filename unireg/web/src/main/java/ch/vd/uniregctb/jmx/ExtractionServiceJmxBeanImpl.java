@@ -45,7 +45,7 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 		if (extraction.size() > 0) {
 			descriptions = new ArrayList<String>(extraction.size());
 			for (ExtractionJob info : extraction) {
-				descriptions.add(info.toDisplayString());
+				descriptions.add(info.toString());
 			}
 		}
 		else {
@@ -85,12 +85,12 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 					if (percent != null) {
 						progress.append(" (").append(percent).append("%)");
 					}
-					strs.add(String.format("%s, en cours depuis %s.%s", enCours.toDisplayString(), TimeHelper.formatDuree(duree), progress.toString()));
+					strs.add(String.format("%s, en cours depuis %s.%s", enCours, TimeHelper.formatDuree(duree), progress.toString()));
 				}
 				else {
 					// devrait être rare (si je job est en cours, il devrait avoir une durée...), mais
 					// on peut avoir le currentJob setté alors que le onStart() n'a pas encore été appelé, donc...
-					strs.add(enCours.toDisplayString());
+					strs.add(enCours.toString());
 				}
 			}
 		}

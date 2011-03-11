@@ -44,11 +44,6 @@ public interface ExtractionJob {
 	Integer getPercentProgression();
 
 	/**
-	 * @return Chaîne de caractères qui décrit le job d'extraction (pour affichage dans l'IHM)
-	 */
-	String toDisplayString();
-
-	/**
 	 * @return une description textuelle de l'extraction
 	 */
 	String getDescription();

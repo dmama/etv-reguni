@@ -211,11 +211,8 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		}
 
 		public String toString() {
-			return String.format("{key=%s, extractor=%s, state=%s, result=%s}", key, extractor, state, result);
-		}
-
-		public String toDisplayString() {
-			return String.format("Extraction '%s (%s)' demandée par %s en date du %s", extractor, key.getUuid(), key.getVisa(), DateHelper.dateTimeToDisplayString(creationDate));
+			return String.format("{key=%s, extractor=%s, creation-date=%s, state=%s, running-msg=%s, progress=%d, result=%s}",
+			                     key, extractor, creationDate, state, getRunningMessage(), getPercentProgression(), result);
 		}
 
 		@Override
