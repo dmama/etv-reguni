@@ -42,6 +42,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param sorting ordre de tri à utiliser
 	 * @return clé générée pour la demande d'export asynchrone
 	 */
+	@Transactional(readOnly = true)
 	ExtractionKey exportListeRecherchee(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamSorting sorting);
 
 	/**

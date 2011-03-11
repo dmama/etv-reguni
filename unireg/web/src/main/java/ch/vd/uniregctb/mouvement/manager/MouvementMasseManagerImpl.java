@@ -73,6 +73,11 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		this.extractionService = extractionService;
 	}
 
+	/**
+	 * Doit être appelé dans une transaction
+	 * @param noCa numéro de la collectivité administrative
+	 * @return ID technique du tiers correspondant à cette collectivité administrative
+	 */
 	private long getIdCollAdmFromNumeroCA(int noCa) {
 		final CollectiviteAdministrative ca = getTiersService().getCollectiviteAdministrative(noCa);
 		return ca.getNumero();
@@ -99,6 +104,12 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	/**
+	 * Doit être appelé dans une transaction
+	 * @param view critères tels que montrés dans le formulaire de recherche
+	 * @param noCollAdmInitiatrice numéro de la collectivité administrative dans laquelle est loggué l'utilisateur
+	 * @return les critères utilisables par le DAO
+	 */
 	private MouvementDossierCriteria createCoreCriteria(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice) {
 		final DateRange range = new DateRangeHelper.Range(RegDate.get(view.getDateMouvementMin()), RegDate.get(view.getDateMouvementMax()));
 		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
@@ -295,6 +306,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public ExtractionKey exportListeRecherchee(MouvementMasseCriteriaView criteria, Integer noCollAdmInitiatrice, ParamSorting sorting) {
 		final MouvementDossierCriteria coreCriteria = createCoreCriteria(criteria, noCollAdmInitiatrice);
 		final MouvementDossierExtractor extractor = new MouvementDossierExtractor(coreCriteria, sorting);
