@@ -26,6 +26,7 @@ import org.springmodules.xt.ajax.support.UnsupportedEventException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.admin.JobPercentIndicator;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.extraction.ExtractionServiceMonitoring;
 import ch.vd.uniregctb.inbox.InboxAttachment;
@@ -39,6 +40,8 @@ import ch.vd.uniregctb.web.xt.component.SimpleText;
  * Contrôleur de la visualisation de l'inbox
  */
 public class InboxController extends ParameterizableViewController implements AjaxHandler {
+
+	private static final String NBSP = "&nbsp;";
 
 	private InboxService inboxService;
 
@@ -108,7 +111,8 @@ public class InboxController extends ParameterizableViewController implements Aj
 		else {
 			final TableHeader header = new TableHeader(new String[] {
 					getMessageResource("label.inbox.date.demande"), getMessageResource("label.inbox.description"),
-					getMessageResource("label.inbox.etat"), getMessageResource("label.inbox.progression")
+					getMessageResource("label.inbox.etat"), getMessageResource("label.inbox.temps.execution"),
+					getMessageResource("label.inbox.progression")
 			});
 
 			final Table table = new Table(header);
@@ -174,7 +178,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 					row.addTableData(td);
 				}
 				else {
-					row.addTableData(new TableData(new SimpleText("&nbsp;")));
+					row.addTableData(new TableData(new SimpleText(NBSP)));
 				}
 
 				table.addTableRow(row);
@@ -202,16 +206,21 @@ public class InboxController extends ParameterizableViewController implements Aj
 		row.addTableData(new TableData(new SimpleText(job.getDescription())));
 		row.addTableData(new TableData(new SimpleText(job.getRunningMessage())));
 		if (job.isRunning()) {
+			final Long jobDuration = job.getDuration();
+			row.addTableData(new TableData(new SimpleText(jobDuration != null ? TimeHelper.formatDureeShort(jobDuration) : NBSP)));
+
 			final Integer progression = job.getPercentProgression();
 			if (progression != null) {
 				row.addTableData(new TableData(new JobPercentIndicator(progression)));
 			}
 			else {
-				row.addTableData(new TableData(new SimpleText("En cours...")));
+				row.addTableData(new TableData(new SimpleText(getMessageResource("label.inbox.en.cours"))));
 			}
 		}
 		else {
-			row.addTableData(new TableData(new SimpleText("&nbsp;")));
+			final TableData data = new TableData(new SimpleText(NBSP));
+			data.addAttribute("colspan", "2");      // temps d'exécution et progression
+			row.addTableData(data);
 		}
 		return row;
 	}
