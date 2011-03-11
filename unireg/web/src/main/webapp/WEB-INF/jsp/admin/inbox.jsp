@@ -69,8 +69,8 @@
 
 			function onReceivedInboxContent() {
 				requestInboxDone = true;
+				refreshInboxSize();				// la méthode est définie dans template.jsp!
 			}
-
 		</script>
 	</tiles:put>
 </tiles:insert>

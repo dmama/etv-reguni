@@ -79,7 +79,40 @@ function ouvrirAide(url) {
 				<ul>
 					<li><a href="<c:url value='/tiers/list.do'/>"><fmt:message key="title.rechercher" /></a></li>
 
-					<li><a href="<c:url value='/admin/inbox.do'/>"><fmt:message key="title.inbox"/></a></li>
+					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+						<li>
+							<a href="<c:url value='/admin/inbox.do'/>">
+								<span id="inboxSize"><fmt:message key="title.inbox"/></span>
+							</a>
+						</li>
+
+						<script type="text/javascript">
+							// appels ajax pour mettre-à-jour le nombre d''éléments non-lus de l''inbox
+							var requestInboxSizeDone = true;
+
+							function refreshInboxSize() {
+								if (!requestInboxSizeDone) {
+									return;
+								}
+								requestInboxSizeDone = false;
+								XT.doAjaxAction('updateInboxUnreadSize', $("#inboxSize").get(0), {},
+								{
+									clearQueryString: true,
+									errorHandler :  function(ajaxRequest, exception) {
+											onReceivedInboxSize();
+										}
+								});
+							}
+
+							// dès l''affichage de la page
+							refreshInboxSize();
+
+							function onReceivedInboxSize() {
+								requestInboxSizeDone = true;
+							}
+						</script>
+
+					</authz:authorize>
 
 					<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB, ROLE_CREATE_AC, ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_NONHAB_INACTIF">
 						<li><fmt:message key="label.action.creation" />

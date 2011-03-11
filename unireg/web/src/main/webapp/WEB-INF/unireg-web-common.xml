@@ -45,7 +45,7 @@
 	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
         <property name="handlerMappings">
             <props>
-                <prop key="/**/*.do">ajaxMotifsForHandler,ajaxPostItHandler,tiersPickerController</prop>
+                <prop key="/**/*.do">ajaxMotifsForHandler,ajaxPostItHandler,tiersPickerController,inboxController</prop>
 				<prop key="/fiscal/for.do">tiersForController</prop>
 				<prop key="/tiers/*.do">ajaxRemarqueHandler</prop>
                 <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>
@@ -55,7 +55,6 @@
                 <prop key="/admin/evenementExterne/civilunitaire.do">civilUnitaireController</prop>
                 <prop key="/admin/batch.do">gestionBatchController</prop>
                 <prop key="/admin/status.do">infoController</prop>
-				<prop key="/admin/inbox.do">inboxController</prop>
                 <prop key="/admin/norentes.do">norentesController</prop>
             </props>
         </property>

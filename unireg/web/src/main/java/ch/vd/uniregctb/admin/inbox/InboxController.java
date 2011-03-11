@@ -3,8 +3,10 @@ package ch.vd.uniregctb.admin.inbox;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
@@ -16,6 +18,7 @@ import org.springmodules.xt.ajax.AjaxResponseImpl;
 import org.springmodules.xt.ajax.action.ExecuteJavascriptFunctionAction;
 import org.springmodules.xt.ajax.action.ReplaceContentAction;
 import org.springmodules.xt.ajax.component.Anchor;
+import org.springmodules.xt.ajax.component.Container;
 import org.springmodules.xt.ajax.component.Image;
 import org.springmodules.xt.ajax.component.Table;
 import org.springmodules.xt.ajax.component.TableData;
@@ -47,6 +50,35 @@ public class InboxController extends ParameterizableViewController implements Aj
 
 	private ExtractionServiceMonitoring extractionService;
 
+	private static interface AjaxActionHandler {
+		AjaxResponse handle(AjaxActionEvent event);
+	}
+
+	private final Map<String, AjaxActionHandler> ajaxHandlers = buildAjaxHandlerMap();
+
+	private Map<String, AjaxActionHandler> buildAjaxHandlerMap() {
+		final Map<String, AjaxActionHandler> ajaxHandlers = new HashMap<String, AjaxActionHandler>();
+		ajaxHandlers.put("updateInboxUnreadSize", new AjaxActionHandler() {
+			@Override
+			public AjaxResponse handle(AjaxActionEvent event) {
+				return updateInboxUnreadSize(event);
+			}
+		});
+		ajaxHandlers.put("loadJobsEnAttente", new AjaxActionHandler() {
+			@Override
+			public AjaxResponse handle(AjaxActionEvent event) {
+				return loadJobsEnAttente(event);
+			}
+		});
+		ajaxHandlers.put("loadInboxContent", new AjaxActionHandler() {
+			@Override
+			public AjaxResponse handle(AjaxActionEvent event) {
+				return loadInboxContent(event);
+			}
+		});
+		return ajaxHandlers;
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setInboxService(InboxService inboxService) {
 		this.inboxService = inboxService;
@@ -59,12 +91,11 @@ public class InboxController extends ParameterizableViewController implements Aj
 
 	@Override
 	public AjaxResponse handle(AjaxEvent event) {
-		if ("loadJobsEnAttente".equals(event.getEventId())) {
-			return loadJobsEnAttente((AjaxActionEvent) event);
+		final AjaxActionHandler handler = ajaxHandlers.get(event.getEventId());
+		if (handler != null && event instanceof AjaxActionEvent) {
+			return handler.handle((AjaxActionEvent) event);
 		}
-		else if ("loadInboxContent".equals(event.getEventId())) {
-			return loadInboxContent((AjaxActionEvent) event);
-		}
+
 		logger.error("You need to call the supports() method first!");
 		throw new UnsupportedEventException("You need to call the supports() method first!");
 	}
@@ -75,7 +106,35 @@ public class InboxController extends ParameterizableViewController implements Aj
 			return false;
 		}
 		final String id = event.getEventId();
-		return ("loadJobsEnAttente".equals(id) || ("loadInboxContent".equals(id)));
+		return ajaxHandlers.containsKey(id);
+	}
+
+	private AjaxResponse updateInboxUnreadSize(AjaxActionEvent event) {
+
+		final String visa = AuthenticationHelper.getCurrentPrincipal();
+		final AjaxResponse response = new AjaxResponseImpl();
+
+		final List<InboxElement> inboxContent = inboxService.getInboxContent(visa);
+		int unread = 0;
+		for (InboxElement elt : inboxContent) {
+			if (!elt.isRead()) {
+				++ unread;
+			}
+		}
+
+		final String baseMsg = getMessageResource("title.inbox");
+		if (unread == 0) {
+			response.addAction(new ReplaceContentAction(event.getElementId(), new SimpleText(baseMsg)));
+		}
+		else {
+			final Container span = new Container(Container.Type.SPAN);
+			span.addAttribute("style", "font-weight: bold;");
+			span.addComponent(new SimpleText(String.format("%s%s(%d)", baseMsg, NBSP, unread)));
+			response.addAction(new ReplaceContentAction(event.getElementId(), span));
+		}
+
+		response.addAction(new ExecuteJavascriptFunctionAction("onReceivedInboxSize", null));
+		return response;
 	}
 
 	/**
