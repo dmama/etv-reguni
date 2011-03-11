@@ -6,20 +6,20 @@ package ch.vd.uniregctb.extraction;
 public class ExtractionResultError extends ExtractionResult {
 
 	private final String msg;
-	private final Exception e;
+	private final Throwable cause;
 
-	public ExtractionResultError(String msg, Exception e) {
+	public ExtractionResultError(String msg, Throwable cause) {
 		this.msg = msg;
-		this.e = e;
+		this.cause = cause;
 	}
 
 	public ExtractionResultError(String msg) {
 		this(msg, null);
 	}
 
-	public ExtractionResultError(Exception e) {
-		this.msg = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-		this.e = e;
+	public ExtractionResultError(Throwable cause) {
+		this.msg = cause.getMessage() != null ? cause.getMessage() : cause.getClass().getName();
+		this.cause = cause;
 	}
 
 	@Override
@@ -31,8 +31,8 @@ public class ExtractionResultError extends ExtractionResult {
 		return msg;
 	}
 
-	public Exception getException() {
-		return e;
+	public Throwable getThrowableCause() {
+		return cause;
 	}
 
 	public String toString() {

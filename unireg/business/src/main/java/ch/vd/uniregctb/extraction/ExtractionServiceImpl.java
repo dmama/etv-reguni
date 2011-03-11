@@ -373,7 +373,7 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 							}
 							result = extractor.run();
 						}
-						catch (Exception e) {
+						catch (Throwable e) {
 							LOGGER.error(String.format("Le job d'extraction %s a lancé une exception", job.getKey()), e);
 							result = new ExtractionResultError(e);
 						}
