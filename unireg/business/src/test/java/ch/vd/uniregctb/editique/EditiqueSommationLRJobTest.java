@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.JobTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.batch.EditiqueSommationLRJob;
@@ -19,7 +19,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class EditiqueSommationLRJobTest extends BusinessTest {
+public class EditiqueSommationLRJobTest extends JobTest {
 
 	private static final Logger LOGGER = Logger.getLogger(EditiqueSommationLRJobTest.class);
 

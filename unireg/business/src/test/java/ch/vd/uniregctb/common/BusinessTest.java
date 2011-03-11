@@ -2,8 +2,6 @@ package ch.vd.uniregctb.common;
 
 import java.util.Date;
 
-import org.springframework.test.context.ContextConfiguration;
-
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
@@ -11,9 +9,6 @@ import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
-@ContextConfiguration(locations = {
-	BusinessTestingConstants.UNIREG_BUSINESS_UT_JOBS
-})
 public abstract class BusinessTest extends AbstractBusinessTest {
 
 	// private final static Logger LOGGER = Logger.getLogger(BusinessTest.class);

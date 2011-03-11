@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.JobTest;
 import ch.vd.uniregctb.declaration.EnvoiDIsJob;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
@@ -16,7 +16,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
-public class EnvoiDIsJobTest extends BusinessTest {
+public class EnvoiDIsJobTest extends JobTest {
 
 	private final Logger LOGGER = Logger.getLogger(EnvoiDIsJobTest.class);
 

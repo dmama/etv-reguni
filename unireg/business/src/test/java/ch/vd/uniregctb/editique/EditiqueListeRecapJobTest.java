@@ -14,7 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.JobTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob;
@@ -25,7 +25,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 @SuppressWarnings({"JavaDoc"})
-public class EditiqueListeRecapJobTest extends BusinessTest {
+public class EditiqueListeRecapJobTest extends JobTest {
 
 	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/ListeRecapJobTest.xml";
 

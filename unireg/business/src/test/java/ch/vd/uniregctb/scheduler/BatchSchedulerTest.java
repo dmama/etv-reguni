@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.JobTest;
 
 import static ch.vd.uniregctb.scheduler.JobDefinition.JobStatut;
 import static org.junit.Assert.assertEquals;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
-public class BatchSchedulerTest extends BusinessTest {
+public class BatchSchedulerTest extends JobTest {
 
 	private final static Logger LOGGER = Logger.getLogger(BatchSchedulerTest.class);
 

@@ -69,7 +69,6 @@ import static junit.framework.Assert.assertNotNull;
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_CACHE,
 		BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
 		BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
-		BusinessTestingConstants.UNIREG_BUSINESS_JOBS,
 		BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
 		BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_EDITIQUE,

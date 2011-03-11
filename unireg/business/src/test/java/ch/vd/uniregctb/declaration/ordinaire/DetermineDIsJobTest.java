@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.JobTest;
 import ch.vd.uniregctb.declaration.DeterminerDIsJob;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -20,7 +20,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
-public class DetermineDIsJobTest extends BusinessTest {
+public class DetermineDIsJobTest extends JobTest {
 
 	private final Logger LOGGER = Logger.getLogger(DetermineDIsJobTest.class);
 
