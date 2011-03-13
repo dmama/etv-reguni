@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -245,9 +247,9 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	private static String initNouveauNoAVS(String nouveauNoAVS) {
-		String numero = nouveauNoAVS;
+		String numero = StringUtils.trimToNull(nouveauNoAVS);
 		// [UNIREG-1223] interprète la valeur "0" comme une valeur nulle
-		if (numero == null || "".equals(numero) || "0".equals(numero)) {
+		if (numero == null || "0".equals(numero)) {
 			numero = null;
 		}
 		return numero;
