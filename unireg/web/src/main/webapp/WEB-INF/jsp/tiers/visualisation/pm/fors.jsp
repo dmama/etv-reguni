@@ -29,7 +29,7 @@
 					</c:when>
 					<c:when test="${forsFiscauxPM.typeAutoriteFiscale == 'COMMUNE_HC' }">
 						<unireg:commune ofs="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forsFiscauxPM.dateDebut}"/>
-						(<unireg:commune ofs="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forsFiscauxPM.dateDebut}"/>
+						(<unireg:commune ofs="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forsFiscauxPM.dateDebut}"/>)
 					</c:when>
 					<c:when test="${forsFiscauxPM.typeAutoriteFiscale == 'PAYS_HS' }">
 						<unireg:infra entityId="${forsFiscauxPM.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
