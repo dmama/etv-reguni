@@ -33,8 +33,8 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final String titre;
 	private final TypeAdresseCivil typeAdresse;
 	private final CommuneSimple communeAdresse;
-	private final Long egid;
-	private final Long ewid;
+	private final Integer egid;
+	private final Integer ewid;
 
 	public static AdresseImpl get(ch.vd.common.model.Adresse target) {
 		if (target == null) {
@@ -66,17 +66,17 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.titre = target.getTitre();
 		this.typeAdresse = TypeAdresseCivil.get(target.getTypeAdresse());
 		this.communeAdresse = CommuneSimpleImpl.get(target.getCommuneAdresse());
-		this.egid = string2long(target.getEgid());
-		this.ewid = string2long(target.getEwid());
+		this.egid = string2int(target.getEgid());
+		this.ewid = string2int(target.getEwid());
 	}
 
-	private static Long string2long(String string) {
+	private static Integer string2int(String string) {
 		string = StringUtils.trimToNull(string);
 		if (string == null) {
 			return null;
 		}
 		else {
-			return Long.parseLong(string);
+			return Integer.parseInt(string);
 		}
 	}
 
@@ -141,12 +141,12 @@ public class AdresseImpl implements Adresse, Serializable {
 	}
 
 	@Override
-	public Long getEgid() {
+	public Integer getEgid() {
 		return egid;
 	}
 
 	@Override
-	public Long getEwid() {
+	public Integer getEwid() {
 		return ewid;
 	}
 

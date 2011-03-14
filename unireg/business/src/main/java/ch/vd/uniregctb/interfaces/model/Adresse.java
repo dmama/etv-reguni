@@ -106,10 +106,10 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
 	/**
 	 * @return le numéro Ofs de bâtiment (Gebäude) ou <b>null</b> s'il est inconnu.
 	 */
-	Long getEgid();
+	Integer getEgid();
 
 	/**
 	 * @return le numéro Ofs de logement (Wohnung) ou <b>null</b> s'il est inconnu.
 	 */
-	Long getEwid();
+	Integer getEwid();
 }

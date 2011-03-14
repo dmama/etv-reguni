@@ -194,12 +194,12 @@ public class MockAdresse implements Adresse {
 	}
 
 	@Override
-	public Long getEgid() {
+	public Integer getEgid() {
 		return null;
 	}
 
 	@Override
-	public Long getEwid() {
+	public Integer getEwid() {
 		return null;
 	}
 

@@ -85,12 +85,12 @@ public class AdresseAdapter implements Adresse {
 	}
 
 	@Override
-	public Long getEgid() {
+	public Integer getEgid() {
 		return target.getEgid();
 	}
 
 	@Override
-	public Long getEwid() {
+	public Integer getEwid() {
 		return target.getEwid();
 	}
 }
