@@ -138,6 +138,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
 		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
 
+		final String oidNyon = String.format("%02d", nyon.getNumeroCollectiviteAdministrative());
+		final String oidMorges = String.format("%02d", morges.getNumeroCollectiviteAdministrative());
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
@@ -214,6 +216,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("CEDI " + nyon.getNumeroCollectiviteAdministrative(), retour2008.getADRES3RETOUR());
 			assertEquals("1014 Lausanne Adm cant", retour2008.getADRES4RETOUR());
 
+			final DI.InfoDI infoDI2008 = di2008.getInfoDI();
+			assertEquals(oidNyon + "-1",infoDI2008.getNOOID());
+			assertEquals(numCtb + "200801" + oidNyon,infoDI2008.getCODBARR());
+
 			final DI.AdresseRetour retour2009 = di2009.getAdresseRetour();
 			assertNotNull(retour2009);
 			assertEquals("Centre d'enregistrement", retour2009.getADRES1RETOUR());
@@ -221,6 +227,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("CEDI " + nyon.getNumeroCollectiviteAdministrative(), retour2009.getADRES3RETOUR());
 			assertEquals("1014 Lausanne Adm cant", retour2009.getADRES4RETOUR());
 
+			final DI.InfoDI infoDI2009 = di2009.getInfoDI();
+
+			assertEquals(oidNyon + "-1",infoDI2009.getNOOID());
+			assertEquals(numCtb + "200901" + oidNyon,infoDI2009.getCODBARR());
 
 				// ... adresse retour pour periode courante DI libre
 			final DI.AdresseRetour retourCourante = diCourante.getAdresseRetour();
@@ -229,12 +239,101 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("des déclarations d'impôt", retourCourante.getADRES2RETOUR());
 			assertEquals("CEDI " + morges.getNumeroCollectiviteAdministrative(), retourCourante.getADRES3RETOUR());
 			assertEquals("1014 Lausanne Adm cant", retourCourante.getADRES4RETOUR());
+
+			final DI.InfoDI infoDICourante = diCourante.getInfoDI();
+
+			assertEquals(oidMorges + "-1",infoDICourante.getNOOID());
+			assertEquals(numCtb +anneeCourante+"01" + oidMorges,infoDICourante.getCODBARR());
+
 		}
 
 
 	}
 	
+	 	//UNIREG-3059 Adresse de retour pour les DI sur deux periode fiscales différentes avec chacune un for differents
 
+	@Test
+	public void testAdresseRetourDI2008() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-3059");
+
+
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative aigle = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
+		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+
+		final int anneeCourante = RegDate.get().year();
+		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+		final PersonnePhysique pp = addNonHabitant("Maelle", "André", date(1980, 6, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2008, 6, 15), MotifFor.ARRIVEE_HS, date(2009, 6, 13), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
+		addForPrincipal(pp, date(2009, 6, 14), MotifFor.DEMENAGEMENT_VD, null,null, MockCommune.Nyon);
+
+		final String numCtb = String.format("%09d", pp.getNumero());
+		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+
+		final PeriodeFiscale periodeCourante = addPeriodeFiscale(anneeCourante);
+		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2008);
+		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
+		final ModeleDocument modeleCourant = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periodeCourante);
+		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+
+		declaration2008.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFSEtendu());
+		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
+		declaration2009.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFSEtendu());
+		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
+		{
+
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008,null);
+			assertNotNull(di2008);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009,null);
+			assertNotNull(di2009);
+
+
+			//Adresse expedition 2008
+			InfoEnteteDocument infoEnteteDocument2008 = impressionDIHelper.remplitEnteteDocument(declaration2008);
+			Expediteur expediteur2008 = infoEnteteDocument2008.getExpediteur();
+			Adresse adresseExpediteur2008 = expediteur2008.getAdresse();
+			assertEquals("Office d'impôt du district", adresseExpediteur2008.getAdresseCourrierLigne1());
+			assertEquals("d'Aigle", adresseExpediteur2008.getAdresseCourrierLigne2());
+			assertEquals("rue de la Gare 27", adresseExpediteur2008.getAdresseCourrierLigne3());
+			assertEquals("1860 Aigle", adresseExpediteur2008.getAdresseCourrierLigne4());
+			assertNull( adresseExpediteur2008.getAdresseCourrierLigne6());
+
+			//Adresse expedition 2009
+			InfoEnteteDocument infoEnteteDocument2009 = impressionDIHelper.remplitEnteteDocument(declaration2009);
+			Expediteur expediteur2009 = infoEnteteDocument2009.getExpediteur();
+			Adresse adresseExpediteur2009 = expediteur2009.getAdresse();
+			assertEquals("Office d'impôt du district", adresseExpediteur2009.getAdresseCourrierLigne1());
+			assertEquals("de Nyon", adresseExpediteur2009.getAdresseCourrierLigne2());
+			assertEquals("Avenue Reverdil 4-6", adresseExpediteur2009.getAdresseCourrierLigne3());
+			assertEquals("1341 Nyon", adresseExpediteur2009.getAdresseCourrierLigne4());
+			assertNull( adresseExpediteur2009.getAdresseCourrierLigne6());
+
+
+			// ... adresse retour pour 2008 2009
+			final DI.AdresseRetour retour2008 = di2008.getAdresseRetour();
+			assertNotNull(retour2008);
+			assertEquals("Centre d'enregistrement", retour2008.getADRES1RETOUR());
+			assertEquals("des déclarations d'impôt", retour2008.getADRES2RETOUR());
+			assertEquals("CEDI " + nyon.getNumeroCollectiviteAdministrative(), retour2008.getADRES3RETOUR());
+			assertEquals("1014 Lausanne Adm cant", retour2008.getADRES4RETOUR());
+
+			final DI.AdresseRetour retour2009 = di2009.getAdresseRetour();
+			assertNotNull(retour2009);
+			assertEquals("Centre d'enregistrement", retour2009.getADRES1RETOUR());
+			assertEquals("des déclarations d'impôt", retour2009.getADRES2RETOUR());
+			assertEquals("CEDI " + nyon.getNumeroCollectiviteAdministrative(), retour2009.getADRES3RETOUR());
+			assertEquals("1014 Lausanne Adm cant", retour2009.getADRES4RETOUR());
+
+
+
+		}
+
+
+	}
 	/**
 	 * [UNIREG-1257] l'office d'impôt expéditeur doit être celui du for fiscal valide durant la période couverte par la déclaration.
 	 */
@@ -262,9 +361,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Bex.getNoOFSEtendu());
 		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
 
-		// L'expéditeur de la déclaration 2007 doit être Orbe (= OID responsable de Vallorbe)
+		// L'expéditeur de la déclaration 2007 doit être Aigle (= OID responsable de Bex)
+		//Selon UNIREG-3059:
+		//L'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de laquel l'édition du document a lieu)
+		//-> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre),
+		// alors l'OID doit être l'OID de gestion courant du moment de l'édition du docuement.
 		{
 			final String oidOrbe = String.format("%02d", orbe.getNumeroCollectiviteAdministrative());
+			final String oidAigle = String.format("%02d", aigle.getNumeroCollectiviteAdministrative());
 
 			// ... sur l'entête
 			final InfoEnteteDocument entete = impressionDIHelper.remplitEnteteDocument(declaration2007);
@@ -284,8 +388,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
-			assertEquals(numCtb + "200701" + oidOrbe, info.getCODBARR());
-			assertEquals(oidOrbe + "-1", info.getNOOID());
+			assertEquals(numCtb + "200701" + oidAigle, info.getCODBARR());
+			assertEquals(oidAigle + "-1", info.getNOOID());
 
 			// ... sur l'adresse du CEDI
 			final DIRetour.AdresseRetour retour = di.getAdresseRetour();

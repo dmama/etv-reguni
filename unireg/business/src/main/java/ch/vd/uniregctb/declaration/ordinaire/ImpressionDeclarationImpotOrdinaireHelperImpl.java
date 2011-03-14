@@ -59,7 +59,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class ImpressionDeclarationImpotOrdinaireHelperImpl implements ImpressionDeclarationImpotOrdinaireHelper  {
+public class ImpressionDeclarationImpotOrdinaireHelperImpl implements ImpressionDeclarationImpotOrdinaireHelper {
 
 	public static final Logger LOGGER = Logger.getLogger(ImpressionDeclarationImpotOrdinaireHelperImpl.class);
 
@@ -94,7 +94,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 	public ImpressionDeclarationImpotOrdinaireHelperImpl(ServiceInfrastructureService infraService, AdresseService adresseService, TiersService tiersService,
-			SituationFamilleService situationFamilleService, EditiqueHelper editiqueHelper) {
+	                                                     SituationFamilleService situationFamilleService, EditiqueHelper editiqueHelper) {
 		this.infraService = infraService;
 		this.adresseService = adresseService;
 		this.tiersService = tiersService;
@@ -169,7 +169,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 				}
 			}
 			infoDocument.setIdEnvoi(idEnvoi);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			String message = "Exception lors de l'identification de la provenance de l'adresse";
 			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + declaration.getTiers().getNumero(), e);
 			throw new EditiqueException(message);
@@ -262,7 +263,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 * Alimente un objet Document pour l'impression des DI
 	 */
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
-			TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		InfoDocument infoDocument = remplitInfoDocument(declaration);
 		InfoEnteteDocument infoEnteteDocument;
 		try {
@@ -332,8 +333,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		remplitDIBase(declaration, annexes, di);
 		remplitAdresseRetour(declaration, di);
-		if(di instanceof DIRetourCivil){
-			remplitContribuables(declaration, (DIRetourCivil)di);	
+		if (di instanceof DIRetourCivil) {
+			remplitContribuables(declaration, (DIRetourCivil) di);
 		}
 
 	}
@@ -348,26 +349,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 
 		if (col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) { // Cas spécial pour le CEDI
+			final Integer officeImpot = getNumeroOfficeImpotRetour(declaration);
 
-
-		   // Remplace UNIREG-
-			//UNIREG-3059  Pour ce qui concerne le gros numéro en gras, l'adresse CEDI XX, et le code à barre :
-			//l'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de laquel l'édition du document a lieu)
-			//-> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre), alors l'OID doit être l'OID de gestion courant du moment de l'édition du docuement.
-
-
-			final int anneeCourante = RegDate.get().year();
-
-			final RegDate finPeriodeCourante = RegDate.get(anneeCourante,12,31);
-			final RegDate finPeriodePrecedente = RegDate.get(anneeCourante - 1,12,31);
-			RegDate dateRecherche=null;
-			if(declaration.getPeriode().getAnnee()== anneeCourante){
-				dateRecherche = finPeriodeCourante;
-			}
-			else{
-				dateRecherche = finPeriodePrecedente;
-			}
-			final Integer officeImpot = tiersService.getOfficeImpotIdAt(declaration.getTiers(), dateRecherche);
 
 			Assert.notNull(officeImpot);
 			remplitAdresseRetourCEDI(adresseRetour, officeImpot);
@@ -390,8 +373,34 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 	}
 
+
+
+	/**
+	 * UNIREG-3059  Pour ce qui concerne le gros numéro en gras, l'adresse CEDI XX, et le code à barre :
+	*l'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de laquel l'édition du document a lieu)
+	 *-> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre), alors l'OID doit être l'OID de gestion courant du moment de l'édition du docuement.
+	 * @param declaration
+	 * @return
+	 */
+	private Integer getNumeroOfficeImpotRetour(DeclarationImpotOrdinaire declaration) {
+
+
+		final int anneeCourante = RegDate.get().year();
+
+		final RegDate finPeriodeCourante = RegDate.get(anneeCourante, 12, 31);
+		final RegDate finPeriodePrecedente = RegDate.get(anneeCourante - 1, 12, 31);
+		RegDate dateRecherche = null;
+		if (declaration.getPeriode().getAnnee() == anneeCourante) {
+			dateRecherche = finPeriodeCourante;
+		}
+		else {
+			dateRecherche = finPeriodePrecedente;
+		}
+		return tiersService.getOfficeImpotIdAt(declaration.getTiers(), dateRecherche);
+	}
+
 	private void remplitAdresseRetourCEDI(DIRetour.AdresseRetour adresseRetour, Integer officeImpotId) throws EditiqueException {
-		
+
 		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative cedi;
 		try {
 			cedi = infraService.getCEDI();
@@ -574,21 +583,21 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private String calculNooid(DeclarationImpotOrdinaire declaration, Tiers tiers) {
 
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, declaration.getDateFin());
+		final Integer officeImpotId = getNumeroOfficeImpotRetour(declaration);
 		Assert.notNull(officeImpotId);
 
 		// [UNIREG-2965] nouveau mapping A, SA et SM (c'est lui le nouveau) -> XX-0, les autres : XX-1)
 		final int suffixe;
 		if (declaration.getQualification() != null) {
 			switch (declaration.getQualification()) {
-				case AUTOMATIQUE:
-				case SEMI_AUTOMATIQUE:
-				case SEMI_MANUEL:
-					suffixe = 0;
-					break;
-				default:
-					suffixe = 1;
-					break;
+			case AUTOMATIQUE:
+			case SEMI_AUTOMATIQUE:
+			case SEMI_MANUEL:
+				suffixe = 0;
+				break;
+			default:
+				suffixe = 1;
+				break;
 			}
 		}
 		else {
@@ -645,7 +654,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private String calculCodeBarre(DeclarationImpotOrdinaire declaration) {
 		Tiers tiers = declaration.getTiers();
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, declaration.getDateFin());
+		final Integer officeImpotId = getNumeroOfficeImpotRetour(declaration);
 		Assert.notNull(officeImpotId);
 		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + declaration.getPeriode().getAnnee().toString()
 				+ StringUtils.leftPad(declaration.getNumero().toString(), 2, "0")
