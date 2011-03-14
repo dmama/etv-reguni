@@ -17,6 +17,7 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -358,6 +359,63 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		}
 		finally {
 			tracing.end(time, "getCommuneByAdresse", "adresseGenerique");
+		}
+
+		return result;
+	}
+
+	@Override
+	public CommuneId getCommuneIdByEgid(final long egid, final RegDate date, final Long hintNoOfsCommune) throws InfrastructureException {
+		CommuneId result;
+		long time = tracing.start();
+		try {
+			result = target.getCommuneIdByEgid(egid, date, hintNoOfsCommune);
+		}
+		finally {
+			tracing.end(time, "getCommuneByEgid", new Object() {
+				@Override
+				public String toString() {
+					return String.format("egid=%d, date=%s, hintNoOfsCommune=%d", egid, ServiceTracing.toString(date), hintNoOfsCommune);
+				}
+			});
+		}
+
+		return result;
+	}
+
+	@Override
+	public CommuneSimple getCommuneById(final CommuneId id) throws InfrastructureException {
+		CommuneSimple result;
+		long time = tracing.start();
+		try {
+			result = target.getCommuneById(id);
+		}
+		finally {
+			tracing.end(time, "getCommuneById", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noOfs=%d, numeroTechnique=%s", id.getNoOfs(), id.getNumeroTechnique());
+				}
+			});
+		}
+
+		return result;
+	}
+
+	@Override
+	public CommuneSimple getCommuneByEgid(final long egid, final RegDate date, final Long hintNoOfsCommune) throws InfrastructureException {
+		CommuneSimple result;
+		long time = tracing.start();
+		try {
+			result = target.getCommuneByEgid(egid, date, hintNoOfsCommune);
+		}
+		finally {
+			tracing.end(time, "getCommuneByEgid", new Object() {
+				@Override
+				public String toString() {
+					return String.format("egid=%d, date=%s, hintNoOfsCommune=%d", egid, ServiceTracing.toString(date), hintNoOfsCommune);
+				}
+			});
 		}
 
 		return result;

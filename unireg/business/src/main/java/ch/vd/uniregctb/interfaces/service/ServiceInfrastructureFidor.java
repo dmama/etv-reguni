@@ -20,6 +20,8 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -141,6 +143,18 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 	}
 
 	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+	}
+
+	@Override
+	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+		// TODO (msi)
+		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+	}
+
+	@Override
+	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
+		// TODO (msi)
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 

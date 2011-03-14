@@ -25,6 +25,8 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -123,6 +125,70 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 		}
 		catch (RemoteException e) {
 			throw new InfrastructureException("Acces a la liste des communes impossible", e);
+		}
+	}
+
+	@Override
+	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+		throw new NotImplementedException("La méthode 'getCommuneByEgid' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	@Override
+	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
+
+		// on essaie d'abord avec Vaud
+		CommuneSimple commune = getCommuneByIdForCanton(id, ServiceInfrastructureService.SIGLE_CANTON_VD);
+
+		if (commune == null) {
+			// on essaie ensuite avec les autres cantons
+			for (Canton canton : getAllCantons()) {
+				final String sigle = canton.getSigleOFS();
+				if (!sigle.equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
+					commune = getCommuneByIdForCanton(id, sigle);
+					if (commune != null) {
+						break;
+					}
+				}
+			}
+		}
+
+		return commune;
+	}
+
+	private CommuneSimple getCommuneByIdForCanton(CommuneId id, String sigleCanton) throws InfrastructureException {
+		try {
+			// comme il peut y avoir plusieurs communes avec les mêmes numéros Ofs, on construit la liste des candidats.
+			final List<?> list = serviceInfrastructure.getCommunes(sigleCanton);
+			List<ch.vd.infrastructure.model.Commune> candidats = new ArrayList<ch.vd.infrastructure.model.Commune>(2);
+			for (Object o : list) {
+				ch.vd.infrastructure.model.Commune co = (ch.vd.infrastructure.model.Commune) o;
+				int noOFSEtendu = (co.isFraction() ? co.getNoTechnique() : co.getNoOFS());
+				if (noOFSEtendu == id.getNoOfs()) {
+					candidats.add(co);
+				}
+			}
+			if (candidats.isEmpty()) {
+				// pas trouvé de candidat -> inutile d'aller plus loin
+				return null;
+			}
+			else if (candidats.size() == 1) {
+				// trouvé juste un candidat -> c'est tout bon
+				return CommuneImpl.get(candidats.get(0));
+			}
+			else {
+				// trouvé 2 ou plus candidats, on filtre sur le numéro technique
+				for (ch.vd.infrastructure.model.Commune candidat : candidats) {
+					if (candidat.getNoTechnique() == id.getNumeroTechnique()) {
+						return CommuneImpl.get(candidat);
+					}
+				}
+				throw new InfrastructureException(
+						"Trouvé " + candidats.size() + " communes avec le numéro Ofs = [" + id.getNoOfs() + "], mais aucune parmis elles ne possèdent le numéro technique = [" +
+								id.getNumeroTechnique() + "]");
+			}
+		}
+		catch (RemoteException e) {
+			throw new InfrastructureException("Accès à la liste des communes impossible", e);
 		}
 	}
 

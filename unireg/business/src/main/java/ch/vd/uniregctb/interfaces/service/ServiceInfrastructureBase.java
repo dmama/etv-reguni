@@ -20,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -284,6 +285,19 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		else {
 			return null;
 		}
+	}
+
+	@Override
+	public final CommuneSimple getCommuneByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+
+		// un premier appel où le cache a peu de chance d'être chaud
+		final CommuneId id = getCommuneIdByEgid(egid, date, hintNoOfsCommune);
+		if (id == null) {
+			return null;
+		}
+
+		// un second appel où il y a beaucoup de chances de trouver la commune dans le cache
+		return getCommuneById(id);
 	}
 
 	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {

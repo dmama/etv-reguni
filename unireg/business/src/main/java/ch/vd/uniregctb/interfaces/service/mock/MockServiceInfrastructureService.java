@@ -11,6 +11,8 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -341,11 +343,21 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 		return commune;
 	}
 
+	@Override
+	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+		return null;
+	}
+
+	@Override
+	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
+		return null;
+	}
+
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getCollectivite(int)
-	 */
+			 * (non-Javadoc)
+			 *
+			 * @see ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getCollectivite(int)
+			 */
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		CollectiviteAdministrative collectivite = null;
 		for (CollectiviteAdministrative c : collectivitesAdministrative) {

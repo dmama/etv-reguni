@@ -24,6 +24,8 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -498,6 +500,96 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 
 		return choisirCommune(candidats, date);
+	}
+
+	private static class KeyGetCommunesByEgid {
+		long egid;
+		RegDate date;
+		Long hintNoOfsCommune;
+
+		private KeyGetCommunesByEgid(long egid, RegDate date, Long hintNoOfsCommune) {
+			this.egid = egid;
+			this.date = date;
+			this.hintNoOfsCommune = hintNoOfsCommune;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetCommunesByEgid that = (KeyGetCommunesByEgid) o;
+
+			return egid == that.egid && !(date != null ? !date.equals(that.date) : that.date != null);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = (int) (egid ^ (egid >>> 32));
+			result = 31 * result + (date != null ? date.hashCode() : 0);
+			return result;
+		}
+	}
+
+	@Override
+	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+		final CommuneId resultat;
+
+		final KeyGetCommunesByEgid key = new KeyGetCommunesByEgid(egid, date, hintNoOfsCommune);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getCommuneIdByEgid(egid, date, hintNoOfsCommune);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (CommuneId) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	private static class KeyGetCommunesById {
+		private long noOfs;
+		private long numeroTechnique;
+
+		private KeyGetCommunesById(long noOfs, long numeroTechnique) {
+			this.noOfs = noOfs;
+			this.numeroTechnique = numeroTechnique;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetCommunesById that = (KeyGetCommunesById) o;
+
+			return noOfs == that.noOfs && numeroTechnique == that.numeroTechnique;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = (int) (noOfs ^ (noOfs >>> 32));
+			result = 31 * result + (int) (numeroTechnique ^ (numeroTechnique >>> 32));
+			return result;
+		}
+	}
+
+	@Override
+	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
+		final CommuneSimple resultat;
+
+		final KeyGetCommunesById key = new KeyGetCommunesById(id.getNoOfs(), id.getNumeroTechnique());
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getCommuneById(id);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (CommuneSimple) element.getObjectValue();
+		}
+
+		return resultat;
 	}
 
 	@SuppressWarnings({"unchecked"})

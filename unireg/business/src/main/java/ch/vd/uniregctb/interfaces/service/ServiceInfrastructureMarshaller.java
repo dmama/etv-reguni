@@ -12,6 +12,7 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -60,6 +61,21 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 
 	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
 		return hostService.getCommuneByNumeroOfsEtendu(noCommune, date);
+	}
+
+	@Override
+	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+		return fidorService.getCommuneIdByEgid(egid, date, hintNoOfsCommune);
+	}
+
+	@Override
+	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
+		return hostService.getCommuneById(id);
+	}
+
+	@Override
+	public CommuneSimple getCommuneByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+		return fidorService.getCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
 	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException {

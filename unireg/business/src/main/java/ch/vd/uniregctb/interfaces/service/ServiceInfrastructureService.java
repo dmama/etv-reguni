@@ -12,6 +12,7 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneId;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -288,6 +289,39 @@ public interface ServiceInfrastructureService {
 	 * @throws InfrastructureException en cas de problème
 	 */
 	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException;
+
+	/**
+	 * Retourne l'identifiant de la commune sur laquelle un bâtiment est construit.
+	 *
+	 * @param egid             un numéro de bâtiment
+	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
+	 * @param hintNoOfsCommune (optionnel) un numéro Ofs de commune qui sera utilisé comme indice pour accélérer la recherche (par exemple, le numéro de commune faîtière en cas de fractions de commune,
+	 *                         ou le numéro de commune avant/après fusion)
+	 * @return l'identifiant de la commune, ou <code>null</code> si le bâtiment est inconnu.
+	 * @throws InfrastructureException en cas de problème
+	 */
+	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException;
+
+	/**
+	 * Retourne une commune à partir de son identifiant unique.
+	 *
+	 * @param id un identifiant de commune
+	 * @return une commune, ou <code>null</code> si la commune est inconnue.
+	 * @throws InfrastructureException en cas de problème
+	 */
+	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException;
+
+	/**
+	 * Retourne la commune sur laquelle un bâtiment est construit.
+	 *
+	 * @param egid             un numéro de bâtiment
+	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
+	 * @param hintNoOfsCommune (optionnel) un numéro Ofs de commune qui sera utilisé comme indice pour accélérer la recherche (par exemple, le numéro de commune faîtière en cas de fractions de commune,
+	 *                         ou le numéro de commune avant/après fusion)
+	 * @return une commune, ou <code>null</code> si le bâtiment est inconnu.
+	 * @throws InfrastructureException en cas de problème
+	 */
+	public CommuneSimple getCommuneByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException;
 
 	/**
 	 * Résoud la commune faîtière d'une fraction de commune (renvoie la commune elle-même si ce n'est pas une fraction)
