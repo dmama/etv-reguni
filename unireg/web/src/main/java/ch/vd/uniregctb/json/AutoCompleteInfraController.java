@@ -132,7 +132,7 @@ public class AutoCompleteInfraController extends JsonController {
 				final Map<Integer, Localite> mapLocalites = buildLocaliteMap(localites);
 				if (rues != null) {
 					for (Rue rue : rues) {
-						if (StringComparator.toLowerCaseWithoutAccent(rue.getDesignationCourrier()).startsWith(term)) {
+						if (StringComparator.toLowerCaseWithoutAccent(rue.getDesignationCourrier()).contains(term)) { // [UNIREG-3383] recherche dans toute la string
 							final Localite localite = mapLocalites.get(rue.getNoLocalite());
 							final String description;
 							if (localite == null) {
