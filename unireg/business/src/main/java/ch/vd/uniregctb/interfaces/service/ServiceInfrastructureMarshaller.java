@@ -64,7 +64,7 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 	}
 
 	@Override
-	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 		return fidorService.getCommuneIdByEgid(egid, date, hintNoOfsCommune);
 	}
 
@@ -74,7 +74,7 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 	}
 
 	@Override
-	public CommuneSimple getCommuneByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+	public CommuneSimple getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 		return fidorService.getCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 

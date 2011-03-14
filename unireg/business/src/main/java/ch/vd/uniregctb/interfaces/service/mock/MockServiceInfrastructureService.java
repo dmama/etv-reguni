@@ -344,7 +344,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	}
 
 	@Override
-	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 		return null;
 	}
 

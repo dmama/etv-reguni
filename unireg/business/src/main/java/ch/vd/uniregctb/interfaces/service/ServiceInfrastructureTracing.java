@@ -365,7 +365,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	}
 
 	@Override
-	public CommuneId getCommuneIdByEgid(final long egid, final RegDate date, final Long hintNoOfsCommune) throws InfrastructureException {
+	public CommuneId getCommuneIdByEgid(final int egid, final RegDate date, final Integer hintNoOfsCommune) throws InfrastructureException {
 		CommuneId result;
 		long time = tracing.start();
 		try {
@@ -403,7 +403,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	}
 
 	@Override
-	public CommuneSimple getCommuneByEgid(final long egid, final RegDate date, final Long hintNoOfsCommune) throws InfrastructureException {
+	public CommuneSimple getCommuneByEgid(final int egid, final RegDate date, final Integer hintNoOfsCommune) throws InfrastructureException {
 		CommuneSimple result;
 		long time = tracing.start();
 		try {

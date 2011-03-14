@@ -300,7 +300,7 @@ public interface ServiceInfrastructureService {
 	 * @return l'identifiant de la commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException;
+	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
 
 	/**
 	 * Retourne une commune à partir de son identifiant unique.
@@ -321,7 +321,7 @@ public interface ServiceInfrastructureService {
 	 * @return une commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneSimple getCommuneByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException;
+	public CommuneSimple getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
 
 	/**
 	 * Résoud la commune faîtière d'une fraction de commune (renvoie la commune elle-même si ce n'est pas une fraction)

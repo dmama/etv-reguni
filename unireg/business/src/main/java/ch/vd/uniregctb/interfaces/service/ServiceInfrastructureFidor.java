@@ -147,7 +147,7 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 	}
 
 	@Override
-	public CommuneId getCommuneIdByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 		// TODO (msi)
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}

@@ -11,7 +11,7 @@ public interface CommuneId {
 	/**
 	 * @return le numéro Ofs de la commune.
 	 */
-	long getNoOfs();
+	int getNoOfs();
 
 	/**
 	 * @return le numéro technique de la commune (uniquement nécessaire pour distinguer les communes de Lussery et Lussery-Villars qui partagent le même numéro Ofs = 5487).

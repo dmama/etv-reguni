@@ -288,7 +288,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	}
 
 	@Override
-	public final CommuneSimple getCommuneByEgid(long egid, RegDate date, Long hintNoOfsCommune) throws InfrastructureException {
+	public final CommuneSimple getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 
 		// un premier appel où le cache a peu de chance d'être chaud
 		final CommuneId id = getCommuneIdByEgid(egid, date, hintNoOfsCommune);
