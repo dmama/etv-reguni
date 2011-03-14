@@ -309,7 +309,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	@Transactional(readOnly = true)
 	public ExtractionKey exportListeRecherchee(MouvementMasseCriteriaView criteria, Integer noCollAdmInitiatrice, ParamSorting sorting) {
 		final MouvementDossierCriteria coreCriteria = createCoreCriteria(criteria, noCollAdmInitiatrice);
-		final MouvementDossierExtractor extractor = new MouvementDossierExtractor(coreCriteria, sorting);
+		final MouvementDossierExtractor extractor = new MouvementDossierExtractor(coreCriteria, criteria.getNoCollAdmDestinataire(), sorting);
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		return extractionService.postExtractionQuery(visa, extractor);
 	}
@@ -320,10 +320,12 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	public class MouvementDossierExtractor extends BaseExtractorImpl implements BatchableExtractor<Long, MouvementDossierExtractionResult> {
 
 		private final MouvementDossierCriteria criteria;
+		private final Integer noCaDestinataire;
 		private final ParamSorting sorting;
 
-		public MouvementDossierExtractor(MouvementDossierCriteria criteria, ParamSorting sorting) {
+		public MouvementDossierExtractor(MouvementDossierCriteria criteria, Integer noCaDestinataire, ParamSorting sorting) {
 			this.criteria = criteria;
+			this.noCaDestinataire = noCaDestinataire;
 			this.sorting = sorting;
 		}
 
@@ -433,7 +435,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 				b.append(" du contribuable ").append(FormatNumeroHelper.numeroCTBToDisplay(criteria.getNoCtb()));
 			}
 			if (criteria.getIdCollAdministrativeDestinataire() != null) {
-				b.append(" vers la collectivité administrative ").append(criteria.getIdCollAdministrativeDestinataire());
+				b.append(" vers la collectivité administrative ").append(noCaDestinataire);
 			}
 			final Collection<EtatMouvementDossier> etatsMouvement = criteria.getEtatsMouvement();
 			if (etatsMouvement != null && etatsMouvement.size() > 0) {
