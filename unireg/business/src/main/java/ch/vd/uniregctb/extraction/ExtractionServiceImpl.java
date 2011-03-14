@@ -35,7 +35,7 @@ import ch.vd.uniregctb.inbox.InboxService;
 /**
  * Implémentation du service d'extractions asynchrones
  */
-public class ExtractionServiceImpl implements ExtractionService, ExtractionServiceMonitoring, InitializingBean, DisposableBean {
+public class ExtractionServiceImpl implements ExtractionService, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = Logger.getLogger(ExtractionServiceImpl.class);
 
@@ -228,6 +228,11 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 		@Override
 		public String getDescription() {
 			return extractor.getExtractionDescription();
+		}
+
+		@Override
+		public void interrupt() {
+			extractor.interrupt();
 		}
 	}
 
@@ -569,6 +574,12 @@ public class ExtractionServiceImpl implements ExtractionService, ExtractionServi
 	@Override
 	public ExtractionKey postExtractionQuery(String visa, BatchableParallelExtractor extractor) {
 		return postExtractionQuery(visa, new BatchableParallelExtractorLauncher(extractor));
+	}
+
+	@Override
+	public void cancelJob(ExtractionJob job) {
+		job.interrupt();        // s'il est en cours, il s'arrêtera tout seul
+		queue.remove(job);      // s'il n'est pas encore en cours, il sera éliminé de la queue
 	}
 
 	private ExtractionKey postExtractionQuery(String visa, ExtractorLauncher launcher) {

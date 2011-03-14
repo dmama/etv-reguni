@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MockExtractionService implements ExtractionService, ExtractionServiceMonitoring {
+public class MockExtractionService implements ExtractionService {
 
 	private static final String MIME_TYPE = "text/plain";
 
@@ -40,6 +40,10 @@ public class MockExtractionService implements ExtractionService, ExtractionServi
 		final ExtractionKey key = new ExtractionKey(visa);
 		map.put(key, new ExtractionResultOk(buildResultStream(), MIME_TYPE, FILENAME, false));
 		return key;
+	}
+
+	@Override
+	public void cancelJob(ExtractionJob job) {
 	}
 
 	public ExtractionResult getExtractionResult(ExtractionKey key) {

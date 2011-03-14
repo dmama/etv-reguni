@@ -71,6 +71,36 @@
 				requestInboxDone = true;
 				refreshInboxSize();				// la méthode est définie dans template.jsp!
 			}
+
+			function stopJobEnAttente(uuid) {
+				if (confirm('Êtes-vous sûr de vouloir interrompre/annuler cette extraction ?')) {
+					XT.doAjaxAction('stopJobEnAttente', null,
+					{
+						uuid: uuid
+					},
+					{
+						clearQueryString: true,
+						errorHandler :  function(ajaxRequest, exception) {
+								onReceivedJobsEnAttente();
+							}
+					});
+				}
+			}
+
+			function removeInboxContent(uuid) {
+				if (confirm('Êtes-vous sûr de vouloir effacer ce message ?')) {
+					XT.doAjaxAction('removeInboxContent', null,
+					{
+						uuid: uuid
+					},
+					{
+						clearQueryString: true,
+						errorHandler :  function(ajaxRequest, exception) {
+								onReceivedJobsEnAttente();
+							}
+					});
+				}
+			}
 		</script>
 	</tiles:put>
 </tiles:insert>

@@ -48,4 +48,8 @@ public interface ExtractionJob {
 	 */
 	String getDescription();
 
+	/**
+	 * Demande l'interruption du job
+	 */
+	void interrupt();
 }

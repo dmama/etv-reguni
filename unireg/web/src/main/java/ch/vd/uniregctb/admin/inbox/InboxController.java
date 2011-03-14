@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springmodules.xt.ajax.AjaxActionEvent;
@@ -31,7 +30,7 @@ import ch.vd.uniregctb.admin.JobPercentIndicator;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.extraction.ExtractionServiceMonitoring;
+import ch.vd.uniregctb.extraction.ExtractionService;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
 import ch.vd.uniregctb.inbox.InboxService;
@@ -48,7 +47,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 
 	private InboxService inboxService;
 
-	private ExtractionServiceMonitoring extractionService;
+	private ExtractionService extractionService;
 
 	private static interface AjaxActionHandler {
 		AjaxResponse handle(AjaxActionEvent event);
@@ -76,6 +75,18 @@ public class InboxController extends ParameterizableViewController implements Aj
 				return loadInboxContent(event);
 			}
 		});
+		ajaxHandlers.put("stopJobEnAttente", new AjaxActionHandler() {
+			@Override
+			public AjaxResponse handle(AjaxActionEvent event) {
+				return stopJobEnAttente(event);
+			}
+		});
+		ajaxHandlers.put("removeInboxContent", new AjaxActionHandler() {
+			@Override
+			public AjaxResponse handle(AjaxActionEvent event) {
+				return removeInboxContent(event);
+			}
+		});
 		return ajaxHandlers;
 	}
 
@@ -85,7 +96,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setExtractionService(ExtractionServiceMonitoring extractionService) {
+	public void setExtractionService(ExtractionService extractionService) {
 		this.extractionService = extractionService;
 	}
 
@@ -137,6 +148,21 @@ public class InboxController extends ParameterizableViewController implements Aj
 		return response;
 	}
 
+	private Map<UUID, ExtractionJob> getKnownJobsEnAttenteForVisa(String visa) {
+		final Map<UUID, ExtractionJob> map = new HashMap<UUID, ExtractionJob>();
+		fillMap(map, extractionService.getQueueContent(visa));
+		fillMap(map, extractionService.getExtractionsEnCours(visa));
+		return map;
+	}
+
+	private static void fillMap(Map<UUID, ExtractionJob> map, List<ExtractionJob> src) {
+		if (src != null && src.size() > 0) {
+			for (ExtractionJob job : src) {
+				map.put(job.getKey().getUuid(), job);
+			}
+		}
+	}
+
 	/**
 	 * Appelé pour rafraîchir la liste des travaux en attente ou en cours
 	 * @param event requête Ajax
@@ -147,14 +173,8 @@ public class InboxController extends ParameterizableViewController implements Aj
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		final AjaxResponse response = new AjaxResponseImpl();
 
-		// on passe d'abord par un set pour éliminer les doublons (qui passeraient juste de la queue d'attente
-		// aux extractions en cours entre les deux appels aux addAll)
-		final Set<ExtractionJob> jobSet = new HashSet<ExtractionJob>();
-		jobSet.addAll(extractionService.getQueueContent(visa));
-		jobSet.addAll(extractionService.getExtractionsEnCours(visa));
-
-		// puis on met dans une liste pour trier par date de demande et ainsi avoir les éléments dans l'ordre de leur exécution
-		final List<ExtractionJob> jobs = new ArrayList<ExtractionJob>(jobSet);
+		// on met dans une liste pour trier par date de demande et ainsi avoir les éléments dans l'ordre de leur exécution
+		final List<ExtractionJob> jobs = new ArrayList<ExtractionJob>(getKnownJobsEnAttenteForVisa(visa).values());
 		Collections.sort(jobs, new Comparator<ExtractionJob>() {
 			@Override
 			public int compare(ExtractionJob o1, ExtractionJob o2) {
@@ -169,6 +189,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 		}
 		else {
 			final TableHeader header = new TableHeader(new String[] {
+					getMessageResource("label.action"),
 					getMessageResource("label.inbox.date.demande"), getMessageResource("label.inbox.description"),
 					getMessageResource("label.inbox.etat"), getMessageResource("label.inbox.temps.execution"),
 					getMessageResource("label.inbox.progression")
@@ -178,12 +199,34 @@ public class InboxController extends ParameterizableViewController implements Aj
 
 			int index = 0;
 			for (ExtractionJob job : jobs) {
-				final TableRow row = createRowForJobEnAttente(job);
-				if (row != null) {
-					final String rowClass = ((index++ % 2) == 1 ? "even" : "odd");
-					row.addAttribute("class", rowClass);
-					table.addTableRow(row);
+				final TableRow row = new TableRow();
+				final Anchor stopLink = new Anchor(String.format("javascript:stopJobEnAttente('%s');", job.getKey().getUuid()));
+				stopLink.addAttribute("class", "stop iepngfix");
+				row.addTableData(new TableData(stopLink));
+				row.addTableData(new TableData(new SimpleText(DateHelper.dateTimeToDisplayString(job.getCreationDate()))));
+				row.addTableData(new TableData(new SimpleText(job.getDescription())));
+				row.addTableData(new TableData(new SimpleText(job.getRunningMessage())));
+				if (job.isRunning()) {
+					final Long jobDuration = job.getDuration();
+					row.addTableData(new TableData(new SimpleText(jobDuration != null ? TimeHelper.formatDureeShort(jobDuration) : NBSP)));
+
+					final Integer progression = job.getPercentProgression();
+					if (progression != null) {
+						row.addTableData(new TableData(new JobPercentIndicator(progression)));
+					}
+					else {
+						row.addTableData(new TableData(new SimpleText(getMessageResource("label.inbox.en.cours"))));
+					}
 				}
+				else {
+					final TableData data = new TableData(new SimpleText(NBSP));
+					data.addAttribute("colspan", "2");      // temps d'exécution et progression
+					row.addTableData(data);
+				}
+
+				final String rowClass = ((index++ % 2) == 1 ? "even" : "odd");
+				row.addAttribute("class", rowClass);
+				table.addTableRow(row);
 			}
 
 			final ReplaceContentAction action = new ReplaceContentAction(elementId, table);
@@ -213,7 +256,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 			final TableHeader header = new TableHeader(new String[] {
 					getMessageResource("label.inbox.date.reception"), getMessageResource("label.inbox.nom"),
 					getMessageResource("label.inbox.description"), getMessageResource("label.inbox.expiration"),
-					getMessageResource("label.inbox.doc")
+					getMessageResource("label.inbox.doc"), getMessageResource("label.action")
 			});
 
 			final String contextPath = event.getHttpRequest().getContextPath();
@@ -240,6 +283,10 @@ public class InboxController extends ParameterizableViewController implements Aj
 					row.addTableData(new TableData(new SimpleText(NBSP)));
 				}
 
+				final Anchor removeLink = new Anchor(String.format("javascript:removeInboxContent('%s');", elt.getUuid()));
+				removeLink.addAttribute("class", "delete iepngfix");
+				row.addTableData(new TableData(removeLink));
+
 				table.addTableRow(row);
 			}
 
@@ -259,28 +306,54 @@ public class InboxController extends ParameterizableViewController implements Aj
 		return String.format("%s %s", rowIndex % 2 == 1 ? "odd" : "even", elt.isRead() ? "read" : "unread");
 	}
 
-	private TableRow createRowForJobEnAttente(ExtractionJob job) {
-		final TableRow row = new TableRow();
-		row.addTableData(new TableData(new SimpleText(DateHelper.dateTimeToDisplayString(job.getCreationDate()))));
-		row.addTableData(new TableData(new SimpleText(job.getDescription())));
-		row.addTableData(new TableData(new SimpleText(job.getRunningMessage())));
-		if (job.isRunning()) {
-			final Long jobDuration = job.getDuration();
-			row.addTableData(new TableData(new SimpleText(jobDuration != null ? TimeHelper.formatDureeShort(jobDuration) : NBSP)));
+	/**
+	 * Appelé pour interrompre un job en cours (ou annuler une demande pas encore prise en compte)
+	 * @param event requête Ajax
+	 * @return les actions à exécuter une fois l'appel terminé
+	 */
+	private AjaxResponse stopJobEnAttente(AjaxActionEvent event) {
 
-			final Integer progression = job.getPercentProgression();
-			if (progression != null) {
-				row.addTableData(new TableData(new JobPercentIndicator(progression)));
-			}
-			else {
-				row.addTableData(new TableData(new SimpleText(getMessageResource("label.inbox.en.cours"))));
+		final AjaxResponse response = new AjaxResponseImpl();
+
+		final Map<String, String> params = event.getParameters();
+		if (params != null) {
+			final UUID uuid = UUID.fromString(params.get("uuid"));
+			final String visa = AuthenticationHelper.getCurrentPrincipal();
+			final Map<UUID, ExtractionJob> jobs = getKnownJobsEnAttenteForVisa(visa);
+			final ExtractionJob job = jobs.get(uuid);
+			if (job != null) {
+				extractionService.cancelJob(job);
+				response.addAction(new ExecuteJavascriptFunctionAction("refreshInboxPage", null));
 			}
 		}
-		else {
-			final TableData data = new TableData(new SimpleText(NBSP));
-			data.addAttribute("colspan", "2");      // temps d'exécution et progression
-			row.addTableData(data);
+
+		return response;
+	}
+
+	/**
+	 * Appelé pour effacer un élément de la boîte de réception
+	 * @param event requête Ajax
+	 * @return les actions à exécuter une fois l'appel terminé
+	 */
+	private AjaxResponse removeInboxContent(AjaxActionEvent event) {
+
+		final AjaxResponse response = new AjaxResponseImpl();
+
+		final Map<String, String> params = event.getParameters();
+		if (params != null) {
+			final UUID uuid = UUID.fromString(params.get("uuid"));
+			final String visa = AuthenticationHelper.getCurrentPrincipal();
+			inboxService.removeDocument(uuid, visa);
+
+
+			final Map<UUID, ExtractionJob> jobs = getKnownJobsEnAttenteForVisa(visa);
+			final ExtractionJob job = jobs.get(uuid);
+			if (job != null) {
+				extractionService.cancelJob(job);
+				response.addAction(new ExecuteJavascriptFunctionAction("refreshInboxPage", null));
+			}
 		}
-		return row;
+
+		return response;
 	}
 }

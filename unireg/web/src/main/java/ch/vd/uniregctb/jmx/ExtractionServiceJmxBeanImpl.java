@@ -10,7 +10,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.extraction.ExtractionServiceMonitoring;
+import ch.vd.uniregctb.extraction.ExtractionService;
 
 /**
  * Implémentation du bean JMX de monitoring des extractions asynchrones
@@ -18,10 +18,10 @@ import ch.vd.uniregctb.extraction.ExtractionServiceMonitoring;
 @ManagedResource
 public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 
-	private ExtractionServiceMonitoring extractionService;
+	private ExtractionService extractionService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setExtractionService(ExtractionServiceMonitoring extractionService) {
+	public void setExtractionService(ExtractionService extractionService) {
 		this.extractionService = extractionService;
 	}
 

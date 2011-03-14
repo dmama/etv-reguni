@@ -63,6 +63,11 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 		addElement(visa, element);
 	}
 
+	@Override
+	public void removeDocument(UUID uuid, String visa) {
+		container.removeElement(uuid, visa);
+	}
+
 	/**
 	 * Ajout d'un document déjà formé à l'inbox du visa donné
 	 * @param visa visa dont on doit utiliser l'inbox

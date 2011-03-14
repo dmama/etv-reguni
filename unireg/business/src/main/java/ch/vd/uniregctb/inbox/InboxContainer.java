@@ -13,6 +13,8 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.utils.Pair;
+
 /**
  * Classe qui maintient le contenu des inbox dont l'InboxService est dépositaire ; cette classe est thread-safe
  * @see InboxService
@@ -29,7 +31,7 @@ public class InboxContainer {
 	/**
 	 * Map de tous les éléments connus, indexés par leur identifiant
 	 */
-	private final Map<UUID, InboxElement> byUuid = new HashMap<UUID, InboxElement>();
+	private final Map<UUID, Pair<String, InboxElement>> byUuid = new HashMap<UUID, Pair<String, InboxElement>>();
 
 	/**
 	 * Ajoute l'élément donné au contenu de l'inbox déterminée par le visa
@@ -41,8 +43,8 @@ public class InboxContainer {
 		if (byUuid.containsKey(element.getUuid())) {
 			throw new IllegalArgumentException("Elément " + element.getUuid() + " déjà présent");
 		}
-		byUuid.put(element.getUuid(), element);
-		final Set<InboxElement> set = getUserSet(visa, true);
+		byUuid.put(element.getUuid(), new Pair<String, InboxElement>(visa, element));
+		final Set<InboxElement> set = getUserRelativeSet(visa, true);
 		set.add(element);
 	}
 
@@ -53,7 +55,7 @@ public class InboxContainer {
 	public List<InboxElement> getInboxContent(String visa) {
 		final List<InboxElement> liste;
 		synchronized (this) {
-			final Set<InboxElement> set = getUserSet(visa, false);
+			final Set<InboxElement> set = getUserRelativeSet(visa, false);
 			if (set == null || set.size() == 0) {
 				liste = Collections.emptyList();
 			}
@@ -70,7 +72,28 @@ public class InboxContainer {
 	 * @return document récupéré correspondant à l'identifiant donné
 	 */
 	public synchronized InboxElement get(UUID uuid) {
-		return byUuid.get(uuid);
+		final Pair<String, InboxElement> elt = byUuid.get(uuid);
+		return elt != null ? elt.getSecond() : null;
+	}
+
+	/**
+	 * Efface un élément de la boîte de réception de son propriétaire
+	 * @param uuid identifiant de l'élément à effacer
+	 * @param visa propriétaire annoncé (pour contrôle)
+	 */
+	public synchronized void removeElement(UUID uuid, String visa) {
+		final Pair<String, InboxElement> elt = byUuid.get(uuid);
+		if (elt != null) {
+			if (elt.getFirst().equals(visa)) {
+				final Set<InboxElement> set = getUserRelativeSet(visa, false);
+				final InboxElement inboxElement = elt.getSecond();
+				if (set != null) {
+					set.remove(inboxElement);
+				}
+				byUuid.remove(uuid);
+				inboxElement.onDiscard();
+			}
+		}
 	}
 
 	/**
@@ -110,7 +133,7 @@ public class InboxContainer {
 	 * @param createIfNecessary <code>true</code> si un nouvel ensemble doit être créé s'il n'existe pas encore, <code>false</code> si la méthode peut retourner <code>null</code> dans ce cas
 	 * @return l'ensemble des éléments connus de l'inbox du visa donné
 	 */
-	private Set<InboxElement> getUserSet(String visa, boolean createIfNecessary) {
+	private Set<InboxElement> getUserRelativeSet(String visa, boolean createIfNecessary) {
 		Set<InboxElement> set = byUser.get(visa);
 		if (set == null && createIfNecessary) {
 			set = new HashSet<InboxElement>();

@@ -46,4 +46,11 @@ public interface InboxService {
 	 * @throws IOException en cas d'erreur à la lecture du document donné
 	 */
 	void addDocument(UUID uuid, String visa, String docName, String description, InboxAttachment attachment, int hoursUntilExpiration) throws IOException;
+
+	/**
+	 * Efface le document donné de l'inbox correspondant au visa donné (ne fait rien si le visa donné n'est pas propriétaire du document en question...)
+	 * @param uuid identifiant du document à effacer
+	 * @param visa visa du propriétaire de la boîte de réception de laquelle le document doit être effacé
+	 */
+	void removeDocument(UUID uuid, String visa);
 }
