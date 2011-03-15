@@ -28,12 +28,17 @@ public class MockOfficeImpot extends MockCollectiviteAdministrative implements O
 	public static MockOfficeImpot OID_PM = new MockOfficeImpot(21, null, "Administration cantonale des impôts", "Office d'impôt des Personnes Morales", null, "OI PERSONNES MORALES");
 	public static MockOfficeImpot OID_ST_CROIX = new MockOfficeImpot(121, null, "Office d'impôt du district de Grandson", "Bureau de Sainte-Croix", null, "OID GRANDSON,  STE-CROIX");
 
+	/**
+	 * Crée un office d'impôt <b>sans</b> l'enregistrer dans le mock par défaut de l'infrastructure
+	 */
 	public MockOfficeImpot() {
-		super();
 	}
 
-	public MockOfficeImpot(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3,
-			String nomCourt) {
+	/**
+	 * Crée un office d'impôt qui sera enregistré automatiquement dans le mock par défaut du service infrastructure.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected MockOfficeImpot(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt) {
 		super(noColAdm, adresse, nomComplet1, nomComplet2, nomComplet3, nomCourt);
 	}
 

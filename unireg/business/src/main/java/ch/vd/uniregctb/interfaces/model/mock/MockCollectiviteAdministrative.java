@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.vd.infrastructure.model.EnumTypeSupportEchangeInformation;
 import ch.vd.registre.base.date.RegDate;
@@ -13,9 +14,7 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureS
 
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
 
-	private static final long serialVersionUID = 4272590042497410216L;
-
-	private static final List<MockCollectiviteAdministrative> all = new ArrayList<MockCollectiviteAdministrative>();
+	private static final Map<Long, MockCollectiviteAdministrative> all = new HashMap<Long, MockCollectiviteAdministrative>();
 
 	public static MockCollectiviteAdministrative OTG = new MockCollectiviteAdministrative(ServiceInfrastructureService.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
 	public static MockCollectiviteAdministrative CEDI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null, "CEDI");
@@ -45,14 +44,34 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	private EnumTypeSupportEchangeInformation supportEchanAO = null;
 	private boolean isACI;
 	private boolean isOID;
-	private boolean isTiersTAO;
 	private boolean isValide;
 
+	/**
+	 * Crée une collectivité administrative <b>sans</b> l'enregistrer dans le mock par défaut de l'infrastructure
+	 */
 	public MockCollectiviteAdministrative() {
 	}
 
-	public MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt,String noTelephone,String noFax) {
-		super();
+	/**
+	 * Crée une collectivité administrative <b>sans</b> l'enregistrer dans le mock par défaut de l'infrastructure
+	 *
+	 * @param noColAdm le numéro de la collectivité
+	 * @param nom      le nom de la collectivité
+	 */
+	public MockCollectiviteAdministrative(long noColAdm, String nom) {
+		this.noColAdm = noColAdm;
+		this.adresse = null;
+		this.nomComplet1 = nom;
+		this.nomComplet2 = null;
+		this.nomComplet3 = null;
+		this.nomCourt = nom;
+	}
+
+	/**
+	 * Crée une nouvelle collectivité administrative qui sera enregistrée automatiquement dans le mock par défaut du service infrastructure.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt,String noTelephone,String noFax) {
 		this.noColAdm = noColAdm;
 		this.adresse = adresse;
 		this.nomComplet1 = nomComplet1;
@@ -63,11 +82,14 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.noFax = noFax;
 
 		DefaultMockServiceInfrastructureService.addColAdm(this);
-		all.add(this);
+		addToAll(noColAdm, this);
 	}
 
-	public MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt) {
-		super();
+	/**
+	 * Crée une nouvelle collectivité administrative qui sera enregistrée automatiquement dans le mock par défaut du service infrastructure.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt) {
 		this.noColAdm = noColAdm;
 		this.adresse = adresse;
 		this.nomComplet1 = nomComplet1;
@@ -76,7 +98,14 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.nomCourt = nomCourt;
 
 		DefaultMockServiceInfrastructureService.addColAdm(this);
-		all.add(this);
+		addToAll(noColAdm, this);
+	}
+
+	private static void addToAll(long noColAdm, MockCollectiviteAdministrative ca) {
+		if (all.containsKey(noColAdm)) {
+			throw new IllegalArgumentException("La collectivité administrative avec le numéro technique = " + noColAdm + " est déjà enregistrée dans la collection !");
+		}
+		all.put(noColAdm, ca);
 	}
 
 	/**
@@ -320,14 +349,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	}
 
 	/**
-	 * @param isTiersTAO
-	 *            the isTiersTAO to set
-	 */
-	public void setTiersTAO(boolean isTiersTAO) {
-		this.isTiersTAO = isTiersTAO;
-	}
-
-	/**
 	 * @return the isValide
 	 */
 	public boolean isValide() {
@@ -342,7 +363,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.isValide = isValide;
 	}
 
-	public static List<MockCollectiviteAdministrative> getAll() {
-		return Collections.unmodifiableList(all);
+	public static Collection<MockCollectiviteAdministrative> getAll() {
+		return Collections.unmodifiableCollection(all.values());
 	}
 }
