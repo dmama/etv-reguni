@@ -104,7 +104,7 @@ var Modifier = {
 	                	self.setIsModified(true);
 	                });
 	                if (type == "text") {
-						$(element).change(function(event) {
+						$(element).keyup(function(event) {
 							event = event || window.event;
 							return self.onkeyup( event);
 						});
