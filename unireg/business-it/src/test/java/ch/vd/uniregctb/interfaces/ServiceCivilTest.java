@@ -105,8 +105,8 @@ public class ServiceCivilTest extends BusinessItTest {
 
 		for (Adresse adresse : adresses) {
 			if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
-				assertEquals(Long.valueOf(3037134), adresse.getEgid());
-				assertEquals(Long.valueOf(3), adresse.getEwid());
+				assertEquals(Integer.valueOf(3037134), adresse.getEgid());
+				assertEquals(Integer.valueOf(3), adresse.getEwid());
 			}
 		}
 	}
