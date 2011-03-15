@@ -51,11 +51,12 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 		String numeroDebiteurParam = request.getParameter(NUMERO_DEBITEUR_PARAMETER_NAME);
 
 		ContribuableAssocieListView bean = (ContribuableAssocieListView) session.getAttribute(CONTRIBUABLE_ASSOCIE_CRITERIA_NAME);
-		if(	(bean == null) ||
-				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
-			if (numeroDebiteurParam != null) {
-				Long numeroDpi = Long.parseLong(numeroDebiteurParam);
-				bean = contribuableAssocieEditManager.getContribuableList(numeroDpi);
+		final Long debiteurDansBean = (bean != null && bean.getDebiteur() != null ? bean.getDebiteur().getNumero() : null);
+		final Long debiteurDansRequete = numeroDebiteurParam != null ? Long.parseLong(numeroDebiteurParam) : null;
+		final boolean isDifferentDebiteur = (debiteurDansBean == null || !debiteurDansBean.equals(debiteurDansRequete));
+		if (bean == null || EFFACER_PARAMETER_VALUE.equals(action) || isDifferentDebiteur) {
+			if (debiteurDansRequete != null) {
+				bean = contribuableAssocieEditManager.getContribuableList(debiteurDansRequete);
 			}
 	 	}
 		return bean;
@@ -70,8 +71,8 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
 			throws Exception {
-		HttpSession session = request.getSession();
-		ContribuableAssocieListView bean = (ContribuableAssocieListView) session.getAttribute(CONTRIBUABLE_ASSOCIE_CRITERIA_NAME);
+		// voir dans le contrôleur d'audit, l'explication de cette façon d'accéder au bean...
+		ContribuableAssocieListView bean = (ContribuableAssocieListView) errors.getTarget();
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 		ModelAndView mav  =  super.showForm(request, response, errors, model);
 		if (errors.getErrorCount() == 0) {
@@ -100,13 +101,6 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 		else {
 			mav.addObject(CONTRIBUABLE_ASSOCIE_LIST_ATTRIBUTE_NAME, null);
 		}
-
-		// TODO (fnr, fde) Cette ligne empeche la pagination sur les resultats de fonctionner.
-		// Cependant j	e crois me rappeler que la supprimer engendre un autre effet de bord ...
-		// A voir avec francois ...
-		//
-		// session.removeAttribute(CONTRIBUABLE_ASSOCIE_CRITERIA_NAME);
-
 		return mav;
 	}
 
