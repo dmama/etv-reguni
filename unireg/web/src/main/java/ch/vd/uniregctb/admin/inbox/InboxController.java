@@ -288,7 +288,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 					row.addTableData(new TableData(new SimpleText(NBSP)));
 				}
 
-				final Anchor removeLink = new Anchor(String.format("javascript:removeInboxContent('%s');", elt.getUuid()));
+				final Anchor removeLink = new Anchor(String.format("javascript:removeInboxContent('%s');", elt.getUuid()), new SimpleText(NBSP));
 				removeLink.addAttribute("class", "delete iepngfix");
 				row.addTableData(new TableData(removeLink));
 
