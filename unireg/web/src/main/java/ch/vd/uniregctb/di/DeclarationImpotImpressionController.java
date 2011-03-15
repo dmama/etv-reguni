@@ -1,14 +1,11 @@
 package ch.vd.uniregctb.di;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,7 +13,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -157,7 +153,7 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 
 			final EditiqueResultat result = diEditManager.envoieImpressionLocalDuplicataDI(bean);
 			if (result != null && result.getDocument() != null) {
-				printPCLManager.openPclStream(request, response, result.getDocument());
+				printPCLManager.openPclStream(response, result.getDocument());
 			}
 			else {
 				final String message = String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(result));

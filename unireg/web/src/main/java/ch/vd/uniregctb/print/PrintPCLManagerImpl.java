@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.print;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 
-import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64InputStream;
+
+import ch.vd.uniregctb.common.StreamUtils;
 
 public class PrintPCLManagerImpl implements PrintPCLManager{
 
@@ -15,104 +20,84 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 		return localApp;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setLocalApp(String localApp) {
 		PrintPCLManagerImpl.localApp = "true".equalsIgnoreCase(localApp) || "1".equals(localApp) || "yes".equalsIgnoreCase(localApp);
 	}
-
 
 	/**
 	 * Ouvre un flux X-CHVD ou PCL
 	 * en fonction du boolean localApp
 	 *
-	 * @param request
 	 * @param response
 	 * @param pcl
 	 * @throws IOException
 	 */
-	public void openPclStream(HttpServletRequest request, HttpServletResponse response, byte[] pcl) throws IOException {
+	public void openPclStream(HttpServletResponse response, byte[] pcl) throws IOException {
 
-		if(isLocalApp()) {
-			openPclWithLocalAppStream(request, response, pcl);
+		final ServletOutputStream out = response.getOutputStream();
+		try {
+			response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
+
+			response.setContentType(getActualMimeType());
+			response.setHeader("Content-disposition", String.format("%s; filename=\"print.%s\"", isAttachmentContent() ? "attachment" : "inline", isLocalApp() ? "chvd" : "pcl"));
+			response.setHeader( "Pragma", "public" );
+			response.setHeader("cache-control", "no-cache");
+			response.setHeader("Cache-control", "must-revalidate");
+
+			final ByteArrayInputStream in = new ByteArrayInputStream(pcl);
+			try {
+				copyToOutputStream(in, out);
+				out.flush();
+			}
+			finally {
+				in.close();
+			}
+		}
+		finally {
+			out.close();
+		}
+	}
+
+	private String construitDebutCorpsLocalApp() {
+		return "<?xml version=\"1.0\" encoding='" + Charset.defaultCharset().name() + "'?>" +
+				"<tasklist name=\"printPCLList\">" +
+				"	<task name=\"printPCL\" action=\"print\">" +
+				"		<print>" +
+				"			<parameter>";
+	}
+
+	private String construitFinCorpsLocalApp() {
+		return  "			</parameter>" +
+				"		</print>" +
+				"	</task>" +
+				"</tasklist>";
+	}
+
+
+	@Override
+	public boolean isAttachmentContent() {
+		// en localapp, apparemment, il faut mettre "inline"
+		return !isLocalApp();
+	}
+
+	@Override
+	public String getActualMimeType() {
+		return isLocalApp() ? "application/x-chvd" : "application/pcl";
+	}
+
+	@Override
+	public void copyToOutputStream(InputStream in, OutputStream out) throws IOException {
+		if (isLocalApp()) {
+			out.write(construitDebutCorpsLocalApp().getBytes());
+
+			final InputStream base64Encoder = new Base64InputStream(in, true);
+			StreamUtils.copy(base64Encoder, out);
+
+			out.write(construitFinCorpsLocalApp().getBytes());
 		}
 		else {
-			openPclWithoutLocalAppStream(request, response, pcl);
+			StreamUtils.copy(in, out);
 		}
 	}
-
-	/**
-	 * Ouvre un flux PCL
-	 *
-	 * @param request
-	 * @param response
-	 * @param pcl
-	 * @throws IOException
-	 */
-	private void openPclWithoutLocalAppStream(HttpServletRequest request, HttpServletResponse response, byte[] pcl) throws IOException {
-
-		ServletOutputStream out = response.getOutputStream();
-		response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
-
-		response.setContentType("application/pcl");
-		response.setHeader("Content-disposition", "attachment");
-		response.setHeader( "Pragma", "public" );
-		response.setHeader("cache-control", "no-cache");
-		response.setHeader("Cache-control", "must-revalidate");
-		response.setContentLength(pcl.length);
-
-		for (byte aPcl : pcl) {
-			out.write(aPcl);
-		}
-
-		out.flush();
-		out.close();
-	}
-
-
-	/**
-	 * Ouvre un flux X-CHVD - PCL
-	 *
-	 * @param request
-	 * @param response
-	 * @param pcl
-	 * @throws IOException
-	 */
-	public void openPclWithLocalAppStream(HttpServletRequest request, HttpServletResponse response, byte[] pcl) throws IOException {
-
-		ServletOutputStream out = response.getOutputStream();
-		response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
-
-		response.setContentType("application/x-chvd");
-		response.setHeader("Content-disposition", "inline; filename=\"print.chvd\"");
-
-		String debutCorps = construitDebutCorps();
-		response.setBufferSize(debutCorps.length());
-
-		out.write(debutCorps.getBytes());
-
-		byte[] bytes = Base64.encodeBase64(pcl);
-		out.write(bytes);
-
-		String finCorps = construitFinCorps();
-		out.write(finCorps.getBytes());
-		out.flush();
-		out.close();
-	}
-
-	private String construitDebutCorps() {
-		String tete = 	"<?xml version=\"1.0\"?>" +
-						"<tasklist name=\"printPCLList\">" +
-						"	<task name=\"printPCL\" action=\"print\">" +
-						"		<print>" +
-						"			<parameter>";
-		return tete;
-	}
-
-	private String construitFinCorps() {
-		String pieds = 	"			</parameter>" +
-						"		</print>" +
-						"	</task>" +
-						"</tasklist>";
-		return pieds;
-	}
-
 }

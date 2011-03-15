@@ -40,6 +40,7 @@
 	<!-- Accès au contenu des fichiers attachés des éléments de l'inbox -->
 	<bean id="inboxContentController" class="ch.vd.uniregctb.admin.inbox.InboxContentController">
 		<property name="inboxService" ref="inboxService"/>
+		<property name="pclManager" ref="printPCLManager"/>
 	</bean>
 
 	<!-- Gestion des batchs  -->

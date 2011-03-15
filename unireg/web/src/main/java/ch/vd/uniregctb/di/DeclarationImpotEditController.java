@@ -398,7 +398,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalDI(bean);
 		if (resultat != null && resultat.getDocument() != null) {
-			printPCLManager.openPclStream(request, response, resultat.getDocument());
+			printPCLManager.openPclStream(response, resultat.getDocument());
 		}
 		else {
 			final HttpSession session = request.getSession();
@@ -455,7 +455,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalTaxationOffice(bean);
 		if (resultat != null && resultat.getDocument() != null) {
-			printPCLManager.openPclStream(request, response, resultat.getDocument());
+			printPCLManager.openPclStream(response, resultat.getDocument());
 		}
 		else {
 			final HttpSession session = request.getSession();

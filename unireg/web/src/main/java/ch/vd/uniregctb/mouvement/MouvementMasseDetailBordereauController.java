@@ -63,7 +63,7 @@ public class MouvementMasseDetailBordereauController extends AbstractMouvementMa
 			final MouvementMasseDetailBordereauView view = (MouvementMasseDetailBordereauView) command;
 			try {
 				final EditiqueResultat resultat = getMouvementManager().imprimerBordereau(view.getSelection());
-				printPCLManager.openPclStream(request, response, resultat.getDocument());
+				printPCLManager.openPclStream(response, resultat.getDocument());
 			}
 			catch (EditiqueException e) {
 				errors.reject("global.error.msg", e.getMessage());

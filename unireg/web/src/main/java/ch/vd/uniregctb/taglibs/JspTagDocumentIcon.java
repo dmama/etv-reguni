@@ -30,6 +30,7 @@ public class JspTagDocumentIcon extends BodyTagSupport {
 		typeMapping.put("application/msword ", "/images/doc_icon.png");
 		typeMapping.put("application/vnd.hp-pcl", "/images/pcl_icon.png");
 		typeMapping.put("application/x-pcl ", "/images/pcl_icon.png");
+		typeMapping.put("application/pcl ", "/images/pcl_icon.png");
 	}
 
 	private String mimeType;

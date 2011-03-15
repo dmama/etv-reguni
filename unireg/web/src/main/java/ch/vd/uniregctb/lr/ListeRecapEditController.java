@@ -133,7 +133,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 			else if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalLR(bean);
 				if (resultat != null && resultat.getDocument() != null) {
-					printPCLManager.openPclStream(request, response, resultat.getDocument());
+					printPCLManager.openPclStream(response, resultat.getDocument());
 				}
 				else {
 					final String message = String.format("%s Veuillez imprimer un duplicata de la liste récapitulative.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
@@ -150,7 +150,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 			else if (request.getParameter(BUTTON_DUPLICATA_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalDuplicataLR(bean);
 				if (resultat != null && resultat.getDocument() != null) {
-					printPCLManager.openPclStream(request, response, resultat.getDocument());
+					printPCLManager.openPclStream(response, resultat.getDocument());
 				}
 				else {
 					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
@@ -161,7 +161,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 			else if (request.getParameter(BUTTON_SOMMER_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalSommationLR(bean);
 				if (resultat != null && resultat.getDocument() != null) {
-					printPCLManager.openPclStream(request, response, resultat.getDocument());
+					printPCLManager.openPclStream(response, resultat.getDocument());
 				}
 				else {
 					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
