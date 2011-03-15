@@ -29,7 +29,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
-import ch.vd.uniregctb.extraction.ExtractionKey;
+import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.extraction.ExtractionService;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAO;
@@ -307,7 +307,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	@Override
 	@Transactional(readOnly = true)
-	public ExtractionKey exportListeRecherchee(MouvementMasseCriteriaView criteria, Integer noCollAdmInitiatrice, ParamSorting sorting) {
+	public ExtractionJob exportListeRecherchee(MouvementMasseCriteriaView criteria, Integer noCollAdmInitiatrice, ParamSorting sorting) {
 		final MouvementDossierCriteria coreCriteria = createCoreCriteria(criteria, noCollAdmInitiatrice);
 		final MouvementDossierExtractor extractor = new MouvementDossierExtractor(coreCriteria, criteria.getNoCollAdmDestinataire(), sorting);
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
@@ -395,7 +395,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 				}
 			}
 
-			return !isInterrupted();
+			return !wasInterrupted();
 		}
 
 		@Override

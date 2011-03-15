@@ -10,7 +10,7 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.extraction.ExtractionKey;
+import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierCriteria;
 import ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView;
@@ -43,7 +43,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @return clé générée pour la demande d'export asynchrone
 	 */
 	@Transactional(readOnly = true)
-	ExtractionKey exportListeRecherchee(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamSorting sorting);
+	ExtractionJob exportListeRecherchee(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamSorting sorting);
 
 	/**
 	 * Trouve tous les mouvements de dossiers qui satisfont aux critères donnés

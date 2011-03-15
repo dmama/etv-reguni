@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.extraction.ExtractionKey;
+import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 
@@ -81,8 +81,8 @@ public abstract class AbstractMouvementMasseRechercheController extends Abstract
 		else if (exporter != null) {
 			final WebParamPagination pagination = getParamPagination(request);
 			final Integer noCollAdmInitiatrice = getNoCollAdmFiltree();
-			final ExtractionKey key = getMouvementManager().exportListeRecherchee(view, noCollAdmInitiatrice, pagination.getSorting());
-			flash(String.format("Demande d'export enregistrée (%s)", key.getUuid()));
+			final ExtractionJob job = getMouvementManager().exportListeRecherchee(view, noCollAdmInitiatrice, pagination.getSorting());
+			flash(String.format("Demande d'export enregistrée (%s)", job.getDescription()));
 		}
 		else {
 			doFind(request, view);

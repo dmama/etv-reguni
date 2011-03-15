@@ -133,7 +133,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	 */
 	private final class ExtractionJobImpl implements ExtractionJob {
 
-		private final ExtractionKey key;
+		private final UUID uuid;
+		private final String visa;
 		private final ExtractorLauncher extractor;
 		private final Date creationDate;
 		private Long startTimestamp;
@@ -141,8 +142,9 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		private JobState state;
 		private ExtractionResult result;
 
-		public ExtractionJobImpl(ExtractionKey key, ExtractorLauncher extractor) {
-			this.key = key;
+		public ExtractionJobImpl(String visa, ExtractorLauncher extractor) {
+			this.uuid = UUID.randomUUID();
+			this.visa = visa;
 			this.extractor = extractor;
 			this.state = JobState.WAITING_FOR_START;
 			this.startTimestamp = null;
@@ -172,8 +174,12 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			this.endTimestamp = System.nanoTime();
 		}
 
-		public ExtractionKey getKey() {
-			return key;
+		public UUID getUuid() {
+			return uuid;
+		}
+
+		public String getVisa() {
+			return visa;
 		}
 
 		public ExtractorLauncher getExtractor() {
@@ -182,6 +188,10 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 
 		public boolean isRunning() {
 			return state == JobState.RUNNING;
+		}
+
+		public boolean wasInterrupted() {
+			return extractor.wasInterrupted();
 		}
 
 		public Date getCreationDate() {
@@ -211,8 +221,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		}
 
 		public String toString() {
-			return String.format("{key=%s, extractor=%s, creation-date=%s, state=%s, running-msg=%s, progress=%d, result=%s}",
-			                     key, extractor, creationDate, state, getRunningMessage(), getPercentProgression(), result);
+			return String.format("{uuid=%s, visa=%s, extractor=%s, creation-date=%s, state=%s, running-msg=%s, progress=%d, result=%s}",
+			                     uuid, visa, extractor, creationDate, state, getRunningMessage(), getPercentProgression(), result);
 		}
 
 		@Override
@@ -233,6 +243,16 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		@Override
 		public void interrupt() {
 			extractor.interrupt();
+		}
+
+		@Override
+		public int hashCode() {
+			return uuid.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj instanceof ExtractionJobImpl && uuid.equals(((ExtractionJobImpl) obj).uuid);
 		}
 	}
 
@@ -273,6 +293,10 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			extractor.interrupt();
 		}
 
+		public final boolean wasInterrupted() {
+			return extractor.wasInterrupted();
+		}
+
 		public final String toString() {
 			return extractor.toString();
 		}
@@ -304,7 +328,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		}
 
 		@Override
-		public ExtractionResult doRun() {
+		public ExtractionResult doRun() throws Exception {
 			return extractor.doExtraction();
 		}
 	}
@@ -371,12 +395,12 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 						try {
 							job.onStart();
 							if (LOGGER.isInfoEnabled()) {
-								LOGGER.info(String.format("Démarrage du job d'extraction %s (%s)", job.getKey(), extractor));
+								LOGGER.info(String.format("Démarrage du job d'extraction %s (%s)", job.getUuid(), extractor));
 							}
 							result = extractor.run();
 						}
 						catch (Throwable e) {
-							LOGGER.error(String.format("Le job d'extraction %s a lancé une exception", job.getKey()), e);
+							LOGGER.error(String.format("Le job d'extraction %s a lancé une exception", job.getUuid()), e);
 							result = new ExtractionResultError(e);
 						}
 						finally {
@@ -386,15 +410,15 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 						}
 
 						if (LOGGER.isInfoEnabled()) {
-							LOGGER.info(String.format("Arrêt du job d'extraction %s (%d ms) : %s", job.getKey(), job.getDuration(), result));
+							LOGGER.info(String.format("Arrêt du job d'extraction %s (%d ms) : %s", job.getUuid(), job.getDuration(), result));
 						}
 
 						// à la fin du job, il faut envoyer ses résultats dans l'inbox du demandeur
 						try {
 							sendDocumentToInbox(job);
 						}
-						catch (Exception e) {
-							LOGGER.error(String.format("Impossible d'envoyer le résultat de l'extraction %s dans l'inbox correpondante", job.getKey()), e);
+						catch (Throwable e) {
+							LOGGER.error(String.format("Impossible d'envoyer le résultat de l'extraction %s dans l'inbox correpondante", job.getUuid()), e);
 						}
 					}
 				}
@@ -423,8 +447,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	}
 
 	private void sendDocumentToInbox(ExtractionJobImpl job) throws IOException {
-		final String visa = job.key.getVisa();
-		final UUID uuid = job.key.getUuid();
+		final String visa = job.getVisa();
+		final UUID uuid = job.getUuid();
 		final String docName = job.extractor.getExtractionName();
 		final String descriptionBase = String.format("%s, commande du %s", job.getDescription(), DateHelper.dateTimeToDisplayString(job.getCreationDate()));
 		final String description;
@@ -475,7 +499,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		final InputStream stream = extractor.getStreamForExtraction(rapportFinal);
 		final String mimeType = extractor.getMimeType();
 		final String filename = extractor.getFilename();
-		return new ExtractionResultOk(stream, mimeType, filename, extractor.isInterrupted());
+		return new ExtractionResultOk(stream, mimeType, filename, extractor.wasInterrupted());
 	}
 
 	/**
@@ -527,7 +551,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		return new BatchTransactionTemplate.BatchCallback<E, R>() {
 			@Override
 			public boolean doInTransaction(List<E> batch, R rapport) throws Exception {
-				return !extractor.isInterrupted() && extractor.doBatchExtraction(batch, rapport);
+				return !extractor.wasInterrupted() && extractor.doBatchExtraction(batch, rapport);
 			}
 
 			@Override
@@ -562,41 +586,39 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	}
 
 	@Override
-	public ExtractionKey postExtractionQuery(String visa, PlainExtractor extractor) {
+	public ExtractionJob postExtractionQuery(String visa, PlainExtractor extractor) {
 		return postExtractionQuery(visa, new PlainExtractorLauncher(extractor));
 	}
 
 	@Override
-	public ExtractionKey postExtractionQuery(String visa, BatchableExtractor extractor) {
+	public ExtractionJob postExtractionQuery(String visa, BatchableExtractor extractor) {
 		return postExtractionQuery(visa, new BatchableExtractorLauncher(extractor));
 	}
 
 	@Override
-	public ExtractionKey postExtractionQuery(String visa, BatchableParallelExtractor extractor) {
+	public ExtractionJob postExtractionQuery(String visa, BatchableParallelExtractor extractor) {
 		return postExtractionQuery(visa, new BatchableParallelExtractorLauncher(extractor));
 	}
 
+	@SuppressWarnings({"SuspiciousMethodCalls"})
 	@Override
 	public void cancelJob(ExtractionJob job) {
 		job.interrupt();        // s'il est en cours, il s'arrêtera tout seul
 		queue.remove(job);      // s'il n'est pas encore en cours, il sera éliminé de la queue
 	}
 
-	private ExtractionKey postExtractionQuery(String visa, ExtractorLauncher launcher) {
+	private ExtractionJob postExtractionQuery(String visa, ExtractorLauncher launcher) {
 		Assert.isTrue(StringUtils.isNotBlank(visa), "Le visa ne doit pas être vide");
 
-		// tout d'abord, on génère une clé pour cette extraction
-		final ExtractionKey key = new ExtractionKey(visa);
-
 		// puis on poste la demande d'exécution dans la queue
-		final ExtractionJobImpl jobInfo = new ExtractionJobImpl(key, launcher);
+		final ExtractionJobImpl jobInfo = new ExtractionJobImpl(visa, launcher);
 		queue.add(jobInfo);
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info(String.format("Job d'extraction %s enregistré (%s)", key, launcher));
+			LOGGER.info(String.format("Job d'extraction %s enregistré pour le visa %s (%s)", jobInfo.getUuid(), visa, launcher));
 		}
 
-		// et enfin on retourne la clé
-		return key;
+		// et enfin on retourne le job
+		return jobInfo;
 	}
 
 	@Override
@@ -652,7 +674,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			final Iterator<ExtractionJob> iterator = liste.iterator();
 			while (iterator.hasNext()) {
 				final ExtractionJob job = iterator.next();
-				if (!visa.equals(job.getKey().getVisa())) {
+				if (!visa.equals(job.getVisa())) {
 					iterator.remove();
 				}
 			}
@@ -676,7 +698,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		for (Executor executor : executors) {
 			final ExtractionJob enCours = executor.currentJob;
 			if (enCours != null) {
-				if (visa == null || visa.equals(enCours.getKey().getVisa())) {
+				if (visa == null || visa.equals(enCours.getVisa())) {
 					liste.add(enCours);
 				}
 			}

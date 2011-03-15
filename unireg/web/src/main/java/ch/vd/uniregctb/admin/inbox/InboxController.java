@@ -158,7 +158,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 	private static void fillMap(Map<UUID, ExtractionJob> map, List<ExtractionJob> src) {
 		if (src != null && src.size() > 0) {
 			for (ExtractionJob job : src) {
-				map.put(job.getKey().getUuid(), job);
+				map.put(job.getUuid(), job);
 			}
 		}
 	}
@@ -200,9 +200,14 @@ public class InboxController extends ParameterizableViewController implements Aj
 			int index = 0;
 			for (ExtractionJob job : jobs) {
 				final TableRow row = new TableRow();
-				final Anchor stopLink = new Anchor(String.format("javascript:stopJobEnAttente('%s');", job.getKey().getUuid()));
-				stopLink.addAttribute("class", "stop iepngfix");
-				row.addTableData(new TableData(stopLink));
+				if (job.wasInterrupted()) {
+					row.addTableData(new TableData(new SimpleText(NBSP)));
+				}
+				else {
+					final Anchor stopLink = new Anchor(String.format("javascript:stopJobEnAttente('%s');", job.getUuid()));
+					stopLink.addAttribute("class", "stop iepngfix");
+					row.addTableData(new TableData(stopLink));
+				}
 				row.addTableData(new TableData(new SimpleText(DateHelper.dateTimeToDisplayString(job.getCreationDate()))));
 				row.addTableData(new TableData(new SimpleText(job.getDescription())));
 				row.addTableData(new TableData(new SimpleText(job.getRunningMessage())));
@@ -344,14 +349,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 			final UUID uuid = UUID.fromString(params.get("uuid"));
 			final String visa = AuthenticationHelper.getCurrentPrincipal();
 			inboxService.removeDocument(uuid, visa);
-
-
-			final Map<UUID, ExtractionJob> jobs = getKnownJobsEnAttenteForVisa(visa);
-			final ExtractionJob job = jobs.get(uuid);
-			if (job != null) {
-				extractionService.cancelJob(job);
-				response.addAction(new ExecuteJavascriptFunctionAction("refreshInboxPage", null));
-			}
+			response.addAction(new ExecuteJavascriptFunctionAction("refreshInboxPage", null));
 		}
 
 		return response;

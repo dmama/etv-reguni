@@ -18,7 +18,7 @@ public abstract class BaseExtractorImpl implements Extractor {
 	}
 
 	@Override
-	public boolean isInterrupted() {
+	public boolean wasInterrupted() {
 		return interrupted;
 	}
 
@@ -37,7 +37,7 @@ public abstract class BaseExtractorImpl implements Extractor {
 
 		@Override
 		public boolean interrupted() {
-			return isInterrupted();
+			return wasInterrupted();
 		}
 
 		@Override

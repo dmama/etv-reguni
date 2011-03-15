@@ -62,7 +62,7 @@ public class ExtractionServiceTest extends BusinessTest {
 			@Override
 			public ExtractionResult doExtraction() {
 				final InputStream in = new ByteArrayInputStream(REPONSE.getBytes());
-				return new ExtractionResultOk(in, "text/plain", "tip.txt", isInterrupted());
+				return new ExtractionResultOk(in, "text/plain", "tip.txt", wasInterrupted());
 			}
 
 			@Override
@@ -72,9 +72,9 @@ public class ExtractionServiceTest extends BusinessTest {
 		}
 
 		// si je demande l'exécution d'un extracteur, je dois retrouver mon résultat
-		final ExtractionKey key = extractionService.postExtractionQuery("MOI", new MyPlainExtractor());
-		Assert.assertEquals("MOI", key.getVisa());
-		Assert.assertNotNull(key.getUuid());
+		final ExtractionJob job = extractionService.postExtractionQuery("MOI", new MyPlainExtractor());
+		Assert.assertEquals("MOI", job.getVisa());
+		Assert.assertNotNull(job.getUuid());
 
 		// on attend quoi, une seconde ?
 		Thread.sleep(1000L);
@@ -185,9 +185,9 @@ public class ExtractionServiceTest extends BusinessTest {
 		}
 
 		// si je demande l'exécution d'un extracteur, je dois retrouver mon résultat
-		final ExtractionKey key = extractionService.postExtractionQuery("MOI", new MyBatchExtractor());
-		Assert.assertEquals("MOI", key.getVisa());
-		Assert.assertNotNull(key.getUuid());
+		final ExtractionJob job = extractionService.postExtractionQuery("MOI", new MyBatchExtractor());
+		Assert.assertEquals("MOI", job.getVisa());
+		Assert.assertNotNull(job.getUuid());
 
 		// on attend quoi, une seconde ?
 		Thread.sleep(1000L);
@@ -310,9 +310,9 @@ public class ExtractionServiceTest extends BusinessTest {
 		}
 
 		// si je demande l'exécution d'un extracteur, je dois retrouver mon résultat
-		final ExtractionKey key = extractionService.postExtractionQuery("MOI", new MyBatchParallelExtractor());
-		Assert.assertEquals("MOI", key.getVisa());
-		Assert.assertNotNull(key.getUuid());
+		final ExtractionJob job = extractionService.postExtractionQuery("MOI", new MyBatchParallelExtractor());
+		Assert.assertEquals("MOI", job.getVisa());
+		Assert.assertNotNull(job.getUuid());
 
 		// on attend quoi, deux secondes ?
 		Thread.sleep(2000L);
@@ -346,5 +346,44 @@ public class ExtractionServiceTest extends BusinessTest {
 		finally {
 			in.close();
 		}
+	}
+
+	@Test
+	public void testInterrupt() throws Exception {
+
+		final class MyInterruptibleExtractor extends BaseExtractorImpl implements PlainExtractor {
+
+			public static final String REPONSE = "C'est ma réponse";
+
+			@Override
+			public ExtractionResult doExtraction() throws Exception {
+				Thread.sleep(500L);     // 500ms d'attente
+				final InputStream in = new ByteArrayInputStream(REPONSE.getBytes());
+				return new ExtractionResultOk(in, "text/plain", "tip.txt", wasInterrupted());
+			}
+
+			@Override
+			public String getExtractionName() {
+				return getClass().getSimpleName();
+			}
+		}
+
+		final ExtractionJob job = extractionService.postExtractionQuery("MOI", new MyInterruptibleExtractor());
+		Assert.assertFalse(job.wasInterrupted());
+
+		Thread.sleep(100L);     // on laisse le temps au job de démarrer
+		Assert.assertEquals(1, extractionService.getExtractionsEnCours("MOI").size());     // le job n'aurait-il pas encore démarré ?
+
+		extractionService.cancelJob(job);
+		Assert.assertTrue(job.wasInterrupted());
+
+		Thread.sleep(800L);    // on laisse le temps au job de se terminer
+
+		Assert.assertFalse(job.isRunning());
+		Assert.assertTrue(job.wasInterrupted());
+
+		final InboxElement inboxElt = inboxService.getInboxElement(job.getUuid());
+		Assert.assertNotNull(inboxElt);
+		Assert.assertTrue(inboxElt.getDescription().contains("interrompu"));
 	}
 }

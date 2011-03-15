@@ -16,7 +16,7 @@ public interface Extractor {
 	/**
 	 * @return <code>true</code> si la méthode {@link #interrupt()} a été appelée
 	 */
-	boolean isInterrupted();
+	boolean wasInterrupted();
 
 	/**
 	 * @return Message fourni par l'extracteur pendant son exécution pour indiquer (optionnel) ce qu'il est en train de faire

@@ -13,27 +13,27 @@ public interface ExtractionService {
 	 * Il s'agit d'un appel asynchrone
 	 * @param visa VISA de l'utilisateur pour le compte duquel cette extraction est lancée
 	 * @param extractor extracteur
-	 * @return clé pour récupérer le document résultant de l'extraction
+	 * @return job d'extraction posté dans la queue d'exécution
 	 */
-	ExtractionKey postExtractionQuery(String visa, PlainExtractor extractor);
+	ExtractionJob postExtractionQuery(String visa, PlainExtractor extractor);
 
 	/**
 	 * Poste une demande d'exécution de l'extracteur donné pour le compte de l'utilisateur dont le visa est donné.</p>
 	 * Il s'agit d'un appel asynchrone
 	 * @param visa VISA de l'utilisateur pour le compte duquel cette extraction est lancée
 	 * @param extractor extracteur
-	 * @return clé pour récupérer le document résultant de l'extraction
+	 * @return job d'extraction posté dans la queue d'exécution
 	 */
-	ExtractionKey postExtractionQuery(String visa, BatchableExtractor extractor);
+	ExtractionJob postExtractionQuery(String visa, BatchableExtractor extractor);
 
 	/**
 	 * Poste une demande d'exécution de l'extracteur donné pour le compte de l'utilisateur dont le visa est donné.</p>
 	 * Il s'agit d'un appel asynchrone
 	 * @param visa VISA de l'utilisateur pour le compte duquel cette extraction est lancée
 	 * @param extractor extracteur
-	 * @return clé pour récupérer le document résultant de l'extraction
+	 * @return job d'extraction posté dans la queue d'exécution
 	 */
-	ExtractionKey postExtractionQuery(String visa, BatchableParallelExtractor extractor);
+	ExtractionJob postExtractionQuery(String visa, BatchableParallelExtractor extractor);
 
 	/**
 	 * Demande l'arrêt d'un job (s'il est en cours) ou son annulation (s'il est encore en attente)
