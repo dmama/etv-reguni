@@ -25,6 +25,7 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -2424,6 +2425,188 @@ public class AdresseServiceTest extends BusinessTest {
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 
 			assertEmpty(adresses.poursuiteAutreTiers); // [UNIREG-3203] pas d'adresse de poursuite autre tiers parce que le conjoint remplace le principal dans ce cas-là
+		}
+	}
+
+	/**
+	 * Cas d'un couple avec le conjoint décédé et le principal sous curatelle après le veuvage.
+	 *
+	 * <pre>
+	 *                               +--------------------------------------------------------------------------
+	 * Adresse civile principal décédé: Aubonne, Chemin des Curzilles 26
+	 *                               +--------------------------------------------------------------------------
+	 *                               ¦- 1965.05.01
+	 *                               ¦
+	 *                               +--------------------------------------------------------------------------
+	 * Adresse civile conjoint:      | Aubonne, Chemin des Curzilles 26
+	 *                               +--------------------------------------------------------------------------
+	 *                               ¦- 1965.05.01
+	 *                               ¦
+	 *                               +--------------------------------------------------------------------------
+	 * Adresse curateur    |         | Aubonne,Rue de Trévelin 135
+	 *                               +--------------------------------------------------------------------------
+	 *                               ¦- 1956.08.19
+	 *                               ¦
+	 *                               ¦                            +---------------------------------------------
+	 * curatelle du conjoint:        ¦                            | Curatelle
+	 *                               ¦                            +---------------------------------------------
+	 *                               ¦                            ¦- 2011.01.11
+	 *                               ¦                            ¦
+	 *                               +----------------------------+----------------------------+----------------
+	 * Adresse conjoint résultante:  | Chemin des Curzilles 26    |    Rue de Trévelin 135     |
+	 *                               +----------------------------+----------------------------+----------------
+	 *                               ¦- 1965.05.01    2011-01-10  ¦                            ¦
+	 *                               ¦                            ¦                            ¦
+	 *                               +--------------------------------------------------------------------------
+	 * Adresse principal résultante: | Chemin des Curzilles 26
+	 *                               +--------------------------------------------------------------------------
+	 *                               ¦- 1965.05.01
+	 *                               ¦
+	 *                               +----------------------------+----------------------------+----------------
+	 * Adresse ménage résultante:    | Chemin des Curzilles 26         Rue de Trévelin 135
+	 *                               +----------------------------+----------------------------+----------------
+	 *                               ¦- 1965.05.01    2011-01-10    - 2011.01.11
+	 * </pre>
+	 */
+	@Test
+	public void testGetAdressesFiscalesHistoCoupleCuratellePrincipalConjointDecede() throws Exception {
+		final long noPrincipal = 2;
+		final long noConjoint = 3;
+		final long noCurateur = 5;
+		final RegDate dateDeces = date(2010, 7, 10);
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// le principal décéde
+				MockIndividu gilbert = addIndividu(noPrincipal, date(1929,2, 9), "Cochand", "Gilbert", true);
+
+				gilbert.setDateDeces(dateDeces);
+				addAdresse(gilbert, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(1965, 5,
+						1), null);
+
+				// la conjoint
+				MockIndividu jeanne = addIndividu(noConjoint, date(1928,6, 17), "Dunner", "Jeanne", false);
+				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(1965,5, 1), null);
+				marieIndividus(gilbert, jeanne, date(1976, 1, 7));
+
+				// le curateur
+				MockIndividu jeanDaniel = addIndividu(noCurateur, date(1956, 8, 19), "Vautier", "Jean-Daniel", true);
+				addAdresse(jeanDaniel, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null,
+						date(1956, 8, 19), null);
+			}
+		});
+
+		final class Numeros {
+			long numeroContribuablePrincipal;
+			long numeroContribuableConjoint;
+			long numeroContribuableMenage;
+		}
+		final Numeros numeros = new Numeros();
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// Crée le ménage
+				PersonnePhysique conjoint = new PersonnePhysique(true);
+				conjoint.setNumeroIndividu(noConjoint);
+				PersonnePhysique principal = new PersonnePhysique(true);
+				principal.setNumeroIndividu(noPrincipal);
+
+				MenageCommun menage = new MenageCommun();
+				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(1976, 1, 7), date(2010,7,10));
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				numeros.numeroContribuableMenage = menage.getNumero();
+				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+				principal.setHabitant(false);
+				principal.setNom("Cochand");
+				principal.setPrenom("Gilbert");
+				numeros.numeroContribuablePrincipal = principal.getNumero();
+
+				rapport = tiersService.addTiersToCouple(menage, conjoint, date(1976, 1, 7), date(2010,7,10));
+				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+				numeros.numeroContribuableConjoint = conjoint.getNumero();
+
+				// Crée le curateur
+				PersonnePhysique curateur = new PersonnePhysique(true);
+				curateur.setNumeroIndividu(noCurateur);
+				curateur = (PersonnePhysique) tiersDAO.save(curateur);
+
+				// Crée la curatelle proprement dites
+				rapport = new Curatelle();
+				rapport.setDateDebut(date(2011, 1, 11));
+				rapport.setObjet(curateur);
+				rapport.setSujet(conjoint);
+				tiersDAO.save(rapport);
+				return null;
+			}
+		});
+		// Vérification des adresses du principal
+		{
+			final Tiers principal = tiersService.getTiers(numeros.numeroContribuablePrincipal);
+			assertNotNull(principal);
+
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(principal, false);
+			assertNotNull(adresses);
+			assertEquals(1, adresses.courrier.size());
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.courrier.get(0));
+
+			assertEquals(1, adresses.representation.size());
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.representation.get(0));
+
+			assertEquals(1, adresses.poursuite.size());
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, false, adresses.poursuite.get(0));
+
+			assertAdressesEquals(adresses.poursuite, adresses.domicile);
+		}
+
+		// Vérification des adresses du conjoint
+		{
+			final Tiers conjoint = tiersService.getTiers(numeros.numeroContribuableConjoint);
+			assertNotNull(conjoint);
+
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(conjoint, false);
+			assertNotNull(adresses);
+
+			assertEquals(2, adresses.courrier.size());
+
+			assertAdresse(date(1965, 5, 1), date(2011,1,10), "Aubonne", SourceType.CIVILE, true, adresses.courrier.get(0));
+
+			assertAdresse(date(2011,1,11), null, "Aubonne", SourceType.CURATELLE, false, adresses.courrier.get(1));
+
+
+
+			assertEquals(1, adresses.representation.size());
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.representation.get(0));
+
+			assertEquals(1, adresses.poursuite.size());
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, false, adresses.poursuite.get(0));
+
+			assertAdressesEquals(adresses.poursuite, adresses.domicile);
+		}
+
+		// Vérification des adresses du ménage
+		{
+			final Tiers menage = tiersService.getTiers(numeros.numeroContribuableMenage);
+			assertNotNull(menage);
+
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(menage, false);
+			assertNotNull(adresses);
+
+			assertEquals(2, adresses.courrier.size());
+			assertAdresse(date(1965, 5, 1), date(2011,1,10), "Aubonne", SourceType.CIVILE, true, adresses.courrier.get(0));
+
+			assertAdresse(date(2011,1,11), null, "Aubonne", SourceType.CURATELLE, false, adresses.courrier.get(1));
+
+			assertEquals(1, adresses.representation.size());
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.representation.get(0));
+
+			assertEquals(1, adresses.poursuite.size());
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, false, adresses.poursuite.get(0));
+
+			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
 	}
 

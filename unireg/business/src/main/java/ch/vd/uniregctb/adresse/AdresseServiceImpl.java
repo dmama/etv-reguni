@@ -1198,7 +1198,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 		// On détermine les périodes de validité des adresses du conjoint comme adresse de représentation du ménage
 		List<DateRange> periodesRepresentation = DateRangeHelper.intersections(periodesAppartenance, periodesTutellePrincipal);
-
+		if (periodesRepresentation == null || periodesRepresentation.isEmpty()) {
+			return Collections.emptyList();
+		}
 		// On ignore toutes les adresses où le conjoint est lui-même sous représentation légale
 		final List<DateRange> periodesPupille = getPeriodesSousRepresentationLegale(conjoint);
 		if (!periodesPupille.isEmpty()) {

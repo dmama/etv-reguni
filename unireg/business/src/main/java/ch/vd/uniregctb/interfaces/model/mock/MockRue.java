@@ -18,6 +18,11 @@ public class MockRue implements Rue {
 		public static final MockRue AvenueDesBergieres = new MockRue(MockLocalite.Lausanne, "Avenue Bergières", 30389);
 	}
 
+
+	public static class Aubonne {
+		public static final MockRue CheminCurzilles = new MockRue(MockLocalite.Aubonne, "Chemin des Curzilles", 88450);
+		public static final MockRue RueTrevelin = new MockRue(MockLocalite.Aubonne, "Rue de Trévelin", 884503);
+	}
 	public static class Prilly {
 		public static final MockRue RueDesMetiers = new MockRue(MockLocalite.Prilly, "Rue des Métiers", 78450);
 		public static final MockRue CheminDeLaPossession = new MockRue(MockLocalite.Prilly, "Chemin de la Possession", 30796);
