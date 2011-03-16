@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.webservices.common;
 
-import org.springframework.beans.factory.InitializingBean;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -47,10 +47,13 @@ public class NoOfsTranslatorImpl implements NoOfsTranslator, InitializingBean {
 		if (exposeNosTechniques) {
 			// selon résultat de la requête "select NO_OFS, NO_TECHNIQUE from CIIV1.COMMUNE where NO_TECHNIQUE != int(NO_OFS) and int(NO_OFS) > 0 ORDER by int(NO_OFS);"
 			communes.put(632, 8060);
+			communes.put(855, 8106);
 			communes.put(888, 8065);
 			communes.put(948, 8079);
 			communes.put(1151, 8076);
-			communes.put(1151, 8076);
+			communes.put(1630, 8108);
+			communes.put(1631, 8107);
+			communes.put(1632, 8110);
 			communes.put(2029, 8048);
 			communes.put(2050, 8062);
 			communes.put(2051, 8066);
@@ -129,13 +132,18 @@ public class NoOfsTranslatorImpl implements NoOfsTranslator, InitializingBean {
 			communes.put(5226, 8025);
 			communes.put(5236, 8074);
 			communes.put(5237, 8075);
+			communes.put(5238, 8105);
+			communes.put(5269, 8103);
 			communes.put(5323, 8073);
 			communes.put(5324, 8085);
+			communes.put(5397, 8102);
+			communes.put(5398, 8104);
 			communes.put(5487, 5510);
 			communes.put(6073, 8050);
 			communes.put(6074, 8068);
 			communes.put(6075, 8069);
 			communes.put(6076, 8091);
+			communes.put(6090, 8109);
 			communes.put(6117, 8049);
 			communes.put(6118, 8092);
 			communes.put(6181, 8057);
