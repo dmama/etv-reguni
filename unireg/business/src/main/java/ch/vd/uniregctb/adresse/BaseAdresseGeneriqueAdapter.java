@@ -284,4 +284,9 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	public CommuneSimple getCommuneAdresse() {
 		return target.getCommuneAdresse();
 	}
+
+	@Override
+	public Integer getEgid() {
+		return target.getEgid();
+	}
 }

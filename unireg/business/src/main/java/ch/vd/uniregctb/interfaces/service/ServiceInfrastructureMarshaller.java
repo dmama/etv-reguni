@@ -174,12 +174,12 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 		return hostService.getCAT();
 	}
 
-	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
-		return hostService.getCommuneByAdresse(adresse);
+	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+		return hostService.getCommuneByAdresse(adresse, date);
 	}
 
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
-		return hostService.getCommuneByAdresse(adresse);
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+		return hostService.getCommuneByAdresse(adresse, date);
 	}
 
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {

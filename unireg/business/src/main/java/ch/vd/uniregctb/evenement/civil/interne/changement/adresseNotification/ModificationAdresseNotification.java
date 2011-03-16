@@ -43,7 +43,7 @@ public class ModificationAdresseNotification extends ChangementBase {
 	private CommuneSimple getCommuneAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilHandlerException {
 		try {
 			final AdressesCiviles adresses = context.getAdresseService().getAdressesCiviles(pp, date, false);
-			return context.getServiceInfra().getCommuneByAdresse(adresses.principale);
+			return context.getServiceInfra().getCommuneByAdresse(adresses.principale, date);
 		}
 		catch (InfrastructureException e) {
 			final String msg = String.format("Impossible de trouver la commune de l'adresse principale au %s de l'individu %d", RegDateHelper.dateToDisplayString(date), pp.getNumeroIndividu());

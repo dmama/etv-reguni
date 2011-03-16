@@ -186,4 +186,9 @@ final class MockAdresseGeneric implements AdresseGenerique {
 	public CommuneSimple getCommuneAdresse() {
 		return null;
 	}
+
+	@Override
+	public Integer getEgid() {
+		return null;
+	}
 }

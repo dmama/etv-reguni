@@ -68,10 +68,13 @@ public class Depart extends Mouvement {
 			isAncienTypeDepart = true;
 		}
 
+		final RegDate dateDepart = evenement.getDateEvenement();
+		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
+
 		// on récupère les anciennes adresses (= à la date d'événement)
 		final AdressesCiviles adresses;
 		try {
-			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), evenement.getDateEvenement(), false));
+			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), dateDepart, false));
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementCivilInterneException(e);
@@ -83,13 +86,13 @@ public class Depart extends Mouvement {
 
 		try {
 			// on récupère la commune de l'adresse principale avant le départ
-			this.ancienneCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(ancienneAdressePrincipale);
+			this.ancienneCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(ancienneAdressePrincipale, dateDepart);
 
 			// on récupère la commune de l'adresse principale avant le départ
-			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire);
+			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire, dateDepart);
 
 			// on récupère la commune de la nouvelle adresse principal
-			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale());
+			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), lendemainDepart);
 
 			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		}
@@ -583,7 +586,7 @@ public class Depart extends Mouvement {
 			try {
 				estEnSuisse = serviceInfra.estEnSuisse(adressePrincipale);
 				if (estEnSuisse) {
-					commune = serviceInfra.getCommuneByAdresse(adressePrincipale);
+					commune = serviceInfra.getCommuneByAdresse(adressePrincipale, depart.getDate().getOneDayAfter());
 				}
 			}
 			catch (InfrastructureException e) {

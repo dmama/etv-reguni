@@ -77,7 +77,8 @@ public class Arrivee extends Mouvement {
 		Assert.isTrue(isEvenementArrivee(evenement.getType()));
 
 		// on récupère les nouvelles adresses (= à la date d'événement)
-		final RegDate veilleArrivee = evenement.getDateEvenement().getOneDayBefore();
+		final RegDate dateArrivee = evenement.getDateEvenement();
+		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
 		final AdressesCiviles anciennesAdresses;
 		try {
 			anciennesAdresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), veilleArrivee, false));
@@ -91,12 +92,12 @@ public class Arrivee extends Mouvement {
 
 		try {
 			// on récupère les nouvelles communes
-			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale());
-			this.nouvelleCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdresseSecondaire());
+			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), dateArrivee);
+			this.nouvelleCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdresseSecondaire(), dateArrivee);
 
 			// on récupère les anciennes communes
-			this.ancienneCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(ancienneAdressePrincipale);
-			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire);
+			this.ancienneCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(ancienneAdressePrincipale, veilleArrivee);
+			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire, veilleArrivee);
 		}
 		catch (InfrastructureException e) {
 			throw new EvenementCivilInterneException(e);
@@ -791,7 +792,7 @@ public class Arrivee extends Mouvement {
 		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
 			final AdressesCiviles adresseDomicile = new AdressesCiviles(context.getServiceCivil().getAdresses(pp.getNumeroIndividu(), date, false));
 			if (adresseDomicile.principale != null) {
-				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile.principale);
+				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile.principale, date);
 			}
 			else {
 				commune = null;

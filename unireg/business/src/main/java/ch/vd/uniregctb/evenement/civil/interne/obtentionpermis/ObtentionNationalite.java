@@ -48,7 +48,7 @@ public class ObtentionNationalite extends ObtentionPermisCOuNationaliteSuisse {
 		try {
 			// on récupère la commune de l'adresse principale en gérant les fractions
 			//à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for
-			final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale());
+			final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale(), evenement.getDateEvenement());
 			this.numeroOfsEtenduCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFSEtendu();
 		}
 		catch (InfrastructureException e) {

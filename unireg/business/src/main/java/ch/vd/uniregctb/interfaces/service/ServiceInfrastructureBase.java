@@ -234,41 +234,53 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	}
 
 	/**
-	 * Récupère la commune attachée à une adresse, et si aucune n'est présente, ou si la commune
-	 * attachée est fractionnée, déduit la commune de la localité déterminée par un numéro de rue
-	 * (si disponible) ou un numéro d'ordre poste
-	 * @param adresse
-	 * @param numeroRue
-	 * @param numeroOrdrePostal
-	 * @return
-	 * @throws InfrastructureException
+	 * Récupère la commune attachée à une adresse, et si aucune n'est présente, ou si la commune attachée est fractionnée, déduit la commune de la localité déterminée par un numéro de rue (si disponible)
+	 * ou un numéro d'ordre poste
+	 *
+	 * @param adresse           une adresse
+	 * @param numeroRue         une numéro de rue
+	 * @param numeroOrdrePostal un numéro d'ordre postal
+	 * @param date              la date de référence
+	 * @return la commune qui correspond à l'adresse spécifiée; ou <b>null</b> si aucune commune n'a été trouvée.
+	 * @throws InfrastructureException en cas d'erreur
 	 */
-	private CommuneSimple getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal) throws InfrastructureException {
-		final CommuneSimple commune;
-		if (adresse != null) {
-			final CommuneSimple communeAttachee = getCommuneAttachee(adresse);
+	private CommuneSimple getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal, RegDate date) throws InfrastructureException {
+		if (adresse == null) {
+			return null;
+		}
 
+		CommuneSimple commune = null;
+
+		// 1er choix : l'egid
+		final Integer egid = adresse.getEgid();
+		if (egid != null) {
+			commune = getCommuneByEgid(egid, date, null);
+		}
+
+		// 2ème choix : la commune attachée à l'adresse
+		if (commune == null) {
+			final CommuneSimple candidate = adresse.getCommuneAdresse();
 			// si la commune est attachée et que ce n'est pas une commune fractionnée, on la prend
 			// sinon, on prend l'adresse depuis la localité
-			if (communeAttachee != null && !communeAttachee.isPrincipale()) {
-				commune = communeAttachee;
-			}
-			else {
-				commune = getCommuneByLocaliteAdresse(numeroRue, numeroOrdrePostal);
+			if (candidate != null && !candidate.isPrincipale()) {
+				commune = candidate;
 			}
 		}
-		else {
-			commune = null;
+
+		// 3ème choix : la commune associée à la localité
+		if (commune == null) {
+			commune = getCommuneByLocaliteAdresse(numeroRue, numeroOrdrePostal);
 		}
+
 		return commune;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
+	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
 		if (adresse != null) {
-			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal());
+			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
 		}
 		else {
 			return null;
@@ -278,9 +290,9 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
 		if (adresse != null) {
-			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal());
+			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
 		}
 		else {
 			return null;

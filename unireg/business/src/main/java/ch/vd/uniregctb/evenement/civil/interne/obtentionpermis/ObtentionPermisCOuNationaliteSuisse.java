@@ -177,7 +177,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				try {
 					final AdresseGenerique adresse = context.getAdresseService().getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, dateEvenement, false);
 					if (adresse != null) {
-						final CommuneSimple commune = getService().getServiceInfra().getCommuneByAdresse(adresse);
+						final CommuneSimple commune = getService().getServiceInfra().getCommuneByAdresse(adresse, dateEvenement);
 						// uniquement si la commune de domicile est vaudoise
 						if (commune != null && commune.isVaudoise()) {
 							noOfsEtendu = commune.getNoOFSEtendu();

@@ -76,7 +76,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 			// à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for vaudois
 			final Adresse adressePrincipale = getAdressePrincipale();
 			if (context.getServiceInfra().estDansLeCanton(adressePrincipale)) {
-				final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale);
+				final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale, evenement.getDateEvenement());
 				if (communePrincipale == null) {
 					throw new EvenementCivilInterneException("Incohérence dans l'adresse principale");
 				}

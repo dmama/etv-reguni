@@ -2009,7 +2009,7 @@ public class AdresseServiceImpl implements AdresseService {
 				final AdresseGenerique adresseGenerique = iter.previous();
 				final CommuneSimple commune;
 				try {
-					commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
+					commune = serviceInfra.getCommuneByAdresse(adresseGenerique, adresseGenerique.getDateDebut());
 				}
 				catch (InfrastructureException e) {
 					throw new AdresseDataException(e);

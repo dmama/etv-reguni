@@ -408,7 +408,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		try {
 			estDomicilieDansLeCanton = serviceInfra.estDansLeCanton(adresseDomicile);
 			if (estDomicilieDansLeCanton) {
-				commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+				commune = serviceInfra.getCommuneByAdresse(adresseDomicile, dateReference);
 			}
 			else {
 				commune = null;

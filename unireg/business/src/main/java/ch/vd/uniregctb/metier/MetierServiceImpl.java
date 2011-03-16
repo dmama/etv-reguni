@@ -1662,7 +1662,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 			else if (adresseDomicile.getNoOfsPays() == null || adresseDomicile.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
 				// en Suisse
-				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
 				if (commune != null) {
 					noOfsEtendu = commune.getNoOFSEtendu();
 					typeAutoriteFiscale = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;

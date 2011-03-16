@@ -287,6 +287,11 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	}
 
 	@Override
+	public Integer getEgid() {
+		return null;
+	}
+
+	@Override
 	public String toString() {
 		return DateRangeHelper.toString(this);
 	}

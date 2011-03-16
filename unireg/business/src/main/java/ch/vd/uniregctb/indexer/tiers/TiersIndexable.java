@@ -118,7 +118,7 @@ public abstract class TiersIndexable {
 			if (domicile != null && !domicile.isDefault()) {
 				estDansLeCanton = serviceInfra.estDansLeCanton(domicile);
 				if (estDansLeCanton) {
-					final CommuneSimple c = serviceInfra.getCommuneByAdresse(domicile);
+					final CommuneSimple c = serviceInfra.getCommuneByAdresse(domicile, null);
 					if (c != null) {
 						noOfsCommuneVD = c.getNoOFSEtendu();
 					}

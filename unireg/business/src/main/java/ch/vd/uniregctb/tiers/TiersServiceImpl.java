@@ -1624,7 +1624,7 @@ public class TiersServiceImpl implements TiersService {
 		try {
 			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
 			if (adresseDomicile != null) {
-				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
 				if (commune != null && commune.isVaudoise()) {
 					return Boolean.TRUE;
 				}

@@ -338,11 +338,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
+	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
 		CommuneSimple result;
 		long time = tracing.start();
 		try {
-			result = target.getCommuneByAdresse(adresse);
+			result = target.getCommuneByAdresse(adresse, date);
 		}
 		finally {
 			tracing.end(time, "getCommuneByAdresse", "adresse");
@@ -351,11 +351,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
 		CommuneSimple result;
 		long time = tracing.start();
 		try {
-			result = target.getCommuneByAdresse(adresse);
+			result = target.getCommuneByAdresse(adresse, date);
 		}
 		finally {
 			tracing.end(time, "getCommuneByAdresse", "adresseGenerique");

@@ -224,7 +224,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		final List<HistoriqueCommune> result = new ArrayList<HistoriqueCommune>();
 		for (Adresse adresse : histo.principales) {
 			if (RegDateHelper.isAfterOrEqual(adresse.getDateFin(), date, NullDateBehavior.LATEST)) {
-				final CommuneSimple commune = infraService.getCommuneByAdresse(adresse);
+				final CommuneSimple commune = infraService.getCommuneByAdresse(adresse, date);
 				final CommuneSimple communeFiltree = (commune == null || !seulementVaud || commune.isVaudoise() ? commune : null);
 				result.add(new HistoriqueCommune(adresse.getDateDebut(), adresse.getDateFin(), communeFiltree));
 			}

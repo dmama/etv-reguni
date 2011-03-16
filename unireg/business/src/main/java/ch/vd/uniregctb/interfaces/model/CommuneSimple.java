@@ -76,11 +76,9 @@ public interface CommuneSimple extends EntiteOFS {
 	boolean isFraction();
 
 	/**
-	 * Indique si la commune, dans le cadre d'un regroupement, est la commune
-	 * principale.
+	 * Indique - dans le cadre d'un regroupement - si la commune est la commune principale (faîtière).
 	 *
-	 * @return <code>true</code> si la commune, dans le cadre d'un
-	 *         regroupement, est la commune principale.
+	 * @return <code>true</code> si la commune, dans le cadre d'un regroupement, est la commune principale; <code>false</code> s'il s'agit d'une fraction de commune ou d'une commune non-fractionnée.
 	 */
 	boolean isPrincipale();
 

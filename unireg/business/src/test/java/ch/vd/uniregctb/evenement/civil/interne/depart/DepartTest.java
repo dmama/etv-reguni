@@ -463,7 +463,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// Ancienne commune
-		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
+		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale, dateEvenement);
 		int noOFS;
 		if (communeVd != null) {
 			noOFS = communeVd.getNoOFS();
@@ -479,14 +479,14 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
 
 		// Nouvelle commune
-		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse);
+		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse, dateEvenement.getOneDayAfter());
 
 		// En cas de depart d'une residence secondaire
 		final MockCommune communeSecondaire ;
 		final MockAdresse adresseSecondaire;
 		if (!principale && adresseVaud.secondaire != null) {
 			adresseSecondaire = (MockAdresse) adresseVaud.secondaire;
-			communeSecondaire = (MockCommune) serviceInfra.getCommuneByAdresse(adresseSecondaire);
+			communeSecondaire = (MockCommune) serviceInfra.getCommuneByAdresse(adresseSecondaire, dateEvenement.getOneDayAfter());
 			noOFS = communeSecondaire.getNoOFS();
 		}
 		else {
@@ -515,7 +515,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// Ancienne commune
-		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
+		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale, dateEvenement);
 		final int noOFS = communeVd.getNoOFS();
 
 
@@ -554,11 +554,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
 		adressePrincipale.setDateFinValidite(DATE_EVENEMENT);
 
-		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
+		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale, DATE_EVENEMENT);
 		int noOFS = communeVd.getNoOFS();
 		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT.getOneDayAfter(), false));
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
-		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse);
+		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse, DATE_EVENEMENT.getOneDayAfter());
 
 		// création d'un événement à DATE_ANTERIEURE_ADRESSE_ACTUELLE
 		final Depart depart =

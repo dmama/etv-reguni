@@ -72,7 +72,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 
 		// on recupere la commune de la nouvelle adresse
 		try {
-			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale());
+			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), evenement.getDateEvenement());
 		}
 		catch (InfrastructureException e) {
 			throw new EvenementCivilInterneException(e);

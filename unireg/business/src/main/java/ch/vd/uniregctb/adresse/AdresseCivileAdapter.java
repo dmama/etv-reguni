@@ -329,6 +329,11 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		return adresse.getCommuneAdresse();
 	}
 
+	@Override
+	public Integer getEgid() {
+		return adresse.getEgid();
+	}
+
 	public Long getId() {
 		return null;
 	}

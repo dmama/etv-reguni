@@ -134,7 +134,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 
 	private Expediteur remplitExpediteur(ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.Adresse adresse = ca.getAdresse();
-		final CommuneSimple commune = infraService.getCommuneByAdresse(adresse);
+		final CommuneSimple commune = infraService.getCommuneByAdresse(adresse, null);
 
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		final TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();

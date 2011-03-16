@@ -252,6 +252,7 @@ public interface ServiceInfrastructureService {
 	 * @param numeroACI le numéro ACI d'une commune
 	 * @return une commune
 	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @deprecated TODO (msi)
 	 */
 	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException;
 
@@ -276,19 +277,22 @@ public interface ServiceInfrastructureService {
 	 * Résoud la commune d'une adresse civile (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)
 	 *
 	 * @param adresse adresse civile dont on cherche la commune
+	 * @param date    la date de référence (<code>null</code> pour la date du jour)
 	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException;
+	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException;
 
 	/**
 	 * Résoud la commune d'une adresse générique (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)
 	 *
+	 *
 	 * @param adresse adresse générique (civile, fiscale, transférée d'un autre tiers...) dont on cherche la commune
+	 * @param date
 	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException;
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException;
 
 	/**
 	 * Retourne l'identifiant de la commune sur laquelle un bâtiment est construit.

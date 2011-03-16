@@ -169,12 +169,12 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getCAT();
 	}
 
-	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
-		return target.getCommuneByAdresse(adresse);
+	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+		return target.getCommuneByAdresse(adresse, date);
 	}
 
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
-		return target.getCommuneByAdresse(adresse);
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+		return target.getCommuneByAdresse(adresse, date);
 	}
 
 	@Override

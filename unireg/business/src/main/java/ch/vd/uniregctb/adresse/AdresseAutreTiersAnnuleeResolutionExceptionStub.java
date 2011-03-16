@@ -103,6 +103,11 @@ public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseG
 		return null;
 	}
 
+	@Override
+	public Integer getEgid() {
+		return null;
+	}
+
 	public String getLogCreationUser() {
 		return target.getLogCreationUser();
 	}

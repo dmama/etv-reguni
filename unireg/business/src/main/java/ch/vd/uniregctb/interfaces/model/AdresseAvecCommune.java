@@ -10,4 +10,9 @@ public interface AdresseAvecCommune {
 	 * @return la commune attachée à cette adresse
 	 */
 	CommuneSimple getCommuneAdresse();
+
+	/**
+	 * @return le numéro Ofs de bâtiment (Gebäude) ou <b>null</b> s'il est inconnu.
+	 */
+	Integer getEgid();
 }
