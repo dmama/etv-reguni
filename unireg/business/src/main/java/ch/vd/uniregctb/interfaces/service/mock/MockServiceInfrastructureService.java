@@ -15,8 +15,6 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneId;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -25,7 +23,6 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
-import ch.vd.uniregctb.interfaces.model.impl.CommuneIdImpl;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -339,7 +336,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	}
 
 	@Override
-	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 		final List<MockLienCommuneBatiment> liens = getBatimentsParEgid().get(egid);
 		if (liens == null || liens.isEmpty()) {
 			return null;
@@ -361,17 +358,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 			return null;
 		}
 
-		return new CommuneIdImpl(commune.getNoOFSEtendu(), -1); // Lussery n'est pas enregistré comme Mock
-	}
-
-	@Override
-	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
-		for (Commune commune : communes) {
-			if (commune.getNoOFSEtendu() == id.getNoOfs()) {
-				return commune;
-			}
-		}
-		return null;
+		return commune.getNoOFSEtendu();
 	}
 
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {

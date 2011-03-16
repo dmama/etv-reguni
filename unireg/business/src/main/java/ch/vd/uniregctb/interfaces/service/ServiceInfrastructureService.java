@@ -12,7 +12,6 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneId;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -286,34 +285,24 @@ public interface ServiceInfrastructureService {
 	/**
 	 * Résoud la commune d'une adresse générique (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)
 	 *
-	 *
 	 * @param adresse adresse générique (civile, fiscale, transférée d'un autre tiers...) dont on cherche la commune
-	 * @param date
+	 * @param date    la date de référence (<code>null</code> pour la date du jour)
 	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
 	 * @throws InfrastructureException en cas de problème
 	 */
 	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException;
 
 	/**
-	 * Retourne l'identifiant de la commune sur laquelle un bâtiment est construit.
+	 * Retourne le numéro Ofs de la commune sur laquelle un bâtiment est construit.
 	 *
 	 * @param egid             un numéro de bâtiment
 	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
 	 * @param hintNoOfsCommune (optionnel) un numéro Ofs de commune qui sera utilisé comme indice pour accélérer la recherche (par exemple, le numéro de commune faîtière en cas de fractions de commune,
 	 *                         ou le numéro de commune avant/après fusion)
-	 * @return l'identifiant de la commune, ou <code>null</code> si le bâtiment est inconnu.
+	 * @return le numéro Ofs de la commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
-
-	/**
-	 * Retourne une commune à partir de son identifiant unique.
-	 *
-	 * @param id un identifiant de commune
-	 * @return une commune, ou <code>null</code> si la commune est inconnue.
-	 * @throws InfrastructureException en cas de problème
-	 */
-	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException;
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
 
 	/**
 	 * Retourne la commune sur laquelle un bâtiment est construit.

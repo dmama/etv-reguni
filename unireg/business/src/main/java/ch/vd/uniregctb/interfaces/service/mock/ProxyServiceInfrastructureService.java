@@ -12,7 +12,6 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneId;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -178,13 +177,8 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
-		return target.getCommuneIdByEgid(egid, date, hintNoOfsCommune);
-	}
-
-	@Override
-	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
-		return target.getCommuneById(id);
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+		return target.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
 	@Override
