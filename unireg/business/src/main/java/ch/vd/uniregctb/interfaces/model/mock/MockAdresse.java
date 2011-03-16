@@ -28,6 +28,7 @@ public class MockAdresse implements Adresse {
 	public String titre;
 	public TypeAdresseCivil typeAdresse;
 	public CommuneSimple communeAdresse;
+	public Integer egid;
 
 	public MockAdresse() {
 
@@ -193,9 +194,12 @@ public class MockAdresse implements Adresse {
 		communeAdresse = c;
 	}
 
-	@Override
 	public Integer getEgid() {
-		return null;
+		return egid;
+	}
+
+	public void setEgid(Integer egid) {
+		this.egid = egid;
 	}
 
 	@Override

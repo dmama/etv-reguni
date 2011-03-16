@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
@@ -47,6 +50,25 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Prilly = new MockCommune(5589, "Prilly", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
 	public static final MockCommune Nyon = new MockCommune(5724, "Nyon", VAUD, MockOfficeImpot.OID_NYON);
 	public static final MockCommune Aigle = new MockCommune(5401, "Aigle", VAUD, MockOfficeImpot.OID_AIGLE);
+
+	//
+	// Quelques communes fusionnées civilement au 1er juillet 2011, mais seulement au 31 décembre 2011 fiscalement
+	//
+	public static final RegDate dateFusion2011 = RegDate.get(2011, 12, 31);
+	public static final RegDate veilleFusion2011 = dateFusion2011.getOneDayBefore();
+
+	// -- Villette, Grandvaux, Cully, Riey, Epesses => Bourg-en-Lavaux
+	public static final MockCommune Villette = new MockCommune(5612, "Villette", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011){};
+	public static final MockCommune Grandvaux = new MockCommune(5605, "Grandvaux", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
+	public static final MockCommune Cully = new MockCommune(5602, "Cully", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
+	public static final MockCommune Riex = new MockCommune(5608, "Riex", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
+	public static final MockCommune Epesses = new MockCommune(5603, "Epesses", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
+	public static final MockCommune BourgEnLavaux = new MockCommune(5613, "Bourg-en-Lavaux", VAUD, MockOfficeImpot.OID_LAVAUX, dateFusion2011, null);
+
+	// -- Yverdon-les-Bains, Gressy => Yverdon-les-Bains
+	public static final MockCommune Gressy = new MockCommune(5918, "Gressy", VAUD, MockOfficeImpot.OID_YVERDON, null, veilleFusion2011);
+	public static final MockCommune YverdonLesBains = new MockCommune(5938, "Yverdon-les-Bains", VAUD, MockOfficeImpot.OID_YVERDON, null, null);
+
 
 	// quelques communes non-éternelles
 	public static final MockCommune Malapalud = new MockCommune(5526, "Malapalud", VAUD, MockOfficeImpot.OID_ECHALLENS, null, RegDate.get(2008, 12, 31));
@@ -113,7 +135,47 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Geneve = new MockCommune(6621, "Genève", GENEVE, null);
 	public static final MockCommune Bale = new MockCommune(2701, "Basel", BALE, null);
 
-	
+	/**
+	 * ce bloque statique est positionné en dernier pour s'assurer que les mocks des communes soient tous initialisés avant d'initialiser
+	 * les mocks des bâtiments (où le cycle suivant existant : MockCommune->MockBatiment->MockRue->MockLocalite->MockCommune)
+	 */
+	static {
+		//
+		// Liens bâtiment-commune sur quelques communes fusionnées au 1er juillet 2011
+		//
+
+		// -- Villette, Grandvaux, Cully, Riey, Epesses => Bourg-en-Lavaux
+		Villette.addBatiment(MockBatiment.Villette.BatimentRouteDeLausanne, null, veilleFusion2011);
+		Villette.addBatiment(MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, veilleFusion2011);
+		Villette.addBatiment(MockBatiment.Villette.BatimentCheminDesGranges, null, veilleFusion2011);
+		Grandvaux.addBatiment(MockBatiment.Grandvaux.BatimentSentierDesVinches, null, veilleFusion2011);
+		Grandvaux.addBatiment(MockBatiment.Grandvaux.BatimentRouteDeLausanne, null, veilleFusion2011);
+		Grandvaux.addBatiment(MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, veilleFusion2011);
+		Cully.addBatiment(MockBatiment.Cully.BatimentPlaceDuTemple, null, veilleFusion2011);
+		Cully.addBatiment(MockBatiment.Cully.BatimentChCFRamuz, null, veilleFusion2011);
+		Cully.addBatiment(MockBatiment.Cully.BatimentChDesColombaires, null, veilleFusion2011);
+		Riex.addBatiment(MockBatiment.Riex.BatimentRueDuCollege, null, veilleFusion2011);
+		Riex.addBatiment(MockBatiment.Riex.BatimentRouteDeRossetDessus, null, veilleFusion2011);
+		Riex.addBatiment(MockBatiment.Riex.BatimentRouteDeLaCorniche, null, veilleFusion2011);
+		Epesses.addBatiment(MockBatiment.Epesses.BatimentChDuMont, null, veilleFusion2011);
+		Epesses.addBatiment(MockBatiment.Epesses.BatimentLaPlace, null, veilleFusion2011);
+		Epesses.addBatiment(MockBatiment.Epesses.BatimentRueDeLaMottaz, null, veilleFusion2011);
+		BourgEnLavaux.addAllBatiments(Villette.getBatiments(veilleFusion2011), dateFusion2011, null);
+		BourgEnLavaux.addAllBatiments(Grandvaux.getBatiments(veilleFusion2011), dateFusion2011, null);
+		BourgEnLavaux.addAllBatiments(Cully.getBatiments(veilleFusion2011), dateFusion2011, null);
+		BourgEnLavaux.addAllBatiments(Riex.getBatiments(veilleFusion2011), dateFusion2011, null);
+		BourgEnLavaux.addAllBatiments(Epesses.getBatiments(veilleFusion2011), dateFusion2011, null);
+
+		// -- Yverdon-les-Bains, Gressy => Yverdon-les-Bains
+		Gressy.addBatiment(MockBatiment.Gressy.BatimentRueCentrale, null, veilleFusion2011);
+		Gressy.addBatiment(MockBatiment.Gressy.BatimentLesPechauds, null, veilleFusion2011);
+		Gressy.addBatiment(MockBatiment.Gressy.BatimentCheminDuMichamp, null, veilleFusion2011);
+		YverdonLesBains.addBatiment(MockBatiment.YverdonLesBains.BatimentCheminDesMuguets, null, null);
+		YverdonLesBains.addBatiment(MockBatiment.YverdonLesBains.BatimentQuaiDeLaThiele, null, null);
+		YverdonLesBains.addBatiment(MockBatiment.YverdonLesBains.BatimentRueDeLaFaiencerie, null, null);
+		YverdonLesBains.addAllBatiments(Gressy.getBatiments(veilleFusion2011), dateFusion2011, null);
+	}
+
 	private String nomMinusculeOFS;
 	private String cantonID;
 	private RegDate dateDebutValidite;
@@ -124,6 +186,8 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private final String sigleCanton;
 	private boolean valide;
 	private final OfficeImpot officeImpot;
+
+	private final List<MockLienCommuneBatiment> liensBatiments = new ArrayList<MockLienCommuneBatiment>();
 
 	private MockCommune(int noOFS, String nomMinuscule, String sigleCanton, OfficeImpot oid, RegDate dateDebutValidite, RegDate dateFinValidite) {
 		this(noOFS, nomMinuscule, sigleCanton, oid);
@@ -203,4 +267,27 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		return officeImpot;
 	}
 
+	public List<MockLienCommuneBatiment> getLiensBatiments() {
+		return liensBatiments;
+	}
+
+	public void addBatiment(MockBatiment b, RegDate debutValidite, RegDate finValidite) {
+		liensBatiments.add(new MockLienCommuneBatiment(this, b, debutValidite, finValidite));
+	}
+
+	public List<MockBatiment> getBatiments(RegDate date) {
+		final List<MockBatiment> list = new ArrayList<MockBatiment>();
+		for (MockLienCommuneBatiment lien : liensBatiments) {
+			if (lien.isValidAt(date)) {
+				list.add(lien.getBatiment());
+			}
+		}
+		return list;
+	}
+
+	private void addAllBatiments(List<MockBatiment> batiments, RegDate debutValidite, RegDate finValidite) {
+		for (MockBatiment batiment : batiments) {
+			this.liensBatiments.add(new MockLienCommuneBatiment(this, batiment, debutValidite, finValidite));
+		}
+	}
 }

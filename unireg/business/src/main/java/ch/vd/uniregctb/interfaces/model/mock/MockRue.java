@@ -120,6 +120,49 @@ public class MockRue implements Rue {
 		public static final MockRue CheminDesRoches = new MockRue(MockLocalite.Pully, "Chemin des Roches", 30887);
 	}
 
+	// Quelques rues de communes fusionnées au 1er juillet 2011
+	public static class Villette {
+		public static final MockRue RouteDeLausanne = new MockRue(MockLocalite.Villette, "Route de Lausanne", 328265);
+		public static final MockRue CheminDeCreuxBechet = new MockRue(MockLocalite.Villette, "Chemin de Creux-Béchet", 108559);
+		public static final MockRue CheminDesGranges = new MockRue(MockLocalite.Aran, "Chemin des Granges", 199333);
+	}
+
+	public static class Grandvaux {
+		public static final MockRue SentierDesVinches = new MockRue(MockLocalite.Grandvaux, "Sentier des Vinches", 33455);
+		public static final MockRue RouteDeLausanne = new MockRue(MockLocalite.Cully, "Route de Lausanne", 31903);
+		public static final MockRue RueSaintGeorges = new MockRue(MockLocalite.Grandvaux, "Rue Saint-Georges", 33446);
+	}
+
+	public static class Cully {
+		public static final MockRue PlaceDuTemple = new MockRue(MockLocalite.Cully, "Place du Temple", 31906);
+		public static final MockRue ChCFRamuz = new MockRue(MockLocalite.Cully, "Ch. C.-F. Ramuz", 31890);
+		public static final MockRue ChDesColombaires = new MockRue(MockLocalite.Cully, "Ch. des Colombaires", 31894);
+	}
+
+	public static class Riex {
+		public static final MockRue RueDuCollege = new MockRue(MockLocalite.Riex, "Rue du Collège", 193825);
+		public static final MockRue RouteDeRossetDessus = new MockRue(MockLocalite.Riex, "Route de Rosset-Dessus", 193836);
+		public static final MockRue RouteDeLaCorniche = new MockRue(MockLocalite.Riex, "Route de la Corniche", 193826);
+	}
+
+	public static class Epesses {
+		public static final MockRue ChDuMont = new MockRue(MockLocalite.Epesses, "Ch. du Mont", 193897);
+		public static final MockRue LaPlace = new MockRue(MockLocalite.Epesses, "La Place", 347669);
+		public static final MockRue RueDeLaMottaz = new MockRue(MockLocalite.Epesses, "Rue de la Mottaz", 193898);
+	}
+
+	public static class Gressy {
+		public static final MockRue RueCentrale = new MockRue(MockLocalite.Gressy, "Rue Centrale", 198580);
+		public static final MockRue LesPechauds = new MockRue(MockLocalite.Gressy, "Les Péchauds", 198575);
+		public static final MockRue CheminDuMichamp = new MockRue(MockLocalite.Gressy, "Chemin du Michamp", 351117);
+	}
+
+	public static class YverdonLesBains {
+		public static final MockRue CheminDesMuguets = new MockRue(MockLocalite.YverdonLesBains, "Chemin des Muguets", 32723);
+		public static final MockRue QuaiDeLaThiele = new MockRue(MockLocalite.YverdonLesBains, "Quai de la Thièle", 32774);
+		public static final MockRue RueDeLaFaiencerie = new MockRue(MockLocalite.YverdonLesBains, "Rue de la Faïencerie", 32675);
+	}
+
 	private final MockLocalite localite;
 	private String designationCourrier;
 	private Integer noRue;

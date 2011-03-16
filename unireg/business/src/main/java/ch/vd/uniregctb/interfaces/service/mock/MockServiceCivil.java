@@ -26,6 +26,7 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
+import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
@@ -243,6 +244,16 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	}
 
 	/**
+	 * Ajoute une adresse pour l'individu spécifié (à partir d'un bâtiment).
+	 */
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockBatiment batiment, String casePostale, RegDate debutValidite, RegDate finValidite) {
+
+		final Adresse adresse = newAdresse(type, batiment, casePostale, debutValidite, finValidite);
+		add(individu, adresse);
+		return adresse;
+	}
+
+	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une localité).
 	 */
 	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, String casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
@@ -264,6 +275,19 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final MockAdresse adresse = (MockAdresse) newAdresse(type, casePostale, localite, debutValidite, finValidite);
 		adresse.setRue(rue.getDesignationCourrier());
 		adresse.setNumeroRue(rue.getNoRue());
+		return adresse;
+	}
+
+	/**
+	 * Crée une nouvelle adresse à partie d'un bâtiment.
+	 */
+	public static Adresse newAdresse(TypeAdresseCivil type, MockBatiment batiment, String casePostale, RegDate debutValidite, RegDate finValidite) {
+		Assert.notNull(batiment);
+
+		MockRue rue = batiment.getRue();
+
+		final MockAdresse adresse = (MockAdresse) newAdresse(type, rue, casePostale, debutValidite, finValidite);
+		adresse.setEgid(batiment.getEgid());
 		return adresse;
 	}
 

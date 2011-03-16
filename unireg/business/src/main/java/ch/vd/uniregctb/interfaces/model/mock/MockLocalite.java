@@ -31,6 +31,14 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Moudon = new MockLocalite(700, 1510, null, "Moudon", MockCommune.Moudon);
 	public static final MockLocalite Pully = new MockLocalite(157, 1009, null, "Pully", MockCommune.Pully);
 	public static final MockLocalite Prilly = new MockLocalite(156, 1008, null, "Prilly", MockCommune.Prilly);
+	public static final MockLocalite Villette = new MockLocalite(7949, 1096, null, "Villette (Lavaux)", MockCommune.Villette);
+	public static final MockLocalite Aran = new MockLocalite(785, 1091, null, "Aran", MockCommune.Villette);
+	public static final MockLocalite Grandvaux = new MockLocalite(784, 1091, null, "Grandvaux", MockCommune.Grandvaux);
+	public static final MockLocalite Cully = new MockLocalite(228, 1096, null, "Cully", MockCommune.Cully);
+	public static final MockLocalite Riex = new MockLocalite(229, 1097, null, "Riex", MockCommune.Riex);
+	public static final MockLocalite Epesses = new MockLocalite(230, 1098, null, "Epesses", MockCommune.Epesses);
+	public static final MockLocalite Gressy = new MockLocalite(5881, 1432, null, "Gressy", MockCommune.Gressy);
+	public static final MockLocalite YverdonLesBains = new MockLocalite(592, 1400, null, "Yverdon-les-Bains", MockCommune.YverdonLesBains);
 
 	// fractions de communes - L'Abbaye
 	public static final MockLocalite LePont = new MockLocalite(543, 1342, null, "Pont, Le", MockCommune.LAbbaye);
@@ -61,7 +69,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Zurich = new MockLocalite(8120, 8001, null, "Zurich", MockCommune.Zurich);
 	public static final MockLocalite GeneveSecteurDist = new MockLocalite(368, 1202, null, "Genève Secteur de dist.", MockCommune.Geneve);
 
-	
+
 	private Integer chiffreComplementaire;
 	private Integer complementNPA;
 	private RegDate dateFinValidite;

@@ -25,9 +25,11 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
+import ch.vd.uniregctb.interfaces.model.impl.CommuneIdImpl;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockLienCommuneBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -69,6 +71,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	protected List<Rue> rues = new ArrayList<Rue>();
 	protected Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<Integer, OfficeImpot>();
 	protected Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<Integer, OfficeImpot>();
+	protected Map<Integer, List<MockLienCommuneBatiment>> batimentsParEgid = null;
 
 	public MockServiceInfrastructureService() {
 		init();
@@ -122,6 +125,39 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 		if (office != null) { // les communes hors-canton ne possèdent pas d'oid
 			oidByNoOfsCommune.put(c.getNoOFSEtendu(), office);
 			oidByNoColAdm.put(office.getNoColAdm(), office);
+		}
+	}
+
+	private Map<Integer, List<MockLienCommuneBatiment>> getBatimentsParEgid() {
+		initBatiments();
+		return batimentsParEgid;
+	}
+
+	private void initBatiments() {
+		if (batimentsParEgid == null) {
+			loadBatiments();
+		}
+	}
+
+	private synchronized void loadBatiments() {
+		if (batimentsParEgid == null) {
+			final HashMap<Integer, List<MockLienCommuneBatiment>> map = new HashMap<Integer, List<MockLienCommuneBatiment>>();
+			for (Commune c : communes) {
+				addLiensBatiments(map, (MockCommune) c);
+			}
+			batimentsParEgid = map;
+		}
+	}
+
+	protected void addLiensBatiments(Map<Integer, List<MockLienCommuneBatiment>> map, MockCommune c) {
+		for (MockLienCommuneBatiment lien : c.getLiensBatiments()) {
+			final Integer egid = lien.getBatiment().getEgid();
+			List<MockLienCommuneBatiment> list = map.get(egid);
+			if (list == null) {
+				list = new ArrayList<MockLienCommuneBatiment>();
+				map.put(egid, list);
+			}
+			list.add(lien);
 		}
 	}
 
@@ -304,11 +340,37 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 
 	@Override
 	public CommuneId getCommuneIdByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
-		return null;
+		final List<MockLienCommuneBatiment> liens = getBatimentsParEgid().get(egid);
+		if (liens == null || liens.isEmpty()) {
+			return null;
+		}
+
+		MockCommune commune = null;
+		for (MockLienCommuneBatiment lien : liens) {
+			if (lien.isValidAt(date)) {
+				if (commune != null) {
+					throw new RuntimeException(
+							"Le bâtiment avec l'egid [" + egid + "] est enregistré dans deux communes en même temps : numéro Ofs [" + commune.getNoOFSEtendu() + "] et numéro Ofs [" +
+									lien.getCommune().getNoOFSEtendu() + "]");
+				}
+				commune = lien.getCommune();
+			}
+		}
+
+		if (commune == null) {
+			return null;
+		}
+
+		return new CommuneIdImpl(commune.getNoOFSEtendu(), -1); // Lussery n'est pas enregistré comme Mock
 	}
 
 	@Override
 	public CommuneSimple getCommuneById(CommuneId id) throws InfrastructureException {
+		for (Commune commune : communes) {
+			if (commune.getNoOFSEtendu() == id.getNoOfs()) {
+				return commune;
+			}
+		}
 		return null;
 	}
 
