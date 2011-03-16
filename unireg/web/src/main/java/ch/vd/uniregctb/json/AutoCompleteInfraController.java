@@ -153,7 +153,8 @@ public class AutoCompleteInfraController extends JsonController {
 			final List<Localite> localites = serviceInfrastructureService.getLocalites();
 			if (localites != null) {
 				for (Localite localite : localites) {
-					if (StringComparator.toLowerCaseWithoutAccent(localite.getNomAbregeMinuscule()).startsWith(term)) {
+					if (StringComparator.toLowerCaseWithoutAccent(localite.getNomAbregeMinuscule()).startsWith(term) ||
+							String.valueOf(localite.getNPA()).startsWith(term)) { // [UNIREG-3390] recherche par numéro de NPA
 						final String description = localite.getNomAbregeMinuscule() + " (" + localite.getNPA() + ")";
 						list.add(new Item(localite.getNomAbregeMinuscule(), description, String.valueOf(localite.getNoOrdre()), String.valueOf(localite.getNoCommune())));
 					}
