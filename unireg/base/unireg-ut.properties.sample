@@ -1,0 +1,100 @@
+
+# Ce fichier contient les propriétés utilisées par les tests d'Unireg
+
+#
+# Configuration DB d'Unireg
+#
+testprop.jdbc.profile=oracle
+testprop.jdbc.username=<username here>
+testprop.jdbc.password=unireg
+
+# Oracle
+testprop.oracle.jdbc.username=${testprop.jdbc.username}
+testprop.oracle.jdbc.password=${testprop.jdbc.password}
+testprop.oracle.jdbc.server=grominet
+testprop.oracle.jdbc.port=1521
+testprop.oracle.jdbc.instance=ORCL
+testprop.oracle.jdbc.url=jdbc:oracle:thin:@${testprop.oracle.jdbc.server}:${testprop.oracle.jdbc.port}:${testprop.oracle.jdbc.instance}
+
+# Postgresql
+testprop.postgresql.jdbc.username=${testprop.jdbc.username}
+testprop.postgresql.jdbc.password=${testprop.jdbc.password}
+testprop.postgresql.jdbc.server=localhost
+testprop.postgresql.jdbc.port=5432
+testprop.postgresql.jdbc.instance=${testprop.jdbc.username}
+testprop.postgresql.jdbc.url=jdbc:postgresql://${testprop.postgresql.jdbc.server}/${testprop.postgresql.jdbc.instance}
+
+# Hsql
+#testprop.hsql.jdbc.username=${testprop.jdbc.username}
+#testprop.hsql.jdbc.password=${testprop.jdbc.password}
+#testprop.hsql.jdbc.server=mem
+#testprop.hsql.jdbc.port=
+#testprop.hsql.jdbc.instance=aname
+#testprop.hsql.jdbc.url=jdbc:hsqldb:${testprop.hsql.jdbc.server}:${testprop.hsql.jdbc.instance}
+
+#
+# Configuration du Host
+#
+testprop.db2.driverClassName=com.ibm.db2.jcc.DB2Driver
+testprop.db2.proxy=jdbc:db2://solve60v:50000/DB2A
+
+# CEDM/CIIA1 (Devel)
+testprop.host-interfaces.url=t3://ssv0213v:51330
+testprop.host-interfaces.username=
+testprop.host-interfaces.password=
+testprop.db2.username=W#ASIUD1
+testprop.db2.password=ze7m8deu
+testprop.db2.schema=CIIA1
+
+# CJVZ/CIIV1 (Validation)
+#testprop.host-interfaces.url=t3://solve61v:63222
+#testprop.host-interfaces.username=
+#testprop.host-interfaces.password=
+#testprop.db2.username=W#ASIZV1
+#testprop.db2.password=tao0603
+#testprop.db2.schema=CIIV1
+
+# CFTZ/CIIT1 (Formation)
+#testprop.host-interfaces.url=t3://solve61v:63252
+#testprop.host-interfaces.username=
+#testprop.host-interfaces.password=
+#testprop.db2.username=W#ASIZT1
+#testprop.db2.password=tao2form
+#testprop.db2.schema=CIIT1
+
+# CMDZ/CIIA2 (Preproduction)
+#testprop.host-interfaces.url=t3://solve61v:63226
+#testprop.host-interfaces.username=
+#testprop.host-interfaces.password=
+#testprop.db2.username=W#ASILD1
+#testprop.db2.password=ehp6r3a
+#testprop.db2.schema=CIIA2
+
+#
+# Configuration de l'ESB
+#
+
+testprop.esb.jms.url=failover:(tcp://spip:50900)
+testprop.esb.jms.username=smx
+testprop.esb.jms.password=smx
+testprop.esb.raft.store=http://ssv0309v:41000/raft/store
+
+#
+# Configuration d'Unireg
+#
+
+# Hibernate
+testprop.hibernate.hbm2ddl.mode=update
+
+# Misc
+testprop.unireg.deploymenturl=/unireg/web
+testprop.uniregws.deploymenturl=/unireg/ws
+testprop.indexer.globalIndexPath=/projets/tmp/unireg-index-unittests
+testprop.documents.repository=/projets/tmp/unireg-documents-unittests
+#testprop.indexer.globalIndexPath=c:\projets\tmp\unireg-index-unittests
+#testprop.documents.repository=c:\projets\tmp\unireg-documents-unittests
+
+# SIPF BVR Plus WebService
+testprop.webservice.sipf.bvrplus.url=http://ssv0214v:64804/fiscalite/form-sipf/bvrplus/SipfBVRPlusImpl
+testprop.webservice.sipf.bvrplus.username=
+testprop.webservice.sipf.bvrplus.password=

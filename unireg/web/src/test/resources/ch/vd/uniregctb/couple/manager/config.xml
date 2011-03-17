@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<!--
+			<property name="hostCivilService" ref="hostCivilService" />
+			<property name="serviceCivilService" ref="serviceCivilService" />
+			<property name="hostPersonneMoraleService" ref="hostPersonneMoraleService" />
+			<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		 -->
+	</bean>
+	
+	<bean id="coupleRecapManager" class="ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl" parent="tiersManager">
+		<property name="metierService" ref="metierService" />
+		<property name="coupleHelper" ref="coupleHelper" />
+		<property name="droitAccesService" ref="droitAccesService" />
+	</bean>
+
+	<bean id="coupleRecapValidator" class="ch.vd.uniregctb.couple.validator.CoupleRecapValidator" >
+		<property name="tiersService" ref="tiersService" />
+		<property name="metierService" ref="metierService" />
+		<property name="coupleHelper" ref="coupleHelper" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
+	<bean id="coupleHelper" class="ch.vd.uniregctb.couple.CoupleHelper">
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+	
+</beans>

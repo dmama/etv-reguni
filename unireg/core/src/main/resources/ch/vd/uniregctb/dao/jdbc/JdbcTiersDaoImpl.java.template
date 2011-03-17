@@ -1,0 +1,381 @@
+package ch.vd.uniregctb.dao.jdbc;
+
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.CategorieEtranger;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
+
+public class JdbcTiersDaoImpl implements JdbcTiersDao {
+
+	private static final TiersMapper ROW_MAPPER = new TiersMapper();
+
+	private JdbcAdresseTiersDao adresseDao = new JdbcAdresseTiersDaoImpl();
+	private JdbcDeclarationDao declarationDao = new JdbcDeclarationDaoImpl();
+	private JdbcForFiscalDao forFiscalDao = new JdbcForFiscalDaoImpl();
+	private JdbcRapportEntreTiersDao retDao = new JdbcRapportEntreTiersDaoImpl();
+	private JdbcSituationFamilleDao sfDao = new JdbcSituationFamilleDaoImpl();
+	private JdbcIdentificationPersonneDao ipDao = new JdbcIdentificationPersonneDaoImpl();
+	private JdbcPeriodiciteDao pDao = new JdbcPeriodiciteDaoImpl();
+
+	private DataSource dataSource;
+
+	public Tiers get(long tiersId, Set<TiersDAO.Parts> parts) {
+
+		final JdbcTemplate template = new JdbcTemplate(dataSource);
+		final Tiers tiers = get(tiersId, template);
+		if (tiers == null) {
+			return null;
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.ADRESSES)) {
+			Set<AdresseTiers> adresses = adresseDao.getForTiers(tiersId, template);
+			for (AdresseTiers a : adresses) {
+				a.setTiers(tiers);
+			}
+			tiers.setAdressesTiers(adresses);
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.DECLARATIONS)) {
+			Set<Declaration> dis = declarationDao.getForTiers(tiersId, true, template);
+			for (Declaration d : dis) {
+				d.setTiers(tiers);
+			}
+			tiers.setDeclarations(dis);
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.FORS_FISCAUX)) {
+			Set<ForFiscal> fors = forFiscalDao.getForTiers(tiersId, template);
+			for (ForFiscal f : fors) {
+				f.setTiers(tiers);
+			}
+			tiers.setForsFiscaux(fors);
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS)) {
+			Set<RapportEntreTiers> rapportsObjets = retDao.getForTiersObjet(tiersId, template);
+			tiers.setRapportsObjet(rapportsObjets);
+			Set<RapportEntreTiers> rapportsSujets = retDao.getForTiersSujet(tiersId, template);
+			tiers.setRapportsSujet(rapportsSujets);
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.SITUATIONS_FAMILLE)) {
+			if (tiers instanceof Contribuable) {
+				Contribuable contribuable = (Contribuable) tiers;
+				Set<SituationFamille> situations = sfDao.getForTiers(tiersId, template);
+				for (SituationFamille s : situations) {
+					s.setContribuable(contribuable);
+				}
+				contribuable.setSituationsFamille(situations);
+			}
+		}
+
+		{ // on veut toujours les identifications de personnes
+			if (tiers instanceof PersonnePhysique) {
+				PersonnePhysique pp = (PersonnePhysique) tiers;
+				Set<IdentificationPersonne> idents = ipDao.getForTiers(tiersId, template);
+				for (IdentificationPersonne i : idents) {
+					i.setPersonnePhysique(pp);
+				}
+				pp.setIdentificationsPersonnes(idents);
+			}
+		}
+
+		{ // on veut toujours les périodicités des débiteurs
+			if (tiers instanceof DebiteurPrestationImposable) {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+				Set<Periodicite> periodicites = pDao.getForTiers(tiersId, template);
+				for (Periodicite p : periodicites) {
+					p.setDebiteur(dpi);
+				}
+				dpi.setPeriodicites(periodicites);
+			}
+		}
+
+		if (tiers instanceof Contribuable) {
+			((Contribuable) tiers).setMouvementsDossier(Collections.<MouvementDossier>emptySet()); // TODO (msi) voir s'il faut renseigner cette collection
+			if (tiers instanceof PersonnePhysique) {
+				((PersonnePhysique) tiers).setDroitsAccesAppliques(Collections.<DroitAcces>emptySet());
+			}
+		}
+
+		return tiers;
+	}
+
+	public List<Tiers> getBatch(Collection<Long> ids, Set<TiersDAO.Parts> parts) {
+
+		final JdbcTemplate template = new JdbcTemplate(dataSource);
+		final List<Tiers> list = getList(ids, template);
+
+		if (parts != null && parts.contains(TiersDAO.Parts.ADRESSES)) {
+			Map<Long, Set<AdresseTiers>> map = adresseDao.getForTiers(ids, template);
+			for (Tiers t : list) {
+				Set<AdresseTiers> adresses = map.get(t.getId());
+				if (adresses == null) {
+					adresses = Collections.emptySet();
+				}
+				else {
+					for (AdresseTiers a : adresses) {
+						a.setTiers(t);
+					}
+				}
+				t.setAdressesTiers(adresses);
+			}
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.DECLARATIONS)) {
+			Map<Long, Set<Declaration>> map = declarationDao.getForTiers(ids, true, template);
+			for (Tiers t : list) {
+				Set<Declaration> declarations = map.get(t.getId());
+				if (declarations == null) {
+					declarations = Collections.emptySet();
+				}
+				else {
+					for (Declaration d : declarations) {
+						d.setTiers(t);
+					}
+				}
+				t.setDeclarations(declarations);
+			}
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.FORS_FISCAUX)) {
+			Map<Long, Set<ForFiscal>> map = forFiscalDao.getForTiers(ids, template);
+			for (Tiers t : list) {
+				Set<ForFiscal> fors = map.get(t.getId());
+				if (fors == null) {
+					fors = Collections.emptySet();
+				}
+				else {
+					for (ForFiscal f : fors) {
+						f.setTiers(t);
+					}
+				}
+				t.setForsFiscaux(fors);
+			}
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS)) {
+			Map<Long, Set<RapportEntreTiers>> map = retDao.getForTiersObjet(ids, template);
+			for (Tiers t : list) {
+				Set<RapportEntreTiers> rapports = map.get(t.getId());
+				if (rapports == null) {
+					rapports = Collections.emptySet();
+				}
+				t.setRapportsObjet(rapports);
+			}
+			map = retDao.getForTiersSujet(ids, template);
+			for (Tiers t : list) {
+				Set<RapportEntreTiers> rapports = map.get(t.getId());
+				if (rapports == null) {
+					rapports = Collections.emptySet();
+				}
+				t.setRapportsSujet(rapports);
+			}
+		}
+
+		if (parts != null && parts.contains(TiersDAO.Parts.SITUATIONS_FAMILLE)) {
+			Map<Long, Set<SituationFamille>> map = sfDao.getForTiers(ids, template);
+			for (Tiers t : list) {
+				if (t instanceof Contribuable) {
+					Contribuable contribuable = (Contribuable) t;
+					Set<SituationFamille> situations = map.get(t.getId());
+					if (situations == null) {
+						situations = Collections.emptySet();
+					}
+					else {
+						for (SituationFamille s : situations) {
+							s.setContribuable(contribuable);
+						}
+					}
+					contribuable.setSituationsFamille(situations);
+				}
+			}
+		}
+
+		{ // on veut toujours les identifications de personnes
+			Map<Long, Set<IdentificationPersonne>> map = ipDao.getForTiers(ids, template);
+			for (Tiers t : list) {
+				if (t instanceof PersonnePhysique) {
+					PersonnePhysique pp = (PersonnePhysique) t;
+					Set<IdentificationPersonne> identifications = map.get(t.getId());
+					if (identifications == null) {
+						identifications = Collections.emptySet();
+					}
+					else {
+						for (IdentificationPersonne i : identifications) {
+							i.setPersonnePhysique(pp);
+						}
+					}
+					pp.setIdentificationsPersonnes(identifications);
+				}
+			}
+		}
+
+		{ // on veut toujours les périodicités des débiteurs
+			Map<Long, Set<Periodicite>> map = pDao.getForTiers(ids, template);
+			for (Tiers t : list) {
+				if (t instanceof DebiteurPrestationImposable) {
+					DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) t;
+					Set<Periodicite> periodicites = map.get(t.getId());
+					if (periodicites == null) {
+						periodicites = Collections.emptySet();
+					}
+					else {
+						for (Periodicite p : periodicites) {
+							p.setDebiteur(dpi);
+						}
+					}
+					dpi.setPeriodicites(periodicites);
+				}
+			}
+		}
+
+		for (Tiers tiers : list) {
+			if (tiers instanceof Contribuable) {
+				((Contribuable) tiers).setMouvementsDossier(Collections.<MouvementDossier>emptySet()); // TODO (msi) voir s'il faut renseigner cette collection
+				if (tiers instanceof PersonnePhysique) {
+					((PersonnePhysique) tiers).setDroitsAccesAppliques(Collections.<DroitAcces>emptySet());
+				}
+			}
+		}
+
+		return list;
+	}
+
+	public Tiers get(long tiersId, JdbcTemplate template) {
+		return (Tiers) DataAccessUtils.uniqueResult(template.query(TiersMapper.selectById(), new Object[]{tiersId}, ROW_MAPPER));
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public List<Tiers> getList(final Collection<Long> tiersId, final JdbcTemplate template) {
+		// Découpe la requête en sous-requêtes si nécessaire
+		return CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Tiers>() {
+			public List<Tiers> process(List<Long> ids) {
+				return template.query(TiersMapper.selectByIds(ids), ROW_MAPPER);
+			}
+		});
+	}
+
+	private static class TiersMapper implements RowMapper {
+		private static final String BASE_SELECT = "select " +
+				${BASE_SELECT};
+
+		public static String selectById() {
+			return BASE_SELECT + " where ${PRIMARY_KEY} = ?";
+		}
+
+		public static String selectByIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " where NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			${MAPPING_CODE}
+		}
+	}
+
+    @SuppressWarnings("unchecked")
+    public Set<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
+
+	    final JdbcTemplate template = new JdbcTemplate(dataSource);
+
+	    final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
+
+	    if (includesComposantsMenage) {
+			// Découpe la requête en sous-requêtes si nécessaire
+			numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+				public List<Long> process(List<Long> ids) {
+					return template.query(NumerosComposantsMapper.selectByIds(ids), new NumerosComposantsMapper());
+				}
+			}));
+	    }
+
+	    numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+		    public List<Long> process(List<Long> ids) {
+			    return template.query(NumerosIndividusMapper.selectByIds(ids), new NumerosIndividusMapper());
+		    }
+	    }));
+
+	    return numeros;
+    }
+
+	private static class NumerosComposantsMapper implements RowMapper {
+
+		private static final String BASE_SELECT = "select " +
+				"t.NUMERO_INDIVIDU " +
+				"from TIERS t, RAPPORT_ENTRE_TIERS r " +
+				"where t.NUMERO = r.TIERS_SUJET_ID " +
+				"and r.ANNULATION_DATE is null " +
+				"and r.RAPPORT_ENTRE_TIERS_TYPE = 'AppartenanceMenage' " +
+				"and t.NUMERO_INDIVIDU is not null";
+
+		public static String selectByIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " and r.TIERS_OBJET_ID in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getLong(1);
+		}
+	}
+
+	private static class NumerosIndividusMapper implements RowMapper {
+
+		private static final String BASE_SELECT = "select " +
+				"t.NUMERO_INDIVIDU " +
+				"from TIERS t " +
+				"where t.NUMERO_INDIVIDU is not null";
+
+		public static String selectByIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " and t.NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getLong(1);
+		}
+	}
+	
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+}
+

@@ -1,0 +1,43 @@
+package ch.vd.uniregctb.interfaces.model.mock;
+
+import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+
+public class MockTuteurGeneral implements TuteurGeneral {
+
+	private String noTelephoneContact;
+	private String nomContact;
+	private String nomOffice;
+	private String prenomContact;
+
+	public String getNoTelephoneContact() {
+		return noTelephoneContact;
+	}
+
+	public void setNoTelephoneContact(String noTelephoneContact) {
+		this.noTelephoneContact = noTelephoneContact;
+	}
+
+	public String getNomContact() {
+		return nomContact;
+	}
+
+	public void setNomContact(String nomContact) {
+		this.nomContact = nomContact;
+	}
+
+	public String getNomOffice() {
+		return nomOffice;
+	}
+
+	public void setNomOffice(String nomOffice) {
+		this.nomOffice = nomOffice;
+	}
+
+	public String getPrenomContact() {
+		return prenomContact;
+	}
+
+	public void setPrenomContact(String prenomContact) {
+		this.prenomContact = prenomContact;
+	}
+}

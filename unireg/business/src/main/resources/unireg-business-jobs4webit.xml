@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Job de testing in container -->
+	<bean id="inContainerTestingJob"
+			parent="schedulerJob"
+			class="ch.vd.uniregctb.testing.InContainerTestingJob" >
+
+		<constructor-arg>
+			<util:constant static-field="ch.vd.uniregctb.testing.InContainerTestingJob.NAME" />
+		</constructor-arg>
+		<constructor-arg value="2" />
+		<constructor-arg value="IT - In container testing" />
+
+		<property name="synchronous" value="true" />
+		<property name="transactionManager" ref="transactionManager" />
+		
+		<property name="tests">
+			<list>
+				<ref local="icTiersDAOTest"/>
+				<ref local="icGlobalIndex"/>
+				<ref local="icEvtCivilNaissanceTest"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Class abstraite de testing -->
+	<bean id="inContainerTest" abstract="true" class="ch.vd.uniregctb.testing.InContainerTest" >
+		<property name="dataSource" ref="dataSource" />
+		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- Test de la DAO des Tiers -->
+	<bean id="icTiersDAOTest" class="ch.vd.uniregctb.testing.IcTiersDAOTest" parent="inContainerTest" >
+	</bean>
+
+	<!-- Test de l'indexer -->
+	<bean id="icGlobalIndex" class="ch.vd.uniregctb.testing.IcGlobalIndexTest" parent="inContainerTest">
+		<property name="globalTiersSearcher" ref="globalTiersSearcher" />
+		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
+	</bean>
+
+	<!-- Test le traitement des evt civils -->
+	<bean id="icEvtCivilNaissanceTest" class="ch.vd.uniregctb.testing.IcEvtCivilNaissanceTest" parent="inContainerTest">
+		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
+		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
+	</bean>
+
+</beans>

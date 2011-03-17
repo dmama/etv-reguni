@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="tiersImportController" class="ch.vd.uniregctb.admin.TiersImportController">
+		<property name="commandClass" value="ch.vd.uniregctb.admin.ScriptBean" />
+		<property name="formView" value="admin/tiersImportForm" />
+		<property name="successView" value="admin/tiersImportConfirmation" />
+		<property name="globalIndexer" ref="globalTiersIndexer" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="docService" ref="docService" />
+		<property name="dbService" ref="databaseService" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="databasePreviewController" class="ch.vd.uniregctb.admin.DatabasePreviewController">
+		<property name="commandClass" value="ch.vd.uniregctb.admin.DatabasePreview" />
+		<property name="formView" value="admin/dbpreview" />
+		<property name="successView" value="dbpreview.do" />
+		<property name="tiersDao" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- Performance -->
+	<bean id="servicePerformanceController" class="ch.vd.uniregctb.common.PerformanceListController">
+		<property name="viewName" value="admin/performance" />
+		<property name="requestURI" value="/admin/performance.do" />
+	</bean>
+
+	<!-- Gestion des batchs  -->
+	<bean id="gestionBatchController" class="ch.vd.uniregctb.admin.GestionBatchController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.admin.BatchList" />
+		<property name="formView" value="admin/batch" />
+		<property name="successView" value="batch.do" />
+		<property name="batchScheduler" ref="batchScheduler" />
+	</bean>
+
+	<!-- Gestion de l'indexation  -->
+	<bean id="gestionIndexationController" class="ch.vd.uniregctb.admin.GestionIndexationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.admin.indexer.GestionIndexation" />
+		<property name="formView" value="admin/indexation" />
+		<property name="successView" value="indexation.do" />
+		<property name="globalIndex" ref="globalIndex" />
+		<property name="indexationManager" ref="indexationManager" />
+	</bean>
+
+	<bean id="indexationManager" class="ch.vd.uniregctb.admin.IndexationManagerImpl">
+		<property name="tiersIndexer" ref="globalTiersIndexer" />
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+	<!-- Gestion de tracing -->
+	<bean id="gestionTracingController" class="ch.vd.uniregctb.admin.GestionTracingController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.admin.GestionTracing" />
+		<property name="formView" value="admin/tracing" />
+		<property name="successView" value="tracing.do" />
+	</bean>
+
+	<!-- Gestion de tracing -->
+	<bean id="auditLogController" class="ch.vd.uniregctb.admin.AuditLogController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.admin.AuditLogBean" />
+		<property name="formView" value="admin/audit" />
+		<property name="successView" value="admin/audit" />
+		<property name="auditLineDAO" ref="auditLineDAO" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- Dump de la base de donnee -->
+	<bean id="databaseDumpController" class="ch.vd.uniregctb.admin.DatabaseDumpController">
+		<property name="sessionForm" value="true" />
+		<property name="databaseService" ref="databaseService" />
+		<property name="docService" ref="docService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="batchScheduler" ref="batchScheduler" />
+		<property name="successView" value="tiersImport.do" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- Gestion des documents -->
+	<bean id="documentController" class="ch.vd.uniregctb.document.DocumentController">
+		<property name="sessionForm" value="true" />
+		<property name="docService" ref="docService" />
+		<property name="servletService" ref="servletService" />
+		<property name="successView" value="../admin/tiersImport.do" /> <!-- msi: temp hack -->
+	</bean>
+	
+	<bean id="ajaxContainer" abstract="true" parent="abstractSimpleFormController">
+		<property name="errorRenderingCallback">
+			<bean class="ch.vd.uniregctb.web.xt.action.FormRenderingCallback" />
+		</property>
+		<property name="successRenderingCallback">
+			<bean class="ch.vd.uniregctb.web.xt.action.FormRenderingCallback" />
+		</property>
+		<property name="ajaxResponseEncoding" value="UTF-8" />
+	</bean>
+
+	<bean id="evenementExterneController" class="ch.vd.uniregctb.admin.evenementExterne.EvenementExterneController"
+		parent="abstractSimpleFormController">
+		<property name="formView" value="admin/evenementExterne/main" />
+		<property name="successView" value="admin/evenementExterne/main.do" />
+		<property name="evenementExterneDAO" ref="evenementExterneDAO" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="quittancementController" class="ch.vd.uniregctb.admin.evenementExterne.QuittancementController" parent="ajaxContainer">
+		<property name="formView" value="admin/evenementExterne/quittancement" />
+		<property name="successView" value="admin/evenementExterne/quittancement.do" />
+		<property name="evenementExterneService" ref="evenementExterneService" />
+
+	</bean>
+
+	<bean id="rapportTravailController" class="ch.vd.uniregctb.admin.evenementExterne.RapportTravailController" parent="ajaxContainer">
+		<property name="formView" value="admin/evenementExterne/rapporttravail" />
+		<property name="successView" value="admin/evenementExterne/rapporttravail.do" />
+	</bean>
+
+	<bean id="evolutionController" class="ch.vd.uniregctb.admin.evenementExterne.EvolutionController" parent="ajaxContainer">
+		<property name="formView" value="admin/evenementExterne/evolution" />
+		<property name="successView" value="admin/evenementExterne/evolution.do" />
+	</bean>
+
+	<bean id="civilUnitaireController" class="ch.vd.uniregctb.admin.evenementExterne.EvenementCivilController" parent="ajaxContainer">
+		<property name="formView" value="admin/evenementExterne/civilunitaire" />
+		<property name="successView" value="admin/evenementExterne/civilunitaire.do" />
+		<property name="evtCivilSender" ref="evtCivilSender" />
+	</bean>
+	
+		<!-- Norentes  -->
+	<bean id="norentesController" class="ch.vd.uniregctb.norentes.NorentesController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.norentes.NorentesBean" />
+		<property name="formView" value="admin/norentes" />
+		<property name="successView" value="norentes.do" />
+	</bean>
+	
+</beans>

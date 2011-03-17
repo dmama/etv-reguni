@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="fiscalEditController" class="ch.vd.uniregctb.tiers.FiscalEditController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/fiscal/edit" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="forFiscalManager" ref="forFiscalManager" />
+		<property name="situationFamilleManager" ref="situationFamilleManager" />
+	</bean>
+
+	<bean id="fiscalEditForDebiteurController" class="ch.vd.uniregctb.tiers.FiscalEditForDebiteurController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/fiscal/edit-for-debiteur" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="forFiscalManager" ref="forFiscalManager" />
+	</bean>
+
+	<bean id="forFiscalManager" class="ch.vd.uniregctb.tiers.manager.ForFiscalManagerImpl"  parent="tiersManager">
+		<property name="forFiscalDAO" ref="forFiscalDAO" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="tacheManager" ref="tacheManager" />
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="tacheManager" class="ch.vd.uniregctb.tiers.manager.TacheManagerImpl">
+		<property name="tacheService" ref="tacheService" />
+		<property name="validationService" ref="validationService" />
+	</bean>
+
+	<bean id="forFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalViewValidator" >
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="tiersForController" class="ch.vd.uniregctb.tiers.TiersForController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.ForFiscalView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/fiscal/for-edit" />
+		<property name="successView" value="common/refresh-parent" />
+		<property name="forFiscalManager" ref="forFiscalManager" />
+		<property name="paramService" ref="parametreAppService" />
+		<property name="validator" ref="forFiscalViewValidator" />
+	</bean>
+
+	<bean id="tiersSituationFamilleController" class="ch.vd.uniregctb.tiers.TiersSituationFamilleController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.SituationFamilleView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/fiscal/situation-famille-edit" />
+		<property name="successView" value="common/refresh-parent" />
+		<property name="situationFamilleManager" ref="situationFamilleManager" />
+		<property name="validator" ref="situationFamilleViewValidator" />
+	</bean>
+
+	<bean id="situationFamilleManager" class="ch.vd.uniregctb.tiers.manager.SituationFamilleManagerImpl">
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="situationFamilleDAO" ref="situationFamilleDAO" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
+	<bean id="situationFamilleViewValidator" class="ch.vd.uniregctb.tiers.validator.SituationFamilleViewValidator" >
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+</beans>
