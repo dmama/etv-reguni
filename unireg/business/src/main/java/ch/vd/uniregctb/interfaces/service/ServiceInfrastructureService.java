@@ -248,14 +248,6 @@ public interface ServiceInfrastructureService {
 	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException;
 
 	/**
-	 * @param numeroACI le numéro ACI d'une commune
-	 * @return une commune
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
-	 * @deprecated TODO (msi)
-	 */
-	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException;
-
-	/**
 	 * Retrouve la commune avec le numéro OFS étendu donné ; si plusieurs communes correspondent, renvoie celle qui est valide à la date donnée
 	 *
 	 * @param noCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)

@@ -72,10 +72,6 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 		return fidorService.getCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
-	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException {
-		return hostService.getCommuneVaudByNumACI(numeroACI);
-	}
-
 	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
 		return hostService.getCommunesDeVaud();
 	}

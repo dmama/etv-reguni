@@ -72,10 +72,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getCommuneByNumeroOfsEtendu(noCommune, date);
 	}
 
-	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException {
-		return target.getCommuneVaudByNumACI(numeroACI);
-	}
-
 	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
 		return target.getCommunesDeVaud();
 	}

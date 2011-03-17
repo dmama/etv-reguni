@@ -116,25 +116,6 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		return pays;
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException {
-		Assert.notNull(numeroACI, "Le numero ACI ne peut pas etre nul");
-
-		// Formatte le numero ACI en String sur 3 positions (EX: 052)
-		String numeroACIstr = String.format("%03d", numeroACI);
-
-		Commune commune = null;
-		for (Commune com : getCommunesDeVaud()) {
-			if (com.getNoACI().equals(numeroACIstr)) {
-				commune = com;
-			}
-		}
-		return commune;
-	}
-
 	/**
 	 * Si la collection de candidats ne contient aucun élément, renvoie <code>null</code>, si elle contient 1 élément, renvoie celui-là,
 	 * et si elle contient plus d'un élément, renvoie le premier élément trouvé valide à la date donnée (<code>null</code>

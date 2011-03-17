@@ -437,24 +437,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneVaudByNumACI(final Integer numeroACI) throws InfrastructureException {
-		Commune result;
-		long time = tracing.start();
-		try {
-			result = target.getCommuneVaudByNumACI(numeroACI);
-		}
-		finally {
-			tracing.end(time, "getCommuneVaudByNumACI", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numeroACI=%s", numeroACI);
-				}
-			});
-		}
-
-		return result;
-	}
-
 	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
