@@ -36,6 +36,10 @@
 					<td width="25%"><fmt:message key="label.commune.evenement" /> :</td>
 					<td width="25%"><unireg:commune ofs="${command.evenement.numeroOfsCommuneAnnonce}" displayProperty="nomMinuscule" date="${command.evenement.dateEvenement}"/></td>
 				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>
+					<td colspan="3"><i><c:out value="${command.evenement.commentaireTraitement}"/></i></td>
+				</tr>
 			</table>
 			
 			<c:if test="${not empty command.evenement.erreurs}">

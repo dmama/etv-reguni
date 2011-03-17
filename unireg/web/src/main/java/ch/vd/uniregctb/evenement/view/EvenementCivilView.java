@@ -29,6 +29,7 @@ public class EvenementCivilView {
 	private Long numeroCTB;
 	private String nom1;
 	private String nom2;
+	private String commentaireTraitement;
 
 	public EvenementCivilView(EvenementCivilExterne evt, TiersDAO tiersDAO) {
 		this.id = evt.getId();
@@ -45,6 +46,7 @@ public class EvenementCivilView {
 		this.numeroOfsCommuneAnnonce = evt.getNumeroOfsCommuneAnnonce();
 		this.dateEvenement = evt.getDateEvenement();
 		this.dateTraitement = evt.getDateTraitement();
+		this.commentaireTraitement = evt.getCommentaireTraitement();
 	}
 
 	public Long getId() {
@@ -159,4 +161,11 @@ public class EvenementCivilView {
 		this.nom2 = nom2;
 	}
 
+	public String getCommentaireTraitement() {
+		return commentaireTraitement;
+	}
+
+	public void setCommentaireTraitement(String commentaireTraitement) {
+		this.commentaireTraitement = commentaireTraitement;
+	}
 }

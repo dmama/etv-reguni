@@ -25,8 +25,20 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	@Override
 	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
-		if (isArriveeDansCommuneNonEncoreFusionnee(event, context)) {
+		final Communes communes = determineCommunesAvantEtApres(event, context);
+
+		if (communes.avant == null || communes.apres == null) {
+			final String message = "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu.";
+			Audit.warn(event.getId(), message);
+			event.setCommentaireTraitement(message);
+			return new Demenagement(event, context, options);
+		}
+		else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
 			// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
+			final String message =
+					"Traité comme une arrivée car les communes " + communes.avant.getNomMinuscule() + " et " + communes.apres.getNomMinuscule() + " ne sont pas encore fusionnées du point-de-vue fiscal.";
+			Audit.info(event.getId(), message);
+			event.setCommentaireTraitement(message);
 			return new Arrivee(event, context, options);
 		}
 		else {
@@ -35,18 +47,29 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 		}
 	}
 
-	/**
-	 * @param event   un événement d'arrivée externe
-	 * @param context le context d'exécution
-	 * @return <b>true</b> si l'événement est un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal; <b>faux</b> dans tous les autres cas.
-	 * @throws EvenementCivilException en cas d'erreur
-	 */
-	private boolean isArriveeDansCommuneNonEncoreFusionnee(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilException {
+	private static class Communes {
 
+		final Commune avant;
+		final Commune apres;
+
+		private Communes(Commune communeAvant, Commune communeApres) {
+			this.avant = communeAvant;
+			this.apres = communeApres;
+		}
+	}
+
+	/**
+	 * Détermine les communes de domicile d'un individu juste avant et juste après son déménagement.
+	 *
+	 * @param event   l'événement de déménagement
+	 * @param context le context d'exécution
+	 * @return les communes trouvées (qui peuvent être nulles)
+	 * @throws EvenementCivilException un cas de problème
+	 */
+	private Communes determineCommunesAvantEtApres(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilException {
 		final Long principal = event.getNumeroIndividuPrincipal();
 		final RegDate jourDemenagement = event.getDateEvenement();
 		final RegDate veilleDemenagement = jourDemenagement.getOneDayBefore();
-
 		try {
 			final AdressesCivilesActives adresseAvant = context.getServiceCivil().getAdresses(principal, veilleDemenagement, false);
 			final AdressesCivilesActives adresseApres = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
@@ -63,26 +86,11 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 			final Integer egidAvant = adresseAvant.principale.getEgid();
 			final Integer egidApres = adresseApres.principale.getEgid();
 
-			if (egidAvant == null || egidApres == null) {
-				Audit.warn(event.getId(), "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu n°" + event.getNumeroIndividuPrincipal() +
-						" : impossible de détecter si le déménagement correspond en fait à une arrivée dans une commune non-encore fusionnée fiscalement.");
-				return false; // on considère qu'il s'agit d'un déménagement
-			}
 
-			final Commune communeAvant = context.getServiceInfra().getCommuneByEgid(egidAvant, veilleDemenagement, event.getNumeroOfsCommuneAnnonce());
-			final Commune communeApres = context.getServiceInfra().getCommuneByEgid(egidApres, jourDemenagement, event.getNumeroOfsCommuneAnnonce());
+			final Commune communeAvant = (egidAvant == null ? null : context.getServiceInfra().getCommuneByEgid(egidAvant, veilleDemenagement, event.getNumeroOfsCommuneAnnonce()));
+			final Commune communeApres = (egidApres == null ? null : context.getServiceInfra().getCommuneByEgid(egidApres, jourDemenagement, event.getNumeroOfsCommuneAnnonce()));
 
-			if (communeAvant == null) {
-				throw new EvenementCivilException(
-						"Impossible de récupérer la commune fiscale de l'individu n°" + principal + " la veille [" + RegDateHelper.dateToDisplayString(veilleDemenagement) + "] de son déménagement.");
-			}
-			if (communeApres == null) {
-				throw new EvenementCivilException(
-						"Impossible de récupérer la commune fiscale de l'individu n°" + principal + " le jour [" + RegDateHelper.dateToDisplayString(jourDemenagement) + "] de son déménagement.");
-			}
-
-			// si les communes avant et après déménagement sont différentes, c'est qu'il s'agit bien en fait d'une arrivée
-			return communeAvant.getNoOFSEtendu() != communeApres.getNoOFSEtendu();
+			return new Communes(communeAvant, communeApres);
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementCivilException(e);

@@ -77,6 +77,8 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		final Arrivee arrivee = (Arrivee) interne;
 		assertEquals(MockCommune.Villette, arrivee.getAncienneCommunePrincipale());
 		assertEquals(MockCommune.Grandvaux, arrivee.getNouvelleCommunePrincipale());
+
+		assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());
 	}
 
 	/**

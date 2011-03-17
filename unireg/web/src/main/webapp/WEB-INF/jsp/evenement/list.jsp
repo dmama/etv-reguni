@@ -59,6 +59,9 @@
 			<display:column sortable ="true" titleKey="label.etat.evenement" sortName="etat" >
 				<fmt:message key="option.etat.evenement.${row.etat}" />
 			</display:column>
+			<display:column titleKey="label.commentaire.traitement">
+				<i><c:out value="${row.commentaireTraitement}"/></i>
+			</display:column>
 			<display:column style="action">
 				<c:if test="${row.id != null}">
 					<unireg:consulterLog entityNature="Evenement" entityId="${row.id}"/>

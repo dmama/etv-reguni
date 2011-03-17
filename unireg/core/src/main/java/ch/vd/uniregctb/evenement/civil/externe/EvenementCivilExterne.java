@@ -42,74 +42,19 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 @Table(name = "EVENEMENT_CIVIL")
 public class EvenementCivilExterne extends HibernateEntity {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 2422294829219811626L;
 
-	/**
-	 * The ID
-	 */
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_LYdY8MK7EdydR6r71NY4Vg"
-	 */
 	private TypeEvenementCivil type;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_SdbwINSZEdyRNpOhiSbYUw"
-	 */
 	private EtatEvenementCivil etat = EtatEvenementCivil.A_TRAITER;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Fnzo8MK7EdydR6r71NY4Vg"
-	 */
 	private Date dateTraitement;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_DiTVAMK7EdydR6r71NY4Vg"
-	 */
 	private RegDate dateEvenement;
-
 	private Long numeroIndividuPrincipal;
-
 	private Long numeroIndividuConjoint;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_LzhfwcTpEdyVT_nuj0a-ig"
-	 */
 	private Long habitantPrincipalId;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_lrMoYcTpEdyVT_nuj0a-ig"
-	 */
 	private Long habitantConjointId;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_IGggAMK7EdydR6r71NY4Vg"
-	 */
 	private Integer numeroOfsCommuneAnnonce;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R6KEAcK-EdydR6r71NY4Vg"
-	 */
+	private String commentaireTraitement;
 	private Set<EvenementCivilExterneErreur> erreurs;
 
 	/**
@@ -377,6 +322,21 @@ public class EvenementCivilExterne extends HibernateEntity {
 
 	public void setNumeroIndividuConjoint(Long numeroIndividuConjoint) {
 		this.numeroIndividuConjoint = numeroIndividuConjoint;
+	}
+
+	/**
+	 * @return un commentaire sur la manière dont le traitement c'est effectué, ou <b>null</b> s'il n'y a rien à dire.
+	 */
+	@Column(name = "COMMENTAIRE_TRAITEMENT", length = LengthConstants.EVTCIVILREG_COMMENT)
+	public String getCommentaireTraitement() {
+		return commentaireTraitement;
+	}
+
+	public void setCommentaireTraitement(String value) {
+		if (value != null && value.length() > LengthConstants.EVTCIVILREG_COMMENT) {
+			value = value.substring(0, LengthConstants.EVTCIVILREG_COMMENT);
+		}
+		this.commentaireTraitement = value;
 	}
 
 	/**

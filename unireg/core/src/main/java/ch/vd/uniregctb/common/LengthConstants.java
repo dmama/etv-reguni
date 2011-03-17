@@ -56,6 +56,7 @@ public abstract class LengthConstants {
 
 	public final static int EVTCIVILREG_ETAT = 10;
 	public final static int EVTCIVILREG_TYPE = 45;
+	public final static int EVTCIVILREG_COMMENT = 255;
 
 	public final static int EVTCIVILERREUR_TYPE = 7;
 	public final static int EVTCIVILERREUR_MESSAGE = 1024;
