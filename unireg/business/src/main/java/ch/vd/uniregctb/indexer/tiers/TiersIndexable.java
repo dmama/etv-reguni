@@ -13,7 +13,6 @@ import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -118,7 +117,7 @@ public abstract class TiersIndexable {
 			if (domicile != null && !domicile.isDefault()) {
 				estDansLeCanton = serviceInfra.estDansLeCanton(domicile);
 				if (estDansLeCanton) {
-					final CommuneSimple c = serviceInfra.getCommuneByAdresse(domicile, null);
+					final Commune c = serviceInfra.getCommuneByAdresse(domicile, null);
 					if (c != null) {
 						noOfsCommuneVD = c.getNoOFSEtendu();
 					}

@@ -9,7 +9,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -29,13 +29,13 @@ public class JspTagCommune extends BodyTagSupport {
 		Object property = null;
 		Object title = null;
 		try {
-			final CommuneSimple commune = service.getCommuneByNumeroOfsEtendu(ofs, date);
+			final Commune commune = service.getCommuneByNumeroOfsEtendu(ofs, date);
 			if (commune != null) {
-				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(displayProperty, CommuneSimple.class);
+				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(displayProperty, Commune.class);
 				property = displayDescriptor.getReadMethod().invoke(commune);
 
 				if (StringUtils.isNotBlank(titleProperty)) {
-					final ReadOnlyPropertyDescriptor titleDescriptor = new ReadOnlyPropertyDescriptor(titleProperty, CommuneSimple.class);
+					final ReadOnlyPropertyDescriptor titleDescriptor = new ReadOnlyPropertyDescriptor(titleProperty, Commune.class);
 					title = titleDescriptor.getReadMethod().invoke(commune);
 				}
 			}

@@ -5,7 +5,7 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 
 /**
  * Données minimale d'une adresse autre tiers <b>annulée</b> ([UNIREG-3154]).
@@ -99,7 +99,7 @@ public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseG
 		return true;
 	}
 
-	public CommuneSimple getCommuneAdresse() {
+	public Commune getCommuneAdresse() {
 		return null;
 	}
 

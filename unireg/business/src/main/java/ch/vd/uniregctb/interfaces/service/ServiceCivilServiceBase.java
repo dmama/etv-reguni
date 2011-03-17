@@ -16,7 +16,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -224,8 +224,8 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		final List<HistoriqueCommune> result = new ArrayList<HistoriqueCommune>();
 		for (Adresse adresse : histo.principales) {
 			if (RegDateHelper.isAfterOrEqual(adresse.getDateFin(), date, NullDateBehavior.LATEST)) {
-				final CommuneSimple commune = infraService.getCommuneByAdresse(adresse, date);
-				final CommuneSimple communeFiltree = (commune == null || !seulementVaud || commune.isVaudoise() ? commune : null);
+				final Commune commune = infraService.getCommuneByAdresse(adresse, date);
+				final Commune communeFiltree = (commune == null || !seulementVaud || commune.isVaudoise() ? commune : null);
 				result.add(new HistoriqueCommune(adresse.getDateDebut(), adresse.getDateFin(), communeFiltree));
 			}
 		}

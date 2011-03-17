@@ -24,7 +24,6 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -119,7 +118,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 			final Integer numeroAutoriteFiscale = forFiscal.getNumeroOfsAutoriteFiscale();
 			Commune communeFor = serviceInfra.getCommuneByNumeroOfsEtendu(numeroAutoriteFiscale, RegDate.get());
 			AdresseGenerique adresse = adresseService.getAdresseFiscale(contribuable, TypeAdresseFiscale.DOMICILE, RegDate.get(), false);
-			CommuneSimple communeAdresse = serviceInfra.getCommuneByAdresse(adresse, RegDate.get());
+			Commune communeAdresse = serviceInfra.getCommuneByAdresse(adresse, RegDate.get());
 			if(communeAdresse != null && communeFor!=null){
 				if (communeFor.getNoOFS() != communeAdresse.getNoOFS()) {
 					rapport.get().addCommunesDifferentes(forFiscal, communeFor.getNomMinuscule(), adresse, communeAdresse.getNomMinuscule());

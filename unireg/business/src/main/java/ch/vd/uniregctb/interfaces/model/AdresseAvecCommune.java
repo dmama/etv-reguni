@@ -9,7 +9,7 @@ public interface AdresseAvecCommune {
 	 * Retourne la commune de l'adresse
 	 * @return la commune attachée à cette adresse
 	 */
-	CommuneSimple getCommuneAdresse();
+	Commune getCommuneAdresse();
 
 	/**
 	 * @return le numéro Ofs de bâtiment (Gebäude) ou <b>null</b> s'il est inconnu.

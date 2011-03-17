@@ -33,7 +33,7 @@ public interface Localite {
 	public boolean isValide();
 
 	/**
-	 * Retourne la communeSimple
+	 * @return une commune associée à la localité.
 	 */
-	public CommuneSimple getCommuneLocalite();
+	public Commune getCommuneLocalite();
 }

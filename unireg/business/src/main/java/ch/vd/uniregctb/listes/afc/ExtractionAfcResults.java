@@ -9,7 +9,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -124,9 +124,9 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 			ofsCommuneForGestion = null;
 		}
 		else {
-			final CommuneSimple commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), dateReference);
+			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), dateReference);
 			if (commune.isFraction()) {
-				final CommuneSimple communeFaitiere = infraService.getCommuneFaitiere(commune, dateReference);
+				final Commune communeFaitiere = infraService.getCommuneFaitiere(commune, dateReference);
 				ofsCommuneForGestion = communeFaitiere.getNoOFSEtendu();
 			}
 			else {

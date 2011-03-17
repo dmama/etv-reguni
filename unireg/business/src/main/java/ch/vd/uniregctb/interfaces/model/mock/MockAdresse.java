@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -27,7 +27,7 @@ public class MockAdresse implements Adresse {
 	public String rue;
 	public String titre;
 	public TypeAdresseCivil typeAdresse;
-	public CommuneSimple communeAdresse;
+	public Commune communeAdresse;
 	public Integer egid;
 
 	public MockAdresse() {
@@ -186,11 +186,11 @@ public class MockAdresse implements Adresse {
 		this.typeAdresse = typeAdresse;
 	}
 
-	public CommuneSimple getCommuneAdresse() {
+	public Commune getCommuneAdresse() {
 		return communeAdresse;
 	}
 
-	public void setCommuneAdresse(CommuneSimple c) {
+	public void setCommuneAdresse(Commune c) {
 		communeAdresse = c;
 	}
 

@@ -22,7 +22,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -53,10 +52,10 @@ public class Depart extends Mouvement {
 	protected static Logger LOGGER = Logger.getLogger(Depart.class);
 
 	private Adresse ancienneAdressePrincipale;
-	private CommuneSimple nouvelleCommunePrincipale;
-	private CommuneSimple ancienneCommunePrincipale;
+	private Commune nouvelleCommunePrincipale;
+	private Commune ancienneCommunePrincipale;
 	private Adresse ancienneAdresseSecondaire;
-	private CommuneSimple ancienneCommuneSecondaire;
+	private Commune ancienneCommuneSecondaire;
 	private Adresse ancienneAdresseCourrier;
 
 	private Pays paysInconnu;
@@ -399,12 +398,12 @@ public class Depart extends Mouvement {
 
 	protected final void validateDepartAdressePrincipale(Depart depart, List<EvenementCivilExterneErreur> erreurs) {
 		final Adresse adressePrincipale = depart.getAncienneAdressePrincipale();
-		final CommuneSimple commune = depart.getAncienneCommunePrincipale();
+		final Commune commune = depart.getAncienneCommunePrincipale();
 
 		validateCoherenceAdresse(adressePrincipale, commune, depart, erreurs);
 
 		// la nouvelle commune est toujours dans le canton de vaud
-		final CommuneSimple nouvelleCommune = depart.getNouvelleCommunePrincipale();
+		final Commune nouvelleCommune = depart.getNouvelleCommunePrincipale();
 
 		if (nouvelleCommune != null && nouvelleCommune.isVaudoise()) {
 			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune est toujours dans le canton de Vaud"));
@@ -413,7 +412,7 @@ public class Depart extends Mouvement {
 
 	protected final void validateDepartAdresseSecondaire(Depart depart, List<EvenementCivilExterneErreur> erreurs) {
 		final Adresse adresseSecondaire = depart.getAncienneAdresseSecondaire();
-		final CommuneSimple communeSecondaire = depart.getAncienneCommuneSecondaire();
+		final Commune communeSecondaire = depart.getAncienneCommuneSecondaire();
 
 		validateCoherenceAdresse(adresseSecondaire, communeSecondaire, depart, erreurs);
 	}
@@ -426,7 +425,7 @@ public class Depart extends Mouvement {
 	 * @param depart         un événement de départ
 	 * @param erreurs
 	 */
-	public void validateCoherenceAdresse(Adresse adresse, CommuneSimple commune, Depart depart, List<EvenementCivilExterneErreur> erreurs) {
+	public void validateCoherenceAdresse(Adresse adresse, Commune commune, Depart depart, List<EvenementCivilExterneErreur> erreurs) {
 
 		if (adresse == null) {
 			erreurs.add(new EvenementCivilExterneErreur("Adresse de résidence avant départ inconnue"));
@@ -582,7 +581,7 @@ public class Depart extends Mouvement {
 			final Adresse adressePrincipale = depart.getNouvelleAdressePrincipale();
 
 			final boolean estEnSuisse;
-			CommuneSimple commune = null;
+			Commune commune = null;
 			try {
 				estEnSuisse = serviceInfra.estEnSuisse(adressePrincipale);
 				if (estEnSuisse) {
@@ -645,7 +644,7 @@ public class Depart extends Mouvement {
 		return getAdressePrincipale();
 	}
 
-	public CommuneSimple getNouvelleCommunePrincipale() {
+	public Commune getNouvelleCommunePrincipale() {
 		return this.nouvelleCommunePrincipale;
 	}
 
@@ -653,7 +652,7 @@ public class Depart extends Mouvement {
 		return ancienneAdressePrincipale;
 	}
 
-	public CommuneSimple getAncienneCommunePrincipale() {
+	public Commune getAncienneCommunePrincipale() {
 		return ancienneCommunePrincipale;
 	}
 
@@ -661,7 +660,7 @@ public class Depart extends Mouvement {
 		return ancienneAdresseSecondaire;
 	}
 
-	public CommuneSimple getAncienneCommuneSecondaire() {
+	public Commune getAncienneCommuneSecondaire() {
 		return ancienneCommuneSecondaire;
 	}
 

@@ -21,7 +21,6 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -52,7 +51,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	/**
 	 * La commune de la nouvelle adresse principale.
 	 */
-	private CommuneSimple nouvelleCommunePrincipale;
+	private Commune nouvelleCommunePrincipale;
 
 	protected Demenagement(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
 		super(evenement, context, options);
@@ -90,7 +89,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		this.nouvelleCommunePrincipale = communePrincipale;
 	}
 
-	public CommuneSimple getNouvelleCommunePrincipale() {
+	public Commune getNouvelleCommunePrincipale() {
 		return nouvelleCommunePrincipale;
 	}
 
@@ -129,7 +128,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		 * La nouvelle adresse principale n’est pas dans le canton (il n’est pas
 		 * obligatoire que l’adresse courrier soit dans le canton).
 		 */
-		final CommuneSimple nouvelleCommune = getNouvelleCommunePrincipale();
+		final Commune nouvelleCommune = getNouvelleCommunePrincipale();
 		if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
 			erreurs.add(new EvenementCivilExterneErreur("La nouvelle adresse est en dehors du canton"));
 		}

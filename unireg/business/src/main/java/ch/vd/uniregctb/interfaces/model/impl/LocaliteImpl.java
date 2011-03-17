@@ -3,14 +3,14 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localite;
 
 public class LocaliteImpl implements Localite, Serializable {
 
 	private static final long serialVersionUID = 2998886376392463517L;
 	
-	private CommuneSimple commune = null;
+	private Commune commune = null;
 	private final RegDate dateFin;
 	private Integer chiffreComplementaire;
 	private Integer complementNPA;
@@ -31,7 +31,7 @@ public class LocaliteImpl implements Localite, Serializable {
 	}
 
 	private LocaliteImpl(ch.vd.infrastructure.model.Localite target) {
-		this.commune = CommuneSimpleImpl.get(target.getCommuneLocalite());
+		this.commune = CommuneImpl.get(target.getCommuneLocalite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
 		this.chiffreComplementaire = target.getChiffreComplementaire();
 		this.complementNPA = initComplementNPA(target.getComplementNPA());
@@ -49,7 +49,7 @@ public class LocaliteImpl implements Localite, Serializable {
 		return chiffreComplementaire;
 	}
 
-	public CommuneSimple getCommuneLocalite() {
+	public Commune getCommuneLocalite() {
 		return commune;
 	}
 

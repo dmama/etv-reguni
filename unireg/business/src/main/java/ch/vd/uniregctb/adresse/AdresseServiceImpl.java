@@ -26,7 +26,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
@@ -2007,7 +2007,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final ListIterator<AdresseGenerique> iter = listeAdresse.listIterator(listeAdresse.size());
 			while (iter.hasPrevious()) {
 				final AdresseGenerique adresseGenerique = iter.previous();
-				final CommuneSimple commune;
+				final Commune commune;
 				try {
 					commune = serviceInfra.getCommuneByAdresse(adresseGenerique, adresseGenerique.getDateDebut());
 				}

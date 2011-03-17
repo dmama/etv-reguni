@@ -18,7 +18,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -48,7 +48,7 @@ public class ObtentionNationalite extends ObtentionPermisCOuNationaliteSuisse {
 		try {
 			// on récupère la commune de l'adresse principale en gérant les fractions
 			//à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for
-			final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale(), evenement.getDateEvenement());
+			final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale(), evenement.getDateEvenement());
 			this.numeroOfsEtenduCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFSEtendu();
 		}
 		catch (InfrastructureException e) {

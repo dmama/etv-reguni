@@ -17,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -64,24 +63,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 				}
 			});
 		}
-		return result;
-	}
-
-	public boolean estDansLeCanton(final CommuneSimple commune) throws InfrastructureException {
-		boolean result;
-		long time = tracing.start();
-		try {
-			result = target.estDansLeCanton(commune);
-		}
-		finally {
-			tracing.end(time, "estDansLeCanton", new Object() {
-				@Override
-				public String toString() {
-					return String.format("communeSimple=%s", commune != null ? commune.getNoOFSEtendu() : null);
-				}
-			});
-		}
-
 		return result;
 	}
 
@@ -337,8 +318,8 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
-		CommuneSimple result;
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+		Commune result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneByAdresse(adresse, date);
@@ -350,8 +331,8 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
-		CommuneSimple result;
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+		Commune result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneByAdresse(adresse, date);
@@ -383,8 +364,8 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	}
 
 	@Override
-	public CommuneSimple getCommuneByEgid(final int egid, final RegDate date, final Integer hintNoOfsCommune) throws InfrastructureException {
-		CommuneSimple result;
+	public Commune getCommuneByEgid(final int egid, final RegDate date, final Integer hintNoOfsCommune) throws InfrastructureException {
+		Commune result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneByEgid(egid, date, hintNoOfsCommune);
@@ -543,8 +524,8 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CommuneSimple getCommuneFaitiere(final CommuneSimple commune, final RegDate dateReference) throws InfrastructureException {
-		CommuneSimple result;
+	public Commune getCommuneFaitiere(final Commune commune, final RegDate dateReference) throws InfrastructureException {
+		Commune result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneFaitiere(commune, dateReference);

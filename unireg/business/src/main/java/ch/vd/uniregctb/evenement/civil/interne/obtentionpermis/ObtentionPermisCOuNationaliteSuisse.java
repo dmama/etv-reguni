@@ -20,7 +20,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -177,7 +176,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				try {
 					final AdresseGenerique adresse = context.getAdresseService().getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, dateEvenement, false);
 					if (adresse != null) {
-						final CommuneSimple commune = getService().getServiceInfra().getCommuneByAdresse(adresse, dateEvenement);
+						final Commune commune = getService().getServiceInfra().getCommuneByAdresse(adresse, dateEvenement);
 						// uniquement si la commune de domicile est vaudoise
 						if (commune != null && commune.isVaudoise()) {
 							noOfsEtendu = commune.getNoOFSEtendu();

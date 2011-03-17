@@ -80,7 +80,7 @@ public class AdresseAdapter implements Adresse {
 		return target.getTypeAdresse();
 	}
 
-	public CommuneSimple getCommuneAdresse() {
+	public Commune getCommuneAdresse() {
 		return target.getCommuneAdresse();
 	}
 

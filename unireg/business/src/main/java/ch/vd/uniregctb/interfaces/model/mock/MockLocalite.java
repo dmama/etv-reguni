@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 
@@ -82,7 +82,7 @@ public class MockLocalite implements Localite {
 	private Integer noOrdre;
 	private Integer nPA;
 	private boolean valide;
-	private CommuneSimple communeLocalite;
+	private Commune communeLocalite;
 
 	public MockLocalite() {
 		DefaultMockServiceInfrastructureService.addLocalite(this);
@@ -200,11 +200,11 @@ public class MockLocalite implements Localite {
 		this.valide = valide;
 	}
 
-	public CommuneSimple getCommuneLocalite() {
+	public Commune getCommuneLocalite() {
 		return communeLocalite;
 	}
 
-	public void setCommuneLocalite(CommuneSimple c) {
+	public void setCommuneLocalite(Commune c) {
 		communeLocalite = c;
 	}
 

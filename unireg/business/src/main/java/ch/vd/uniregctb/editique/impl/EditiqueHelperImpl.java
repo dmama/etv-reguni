@@ -22,7 +22,6 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -134,7 +133,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 
 	private Expediteur remplitExpediteur(ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.Adresse adresse = ca.getAdresse();
-		final CommuneSimple commune = infraService.getCommuneByAdresse(adresse, null);
+		final Commune commune = infraService.getCommuneByAdresse(adresse, null);
 
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		final TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();

@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 
 /*
  * Classe de base commune à toutes les classes qui adaptent - d'une manière ou d'une autre - une adresse générique.
@@ -281,7 +281,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		return source.getType() == SourceType.FISCALE && target.isPermanente();
 	}
 
-	public CommuneSimple getCommuneAdresse() {
+	public Commune getCommuneAdresse() {
 		return target.getCommuneAdresse();
 	}
 

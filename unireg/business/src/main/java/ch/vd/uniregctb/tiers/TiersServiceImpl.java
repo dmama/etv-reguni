@@ -61,7 +61,6 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -1624,7 +1623,7 @@ public class TiersServiceImpl implements TiersService {
 		try {
 			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
 			if (adresseDomicile != null) {
-				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
+				final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
 				if (commune != null && commune.isVaudoise()) {
 					return Boolean.TRUE;
 				}

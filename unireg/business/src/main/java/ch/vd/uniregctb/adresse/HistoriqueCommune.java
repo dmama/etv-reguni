@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 
 /**
  * Décrit la présence dans une commune pendant une période
@@ -15,9 +15,9 @@ public class HistoriqueCommune implements CollatableDateRange {
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private final CommuneSimple commune;
+	private final Commune commune;
 
-	public HistoriqueCommune(RegDate dateDebut, RegDate dateFin, CommuneSimple commune) {
+	public HistoriqueCommune(RegDate dateDebut, RegDate dateFin, Commune commune) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.commune = commune;
@@ -40,7 +40,7 @@ public class HistoriqueCommune implements CollatableDateRange {
 	}
 
 	@SuppressWarnings({"SimplifiableIfStatement"})
-	private static boolean sameCommune(CommuneSimple commune1, CommuneSimple commune2) {
+	private static boolean sameCommune(Commune commune1, Commune commune2) {
 		if (commune1 == commune2) {
 			return true;
 		}
@@ -56,7 +56,7 @@ public class HistoriqueCommune implements CollatableDateRange {
 		return new HistoriqueCommune(dateDebut, next.getDateFin(), commune);
 	}
 
-	public CommuneSimple getCommune() {
+	public Commune getCommune() {
 		return commune;
 	}
 }

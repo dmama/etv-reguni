@@ -13,7 +13,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 
 /**
  * Règles métiers permettant de traiter les événements de déménagement intra communal.
@@ -69,8 +69,8 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 				return false; // on considère qu'il s'agit d'un déménagement
 			}
 
-			final CommuneSimple communeAvant = context.getServiceInfra().getCommuneByEgid(egidAvant, veilleDemenagement, event.getNumeroOfsCommuneAnnonce());
-			final CommuneSimple communeApres = context.getServiceInfra().getCommuneByEgid(egidApres, jourDemenagement, event.getNumeroOfsCommuneAnnonce());
+			final Commune communeAvant = context.getServiceInfra().getCommuneByEgid(egidAvant, veilleDemenagement, event.getNumeroOfsCommuneAnnonce());
+			final Commune communeApres = context.getServiceInfra().getCommuneByEgid(egidApres, jourDemenagement, event.getNumeroOfsCommuneAnnonce());
 
 			if (communeAvant == null) {
 				throw new EvenementCivilException(

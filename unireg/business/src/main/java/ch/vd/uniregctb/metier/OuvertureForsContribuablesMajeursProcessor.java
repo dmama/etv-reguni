@@ -29,7 +29,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -404,7 +404,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		boolean estDomicilieDansLeCanton;
-		final CommuneSimple commune;
+		final Commune commune;
 		try {
 			estDomicilieDansLeCanton = serviceInfra.estDansLeCanton(adresseDomicile);
 			if (estDomicilieDansLeCanton) {

@@ -20,7 +20,6 @@ import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.LogicielMetier;
@@ -202,8 +201,8 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	 * @param adresse l'adresse
 	 * @return la commune
 	 */
-	private static CommuneSimple getCommuneAttachee(AdresseAvecCommune adresse) {
-		final CommuneSimple commune;
+	private static Commune getCommuneAttachee(AdresseAvecCommune adresse) {
+		final Commune commune;
 		if (adresse != null) {
 			commune = adresse.getCommuneAdresse();
 		}
@@ -224,12 +223,12 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	 * @return la commune qui correspond à l'adresse spécifiée; ou <b>null</b> si aucune commune n'a été trouvée.
 	 * @throws InfrastructureException en cas d'erreur
 	 */
-	private CommuneSimple getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal, RegDate date) throws InfrastructureException {
+	private Commune getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal, RegDate date) throws InfrastructureException {
 		if (adresse == null) {
 			return null;
 		}
 
-		CommuneSimple commune = null;
+		Commune commune = null;
 
 		// 1er choix : l'egid
 		final Integer egid = adresse.getEgid();
@@ -239,7 +238,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 
 		// 2ème choix : la commune attachée à l'adresse
 		if (commune == null) {
-			final CommuneSimple candidate = adresse.getCommuneAdresse();
+			final Commune candidate = adresse.getCommuneAdresse();
 			// si la commune est attachée et que ce n'est pas une commune fractionnée, on la prend
 			// sinon, on prend l'adresse depuis la localité
 			if (candidate != null && !candidate.isPrincipale()) {
@@ -258,7 +257,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
 		}
@@ -270,7 +269,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
 		}
@@ -280,7 +279,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	}
 
 	@Override
-	public final CommuneSimple getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public final Commune getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 
 		// un premier appel où le cache a peu de chance d'être chaud
 		final Integer noOfs = getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
@@ -292,7 +291,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		return getCommuneByNumeroOfsEtendu(noOfs, date);
 	}
 
-	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {
+	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws InfrastructureException {
 		if (commune == null || !commune.isFraction()) {
 			return commune;
 		}
@@ -356,21 +355,6 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean estDansLeCanton(final CommuneSimple commune) throws InfrastructureException {
-		final String sigle = commune.getSigleCanton();
-		if (sigle == null || sigle.equals("")) {
-			final int noOfs = commune.getNoOFS();
-			final Canton canton = getCantonByCommune(noOfs);
-			return getVaud().equals(canton);
-		}
-		else {
-			return SIGLE_CANTON_VD.equals(sigle);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public boolean estDansLeCanton(final Commune commune) throws InfrastructureException {
 		final String sigle = commune.getSigleCanton();
 		if (sigle == null || sigle.equals("")) {
@@ -417,7 +401,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 
 		final Integer numero = adresse.getNumeroRue();
 		if (numero == null || numero == 0) {
-			final CommuneSimple commune = adresse.getCommuneAdresse();
+			final Commune commune = adresse.getCommuneAdresse();
 			return commune != null && estDansLeCanton(commune);
 		}
 		else {

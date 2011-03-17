@@ -12,7 +12,6 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -92,7 +91,7 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getListeCommunesByOID(oid);
 	}
 
-	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {
+	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws InfrastructureException {
 		return target.getCommuneFaitiere(commune, dateReference);
 	}
 
@@ -164,11 +163,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getCAT();
 	}
 
-	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
 		return target.getCommuneByAdresse(adresse, date);
 	}
 
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
 		return target.getCommuneByAdresse(adresse, date);
 	}
 
@@ -178,7 +177,7 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public CommuneSimple getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public Commune getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
 		return target.getCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
@@ -196,10 +195,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 
 	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
 		return target.getOfficesImpot();
-	}
-
-	public boolean estDansLeCanton(CommuneSimple commune) throws InfrastructureException {
-		return target.estDansLeCanton(commune);
 	}
 
 	public boolean estDansLeCanton(Commune commune) throws InfrastructureException {

@@ -5,11 +5,10 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 
-public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple {
+public class MockCommune extends MockEntityOFS implements Commune {
 
 	private static final String VAUD = "VD";
 	private static final String BERN = "BE";

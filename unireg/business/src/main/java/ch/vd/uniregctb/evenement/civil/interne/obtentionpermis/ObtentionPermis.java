@@ -19,7 +19,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -76,7 +76,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 			// à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for vaudois
 			final Adresse adressePrincipale = getAdressePrincipale();
 			if (context.getServiceInfra().estDansLeCanton(adressePrincipale)) {
-				final CommuneSimple communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale, evenement.getDateEvenement());
+				final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale, evenement.getDateEvenement());
 				if (communePrincipale == null) {
 					throw new EvenementCivilInterneException("Incohérence dans l'adresse principale");
 				}

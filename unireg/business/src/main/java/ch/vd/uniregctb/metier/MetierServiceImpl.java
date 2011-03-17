@@ -28,7 +28,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -1662,7 +1662,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 			else if (adresseDomicile.getNoOfsPays() == null || adresseDomicile.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
 				// en Suisse
-				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
+				final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
 				if (commune != null) {
 					noOfsEtendu = commune.getNoOFSEtendu();
 					typeAutoriteFiscale = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;

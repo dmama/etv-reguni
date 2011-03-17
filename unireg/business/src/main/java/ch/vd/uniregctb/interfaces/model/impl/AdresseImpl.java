@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -32,7 +32,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final String rue;
 	private final String titre;
 	private final TypeAdresseCivil typeAdresse;
-	private final CommuneSimple communeAdresse;
+	private final Commune communeAdresse;
 	private final Integer egid;
 	private final Integer ewid;
 
@@ -65,7 +65,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.rue = target.getRue();
 		this.titre = target.getTitre();
 		this.typeAdresse = TypeAdresseCivil.get(target.getTypeAdresse());
-		this.communeAdresse = CommuneSimpleImpl.get(target.getCommuneAdresse());
+		this.communeAdresse = CommuneImpl.get(target.getCommuneAdresse());
 		this.egid = string2int(target.getEgid());
 		this.ewid = string2int(target.getEwid());
 	}
@@ -136,7 +136,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		return typeAdresse;
 	}
 
-	public CommuneSimple getCommuneAdresse() {
+	public Commune getCommuneAdresse() {
 		return communeAdresse;
 	}
 

@@ -30,7 +30,6 @@ import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -67,10 +66,10 @@ public class Arrivee extends Mouvement {
 
 	private Adresse ancienneAdressePrincipale;
 	private Adresse ancienneAdresseSecondaire;
-	private CommuneSimple ancienneCommunePrincipale;
-	private CommuneSimple ancienneCommuneSecondaire;
-	private CommuneSimple nouvelleCommunePrincipale;
-	private CommuneSimple nouvelleCommuneSecondaire;
+	private Commune ancienneCommunePrincipale;
+	private Commune ancienneCommuneSecondaire;
+	private Commune nouvelleCommunePrincipale;
+	private Commune nouvelleCommuneSecondaire;
 
 	public Arrivee(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
 		super(evenement, context, options);
@@ -140,11 +139,11 @@ public class Arrivee extends Mouvement {
 		return ancienneAdresseSecondaire;
 	}
 
-	public CommuneSimple getAncienneCommunePrincipale() {
+	public Commune getAncienneCommunePrincipale() {
 		return ancienneCommunePrincipale;
 	}
 
-	public CommuneSimple getAncienneCommuneSecondaire() {
+	public Commune getAncienneCommuneSecondaire() {
 		return ancienneCommuneSecondaire;
 	}
 
@@ -156,11 +155,11 @@ public class Arrivee extends Mouvement {
 		return getAdresseSecondaire(); // par définition
 	}
 
-	public final CommuneSimple getNouvelleCommunePrincipale() {
+	public final Commune getNouvelleCommunePrincipale() {
 		return nouvelleCommunePrincipale;
 	}
 
-	public final CommuneSimple getNouvelleCommuneSecondaire() {
+	public final Commune getNouvelleCommuneSecondaire() {
 		return nouvelleCommuneSecondaire;
 	}
 
@@ -201,7 +200,7 @@ public class Arrivee extends Mouvement {
 		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE) {
 			// Verification de la commune d'arrivée
 			try {
-				final CommuneSimple communeArrivee = getCommuneArrivee(serviceInfra, this, type);
+				final Commune communeArrivee = getCommuneArrivee(serviceInfra, this, type);
 				if (communeArrivee == null) {
 					erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (adresse hors-Suisse ?)"));
 				}
@@ -214,9 +213,9 @@ public class Arrivee extends Mouvement {
 		}
 	}
 
-	private static CommuneSimple getCommuneArrivee(ServiceInfrastructureService serviceInfra, Arrivee arrivee, ArriveeType type) throws InfrastructureException {
+	private static Commune getCommuneArrivee(ServiceInfrastructureService serviceInfra, Arrivee arrivee, ArriveeType type) throws InfrastructureException {
 
-		CommuneSimple commune = null;
+		Commune commune = null;
 
 		// [UNIREG-3379] si l'egid est renseigné dans l'adresse d'arrivée, on l'utilise en priorité pour déterminer la commune d'arrivée
 		final Integer egid;
@@ -250,7 +249,7 @@ public class Arrivee extends Mouvement {
 		return commune;
 	}
 
-	private static CommuneSimple getCommuneArriveeDepuisAdresse(Arrivee arrivee, ArriveeType type) {
+	private static Commune getCommuneArriveeDepuisAdresse(Arrivee arrivee, ArriveeType type) {
 		switch (type) {
 			case ARRIVEE_ADRESSE_PRINCIPALE:
 				return arrivee.getNouvelleCommunePrincipale();
@@ -350,7 +349,7 @@ public class Arrivee extends Mouvement {
 			/*
 			 * La nouvelle adresse principale n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
 			 */
-			final CommuneSimple nouvelleCommune = getCommuneArrivee(getService().getServiceInfra(), arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
+			final Commune nouvelleCommune = getCommuneArrivee(getService().getServiceInfra(), arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
 			Assert.notNull(nouvelleCommune);
 			if (!nouvelleCommune.isVaudoise()) {
 				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale est en dehors du canton"));
@@ -390,7 +389,7 @@ public class Arrivee extends Mouvement {
 			/*
 			 * La nouvelle adresse secondaire n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
 			 */
-			final CommuneSimple nouvelleCommune = getCommuneArrivee(infraService, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
+			final Commune nouvelleCommune = getCommuneArrivee(infraService, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
 			if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
 				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune secondaire est en dehors du canton"));
 			}
@@ -463,7 +462,7 @@ public class Arrivee extends Mouvement {
 			final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), arrivee.getDate());
 
 			final boolean individuMajeur = FiscalDateHelper.isMajeurAt(individu, dateEvenement);
-			final CommuneSimple communeArrivee = getCommuneArrivee(context.getServiceInfra(), arrivee, type);
+			final Commune communeArrivee = getCommuneArrivee(context.getServiceInfra(), arrivee, type);
 
 			/*
 			 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire, ou en cas d'arrivée en résidence principale
@@ -806,8 +805,8 @@ public class Arrivee extends Mouvement {
 	 * @throws DonneesCivilesException
 	 * @throws InfrastructureException
 	 */
-	private CommuneSimple getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, InfrastructureException {
-		final CommuneSimple commune;
+	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, InfrastructureException {
+		final Commune commune;
 		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
 			final AdressesCiviles adresseDomicile = new AdressesCiviles(context.getServiceCivil().getAdresses(pp.getNumeroIndividu(), date, false));
 			if (adresseDomicile.principale != null) {
@@ -837,7 +836,7 @@ public class Arrivee extends Mouvement {
 	 * @param ensemble ensemble du ménage et des personnes physiques le composant
 	 * @return une commune selon les règles édictées plus haut
 	 */
-	private Pair<CommuneSimple, RegDate> getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique arrivant, EnsembleTiersCouple ensemble) {
+	private Pair<Commune, RegDate> getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique arrivant, EnsembleTiersCouple ensemble) {
 
 		final RegDate dateArrivee = arrivee.getDate();
 		try {
@@ -876,9 +875,9 @@ public class Arrivee extends Mouvement {
 						if (communes.size() > 2) {
 							final StringBuilder b = new StringBuilder();
 							for (int i = 1 ; i < communes.size() ; ++ i) {
-								final CommuneSimple ancienneCommune = communes.get(i - 1).getCommune();
+								final Commune ancienneCommune = communes.get(i - 1).getCommune();
 								final String nomAncienneCommune = ancienneCommune != null ? String.format("%s (%d)", ancienneCommune.getNomMinuscule(), ancienneCommune.getNoOFSEtendu()) : "HC/HS";
-								final CommuneSimple nouvelleCommune = communes.get(i).getCommune();
+								final Commune nouvelleCommune = communes.get(i).getCommune();
 								final String nomNouvelleCommune = nouvelleCommune != null ? String.format("%s (%d)", nouvelleCommune.getNomMinuscule(), nouvelleCommune.getNoOFSEtendu()) : "HC/HS";
 								if (i > 1) {
 									b.append(", ");
@@ -890,8 +889,8 @@ public class Arrivee extends Mouvement {
 						}
 						else {
 							// un seul déménagement...
-							final CommuneSimple ancienneCommune = communes.get(0).getCommune();
-							final CommuneSimple nouvelleCommune = communes.get(1).getCommune();
+							final Commune ancienneCommune = communes.get(0).getCommune();
+							final Commune nouvelleCommune = communes.get(1).getCommune();
 							if (ancienneCommune == null) {
 								// arrivée HC/HS --> réglé plus bas
 							}
@@ -908,12 +907,12 @@ public class Arrivee extends Mouvement {
 				}
 			}
 
-			final CommuneSimple residencePrincipal = getCommuneDomicile(dateDebutFor, principal);
-			final CommuneSimple residenceConjoint = getCommuneDomicile(dateDebutFor, conjoint);
+			final Commune residencePrincipal = getCommuneDomicile(dateDebutFor, principal);
+			final Commune residenceConjoint = getCommuneDomicile(dateDebutFor, conjoint);
 			final boolean principalVaudois = residencePrincipal != null && residencePrincipal.isVaudoise();
 			final boolean conjointVaudois = residenceConjoint != null && residenceConjoint.isVaudoise();
 
-			final CommuneSimple commune;
+			final Commune commune;
 
 			// aucun vaudois -> erreur !!
 			if (!principalVaudois && !conjointVaudois) {
@@ -947,7 +946,7 @@ public class Arrivee extends Mouvement {
 				}
 			}
 
-			return commune == null ? null : new Pair<CommuneSimple, RegDate>(commune, dateDebutFor);
+			return commune == null ? null : new Pair<Commune, RegDate>(commune, dateDebutFor);
 		}
 		catch (InfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
@@ -979,7 +978,7 @@ public class Arrivee extends Mouvement {
 		Assert.notNull(menageCommun);
 
 		final EnsembleTiersCouple ensemble = getService().getEnsembleTiersCouple(menageCommun, arrivee.getDate());
-		final Pair<CommuneSimple, RegDate> infosFor = getCommuneForSuiteArriveeCouple(arrivee, arrivant, ensemble);
+		final Pair<Commune, RegDate> infosFor = getCommuneForSuiteArriveeCouple(arrivee, arrivant, ensemble);
 		if (infosFor == null) {
 			// pas de for à créer...
 			return;
@@ -987,7 +986,7 @@ public class Arrivee extends Mouvement {
 
 		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
 		final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), infosFor.getSecond());
-		final CommuneSimple commune = infosFor.getFirst();
+		final Commune commune = infosFor.getFirst();
 
 		try {
 
@@ -1389,15 +1388,15 @@ public class Arrivee extends Mouvement {
 		}
 
 		try {
-			final CommuneSimple nouvelleCommunePrincipale = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
-			final CommuneSimple ancienneCommunePrincipale = arrivee.getAncienneCommunePrincipale();
+			final Commune nouvelleCommunePrincipale = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
+			final Commune ancienneCommunePrincipale = arrivee.getAncienneCommunePrincipale();
 
 			if ((ancienneCommunePrincipale == null && nouvelleCommunePrincipale != null)
 					|| (nouvelleCommunePrincipale != null && nouvelleCommunePrincipale.getNoOFSEtendu() != ancienneCommunePrincipale.getNoOFSEtendu())) {
 				return ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE;
 			}
-			final CommuneSimple nouvelleCommuneSecondaire = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
-			final CommuneSimple ancienneCommuneSecondaire = arrivee.getAncienneCommuneSecondaire();
+			final Commune nouvelleCommuneSecondaire = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
+			final Commune ancienneCommuneSecondaire = arrivee.getAncienneCommuneSecondaire();
 			if ((ancienneCommuneSecondaire == null && nouvelleCommuneSecondaire != null)
 					|| (nouvelleCommuneSecondaire != null && nouvelleCommuneSecondaire.getNoOFSEtendu() != ancienneCommuneSecondaire.getNoOFSEtendu())) {
 				return ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE;
@@ -1445,7 +1444,7 @@ public class Arrivee extends Mouvement {
 		}
 	}
 
-	protected boolean isDansLeCanton(CommuneSimple commune) {
+	protected boolean isDansLeCanton(Commune commune) {
 		return commune != null && commune.isVaudoise();
 	}
 }

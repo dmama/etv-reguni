@@ -12,7 +12,6 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -272,7 +271,7 @@ public interface ServiceInfrastructureService {
 	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneSimple getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException;
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException;
 
 	/**
 	 * Résoud la commune d'une adresse générique (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)
@@ -282,7 +281,7 @@ public interface ServiceInfrastructureService {
 	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException;
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException;
 
 	/**
 	 * Retourne le numéro Ofs de la commune sur laquelle un bâtiment est construit.
@@ -306,7 +305,7 @@ public interface ServiceInfrastructureService {
 	 * @return une commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneSimple getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
+	public Commune getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
 
 	/**
 	 * Résoud la commune faîtière d'une fraction de commune (renvoie la commune elle-même si ce n'est pas une fraction)
@@ -316,7 +315,7 @@ public interface ServiceInfrastructureService {
 	 * @return la commune faîtière de la fraction donnée à la date donnée
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException;
+	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws InfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro de collectivité administrative de l'office d'impôt
@@ -344,13 +343,6 @@ public interface ServiceInfrastructureService {
 	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	public boolean estDansLeCanton(final Rue rue) throws InfrastructureException;
-
-	/**
-	 * @param commune une commune
-	 * @return <b>true</b> si la commune spécifiée est dans le canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	public boolean estDansLeCanton(final CommuneSimple commune) throws InfrastructureException;
 
 	/**
 	 * @param commune une commune
