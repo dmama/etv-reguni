@@ -12,6 +12,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
+import ch.vd.uniregctb.common.MimeTypeHelper;
+
 public class JspTagDocumentIcon extends BodyTagSupport {
 
 	/**
@@ -21,20 +23,21 @@ public class JspTagDocumentIcon extends BodyTagSupport {
 
 	static {
 		typeMapping = new HashMap<String, String>();
-		typeMapping.put("text/csv", "/images/csv_icon.png");
-		typeMapping.put("text/plain", "/images/txt_icon.png");
-		typeMapping.put("application/pdf", "/images/pdf_icon.png");
-		typeMapping.put("application/xml", "/images/xml_icon.png");
-		typeMapping.put("text/xml", "/images/xml_icon.png");
-		typeMapping.put("application/zip", "/images/zip_icon.png");
-		typeMapping.put("application/msword ", "/images/doc_icon.png");
-		typeMapping.put("application/vnd.hp-pcl", "/images/pcl_icon.png");
-		typeMapping.put("application/x-pcl ", "/images/pcl_icon.png");
-		typeMapping.put("application/pcl ", "/images/pcl_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_CSV, "/images/csv_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_PLAINTEXT, "/images/txt_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_PDF, "/images/pdf_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_XML, "/images/xml_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_APPXML, "/images/xml_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_ZIP, "/images/zip_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_MSWORD, "/images/doc_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_HPPCL, "/images/printer_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_XPCL, "/images/printer_icon.png");
+		typeMapping.put(MimeTypeHelper.MIME_PCL, "/images/printer_icon.png");
 	}
 
 	private String mimeType;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
 	}

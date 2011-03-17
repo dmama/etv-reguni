@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 
 import org.apache.commons.codec.binary.Base64InputStream;
 
+import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.StreamUtils;
 
 public class PrintPCLManagerImpl implements PrintPCLManager{
@@ -39,8 +40,10 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 		try {
 			response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
-			response.setContentType(getActualMimeType());
-			response.setHeader("Content-disposition", String.format("%s; filename=\"print.%s\"", isAttachmentContent() ? "attachment" : "inline", isLocalApp() ? "chvd" : "pcl"));
+			final String actualMimeType = getActualMimeType();
+			final String filenameExtension = MimeTypeHelper.getFileExtensionForType(actualMimeType);
+			response.setContentType(actualMimeType);
+			response.setHeader("Content-disposition", String.format("%s; filename=\"print%s\"", isAttachmentContent() ? "attachment" : "inline", filenameExtension));
 			response.setHeader( "Pragma", "public" );
 			response.setHeader("cache-control", "no-cache");
 			response.setHeader("Cache-control", "must-revalidate");
@@ -83,7 +86,7 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 
 	@Override
 	public String getActualMimeType() {
-		return isLocalApp() ? "application/x-chvd" : "application/pcl";
+		return isLocalApp() ? MimeTypeHelper.MIME_CHVD : MimeTypeHelper.MIME_PCL;
 	}
 
 	@Override

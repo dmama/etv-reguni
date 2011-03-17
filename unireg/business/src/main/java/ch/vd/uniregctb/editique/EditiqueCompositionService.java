@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 public interface EditiqueCompositionService {
 
 	/**
-	 * Imprime la déclaration spécifiée pour une visualisation on-line, et retourne le document imprimé.
+	 * Imprime la déclaration spécifiée pour une visualisation on-line, et retourne le document imprimé. Il n'y a pas d'envoi vers inbox si c'est trop lent.
 	 * <p>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
 	 * {@link ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinaire, RegDate)}.
@@ -28,19 +28,19 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la déclaration spécifiée pour une visualisation on-line et retourne le document imprimé
+	 * Imprime la déclaration spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
 	 * <p>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
 	 * {@link ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinaire, RegDate, TypeDocument, List)}.
+	 *
 	 *
 	 * @param declaration la déclaration d'impôt ordinaire à imprimer
 	 * @param dateEvenement la date d'impression
 	 * @param typeDocument le type de document
 	 * @param annexes la liste des annexes
-	 * @param isDuplicata true si impression d'un duplicata
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws
+	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws
 			EditiqueException, JMSException;
 
 	/**

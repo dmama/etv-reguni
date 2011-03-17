@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -102,10 +103,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, dateEvenement, null, null, false);
+		return imprimeDIOnline(declaration, dateEvenement, null, null, false, true);
 	}
 
-	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
+		return imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true, false);
+	}
+
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata, boolean forceSynchrone) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
@@ -122,7 +127,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		editiqueDI.setDocumentArray(documents);
 		final String typeDocumentMessage = impressionDIHelper.calculPrefixe(declaration);
 		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
-		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocumentMessage, TypeFormat.PCL, mainDocument, false);
+		if (forceSynchrone) {
+			return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, TypeFormat.PCL, mainDocument, false);
+		}
+		else {
+			final String description = String.format("Document '%s %d' du contribuable %s", typeDocument.getDescription(), declaration.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
+			return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, TypeFormat.PCL, mainDocument, false, description);
+		}
 	}
 
 	public void imprimeDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException {
@@ -157,7 +168,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String prefixe = impressionNouveauxDossiersHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionNouveauxDossiersHelper.remplitNouveauDossier(contribuables);
 		final String nomDocument = impressionNouveauxDossiersHelper.construitIdDocument(contribuables.get(0));
-		return editiqueService.creerDocumentImmediatement(nomDocument, prefixe, TypeFormat.PDF, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PDF, document, false);
 	}
 
 	public void imprimeSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException {
@@ -181,7 +192,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createOnlineParams(declaration, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur(), dateEvenement);
 		final FichierImpressionDocument document = impressionSommationDIHelper.remplitSommationDI(params);
 		final String nomDocument = impressionSommationDIHelper.construitIdDocument(declaration);
-		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PDF, document, true);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PDF, document, true);
 	}
 
 	/**
@@ -224,7 +235,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String typeDocument = impressionSommationLRHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
 		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
-		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PCL, document, true);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PCL, document, true);
 	}
 
 	public EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinaire di, DelaiDeclaration delai) throws EditiqueException, JMSException {
@@ -233,7 +244,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1]);
 		final FichierImpressionDocument document = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params);
 		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(delai);
-		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PDF, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PDF, document, false);
 	}
 
 	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException {
@@ -241,14 +252,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
 		final String typeDocumentMessage = impressionLRHelper.calculPrefixe();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
-		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocumentMessage, TypeFormat.PCL, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, TypeFormat.PCL, document, false);
 	}
 
 	public EditiqueResultat imprimeTaxationOfficeOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException {
 		final String prefixe = impressionTaxationOfficeHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionTaxationOfficeHelper.remplitTaxationOffice(declaration);
 		final String nomDocument = impressionTaxationOfficeHelper.construitIdDocument(declaration);
-		return editiqueService.creerDocumentImmediatement(nomDocument, prefixe, TypeFormat.PCL, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PCL, document, false);
 	}
 
 	public void imprimeTaxationOfficeBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException {
@@ -264,6 +275,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final ImpressionBordereauMouvementDossierHelperParams params = new ImpressionBordereauMouvementDossierHelperParams(bordereau, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur());
 		final FichierImpressionDocument document = impressionBordereauMouvementDossierHelper.remplitBordereau(params);
 		final String nomDocument = impressionBordereauMouvementDossierHelper.construitIdDocument(bordereau);
-		return editiqueService.creerDocumentImmediatement(nomDocument, prefixe, TypeFormat.PCL, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PCL, document, false);
 	}
 }

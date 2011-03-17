@@ -94,34 +94,47 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		final List<EditiqueResultat> events = new ArrayList<EditiqueResultat>();
 
 		listener.setStorageService(new EditiqueRetourImpressionStorageService() {
+			@Override
 			public void onArriveeRetourImpression(EditiqueResultat resultat) {
 				events.add(resultat);
 			}
 
+			@Override
+			public void registerTrigger(String nomDocument, RetourImpressionTrigger trigger) {
+				throw new NotImplementedException();
+			}
+
+			@Override
 			public EditiqueResultat getDocument(String nomDocument, long timeout) {
 				throw new NotImplementedException();
 			}
 
+			@Override
 			public int getDocumentsRecus() {
 				throw new NotImplementedException();
 			}
 
+			@Override
 			public int getDocumentsEnAttenteDeDispatch() {
 				throw new NotImplementedException();
 			}
 
+			@Override
 			public int getCleanupPeriod() {
 				throw new NotImplementedException();
 			}
 
+			@Override
 			public void setCleanupPeriod(int period) {
 				throw new NotImplementedException();
 			}
 
+			@Override
 			public int getDocumentsPurges() {
 				throw new NotImplementedException();
 			}
 
+			@Override
 			public Date getDateDernierePurgeEffective() {
 				throw new NotImplementedException();
 			}

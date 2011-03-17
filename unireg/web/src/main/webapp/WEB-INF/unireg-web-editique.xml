@@ -16,15 +16,17 @@
 	</bean>
 
 	<bean id="retourImpressionStorageService" class="ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl">
-		<property name="cleanupPeriod" value="${editique.locale.attente.timeout}"/>
+		<property name="cleanupPeriod" value="${editique.locale.sync.attente.timeout}"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.impl.EditiqueServiceImpl" lazy-init="true">
 		<property name="sender" ref="evenementEditiqueSender" />
 		<property name="retourImpressionStorage" ref="retourImpressionStorageService" />
-		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
+		<property name="syncReceiveTimeout" value="${editique.locale.sync.attente.timeout}" />
+		<property name="asyncReceiveDelay" value="${editique.locale.async.attente.delai}" />
 		<property name="copieConformeService" ref="copieConformeService" />
+		<property name="inboxService" ref="inboxService" />
 	</bean>
 
 	<bean id="copieConformeService" class="ch.vd.uniregctb.editique.impl.EditiqueCopieConformeServiceImpl">

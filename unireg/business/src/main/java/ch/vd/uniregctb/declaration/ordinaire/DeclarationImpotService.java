@@ -112,7 +112,7 @@ public interface DeclarationImpotService {
 
 	/**
 	 * Envoie à l'impression le duplicata de la déclaration spécifiée pour une visualisation on-line. Cette
-	 * méthode retourne  directement le document d'impression
+	 * méthode retourne  directement le document d'impression ou, s'il est trop long à venir, re-route sur l'inbox
 	 *
 	 * @param declaration
 	 *            la déclaration d'impôt ordinaire à imprimer

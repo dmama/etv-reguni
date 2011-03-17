@@ -783,7 +783,10 @@
 		<surefire.useFile>false</surefire.useFile>
 
 		<!-- Editique -->
-		<editique.locale.attente.timeout>120</editique.locale.attente.timeout>
+		<!-- Temps de timeout lors des impressions locales qui doivent être synchrones -->
+		<editique.locale.sync.attente.timeout>120</editique.locale.sync.attente.timeout>
+		<!-- Délai d'attente avant qu'une impression locale pas nécessairement synchrone soit re-routée vers l'inbox du demandeur -->
+		<editique.locale.async.attente.delai>15</editique.locale.async.attente.delai>
 	</properties>
 
 </project>

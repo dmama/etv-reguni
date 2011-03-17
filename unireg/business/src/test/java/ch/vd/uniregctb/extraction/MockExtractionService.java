@@ -19,7 +19,7 @@ public class MockExtractionService implements ExtractionService {
 
 	private static final String RESULT_STREAM_CONTENT = "Travail effectué!";
 
-	private static final String FILENAME = "notice.txt";
+	private static final String FILENAME_RADICAL = "notice";
 
 	private final Map<UUID, ExtractionJob> map = Collections.synchronizedMap(new HashMap<UUID, ExtractionJob>());
 
@@ -114,7 +114,7 @@ public class MockExtractionService implements ExtractionService {
 	}
 
 	private ExtractionJob buildMockJob(String visa) {
-		final ExtractionJob job = new MockExtractionJob(visa, new ExtractionResultOk(buildResultStream(), MIME_TYPE, FILENAME, false));
+		final ExtractionJob job = new MockExtractionJob(visa, new ExtractionResultOk(buildResultStream(), MIME_TYPE, FILENAME_RADICAL, false));
 		map.put(job.getUuid(), job);
 		return job;
 	}

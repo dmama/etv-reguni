@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.editique.impl;
 
 import junit.framework.Assert;
+import org.apache.commons.lang.mutable.MutableObject;
 import org.junit.Test;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.RetourImpressionTrigger;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 import ch.vd.uniregctb.stats.LoadMonitor;
 import ch.vd.uniregctb.stats.ServiceStats;
@@ -331,6 +333,109 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			Assert.assertEquals(nomDocumentVoyageurTemporel, resultat.getIdDocument());
 			Assert.assertTrue(tsFin - tsDebut < 50);
 		}
+	}
+
+	@Test
+	public void testTriggerEnregistreAvantReception() throws Exception {
+
+		// on enregistre un trigger, on attend un peu, il ne doit pas avoir bougé ;
+		// quand le document du trigger arrive, on doit le voir dans le trigger
+		final MutableObject res = new MutableObject(null);
+		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
+			@Override
+			public void trigger(EditiqueResultat resultat) throws Exception {
+				res.setValue(resultat);
+			}
+		};
+
+		final String nomDocument = "Mon document qui déclenche tout";
+		service.registerTrigger(nomDocument, myTrigger);
+
+		// on attend un peu... rien ne bouge, normalement
+		Thread.sleep(1000);
+
+		Assert.assertNull("Pourquoi le résultat est-il déjà revenu?", res.getValue());
+
+		// maintenant le document arrive...
+		service.onArriveeRetourImpression(buildResultat(nomDocument));
+
+		// on laisse la main quelques instants...
+		Thread.sleep(100);
+
+		final Object value = res.getValue();
+		Assert.assertNotNull("Pas encore arrivé ?", value);
+		Assert.assertTrue(value instanceof EditiqueResultat);
+
+		final EditiqueResultat resultatRecu = (EditiqueResultat) value;
+		Assert.assertEquals(nomDocument, resultatRecu.getIdDocument());
+	}
+
+	@Test
+	public void testTriggerEnregistreApresReception() throws Exception {
+
+		// arrivée d'un document, on attends un peu, puis on enregistre le trigger
+		// dès le retour de la méthode d'enregistrement, le trigger doit déjà avoir
+		// été déclanché
+
+		// maintenant le document arrive...
+		final String nomDocument = "Mon document qui arrive entre deux...";
+		service.onArriveeRetourImpression(buildResultat(nomDocument));
+
+		// on attend un peu... rien ne bouge, normalement
+		Thread.sleep(500);
+
+        // on enregistre un trigger
+		final MutableObject res = new MutableObject(null);
+		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
+			@Override
+			public void trigger(EditiqueResultat resultat) throws Exception {
+				res.setValue(resultat);
+			}
+		};
+
+		Assert.assertNull("Initialisation bizarre...", res.getValue());
+		service.registerTrigger(nomDocument, myTrigger);
+
+		// on laisse la main quelques instants...
+		Thread.sleep(100);
+
+		final Object value = res.getValue();
+		Assert.assertNotNull("Le trigger n'a pas encore été appelé ? Bizarre...", value);
+		Assert.assertTrue(value instanceof EditiqueResultat);
+
+		final EditiqueResultat resultatRecu = (EditiqueResultat) value;
+		Assert.assertEquals(nomDocument, resultatRecu.getIdDocument());
+	}
+
+	@Test
+	public void testTriggerEnregistreSurMauvaisDocument() throws Exception {
+
+		// on enregistre un trigger, on attend un peu, il ne doit pas avoir bougé ;
+		// quand le document du trigger arrive, il ne doit toujours pas bouger (ce n'est pas le bon document !)
+		final MutableObject res = new MutableObject(null);
+		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
+			@Override
+			public void trigger(EditiqueResultat resultat) throws Exception {
+				res.setValue(resultat);
+			}
+		};
+
+		final String nomDocumentAttendu = "Mon document qui est attendu";
+		final String nomDocumentArrive = "Mon document qui arrive";
+		service.registerTrigger(nomDocumentAttendu, myTrigger);
+
+		// on attend un peu... rien ne bouge, normalement
+		Thread.sleep(1000);
+
+		Assert.assertNull("Pourquoi le résultat est-il revenu?", res.getValue());
+
+		// maintenant le document arrive...
+		service.onArriveeRetourImpression(buildResultat(nomDocumentArrive));
+
+		// on laisse la main quelques instants...
+		Thread.sleep(1000);
+
+		Assert.assertNull("Pourquoi le trigger a-t-il été lancé ?", res.getValue());
 	}
 
 	private static long currentTimeMillis() {

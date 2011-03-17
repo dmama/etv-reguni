@@ -106,7 +106,7 @@ public final class EditiqueResultatImpl implements EditiqueResultat {
 	 * @param timestampReceived
 	 *            le timestamp de la reception du document.
 	 */
-	void setTimestampReceived(long timestampReceived) {
+	public void setTimestampReceived(long timestampReceived) {
 		this.timestampReceived = timestampReceived;
 	}
 

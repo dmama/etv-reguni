@@ -3,9 +3,7 @@ package ch.vd.uniregctb.admin.inbox;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import ch.vd.uniregctb.common.StreamUtils;
+import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
 import ch.vd.uniregctb.inbox.InboxService;
@@ -35,7 +33,7 @@ public class InboxContentController extends AbstractController implements Initia
 	private static final String ACTION_DOWNLOAD = "dl";
 
 	private Map<String, ContentDeliveryStrategy> contentDeliveryStrategies;
-	private ContentDeliveryStrategy defaultDeliveryStrategy;
+	private final ContentDeliveryStrategy defaultDeliveryStrategy = new PassThroughContentDeliveryStrategy();
 
 	private InboxService inboxService;
 
@@ -53,87 +51,13 @@ public class InboxContentController extends AbstractController implements Initia
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		// initialisation de la stratégie associée aux flux PCL
 		final Map<String, ContentDeliveryStrategy> map = new HashMap<String, ContentDeliveryStrategy>();
 		final PclContentDeliveryStrategy pclContentDeliveryStrategy = new PclContentDeliveryStrategy(pclManager);
-		map.put("application/pcl", pclContentDeliveryStrategy);
-		map.put("application/x-pcl", pclContentDeliveryStrategy);
-		map.put("application/vnd.hp-pcl", pclContentDeliveryStrategy);
+		map.put(MimeTypeHelper.MIME_PCL, pclContentDeliveryStrategy);
+		map.put(MimeTypeHelper.MIME_XPCL, pclContentDeliveryStrategy);
+		map.put(MimeTypeHelper.MIME_HPPCL, pclContentDeliveryStrategy);
 		contentDeliveryStrategies = map;
-
-		defaultDeliveryStrategy = new PassThroughContentDeliveryStrategy();
-	}
-
-	/**
-	 * Différentes stratégies pour reconstituer le flux à télécharger
-	 */
-	private static interface ContentDeliveryStrategy {
-
-		/**
-		 * @param mimeType le type MIME original
-		 * @return le type MIME définitif du contenu (en cas d'encapsulation du flux initial dans autre chose, ce type n'est pas forcément celui du flux initial)
-		 */
-		String getMimeType(String mimeType);
-
-		/**
-		 * @return <code>true</code> si la "content-disposition" doit être "attachment", <code>false</code> s'il doit être "inline"
-		 */
-		boolean isAttachment();
-
-		/**
-		 * Copie du flux initial dans le flux de la réponse HTTP
-		 * @param in flux initial
-		 * @param out flux de la réponse HTTP
-		 * @throws IOException en cas de problème à la recopie
-		 */
-		void copyToOutputStream(InputStream in, OutputStream out) throws IOException;
-	}
-
-	/**
-	 * Stratégie par défaut, sans aucune encapsulation
-	 */
-	private static class PassThroughContentDeliveryStrategy implements ContentDeliveryStrategy {
-
-		@Override
-		public String getMimeType(String mimeType) {
-			return mimeType;
-		}
-
-		@Override
-		public boolean isAttachment() {
-			return true;
-		}
-
-		@Override
-		public void copyToOutputStream(InputStream in, OutputStream out) throws IOException {
-			StreamUtils.copy(in, out);
-		}
-	}
-
-	/**
-	 * Stratégie utilisée par les flux PCL (avec ou sans encapsulation localapp)
-	 */
-	private static class PclContentDeliveryStrategy implements ContentDeliveryStrategy {
-
-		private final PrintPCLManager pclManager;
-
-		private PclContentDeliveryStrategy(PrintPCLManager pclManager) {
-			this.pclManager = pclManager;
-		}
-
-		@Override
-		public String getMimeType(String mimeType) {
-			return pclManager.getActualMimeType();
-		}
-
-		@Override
-		public boolean isAttachment() {
-			return pclManager.isAttachmentContent();
-		}
-
-		@Override
-		public void copyToOutputStream(InputStream in, OutputStream out) throws IOException {
-			pclManager.copyToOutputStream(in, out);
-		}
 	}
 
 	private ContentDeliveryStrategy getStrategy(String mimeType) {
@@ -165,13 +89,14 @@ public class InboxContentController extends AbstractController implements Initia
 				final InputStream in = attachment.getContent();
 				try {
 					final String mimeType = attachment.getMimeType();
-					final String filename = attachment.getFilename();
 
 					final ServletOutputStream out = response.getOutputStream();
 					response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
 					final ContentDeliveryStrategy strategy = getStrategy(mimeType);
-					response.setContentType(strategy.getMimeType(mimeType));
+					final String actualMimeType = strategy.getMimeType(mimeType);
+					response.setContentType(actualMimeType);
+					final String filename = String.format("%s%s", attachment.getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(actualMimeType));
 					response.setHeader("Content-disposition", String.format("%s; filename=\"%s\"", strategy.isAttachment() ? "attachment" : "inline", filename));
 					response.setHeader("Pragma", "public");
 					response.setHeader("cache-control", "no-cache");

@@ -41,10 +41,12 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 	private DeclarationImpotEditManager diEditManager;
 	private PrintPCLManager printPCLManager;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiEditManager(DeclarationImpotEditManager diEditManager) {
 		this.diEditManager = diEditManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPrintPCLManager(PrintPCLManager printPCLManager) {
 		this.printPCLManager = printPCLManager;
 	}
@@ -112,60 +114,51 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse,
-	 *      org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-
-		return mav;
-	}
-
-	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
-		TracePoint tp = TracingManager.begin();
+		final TracePoint tp = TracingManager.begin();
+		try {
 
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
+			final ModelAndView mav = super.onSubmit(request, response, command, errors);
 
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
-		DeclarationImpotImpressionView bean = (DeclarationImpotImpressionView) command;
+			final String action = request.getParameter(ACTION_PARAMETER_NAME);
+			final DeclarationImpotImpressionView bean = (DeclarationImpotImpressionView) command;
 
-		final Long idDi = bean.getIdDI();
-		final Long tiersId = diEditManager.getTiersId(idDi);
-		checkAccesDossierEnEcriture(tiersId);
+			final Long idDi = bean.getIdDI();
+			final Long tiersId = diEditManager.getTiersId(idDi);
+			checkAccesDossierEnEcriture(tiersId);
 
-		if(action.equals(EFFACER_PARAMETER_VALUE)) {
-
-			HttpSession session = request.getSession();
-			session.setAttribute(IMPRESSION_DI_CRITERIA_NAME, bean);
-			mav.setView(new RedirectView("impression.do"));
-		}
-		else if (action.equals(DUPLICATA_VALUE)) {
-
-			final EditiqueResultat result = diEditManager.envoieImpressionLocalDuplicataDI(bean);
-			if (result != null && result.getDocument() != null) {
-				printPCLManager.openPclStream(response, result.getDocument());
+			if(action.equals(EFFACER_PARAMETER_VALUE)) {
+				final HttpSession session = request.getSession();
+				session.setAttribute(IMPRESSION_DI_CRITERIA_NAME, bean);
+				mav.setView(new RedirectView("impression.do"));
 			}
-			else {
-				final String message = String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(result));
-				throw new EditiqueCommunicationException(message);
+			else if (action.equals(DUPLICATA_VALUE)) {
+
+				final EditiqueResultat result = diEditManager.envoieImpressionLocalDuplicataDI(bean);
+				if (result != null && result.getDocument() != null) {
+					printPCLManager.openPclStream(response, result.getDocument());
+				}
+				else if (result == null) {
+					flash(String.format("L'impression n'a pas encore été réalisée, elle sera consultable dans votre boîte de réception dès qu'elle sera disponible"));
+					mav.setView(new RedirectView(String.format("edit.do?action=editdi&id=%d", idDi)));
+				}
+				else {
+					final String message = String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(result));
+					throw new EditiqueCommunicationException(message);
+				}
 			}
+
+			return mav;
 		}
-
-		TracingManager.end(tp);
-
-		TracingManager.outputMeasures(LOGGER);
-
-		return mav;
+		finally {
+			TracingManager.end(tp);
+			TracingManager.outputMeasures(LOGGER);
+		}
 	}
 
 }

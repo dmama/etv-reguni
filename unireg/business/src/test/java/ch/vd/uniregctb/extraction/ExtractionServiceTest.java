@@ -62,7 +62,7 @@ public class ExtractionServiceTest extends BusinessTest {
 			@Override
 			public ExtractionResult doExtraction() {
 				final InputStream in = new ByteArrayInputStream(REPONSE.getBytes());
-				return new ExtractionResultOk(in, "text/plain", "tip.txt", wasInterrupted());
+				return new ExtractionResultOk(in, "text/plain", "tip", wasInterrupted());
 			}
 
 			@Override
@@ -90,7 +90,7 @@ public class ExtractionServiceTest extends BusinessTest {
 		final InboxAttachment attachment = elt.getAttachment();
 		Assert.assertNotNull(attachment);
 		Assert.assertEquals("text/plain", attachment.getMimeType());
-		Assert.assertEquals("tip.txt", attachment.getFilename());
+		Assert.assertEquals("tip", attachment.getFilenameRadical());
 
 		final InputStream in = attachment.getContent();
 		Assert.assertNotNull(in);
@@ -174,7 +174,7 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public String getFilename() {
+			public String getFilenameRadical() {
 				return "data";
 			}
 
@@ -203,7 +203,7 @@ public class ExtractionServiceTest extends BusinessTest {
 		final InboxAttachment attachment = elt.getAttachment();
 		Assert.assertNotNull(attachment);
 		Assert.assertEquals("application/octet-stream", attachment.getMimeType());
-		Assert.assertEquals("data", attachment.getFilename());
+		Assert.assertEquals("data", attachment.getFilenameRadical());
 
 		final InputStream in = attachment.getContent();
 		Assert.assertNotNull(in);
@@ -299,7 +299,7 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public String getFilename() {
+			public String getFilenameRadical() {
 				return "data";
 			}
 
@@ -328,7 +328,7 @@ public class ExtractionServiceTest extends BusinessTest {
 		final InboxAttachment attachment = elt.getAttachment();
 		Assert.assertNotNull(attachment);
 		Assert.assertEquals("application/octet-stream", attachment.getMimeType());
-		Assert.assertEquals("data", attachment.getFilename());
+		Assert.assertEquals("data", attachment.getFilenameRadical());
 
 		final InputStream in = attachment.getContent();
 		Assert.assertNotNull(in);
@@ -359,7 +359,7 @@ public class ExtractionServiceTest extends BusinessTest {
 			public ExtractionResult doExtraction() throws Exception {
 				Thread.sleep(500L);     // 500ms d'attente
 				final InputStream in = new ByteArrayInputStream(REPONSE.getBytes());
-				return new ExtractionResultOk(in, "text/plain", "tip.txt", wasInterrupted());
+				return new ExtractionResultOk(in, "text/plain", "tip", wasInterrupted());
 			}
 
 			@Override

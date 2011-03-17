@@ -461,8 +461,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 				final InputStream in = resultOk.getStream();
 				if (in != null) {
 					final String mimeType = resultOk.getMimeType();
-					final String filename = resultOk.getFilename();
-					attachment = new InboxAttachment(mimeType, in, filename);
+					final String filenameRadical = resultOk.getFilenameRadical();
+					attachment = new InboxAttachment(mimeType, in, filenameRadical);
 				}
 			}
 		}
@@ -498,8 +498,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		action.run(extractor, rapportFinal, elements);
 		final InputStream stream = extractor.getStreamForExtraction(rapportFinal);
 		final String mimeType = extractor.getMimeType();
-		final String filename = extractor.getFilename();
-		return new ExtractionResultOk(stream, mimeType, filename, extractor.wasInterrupted());
+		final String filenameRadical = extractor.getFilenameRadical();
+		return new ExtractionResultOk(stream, mimeType, filenameRadical, extractor.wasInterrupted());
 	}
 
 	/**

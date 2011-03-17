@@ -61,7 +61,8 @@ public class UniregWsTomcatRunner {
 		System.setProperty("host-interfaces.factory", "weblogic.jndi.WLInitialContextFactory");
 		System.setProperty("host-interfaces.ejb-proxy-class", "org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean");
 
-		System.setProperty("editique.locale.attente.timeout", "30");
+		System.setProperty("editique.locale.sync.attente.timeout", "30");
+		System.setProperty("editique.locale.async.attente.delai", "10");
 
 		System.setProperty("oracle.hibernate.dialect", "ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar");
 		System.setProperty("oracle.hibernate.query.substitutions", "true 1, false 0");

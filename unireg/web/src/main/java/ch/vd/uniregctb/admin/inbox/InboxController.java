@@ -278,11 +278,9 @@ public class InboxController extends ParameterizableViewController implements Aj
 				row.addTableData(new TableData(new SimpleText(JspTagDuration.buildDisplayText(elt.getTimeToExpiration(), getMessageResource("label.inbox.sans.expiration"), getMessageResource("label.inbox.expire"), true))));
 				final InboxAttachment attachment = elt.getAttachment();
 				if (attachment != null) {
-					final Image img = new Image(JspTagDocumentIcon.getImageUri(contextPath, attachment.getMimeType()), attachment.getFilename());
+					final Image img = new Image(JspTagDocumentIcon.getImageUri(contextPath, attachment.getMimeType()), attachment.getFilenameRadical());
 					final Anchor link = new Anchor(String.format("%s/admin/inbox-content.do?action=dl&amp;id=%s", contextPath, elt.getUuid()), img);
-					final TableData td = new TableData(link);
-					td.addAttribute("style", "text-align: center;");
-					row.addTableData(td);
+					row.addTableData(new TableData(link));
 				}
 				else {
 					row.addTableData(new TableData(new SimpleText(NBSP)));

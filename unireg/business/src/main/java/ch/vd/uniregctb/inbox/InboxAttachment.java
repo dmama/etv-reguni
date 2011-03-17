@@ -10,20 +10,20 @@ public class InboxAttachment {
 
 	private final String mimeType;
 	private final TempFileInputStreamProvider contentProvider;
-	private final String filename;
+	private final String filenameRadical;
 
 	/**
 	 * Attachement à un élément de la boîte de réception
 	 *
 	 * @param mimeType type MIME du contenu
 	 * @param content contenu de l'attachement (le flux sera consommé directement et fermé)
-	 * @param filename nom de fichier type pour cet attachement
+	 * @param filenameRadical radical du nom de fichier type pour cet attachement (i.e. sans l'extension, qui pourra être construite plus tard d'après le mime-type)
 	 * @throws IOException en cas de problème avec le flux
 	 */
-	public InboxAttachment(String mimeType, InputStream content, String filename) throws IOException {
+	public InboxAttachment(String mimeType, InputStream content, String filenameRadical) throws IOException {
 		this.mimeType = mimeType;
 		this.contentProvider = new TempFileInputStreamProvider("ur-inbox-elt-", content);
-		this.filename = filename;
+		this.filenameRadical = filenameRadical;
 	}
 
 	public String getMimeType() {
@@ -34,13 +34,12 @@ public class InboxAttachment {
 		return contentProvider.getInputStream();
 	}
 
-	public String getFilename() {
-		return filename;
+	public String getFilenameRadical() {
+		return filenameRadical;
 	}
 
 	/**
-	 * Appelé lorsque l'élément est envoyé aux oubliettes (pour la clôture du flux d'entrée
-	 * et d'éventuels nettoyages)
+	 * Appelé lorsque l'élément est envoyé aux oubliettes (pour d'éventuels nettoyages)
 	 */
 	public void onDiscard() {
 		contentProvider.close();

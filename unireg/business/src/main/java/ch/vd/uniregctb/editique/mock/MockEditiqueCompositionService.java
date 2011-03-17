@@ -29,8 +29,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 		return resultat;
 	}
 
-	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes,
-	                                        boolean isDuplicata) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 

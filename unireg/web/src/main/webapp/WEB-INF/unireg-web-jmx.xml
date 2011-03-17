@@ -88,7 +88,7 @@
 
 	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">
 		<property name="storageService" ref="retourImpressionStorageService"/>
-		<property name="callerTimeout" value="${editique.locale.attente.timeout}"/>
+		<property name="callerTimeout" value="${editique.locale.sync.attente.timeout}"/>
 	</bean>
 
 	<bean name="extractionServiceJmxBean" class="ch.vd.uniregctb.jmx.ExtractionServiceJmxBeanImpl">

@@ -270,11 +270,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
-			List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
-		EditiqueResultat resultat;
+	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+		final EditiqueResultat resultat;
 		try {
-			resultat = editiqueCompositionService.imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true);
+			resultat = editiqueCompositionService.imprimeDuplicataDIOnline(declaration, dateEvenement, typeDocument, annexes);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);

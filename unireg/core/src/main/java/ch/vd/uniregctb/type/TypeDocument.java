@@ -21,6 +21,11 @@ public enum TypeDocument {
 		public boolean isOrdinaire() {
 			return true;
 		}
+
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt ordinaire complète";
+		}
 	},
 
 	/**
@@ -32,6 +37,11 @@ public enum TypeDocument {
 		@Override
 		public boolean isOrdinaire() {
 			return true;
+		}
+
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt ordinaire complète";
 		}
 	},
 
@@ -45,6 +55,11 @@ public enum TypeDocument {
 		public boolean isOrdinaire() {
 			return true;
 		}
+
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt ordinaire VaudTax";
+		}
 	},
 
 	/**
@@ -56,6 +71,11 @@ public enum TypeDocument {
 		@Override
 		public boolean isOrdinaire() {
 			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt dépense";
 		}
 	},
 
@@ -69,6 +89,11 @@ public enum TypeDocument {
 		public boolean isOrdinaire() {
 			return false;
 		}
+
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt hors-canton immeuble";
+		}
 	},
 
 	LISTE_RECAPITULATIVE {
@@ -76,10 +101,20 @@ public enum TypeDocument {
 		public boolean isOrdinaire() {
 			return false;
 		}
+
+		@Override
+		public String getDescription() {
+			return "liste récapitulative";
+		}
 	};
 
 	/**
 	 * @return <b>vrai</b> si le type de document correspond à une déclaration ordinaire (complète manuelle, complète batch ou vaudtax).
 	 */
 	public abstract boolean isOrdinaire();
+
+	/**
+	 * @return une description textuelle du type de document
+	 */
+	public abstract String getDescription();
 }

@@ -23,6 +23,13 @@ public interface EditiqueRetourImpressionStorageService {
 	EditiqueResultat getDocument(String nomDocument, long timeout);
 
 	/**
+	 * Enregistre un trigger qui sera déclenché à la réception du retour d'impression identifié par son ID
+	 * @param nomDocument identifiant du document déclencheur
+	 * @param trigger action à lancer à la réception du document voulu
+	 */
+	void registerTrigger(String nomDocument, RetourImpressionTrigger trigger);
+
+	/**
 	 * @return le nombre de documents reçus depuis le démarrage du service
 	 */
 	int getDocumentsRecus();

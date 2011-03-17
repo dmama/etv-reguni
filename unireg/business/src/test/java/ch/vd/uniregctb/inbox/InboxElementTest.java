@@ -17,7 +17,7 @@ public class InboxElementTest extends WithoutSpringTest {
 	private static final String CONTENT = "Lorem ipsum dolor sit amet";
 
 	private InboxAttachment buildAttachment() throws IOException {
-		return new InboxAttachment("text/plain", new ByteArrayInputStream(CONTENT.getBytes()), "doloris.txt");
+		return new InboxAttachment("text/plain", new ByteArrayInputStream(CONTENT.getBytes()), "doloris");
 	}
 
 	@Test
@@ -30,7 +30,7 @@ public class InboxElementTest extends WithoutSpringTest {
 		final InboxAttachment attachment = elt.getAttachment();
 		Assert.assertNotNull(attachment);
 		Assert.assertEquals("text/plain", attachment.getMimeType());
-		Assert.assertEquals("doloris.txt", attachment.getFilename());
+		Assert.assertEquals("doloris", attachment.getFilenameRadical());
 
 		Assert.assertNotNull(elt.getIncomingDate());
 		Assert.assertFalse(elt.isRead());

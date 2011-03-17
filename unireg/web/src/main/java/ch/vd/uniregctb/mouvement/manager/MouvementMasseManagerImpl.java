@@ -410,8 +410,8 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 
 		@Override
-		public String getFilename() {
-			return "mouvements.csv";
+		public String getFilenameRadical() {
+			return "mouvements";
 		}
 
 		@Override

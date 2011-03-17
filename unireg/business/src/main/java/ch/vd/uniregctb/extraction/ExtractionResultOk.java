@@ -9,13 +9,13 @@ public class ExtractionResultOk extends ExtractionResult {
 
 	private final InputStream stream;
 	private final String mimeType;
-	private final String filename;
+	private final String filenameRadical;
 	private final boolean interrupted;
 
-	public ExtractionResultOk(InputStream stream, String mimeType, String filename, boolean interrupted) {
+	public ExtractionResultOk(InputStream stream, String mimeType, String filenameRadical, boolean interrupted) {
 		this.stream = stream;
 		this.mimeType = mimeType;
-		this.filename = filename;
+		this.filenameRadical = filenameRadical;
 		this.interrupted = interrupted;
 	}
 
@@ -32,8 +32,8 @@ public class ExtractionResultOk extends ExtractionResult {
 		return mimeType;
 	}
 
-	public String getFilename() {
-		return filename;
+	public String getFilenameRadical() {
+		return filenameRadical;
 	}
 
 	public boolean isInterrupted() {

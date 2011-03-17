@@ -97,7 +97,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final EditiqueServiceImpl service = new EditiqueServiceImpl();
 		service.setSender(sender);
 		service.setRetourImpressionStorage(storageService);
-		service.setReceiveTimeout(RECEIVE_TIMEOUT);
+		service.setSyncReceiveTimeout(RECEIVE_TIMEOUT);
 
 		final EditiqueHelperImpl editiqueHelper = new EditiqueHelperImpl();
 		editiqueHelper.setAdresseService(adresseService);
