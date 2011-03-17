@@ -94,11 +94,11 @@ public class JspTagInfra extends BodyTagSupport {
 			try {
 				final StringBuilder b = new StringBuilder();
 				if (title != null) {
-					b.append("<div title='").append(HtmlUtils.htmlEscape(title.toString())).append("'>");
+					b.append("<span title='").append(HtmlUtils.htmlEscape(title.toString())).append("'>");
 				}
 				b.append(HtmlUtils.htmlEscape(property.toString()));
 				if (title != null) {
-					b.append("</div>");
+					b.append("</span>");
 				}
 				pageContext.getOut().print(b.toString());
 			}
