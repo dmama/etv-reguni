@@ -178,7 +178,9 @@ public class Arrivee extends Mouvement {
 				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC
 				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS
 				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE
-				|| type == TypeEvenementCivil.ARRIVEE_SECONDAIRE) {
+				|| type == TypeEvenementCivil.ARRIVEE_SECONDAIRE
+				// [UNIREG-3379] dans le cas d'un déménagement entre deux communes non-encore fusionnées fiscalement, le déménagement se traduit par une arrivée.
+				|| type == TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE) {
 			isPresent = true;
 
 		}
@@ -214,21 +216,38 @@ public class Arrivee extends Mouvement {
 
 	private static CommuneSimple getCommuneArrivee(ServiceInfrastructureService serviceInfra, Arrivee arrivee, ArriveeType type) throws InfrastructureException {
 
-		// [UNIREG-1995] si la commune d'annonce est renseignée dans l'événement, la prendre en compte
-		// (ou si bien-sûr on tombe sur une commune fractionnée) sinon on prend la commune de l'adresse
+		CommuneSimple commune = null;
 
-		if (arrivee.getNumeroOfsCommuneAnnonce() != null && arrivee.getNumeroOfsCommuneAnnonce() > 0) {
-			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(arrivee.getNumeroOfsCommuneAnnonce(), arrivee.getDate());
-			if (commune == null || commune.isPrincipale()) {
-				return getCommuneArriveeDepuisAdresse(arrivee, type);
-			}
-			else {
-				return commune;
-			}
+		// [UNIREG-3379] si l'egid est renseigné dans l'adresse d'arrivée, on l'utilise en priorité pour déterminer la commune d'arrivée
+		final Integer egid;
+		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE){
+			final Adresse adresse = arrivee.getNouvelleAdressePrincipale();
+			egid = (adresse == null ? null : adresse.getEgid());
 		}
 		else {
-			return getCommuneArriveeDepuisAdresse(arrivee, type);
+			final Adresse adresse = arrivee.getNouvelleAdresseSecondaire();
+			egid = (adresse == null ? null : adresse.getEgid());
 		}
+		if (egid != null) {
+			commune = getCommuneArriveeDepuisAdresse(arrivee, type);
+		}
+
+		// [UNIREG-1995] si la commune d'annonce est renseignée dans l'événement, la prendre en compte
+		// (ou si bien-sûr on tombe sur une commune fractionnée) sinon on prend la commune de l'adresse
+		if (commune == null) {
+			if (arrivee.getNumeroOfsCommuneAnnonce() != null && arrivee.getNumeroOfsCommuneAnnonce() > 0) {
+				final Commune c = serviceInfra.getCommuneByNumeroOfsEtendu(arrivee.getNumeroOfsCommuneAnnonce(), arrivee.getDate());
+				if (c != null && !c.isPrincipale()) {
+					commune = c;
+				}
+			}
+		}
+
+		if (commune == null) {
+			commune = getCommuneArriveeDepuisAdresse(arrivee, type);
+		}
+
+		return commune;
 	}
 
 	private static CommuneSimple getCommuneArriveeDepuisAdresse(Arrivee arrivee, ArriveeType type) {
@@ -1399,6 +1418,7 @@ public class Arrivee extends Mouvement {
 			case ARRIVEE_PRINCIPALE_HS :
 				return MotifFor.ARRIVEE_HS;
 			case ARRIVEE_PRINCIPALE_VAUDOISE :
+			case DEMENAGEMENT_DANS_COMMUNE: // [UNIREG-3379] dans le cas d'un déménagement entre deux communes non-encore fusionnées fiscalement, le déménagement se traduit par une arrivée.
 				return MotifFor.DEMENAGEMENT_VD;
 			case ARRIVEE_DANS_COMMUNE :
 				MotifFor motifOuverture = MotifFor.DEMENAGEMENT_VD;
