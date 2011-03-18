@@ -145,6 +145,10 @@
 	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormController">
 	</bean>
 
+	<bean id="abstractSimpleFormEditiqueAwareController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController" parent="abstractSimpleFormController">
+		<property name="editiqueDownloadService" ref="editiqueDownloadService"/>
+	</bean>
+
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
     	<property name="host" value="smtp.vd.ch"/>
     </bean>

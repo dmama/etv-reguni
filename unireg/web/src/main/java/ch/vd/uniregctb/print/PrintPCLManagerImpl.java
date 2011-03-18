@@ -34,7 +34,7 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 	 * @param pcl
 	 * @throws IOException
 	 */
-	public void openPclStream(HttpServletResponse response, byte[] pcl) throws IOException {
+	public void openPclStream(HttpServletResponse response, String filenameRadical, byte[] pcl) throws IOException {
 
 		final ServletOutputStream out = response.getOutputStream();
 		try {
@@ -43,7 +43,7 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 			final String actualMimeType = getActualMimeType();
 			final String filenameExtension = MimeTypeHelper.getFileExtensionForType(actualMimeType);
 			response.setContentType(actualMimeType);
-			response.setHeader("Content-disposition", String.format("%s; filename=\"print%s\"", isAttachmentContent() ? "attachment" : "inline", filenameExtension));
+			response.setHeader("Content-disposition", String.format("%s; filename=\"%s%s\"", filenameRadical, isAttachmentContent() ? "attachment" : "inline", filenameExtension));
 			response.setHeader( "Pragma", "public" );
 			response.setHeader("cache-control", "no-cache");
 			response.setHeader("Cache-control", "must-revalidate");

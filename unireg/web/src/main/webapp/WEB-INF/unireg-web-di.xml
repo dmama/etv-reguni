@@ -2,10 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="abstractDeclarationImpotController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.di.AbstractDeclarationImpotController">
+	<bean id="abstractDeclarationImpotController" parent="abstractSimpleFormEditiqueAwareController" abstract="true" class="ch.vd.uniregctb.di.AbstractDeclarationImpotController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="diMapHelper" ref="diMapHelper" />
-		<property name="servletService" ref="servletService" />
 	</bean>
 
 	<bean id="diEditValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditValidator" >
@@ -19,7 +18,6 @@
 		<property name="successView" value="redirect:/di/list.do" />
 		<property name="validator" ref="diEditValidator" />
 		<property name="diEditManager" ref="diEditManager" />
-		<property name="printPCLManager" ref="printPCLManager" />
 	</bean>
 	
 	<bean id="declarationImpotEditContribuableValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditContribuableValidator" >
@@ -60,7 +58,6 @@
 		<property name="formView" value="di/edit/impression" />
 		<property name="successView" value="common/refresh-parent" />
 		<property name="diEditManager" ref="diEditManager" />
-		<property name="printPCLManager" ref="printPCLManager" />
 		<property name="validator" ref="diImpressionValidator" />
 	</bean>
 

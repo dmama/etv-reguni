@@ -21,6 +21,8 @@ public abstract class MimeTypeHelper {
 	public static final String MIME_XML = "text/xml";
 	public static final String MIME_ZIP = "application/zip";
 	public static final String MIME_MSWORD = "application/msword";
+	public static final String MIME_TIFF = "image/tiff";
+	public static final String MIME_AFP = "application/afp";
 
 	private static final Map<String, String> fileSuffixes;
 
@@ -37,6 +39,8 @@ public abstract class MimeTypeHelper {
 		fileSuffixes.put(MIME_APPXML, ".xml");
 		fileSuffixes.put(MIME_ZIP, ".zip");
 		fileSuffixes.put(MIME_MSWORD, ".doc");
+		fileSuffixes.put(MIME_TIFF, ".tiff");
+		fileSuffixes.put(MIME_AFP, ".afp");
 	}
 
 	/**

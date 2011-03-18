@@ -12,6 +12,6 @@ public interface RetourImpressionTrigger {
 	 * @param resultat document reçu
 	 * @throws Exception en cas d'impossibilité d'effectuer la tâche demandée
 	 */
-	void trigger(EditiqueResultat resultat) throws Exception;
+	void trigger(EditiqueResultatRecu resultat) throws Exception;
 
 }

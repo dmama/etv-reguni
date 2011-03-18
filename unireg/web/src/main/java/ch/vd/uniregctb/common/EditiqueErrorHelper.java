@@ -1,21 +1,21 @@
 package ch.vd.uniregctb.common;
 
-import org.apache.commons.lang.StringUtils;
-
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 
 /**
  * classe qui permet de factoriser quelques petites méthodes utilitaires
  * autour des erreurs éditiques
  */
-public class EditiqueErrorHelper {
+public abstract class EditiqueErrorHelper {
 
 	private static String getComplementErreur(EditiqueResultat resultat) {
-		if (resultat == null) {
+		if (resultat instanceof EditiqueResultatTimeout) {
 			return "Time-out";
 		}
-		else if (!StringUtils.isBlank(resultat.getError())) {
-			return resultat.getError();
+		else if (resultat instanceof EditiqueResultatErreur) {
+			return ((EditiqueResultatErreur) resultat).getError();
 		}
 		else {
 			return null;

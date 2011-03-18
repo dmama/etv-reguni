@@ -26,4 +26,9 @@
 
 	<bean id="inboxService" class="ch.vd.uniregctb.inbox.InboxServiceImpl"/>
 
+	<bean id="editiqueDownloadService" class="ch.vd.uniregctb.common.EditiqueDownloadServiceImpl">
+		<property name="servletService" ref="servletService"/>
+		<property name="printPCLManager" ref="printPCLManager"/>
+	</bean>
+
 </beans>

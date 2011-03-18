@@ -25,7 +25,6 @@ import ch.vd.uniregctb.di.view.DeclarationImpotSelectView;
 import ch.vd.uniregctb.di.view.DeclarationImpotView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -70,8 +69,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	public final static String SELECTION_DI_PARAMETER_NAME = "selection";
 
 	private DeclarationImpotEditManager diEditManager;
-	private PrintPCLManager printPCLManager;
-
 
 	public DeclarationImpotEditController() {
 		super();
@@ -382,7 +379,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return new ModelAndView("di/edit/edit", model);
 	}
 
-	private ModelAndView imprimerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+	private ModelAndView imprimerDI(final HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
 
 		final Long noCtb = bean.getContribuable().getNumero();
 		checkAccesDossierEnEcriture(noCtb);
@@ -396,21 +393,28 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			throw new ValidationException(null, errorMessage);
 		}
 
-		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalDI(bean);
-		if (resultat != null && resultat.getDocument() != null) {
-			printPCLManager.openPclStream(response, resultat.getDocument());
-		}
-		else {
-			final HttpSession session = request.getSession();
-			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-			return new ModelAndView("redirect:edit.do?action=listdis&numero=" + noCtb);
-		}
+		final TraitementRetourEditique inbox = new TraitementRetourEditique() {
+			@Override
+			public ModelAndView doJob(EditiqueResultat resultat) {
+				return new ModelAndView("redirect:edit.do?action=listdis&numero=" + noCtb);
+			}
+		};
 
-		if (bean.getId() != null) {
+		final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+			@Override
+			public ModelAndView doJob(EditiqueResultat resultat) {
+				final HttpSession session = request.getSession();
+				session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+				return new ModelAndView("redirect:edit.do?action=listdis&numero=" + noCtb);
+			}
+		};
+
+		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalDI(bean);
+		final ModelAndView mav = traiteRetourEditique(resultat, response, "di", inbox, erreur, erreur);
+		if (mav == null && bean.getId() != null) {
 			diEditManager.refresh(bean);
 		}
-
-		return null;
+		return mav;
 	}
 
 	private ModelAndView creerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotSelectView bean, BindException errors) throws Exception {
@@ -449,25 +453,38 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		}
 	}
 
-	private ModelAndView imprimerTO(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+	private ModelAndView imprimerTO(final HttpServletRequest request, HttpServletResponse response, final DeclarationImpotDetailView bean, BindException errors) throws Exception {
 
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
+		final TraitementRetourEditique inbox = new TraitementRetourEditique() {
+			@Override
+			public ModelAndView doJob(EditiqueResultat resultat) {
+				return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
+			}
+		};
+
+		final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+			@Override
+			public ModelAndView doJob(EditiqueResultat resultat) {
+				final HttpSession session = request.getSession();
+				session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+				return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
+			}
+		};
+
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalTaxationOffice(bean);
-		if (resultat != null && resultat.getDocument() != null) {
-			printPCLManager.openPclStream(response, resultat.getDocument());
-		}
-		else {
-			final HttpSession session = request.getSession();
-			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-			return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
+		final ModelAndView mav = traiteRetourEditique(resultat, response, "to", inbox, erreur, erreur);
+		if (mav == null) {
+
+			if (bean.getId() != null) {
+				diEditManager.refresh(bean);
+			}
+
+			return new ModelAndView("redirect:edit.do?action=listdis&numero=" + bean.getContribuable().getNumero());
 		}
 
-		if (bean.getId() != null) {
-			diEditManager.refresh(bean);
-		}
-
-		return new ModelAndView("redirect:edit.do?action=listdis&numero=" + bean.getContribuable().getNumero());
+		return mav;
 	}
 
 	private ModelAndView annulerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
@@ -492,17 +509,13 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return new ModelAndView("redirect:/tache/list.do");
 	}
 
-	private ModelAndView sommerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+	private ModelAndView sommerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, final BindException errors) throws Exception {
 
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
+		final TraitementRetourEditique erreurTimeout = new ErreurGlobaleCommunicationEditique(errors);
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalSommationDI(bean);
-		if (resultat != null && resultat.getDocument() != null) {
-			getServletService().downloadAsFile("sommationDi.pdf", resultat.getDocument(), response);
-		}
-		else {
-			errors.reject("global.error.communication.editique");
-		}
+		traiteRetourEditique(resultat, response, "sommationDi", null, erreurTimeout, erreurTimeout);
 
 		if (bean.getId() != null) {
 			diEditManager.refresh(bean);
@@ -514,13 +527,9 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 		final String delai = getEventArgument();
 		final Long idDelai = Long.parseLong(delai);
+		final TraitementRetourEditique erreurTimeout = new ErreurGlobaleCommunicationEditique(errors);
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalConfirmationDelai(bean, idDelai);
-		if (resultat != null && resultat.getDocument() != null) {
-			getServletService().downloadAsFile("delai.pdf", resultat.getDocument(), response);
-		}
-		else {
-			errors.reject("global.error.communication.editique");
-		}
+		traiteRetourEditique(resultat, response, "delai", null, erreurTimeout, erreurTimeout);
 
 		if (bean.getId() != null) {
 			diEditManager.refresh(bean);
@@ -578,9 +587,4 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	public void setDiEditManager(DeclarationImpotEditManager diEditManager) {
 		this.diEditManager = diEditManager;
 	}
-
-	public void setPrintPCLManager(PrintPCLManager printPCLManager) {
-		this.printPCLManager = printPCLManager;
-	}
-
 }

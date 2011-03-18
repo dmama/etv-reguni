@@ -24,9 +24,23 @@ public class RetourImpressionToInboxTrigger implements RetourImpressionTrigger {
 	}
 
 	@Override
-	public void trigger(EditiqueResultat resultat) throws IOException {
-		final String mimeType = resultat.getContentType();
-		final InboxAttachment attachment = new InboxAttachment(mimeType, new ByteArrayInputStream(resultat.getDocument()), "print");
-		inboxService.addDocument(visa, "Impression locale", description, attachment, hoursUntilExpiration);
+	public void trigger(EditiqueResultatRecu resultat) throws IOException {
+		final InboxAttachment attachment;
+		final String descriptionEffective;
+		if (resultat instanceof EditiqueResultatDocument) {
+			final EditiqueResultatDocument docResultat = (EditiqueResultatDocument) resultat;
+			final String mimeType = docResultat.getContentType();
+			attachment = new InboxAttachment(mimeType, new ByteArrayInputStream(docResultat.getDocument()), "print");
+			descriptionEffective = description;
+		}
+		else if (resultat instanceof EditiqueResultatErreur) {
+			attachment = null;
+			descriptionEffective = String.format("%s, Erreur '%s'", description, ((EditiqueResultatErreur) resultat).getError());
+		}
+		else {
+			attachment = null;
+			descriptionEffective = String.format("%s, Pas de document", description);
+		}
+		inboxService.addDocument(visa, "Impression locale", descriptionEffective, attachment, hoursUntilExpiration);
 	}
 }

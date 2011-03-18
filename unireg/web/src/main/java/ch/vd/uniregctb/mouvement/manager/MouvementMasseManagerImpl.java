@@ -27,6 +27,7 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatDocument;
 import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
 import ch.vd.uniregctb.extraction.ExtractionJob;
@@ -180,7 +181,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	public EditiqueResultat imprimerBordereau(long[] idsMouvement) throws EditiqueException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvement);
 		final EditiqueResultat resultat = mouvementService.envoyerImpressionBordereau(mvts);
-		if (resultat == null || resultat.getDocument() == null) {
+		if (!(resultat instanceof EditiqueResultatDocument)) {
 			// je veux faire sauter la transaction pour que le bordereau ne soit pas généré
 			throw new EditiqueException(EditiqueErrorHelper.getMessageErreurEditique(resultat));
 		}

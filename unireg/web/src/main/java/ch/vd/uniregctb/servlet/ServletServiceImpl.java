@@ -45,16 +45,12 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 	 * {@inheritDoc}
 	 */
 	public void downloadAsFile(String fileName, byte[] bytes, HttpServletResponse response) throws IOException {
-		InputStream in = null;
-
+		final InputStream in = new ByteArrayInputStream(bytes);
 		try {
-			in = new ByteArrayInputStream(bytes);
 			downloadAsFile(fileName, in, bytes.length, response);
 		}
 		finally {
-			if (in != null) {
-				in.close();
-			}
+			in.close();
 		}
 	}
 

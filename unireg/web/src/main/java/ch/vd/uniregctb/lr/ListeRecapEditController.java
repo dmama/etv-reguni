@@ -14,7 +14,6 @@ import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.lr.manager.ListeRecapEditManager;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
-import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -38,7 +37,6 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 	public final static String TARGET_ANNULER_DELAI = "annulerDelai";
 
 	private ListeRecapEditManager lrEditManager;
-	private PrintPCLManager printPCLManager;
 
 	public ListeRecapEditController() {
 		super();
@@ -131,17 +129,29 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 				lrEditManager.annulerDelai(bean, idDelai);
 			}
 			else if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
+
+				final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+					@Override
+					public ModelAndView doJob(EditiqueResultat resultat) {
+						final String message = String.format("%s Veuillez imprimer un duplicata de la liste récapitulative.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+						throw new EditiqueCommunicationException(message);
+					}
+				};
+
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalLR(bean);
-				if (resultat != null && resultat.getDocument() != null) {
-					printPCLManager.openPclStream(response, resultat.getDocument());
-				}
-				else {
-					final String message = String.format("%s Veuillez imprimer un duplicata de la liste récapitulative.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
-					throw new EditiqueCommunicationException(message);
-				}
+				traiteRetourEditique(resultat, response, "lr", null, erreur, erreur);
 			}
 		}
 		else {
+
+			final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+				@Override
+				public ModelAndView doJob(EditiqueResultat resultat) {
+					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+					throw new EditiqueCommunicationException(message);
+				}
+			};
+
 			if (request.getParameter(BUTTON_SAUVER) != null) {
 				lrEditManager.save(bean);
 				this.setModified(false);
@@ -149,24 +159,12 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 			}
 			else if (request.getParameter(BUTTON_DUPLICATA_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalDuplicataLR(bean);
-				if (resultat != null && resultat.getDocument() != null) {
-					printPCLManager.openPclStream(response, resultat.getDocument());
-				}
-				else {
-					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
-					throw new EditiqueCommunicationException(message);
-				}
+				traiteRetourEditique(resultat, response, "lr", null, erreur, erreur);
 			}
 			//TODO [FDE] A supprimer - Mis ici pour tester les Sommations LR
 			else if (request.getParameter(BUTTON_SOMMER_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalSommationLR(bean);
-				if (resultat != null && resultat.getDocument() != null) {
-					printPCLManager.openPclStream(response, resultat.getDocument());
-				}
-				else {
-					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
-					throw new EditiqueCommunicationException(message);
-				}
+				traiteRetourEditique(resultat, response, "sommationLr", null, erreur, erreur);
 			}
 			else if (request.getParameter(BUTTON_ANNULER_LR) != null) {
 				lrEditManager.annulerLR(bean);
@@ -180,10 +178,4 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 	public void setLrEditManager(ListeRecapEditManager lrEditManager) {
 		this.lrEditManager = lrEditManager;
 	}
-
-
-	public void setPrintPCLManager(PrintPCLManager printPCLManager) {
-		this.printPCLManager = printPCLManager;
-	}
-
 }

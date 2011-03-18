@@ -31,7 +31,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -132,8 +131,8 @@ public class EditiqueServiceTest extends BusinessItTest {
 
 		final EditiqueResultat resultat = composition.imprimeNouveauxDossiers(Arrays.asList((Contribuable) jose));
 		assertNotNull("Aucun document reçu en retour après " + RECEIVE_TIMEOUT + " secondes", resultat);
-		assertFalse(resultat.hasError());
-		assertEquals("application/pdf", resultat.getContentType());
+		assertInstanceOf(EditiqueResultatDocument.class, resultat);
+		assertEquals("application/pdf", ((EditiqueResultatDocument) resultat).getContentType());
 		assertTrue(resultat.getIdDocument().startsWith(String.format("%09d", jose.getId())));
 	}
 }

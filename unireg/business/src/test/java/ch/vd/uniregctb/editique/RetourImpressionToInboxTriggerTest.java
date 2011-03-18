@@ -10,7 +10,7 @@ import org.junit.Test;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.StreamUtils;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.editique.impl.EditiqueResultatImpl;
+import ch.vd.uniregctb.editique.impl.EditiqueResultatDocumentImpl;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
 import ch.vd.uniregctb.inbox.MockInboxService;
@@ -34,13 +34,8 @@ public class RetourImpressionToInboxTriggerTest extends WithoutSpringTest {
 
 	private static final String CONTENT = "Et oui c'est elle !";
 
-	private static EditiqueResultat buildResultat(String nomDocument) {
-		final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-		resultat.setContentType(MimeTypeHelper.MIME_PLAINTEXT);
-		resultat.setDocument(CONTENT.getBytes());
-		resultat.setIdDocument(nomDocument);
-		resultat.setTimestampReceived(System.currentTimeMillis());
-		return resultat;
+	private static EditiqueResultatRecu buildResultat(String nomDocument) {
+		return new EditiqueResultatDocumentImpl(nomDocument, MimeTypeHelper.MIME_PLAINTEXT, null, CONTENT.getBytes(), System.currentTimeMillis());
 	}
 
 	@Test

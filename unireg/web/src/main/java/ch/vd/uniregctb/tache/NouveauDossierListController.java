@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.tache;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -40,7 +39,7 @@ public class NouveauDossierListController extends AbstractTacheController {
 	public static final String RESULT_SIZE_NAME = "resultSize";
 	public static final String NOUVEAU_DOSSIER_CRITERIA_NAME = "nouveauDossierCriteria";
 	public static final String NOUVEAU_DOSSIER_LIST_ATTRIBUTE_NAME = "nouveauxDossiers";
-	public static final Integer PAGE_SIZE = new Integer(25);
+	public static final int PAGE_SIZE = 25;
 
 	private TacheListManager tacheListManager;
 
@@ -110,11 +109,11 @@ public class NouveauDossierListController extends AbstractTacheController {
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_NOUVEAU_DOSSIER_ID, PAGE_SIZE);
 			List<NouveauDossierListView> dossiersView = tacheListManager.find(bean, pagination);
 			mav.addObject(NOUVEAU_DOSSIER_LIST_ATTRIBUTE_NAME, dossiersView);
-			mav.addObject(RESULT_SIZE_NAME, new Integer(tacheListManager.count(bean)));
+			mav.addObject(RESULT_SIZE_NAME, tacheListManager.count(bean));
 		}
 		else {
 			mav.addObject(NOUVEAU_DOSSIER_LIST_ATTRIBUTE_NAME, new ArrayList<NouveauDossierListView>());
-			mav.addObject(RESULT_SIZE_NAME, Integer.valueOf(0));
+			mav.addObject(RESULT_SIZE_NAME, 0);
 		}
 
 		TracingManager.end(tp);
@@ -140,14 +139,17 @@ public class NouveauDossierListController extends AbstractTacheController {
 
 		if (request.getParameter(BOUTON_IMPRIMER) != null) {
 			try {
+
+				final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+					@Override
+					public ModelAndView doJob(EditiqueResultat resultat) {
+						final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+						throw new EditiqueCommunicationException(message);
+					}
+				};
+
 				final EditiqueResultat resultat = tacheListManager.envoieImpressionLocalDossier(bean);
-				if (resultat != null && resultat.getDocument() != null) {
-					getServletService().downloadAsFile("dossier.pdf", resultat.getDocument(), response);
-				}
-				else {
-					final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
-					throw new EditiqueCommunicationException(message);
-				}
+				traiteRetourEditique(resultat, response, "dossier", null, erreur, erreur);
 			}
 			catch (EditiqueException e) {
 				LOGGER.error(e, e);

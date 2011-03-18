@@ -1,21 +1,17 @@
 package ch.vd.uniregctb.di;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.servlet.ServletService;
+import ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
-public class AbstractDeclarationImpotController extends AbstractSimpleFormController {
+public class AbstractDeclarationImpotController extends AbstractSimpleFormEditiqueAwareController {
 
 	private TiersMapHelper tiersMapHelper;
 
 	private DeclarationImpotMapHelper diMapHelper;
-
-	private ServletService servletService;
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
@@ -23,14 +19,6 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormContro
 
 	public void setDiMapHelper(DeclarationImpotMapHelper diMapHelper) {
 		this.diMapHelper = diMapHelper;
-	}
-
-	public ServletService getServletService() {
-		return servletService;
-	}
-
-	public void setServletService(ServletService servletService) {
-		this.servletService = servletService;
 	}
 
 	/**

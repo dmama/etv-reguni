@@ -8,6 +8,9 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.uniregctb.editique.EditiqueResultatRecu;
+import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 import ch.vd.uniregctb.editique.RetourImpressionTrigger;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 import ch.vd.uniregctb.stats.LoadMonitor;
@@ -79,22 +82,21 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		// je ne reçois rien, je vérifie que je sors au bout du temps requis : 1s
 		final long tsDebut = currentTimeMillis();
-		final EditiqueResultat res = service.getDocument("Mon document qui ne vient pas...", 1000);
+		final String nomDocument = "Mon document qui ne vient pas...";
+		final EditiqueResultat res = service.getDocument(nomDocument, 1000);
 		final long tsFin = currentTimeMillis();
-		Assert.assertNull(res);
+		Assert.assertTrue(res instanceof EditiqueResultatTimeout);
+		Assert.assertEquals(nomDocument, res.getIdDocument());
 		final long attente = tsFin - tsDebut;
 		Assert.assertTrue("Attente = " + attente + "ms", attente >= 1000);
 	}
 
-	private static EditiqueResultat buildResultat(String idDocument) {
+	private static EditiqueResultatRecu buildResultat(String idDocument) {
 		return buildResultat(idDocument, currentTimeMillis());
 	}
 
-	private static EditiqueResultat buildResultat(String idDocument, long timestampReceived) {
-		final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-		resultat.setIdDocument(idDocument);
-		resultat.setTimestampReceived(timestampReceived);
-		return resultat;
+	private static EditiqueResultatRecu buildResultat(String idDocument, long timestampReceived) {
+		return new EditiqueResultatDocumentImpl(idDocument, null, null, null, timestampReceived);
 	}
 
 	@Test(timeout = 1200)
@@ -104,7 +106,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		// et on commence tout de suite à attendre
 
 		final String nomDocument = "Mon document tant attendu";
-		final EditiqueResultat envoi = buildResultat(nomDocument);
+		final EditiqueResultatRecu envoi = buildResultat(nomDocument);
 		final Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -121,7 +123,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final long tsDebut = currentTimeMillis();
 		final EditiqueResultat resultat = service.getDocument(nomDocument, 1000);
 		final long tsFin = currentTimeMillis();
-		Assert.assertNotNull(resultat);
+		Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 		Assert.assertEquals(nomDocument, resultat.getIdDocument());
 		Assert.assertTrue(tsFin - tsDebut < 1000);
 		Assert.assertTrue(tsFin - tsDebut >= 200);
@@ -136,7 +138,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		// et on commence tout de suite à attendre (mais seulement 150ms) -> le document ne doit pas être vu
 
 		final String nomDocument = "Mon document tant attendu";
-		final EditiqueResultat envoi = buildResultat(nomDocument);
+		final EditiqueResultatRecu envoi = buildResultat(nomDocument);
 		final Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -155,14 +157,15 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final long tsDebut = currentTimeMillis();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, 150);
 			final long tsFin = currentTimeMillis();
-			Assert.assertNull(resultat);
+			Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
+			Assert.assertEquals(nomDocument, resultat.getIdDocument());
 			Assert.assertTrue(tsFin - tsDebut >= 150);
 		}
 
 		// deuxième essai : cette fois il doit venir
 		{
 			final EditiqueResultat resultat = service.getDocument(nomDocument, 150);
-			Assert.assertNotNull(resultat);
+			Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 		}
 
 		thread.join();
@@ -176,7 +179,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document déjà là";
 		{
-			final EditiqueResultat resultat = buildResultat(nomDocument);
+			final EditiqueResultatRecu resultat = buildResultat(nomDocument);
 			service.onArriveeRetourImpression(resultat);
 		}
 
@@ -185,7 +188,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final long tsDebut = currentTimeMillis();
 		final EditiqueResultat resultat = service.getDocument(nomDocument, 1000);
 		final long tsFin = currentTimeMillis();
-		Assert.assertNotNull(resultat);
+		Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 		Assert.assertEquals(nomDocument, resultat.getIdDocument());
 		Assert.assertTrue(tsFin - tsDebut < 50);
 	}
@@ -198,7 +201,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document déjà là";
 		{
-			final EditiqueResultat resultat = buildResultat(nomDocument);
+			final EditiqueResultatRecu resultat = buildResultat(nomDocument);
 			service.onArriveeRetourImpression(resultat);
 		}
 
@@ -209,7 +212,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final long tsDebut = currentTimeMillis();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, 1000);
 			final long tsFin = currentTimeMillis();
-			Assert.assertNotNull(resultat);
+			Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 			Assert.assertEquals(nomDocument, resultat.getIdDocument());
 			Assert.assertTrue(tsFin - tsDebut < 50);
 		}
@@ -219,7 +222,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final long tsDebut = currentTimeMillis();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, 500);
 			final long tsFin = currentTimeMillis();
-			Assert.assertNull(resultat);
+			Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
+			Assert.assertEquals(nomDocument, resultat.getIdDocument());
 			Assert.assertTrue(tsFin - tsDebut >= 500);
 		}
 	}
@@ -233,7 +237,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocumentAttendu = "Mon document tant attendu";
 		final String nomDocumentEvoye = "Mon document reçu";
 
-		final EditiqueResultat envoi = buildResultat(nomDocumentEvoye);
+		final EditiqueResultatRecu envoi = buildResultat(nomDocumentEvoye);
 		final Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -250,7 +254,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final long tsDebut = currentTimeMillis();
 		final EditiqueResultat resultat = service.getDocument(nomDocumentAttendu, 500);
 		final long tsFin = currentTimeMillis();
-		Assert.assertNull(resultat);
+		Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
+		Assert.assertEquals(nomDocumentAttendu, resultat.getIdDocument());
 		Assert.assertTrue(tsFin - tsDebut >= 500);
 
 		thread.join();
@@ -265,8 +270,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocumentAttendu = "Mon document tant attendu";
 		final String nomDocumentEvoye = "Mon autre document reçu";
 
-		final EditiqueResultat documentAttendu = buildResultat(nomDocumentAttendu);
-		final EditiqueResultat autreDocument = buildResultat(nomDocumentEvoye);
+		final EditiqueResultatRecu documentAttendu = buildResultat(nomDocumentAttendu);
+		final EditiqueResultatRecu autreDocument = buildResultat(nomDocumentEvoye);
 		final Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -286,7 +291,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final long tsDebut = currentTimeMillis();
 		final EditiqueResultat resultat = service.getDocument(nomDocumentAttendu, 500);
 		final long tsFin = currentTimeMillis();
-		Assert.assertNotNull(resultat);
+		Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 		Assert.assertEquals(nomDocumentAttendu, resultat.getIdDocument());
 		Assert.assertTrue(tsFin - tsDebut < 350);
 
@@ -303,12 +308,12 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocument = "Mon document qui ne m'attend plus";
 		final String nomDocumentVoyageurTemporel = "Time traveler";
 		{
-			final EditiqueResultat resultat = buildResultat(nomDocument);
+			final EditiqueResultatRecu resultat = buildResultat(nomDocument);
 			service.onArriveeRetourImpression(resultat);
 
 			// date de réception : 1.8s dans le futur !
 			// (afin de tester que seuls les vieux documents sont effacés)
-			final EditiqueResultat timeTraveler = buildResultat(nomDocumentVoyageurTemporel, currentTimeMillis() + 1800L);
+			final EditiqueResultatRecu timeTraveler = buildResultat(nomDocumentVoyageurTemporel, currentTimeMillis() + 1800L);
 			service.onArriveeRetourImpression(timeTraveler);
 		}
 
@@ -320,7 +325,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final long tsDebut = currentTimeMillis();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, 300);
 			final long tsFin = currentTimeMillis();
-			Assert.assertNull(resultat);
+			Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
+			Assert.assertEquals(nomDocument, resultat.getIdDocument());
 			Assert.assertTrue(tsFin - tsDebut >= 300);
 		}
 
@@ -329,7 +335,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final long tsDebut = currentTimeMillis();
 			final EditiqueResultat resultat = service.getDocument(nomDocumentVoyageurTemporel, 300);
 			final long tsFin = currentTimeMillis();
-			Assert.assertNotNull(resultat);
+			Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 			Assert.assertEquals(nomDocumentVoyageurTemporel, resultat.getIdDocument());
 			Assert.assertTrue(tsFin - tsDebut < 50);
 		}
@@ -343,7 +349,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final MutableObject res = new MutableObject(null);
 		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
 			@Override
-			public void trigger(EditiqueResultat resultat) throws Exception {
+			public void trigger(EditiqueResultatRecu resultat) throws Exception {
 				res.setValue(resultat);
 			}
 		};
@@ -364,9 +370,9 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final Object value = res.getValue();
 		Assert.assertNotNull("Pas encore arrivé ?", value);
-		Assert.assertTrue(value instanceof EditiqueResultat);
+		Assert.assertTrue(value instanceof EditiqueResultatDocument);
 
-		final EditiqueResultat resultatRecu = (EditiqueResultat) value;
+		final EditiqueResultatDocument resultatRecu = (EditiqueResultatDocument) value;
 		Assert.assertEquals(nomDocument, resultatRecu.getIdDocument());
 	}
 
@@ -388,7 +394,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final MutableObject res = new MutableObject(null);
 		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
 			@Override
-			public void trigger(EditiqueResultat resultat) throws Exception {
+			public void trigger(EditiqueResultatRecu resultat) throws Exception {
 				res.setValue(resultat);
 			}
 		};
@@ -401,9 +407,9 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final Object value = res.getValue();
 		Assert.assertNotNull("Le trigger n'a pas encore été appelé ? Bizarre...", value);
-		Assert.assertTrue(value instanceof EditiqueResultat);
+		Assert.assertTrue(value instanceof EditiqueResultatDocument);
 
-		final EditiqueResultat resultatRecu = (EditiqueResultat) value;
+		final EditiqueResultatDocument resultatRecu = (EditiqueResultatDocument) value;
 		Assert.assertEquals(nomDocument, resultatRecu.getIdDocument());
 	}
 
@@ -415,7 +421,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final MutableObject res = new MutableObject(null);
 		final RetourImpressionTrigger myTrigger = new RetourImpressionTrigger() {
 			@Override
-			public void trigger(EditiqueResultat resultat) throws Exception {
+			public void trigger(EditiqueResultatRecu resultat) throws Exception {
 				res.setValue(resultat);
 			}
 		};

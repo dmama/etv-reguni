@@ -95,7 +95,7 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 
 		listener.setStorageService(new EditiqueRetourImpressionStorageService() {
 			@Override
-			public void onArriveeRetourImpression(EditiqueResultat resultat) {
+			public void onArriveeRetourImpression(EditiqueResultatRecu resultat) {
 				events.add(resultat);
 			}
 

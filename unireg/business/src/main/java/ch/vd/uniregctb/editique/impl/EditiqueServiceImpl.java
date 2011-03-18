@@ -10,6 +10,9 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.editique.EditiqueCopieConformeService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.EvenementEditiqueSender;
@@ -46,11 +49,15 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	 */
 	private int asyncReceiveDelay = 15;
 
+	private static interface TimeoutManager {
+		EditiqueResultat onTimeout(EditiqueResultat src);
+	}
+
 	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(final String nomDocument, final String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, final String description) throws EditiqueException {
-		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, asyncReceiveDelay, new Runnable() {
+		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, asyncReceiveDelay, new TimeoutManager() {
 			@Override
-			public void run() {
+			public EditiqueResultat onTimeout(EditiqueResultat src) {
 				final String visa = AuthenticationHelper.getCurrentPrincipal();
 				if (LOGGER.isDebugEnabled()) {
 					final String msg = String.format("Retour d'impression un peu lent pour le document '%s', routage demandé vers l'inbox de l'utilisateur %s", nomDocument, visa);
@@ -59,19 +66,21 @@ public final class EditiqueServiceImpl implements EditiqueService {
 
 				final RetourImpressionTrigger trigger = new RetourImpressionToInboxTrigger(inboxService, visa, description, 2);
 				retourImpressionStorage.registerTrigger(nomDocument, trigger);
+				return new EditiqueResultatReroutageInboxImpl(src.getIdDocument());
 			}
 		});
 	}
 
 	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException {
-		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new Runnable() {
+		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new TimeoutManager() {
 			@Override
-			public void run() {
+			public EditiqueResultat onTimeout(EditiqueResultat src) {
 				if (LOGGER.isDebugEnabled()) {
 					final String msg = String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument);
 					LOGGER.debug(msg);
 				}
+				return src;
 			}
 		});
 	}
@@ -90,7 +99,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	 * @return le document imprimé ou <b>null</b> si éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	private EditiqueResultat creerDocumentImmediatement(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, int secTimeout, Runnable timeoutManager) throws EditiqueException {
+	private EditiqueResultat creerDocumentImmediatement(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, int secTimeout, TimeoutManager timeoutManager) throws EditiqueException {
 
 		// envoi de la demande
 		if (LOGGER.isDebugEnabled()) {
@@ -105,7 +114,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 			LOGGER.debug(msg);
 		}
 
-		final EditiqueResultat resultat;
+		EditiqueResultat resultat;
 		try {
 			resultat = retourImpressionStorage.getDocument(nomDocument, secTimeout * 1000L);
 		}
@@ -114,17 +123,20 @@ public final class EditiqueServiceImpl implements EditiqueService {
 		}
 
 		// si on n'a rien reçu dans le temps imparti, il faut faire quelque chose de spécifique ?
-		if (resultat == null) {
-			timeoutManager.run();
+		if (resultat instanceof EditiqueResultatTimeout) {
+			resultat = timeoutManager.onTimeout(resultat);
 		}
 		else if (LOGGER.isDebugEnabled()) {
 			// log de l'état de la réponse
 			final String statut;
-			if (resultat.getDocument() == null) {
-				statut = String.format("Erreur (%s), ", resultat.getError());
+			if (resultat instanceof EditiqueResultatDocument) {
+				statut = "OK";
+			}
+			else if (resultat instanceof EditiqueResultatErreur) {
+				statut = String.format("Erreur (%s), ", ((EditiqueResultatErreur) resultat).getError());
 			}
 			else {
-				statut = "OK";
+				statut = String.format("Erreur inconnue '%s'", resultat);
 			}
 			final String msg = String.format("Retour d'impression locale reçu pour document %s (%s) : %s", nomDocument, typeDocument, statut);
 			LOGGER.debug(msg);

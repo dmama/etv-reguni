@@ -1,13 +1,12 @@
 package ch.vd.uniregctb.mouvement;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController;
 
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-
-public class AbstractMouvementController extends AbstractSimpleFormController{
+public class AbstractMouvementController extends AbstractSimpleFormEditiqueAwareController {
 
 	private MouvementMapHelper mouvementMapHelper;
 

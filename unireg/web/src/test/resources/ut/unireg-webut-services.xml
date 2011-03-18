@@ -15,4 +15,6 @@
 
 	<bean id="inboxService" class="ch.vd.uniregctb.inbox.MockInboxService"/>
 
+	<bean id="editiqueDownloadService" class="ch.vd.uniregctb.common.MockEditiqueDownloadService"/>
+
 </beans>

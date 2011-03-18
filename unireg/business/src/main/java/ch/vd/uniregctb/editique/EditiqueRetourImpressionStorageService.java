@@ -12,7 +12,7 @@ public interface EditiqueRetourImpressionStorageService {
 	 * Appelé à l'arrivée d'une nouvelle impression par le listener de messages éditique
 	 * @param resultat représentation du document imprimé
 	 */
-	void onArriveeRetourImpression(EditiqueResultat resultat);
+	void onArriveeRetourImpression(EditiqueResultatRecu resultat);
 
 	/**
 	 * Récupère le document identifié par son nom (champ {@link EditiqueHelper#DI_ID} dans l'entête)

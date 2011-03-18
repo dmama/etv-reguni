@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.di;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -16,14 +14,13 @@ import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
 
-public class DeclarationImpotImpressionController  extends AbstractDeclarationImpotController {
+public class DeclarationImpotImpressionController extends AbstractDeclarationImpotController {
 
 	protected static final Logger LOGGER = Logger.getLogger(DeclarationImpotEditController.class);
 
@@ -39,16 +36,10 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 	public final static String DUPLICATA_VALUE = "duplicataDI";
 
 	private DeclarationImpotEditManager diEditManager;
-	private PrintPCLManager printPCLManager;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiEditManager(DeclarationImpotEditManager diEditManager) {
 		this.diEditManager = diEditManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setPrintPCLManager(PrintPCLManager printPCLManager) {
-		this.printPCLManager = printPCLManager;
 	}
 
 	public DeclarationImpotImpressionController() {
@@ -139,18 +130,24 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 			}
 			else if (action.equals(DUPLICATA_VALUE)) {
 
+				final TraitementRetourEditique inbox = new TraitementRetourEditique() {
+					@Override
+					public ModelAndView doJob(EditiqueResultat resultat) {
+						mav.setView(new RedirectView(String.format("edit.do?action=editdi&id=%d", idDi)));
+						return null;
+					}
+				};
+
+				final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+					@Override
+					public ModelAndView doJob(EditiqueResultat resultat) {
+						final String message = String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+						throw new EditiqueCommunicationException(message);
+					}
+				};
+
 				final EditiqueResultat result = diEditManager.envoieImpressionLocalDuplicataDI(bean);
-				if (result != null && result.getDocument() != null) {
-					printPCLManager.openPclStream(response, result.getDocument());
-				}
-				else if (result == null) {
-					flash(String.format("L'impression n'a pas encore été réalisée, elle sera consultable dans votre boîte de réception dès qu'elle sera disponible"));
-					mav.setView(new RedirectView(String.format("edit.do?action=editdi&id=%d", idDi)));
-				}
-				else {
-					final String message = String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(result));
-					throw new EditiqueCommunicationException(message);
-				}
+				traiteRetourEditique(result, response, "di", inbox, erreur, erreur);
 			}
 
 			return mav;

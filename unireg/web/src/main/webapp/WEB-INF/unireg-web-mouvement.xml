@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean 	id="abstractMouvementController"
-			parent="abstractSimpleFormController"
+			parent="abstractSimpleFormEditiqueAwareController"
 			abstract="true"
 			class="ch.vd.uniregctb.mouvement.AbstractMouvementController">
 		<property name="mouvementMapHelper" ref="mouvementMapHelper" />
@@ -74,7 +74,6 @@
 		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView"/>
 		<property name="formView" value="mouvement/masse/imprimer/detail"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
-		<property name="printPCLManager" ref="printPCLManager" />
 	</bean>
 
 	<bean id="mouvementMasseReceptionBordereauxController" class="ch.vd.uniregctb.mouvement.MouvementMasseReceptionBordereauxController" parent="abstractMouvementMasseController">

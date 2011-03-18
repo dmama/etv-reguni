@@ -5,15 +5,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.servlet.ServletService;
+import ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
-public class AbstractListeRecapController extends AbstractSimpleFormController {
+public class AbstractListeRecapController extends AbstractSimpleFormEditiqueAwareController {
 
 	private TiersMapHelper tiersMapHelper;
-	private ServletService servletService;
-
 
 	public TiersMapHelper getTiersMapHelper() {
 		return tiersMapHelper;
@@ -21,14 +18,6 @@ public class AbstractListeRecapController extends AbstractSimpleFormController {
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
-	}
-
-	public ServletService getServletService() {
-		return servletService;
-	}
-
-	public void setServletService(ServletService servletService) {
-		this.servletService = servletService;
 	}
 
 	/**

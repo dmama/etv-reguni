@@ -3,12 +3,11 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean 	id="abstractTacheController"
-			parent="abstractSimpleFormController"
+			parent="abstractSimpleFormEditiqueAwareController"
 			abstract="true"
 			class="ch.vd.uniregctb.tache.AbstractTacheController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="tacheMapHelper" ref="tacheMapHelper" />
-		<property name="servletService" ref="servletService" />
 	</bean>
 
 	<bean id="tacheListManager" class="ch.vd.uniregctb.tache.manager.TacheListManagerImpl" >

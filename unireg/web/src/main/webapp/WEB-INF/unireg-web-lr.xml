@@ -3,11 +3,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean 	id="abstractListeRecapController"
-			parent="abstractSimpleFormController"
+			parent="abstractSimpleFormEditiqueAwareController"
 			abstract="true"
 			class="ch.vd.uniregctb.lr.AbstractListeRecapController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="servletService" ref="servletService" />
 	</bean>
 
 	<bean id="lrListController" class="ch.vd.uniregctb.lr.ListeRecapListController" parent="abstractListeRecapController">
@@ -30,7 +29,6 @@
 		<property name="commandClass" value="ch.vd.uniregctb.lr.view.ListeRecapDetailView" />
 		<property name="commandName" value="command" />
 		<property name="lrEditManager" ref="lrEditManager" />
-		<property name="printPCLManager" ref="printPCLManager" />
 		<property name="formView" value="lr/edit/edit" />
 		<property name="successView" value="redirect:/lr/list.do" />
 	</bean>

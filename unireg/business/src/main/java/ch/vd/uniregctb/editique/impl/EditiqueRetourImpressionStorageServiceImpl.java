@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
 import ch.vd.uniregctb.editique.RetourImpressionTrigger;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
@@ -34,7 +35,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 	/**
 	 * Map des impressions reçues et pas encore réclamées
 	 */
-	private final Map<String, EditiqueResultat> impressionsRecues = new HashMap<String, EditiqueResultat>();
+	private final Map<String, EditiqueResultatRecu> impressionsRecues = new HashMap<String, EditiqueResultatRecu>();
 
 	/**
 	 * Map des triggers enregistrés pour être déclenchés à la réception de nouveaux retours d'impression
@@ -119,12 +120,12 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		public void run() {
 			final long tickPrecedent = getTimestampMillis() - cleanupPeriod * 1000L;
 			synchronized (impressionsRecues) {
-				final Iterator<Map.Entry<String, EditiqueResultat>> iterator = impressionsRecues.entrySet().iterator();
+				final Iterator<Map.Entry<String, EditiqueResultatRecu>> iterator = impressionsRecues.entrySet().iterator();
 				while (iterator.hasNext()) {
-					final Map.Entry<String, EditiqueResultat> entry = iterator.next();
-					final EditiqueResultat document = entry.getValue();
-					if (document.getTimestampReceived() < tickPrecedent) {
-						LOGGER.warn(String.format("Cleanup du retour d'impression '%s' qui n'intéresse apparemment personne", document.getIdDocument()));
+					final Map.Entry<String, EditiqueResultatRecu> entry = iterator.next();
+					final EditiqueResultatRecu retour = entry.getValue();
+					if (retour.getTimestampReceived() < tickPrecedent) {
+						LOGGER.warn(String.format("Cleanup du retour d'impression '%s' qui n'intéresse apparemment personne", retour.getIdDocument()));
 						iterator.remove();
 
 						++ purgedDocuments;
@@ -151,13 +152,13 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 				// on attend les arrivées des nouvelles impressions
 				synchronized (impressionsRecues) {
 					while (!stopping) {
-						final Iterator<Map.Entry<String, EditiqueResultat>> iterator = impressionsRecues.entrySet().iterator();
+						final Iterator<Map.Entry<String, EditiqueResultatRecu>> iterator = impressionsRecues.entrySet().iterator();
 						while (iterator.hasNext()) {
-							final Map.Entry<String, EditiqueResultat> entry = iterator.next();
+							final Map.Entry<String, EditiqueResultatRecu> entry = iterator.next();
 							final RetourImpressionTrigger trigger = delayedTriggers.remove(entry.getKey());
 							if (trigger != null) {
 								iterator.remove();
-								final EditiqueResultat resultat = entry.getValue();
+								final EditiqueResultatRecu resultat = entry.getValue();
 								try {
 									trigger.trigger(resultat);
 								}
@@ -229,7 +230,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 	}
 
-	public void onArriveeRetourImpression(EditiqueResultat resultat) {
+	public void onArriveeRetourImpression(EditiqueResultatRecu resultat) {
 
 		// ah ? un retour d'impression ? il faut le mettre dans la map
 		// et dire à tous ceux qui attendent qu'il y a du nouveau...
@@ -284,7 +285,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 							LOGGER.debug(String.format("Timeout dépassé pour la récupération du document '%s'", nomDocument));
 						}
 
-						return null;
+						return new EditiqueResultatTimeoutImpl(nomDocument);
 					}
 
 					try {
@@ -292,7 +293,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 					}
 					catch (InterruptedException e) {
 						// interrompu...? on s'en va
-						return null;
+						return new EditiqueResultatTimeoutImpl(nomDocument);
 					}
 				}
 				else {

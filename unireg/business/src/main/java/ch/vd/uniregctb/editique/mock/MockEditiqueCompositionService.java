@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.editique.mock;
 
 import javax.jms.JMSException;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -11,7 +13,7 @@ import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.impl.EditiqueResultatImpl;
+import ch.vd.uniregctb.editique.impl.EditiqueResultatDocumentImpl;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -23,10 +25,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	private static EditiqueResultat dummyResultat() {
-		final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-		resultat.setContentType("text/plain");
-		resultat.setDocument("Ceci est un test".getBytes());
-		return resultat;
+		return new EditiqueResultatDocumentImpl("DUMMY", MimeTypeHelper.MIME_PLAINTEXT, null, "Ceci est un test".getBytes(), System.currentTimeMillis());
 	}
 
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {

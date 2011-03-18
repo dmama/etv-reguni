@@ -2,7 +2,6 @@ package ch.vd.uniregctb.mouvement;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -15,10 +14,10 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView;
-import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.type.Localisation;
 import ch.vd.uniregctb.type.TypeMouvement;
 
@@ -37,14 +36,10 @@ public class MouvementMasseDetailBordereauController extends AbstractMouvementMa
 	private static final String IMPRIMER = "imprimer";
 
 	private ServiceInfrastructureService infraService;
-	private PrintPCLManager printPCLManager;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
-	}
-
-	public void setPrintPCLManager(PrintPCLManager printPCLManager) {
-		this.printPCLManager = printPCLManager;
 	}
 
 	@Override
@@ -55,15 +50,31 @@ public class MouvementMasseDetailBordereauController extends AbstractMouvementMa
 	}
 
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, final BindException errors) throws Exception {
 		final String imprimer = request.getParameter(IMPRIMER);
 		// validation de l'impression ?
 		if (imprimer != null) {
 			checkAccess();
 			final MouvementMasseDetailBordereauView view = (MouvementMasseDetailBordereauView) command;
 			try {
+
+				final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+					@Override
+					public ModelAndView doJob(EditiqueResultat resultat) {
+						final String msg;
+						if (resultat instanceof EditiqueResultatErreur) {
+							msg = ((EditiqueResultatErreur) resultat).getError();
+						}
+						else {
+							msg = "Erreur inconnue";
+						}
+						errors.reject("global.error.msg", msg);
+						return null;
+					}
+				};
+
 				final EditiqueResultat resultat = getMouvementManager().imprimerBordereau(view.getSelection());
-				printPCLManager.openPclStream(response, resultat.getDocument());
+				traiteRetourEditique(resultat, response, "bordereau", null, erreur, erreur);
 			}
 			catch (EditiqueException e) {
 				errors.reject("global.error.msg", e.getMessage());

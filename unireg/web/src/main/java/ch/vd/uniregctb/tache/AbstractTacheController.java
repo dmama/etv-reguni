@@ -1,23 +1,19 @@
 package ch.vd.uniregctb.tache;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.servlet.ServletService;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
-public class AbstractTacheController extends AbstractSimpleFormController {
+public class AbstractTacheController extends AbstractSimpleFormEditiqueAwareController {
 
 	private TiersMapHelper tiersMapHelper;
 
 	private TacheMapHelper tacheMapHelper;
-
-	private ServletService servletService;
 
 	public TiersMapHelper getTiersMapHelper() {
 		return tiersMapHelper;
@@ -27,21 +23,12 @@ public class AbstractTacheController extends AbstractSimpleFormController {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-
 	public TacheMapHelper getTacheMapHelper() {
 		return tacheMapHelper;
 	}
 
 	public void setTacheMapHelper(TacheMapHelper tacheMapHelper) {
 		this.tacheMapHelper = tacheMapHelper;
-	}
-
-	public ServletService getServletService() {
-		return servletService;
-	}
-
-	public void setServletService(ServletService servletService) {
-		this.servletService = servletService;
 	}
 
 	/**
