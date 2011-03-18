@@ -1,5 +1,5 @@
 #! /bin/bash -
-# génère les scripts SQL qui permettent de relier une personne physique avec un individu (passage en habitant)
+# génère les scripts SQL qui permettent d'aligner les événements civils avec les personnes physiques
 
 if [ $# -ne 3 ]; then
 	echo "Syntaxe : $(basename "$0") <no-jira> <no-ctb-pp> <no-ind-pp>" >&2
@@ -21,8 +21,6 @@ elif [[ ! "$IND" =~ ^[0-9]+$ ]]; then
 	exit 1
 fi
 
-echo "-- Association de la personne physique $CTB_PP avec l'individu = $IND"
-echo "UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER='SQL-$JIRA', PP_HABITANT=1, NUMERO_INDIVIDU=$IND, INDEX_DIRTY=1 WHERE NUMERO=$CTB_PP;"
-echo "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=$CTB_PP;"
-echo
-$(dirname "$0")/aligner-pp-avec-evenements-civils.sh $JIRA $CTB_PP $IND
+echo "-- Association des événements civils de l'individu $IND avec la personne physique $CTB_PP"
+echo "UPDATE EVENEMENT_CIVIL SET LOG_MDATE=CURRENT_DATE, LOG_MUSER='SQL-$JIRA', HAB_PRINCIPAL=$CTB_PP WHERE NO_INDIVIDU_PRINCIPAL=$IND AND HAB_PRINCIPAL!=$CTB_PP;"
+echo "UPDATE EVENEMENT_CIVIL SET LOG_MDATE=CURRENT_DATE, LOG_MUSER='SQL-$JIRA', HAB_CONJOINT=$CTB_PP WHERE NO_INDIVIDU_CONJOINT=$IND AND HAB_CONJOINT!=$CTB_PP;"
