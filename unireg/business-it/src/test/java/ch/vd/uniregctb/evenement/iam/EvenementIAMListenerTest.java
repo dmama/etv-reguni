@@ -93,7 +93,10 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 	@After
 	public void tearDown() {
-		container.destroy();
+		// si le setup saute avant la fin... container peut encore être null
+		if (container != null) {
+			container.destroy();
+		}
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
