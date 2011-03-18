@@ -11,6 +11,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
@@ -431,5 +432,109 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEquals(ModeImposition.ORDINAIRE, traite.modeImposition);
 		assertNotNull(traite.officeImpotID);
 		assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), traite.officeImpotID.intValue());
+	}
+
+	/**
+	 * [UNIREG-3379] Vérifie que le batch ouvre bien un for principal ordinaire sur la bonne commune pour un habitant suisse majeur qui habitent une commune fusionnée au civil mais pas au fiscal.
+	 */
+	@Test
+	public void testTraiteHabitantSuisseMajeurSansForSurCommuneFusionneeAuCivilMaisPasAuFiscal() {
+
+		final int noIndividu = 1234;
+		final RegDate dateTraitement = date(2010, 11, 1);
+		final RegDate dateNaissance = date(1992, 10, 17); // => majeur le 17 octobre 2010
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, dateNaissance, null); // localité Gressy => commune de Gressy jusqu'à fin 2010
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+			}
+		});
+
+		final PersonnePhysique h = addHabitant(noIndividu);
+
+		// Lancement du batch
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		processor.rapport = rapport;
+		processor.traiteHabitant(h.getNumero(), dateTraitement);
+
+		// Vérification du rapport
+		assertEquals(1, rapport.nbHabitantsTotal);
+		assertEmpty(rapport.habitantEnErrors);
+
+		final List<Traite> traites = rapport.habitantTraites;
+		assertEquals(1, traites.size());
+
+		final Traite traite = traites.get(0);
+		assertEquals(h.getNumero().longValue(), traite.noCtb);
+		assertEquals(ModeImposition.ORDINAIRE, traite.modeImposition);
+
+		// Vérification qu'un for a bien été ouvert sur le contribuable
+		final ForsParType fors = h.getForsParType(true);
+		assertNotNull(fors);
+		assertEmpty(fors.autreElementImpot);
+		assertEmpty(fors.dpis);
+		assertEmpty(fors.secondaires);
+
+		final List<ForFiscalPrincipal> principaux = fors.principaux;
+		assertNotNull(principaux);
+		assertEquals(1, principaux.size());
+
+		final ForFiscalPrincipal fp = principaux.get(0);
+		assertForPrincipal(dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Gressy, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fp);
+	}
+
+	/**
+	 * [UNIREG-3379] Vérifie que le batch ouvre bien un for principal ordinaire sur la bonne commune pour un habitant suisse majeur qui habitent une commune fusionnée au civil et au fiscal.
+	 */
+	@Test
+	public void testTraiteHabitantSuisseMajeurSansForSurCommuneFusionneeAuCivilEtAuFiscal() {
+
+		final int noIndividu = 1234;
+		final RegDate dateTraitement = date(2011, 2, 1);
+		final RegDate dateNaissance = date(1993, 1, 17); // => majeur le 17 janvier 2011
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, dateNaissance, null); // localité Gressy => commune d'Yverdon-les-Bains dès 2011
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+			}
+		});
+
+		final PersonnePhysique h = addHabitant(noIndividu);
+
+		// Lancement du batch
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		processor.rapport = rapport;
+		processor.traiteHabitant(h.getNumero(), dateTraitement);
+
+		// Vérification du rapport
+		assertEquals(1, rapport.nbHabitantsTotal);
+		assertEmpty(rapport.habitantEnErrors);
+
+		final List<Traite> traites = rapport.habitantTraites;
+		assertEquals(1, traites.size());
+
+		final Traite traite = traites.get(0);
+		assertEquals(h.getNumero().longValue(), traite.noCtb);
+		assertEquals(ModeImposition.ORDINAIRE, traite.modeImposition);
+
+		// Vérification qu'un for a bien été ouvert sur le contribuable
+		final ForsParType fors = h.getForsParType(true);
+		assertNotNull(fors);
+		assertEmpty(fors.autreElementImpot);
+		assertEmpty(fors.dpis);
+		assertEmpty(fors.secondaires);
+
+		final List<ForFiscalPrincipal> principaux = fors.principaux;
+		assertNotNull(principaux);
+		assertEquals(1, principaux.size());
+
+		final ForFiscalPrincipal fp = principaux.get(0);
+		assertForPrincipal(dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.YverdonLesBains, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fp);
 	}
 }
