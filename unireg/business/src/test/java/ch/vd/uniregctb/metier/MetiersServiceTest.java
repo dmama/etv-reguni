@@ -20,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
+import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
@@ -1201,13 +1202,13 @@ try {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse, 1);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Grandvaux.RueSaintGeorges, null, dateMariage, dateSeparation.getOneDayBefore());
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Riex.RouteDeLaCorniche, null, dateSeparation, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, dateMariage, dateSeparation.getOneDayBefore());
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Riex.BatimentRouteDeLaCorniche, null, dateSeparation, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse, 1);
 				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
-				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Grandvaux.RueSaintGeorges, null, dateMariage, null);
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
 			}
@@ -1277,6 +1278,105 @@ try {
 
 			final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
 			assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+		}
+	}
+
+	/**
+	 * [UNIREG-3379] Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit (cas spécial pour les communes fusionnées au
+	 * civil et au fiscal)
+	 */
+	@Test
+	public void testSeparationAdresseDomicileSurCommunesFusionneesAuCivilEtAuFiscal() throws Exception {
+
+		final long noIndFabrice = 12541L;
+		final long noIndGeorgette = 12542L;
+		final RegDate naissanceFabrice = date(1970, 1, 1);
+		final RegDate naissanceGeorgette = date(1975, 1, 1);
+		final RegDate dateMariage = date(1995, 1, 1);
+		final RegDate dateSeparation = date(2011, 2, 2);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
+				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse, 1);
+				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, dateMariage, dateSeparation.getOneDayBefore());
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Riex.BatimentRouteDeLaCorniche, null, dateSeparation, null);
+
+				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
+				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse, 1);
+				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, dateMariage, null);
+
+				marieIndividus(fabrice, georgette, dateMariage);
+			}
+		});
+
+		class Ids {
+			long fabrice;
+			long georgette;
+			long menage;
+		}
+		final Ids ids = new Ids();
+
+		// Crée un couple avec un for principal à Grandvaux
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+				final MenageCommun menage = ensemble.getMenage();
+
+				ids.fabrice = fabrice.getNumero();
+				ids.georgette = georgette.getNumero();
+				ids.menage = menage.getNumero();
+
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux);
+				return null;
+			}
+		});
+
+		// Sépare les époux. Monsieur déménage alors à Riex et Madame garde le camion de Ken
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
+				metierService.separe(mc, dateSeparation, "test", null, true, null);
+				return null;
+			}
+		});
+
+		// vérifie les fors principaux ouverts sur les séparés : Monsieur à Bourg-en-Lavaux (anciennement Riex), Madame à Bourg-en-Lavaux (anciennement Grandvaux)
+
+		// For fermé sur le couple
+		{
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
+
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+					MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+		}
+
+		// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
+		{
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+
+			final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
+			assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+		}
+
+		// For ouvert sur Georgette : à Grandvaux, car son domicile n'a pas changé
+		{
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
+
+			final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
+			assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 		}
 	}
 
