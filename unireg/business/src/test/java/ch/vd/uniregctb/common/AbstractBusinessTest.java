@@ -23,6 +23,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -50,6 +51,7 @@ import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodeDecompte;
@@ -60,8 +62,10 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 // Surcharge des fichiers de config Spring. Il faut mettre les fichiers
 // UT a la fin
@@ -180,6 +184,33 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 				});
 			}
 		});
+	}
+
+	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
+		assertNotNull(forPrincipal);
+		assertEquals(debut, forPrincipal.getDateDebut());
+		assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
+		assertNull(forPrincipal.getDateFin());
+		assertNull(forPrincipal.getMotifFermeture());
+		final TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+		assertEquals(type, forPrincipal.getTypeAutoriteFiscale());
+		assertEquals(Integer.valueOf(commune.getNoOFS()), forPrincipal.getNumeroOfsAutoriteFiscale());
+		assertEquals(motif, forPrincipal.getMotifRattachement());
+		assertEquals(modeImposition, forPrincipal.getModeImposition());
+	}
+
+	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, RegDate fin, MotifFor motifFermeture, Commune commune, MotifRattachement motif, ModeImposition modeImposition,
+	                                         ForFiscalPrincipal forPrincipal) {
+		assertNotNull(forPrincipal);
+		assertEquals(debut, forPrincipal.getDateDebut());
+		assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
+		assertEquals(fin, forPrincipal.getDateFin());
+		assertEquals(motifFermeture, forPrincipal.getMotifFermeture());
+		final TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+		assertEquals(type, forPrincipal.getTypeAutoriteFiscale());
+		assertEquals(Integer.valueOf(commune.getNoOFS()), forPrincipal.getNumeroOfsAutoriteFiscale());
+		assertEquals(motif, forPrincipal.getMotifRattachement());
+		assertEquals(modeImposition, forPrincipal.getModeImposition());
 	}
 
 	protected static void assertForAutreImpot(RegDate debut, RegDate fin, TypeAutoriteFiscale taf, MockCommune commune, GenreImpot genreImpot, ForFiscalAutreImpot forFiscal) {
