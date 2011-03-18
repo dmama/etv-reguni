@@ -43,7 +43,7 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 			final String actualMimeType = getActualMimeType();
 			final String filenameExtension = MimeTypeHelper.getFileExtensionForType(actualMimeType);
 			response.setContentType(actualMimeType);
-			response.setHeader("Content-disposition", String.format("%s; filename=\"%s%s\"", filenameRadical, isAttachmentContent() ? "attachment" : "inline", filenameExtension));
+			response.setHeader("Content-disposition", String.format("%s; filename=\"%s%s\"", isAttachmentContent() ? "attachment" : "inline", filenameRadical, filenameExtension));
 			response.setHeader( "Pragma", "public" );
 			response.setHeader("cache-control", "no-cache");
 			response.setHeader("Cache-control", "must-revalidate");

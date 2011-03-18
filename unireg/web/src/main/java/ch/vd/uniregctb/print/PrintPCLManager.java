@@ -12,8 +12,8 @@ public interface PrintPCLManager {
 	 *
 	 * @param response réponse HTTP à utiliser pour y placer le flux PCL
 	 * @param filenameRadical radical du nom de fichier à présenter dans la réponse HTTP
-	 * @param pcl données du flux PCL  @throws IOException en cas de problème IO
-	 * @throws java.io.IOException en cas de problème
+	 * @param pcl données du flux PCL
+	 * @throws IOException en cas de problème IO
 	 */
 	void openPclStream(HttpServletResponse response, String filenameRadical, byte[] pcl) throws IOException;
 

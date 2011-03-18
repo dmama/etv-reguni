@@ -94,8 +94,7 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 
 		@Override
 		public void download(byte[] contenu, String mimeType, String filenameRadical, HttpServletResponse response) throws IOException {
-			final String filename = String.format("%s%s", filenameRadical, MimeTypeHelper.getFileExtensionForType(mimeType));
-			pclManager.openPclStream(response, filename, contenu);
+			pclManager.openPclStream(response, filenameRadical, contenu);
 		}
 	}
 
