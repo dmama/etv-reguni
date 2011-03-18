@@ -523,6 +523,24 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return null;
 	}
 
+	/**
+	 * Ajoute juste une erreur globale de communication éditique dans les erreurs de binding
+	 */
+	private static final class ErreurGlobaleCommunicationEditique implements TraitementRetourEditique {
+
+		private final BindException errors;
+
+		public ErreurGlobaleCommunicationEditique(BindException errors) {
+			this.errors = errors;
+		}
+
+		@Override
+		public ModelAndView doJob(EditiqueResultat resultat) {
+			errors.reject("global.error.communication.editique");
+			return null;
+		}
+	}
+
 	private ModelAndView imprimerDelai(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
 
 		final String delai = getEventArgument();

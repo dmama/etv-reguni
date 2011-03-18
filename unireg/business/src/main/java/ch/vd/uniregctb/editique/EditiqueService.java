@@ -13,8 +13,8 @@ public interface EditiqueService {
 
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression directe. Si le délai de réponse éditique
-	 * est dépassé (voir variable editique.locale.sync.attente.timeout), la méthode renvoie <code>null</code> et le retour d'impression, s'il
-	 * arrive un jour, sera poubellisé.
+	 * est dépassé (voir variable editique.locale.sync.attente.timeout), la méthode renvoie un objet qui implémente {@link EditiqueResultatTimeout}
+	 * et le retour d'impression, s'il arrive un jour, sera poubellisé.
 	 *
 	 * @param nomDocument  le nom du document à transmettre à Editique.
 	 * @param typeDocument le type de document
@@ -28,7 +28,7 @@ public interface EditiqueService {
 
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression directe ; si l'impression est un peu lente,
-	 * la méthode retourne <code>null</code> au bout du temps imparti (défaut : 15 secondes, voir la variable editique.locale.async.attente.delai)
+	 * la méthode retourne un objet qui implémente {@link EditiqueResultatReroutageInbox} au bout du temps imparti (défaut : 15 secondes, voir la variable editique.locale.async.attente.delai)
 	 * après avoir enregistré une demande de re-routage du résultat d'impression vers l'inbox du demandeur dès qu'il finira par arriver
 	 *
 	 * @param nomDocument le nom du document à transmettre à Editique.

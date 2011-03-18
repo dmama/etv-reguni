@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -17,7 +16,7 @@ import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
  */
 public abstract class AbstractSimpleFormEditiqueAwareController extends AbstractSimpleFormController {
 
-	public static final String MESSAGE_REROUTAGE_INBOX = "L'impression n'est pas encore revenue. Pour vous permettre de continuer à travailler, celle-ci sera mise à disposition dans la boîte de réception dès que possible.";
+	public static final String MESSAGE_REROUTAGE_INBOX = "label.inbox.impression.reroutee";
 
 	private EditiqueDownloadService editiqueDownloadService;
 
@@ -29,27 +28,26 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 	 * Permet de spécifier des comportements
 	 */
 	protected static interface TraitementRetourEditique {
+
+		/**
+		 * Méthode appelée pour implémentation du comportement spécifique
+		 * @param resultat résultat renvoyé par éditique
+		 * @return en général une action de redirection (dans les cas d'erreur / timeout)
+		 */
 		ModelAndView doJob(EditiqueResultat resultat);
 	}
 
 	/**
-	 * Ajoute juste une erreur globale de communication éditique dans les erreurs de binding
+	 * Méthode à appeler depuis les classes dérivée afin de gérer un objet {@link EditiqueResultat} arrivé depuis Editique
+	 * @param resultat le résultat à gérer
+	 * @param response la réponse HTTP dans laquelle, le cas échéant, le contenu doit être bourré pour téléchargement
+	 * @param filenameRadical radical (sans extension, qui sera déduite du type MIME du contenu) du nom de fichier sous lequel le contenu doit apparaître dans la réponse HTTP, le cas échéant
+	 * @param onReroutageInbox action à effectuer après l'appel à la méthode {@link #flash} dans le cas où le retour d'impression se fait un peu attendre et a été re-routé ver l'inbox
+	 * @param onTimeout action à effectuer sur réception d'un timeout définitif
+	 * @param onError action à effectuer à la réception d'une erreur depuis éditique
+	 * @return une action de redirection dans les cas d'erreur / timeout, null en principe dans les cas de téléchargement
+	 * @throws IOException en cas de problème IO
 	 */
-	protected static final class ErreurGlobaleCommunicationEditique implements TraitementRetourEditique {
-
-		private final BindException errors;
-
-		public ErreurGlobaleCommunicationEditique(BindException errors) {
-			this.errors = errors;
-		}
-
-		@Override
-		public ModelAndView doJob(EditiqueResultat resultat) {
-			errors.reject("global.error.communication.editique");
-			return null;
-		}
-	}
-
 	protected ModelAndView traiteRetourEditique(EditiqueResultat resultat, HttpServletResponse response, String filenameRadical,
 												TraitementRetourEditique onReroutageInbox, TraitementRetourEditique onTimeout,
 												TraitementRetourEditique onError) throws IOException {
@@ -57,7 +55,8 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 			editiqueDownloadService.download((EditiqueResultatDocument) resultat, filenameRadical, response);
 		}
 		else if (resultat instanceof EditiqueResultatReroutageInbox) {
-			flash(MESSAGE_REROUTAGE_INBOX);
+			final String msg = getMessageSourceAccessor().getMessage(MESSAGE_REROUTAGE_INBOX);
+			flash(msg);
 			if (onReroutageInbox != null) {
 				return onReroutageInbox.doJob(resultat);
 			}

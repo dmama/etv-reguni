@@ -5,5 +5,5 @@ package ch.vd.uniregctb.editique;
  * que la demande d'impression a été re-routée vers le mécanisme asynchrone
  * dont le résultat sera livré dans la boîte de réception de l'appelant
  */
-public interface EditiqueResultatReroutageInbox extends EditiqueResultatTimeout {
+public interface EditiqueResultatReroutageInbox {
 }
