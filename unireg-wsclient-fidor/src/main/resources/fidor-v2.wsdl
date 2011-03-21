@@ -1,310 +1,312 @@
-<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="FidorService" targetNamespace="http://www.vd.ch/fidor/ws/v2" xmlns:ns1="http://cxf.apache.org/bindings/xformat" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/fidor/ws/v2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <wsdl:types>
-<xs:schema elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/fidor/ws/v2" version="1.0" xmlns:tns="http://www.vd.ch/fidor/ws/v2" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-<xs:element name="getLogicielDetail" type="tns:getLogicielDetail" />
-<xs:element name="getLogicielDetailResponse" type="tns:getLogicielDetailResponse" />
-<xs:element name="getPaysDetail" type="tns:getPaysDetail" />
-<xs:element name="getPaysDetailResponse" type="tns:getPaysDetailResponse" />
-<xs:element name="getTousLesLogiciels" type="tns:getTousLesLogiciels" />
-<xs:element name="getTousLesLogicielsResponse" type="tns:getTousLesLogicielsResponse" />
-<xs:element name="getTousLesPays" type="tns:getTousLesPays" />
-<xs:element name="getTousLesPaysResponse" type="tns:getTousLesPaysResponse" />
-<xs:element name="getUrl" type="tns:getUrl" />
-<xs:element name="getUrlResponse" type="tns:getUrlResponse" />
-<xs:complexType name="getPaysDetail">
-<xs:sequence>
-<xs:element name="ofsId" type="xs:long" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="getPaysDetailResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="paysDetail" type="tns:pays" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="pays">
-<xs:sequence>
-<xs:element minOccurs="0" name="continent" type="tns:continent" />
-<xs:element minOccurs="0" name="dateChangement" type="xs:dateTime" />
-<xs:element minOccurs="0" name="dateEntreeOnu" type="xs:dateTime" />
-<xs:element minOccurs="0" name="etat" type="xs:boolean" />
-<xs:element minOccurs="0" name="etatSuperieur" type="xs:int" />
-<xs:element minOccurs="0" name="iso2Id" type="xs:string" />
-<xs:element minOccurs="0" name="iso3Id" type="xs:string" />
-<xs:element minOccurs="0" name="membreOnu" type="xs:boolean" />
-<xs:element minOccurs="0" name="nomCourtDe" type="xs:string" />
-<xs:element minOccurs="0" name="nomCourtEn" type="xs:string" />
-<xs:element minOccurs="0" name="nomCourtFr" type="xs:string" />
-<xs:element minOccurs="0" name="nomCourtIt" type="xs:string" />
-<xs:element minOccurs="0" name="nomOfficielDe" type="xs:string" />
-<xs:element minOccurs="0" name="nomOfficielFr" type="xs:string" />
-<xs:element minOccurs="0" name="nomOfficielIt" type="xs:string" />
-<xs:element name="ofsId" type="xs:int" />
-<xs:element minOccurs="0" name="onuId" type="xs:int" />
-<xs:element minOccurs="0" name="reconnaissanceSuisse" type="xs:boolean" />
-<xs:element minOccurs="0" name="reconnaissanceSuisseDate" type="xs:dateTime" />
-<xs:element minOccurs="0" name="region" type="tns:regionMondiale" />
-<xs:element minOccurs="0" name="remarqueDe" type="xs:string" />
-<xs:element minOccurs="0" name="remarqueFr" type="xs:string" />
-<xs:element minOccurs="0" name="remarqueIt" type="xs:string" />
-<xs:element minOccurs="0" name="typeDePays" type="tns:typeDePays" />
-<xs:element minOccurs="0" name="valide" type="xs:boolean" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="getLogicielDetail">
-<xs:sequence>
-<xs:element name="logicielId" type="xs:long" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="getLogicielDetailResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="logicielDetail" type="tns:logiciel" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="logiciel">
-<xs:sequence>
-<xs:element name="certifie" type="xs:boolean" />
-<xs:element minOccurs="0" name="contactMetierMail" type="xs:string" />
-<xs:element minOccurs="0" name="contactMetierNom" type="xs:string" />
-<xs:element minOccurs="0" name="contactTechniqueMail" type="xs:string" />
-<xs:element minOccurs="0" name="contactTechniqueNom" type="xs:string" />
-<xs:element minOccurs="0" name="fournisseur" type="xs:string" />
-<xs:element minOccurs="0" name="fournisseurAdresse" type="xs:string" />
-<xs:element name="id" type="xs:long" />
-<xs:element minOccurs="0" name="libelle" type="xs:string" />
-<xs:element minOccurs="0" name="metier" type="tns:logicielMetier" />
-<xs:element minOccurs="0" name="version" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="getUrl">
-<xs:sequence>
-<xs:element minOccurs="0" name="app" type="xs:string" />
-<xs:element minOccurs="0" name="acces" type="tns:acces" />
-<xs:element minOccurs="0" name="targetType" type="xs:string" />
-<xs:element minOccurs="0" name="parameterMap" type="tns:parameterMap" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="parameterMap">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" name="entries" type="tns:parameterEntry" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="parameterEntry">
-<xs:sequence>
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="value" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="getUrlResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="url" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="getTousLesLogiciels">
-<xs:sequence />
-</xs:complexType>
-<xs:complexType name="getTousLesLogicielsResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="logicielsList" type="tns:logiciel" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="getTousLesPays">
-<xs:sequence />
-</xs:complexType>
-<xs:complexType name="getTousLesPaysResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="paysList" type="tns:pays" />
-</xs:sequence>
-</xs:complexType>
-<xs:simpleType name="continent">
-<xs:restriction base="xs:string">
-<xs:enumeration value="E1_Europe" />
-<xs:enumeration value="E2_Afrique" />
-<xs:enumeration value="E3_Amerique" />
-<xs:enumeration value="E4_Asie" />
-<xs:enumeration value="E5_Oceanie" />
-<xs:enumeration value="E6_Antarctique" />
-</xs:restriction>
-</xs:simpleType>
-<xs:simpleType name="regionMondiale">
-<xs:restriction base="xs:string">
-<xs:enumeration value="E11_EuropeSeptentrionale" />
-<xs:enumeration value="E12_EuropeOrientale" />
-<xs:enumeration value="E13_EuropeCentrale" />
-<xs:enumeration value="E14_EuropeOccidentale" />
-<xs:enumeration value="E15_EuropeMeridionaleOccidentale" />
-<xs:enumeration value="E16_EuropeMéridionale" />
-<xs:enumeration value="E17_EuropeMeridionaleOrientale" />
-<xs:enumeration value="E21_AfriqueSeptentrionale" />
-<xs:enumeration value="E22_AfriqueOrientale" />
-<xs:enumeration value="E23_AfriqueCentrale" />
-<xs:enumeration value="E24_AfriqueOccidentale" />
-<xs:enumeration value="E25_AfriqueMeridionaleOccidentale" />
-<xs:enumeration value="E26_AfriqueMeridionale" />
-<xs:enumeration value="E27_AfriqueMeridionaleOrientale" />
-<xs:enumeration value="E31_AmeriqueDuNord" />
-<xs:enumeration value="E32_Caraibes" />
-<xs:enumeration value="E33_AmeriqueCentrale" />
-<xs:enumeration value="E34_AmeriqueDuSudSeptentrionale" />
-<xs:enumeration value="E35_AmeriqueDuSudCentrale" />
-<xs:enumeration value="E36_AmeriqueDuSudMeridionale" />
-<xs:enumeration value="E41_AsieSeptentrionale" />
-<xs:enumeration value="E42_AsieOrientale" />
-<xs:enumeration value="E43_AsieCentrale" />
-<xs:enumeration value="E44_AsieOccidentale" />
-<xs:enumeration value="E45_AsieMeridionaleOccidentale" />
-<xs:enumeration value="E46_AsieMeridionale" />
-<xs:enumeration value="E47_AsieMeridionaleOrientale" />
-<xs:enumeration value="E51_OceanieSeptentrionale" />
-<xs:enumeration value="E53_OceanieCentrale" />
-<xs:enumeration value="E54_OceanieOccidentale" />
-<xs:enumeration value="E56_OceanieMeridionale" />
-<xs:enumeration value="E61_Antarctique" />
-</xs:restriction>
-</xs:simpleType>
-<xs:simpleType name="typeDePays">
-<xs:restriction base="xs:string">
-<xs:enumeration value="E01_UE" />
-<xs:enumeration value="E02_AELE" />
-<xs:enumeration value="E03_EtatTiers" />
-</xs:restriction>
-</xs:simpleType>
-<xs:simpleType name="logicielMetier">
-<xs:restriction base="xs:string">
-<xs:enumeration value="EMPACI" />
-<xs:enumeration value="ECH99" />
-</xs:restriction>
-</xs:simpleType>
-<xs:simpleType name="acces">
-<xs:restriction base="xs:string">
-<xs:enumeration value="INTERNE" />
-<xs:enumeration value="EXTERNE" />
-</xs:restriction>
-</xs:simpleType>
-</xs:schema>
-  </wsdl:types>
-  <wsdl:message name="getUrlResponse">
-    <wsdl:part element="tns:getUrlResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getLogicielDetail">
-    <wsdl:part element="tns:getLogicielDetail" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getPaysDetail">
-    <wsdl:part element="tns:getPaysDetail" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getPaysDetailResponse">
-    <wsdl:part element="tns:getPaysDetailResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getTousLesLogicielsResponse">
-    <wsdl:part element="tns:getTousLesLogicielsResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getTousLesLogiciels">
-    <wsdl:part element="tns:getTousLesLogiciels" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getTousLesPaysResponse">
-    <wsdl:part element="tns:getTousLesPaysResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getUrl">
-    <wsdl:part element="tns:getUrl" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getTousLesPays">
-    <wsdl:part element="tns:getTousLesPays" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getLogicielDetailResponse">
-    <wsdl:part element="tns:getLogicielDetailResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:portType name="FidorPortType">
-    <wsdl:operation name="getPaysDetail">
-      <wsdl:input message="tns:getPaysDetail" name="getPaysDetail">
-    </wsdl:input>
-      <wsdl:output message="tns:getPaysDetailResponse" name="getPaysDetailResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getLogicielDetail">
-      <wsdl:input message="tns:getLogicielDetail" name="getLogicielDetail">
-    </wsdl:input>
-      <wsdl:output message="tns:getLogicielDetailResponse" name="getLogicielDetailResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getUrl">
-      <wsdl:input message="tns:getUrl" name="getUrl">
-    </wsdl:input>
-      <wsdl:output message="tns:getUrlResponse" name="getUrlResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getTousLesLogiciels">
-      <wsdl:input message="tns:getTousLesLogiciels" name="getTousLesLogiciels">
-    </wsdl:input>
-      <wsdl:output message="tns:getTousLesLogicielsResponse" name="getTousLesLogicielsResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getTousLesPays">
-      <wsdl:input message="tns:getTousLesPays" name="getTousLesPays">
-    </wsdl:input>
-      <wsdl:output message="tns:getTousLesPaysResponse" name="getTousLesPaysResponse">
-    </wsdl:output>
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="FidorServiceSoapBinding" type="tns:FidorPortType">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="getPaysDetail">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getPaysDetail">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="getPaysDetailResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getLogicielDetail">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getLogicielDetail">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="getLogicielDetailResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getUrl">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getUrl">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="getUrlResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getTousLesLogiciels">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getTousLesLogiciels">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="getTousLesLogicielsResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getTousLesPays">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getTousLesPays">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="getTousLesPaysResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="FidorService">
-    <wsdl:port binding="tns:FidorServiceSoapBinding" name="FidorPort">
-      <soap:address location="http://fidor-va.etat-de-vaud.ch/fiscalite/val-fidor/ws/v2" />
-    </wsdl:port>
-  </wsdl:service>
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions name="FidorService" targetNamespace="http://www.vd.ch/fidor/ws/v2" xmlns:ns1="http://cxf.apache.org/bindings/xformat" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+				  xmlns:tns="http://www.vd.ch/fidor/ws/v2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<wsdl:types>
+		<xs:schema elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/fidor/ws/v2" version="1.0" xmlns:tns="http://www.vd.ch/fidor/ws/v2" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:element name="getLogicielDetail" type="tns:getLogicielDetail" />
+			<xs:element name="getLogicielDetailResponse" type="tns:getLogicielDetailResponse" />
+			<xs:element name="getPaysDetail" type="tns:getPaysDetail" />
+			<xs:element name="getPaysDetailResponse" type="tns:getPaysDetailResponse" />
+			<xs:element name="getTousLesLogiciels" type="tns:getTousLesLogiciels" />
+			<xs:element name="getTousLesLogicielsResponse" type="tns:getTousLesLogicielsResponse" />
+			<xs:element name="getTousLesPays" type="tns:getTousLesPays" />
+			<xs:element name="getTousLesPaysResponse" type="tns:getTousLesPaysResponse" />
+			<xs:element name="getUrl" type="tns:getUrl" />
+			<xs:element name="getUrlResponse" type="tns:getUrlResponse" />
+			<xs:complexType name="getPaysDetail">
+				<xs:sequence>
+					<xs:element name="ofsId" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getPaysDetailResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="paysDetail" type="tns:pays" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="pays">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="continent" type="tns:continent" />
+					<xs:element minOccurs="0" name="dateChangement" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="dateEntreeOnu" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="etat" type="xs:boolean" />
+					<xs:element minOccurs="0" name="etatSuperieur" type="xs:int" />
+					<xs:element minOccurs="0" name="iso2Id" type="xs:string" />
+					<xs:element minOccurs="0" name="iso3Id" type="xs:string" />
+					<xs:element minOccurs="0" name="membreOnu" type="xs:boolean" />
+					<xs:element minOccurs="0" name="nomCourtDe" type="xs:string" />
+					<xs:element minOccurs="0" name="nomCourtEn" type="xs:string" />
+					<xs:element minOccurs="0" name="nomCourtFr" type="xs:string" />
+					<xs:element minOccurs="0" name="nomCourtIt" type="xs:string" />
+					<xs:element minOccurs="0" name="nomOfficielDe" type="xs:string" />
+					<xs:element minOccurs="0" name="nomOfficielFr" type="xs:string" />
+					<xs:element minOccurs="0" name="nomOfficielIt" type="xs:string" />
+					<xs:element name="ofsId" type="xs:int" />
+					<xs:element minOccurs="0" name="onuId" type="xs:int" />
+					<xs:element minOccurs="0" name="reconnaissanceSuisse" type="xs:boolean" />
+					<xs:element minOccurs="0" name="reconnaissanceSuisseDate" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="region" type="tns:regionMondiale" />
+					<xs:element minOccurs="0" name="remarqueDe" type="xs:string" />
+					<xs:element minOccurs="0" name="remarqueFr" type="xs:string" />
+					<xs:element minOccurs="0" name="remarqueIt" type="xs:string" />
+					<xs:element minOccurs="0" name="typeDePays" type="tns:typeDePays" />
+					<xs:element minOccurs="0" name="valide" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getLogicielDetail">
+				<xs:sequence>
+					<xs:element name="logicielId" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getLogicielDetailResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="logicielDetail" type="tns:logiciel" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="logiciel">
+				<xs:sequence>
+					<xs:element name="certifie" type="xs:boolean" />
+					<xs:element minOccurs="0" name="contactMetierMail" type="xs:string" />
+					<xs:element minOccurs="0" name="contactMetierNom" type="xs:string" />
+					<xs:element minOccurs="0" name="contactTechniqueMail" type="xs:string" />
+					<xs:element minOccurs="0" name="contactTechniqueNom" type="xs:string" />
+					<xs:element minOccurs="0" name="fournisseur" type="xs:string" />
+					<xs:element minOccurs="0" name="fournisseurAdresse" type="xs:string" />
+					<xs:element name="id" type="xs:long" />
+					<xs:element minOccurs="0" name="libelle" type="xs:string" />
+					<xs:element minOccurs="0" name="metier" type="tns:logicielMetier" />
+					<xs:element minOccurs="0" name="version" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getUrl">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="app" type="xs:string" />
+					<xs:element minOccurs="0" name="acces" type="tns:acces" />
+					<xs:element minOccurs="0" name="targetType" type="xs:string" />
+					<xs:element minOccurs="0" name="parameterMap" type="tns:parameterMap" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="parameterMap">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" name="entries" type="tns:parameterEntry" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="parameterEntry">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="name" type="xs:string" />
+					<xs:element minOccurs="0" name="value" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getUrlResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="url" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getTousLesLogiciels">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="getTousLesLogicielsResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="logicielsList" type="tns:logiciel" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getTousLesPays">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="getTousLesPaysResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="paysList" type="tns:pays" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="continent">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="E1_Europe" />
+					<xs:enumeration value="E2_Afrique" />
+					<xs:enumeration value="E3_Amerique" />
+					<xs:enumeration value="E4_Asie" />
+					<xs:enumeration value="E5_Oceanie" />
+					<xs:enumeration value="E6_Antarctique" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="regionMondiale">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="E11_EuropeSeptentrionale" />
+					<xs:enumeration value="E12_EuropeOrientale" />
+					<xs:enumeration value="E13_EuropeCentrale" />
+					<xs:enumeration value="E14_EuropeOccidentale" />
+					<xs:enumeration value="E15_EuropeMeridionaleOccidentale" />
+					<xs:enumeration value="E16_EuropeMéridionale" />
+					<xs:enumeration value="E17_EuropeMeridionaleOrientale" />
+					<xs:enumeration value="E21_AfriqueSeptentrionale" />
+					<xs:enumeration value="E22_AfriqueOrientale" />
+					<xs:enumeration value="E23_AfriqueCentrale" />
+					<xs:enumeration value="E24_AfriqueOccidentale" />
+					<xs:enumeration value="E25_AfriqueMeridionaleOccidentale" />
+					<xs:enumeration value="E26_AfriqueMeridionale" />
+					<xs:enumeration value="E27_AfriqueMeridionaleOrientale" />
+					<xs:enumeration value="E31_AmeriqueDuNord" />
+					<xs:enumeration value="E32_Caraibes" />
+					<xs:enumeration value="E33_AmeriqueCentrale" />
+					<xs:enumeration value="E34_AmeriqueDuSudSeptentrionale" />
+					<xs:enumeration value="E35_AmeriqueDuSudCentrale" />
+					<xs:enumeration value="E36_AmeriqueDuSudMeridionale" />
+					<xs:enumeration value="E41_AsieSeptentrionale" />
+					<xs:enumeration value="E42_AsieOrientale" />
+					<xs:enumeration value="E43_AsieCentrale" />
+					<xs:enumeration value="E44_AsieOccidentale" />
+					<xs:enumeration value="E45_AsieMeridionaleOccidentale" />
+					<xs:enumeration value="E46_AsieMeridionale" />
+					<xs:enumeration value="E47_AsieMeridionaleOrientale" />
+					<xs:enumeration value="E51_OceanieSeptentrionale" />
+					<xs:enumeration value="E53_OceanieCentrale" />
+					<xs:enumeration value="E54_OceanieOccidentale" />
+					<xs:enumeration value="E56_OceanieMeridionale" />
+					<xs:enumeration value="E61_Antarctique" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="typeDePays">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="E01_UE" />
+					<xs:enumeration value="E02_AELE" />
+					<xs:enumeration value="E03_EtatTiers" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="logicielMetier">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="EMPACI" />
+					<xs:enumeration value="ECH99" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="acces">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="INTERNE" />
+					<xs:enumeration value="EXTERNE" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="getUrlResponse">
+		<wsdl:part element="tns:getUrlResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getLogicielDetail">
+		<wsdl:part element="tns:getLogicielDetail" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getPaysDetail">
+		<wsdl:part element="tns:getPaysDetail" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getPaysDetailResponse">
+		<wsdl:part element="tns:getPaysDetailResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTousLesLogicielsResponse">
+		<wsdl:part element="tns:getTousLesLogicielsResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTousLesLogiciels">
+		<wsdl:part element="tns:getTousLesLogiciels" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTousLesPaysResponse">
+		<wsdl:part element="tns:getTousLesPaysResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getUrl">
+		<wsdl:part element="tns:getUrl" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTousLesPays">
+		<wsdl:part element="tns:getTousLesPays" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getLogicielDetailResponse">
+		<wsdl:part element="tns:getLogicielDetailResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="FidorPortType">
+		<wsdl:operation name="getPaysDetail">
+			<wsdl:input message="tns:getPaysDetail" name="getPaysDetail">
+			</wsdl:input>
+			<wsdl:output message="tns:getPaysDetailResponse" name="getPaysDetailResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getLogicielDetail">
+			<wsdl:input message="tns:getLogicielDetail" name="getLogicielDetail">
+			</wsdl:input>
+			<wsdl:output message="tns:getLogicielDetailResponse" name="getLogicielDetailResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getUrl">
+			<wsdl:input message="tns:getUrl" name="getUrl">
+			</wsdl:input>
+			<wsdl:output message="tns:getUrlResponse" name="getUrlResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getTousLesLogiciels">
+			<wsdl:input message="tns:getTousLesLogiciels" name="getTousLesLogiciels">
+			</wsdl:input>
+			<wsdl:output message="tns:getTousLesLogicielsResponse" name="getTousLesLogicielsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getTousLesPays">
+			<wsdl:input message="tns:getTousLesPays" name="getTousLesPays">
+			</wsdl:input>
+			<wsdl:output message="tns:getTousLesPaysResponse" name="getTousLesPaysResponse">
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="FidorServiceSoapBinding" type="tns:FidorPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getPaysDetail">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getPaysDetail">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getPaysDetailResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getLogicielDetail">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getLogicielDetail">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getLogicielDetailResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getUrl">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getUrl">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getUrlResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getTousLesLogiciels">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTousLesLogiciels">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTousLesLogicielsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getTousLesPays">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getTousLesPays">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getTousLesPaysResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="FidorService">
+		<wsdl:port binding="tns:FidorServiceSoapBinding" name="FidorPort">
+			<soap:address location="http://fidor-va.etat-de-vaud.ch/fiscalite/val-fidor/ws/v2" />
+		</wsdl:port>
+	</wsdl:service>
 </wsdl:definitions>
