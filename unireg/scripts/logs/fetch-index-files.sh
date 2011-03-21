@@ -21,8 +21,8 @@ elif [ -e "$DEST_FILE" ]; then
 	exit 1
 fi
 
-# les fichiers sont téléchargés dans un sous-répertoire spécifique à l'environnement voulu
-cd "$(dirname "$0")/$ENVIRONMENT"
+# on rend maintenant le nom du fichier de destination absolu
+DEST_FILE=$(cd $(dirname "$DEST_FILE") && pwd)/$(basename "$DEST_FILE")
 
 # cleanup avant nouvelle récupération
 LUCENE_DIR=lucene
