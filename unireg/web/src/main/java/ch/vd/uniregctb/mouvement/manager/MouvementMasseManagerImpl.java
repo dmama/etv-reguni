@@ -23,6 +23,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -458,31 +459,32 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			}
 			return b.toString();
 		}
-	}
 
-	private static String buildCsv(List<MouvementDetailView> mvts) {
-		return CsvHelper.asCsvFile(mvts, "mvts.csv", null, 150, new CsvHelper.Filler<MouvementDetailView>() {
-			@Override
-			public void fillHeader(StringBuilder b) {
-				b.append("CTB_ID").append(CsvHelper.COMMA);
-				b.append("NOM_RAISON_SOCIALE").append(CsvHelper.COMMA);
-				b.append("TYPE_MOUVEMENT").append(CsvHelper.COMMA);
-				b.append("ETAT").append(CsvHelper.COMMA);
-				b.append("COLL_ADM").append(CsvHelper.COMMA);
-				b.append("DESTINATION");
-			}
+		private String buildCsv(List<MouvementDetailView> mvts) {
+			final String filename = String.format("%s%s", getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(getMimeType()));
+			return CsvHelper.asCsvFile(mvts, filename, null, 150, new CsvHelper.Filler<MouvementDetailView>() {
+				@Override
+				public void fillHeader(StringBuilder b) {
+					b.append("CTB_ID").append(CsvHelper.COMMA);
+					b.append("NOM_RAISON_SOCIALE").append(CsvHelper.COMMA);
+					b.append("TYPE_MOUVEMENT").append(CsvHelper.COMMA);
+					b.append("ETAT").append(CsvHelper.COMMA);
+					b.append("COLL_ADM").append(CsvHelper.COMMA);
+					b.append("DESTINATION");
+				}
 
-			@Override
-			public void fillLine(StringBuilder b, MouvementDetailView elt) {
-				final ContribuableView ctb = elt.getContribuable();
-				b.append(ctb.getNumero()).append(CsvHelper.COMMA);
-				b.append(CsvHelper.asCsvField(ctb.getNomPrenom())).append(CsvHelper.COMMA);
-				b.append(elt.getTypeMouvement()).append(CsvHelper.COMMA);
-				b.append(elt.getEtatMouvement()).append(CsvHelper.COMMA);
-				b.append(CsvHelper.escapeChars(elt.getCollectiviteAdministrative())).append(CsvHelper.COMMA);
-				b.append(CsvHelper.escapeChars(elt.getDestinationUtilisateur()));
-			}
-		});
+				@Override
+				public void fillLine(StringBuilder b, MouvementDetailView elt) {
+					final ContribuableView ctb = elt.getContribuable();
+					b.append(ctb.getNumero()).append(CsvHelper.COMMA);
+					b.append(CsvHelper.asCsvField(ctb.getNomPrenom())).append(CsvHelper.COMMA);
+					b.append(elt.getTypeMouvement()).append(CsvHelper.COMMA);
+					b.append(elt.getEtatMouvement()).append(CsvHelper.COMMA);
+					b.append(CsvHelper.escapeChars(elt.getCollectiviteAdministrative())).append(CsvHelper.COMMA);
+					b.append(CsvHelper.escapeChars(elt.getDestinationUtilisateur()));
+				}
+			});
+		}
 	}
 
 	public static class MouvementDossierExtractionResult implements BatchResults<Long, MouvementDossierExtractionResult> {
