@@ -85,7 +85,7 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 		// on lance le timer du nettoyeur
 		final long p = getCleaningPeriod();
 		if (p > 0) {
-			cleaningTimer = new Timer("Inbox-Cleaner");
+			cleaningTimer = new Timer("InboxCleaner");
 			cleaningTimer.schedule(new Nettoyeur(), p, p);
 		}
 	}

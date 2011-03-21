@@ -120,7 +120,7 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 
 	@Override
 	public String toString() {
-		return String.format("{name=%s, arrival=%s}", name, DateHelper.dateTimeToDisplayString(incomingDate));
+		return String.format("{uuid=%s, name=%s, arrival=%s}", uuid, name, DateHelper.dateTimeToDisplayString(incomingDate));
 	}
 
 	@Override
