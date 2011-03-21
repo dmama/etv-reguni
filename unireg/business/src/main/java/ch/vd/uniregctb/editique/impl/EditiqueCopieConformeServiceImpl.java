@@ -86,7 +86,7 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 		m.setDomain(domain);
 		m.setContext(contexte);
 		m.setApplication(application);
-		m.setBusinessId(String.valueOf(m.hashCode()));
+		m.setBusinessId(nomDocument);
 		m.setBusinessUser(user);
 		m.setServiceDestination(serviceDestination);
 		m.setBody("<empty/>");
