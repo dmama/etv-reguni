@@ -106,7 +106,7 @@ public class AdresseEnvoi {
 	public String pourAdresse;
 
 	/**
-	 * La rue est son numéro.
+	 * La rue et son numéro.
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
