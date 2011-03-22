@@ -1,8 +1,21 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions name="FidorService" targetNamespace="http://www.vd.ch/fidor/ws/v2" xmlns:ns1="http://cxf.apache.org/bindings/xformat" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 				  xmlns:tns="http://www.vd.ch/fidor/ws/v2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
-		<xs:schema elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/fidor/ws/v2" version="1.0" xmlns:tns="http://www.vd.ch/fidor/ws/v2" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/fidor/ws/v2" xmlns:tns="http://www.vd.ch/fidor/ws/v2"
+				   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:element name="getCommuneParBatiment" type="tns:getCommuneParBatiment" />
+			<xs:element name="getCommuneParBatimentResponse" type="tns:getCommuneParBatimentResponse" />
+			<xs:element name="getCommuneParNoOFS" type="tns:getCommuneParNoOFS" />
+			<xs:element name="getCommuneParNoOFSResponse" type="tns:getCommuneParNoOFSResponse" />
+			<xs:element name="getCommuneParNoTechnique" type="tns:getCommuneParNoTechnique" />
+			<xs:element name="getCommuneParNoTechniqueResponse" type="tns:getCommuneParNoTechniqueResponse" />
+			<xs:element name="getCommunes" type="tns:getCommunes" />
+			<xs:element name="getCommunesHistoParNoOFS" type="tns:getCommunesHistoParNoOFS" />
+			<xs:element name="getCommunesHistoParNoOFSResponse" type="tns:getCommunesHistoParNoOFSResponse" />
+			<xs:element name="getCommunesHistoParNoTechnique" type="tns:getCommunesHistoParNoTechnique" />
+			<xs:element name="getCommunesHistoParNoTechniqueResponse" type="tns:getCommunesHistoParNoTechniqueResponse" />
+			<xs:element name="getCommunesResponse" type="tns:getCommunesResponse" />
 			<xs:element name="getLogicielDetail" type="tns:getLogicielDetail" />
 			<xs:element name="getLogicielDetailResponse" type="tns:getLogicielDetailResponse" />
 			<xs:element name="getPaysDetail" type="tns:getPaysDetail" />
@@ -13,6 +26,33 @@
 			<xs:element name="getTousLesPaysResponse" type="tns:getTousLesPaysResponse" />
 			<xs:element name="getUrl" type="tns:getUrl" />
 			<xs:element name="getUrlResponse" type="tns:getUrlResponse" />
+			<xs:complexType name="getCommuneParBatiment">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="numeroOfs" type="xs:int" />
+					<xs:element minOccurs="0" name="egid" type="xs:int" />
+					<xs:element minOccurs="0" name="dateReference" type="xs:dateTime" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommuneParBatimentResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="communeFiscale" type="tns:communeFiscale" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="communeFiscale">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="canton" type="xs:string" />
+					<xs:element minOccurs="0" name="dateDebutValidite" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="dateFinValidite" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="dateModification" type="xs:dateTime" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="fractions" nillable="true" type="tns:communeFiscale" />
+					<xs:element minOccurs="0" name="noOfs" type="xs:int" />
+					<xs:element minOccurs="0" name="noTechnique" type="xs:int" />
+					<xs:element minOccurs="0" name="nomCourt" type="xs:string" />
+					<xs:element minOccurs="0" name="nomOfficiel" type="xs:string" />
+					<xs:element minOccurs="0" name="parentOfsId" type="xs:int" />
+					<xs:element minOccurs="0" name="statut" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:complexType name="getPaysDetail">
 				<xs:sequence>
 					<xs:element name="ofsId" type="xs:long" />
@@ -101,6 +141,16 @@
 					<xs:element minOccurs="0" name="url" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
+			<xs:complexType name="getCommunesHistoParNoOFS">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="numeroOFS" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommunesHistoParNoOFSResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="communesFiscalesList" type="tns:communeFiscale" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:complexType name="getTousLesLogiciels">
 				<xs:sequence />
 			</xs:complexType>
@@ -109,12 +159,53 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="logicielsList" type="tns:logiciel" />
 				</xs:sequence>
 			</xs:complexType>
+			<xs:complexType name="getCommunes">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="dateReference" type="xs:dateTime" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommunesResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="communesFiscalesList" type="tns:communeFiscale" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommuneParNoOFS">
+				<xs:sequence>
+					<xs:element name="numeroOFS" type="xs:int" />
+					<xs:element minOccurs="0" name="dateReference" type="xs:dateTime" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommuneParNoOFSResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="communeFiscale" type="tns:communeFiscale" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:complexType name="getTousLesPays">
 				<xs:sequence />
 			</xs:complexType>
 			<xs:complexType name="getTousLesPaysResponse">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="paysList" type="tns:pays" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommunesHistoParNoTechnique">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="numeroTechnique" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommunesHistoParNoTechniqueResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="communesFiscalesList" type="tns:communeFiscale" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommuneParNoTechnique">
+				<xs:sequence>
+					<xs:element name="numeroTechnique" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getCommuneParNoTechniqueResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="communeFiscale" type="tns:communeFiscale" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:simpleType name="continent">
@@ -182,34 +273,18 @@
 					<xs:enumeration value="EXTERNE" />
 				</xs:restriction>
 			</xs:simpleType>
+			<xs:element name="FidorBusinessException" type="tns:FidorBusinessException" />
+			<xs:complexType name="FidorBusinessException">
+				<xs:sequence />
+			</xs:complexType>
 		</xs:schema>
 	</wsdl:types>
-	<wsdl:message name="getUrlResponse">
-		<wsdl:part element="tns:getUrlResponse" name="parameters">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getLogicielDetail">
-		<wsdl:part element="tns:getLogicielDetail" name="parameters">
-		</wsdl:part>
-	</wsdl:message>
 	<wsdl:message name="getPaysDetail">
 		<wsdl:part element="tns:getPaysDetail" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getPaysDetailResponse">
 		<wsdl:part element="tns:getPaysDetailResponse" name="parameters">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getTousLesLogicielsResponse">
-		<wsdl:part element="tns:getTousLesLogicielsResponse" name="parameters">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getTousLesLogiciels">
-		<wsdl:part element="tns:getTousLesLogiciels" name="parameters">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="getTousLesPaysResponse">
-		<wsdl:part element="tns:getTousLesPaysResponse" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getUrl">
@@ -220,11 +295,89 @@
 		<wsdl:part element="tns:getTousLesPays" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
+	<wsdl:message name="getCommuneParBatiment">
+		<wsdl:part element="tns:getCommuneParBatiment" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommunesHistoParNoTechnique">
+		<wsdl:part element="tns:getCommunesHistoParNoTechnique" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommunesResponse">
+		<wsdl:part element="tns:getCommunesResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommunes">
+		<wsdl:part element="tns:getCommunes" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommuneParNoOFS">
+		<wsdl:part element="tns:getCommuneParNoOFS" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="FidorBusinessException">
+		<wsdl:part element="tns:FidorBusinessException" name="FidorBusinessException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommuneParNoTechniqueResponse">
+		<wsdl:part element="tns:getCommuneParNoTechniqueResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommuneParNoTechnique">
+		<wsdl:part element="tns:getCommuneParNoTechnique" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommuneParNoOFSResponse">
+		<wsdl:part element="tns:getCommuneParNoOFSResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getLogicielDetail">
+		<wsdl:part element="tns:getLogicielDetail" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getUrlResponse">
+		<wsdl:part element="tns:getUrlResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTousLesLogiciels">
+		<wsdl:part element="tns:getTousLesLogiciels" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTousLesLogicielsResponse">
+		<wsdl:part element="tns:getTousLesLogicielsResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTousLesPaysResponse">
+		<wsdl:part element="tns:getTousLesPaysResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommunesHistoParNoOFS">
+		<wsdl:part element="tns:getCommunesHistoParNoOFS" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
 	<wsdl:message name="getLogicielDetailResponse">
 		<wsdl:part element="tns:getLogicielDetailResponse" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
+	<wsdl:message name="getCommunesHistoParNoTechniqueResponse">
+		<wsdl:part element="tns:getCommunesHistoParNoTechniqueResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommuneParBatimentResponse">
+		<wsdl:part element="tns:getCommuneParBatimentResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCommunesHistoParNoOFSResponse">
+		<wsdl:part element="tns:getCommunesHistoParNoOFSResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
 	<wsdl:portType name="FidorPortType">
+		<wsdl:operation name="getCommuneParBatiment">
+			<wsdl:input message="tns:getCommuneParBatiment" name="getCommuneParBatiment">
+			</wsdl:input>
+			<wsdl:output message="tns:getCommuneParBatimentResponse" name="getCommuneParBatimentResponse">
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="getPaysDetail">
 			<wsdl:input message="tns:getPaysDetail" name="getPaysDetail">
 			</wsdl:input>
@@ -243,11 +396,35 @@
 			<wsdl:output message="tns:getUrlResponse" name="getUrlResponse">
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="getCommunesHistoParNoOFS">
+			<wsdl:input message="tns:getCommunesHistoParNoOFS" name="getCommunesHistoParNoOFS">
+			</wsdl:input>
+			<wsdl:output message="tns:getCommunesHistoParNoOFSResponse" name="getCommunesHistoParNoOFSResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:FidorBusinessException" name="FidorBusinessException">
+			</wsdl:fault>
+		</wsdl:operation>
 		<wsdl:operation name="getTousLesLogiciels">
 			<wsdl:input message="tns:getTousLesLogiciels" name="getTousLesLogiciels">
 			</wsdl:input>
 			<wsdl:output message="tns:getTousLesLogicielsResponse" name="getTousLesLogicielsResponse">
 			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getCommunes">
+			<wsdl:input message="tns:getCommunes" name="getCommunes">
+			</wsdl:input>
+			<wsdl:output message="tns:getCommunesResponse" name="getCommunesResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:FidorBusinessException" name="FidorBusinessException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getCommuneParNoOFS">
+			<wsdl:input message="tns:getCommuneParNoOFS" name="getCommuneParNoOFS">
+			</wsdl:input>
+			<wsdl:output message="tns:getCommuneParNoOFSResponse" name="getCommuneParNoOFSResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:FidorBusinessException" name="FidorBusinessException">
+			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getTousLesPays">
 			<wsdl:input message="tns:getTousLesPays" name="getTousLesPays">
@@ -255,9 +432,34 @@
 			<wsdl:output message="tns:getTousLesPaysResponse" name="getTousLesPaysResponse">
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="getCommunesHistoParNoTechnique">
+			<wsdl:input message="tns:getCommunesHistoParNoTechnique" name="getCommunesHistoParNoTechnique">
+			</wsdl:input>
+			<wsdl:output message="tns:getCommunesHistoParNoTechniqueResponse" name="getCommunesHistoParNoTechniqueResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:FidorBusinessException" name="FidorBusinessException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getCommuneParNoTechnique">
+			<wsdl:input message="tns:getCommuneParNoTechnique" name="getCommuneParNoTechnique">
+			</wsdl:input>
+			<wsdl:output message="tns:getCommuneParNoTechniqueResponse" name="getCommuneParNoTechniqueResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:FidorBusinessException" name="FidorBusinessException">
+			</wsdl:fault>
+		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="FidorServiceSoapBinding" type="tns:FidorPortType">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getCommuneParBatiment">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getCommuneParBatiment">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getCommuneParBatimentResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="getPaysDetail">
 			<soap:operation soapAction="" style="document" />
 			<wsdl:input name="getPaysDetail">
@@ -275,6 +477,18 @@
 			<wsdl:output name="getLogicielDetailResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getCommunesHistoParNoOFS">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getCommunesHistoParNoOFS">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getCommunesHistoParNoOFSResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="FidorBusinessException">
+				<soap:fault name="FidorBusinessException" use="literal" />
+			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getUrl">
 			<soap:operation soapAction="" style="document" />
@@ -294,6 +508,30 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="getCommuneParNoOFS">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getCommuneParNoOFS">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getCommuneParNoOFSResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="FidorBusinessException">
+				<soap:fault name="FidorBusinessException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getCommunes">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getCommunes">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getCommunesResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="FidorBusinessException">
+				<soap:fault name="FidorBusinessException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
 		<wsdl:operation name="getTousLesPays">
 			<soap:operation soapAction="" style="document" />
 			<wsdl:input name="getTousLesPays">
@@ -303,10 +541,34 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="getCommunesHistoParNoTechnique">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getCommunesHistoParNoTechnique">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getCommunesHistoParNoTechniqueResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="FidorBusinessException">
+				<soap:fault name="FidorBusinessException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getCommuneParNoTechnique">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getCommuneParNoTechnique">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getCommuneParNoTechniqueResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="FidorBusinessException">
+				<soap:fault name="FidorBusinessException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
 	</wsdl:binding>
 	<wsdl:service name="FidorService">
 		<wsdl:port binding="tns:FidorServiceSoapBinding" name="FidorPort">
-			<soap:address location="http://fidor-va.etat-de-vaud.ch/fiscalite/val-fidor/ws/v2" />
+			<soap:address location="http://localhost:4835/registres/fidor/ws/v2" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
