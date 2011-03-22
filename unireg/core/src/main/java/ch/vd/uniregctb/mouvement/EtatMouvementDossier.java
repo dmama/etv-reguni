@@ -6,11 +6,13 @@ import java.util.List;
 
 public enum EtatMouvementDossier {
 
-	A_TRAITER,
-	A_ENVOYER,
-	RETIRE,
-	TRAITE,
-	RECU_BORDEREAU;
+	A_TRAITER("à traiter"),
+	A_ENVOYER("à envoyer"),
+	RETIRE("retiré"),
+	TRAITE("traité"),
+	RECU_BORDEREAU("reçu");
+
+	private final String description;
 
 	private static final List<EtatMouvementDossier> etatsTraites;
 
@@ -31,12 +33,20 @@ public enum EtatMouvementDossier {
 		etatsEnInstance = Collections.unmodifiableList(enInstance);
 	}
 
+	private EtatMouvementDossier(String description) {
+		this.description = description;
+	}
+
 	public boolean isTraite() {
 		return this == TRAITE || this == RECU_BORDEREAU;
 	}
 
 	public boolean isEnInstance() {
 		return this == A_TRAITER || this == A_ENVOYER;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public static List<EtatMouvementDossier> getEtatsTraites() {

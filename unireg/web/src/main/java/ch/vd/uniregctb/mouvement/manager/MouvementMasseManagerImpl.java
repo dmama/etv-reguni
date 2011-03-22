@@ -431,7 +431,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			final StringBuilder b = new StringBuilder();
 			b.append("Extraction des mouvements de dossiers");
 			if (criteria.getTypeMouvement() != null) {
-				b.append(" de type ").append(criteria.getTypeMouvement() == TypeMouvement.EnvoiDossier ? "ENVOI" : "RECEPTION");
+				b.append(" de type ").append(criteria.getTypeMouvement() == TypeMouvement.EnvoiDossier ? "'envoi'" : "'réception'");
 			}
 			if (criteria.getNoCtb() != null) {
 				b.append(" du contribuable ").append(FormatNumeroHelper.numeroCTBToDisplay(criteria.getNoCtb()));
@@ -454,7 +454,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 						}
 					}
 					final EtatMouvementDossier etat = etats.get(i);
-					b.append(etat);
+					b.append('\'').append(etat.getDescription()).append('\'');
 				}
 			}
 			return b.toString();
