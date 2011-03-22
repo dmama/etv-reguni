@@ -6,7 +6,7 @@
 
 /* Improve colour contrast of links */
 a:link, a:visited {
-color: #781351
+	color: #781351
 }
 
 #sommaire,
@@ -21,13 +21,18 @@ form#command,
 table.display_table div,
 #timeline,
 fieldset.information table.display_table form input,
-a.modif {
+a.modif,
+.ui-tabs-nav, .ui-tabs-hide,
+.staticTip {
 	display:none;
 }
 
-
-#noprint {
+.noprint {
 	display:none;
+}
+
+legend {
+	background-color: #fc0;
 }
 
 .display table {
@@ -36,22 +41,23 @@ a.modif {
 	margin: 20px 0 20px 0;
 }
 
-.display  th, .displayTable  td {
+.display th, .displayTable  td {
 	padding: 2px 4px 2px 4px !important;
 	text-align: left;
 	vertical-align: top;
 }
 
-.display  thead tr {
-	background-color: #fc0;
+thead tr {
+	border-bottom: 10px;
+}
+
+th {
+	background-color: #DDD;
+	border-bottom: 2px solid #CDCDCD;
 }
 
 
 .display td a, .display td a:visited, .display td a:link,
-.display th a,.displayTable th a:visited {
-	color: black;
-}
-
 .display th a, .displayTable th a:visited {
 	color: black;
 }
@@ -74,5 +80,6 @@ a.modif {
 }
 
 fieldset, fieldset.information {
+	padding: 0.5em;
 	page-break-inside: avoid;
 }

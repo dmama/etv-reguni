@@ -11,8 +11,8 @@
 
 	<c:if test="${not empty command.entreprise.regimesFiscauxVD}">
 	
-		<input id="showRegimesVDHisto" type="checkbox" onclick="refreshRegimesVDTable(this);" />
-		<label for="showRegimesVDHisto"><fmt:message key="label.historique" /></label>
+		<input class="noprint" id="showRegimesVDHisto" type="checkbox" onclick="refreshRegimesVDTable(this);" />
+		<label class="noprint" for="showRegimesVDHisto"><fmt:message key="label.historique" /></label>
 	
 		<display:table name="${command.entreprise.regimesFiscauxVD}" id="regimesVD" class="display">
 			<display:column sortable="true" titleKey="label.date.debut">
@@ -39,8 +39,8 @@
 
 	<c:if test="${not empty command.entreprise.regimesFiscauxCH}">
 	
-		<input id="showRegimesCHHisto" type="checkbox" onclick="refreshRegimesCHTable(this);" />
-		<label for="showRegimesCHHisto"><fmt:message key="label.historique" /></label>
+		<input class="noprint" id="showRegimesCHHisto" type="checkbox" onclick="refreshRegimesCHTable(this);" />
+		<label class="noprint" for="showRegimesCHHisto"><fmt:message key="label.historique" /></label>
 	
 		<display:table name="${command.entreprise.regimesFiscauxCH}" id="regimesCH" class="display">
 			<display:column sortable="true" titleKey="label.date.debut">

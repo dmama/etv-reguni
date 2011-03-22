@@ -15,8 +15,8 @@
 <fieldset>
 	<legend><span><fmt:message key="label.adresse.fiscales" /></span></legend>
 
-	<input name="adrHistoFiscales" type="checkbox" <c:if test="${command.adressesHisto}">checked</c:if> onclick="toggleRowsIsHisto('adresse','isAdrHisto',2);" id="isAdrHisto" />
-	<label for="isAdrHisto"><fmt:message key="label.historique" /></label>
+	<input class="noprint" name="adrHistoFiscales" type="checkbox" <c:if test="${command.adressesHisto}">checked</c:if> onclick="toggleRowsIsHisto('adresse','isAdrHisto',2);" id="isAdrHisto" />
+	<label class="noprint" for="isAdrHisto"><fmt:message key="label.historique" /></label>
 
 	<jsp:include page="../../common/adresse/adresseFiscale.jsp">
 		<jsp:param name="page" value="visu"/>
@@ -36,8 +36,8 @@
 		</span>
 	</legend>
 
-	<input name="adrHistoCiviles" type="checkbox" <c:if test="${command.adressesHistoCiviles}">checked</c:if> onclick="toggleRowsIsHisto('adresseCivile','isAdrHistoCiviles',2);" id="isAdrHistoCiviles" />
-	<label for="isAdrHistoCiviles"><fmt:message key="label.historique" /></label>
+	<input class="noprint" name="adrHistoCiviles" type="checkbox" <c:if test="${command.adressesHistoCiviles}">checked</c:if> onclick="toggleRowsIsHisto('adresseCivile','isAdrHistoCiviles',2);" id="isAdrHistoCiviles" />
+	<label class="noprint" for="isAdrHistoCiviles"><fmt:message key="label.historique" /></label>
 	<jsp:include page="../../common/adresse/adresseCivile.jsp">
 		<jsp:param name="page" value="visu"/>
 		<jsp:param name="membre" value="principal"/>
@@ -47,8 +47,8 @@
 <fieldset <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
 	<legend><span><fmt:message key="label.adresse.civiles.membre.couple" />${command.nomPrenomConjoint}</span></legend>
 
-	<input name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',2);" id="isAdrHistoCivilesConjoint" />
-	<label for="isAdrHistoCivilesConjoint"><fmt:message key="label.historique" /></label>
+	<input class="noprint" name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',2);" id="isAdrHistoCivilesConjoint" />
+	<label class="noprint" for="isAdrHistoCivilesConjoint"><fmt:message key="label.historique" /></label>
 
 	<jsp:include page="../../common/adresse/adresseCivile.jsp">
 		<jsp:param name="page" value="visu"/>

@@ -9,8 +9,8 @@
 			<div class="flash-warning"><c:out value="${command.situationsFamilleEnErreurMessage}"/></div>
 		</c:if>
 		<c:if test="${command.situationsFamilleEnErreurMessage == null}">
-			<input name="adresse_histo" type="checkbox" onClick="toggleRowsIsHisto('situationFamille','isSFHisto', 5);" id="isSFHisto" />
-			<label for="isSFHisto"><fmt:message key="label.historique" /></label>
+			<input class="noprint" name="adresse_histo" type="checkbox" onClick="toggleRowsIsHisto('situationFamille','isSFHisto', 5);" id="isSFHisto" />
+			<label class="noprint" for="isSFHisto"><fmt:message key="label.historique" /></label>
 
 			<jsp:include page="../../common/fiscal/situation-famille.jsp">
 				<jsp:param name="page" value="visu"/>

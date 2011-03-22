@@ -98,6 +98,7 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		builder.append(getHRef());
 		builder.append("\" class=\"");
 		builder.append(getCssClass());
+		builder.append(" noprint");
 
 		final String onClick = getOnClick();
 		if (!estVide(onClick)) {

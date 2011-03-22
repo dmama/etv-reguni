@@ -10,7 +10,7 @@ import ch.vd.uniregctb.web.xt.component.SimpleText;
 public class AddRemarqueLink extends Anchor {
 	public AddRemarqueLink(Long tiersId) {
 		super("#", new SimpleText("&nbsp;Ajouter une remarque"));
-		addAttribute("class", "add");
+		addAttribute("class", "add noprint");
 		addAttribute("onclick", "XT.doAjaxAction('addRemarque', this, {'tiersId' : " + tiersId + "});");
 	}
 }

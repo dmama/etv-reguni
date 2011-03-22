@@ -27,12 +27,12 @@ function ouvrirAide(url) {
 		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 		<%@ include file="/WEB-INF/jsp/include/fieldsets-workaround.jsp" %>
 
-		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/layout.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/tabs.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/tools.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
+		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="javascript">
 			function getContextPath() {

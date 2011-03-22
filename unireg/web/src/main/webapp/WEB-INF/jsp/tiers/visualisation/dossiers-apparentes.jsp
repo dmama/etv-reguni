@@ -20,11 +20,10 @@
 	<table id="tableTypeRapport">
 		<tr
 			class="<unireg:nextRowClass/>">
-			<td width="25%"><input name="rapport_actif" type="checkbox"
-				id="isRapportHisto"
-				onclick="toggleRowsIsHisto('dossierApparente','isRapportHisto', 2)" />
-				<label for="isRapportHisto"><fmt:message key="label.historique" /></label>
-				</td>
+			<td width="25%">
+				<input class="noprint" name="rapport_actif" type="checkbox" id="isRapportHisto" onclick="toggleRowsIsHisto('dossierApparente','isRapportHisto', 2)" />
+				<label class="noprint" for="isRapportHisto"><fmt:message key="label.historique" /></label>
+			</td>
 			<td width="75%">&nbsp;</td>
 		</tr>
 		<form name="form" id="form">

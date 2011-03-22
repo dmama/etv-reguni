@@ -14,8 +14,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.contribuable.associe" /></span></legend>
 	
-	<input name="rt_histo"
-	type="checkbox" onClick="toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);" id="isCtbAssoHisto" />
+	<input class="noprint" name="rt_histo" type="checkbox" onClick="toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);" id="isCtbAssoHisto" />
 	<fmt:message key="label.historique" />
 		
 	<jsp:include page="../common/contribuable-associe.jsp">
@@ -61,9 +60,8 @@
 	<table border="0">
 		<tr>
 			<td>
-				<input name="rapportsPrestationHisto" type="checkbox" id="rapportsPrestationHisto"
-					<c:if test="${command.rapportsPrestationHisto}">checked</c:if> onClick="window.location = toggleBooleanParam(window.location, 'rapportsPrestationHisto', true)" />
-				<label for="rapportsPrestationHisto"><fmt:message key="label.historique" /></label>
+				<input class="noprint" name="rapportsPrestationHisto" type="checkbox" id="rapportsPrestationHisto" <c:if test="${command.rapportsPrestationHisto}">checked</c:if> onClick="window.location = toggleBooleanParam(window.location, 'rapportsPrestationHisto', true)" />
+				<label class="noprint" for="rapportsPrestationHisto"><fmt:message key="label.historique" /></label>
 			</td>
 
 			<td id="timeline" align="right">

@@ -10,8 +10,8 @@
 
 	<c:if test="${not empty command.entreprise.forsFiscaux}">
 
-		<input id="showforsFiscauxPMHisto" type="checkbox" onclick="refreshforsFiscauxPM(this);" />
-		<label for="showforsFiscauxPMHisto"><fmt:message key="label.historique" /></label>
+		<input class="noprint" id="showforsFiscauxPMHisto" type="checkbox" onclick="refreshforsFiscauxPM(this);" />
+		<label class="noprint" for="showforsFiscauxPMHisto"><fmt:message key="label.historique" /></label>
 
 		<display:table name="${command.entreprise.forsFiscaux}" id="forsFiscauxPM" class="display">
 

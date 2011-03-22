@@ -4,9 +4,8 @@
 <fieldset>
 	<legend><span><fmt:message key="label.fors.fiscaux" /></span></legend>
 	<c:if test="${not empty command.forsFiscaux}">
-		<input name="fors_debiteurs_histo"
-			type="checkbox" onClick="toggleRowsIsHisto('forFiscal','isForDebHisto', 2);" id="isForDebHisto" />
-		<label for="isForDebHisto"><fmt:message key="label.historique" /></label>
+		<input class="noprint" name="fors_debiteurs_histo" type="checkbox" onClick="toggleRowsIsHisto('forFiscal','isForDebHisto', 2);" id="isForDebHisto" />
+		<label class="noprint" for="isForDebHisto"><fmt:message key="label.historique" /></label>
 		
 		<jsp:include page="../../common/fiscal/for-debiteur.jsp">
 			<jsp:param name="page" value="visu"/>

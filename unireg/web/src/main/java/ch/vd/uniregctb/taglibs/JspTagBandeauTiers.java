@@ -236,7 +236,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 						// si on a un tiers appartenant à un ensemble tiers-couple, on affiche des raccourcis vers les autres membres
 						final String others = buildImageOtherTiers(tiers, ensemble);
 						if (others != null) {
-							s.append("</td><td class=\"composition_menage\" valign=\"top\">\n");
+							s.append("</td><td class=\"composition_menage noprint\" valign=\"top\">\n");
 							s.append(others);
 						}
 					}

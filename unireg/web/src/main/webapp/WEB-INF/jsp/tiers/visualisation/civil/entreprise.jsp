@@ -49,8 +49,8 @@
 <fieldset>
 	<legend><span><fmt:message key="label.sieges"/></span></legend>
 
-	<input id="showSiegesHisto" type="checkbox" onclick="refreshSiegesTable(this);" />
-	<label for="showSiegesHisto"><fmt:message key="label.historique" /></label>
+	<input class="noprint" id="showSiegesHisto" type="checkbox" onclick="refreshSiegesTable(this);" />
+	<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.sieges}" id="sieges" class="display">
 		<display:column sortable="true" titleKey="label.date.debut">
@@ -76,8 +76,8 @@
 <fieldset>
 	<legend><span><fmt:message key="label.formes.juridiques"/></span></legend>
 
-	<input id="showFormesJuridiquesHisto" type="checkbox" onclick="refreshFormesJuridiquesTable(this);" />
-	<label for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
+	<input class="noprint" id="showFormesJuridiquesHisto" type="checkbox" onclick="refreshFormesJuridiquesTable(this);" />
+	<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.formesJuridiques}" id="formesJuridiques" class="display">
 		<display:column sortable="true" titleKey="label.date.debut">
@@ -93,8 +93,8 @@
 <fieldset>
 	<legend><span><fmt:message key="label.capitaux"/></span></legend>
 
-	<input id="showCapitauxHisto" type="checkbox" onclick="refreshCapitauxTable(this);" />
-	<label for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
+	<input class="noprint" id="showCapitauxHisto" type="checkbox" onclick="refreshCapitauxTable(this);" />
+	<label class="noprint" for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
 
 	<fmt:setLocale value="ch" scope="page"/>
 	<display:table name="${command.entreprise.capitaux}" id="capitaux" class="display">
