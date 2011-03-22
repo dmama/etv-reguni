@@ -131,7 +131,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final MockCommune Bern = new MockCommune(351, "Bern", BERN, null);
 	public static final MockCommune Neuchatel = new MockCommune(6458, "Neuchâtel", NEUCHATEL, null);
 	public static final MockCommune Peseux = new MockCommune(6412, "Peseux", NEUCHATEL, null);
-	public static final MockCommune Enney = new MockCommune(2132, "ENNEY", FRIBOURG, null);
+	public static final MockCommune Enney = new MockCommune(2132, "Enney", FRIBOURG, null);
 	public static final MockCommune Geneve = new MockCommune(6621, "Genève", GENEVE, null);
 	public static final MockCommune Bale = new MockCommune(2701, "Basel", BALE, null);
 
