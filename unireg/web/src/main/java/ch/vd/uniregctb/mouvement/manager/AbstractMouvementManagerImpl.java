@@ -376,6 +376,13 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			final String nomCollectiviteAdm = getNomCollectiviteAdministrative(reception.getCollectiviteAdministrativeReceptrice());
 			view.setCollectiviteAdministrative(nomCollectiviteAdm);
 		}
+
+		// [UNIREG-3402] seuls les mouvements d'archives en masse créés APRES la MeP 11R1 (c'était le 11 mars 2011)
+		// doivent pouvoir être libellés "Archives période XXXX", les autres devant rester "Archives" - c'est assez
+		// moche, d'accord, mais la partie "uniquement pour les mouvements enregistrées par le batch depuis qu'il est capable de générer des mouvements vers les archives uniquement."
+		// n'est apparue que très tardivement dans la spécification de cette modification... après la MeP, en fait.
+		final RegDate dateMeP11R1 = RegDate.get(2011, 3, 11);
+
 		if (reception instanceof ReceptionDossierPersonnel) {
 			final long noIndividu = ((ReceptionDossierPersonnel) reception).getNoIndividuRecepteur();
 			final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(noIndividu);
@@ -384,7 +391,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
 			view.setUtilisateurReception(infoCollaborateur.visaOperateur);
 		}
-		else if (reception instanceof ReceptionDossierArchives && ((ReceptionDossierArchives) reception).getBordereau() != null) {
+		else if (reception instanceof ReceptionDossierArchives && ((ReceptionDossierArchives) reception).getBordereau() != null && RegDate.get(reception.getLogCreationDate()).isAfter(dateMeP11R1)) {
 			final Object[] params = {Integer.toString(reception.getDateMouvement().year())};
 			final String localisationStr = messageSource.getMessage("option.localisation.archives.periode", params, WebContextUtils.getDefaultLocale());
 			view.setDestinationUtilisateur(localisationStr);
