@@ -11,11 +11,14 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import ch.vd.fidor.ws.v2.Acces;
+import ch.vd.fidor.ws.v2.CommuneFiscale;
+import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
@@ -28,6 +31,7 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
+import ch.vd.uniregctb.interfaces.model.impl.CommuneImpl;
 import ch.vd.uniregctb.interfaces.model.impl.LogicielImpl;
 import ch.vd.uniregctb.interfaces.model.impl.PaysImpl;
 import ch.vd.uniregctb.webservice.fidor.FidorClient;
@@ -93,23 +97,102 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 	}
 
 	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			if (all == null || all.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			final List<Commune> communes = new ArrayList<Commune>();
+			for (CommuneFiscale commune : all) {
+				if (commune.getCanton().equals(canton.getSigleOFS())) {
+					communes.add(CommuneImpl.get(commune));
+				}
+			}
+			return communes;
+		}
+		catch (FidorBusinessException_Exception e) {
+			throw new InfrastructureException(e.getMessage(), e);
+		}
 	}
 
 	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			if (all == null || all.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			final List<Commune> communes = new ArrayList<Commune>();
+			for (CommuneFiscale commune : all) {
+				final List<CommuneFiscale> fractions = commune.getFractions();
+				if ((fractions == null || fractions.isEmpty()) && commune.getCanton().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
+					communes.add(CommuneImpl.get(commune));
+				}
+			}
+			return communes;
+		}
+		catch (FidorBusinessException_Exception e) {
+			throw new InfrastructureException(e.getMessage(), e);
+		}
 	}
 
 	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			if (all == null || all.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			final List<Commune> communes = new ArrayList<Commune>();
+			for (CommuneFiscale commune : all) {
+				if (commune.getCanton().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
+					communes.add(CommuneImpl.get(commune));
+				}
+			}
+			return communes;
+		}
+		catch (FidorBusinessException_Exception e) {
+			throw new InfrastructureException(e.getMessage(), e);
+		}
 	}
 
 	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			if (all == null || all.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			final List<Commune> communes = new ArrayList<Commune>();
+			for (CommuneFiscale commune : all) {
+				if (!commune.getCanton().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
+					communes.add(CommuneImpl.get(commune));
+				}
+			}
+			return communes;
+		}
+		catch (FidorBusinessException_Exception e) {
+			throw new InfrastructureException(e.getMessage(), e);
+		}
 	}
 
 	public List<Commune> getCommunes() throws InfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			if (all == null || all.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			final List<Commune> communes = new ArrayList<Commune>();
+			for (CommuneFiscale commune : all) {
+				communes.add(CommuneImpl.get(commune));
+			}
+			return communes;
+		}
+		catch (FidorBusinessException_Exception e) {
+			throw new InfrastructureException(e.getMessage(), e);
+		}
 	}
 
 	public List<Localite> getLocalites() throws InfrastructureException {
@@ -141,13 +224,23 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 	}
 
 	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final CommuneFiscale c = fidorClient.getCommuneParNoOFS(noCommune, XmlUtils.regdate2xmlcal(date));
+			return CommuneImpl.get(c);
+		}
+		catch (FidorBusinessException_Exception e) {
+			throw new InfrastructureException(e.getMessage(), e);
+		}
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
-		// TODO (msi)
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+		final CommuneFiscale commune = fidorClient.getCommuneParBatiment(hintNoOfsCommune, egid, XmlUtils.regdate2xmlcal(date));
+		if (commune == null) {
+			return null;
+		}
+
+		return commune.getNoOfs();
 	}
 
 	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
@@ -226,8 +319,8 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 	/**
 	 * Initialise les URLs des applications fiscales.
 	 * <p/>
-	 * <b>Note:</b> il est absolument nécessaire d'initialiser le client <i>après</i> le contexte Spring, car il y a une dépendence implicite sur le bus CXF
-	 * qui risque d'être initialisé plus tard que ce bean. Dans ce dernier, cas on reçoit une NPE dans le constructeur du service.
+	 * <b>Note:</b> il est absolument nécessaire d'initialiser le client <i>après</i> le contexte Spring, car il y a une dépendence implicite sur le bus CXF qui risque d'être initialisé plus tard que ce
+	 * bean. Dans ce dernier, cas on reçoit une NPE dans le constructeur du service.
 	 */
 	private void initUrls() {
 		final long now = System.nanoTime();

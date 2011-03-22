@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.Serializable;
 
+import ch.vd.fidor.ws.v2.CommuneFiscale;
 import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -12,15 +14,11 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private final String noACI;
-	private final String noCantonal;
 	private final int noOFSEtendu;
-	private final String nomAbrege;
 	private final int numTechMere;
 	private final boolean vaudoise;
 	private final boolean fraction;
 	private final boolean principale;
-	private final boolean valide;
 	private final String sigleCanton;
 
 	public static CommuneImpl get(ch.vd.infrastructure.model.Commune target) {
@@ -37,36 +35,51 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return new CommuneImpl(target);
 	}
 
+	public static Commune get(CommuneFiscale target) {
+		if (target == null) {
+			return null;
+		}
+		return new CommuneImpl(target);
+	}
+
 	protected CommuneImpl(ch.vd.infrastructure.model.CommuneSimple target) {
 		super(target);
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
-		this.noACI = target.getNoACI();
-		this.noCantonal = target.getNoCantonal();
 		this.noOFSEtendu = (target.isFraction() ? target.getNoTechnique() : target.getNoOFS());
-		this.nomAbrege = target.getNomAbrege();
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNumTechMere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
-		this.valide = target.isValide();
 	}
 
 	protected CommuneImpl(ch.vd.infrastructure.model.Commune target) {
 		super(target);
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
-		this.noACI = target.getNoACI();
-		this.noCantonal = target.getNoCantonal();
 		this.noOFSEtendu = (target.isFraction() ? target.getNoTechnique() : target.getNoOFS());
-		this.nomAbrege = target.getNomAbrege();
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNumTechMere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
-		this.valide = target.isValide();
+	}
+
+	protected CommuneImpl(CommuneFiscale target) {
+		super(target.getNoOfs(), target.getNomOfficiel().toUpperCase(), target.getNomOfficiel(), null);
+		this.dateDebut = cal2regdate(target.getDateDebutValidite());
+		this.dateFin = cal2regdate(target.getDateFinValidite());
+		this.noOFSEtendu = (target.getParentOfsId() == null ? target.getNoOfs() : target.getNoTechnique());
+		this.sigleCanton = target.getCanton();
+		this.numTechMere = target.getParentOfsId();
+		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
+		this.fraction = (target.getParentOfsId() != null);
+		this.principale = (target.getFractions() != null && !target.getFractions().isEmpty());
+	}
+
+	private static RegDate cal2regdate(XMLGregorianCalendar cal) {
+		return RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -77,14 +90,6 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return dateFin;
 	}
 
-	public String getNoACI() {
-		return noACI;
-	}
-
-	public String getNoCantonal() {
-		return noCantonal;
-	}
-
 	public int getNoOFSEtendu() {
 		return noOFSEtendu;
 	}
@@ -92,10 +97,6 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	@Override
 	public int getNoOFS() {
 		return getNoOFSEtendu();
-	}
-
-	public String getNomAbrege() {
-		return nomAbrege;
 	}
 
 	public int getNumTechMere() {
@@ -116,9 +117,5 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	public boolean isPrincipale() {
 		return principale;
-	}
-
-	public boolean isValide() {
-		return valide;
 	}
 }

@@ -1,14 +1,19 @@
 package ch.vd.uniregctb.wsclient.fidor;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.fidor.ws.v2.Acces;
+import ch.vd.fidor.ws.v2.CommuneFiscale;
+import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
 import ch.vd.fidor.ws.v2.Logiciel;
 import ch.vd.fidor.ws.v2.ParameterMap;
 import ch.vd.fidor.ws.v2.Pays;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservice.fidor.FidorClient;
@@ -31,17 +36,112 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 		this.statsService = statsService;
 	}
 
-
-	public Logiciel getLogicielDetail(final long l) {
+	public Logiciel getLogicielDetail(final long id) {
 		final long start = tracing.start();
 		try {
-			return target.getLogicielDetail(l);
+			return target.getLogicielDetail(id);
 		}
 		finally {
 			tracing.end(start, "getLogicielDetail", new Object() {
 				@Override
 				public String toString() {
-					return String.format("getLogicielDetail=%s", l);
+					return String.format("id=%s", id);
+				}
+			});
+		}
+	}
+
+	@Override
+	public CommuneFiscale getCommuneParNoOFS(final int noOfs, final XMLGregorianCalendar cal) throws FidorBusinessException_Exception {
+		final long start = tracing.start();
+		try {
+			return target.getCommuneParNoOFS(noOfs, cal);
+		}
+		finally {
+			tracing.end(start, "getCommuneFromNoOfs", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noOfs=%d, date=%s", noOfs, XmlUtils.xmlcal2regdate(cal));
+				}
+			});
+		}
+	}
+
+	@Override
+	public CommuneFiscale getCommuneParNoTechnique(final int noTechnique) throws FidorBusinessException_Exception {
+		final long start = tracing.start();
+		try {
+			return target.getCommuneParNoTechnique(noTechnique);
+		}
+		finally {
+			tracing.end(start, "getCommuneFromNoTechnique", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noTechnique=%d", noTechnique);
+				}
+			});
+		}
+	}
+
+	@Override
+	public List<CommuneFiscale> getCommunesHistoParNoOFS(final int noOfs) throws FidorBusinessException_Exception {
+		final long start = tracing.start();
+		try {
+			return target.getCommunesHistoParNoOFS(noOfs);
+		}
+		finally {
+			tracing.end(start, "getCommunesHistoFromNoOfs", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noOfs=%d", noOfs);
+				}
+			});
+		}
+	}
+
+	@Override
+	public List<CommuneFiscale> getCommunesHistoParNoTechnique(final int noTechnique) throws FidorBusinessException_Exception {
+		final long start = tracing.start();
+		try {
+			return target.getCommunesHistoParNoTechnique(noTechnique);
+		}
+		finally {
+			tracing.end(start, "getCommunesHistoParNoTechnique", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noTechnique=%d", noTechnique);
+				}
+			});
+		}
+	}
+
+	@Override
+	public List<CommuneFiscale> getCommunes(final XMLGregorianCalendar cal) throws FidorBusinessException_Exception {
+		final long start = tracing.start();
+		try {
+			return target.getCommunes(cal);
+		}
+		finally {
+			tracing.end(start, "getCommunes", new Object() {
+				@Override
+				public String toString() {
+					return String.format("date=%s", XmlUtils.xmlcal2regdate(cal));
+				}
+			});
+		}
+	}
+
+	@Override
+	public CommuneFiscale getCommuneParBatiment(final int egid, final int noOfs, final XMLGregorianCalendar cal) {
+		final long start = tracing.start();
+		try {
+			return target.getCommuneParBatiment(egid, noOfs, cal);
+		}
+		finally {
+			tracing.end(start, "getCommuneFromBatiment", new Object() {
+				@Override
+				public String toString() {
+					return String.format("egid=%d, noOfs=%d, date=%s", egid, noOfs, XmlUtils.xmlcal2regdate(cal));
 				}
 			});
 		}

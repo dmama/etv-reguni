@@ -177,14 +177,9 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	}
 
 	private String nomMinusculeOFS;
-	private String cantonID;
 	private RegDate dateDebutValidite;
 	private RegDate dateFinValidite;
-	private String noACI;
-	private String noCantonal;
-	private String nomAbrege;
 	private final String sigleCanton;
-	private boolean valide;
 	private final OfficeImpot officeImpot;
 
 	private final List<MockLienCommuneBatiment> liensBatiments = new ArrayList<MockLienCommuneBatiment>();
@@ -211,28 +206,12 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		this.nomMinusculeOFS = nomMinusculeOFS;
 	}
 
-	public String getCantonID() {
-		return cantonID;
-	}
-
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
 
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
-	}
-
-	public String getNoACI() {
-		return noACI;
-	}
-
-	public String getNoCantonal() {
-		return noCantonal;
-	}
-
-	public String getNomAbrege() {
-		return nomAbrege;
 	}
 
 	public int getNoOFSEtendu() {
@@ -257,10 +236,6 @@ public class MockCommune extends MockEntityOFS implements Commune {
 
 	public boolean isPrincipale() {
 		return false;
-	}
-
-	public boolean isValide() {
-		return valide;
 	}
 
 	public OfficeImpot getOfficeImpot() {

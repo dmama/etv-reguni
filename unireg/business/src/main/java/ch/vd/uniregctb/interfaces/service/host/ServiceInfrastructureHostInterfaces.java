@@ -127,7 +127,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommuneByEgid' ne doit pas être appelée sur le service host-interfaces.");
 	}
 

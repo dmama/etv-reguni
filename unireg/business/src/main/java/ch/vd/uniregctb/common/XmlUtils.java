@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.common;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -11,7 +15,11 @@ import org.apache.xmlbeans.XmlOptions;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import ch.vd.registre.base.date.RegDate;
+
 public abstract class XmlUtils {
+
+	private static DatatypeFactory datatypeFactory;
 
 	/**
 	 * Converti un document généré avec XmlBeans dans un document généré par JaxB.
@@ -42,4 +50,29 @@ public abstract class XmlUtils {
 		return out.toString();
 	}
 
+	public static RegDate xmlcal2regdate(XMLGregorianCalendar cal) {
+		if (cal == null) {
+			return null;
+		}
+		return RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
+	}
+
+	public static XMLGregorianCalendar regdate2xmlcal(RegDate date) {
+		if (date == null) {
+			return null;
+		}
+		return getDataTypeFactory().newXMLGregorianCalendar(date.year(), date.month(), date.day(), 0, 0, 0, 0, DatatypeConstants.FIELD_UNDEFINED);
+	}
+
+	private static DatatypeFactory getDataTypeFactory() {
+		if (datatypeFactory == null) {
+			try {
+				datatypeFactory = DatatypeFactory.newInstance();
+			}
+			catch (DatatypeConfigurationException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return datatypeFactory;
+	}
 }

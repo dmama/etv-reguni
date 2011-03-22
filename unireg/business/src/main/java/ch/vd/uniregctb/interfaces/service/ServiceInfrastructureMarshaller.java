@@ -62,12 +62,12 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
 		return fidorService.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
 	@Override
-	public Commune getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
 		return fidorService.getCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 

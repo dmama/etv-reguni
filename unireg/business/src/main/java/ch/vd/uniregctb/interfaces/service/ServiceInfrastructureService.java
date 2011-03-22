@@ -288,24 +288,24 @@ public interface ServiceInfrastructureService {
 	 *
 	 * @param egid             un numéro de bâtiment
 	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
-	 * @param hintNoOfsCommune (optionnel) un numéro Ofs de commune qui sera utilisé comme indice pour accélérer la recherche (par exemple, le numéro de commune faîtière en cas de fractions de commune,
-	 *                         ou le numéro de commune avant/après fusion)
+	 * @param hintNoOfsCommune le numéro Ofs de la commune d'annonce qui sera utilisé comme indice pour accélérer la recherche (par commune d'annonce, il faut entendre la commune associée à l'adresse
+	 *                         telle que retournée par le service civil. La signification métier de cette commune est encore sujette à interprétations)
 	 * @return le numéro Ofs de la commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException;
 
 	/**
 	 * Retourne la commune sur laquelle un bâtiment est construit.
 	 *
 	 * @param egid             un numéro de bâtiment
 	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
-	 * @param hintNoOfsCommune (optionnel) un numéro Ofs de commune qui sera utilisé comme indice pour accélérer la recherche (par exemple, le numéro de commune faîtière en cas de fractions de commune,
-	 *                         ou le numéro de commune avant/après fusion)
+	 * @param hintNoOfsCommune le numéro Ofs de la commune d'annonce qui sera utilisé comme indice pour accélérer la recherche (par commune d'annonce, il faut entendre la commune associée à l'adresse
+	 *                         telle que retournée par le service civil. La signification métier de cette commune est encore sujette à interprétations)
 	 * @return une commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws InfrastructureException en cas de problème
 	 */
-	public Commune getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException;
+	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException;
 
 	/**
 	 * Résoud la commune faîtière d'une fraction de commune (renvoie la commune elle-même si ce n'est pas une fraction)

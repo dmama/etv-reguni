@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>unireg-wsclient-fidor</artifactId>
-			<version>1.0.0</version>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<artifactId>shared-jmx</artifactId>
@@ -75,11 +75,6 @@
 			<groupId>ch.vd.technical.esb</groupId>
 			<artifactId>EsbClient</artifactId>
 			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.vd.fidor</groupId>
-			<artifactId>fidor-client</artifactId>
-			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

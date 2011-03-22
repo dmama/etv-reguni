@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -150,16 +151,15 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		if ( allLocaliteCommune == null) {
 			allLocaliteCommune = new HashMap<Integer, List<Localite>>();
 		}
-		Integer key = commune;
-		List<Localite> list = allLocaliteCommune.get(key);
+		List<Localite> list = allLocaliteCommune.get(commune);
 		if ( list == null) {
 			list = new ArrayList<Localite>();
 			for (Localite loc : getLocalites()) {
-				if (loc.getNoCommune() != null && loc.getNoCommune().intValue() == commune) {
+				if (loc.getNoCommune() != null && loc.getNoCommune() == commune) {
 					list.add(loc);
 				}
 			}
-			allLocaliteCommune.put(key,list);
+			allLocaliteCommune.put(commune,list);
 		}
 		return list;
 	}
@@ -233,7 +233,11 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		// 1er choix : l'egid
 		final Integer egid = adresse.getEgid();
 		if (egid != null) {
-			commune = getCommuneByEgid(egid, date, null);
+			final Commune communeAnnonce = adresse.getCommuneAdresse();
+			if (communeAnnonce == null) { // (msi, 18.03.2011) selon Thierry Declerq et Andréa Osmani, chaque adresse qui possède un egid doit aussi posséder une commune d'annonce.
+				throw new InfrastructureException("Commune d'annonce inexistante sur l'adresse [" + ReflexionUtils.toString(adresse, false) + "] qui contient pourtant le numéro de bâtiment [" + egid + "]");
+			}
+			commune = getCommuneByEgid(egid, date, communeAnnonce.getNoOFSEtendu());
 		}
 
 		// 2ème choix : la commune attachée à l'adresse
@@ -279,7 +283,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	}
 
 	@Override
-	public final Commune getCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public final Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
 
 		// un premier appel où le cache a peu de chance d'être chaud
 		final Integer noOfs = getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);

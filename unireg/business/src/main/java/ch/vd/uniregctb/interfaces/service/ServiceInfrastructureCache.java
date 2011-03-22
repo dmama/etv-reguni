@@ -503,9 +503,9 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	private static class KeyGetCommunesByEgid {
 		int egid;
 		RegDate date;
-		Integer hintNoOfsCommune;
+		int hintNoOfsCommune;
 
-		private KeyGetCommunesByEgid(int egid, RegDate date, Integer hintNoOfsCommune) {
+		private KeyGetCommunesByEgid(int egid, RegDate date, int hintNoOfsCommune) {
 			this.egid = egid;
 			this.date = date;
 			this.hintNoOfsCommune = hintNoOfsCommune;
@@ -518,19 +518,20 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 
 			final KeyGetCommunesByEgid that = (KeyGetCommunesByEgid) o;
 
-			return egid == that.egid && !(date != null ? !date.equals(that.date) : that.date != null);
+			return egid == that.egid && hintNoOfsCommune == that.hintNoOfsCommune && !(date != null ? !date.equals(that.date) : that.date != null);
 		}
 
 		@Override
 		public int hashCode() {
 			int result = egid;
 			result = 31 * result + (date != null ? date.hashCode() : 0);
+			result = 31 * result + hintNoOfsCommune;
 			return result;
 		}
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
 		final Integer resultat;
 
 		final KeyGetCommunesByEgid key = new KeyGetCommunesByEgid(egid, date, hintNoOfsCommune);

@@ -336,7 +336,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, Integer hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
 		final List<MockLienCommuneBatiment> liens = getBatimentsParEgid().get(egid);
 		if (liens == null || liens.isEmpty()) {
 			return null;
