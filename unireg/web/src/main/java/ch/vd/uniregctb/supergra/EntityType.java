@@ -8,6 +8,8 @@ public enum EntityType {
 	ForFiscal(ch.vd.uniregctb.tiers.ForFiscal.class, "for fiscal"),
 	AdresseTiers(ch.vd.uniregctb.adresse.AdresseTiers.class, "adresse"),
 	Declaration(ch.vd.uniregctb.declaration.Declaration.class, "déclaration"),
+	EtatDeclaration(ch.vd.uniregctb.declaration.EtatDeclaration.class, "état de déclaration"),
+	DelaiDeclaration(ch.vd.uniregctb.declaration.DelaiDeclaration.class, "délai de déclaration"),
 	RapportEntreTiers(ch.vd.uniregctb.tiers.RapportEntreTiers.class, "rapport entre tiers"),
 	IdentificationPersonne(ch.vd.uniregctb.tiers.IdentificationPersonne.class, "identification de personne"),
 	Periodicite(ch.vd.uniregctb.declaration.Periodicite.class, "périodicité"),

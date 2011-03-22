@@ -40,6 +40,7 @@ import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.entreprise.HostPersonneMoraleService;
@@ -748,7 +749,8 @@ public class TiersManager implements MessageSourceAware {
 				DeclarationImpotSource lr = (DeclarationImpotSource) declaration;
 				ListeRecapDetailView lrView = new ListeRecapDetailView();
 				lrView.setId(lr.getId());
-				lrView.setEtat(lr.getDernierEtat().getEtat());
+				final EtatDeclaration dernierEtat = lr.getDernierEtat();
+				lrView.setEtat(dernierEtat == null ? null : dernierEtat.getEtat());
 				lrView.setDateDebutPeriode(lr.getDateDebut());
 				lrView.setDateFinPeriode(lr.getDateFin());
 				lrView.setDateRetour(lr.getDateRetour());

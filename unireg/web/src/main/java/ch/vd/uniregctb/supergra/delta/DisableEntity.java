@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.supergra.delta;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.SuperGraContext;
@@ -12,6 +13,7 @@ public class DisableEntity extends Delta {
 	private EntityKey key;
 
 	public DisableEntity(EntityKey key) {
+		Assert.notNull(key);
 		this.key = key;
 	}
 
