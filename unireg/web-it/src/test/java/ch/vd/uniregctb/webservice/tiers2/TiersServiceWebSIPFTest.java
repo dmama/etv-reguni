@@ -12,6 +12,7 @@ import ch.vd.uniregctb.webservices.tiers2.Capital;
 import ch.vd.uniregctb.webservices.tiers2.CompteBancaire;
 import ch.vd.uniregctb.webservices.tiers2.EtatPM;
 import ch.vd.uniregctb.webservices.tiers2.EvenementPM;
+import ch.vd.uniregctb.webservices.tiers2.EvenementPMArray;
 import ch.vd.uniregctb.webservices.tiers2.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.FormatNumeroCompte;
 import ch.vd.uniregctb.webservices.tiers2.FormeJuridique;
@@ -174,7 +175,10 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setTiersNumber(222L);
 
-		final List<EvenementPM> events = service.searchEvenementsPM(params).getItem();
+		final EvenementPMArray array = service.searchEvenementsPM(params);
+		assertNotNull(array);
+		
+		final List<EvenementPM> events = array.getItem();
 		assertNotNull(events);
 		assertEquals(16, events.size());
 
@@ -283,7 +287,10 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setCodeEvenement("001");
 		params.setTiersNumber(222L); // pas obligatoire, juste pour limiter le nombre de résultats
 
-		final List<EvenementPM> events = service.searchEvenementsPM(params).getItem();
+		final EvenementPMArray array = service.searchEvenementsPM(params);
+		assertNotNull(array);
+
+		final List<EvenementPM> events = array.getItem();
 		assertNotNull(events);
 		assertEquals(2, events.size());
 
@@ -312,7 +319,10 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setDateMaximale(newDate(2003, 7, 1));
 		params.setTiersNumber(222L);
 
-		final List<EvenementPM> events = service.searchEvenementsPM(params).getItem();
+		final EvenementPMArray array = service.searchEvenementsPM(params);
+		assertNotNull(array);
+
+		final List<EvenementPM> events = array.getItem();
 		assertNotNull(events);
 		assertEquals(6, events.size());
 
