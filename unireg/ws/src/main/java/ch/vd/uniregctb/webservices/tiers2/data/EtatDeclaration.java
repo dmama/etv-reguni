@@ -34,7 +34,7 @@ public class EtatDeclaration {
 	@XmlElement(required = true)
 	public Date dateObtention;
 
-	/** Date à laquelle le délai a été annulé, ou <b>null</b> s'il n'est pas annulé. */
+	/** Date à laquelle l'état a été annulé, ou <b>null</b> s'il n'est pas annulé. */
 	@XmlElement(required = false)
 	public Date dateAnnulation;
 
