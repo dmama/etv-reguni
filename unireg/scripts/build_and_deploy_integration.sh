@@ -33,16 +33,14 @@ env=integration
 user=dsi_unireg@ssv0309v
 upDir=/ccv/data/dsi_unireg/uploads
 
-configDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg/config
-deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg#web
-workDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg
+webAppDir=/ccv/data/dsi_unireg/uniregIN/applications/unireg-web
+webDeployDir=/ccv/data/dsi_unireg/uniregIN/app/unireg-web/${version}
 
-wsConfigDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg-ws/config
-wsDeployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg#ws
-wsWorkDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg-ws
+wsAppDir=/ccv/data/dsi_unireg/uniregIN/applications/unireg-ws
+wsDeployDir=/ccv/data/dsi_unireg/uniregIN/app/unireg-ws/${version}
 
-relFileOrig=uniregweb-release.zip
-relFileDest=uniregweb-release-${version}-${DATE}.zip
+webFileOrig=uniregweb-release.zip
+webFileDest=uniregweb-release-${version}-${DATE}.zip
 wsFileOrig=uniregws-release.zip
 wsFileDest=uniregws-release-${version}-${DATE}.zip
 
@@ -71,27 +69,33 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
-cp -v unireg/web/target/$relFileOrig unireg/web/target/$relFileDest
+cp -v unireg/web/target/$webFileOrig unireg/web/target/$webFileDest
 cp -v unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
+
+#
+# arrêt
+#
+ssh $user "cd /ccv/data/dsi_unireg/uniregIN && ./tomcatctl.sh stop"
+echo "Arrêt de tomcat à $(date)"
 
 #
 # Deploiement de la web-app
 #
-scp unireg/web/target/$relFileDest $user:$upDir/
+scp unireg/web/target/$webFileDest $user:$upDir/
 
-ssh $user "rm -rf $upDir/explode"
-ssh $user "mkdir -p $upDir/explode"
-ssh $user "cd $upDir/explode && unzip $upDir/$relFileDest"
+ssh $user "rm -rf $upDir/explode && mkdir -p $upDir/explode"
+ssh $user "cd $upDir/explode && unzip $upDir/$webFileDest"
 
 # copie des fichiers de config
-ssh $user "mkdir -p $configDir/"
-ssh $user "cp $upDir/explode/config/$env/* $configDir/"
+ssh $user "mkdir -p $webAppDir/config"
+ssh $user "cp $upDir/explode/config/$env/* $webAppDir/config"
 
-# unzip du war
-ssh $user "rm -rf $deployDir $workDir"
-ssh $user "mkdir -p $deployDir"
-ssh $user "cd $deployDir && unzip $upDir/explode/deployment/uniregweb.war"
+# copie du war
+ssh $user "mkdir -p $webDeployDir/deployment"
+ssh $user "cp $upDir/explode/deployment/uniregweb.war $webDeployDir/deployment/unireg-web.war"
 
+# mise-à-jour du lien symbolique
+ssh $user "cd $webAppDir && rm -f deployment && ln -s $webDeployDir/deployment deployment"
 echo "Fin du deploiement de la web-app à: $(date)"
 
 #
@@ -99,18 +103,23 @@ echo "Fin du deploiement de la web-app à: $(date)"
 #
 scp unireg/ws/target/$wsFileDest $user:$upDir/
 
-ssh $user "rm -rf $upDir/explode"
-ssh $user "mkdir -p $upDir/explode"
+ssh $user "rm -rf $upDir/explode && mkdir -p $upDir/explode"
 ssh $user "cd $upDir/explode && unzip $upDir/$wsFileDest"
 
 # copie des fichiers de config
-ssh $user "mkdir -p $wsConfigDir/"
-ssh $user "cp $upDir/explode/config/$env/* $wsConfigDir/"
+ssh $user "mkdir -p $wsAppDir/config"
+ssh $user "cp $upDir/explode/config/$env/* $wsAppDir/config"
 
-# unzip du war
-ssh $user "rm -rf $wsDeployDir $wsWorkDir"
-ssh $user "mkdir -p $wsDeployDir"
-ssh $user "cd $wsDeployDir && unzip $upDir/explode/deployment/uniregws.war"
+# copie du war
+ssh $user "mkdir -p $wsDeployDir/deployment"
+ssh $user "cp $upDir/explode/deployment/uniregws.war $wsDeployDir/deployment/unireg-ws.war"
 
+# mise-à-jour du lien symbolique
+ssh $user "cd $wsAppDir && rm -f deployment && ln -s $wsDeployDir/deployment deployment"
 echo "Fin du deploiement des web-services à: $(date)"
 
+#
+# cleanup & restart
+#
+ssh $user "cd /ccv/data/dsi_unireg/uniregIN && ./tomcatctl.sh clean && ./tomcatctl.sh start"
+echo "Redémarrage de tomcat à $(date)"

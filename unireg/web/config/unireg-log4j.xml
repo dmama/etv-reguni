@@ -3,12 +3,12 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 	<!-- Log4j config for WEB -->
 
-	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+	<!-- appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="Threshold" value="INFO" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[web-unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
 		</layout>
-	</appender>
+	</appender -->
 
 	<appender name="IN_MEMORY" class="ch.vd.uniregctb.log.RollingInMemoryAppender">
 		<param name="MaxLines" value="100" />

@@ -47,14 +47,14 @@ public class UniregTomcatRunner {
 		System.setProperty("pom.name", "UniregCTB - Web");
 		System.setProperty("pom.description", "UniregCTB, Le registre unifie de l'Etat de Vaud - Web");
 
-		System.setProperty("unireg.appname", "unireg");
+		System.setProperty("unireg-web.appname", "unireg-web");
 		System.setProperty("unireg.standalone", "false");
-		System.setProperty("unireg.log4j.location", "file:${ch.vd.appDir}/${unireg.appname}/config/unireg-log4j.xml");
+		System.setProperty("unireg.log4j.location", "file:${ch.vd.appDir}/${unireg-web.appname}/config/unireg-log4j.xml");
 
-		final String propertiesPath = String.format("%s/%s/config/unireg.properties", appDir, System.getProperty("unireg.appname"));
+		final String propertiesPath = String.format("%s/%s/config/unireg.properties", appDir, System.getProperty("unireg-web.appname"));
 		System.setProperty("unireg.properties.path", propertiesPath);
 
-		final String credentialsPath = String.format("%s/%s/config/credentials.properties", appDir, System.getProperty("unireg.appname"));
+		final String credentialsPath = String.format("%s/%s/config/credentials.properties", appDir, System.getProperty("unireg-web.appname"));
 		System.setProperty("credentials.properties.path", credentialsPath);
 
 		System.setProperty("host-interfaces.version-short", "1.9");
