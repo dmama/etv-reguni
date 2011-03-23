@@ -12,8 +12,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class ReflexionUtils {
 
@@ -63,13 +65,17 @@ public abstract class ReflexionUtils {
 	 * @return la représentation string de l'objet spécifié.
 	 */
 	public static String toString(Object o, boolean showNull) {
+		return toString(o, showNull, new HashSet<Object>());
+	}
+
+	private static String toString(Object o, boolean showNull, Set<Object> processed) {
 		if (o == null) {
 			return "null";
 		}
 
 		// Cas triviaux
 		if (o instanceof Collection) {
-			return toString((Collection<?>) o, showNull);
+			return toString((Collection<?>) o, showNull, processed);
 		}
 		else if (o instanceof Number || o instanceof Boolean || o instanceof Enum || o instanceof Character) {
 			return o.toString();
@@ -80,6 +86,12 @@ public abstract class ReflexionUtils {
 		else if (o instanceof Class) {
 			return ((Class) o).getName();
 		}
+
+		// on évite de partir en récursion infinie
+		if (processed.contains(o)) {
+			return "<...>";
+		}
+		processed.add(o);
 
 		// Cas généraux : on passe par la réflexion java
 		try {
@@ -111,7 +123,7 @@ public abstract class ReflexionUtils {
 				else {
 					s.append(", ");
 				}
-				s.append(descriptor.getName()).append("=").append(toString(value, showNull));
+				s.append(descriptor.getName()).append("=").append(toString(value, showNull, processed));
 			}
 			s.append('}');
 
@@ -128,7 +140,7 @@ public abstract class ReflexionUtils {
 		}
 	}
 
-	private static String toString(Collection<?> coll, boolean showNull) {
+	private static String toString(Collection<?> coll, boolean showNull, Set<Object> processed) {
 		if (coll == null) {
 			return "null";
 		}
@@ -143,7 +155,7 @@ public abstract class ReflexionUtils {
 			else {
 				s.append(", ");
 			}
-			s.append(toString(o, showNull));
+			s.append(toString(o, showNull, processed));
 		}
 		s.append(']');
 
