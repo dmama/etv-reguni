@@ -566,7 +566,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		message.setNbContribuablesTrouves(null);
 		message.setReponse(reponse);
-		message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
+		message.setEtat(Etat.EXCEPTION);
 	}
 
 
