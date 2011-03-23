@@ -79,8 +79,12 @@ public class AsyncTiersIndexerThread extends Thread {
 		try {
 			delegateRun();
 		}
+		catch (Exception e) {
+			LOGGER.error(e);
+		}
 		finally {
 			executionTime = System.nanoTime() - start;
+			LOGGER.info("Arrêt du thread.");
 		}
 	}
 
