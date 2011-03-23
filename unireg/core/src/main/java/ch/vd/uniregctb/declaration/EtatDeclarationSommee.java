@@ -27,10 +27,11 @@ public class EtatDeclarationSommee extends EtatDeclaration {
 		return TypeEtatDeclaration.SOMMEE;
 	}
 
-	public EtatDeclarationSommee(RegDate dateObtention,RegDate dateEnvoiCourrier) {
+	public EtatDeclarationSommee(RegDate dateObtention, RegDate dateEnvoiCourrier) {
 		super(dateObtention);
 		this.dateEnvoiCourrier = dateEnvoiCourrier;
 	}
+
 	@Column(name = "DATE_ENVOI_COURRIER")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateEnvoiCourrier() {
@@ -43,8 +44,8 @@ public class EtatDeclarationSommee extends EtatDeclaration {
 
 	@Override
 	public String toString() {
-	final String desc = super.toString();
-	final String dateEnvoiStr = dateEnvoiCourrier != null ? RegDateHelper.dateToDisplayString(dateEnvoiCourrier) : "?";
-	return String.format(", Courrier envoyé le %s)",dateEnvoiStr);
+		final String desc = super.toString();
+		final String dateEnvoiStr = dateEnvoiCourrier != null ? RegDateHelper.dateToDisplayString(dateEnvoiCourrier) : "?";
+		return String.format("%s, (Courrier envoyé le %s)", desc, dateEnvoiStr);
 	}
 }
