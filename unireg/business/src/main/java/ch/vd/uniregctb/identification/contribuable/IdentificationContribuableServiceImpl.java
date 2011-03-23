@@ -40,6 +40,8 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -145,7 +147,21 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		for (Phase phase : Phase.values()) {
 			final TiersCriteria criteria = asTiersCriteria(criteres, phase);
 			if (!criteria.isEmpty()) {
-				indexedData = searcher.search(criteria);
+
+				try {
+					indexedData = searcher.search(criteria);
+				}
+				catch (IndexerException e) {
+					if (e instanceof TooManyResultsIndexerException) {
+						return Collections.emptyList();
+					}
+					else {
+						throw new RuntimeException(e);
+					}
+
+
+				}
+
 			}
 
 			if (indexedData != null && !indexedData.isEmpty()) {
@@ -550,7 +566,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		message.setNbContribuablesTrouves(null);
 		message.setReponse(reponse);
-		message.setEtat(Etat.EXCEPTION);
+		message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 	}
 
 
@@ -992,6 +1008,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		}
 		else {
+			//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement
+			if (Etat.EXCEPTION == message.getEtat()) {
+				message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
+			}
 			return false;
 		}
 

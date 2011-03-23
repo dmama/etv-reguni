@@ -50,6 +50,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests du service (qu'attendiez-vous d'autre ?).
@@ -602,6 +603,63 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			final PersonnePhysique pp1 = list.get(1);
 			assertEquals(ids.anne, pp1.getNumero());
 		}
+
+
+	}
+
+
+	@Test
+	public void testTooManyResultsExceptions() throws Exception {
+
+
+		final long noIndividuAlbert = 1234;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
+				addIndividu(noIndividuAnne, date(1965, 8, 13), "Zweisteinen", "Anne", false);
+			}
+		});
+
+		class Ids {
+			Long albert;
+			Long anne;
+		}
+		final Ids ids = new Ids();
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Albert, le seul, le vrai
+				final PersonnePhysique albert = addHabitant(noIndividuAlbert);
+				ids.albert = albert.getNumero();
+
+				// même nom de famille qu'Albert
+				final PersonnePhysique anne = addHabitant(noIndividuAnne);
+				ids.anne = anne.getNumero();
+
+				for(int i=0;i<150;i++){
+					addNonHabitant("Alberto", "Fujimori", date(1953, 12, 3), Sexe.MASCULIN);
+				}
+
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// Albert
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setPrenoms("Alberto");
+
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertEmpty(list);
+
+		}
+
 
 
 	}
@@ -1168,7 +1226,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 				final IdentificationContribuable ic = list.get(0);
 				assertNotNull(ic);
-				assertEquals(Etat.EXCEPTION, ic.getEtat());
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
 				assertNull(ic.getNbContribuablesTrouves());
 
 				final Reponse reponse = ic.getReponse();
