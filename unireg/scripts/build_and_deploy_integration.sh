@@ -46,7 +46,7 @@ wsFileDest=uniregws-release-${version}-${DATE}.zip
 
 # Compilation
 if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/base && mvn -Pnot,env.int,oracle,ext clean install)
+	(cd unireg/base && mvn -Pnot,oracle,ext clean install)
 fi
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors du build"
@@ -54,7 +54,7 @@ if [ $? != 0 ]; then
 fi
 
 if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/web && mvn -Pnot,env.int,oracle assembly:assembly)
+	(cd unireg/web && mvn -Pnot,oracle assembly:assembly)
 fi
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de web"
@@ -62,7 +62,7 @@ if [ $? != 0 ]; then
 fi
 
 if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/ws && mvn -Pnot,env.int,oracle assembly:assembly)
+	(cd unireg/ws && mvn -Pnot,oracle assembly:assembly)
 fi
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de ws"
