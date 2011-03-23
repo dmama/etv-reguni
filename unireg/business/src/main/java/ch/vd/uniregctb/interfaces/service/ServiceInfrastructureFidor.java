@@ -235,6 +235,12 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 
 	@Override
 	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+
+		// TODO (msi) réactiver cet appel quand fidor sera disponible en intégration
+		if (true) {
+			return null;
+		}
+
 		final CommuneFiscale commune = fidorClient.getCommuneParBatiment(hintNoOfsCommune, egid, XmlUtils.regdate2xmlcal(date));
 		if (commune == null) {
 			return null;
