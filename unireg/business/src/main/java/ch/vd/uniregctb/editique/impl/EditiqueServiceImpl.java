@@ -49,6 +49,11 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	 */
 	private int asyncReceiveDelay = 15;
 
+	/**
+	 * Délai de conservation (en heures) des retours d'impression reroutés par l'inbox
+	 */
+	private int hoursRetourImpressionExpiration = 2;
+
 	private static interface TimeoutManager {
 		EditiqueResultat onTimeout(EditiqueResultat src);
 	}
@@ -64,7 +69,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 					LOGGER.debug(msg);
 				}
 
-				final RetourImpressionTrigger trigger = new RetourImpressionToInboxTrigger(inboxService, visa, description, 2);
+				final RetourImpressionTrigger trigger = new RetourImpressionToInboxTrigger(inboxService, visa, description, hoursRetourImpressionExpiration);
 				retourImpressionStorage.registerTrigger(nomDocument, trigger);
 				return new EditiqueResultatReroutageInboxImpl(src.getIdDocument());
 			}
@@ -180,5 +185,13 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAsyncReceiveDelay(int asyncReceiveDelay) {
 		this.asyncReceiveDelay = asyncReceiveDelay;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setHoursRetourImpressionExpiration(int hoursRetourImpressionExpiration) {
+		if (hoursRetourImpressionExpiration < 0) {
+			throw new IllegalArgumentException("La valeur doit être positive ou zéro (= pas d'expiration)");
+		}
+		this.hoursRetourImpressionExpiration = hoursRetourImpressionExpiration;
 	}
 }

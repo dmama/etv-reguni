@@ -25,6 +25,7 @@
 		<property name="retourImpressionStorage" ref="retourImpressionStorageService" />
 		<property name="syncReceiveTimeout" value="${editique.locale.sync.attente.timeout}" />
 		<property name="asyncReceiveDelay" value="${editique.locale.async.attente.delai}" />
+		<property name="hoursRetourImpressionExpiration" value="${extprop.async.print.expiration.hours}" />
 		<property name="copieConformeService" ref="copieConformeService" />
 		<property name="inboxService" ref="inboxService" />
 	</bean>
