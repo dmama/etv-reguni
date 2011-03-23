@@ -63,11 +63,19 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 
 	@Override
 	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+		// TODO (msi) réactiver cet appel quand fidor sera disponible en intégration
+		if (true) {
+			return null;
+		}
 		return fidorService.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
 	@Override
 	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+		// TODO (msi) réactiver cet appel quand fidor sera disponible en intégration
+		if (true) {
+			return null;
+		}
 		return fidorService.getCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
