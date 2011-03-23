@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<util:list id="hibernateAnnotatedClasses">
+		<value>ch.vd.uniregctb.migreg.MigrationError</value>
+		<value>ch.vd.uniregctb.adresse.AdresseAutreTiers</value>
+		<value>ch.vd.uniregctb.adresse.AdresseCivile</value>
+		<value>ch.vd.uniregctb.adresse.AdresseEtrangere</value>
+		<value>ch.vd.uniregctb.adresse.AdressePM</value>
+		<value>ch.vd.uniregctb.adresse.AdresseSuisse</value>
+		<value>ch.vd.uniregctb.adresse.AdresseTiers</value>
+		<value>ch.vd.uniregctb.adresse.AdresseSupplementaire</value>
+		<value>ch.vd.uniregctb.audit.AuditLine</value>
+		<value>ch.vd.uniregctb.declaration.Declaration</value>
+		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</value>
+		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
+		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationEchue</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationEmise</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationRetournee</value>
+		<value>ch.vd.uniregctb.declaration.PeriodeFiscale</value>
+		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>
+		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
+		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
+		<value>ch.vd.uniregctb.declaration.Periodicite</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscal</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalFor</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalDI</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalLR</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalNaissance</value>
+		<value>ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne</value>
+		<value>ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur</value>
+		<value>ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable</value>
+		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
+		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
+		<value>ch.vd.uniregctb.tiers.Contribuable</value>
+		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.Entreprise</value>
+		<value>ch.vd.uniregctb.tiers.Etablissement</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscal</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalAutreImpot</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalRevenuFortune</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipal</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalSecondaire</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable</value>
+		<value>ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.IdentificationPersonne</value>
+		<value>ch.vd.uniregctb.tiers.MenageCommun</value>
+		<value>ch.vd.uniregctb.tiers.PersonnePhysique</value>
+		<value>ch.vd.uniregctb.tiers.RapportEntreTiers</value>
+		<value>ch.vd.uniregctb.tiers.AppartenanceMenage</value>
+		<value>ch.vd.uniregctb.tiers.RapportPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.RepresentationConventionnelle</value>
+		<value>ch.vd.uniregctb.tiers.RepresentationLegale</value>
+		<value>ch.vd.uniregctb.tiers.Tutelle</value>
+		<value>ch.vd.uniregctb.tiers.Curatelle</value>
+		<value>ch.vd.uniregctb.tiers.ConseilLegal</value>
+		<value>ch.vd.uniregctb.tiers.ContactImpotSource</value>
+		<value>ch.vd.uniregctb.tiers.AnnuleEtRemplace</value>
+		<value>ch.vd.uniregctb.tiers.SituationFamille</value>
+		<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
+		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
+		<value>ch.vd.uniregctb.tiers.Tiers</value>
+		<value>ch.vd.uniregctb.tiers.Tache</value>
+		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot</value>
+		<value>ch.vd.uniregctb.tiers.TacheControleDossier</value>
+		<value>ch.vd.uniregctb.tiers.TacheTransmissionDossier</value>
+		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot</value>
+		<value>ch.vd.uniregctb.tiers.TacheNouveauDossier</value>
+		<value>ch.vd.uniregctb.tiers.DroitAcces</value>
+		<value>ch.vd.uniregctb.tiers.Remarque</value>
+		<value>ch.vd.uniregctb.evenement.externe.EvenementExterne</value>
+		<value>ch.vd.uniregctb.evenement.externe.QuittanceLR</value>
+		<value>ch.vd.uniregctb.mouvement.MouvementDossier</value>
+		<value>ch.vd.uniregctb.mouvement.EnvoiDossier</value>
+		<value>ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur</value>
+		<value>ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossier</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierArchives</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierClassementGeneral</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierClassementIndependants</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel</value>
+		<value>ch.vd.uniregctb.mouvement.BordereauMouvementDossier</value>
+		<value>ch.vd.uniregctb.document.Document</value>
+		<value>ch.vd.uniregctb.document.DatabaseDump</value>
+		<value>ch.vd.uniregctb.document.DeterminationDIsRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiDIsRapport</value>
+		<value>ch.vd.uniregctb.document.EchoirDIsRapport</value>
+		<value>ch.vd.uniregctb.document.MajoriteRapport</value>
+		<value>ch.vd.uniregctb.document.FusionDeCommunesRapport</value>
+		<value>ch.vd.uniregctb.document.RolesCommunesRapport</value>
+		<value>ch.vd.uniregctb.document.RolesOIDsRapport</value>
+		<value>ch.vd.uniregctb.document.StatistiquesDIsRapport</value>
+		<value>ch.vd.uniregctb.document.StatistiquesCtbsRapport</value>
+		<value>ch.vd.uniregctb.document.ListeDIsNonEmisesRapport</value>
+		<value>ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsRapport</value>
+		<value>ch.vd.uniregctb.document.ValidationJobRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiLRsRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiSommationLRsRapport</value>
+		<value>ch.vd.uniregctb.document.ListesNominativesRapport</value>
+		<value>ch.vd.uniregctb.document.DeterminerLRsEchuesRapport</value>
+		<value>ch.vd.uniregctb.document.AcomptesRapport</value>
+		<value>ch.vd.uniregctb.document.ExtractionAfcRapport</value>
+		<value>ch.vd.uniregctb.document.ListeAssujettisRapport</value>
+		<value>ch.vd.uniregctb.document.ImpressionChemisesTORapport</value>
+		<value>ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport</value>
+		<value>ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport</value>
+		<value>ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport</value>
+		<value>ch.vd.uniregctb.document.RapprocherCtbRapport</value>
+		<value>ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport</value>
+		<value>ch.vd.uniregctb.document.CorrectionFlagHabitantRapport</value>
+		<value>ch.vd.uniregctb.document.StatistiquesEvenementsRapport</value>
+		<value>ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport</value>
+		<value>ch.vd.uniregctb.document.IdentifierContribuableRapport</value>
+		<value>ch.vd.uniregctb.document.TraiterEvenementExterneRapport</value>
+		<value>ch.vd.uniregctb.document.ResolutionAdresseRapport</value>
+		<value>ch.vd.uniregctb.document.ComparerSituationFamilleRapport</value>
+		<value>ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport</value>
+		<value>ch.vd.uniregctb.document.ListeNoteRapport</value>
+		<value>ch.vd.uniregctb.document.MigrationCoquillesPMRapport</value>
+		<value>ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport</value>
+		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
+	</util:list>
+
+	<!-- La session factory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="annotatedClasses" ref="hibernateAnnotatedClasses" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties" ref="hibernateProperties" />
+		<property name="entityInterceptor" ref="chainingInterceptor" />
+		<property name="lobHandler" ref="oracleLobHandler" />
+	</bean>
+
+	<bean id="oracleLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
+
+	<bean id="chainingInterceptor" class="ch.vd.uniregctb.hibernate.interceptor.ChainingInterceptor" />
+
+	<bean id="modificationLogInterceptor" class="ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor">
+		<property name="parent" ref="modificationInterceptor" />
+	</bean>
+
+	<bean id="modificationInterceptor" class="ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor">
+		<property name="chainingInterceptor" ref="chainingInterceptor" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="fakeInterceptorHibernate" class="ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor" />
+
+</beans>

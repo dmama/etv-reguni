@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- POM for Unireg-XmlBeans -->
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>uniregctb-xmlbeans-cedi</artifactId>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>ch.vd.uniregctb</groupId>
+		<artifactId>uniregctb-xmlbeans-base</artifactId>
+		<!-- BEGIN_LVERSION -->
+		<version>1.25</version>
+		<!-- END_LVERSION -->
+		<relativePath>../base/pom.xml</relativePath>
+	</parent>
+	
+	<name>UniregCTB - XmlBeans - CEDI</name>
+	<description>UniregCTB - Contient les beans Xml pour le CEDI (générés à part pour des raisons de namespace)</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-xmlbeans-interfaces</artifactId>
+			<version>${pom.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+	</dependencies>
+
+	<!-- Build plugins and sources -->
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<phase>install</phase>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Generate XMLBeans schema objects -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>xmlbeans</goal>
+						</goals>
+					</execution>
+				</executions>
+				<inherited>true</inherited>
+				<configuration>
+					<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+					<sourceGenerationDirectory>${project.build.directory}/generated</sourceGenerationDirectory>
+					<xmlConfigs>
+						<xmlConfig implementation="java.io.File">src/main/resources/xsdConfig</xmlConfig>
+					</xmlConfigs>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<!-- Build resources -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>${basedir}/target/generated-resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</testResource>
+		</testResources>
+	</build>
+	
+</project>
+

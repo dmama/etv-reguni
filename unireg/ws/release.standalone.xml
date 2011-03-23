@@ -1,0 +1,47 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<!-- Documentation -->
+		<fileSet>
+			<directory>../base/doc</directory>
+			<outputDirectory>docs</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>INSTALL.doc</include>
+			</includes>
+		</fileSet>
+		<!-- Fichier unireg-log4j.xml -->
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+			</includes>
+			<outputDirectory>config</outputDirectory>
+		</fileSet>
+		<!-- Fichier properties et ehcache.xml -->
+		<fileSet>
+			<directory>config/standalone</directory>
+			<outputDirectory>config</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<!-- Fichiers SQL -->
+		<fileSet>
+			<directory>../base/sql</directory>
+			<outputDirectory>sql</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+	</fileSets>
+	<files>
+		<file>
+			<!-- BEGIN_LVERSION -->
+			<source>target/uniregctb-ws-4.10-SNAPSHOT.war</source>
+			<!-- END_LVERSION -->
+			<outputDirectory>deployment</outputDirectory>
+			<destName>uniregws.war</destName>
+		</file>
+	</files>
+</assembly>

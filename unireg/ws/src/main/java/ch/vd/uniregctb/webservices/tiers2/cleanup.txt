@@ -1,0 +1,12 @@
+- supprimer les ids techniques sur les fors fiscaux et les situations de famille
+- ajouter les motifs d'ouverture début/fin d'activité diplomatique (UNIREG-911)
+- ne renseigner les dates de début/fin de validité que lorsque les fors fiscaux sont demandés (+ documentation)
+- nouveau motif de rattachement 'activité lucrative' (UNIREG-1780)
+- passer le champ date de naissance de TiersInfo au format Date
+- ajouter un code de catégorie sur les exceptions métier 'BusinessException' (UNIREG-3112)
+- ajouter un code de catégorie sur les exceptions métier 'AccessDenied' pour le cas de la visualisation limitée (UNIREG-3208)
+- voir pour ne plus exposer la date d'annulation sur les états des déclarations
+- supprimer les délais sur les déclarations
+- fusionner les adresses et les adresses d'envoi (UNIREG-2546) + ne plus exposer l'historique mais seulement les valeurs courantes
+- éventuellement fusionner les structure Tiers et TiersHisto pour ne plus garder que TiersHisto.
+- rendre possible l'appel de searchTiers avec plusieurs types de contribuables (le besoin exprimé pour le moment est "PP+MC") (UNIREG-3315)
