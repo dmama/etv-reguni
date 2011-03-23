@@ -11,8 +11,7 @@
 					&nbsp;
 					(<fmt:message key="label.date.envoi.courrier">
 					 	<fmt:param><unireg:date date="${etat.dateEnvoiCourrier}"/></fmt:param>
-					 </fmt:message>
-					 )
+					</fmt:message>)
 				</c:if>
 		</display:column>
  		<display:column titleKey="label.etat">
