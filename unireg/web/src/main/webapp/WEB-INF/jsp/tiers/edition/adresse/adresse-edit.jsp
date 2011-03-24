@@ -130,7 +130,7 @@
 												}
 												else {
 													$('#numeroRue').val(null);
-													$('#numeroOrdrePoste').val(null);
+													// [UNIREG-3408] On n'annule pas le numéro de localité car il doit être possible de saisir une rue non-référencée
 												}
 											});
 
@@ -188,7 +188,7 @@
 										}
 										else {
 											$('#numeroRue').val(null);
-											$('#numeroOrdrePoste').val(null);
+											// [UNIREG-3408] On n'annule pas le numéro de localité car il doit être possible de saisir une rue non-référencée
 										}
 									});
 								});
