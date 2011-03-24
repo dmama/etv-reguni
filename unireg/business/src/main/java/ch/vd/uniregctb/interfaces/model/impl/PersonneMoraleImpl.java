@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.EtatPM;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.FormeJuridique;
 import ch.vd.uniregctb.interfaces.model.Mandat;
+import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.Siege;
@@ -90,6 +92,55 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		this.mandats = initMandats(target.getMandats());
 	}
 
+	public PersonneMoraleImpl(PersonneMoraleImpl right, Set<PartPM> parts) {
+		this.dateDebut = right.dateDebut;
+		this.dateFin = right.dateFin;
+		this.dateBouclementFuture = right.dateBouclementFuture;
+		this.designationAbregee = right.designationAbregee;
+		this.telephoneContact = right.telephoneContact;
+		this.titulaireCompte = right.titulaireCompte;
+		this.numeroIPMRO = right.numeroIPMRO;
+		this.telecopieContact = right.telecopieContact;
+		this.raisonSociale3 = right.raisonSociale3;
+		this.raisonSociale2 = right.raisonSociale2;
+		this.raisonSociale1 = right.raisonSociale1;
+		this.raisonSociale = right.raisonSociale;
+		this.numeroEntreprise = right.numeroEntreprise;
+		this.nomContact = right.nomContact;
+		this.comptesBancaires = right.comptesBancaires;
+
+		if (parts != null && parts.contains(PartPM.ADRESSES)) {
+			this.adresses = right.adresses;
+		}
+		if (parts != null && parts.contains(PartPM.FORMES_JURIDIQUES)) {
+			this.formesJuridiques = right.formesJuridiques;
+		}
+		if (parts != null && parts.contains(PartPM.CAPITAUX)) {
+			this.capitaux = right.capitaux;
+		}
+		if (parts != null && parts.contains(PartPM.ETATS)) {
+			this.etats = right.etats;
+		}
+		if (parts != null && parts.contains(PartPM.REGIMES_FISCAUX)) {
+			this.regimesVD = right.regimesVD;
+			this.regimesCH = right.regimesCH;
+		}
+		if (parts != null && parts.contains(PartPM.SIEGES)) {
+			this.sieges = right.sieges;
+		}
+		if (parts != null && parts.contains(PartPM.ASSUJETTISSEMENTS)) {
+			this.assujettissementsLIC = right.assujettissementsLIC;
+			this.assujettissementsLIFD = right.assujettissementsLIFD;
+		}
+		if (parts != null && parts.contains(PartPM.FORS_FISCAUX)) {
+			this.forsFiscauxPrincipaux = right.forsFiscauxPrincipaux;
+			this.forsFiscauxSecondaires = right.forsFiscauxSecondaires;
+		}
+		if (parts != null && parts.contains(PartPM.MANDATS)) {
+			this.mandats = right.mandats;
+		}
+	}
+	
 	public Collection<AdresseEntreprise> getAdresses() {
 		return adresses;
 	}
@@ -339,5 +390,45 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 			}
 		}
 		return mandats;
+	}
+
+	@Override
+	public void copyPartsFrom(PersonneMorale pm, Set<PartPM> parts) {
+
+		if (parts != null && parts.contains(PartPM.ADRESSES)) {
+			adresses = pm.getAdresses();
+		}
+		if (parts != null && parts.contains(PartPM.FORMES_JURIDIQUES)) {
+			formesJuridiques = pm.getFormesJuridiques();
+		}
+		if (parts != null && parts.contains(PartPM.CAPITAUX)) {
+			capitaux = pm.getCapitaux();
+		}
+		if (parts != null && parts.contains(PartPM.ETATS)) {
+			etats = pm.getEtats();
+		}
+		if (parts != null && parts.contains(PartPM.REGIMES_FISCAUX)) {
+			regimesVD = pm.getRegimesVD();
+			regimesCH = pm.getRegimesCH();
+		}
+		if (parts != null && parts.contains(PartPM.SIEGES)) {
+			sieges = pm.getSieges();
+		}
+		if (parts != null && parts.contains(PartPM.ASSUJETTISSEMENTS)) {
+			assujettissementsLIC = pm.getAssujettissementsLIC();
+			assujettissementsLIFD = pm.getAssujettissementsLIFD();
+		}
+		if (parts != null && parts.contains(PartPM.FORS_FISCAUX)) {
+			forsFiscauxPrincipaux = pm.getForsFiscauxPrincipaux();
+			forsFiscauxSecondaires = pm.getForsFiscauxSecondaires();
+		}
+		if (parts != null && parts.contains(PartPM.MANDATS)) {
+			mandats = pm.getMandats();
+		}
+	}
+
+	@Override
+	public PersonneMorale clone(Set<PartPM> parts) {
+		return new PersonneMoraleImpl(this, parts);
 	}
 }
