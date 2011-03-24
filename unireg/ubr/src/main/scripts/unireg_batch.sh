@@ -5,6 +5,7 @@ if [ -z "$JAVA_HOME" ]; then
 	exit 1
 elif [ ! -e "$JAVA_HOME/bin/java" ]; then
 	echo "File $JAVA_HOME/bin/java cannot be found!" >&2
+	exit 1
 fi
 
 dir=lib
