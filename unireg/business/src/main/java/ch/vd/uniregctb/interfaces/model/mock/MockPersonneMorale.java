@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
@@ -13,6 +14,7 @@ import ch.vd.uniregctb.interfaces.model.EtatPM;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.FormeJuridique;
 import ch.vd.uniregctb.interfaces.model.Mandat;
+import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.Siege;
@@ -276,6 +278,52 @@ public class MockPersonneMorale implements PersonneMorale {
 		this.fin = fin;
 	}
 
+	public MockPersonneMorale(MockPersonneMorale right, Set<PartPM> parts) {
+		this.debut = right.debut;
+		this.fin = right.fin;
+		this.nomContact = right.nomContact;
+		this.numeroEntreprise = right.numeroEntreprise;
+		this.raisonSociale = right.raisonSociale;
+		this.telecopieContact = right.telecopieContact;
+		this.telephoneContact = right.telephoneContact;
+		this.raisonSociale1 = right.raisonSociale1;
+		this.raisonSociale2 = right.raisonSociale2;
+		this.raisonSociale3 = right.raisonSociale3;
+		this.titulaireCompte = right.titulaireCompte;
+		this.designationAbregee = right.designationAbregee;
+		this.dateBouclementFuture = right.dateBouclementFuture;
+		this.numeroIPMRO = right.numeroIPMRO;
+		this.comptesBancaires = right.comptesBancaires;
+
+		if (parts != null && parts.contains(PartPM.ADRESSES)) {
+			this.adresses = right.adresses;
+		}
+		if (parts != null && parts.contains(PartPM.FORMES_JURIDIQUES)) {
+			this.formesJuridiques = right.formesJuridiques;
+		}
+		if (parts != null && parts.contains(PartPM.CAPITAUX)) {
+			this.capitaux = right.capitaux;
+		}
+		if (parts != null && parts.contains(PartPM.ETATS)) {
+			this.etats = right.etats;
+		}
+		if (parts != null && parts.contains(PartPM.REGIMES_FISCAUX)) {
+			this.regimesVD = right.regimesVD;
+			this.regimesCH = right.regimesCH;
+		}
+		if (parts != null && parts.contains(PartPM.SIEGES)) {
+			this.sieges = right.sieges;
+		}
+		if (parts != null && parts.contains(PartPM.ASSUJETTISSEMENTS)) {
+			this.assujettissementsLIC = right.assujettissementsLIC;
+			this.assujettissementsLIFD = right.assujettissementsLIFD;
+		}
+		if (parts != null && parts.contains(PartPM.FORS_FISCAUX)) {
+			this.forsFiscauxPrincipaux = right.forsFiscauxPrincipaux;
+			this.forsFiscauxSecondaires = right.forsFiscauxSecondaires;
+		}
+	}
+
 	public void addAdresse(AdresseEntreprise adresse) {
 		adresses.add(adresse);
 	}
@@ -490,5 +538,41 @@ public class MockPersonneMorale implements PersonneMorale {
 
 	public List<Mandat> getMandats() {
 		return null;
+	}
+
+	@Override
+	public void copyPartsFrom(PersonneMorale pm, Set<PartPM> parts) {
+		if (parts != null && parts.contains(PartPM.ADRESSES)) {
+			adresses = pm.getAdresses();
+		}
+		if (parts != null && parts.contains(PartPM.FORMES_JURIDIQUES)) {
+			formesJuridiques = pm.getFormesJuridiques();
+		}
+		if (parts != null && parts.contains(PartPM.CAPITAUX)) {
+			capitaux = pm.getCapitaux();
+		}
+		if (parts != null && parts.contains(PartPM.ETATS)) {
+			etats = pm.getEtats();
+		}
+		if (parts != null && parts.contains(PartPM.REGIMES_FISCAUX)) {
+			regimesVD = pm.getRegimesVD();
+			regimesCH = pm.getRegimesCH();
+		}
+		if (parts != null && parts.contains(PartPM.SIEGES)) {
+			sieges = pm.getSieges();
+		}
+		if (parts != null && parts.contains(PartPM.ASSUJETTISSEMENTS)) {
+			assujettissementsLIC = pm.getAssujettissementsLIC();
+			assujettissementsLIFD = pm.getAssujettissementsLIFD();
+		}
+		if (parts != null && parts.contains(PartPM.FORS_FISCAUX)) {
+			forsFiscauxPrincipaux = pm.getForsFiscauxPrincipaux();
+			forsFiscauxSecondaires = pm.getForsFiscauxSecondaires();
+		}
+	}
+
+	@Override
+	public PersonneMorale clone(Set<PartPM> parts) {
+		return new MockPersonneMorale(this, parts);
 	}
 }

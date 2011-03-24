@@ -130,13 +130,11 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		return ids;
 	}
 
-	private static class GetPersonneMoraleByIdAndPartsKey {
+	private static class GetPersonneMoraleByIdKey {
 		private long id;
-		private Set<PartPM> parts;
 
-		private GetPersonneMoraleByIdAndPartsKey(long id, Set<PartPM> parts) {
+		private GetPersonneMoraleByIdKey(long id) {
 			this.id = id;
-			this.parts = parts;
 		}
 
 		@Override
@@ -144,16 +142,13 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final GetPersonneMoraleByIdAndPartsKey that = (GetPersonneMoraleByIdAndPartsKey) o;
-
-			return id == that.id && !(parts != null ? !parts.equals(that.parts) : that.parts != null);
+			final GetPersonneMoraleByIdKey that = (GetPersonneMoraleByIdKey) o;
+			return id == that.id;
 		}
 
 		@Override
 		public int hashCode() {
-			int result = (int) (id ^ (id >>> 32));
-			result = 31 * result + (parts != null ? parts.hashCode() : 0);
-			return result;
+			return (int) (id ^ (id >>> 32));
 		}
 	}
 
@@ -163,30 +158,29 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 
 		final PersonneMorale pm;
-
 		final Set<PartPM> set = arrayToSet(parts);
-		final GetPersonneMoraleByIdAndPartsKey key = new GetPersonneMoraleByIdAndPartsKey(id, set);
+
+		final GetPersonneMoraleByIdKey key = new GetPersonneMoraleByIdKey(id);
 		final Element element = cache.get(key);
 		if (element == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
 			pm = target.getPersonneMorale(id, parts);
-			cache.put(new Element(key, pm));
+			PersonneMoraleCacheValueWithParts value = new PersonneMoraleCacheValueWithParts(set, pm);
+			cache.put(new Element(key, value));
 		}
 		else {
-			pm = (PersonneMorale) element.getObjectValue();
+			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
+			PersonneMoraleCacheValueWithParts value = (PersonneMoraleCacheValueWithParts) element.getObjectValue();
+			Set<PartPM> delta = value.getMissingParts(set);
+			if (delta != null) {
+				// on complète la liste des parts à la volée
+				PersonneMorale deltaTiers = target.getPersonneMorale(id, setToArray(set));
+				value.addParts(delta, deltaTiers);
+			}
+			pm = value.getValueForParts(set);
 		}
 
 		return pm;
-	}
-
-	private static Set<PartPM> arrayToSet(PartPM[] parts) {
-		if (parts == null) {
-			return null;
-		}
-
-		final Set<PartPM> set = new HashSet<PartPM>(parts.length);
-		set.addAll(Arrays.asList(parts));
-		return set;
 	}
 
 	/**
@@ -253,5 +247,27 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		// pas caché : cela en vaut-il vraiment la peine ?
 		return target.findEvenements(numeroEntreprise, code, minDate, maxDate);
+	}
+
+	private static Set<PartPM> arrayToSet(PartPM[] array) {
+		if (array == null) {
+			return null;
+		}
+
+		final Set<PartPM> set = new HashSet<PartPM>(array.length);
+		set.addAll(Arrays.asList(array));
+		return set;
+	}
+
+	private static PartPM[] setToArray(Set<PartPM> set) {
+		if (set == null) {
+			return null;
+		}
+		final PartPM[] array = new PartPM[set.size()];
+		int i = 0;
+		for (PartPM a : set) {
+			array[i++] = a;
+		}
+		return array;
 	}
 }

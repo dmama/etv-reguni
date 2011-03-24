@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface PersonneMorale {
 
@@ -143,4 +144,20 @@ public interface PersonneMorale {
 	 * @return tous les mandats de la PM, triés par ordre chronologique croissant.
 	 */
 	List<Mandat> getMandats();
+
+	/**
+	 * Copie les parties spécifiées à partir de la PM spécifiée.
+	 *
+	 * @param pm    la personne morale sur laquelle il faut copier les parties.
+	 * @param parts les parties à copier.
+	 */
+	void copyPartsFrom(PersonneMorale pm, Set<PartPM> parts);
+
+	/**
+	 * Clone la PM en restreignant la liste des parties renseignées.
+	 *
+	 * @param parts les parties à renseigner.
+	 * @return une nouvelles personne morale
+	 */
+	PersonneMorale clone(Set<PartPM> parts);
 }
