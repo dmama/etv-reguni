@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -163,6 +164,7 @@ public class AsyncTiersIndexerThread extends Thread {
 				 */
 				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 				try {
+					session.setFlushMode(FlushMode.MANUAL);
 					final List<Tiers> list;
 
 					if (batch.size() == 1) {
