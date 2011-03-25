@@ -16,7 +16,7 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 
 	//private static final Logger LOGGER = Logger.getLogger(AutreCommunauteIndexable.class);
 
-	public static final String SUB_TYPE = "autreCommunaute";
+	public static final String SUB_TYPE = "autrecommunaute";
 
 	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AutreCommunaute autreCommunaute) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, autreCommunaute);
