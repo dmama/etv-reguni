@@ -741,7 +741,7 @@
 		<acegi.version>1.0.4</acegi.version>
 		<cxf.version>2.2.8</cxf.version>
 		<lucene.version>3.0.1</lucene.version>
-		<activemq.version>5.4.0-fuse-00-00</activemq.version>
+		<activemq.version>5.4.2-fuse-02-00</activemq.version>
 		<jencks.version>2.2</jencks.version>
 
 		<!-- Testing dependency versions -->
