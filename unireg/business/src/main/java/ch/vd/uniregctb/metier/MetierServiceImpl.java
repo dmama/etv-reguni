@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -32,6 +31,7 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.modeimposition.DecesModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.DivorceModeImpositionResolver;
@@ -1712,7 +1712,7 @@ public class MetierServiceImpl implements MetierService {
 		catch (ModeImpositionResolverException ex) {
 			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
 		}
-		catch (InfrastructureException ex) {
+		catch (ServiceInfrastructureException ex) {
 			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
 		}
 	}

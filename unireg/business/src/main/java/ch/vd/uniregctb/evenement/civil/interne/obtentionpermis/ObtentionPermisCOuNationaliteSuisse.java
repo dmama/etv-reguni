@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -185,7 +185,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				}
 				catch (AdresseException e) {
 					throw new EvenementCivilHandlerException("Impossible de récupérer l'adresse", e);
-				} catch (InfrastructureException e) {
+				} catch (ServiceInfrastructureException e) {
 					throw new EvenementCivilHandlerException("Impossible de récupérer la commune", e);
 				}
 			}
@@ -197,7 +197,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 						noOfsEtendu = 0;
 					}
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					throw new EvenementCivilHandlerException("Impossible de récupérer la commune", e);
 				}
 			}

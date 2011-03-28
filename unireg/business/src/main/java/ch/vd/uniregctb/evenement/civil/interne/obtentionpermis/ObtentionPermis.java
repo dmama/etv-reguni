@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -86,7 +86,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 				this.numeroOfsEtenduCommunePrincipale = 0;
 			}
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilInterneException("Echec de résolution de l'adresse principale.", e);
 		}
 	}

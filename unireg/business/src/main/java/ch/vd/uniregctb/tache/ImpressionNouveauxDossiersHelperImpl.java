@@ -2,43 +2,41 @@ package ch.vd.uniregctb.tache;
 
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
-import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.adresse.AdresseException;
 import noNamespace.FicheOuvertureDossierDocument;
-import noNamespace.FichierImpressionDocument;
-import noNamespace.InfoDocumentDocument1;
-import noNamespace.InfoEnteteDocumentDocument1;
-import noNamespace.TypAdresse;
-import noNamespace.TypFichierImpression;
-import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.FicheOuvertureDossierDocument.FicheOuvertureDossier;
 import noNamespace.FicheOuvertureDossierDocument.FicheOuvertureDossier.Contrib1;
 import noNamespace.FicheOuvertureDossierDocument.FicheOuvertureDossier.Contrib2;
 import noNamespace.FicheOuvertureDossierDocument.FicheOuvertureDossier.Dossier;
+import noNamespace.FichierImpressionDocument;
+import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
+import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.TypAdresse;
+import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
-
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -134,7 +132,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 		try {
 			commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalGestion.getDateFin());
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			commune = null;
 		}
 		if (commune == null) {

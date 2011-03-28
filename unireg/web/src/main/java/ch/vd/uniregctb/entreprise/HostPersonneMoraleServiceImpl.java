@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.interfaces.model.Capital;
 import ch.vd.uniregctb.interfaces.model.EtatPM;
@@ -160,14 +159,9 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 			v.setDateDebut(r.getDateDebut());
 			v.setDateFin(r.getDateFin());
 			v.setCode(r.getCode());
-			try {
-				final TypeRegimeFiscal type = serviceInfra.getTypeRegimeFiscal(r.getCode());
-				if (type != null) {
-					v.setLibelle(type.getLibelle());
-				}
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException(e);
+			final TypeRegimeFiscal type = serviceInfra.getTypeRegimeFiscal(r.getCode());
+			if (type != null) {
+				v.setLibelle(type.getLibelle());
 			}
 			list.add(v);
 		}
@@ -186,14 +180,9 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 			v.setDateDebut(r.getDateDebut());
 			v.setDateFin(r.getDateFin());
 			v.setCode(r.getCode());
-			try {
-				final TypeEtatPM type = serviceInfra.getTypeEtatPM(r.getCode());
-				if (type != null) {
-					v.setLibelle(type.getLibelle());
-				}
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException(e);
+			final TypeEtatPM type = serviceInfra.getTypeEtatPM(r.getCode());
+			if (type != null) {
+				v.setLibelle(type.getLibelle());
 			}
 			list.add(v);
 		}

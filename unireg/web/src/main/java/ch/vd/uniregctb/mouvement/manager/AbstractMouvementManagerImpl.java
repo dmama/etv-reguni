@@ -30,6 +30,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
@@ -446,7 +447,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(ofsCommune, forGestion.getDateFin());
 				return commune.getNomMinuscule();
 			}
-			catch (InfrastructureException e) {
+			catch (ServiceInfrastructureException e) {
 				LOGGER.error("Erreur lors de la récupération de la commune de gestion", e);
 				return null;
 			}

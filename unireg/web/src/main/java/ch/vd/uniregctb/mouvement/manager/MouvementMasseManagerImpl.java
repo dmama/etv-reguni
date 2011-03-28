@@ -33,6 +33,7 @@ import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.extraction.ExtractionService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAO;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -296,7 +297,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = getServiceInfra().getCollectivite(noCa);
 			return ca.getNomCourt();
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			return String.format("Collectivité - %d", noCa);
 		}
 	}

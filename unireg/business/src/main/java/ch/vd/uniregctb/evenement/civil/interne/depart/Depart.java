@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -24,6 +23,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -95,7 +95,7 @@ public class Depart extends Mouvement {
 
 			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilInterneException(e);
 		}
 	}
@@ -115,13 +115,7 @@ public class Depart extends Mouvement {
 		this.ancienneAdresseCourrier = ancienneAdresseCourrier;
 		this.ancienneAdresseSecondaire = ancienneAdresseSecondaire;
 		this.ancienneCommuneSecondaire = ancienneCommuneSecondaire;
-
-		try {
-			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException(e);
-		}
+		this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 	}
 
 	/**
@@ -334,12 +328,7 @@ public class Depart extends Mouvement {
 		Adresse nouvelleAdressePrincipale = depart.getNouvelleAdressePrincipale();
 		if (nouvelleAdressePrincipale != null && nouvelleAdressePrincipale.getNoOfsPays() != null) {
 			boolean estEnSuisse;
-			try {
-				estEnSuisse = getService().getServiceInfra().estEnSuisse(nouvelleAdressePrincipale);
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException(e);
-			}
+			estEnSuisse = getService().getServiceInfra().estEnSuisse(nouvelleAdressePrincipale);
 			if (!estEnSuisse) {
 				motifFermeture = MotifFor.DEPART_HS;
 			}
@@ -582,14 +571,9 @@ public class Depart extends Mouvement {
 
 			final boolean estEnSuisse;
 			Commune commune = null;
-			try {
-				estEnSuisse = serviceInfra.estEnSuisse(adressePrincipale);
-				if (estEnSuisse) {
-					commune = serviceInfra.getCommuneByAdresse(adressePrincipale, depart.getDate().getOneDayAfter());
-				}
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException("la nouvelle adresse principale est inconnue", e);
+			estEnSuisse = serviceInfra.estEnSuisse(adressePrincipale);
+			if (estEnSuisse) {
+				commune = serviceInfra.getCommuneByAdresse(adressePrincipale, depart.getDate().getOneDayAfter());
 			}
 
 			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);

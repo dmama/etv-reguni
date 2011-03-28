@@ -12,7 +12,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.role.ProduireRolesResults;
 import ch.vd.uniregctb.type.MotifFor;
@@ -83,7 +83,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		try {
 			return infraService.getOfficeImpot(noColOID);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			return null;
 		}
 	}
@@ -92,7 +92,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		try {
 			return infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, date);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			return null;
 		}
 	}
@@ -101,7 +101,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		try {
 			return infraService.getListeCommunesByOID(oid);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			return null;
 		}
 	}

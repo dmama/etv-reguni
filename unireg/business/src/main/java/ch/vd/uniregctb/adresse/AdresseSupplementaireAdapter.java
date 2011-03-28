@@ -3,7 +3,6 @@ package ch.vd.uniregctb.adresse;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -205,12 +204,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	private Localite getLocalite(AdresseSuisse adresse) {
 		final Integer noLocalite = getNumeroOrdreLocalite(adresse);
 		final Localite localite;
-		try {
-			localite = service.getLocaliteByONRP(noLocalite);
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Erreur en essayant de récupérer la localité avec le numéro = " + noLocalite, e);
-		}
+		localite = service.getLocaliteByONRP(noLocalite);
 		Assert.notNull(localite, "La localité avec le numéro " + noLocalite + " n'existe pas.");
 		return localite;
 	}
@@ -221,12 +215,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		final Integer numeroRue = adresse.getNumeroRue();
 		if (numeroRue != null) {
 			final Rue rue;
-			try {
-				rue = service.getRueByNumero(numeroRue);
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException("Erreur en essayant de récupérer la rue avec le numéro technique = " + numeroRue, e);
-			}
+			rue = service.getRueByNumero(numeroRue);
 			noLocalite = rue.getNoLocalite();
 		}
 		else {

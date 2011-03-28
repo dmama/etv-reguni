@@ -408,12 +408,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	private Localite getLocalite(AdresseSuisse adresse) {
 		final Integer noLocalite = getNumeroOrdreLocalite(adresse);
 		final Localite localite;
-		try {
-			localite = getServiceInfrastructureService().getLocaliteByONRP(noLocalite);
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Erreur en essayant de récupérer la localité avec le numéro = " + noLocalite, e);
-		}
+		localite = getServiceInfrastructureService().getLocaliteByONRP(noLocalite);
 		return localite;
 	}
 
@@ -429,12 +424,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		final Integer numeroRue = adresse.getNumeroRue();
 		if (numeroRue != null) {
 			final Rue rue;
-			try {
-				rue = getServiceInfrastructureService().getRueByNumero(numeroRue);
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException("Erreur en essayant de récupérer la rue avec le numéro OFS = " + numeroRue, e);
-			}
+			rue = getServiceInfrastructureService().getRueByNumero(numeroRue);
 			noLocalite = rue.getNoLocalite();
 		}
 		else {
@@ -452,12 +442,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	public Pays getPays(AdresseEtrangere adresseEtrangere) {
 
 		Assert.notNull(adresseEtrangere);
-		try {
-			return getServiceInfrastructureService().getPays(adresseEtrangere.getNumeroOfsPays());
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Erreur en essayant de récupérer le pays", e);
-		}
+		return getServiceInfrastructureService().getPays(adresseEtrangere.getNumeroOfsPays());
 
 	}
 
@@ -549,14 +534,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		Integer noOfsPays = addIndividu.getNoOfsPays();
 		if (noOfsPays != null) {
-			try {
-				Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
-				if (pays != null) {
-					addDispoView.setPaysNpa(pays.getNomMinuscule());
-				}
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException(e);
+			Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
+			if (pays != null) {
+				addDispoView.setPaysNpa(pays.getNomMinuscule());
 			}
 		}
 
@@ -588,14 +568,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		Integer noOfsPays = adresse.getNoOfsPays();
 		if (noOfsPays != null) {
-			try {
-				Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
-				if (pays != null) {
-					addDispoView.setPaysNpa(pays.getNomMinuscule());
-				}
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException(e);
+			Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
+			if (pays != null) {
+				addDispoView.setPaysNpa(pays.getNomMinuscule());
 			}
 		}
 

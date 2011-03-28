@@ -12,6 +12,10 @@ public class ServiceInfrastructureException extends RuntimeException {
 		super(e);
 	}
 
+	public ServiceInfrastructureException(String message) {
+		super(message);
+	}
+
 	public ServiceInfrastructureException(String string, Throwable e) {
 		super(string, e);
 	}

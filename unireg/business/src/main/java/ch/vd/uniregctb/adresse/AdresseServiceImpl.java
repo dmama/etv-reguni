@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -32,6 +31,7 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
@@ -633,14 +633,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale pour l'adressage de la collectivité administrative spécifiée.
 	 */
 	private String getRaisonSociale(CollectiviteAdministrative collectivite) {
-		try {
-			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
-			return c.getNomCourt();
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Impossible de trouver la collectivite administrative avec le numéro = "
-					+ collectivite.getNumeroCollectiviteAdministrative(), e);
-		}
+		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
+		return c.getNomCourt();
 	}
 
 	/**
@@ -648,26 +642,20 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale pour l'adressage de la collectivité administrative spécifiée.
 	 */
 	private List<String> getRaisonSocialeLongue(CollectiviteAdministrative collectivite) {
-		try {
-			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite
-					.getNumeroCollectiviteAdministrative());
+		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite
+				.getNumeroCollectiviteAdministrative());
 
-			final List<String> nomsComplets = new ArrayList<String>(3);
-			if (StringUtils.isNotBlank(c.getNomComplet1())) {
-				nomsComplets.add(c.getNomComplet1());
-			}
-			if (StringUtils.isNotBlank(c.getNomComplet2())) {
-				nomsComplets.add(c.getNomComplet2());
-			}
-			if (StringUtils.isNotBlank(c.getNomComplet3())) {
-				nomsComplets.add(c.getNomComplet3());
-			}
-			return nomsComplets;
+		final List<String> nomsComplets = new ArrayList<String>(3);
+		if (StringUtils.isNotBlank(c.getNomComplet1())) {
+			nomsComplets.add(c.getNomComplet1());
 		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Impossible de trouver la collectivite administrative avec le numéro = "
-					+ collectivite.getNumeroCollectiviteAdministrative(), e);
+		if (StringUtils.isNotBlank(c.getNomComplet2())) {
+			nomsComplets.add(c.getNomComplet2());
 		}
+		if (StringUtils.isNotBlank(c.getNomComplet3())) {
+			nomsComplets.add(c.getNomComplet3());
+		}
+		return nomsComplets;
 	}
 
 	/**
@@ -747,20 +735,15 @@ public class AdresseServiceImpl implements AdresseService {
 
 	private String buildPays(AdresseGenerique adresse, boolean aussiSuisse) {
 		final Integer noOfsPays = adresse.getNoOfsPays();
-		try {
-			final Pays pays = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays));
-			final String nomPays;
-			if (pays != null && (aussiSuisse || !pays.isSuisse())) {
-				nomPays = pays.getNomMinuscule();
-			}
-			else {
-				nomPays = null;
-			}
-			return nomPays;
+		final Pays pays = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays));
+		final String nomPays;
+		if (pays != null && (aussiSuisse || !pays.isSuisse())) {
+			nomPays = pays.getNomMinuscule();
 		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Impossible de trouver le pays avec le numéro Ofs = " + noOfsPays);
+		else {
+			nomPays = null;
 		}
+		return nomPays;
 	}
 
 	/**
@@ -1525,16 +1508,11 @@ public class AdresseServiceImpl implements AdresseService {
 		final Integer numero = collectivite.getNumeroCollectiviteAdministrative();
 		if (numero != null) {
 			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil;
-			try {
-				collectiviteCivil = serviceInfra.getCollectivite(numero);
-				Assert.notNull(collectiviteCivil);
+			collectiviteCivil = serviceInfra.getCollectivite(numero);
+			Assert.notNull(collectiviteCivil);
 
-				adresses.principale = collectiviteCivil.getAdresse();
-				adresses.courrier = adresses.principale;
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException("Erreur dans la récupération des adresses", e);
-			}
+			adresses.principale = collectiviteCivil.getAdresse();
+			adresses.courrier = adresses.principale;
 		}
 
 		return adresses;
@@ -1544,18 +1522,13 @@ public class AdresseServiceImpl implements AdresseService {
 
 		AdressesCivilesHisto adresses = new AdressesCivilesHisto();
 
-		try {
-			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
-			Assert.notNull(collectiviteCivil);
+		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
+		Assert.notNull(collectiviteCivil);
 
-			final Adresse adresse = collectiviteCivil.getAdresse();
-			if (adresse != null) {
-				adresses.principales.add(adresse);
-				adresses.courriers.add(adresse);
-			}
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Erreur dans la récupération des adresses", e);
+		final Adresse adresse = collectiviteCivil.getAdresse();
+		if (adresse != null) {
+			adresses.principales.add(adresse);
+			adresses.courriers.add(adresse);
 		}
 
 		return adresses;
@@ -2011,7 +1984,7 @@ public class AdresseServiceImpl implements AdresseService {
 				try {
 					commune = serviceInfra.getCommuneByAdresse(adresseGenerique, adresseGenerique.getDateDebut());
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					throw new AdresseDataException(e);
 				}
 				if (commune != null && commune.isVaudoise()) {

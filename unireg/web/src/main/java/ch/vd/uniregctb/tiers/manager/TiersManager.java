@@ -60,6 +60,7 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
@@ -785,7 +786,7 @@ public class TiersManager implements MessageSourceAware {
 		try {
 			return getServiceInfrastructureService().getLocaliteByONRP(noLocalite);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			LOGGER.error("Impossible de trouver la localité avec le numéro OFS = " + noLocalite, e);
 			return null;
 		}
@@ -799,7 +800,7 @@ public class TiersManager implements MessageSourceAware {
 		try {
 			return getServiceInfrastructureService().getRueByNumero(numeroRue.intValue());
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			LOGGER.error("Impossible de trouver la rue avec le numéro = " + numeroRue, e);
 			return null;
 		}
@@ -1933,7 +1934,7 @@ public class TiersManager implements MessageSourceAware {
 		try {
 			return serviceInfrastructureService.estDansLeCanton(adresse);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			LOGGER.error("Impossible de déterminer le canton de l'adresse : " + adresse, e);
 			return false;
 		}

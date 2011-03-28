@@ -1,19 +1,20 @@
 package ch.vd.uniregctb.rapport;
 
-import ch.vd.infrastructure.service.InfrastructureException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.Set;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.Set;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution d'un job d'ouverture des fors des habitants majeurs
@@ -113,7 +114,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		try {
 			commune = infraService.getCommuneByNumeroOfsEtendu(noOfs, dateReference);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			commune = null;
 		}
 

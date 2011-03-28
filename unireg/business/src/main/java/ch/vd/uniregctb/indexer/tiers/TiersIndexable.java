@@ -3,7 +3,6 @@ package ch.vd.uniregctb.indexer.tiers;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -175,7 +175,7 @@ public abstract class TiersIndexable {
 				ch.vd.registre.base.utils.Assert.fail("Le Type du For doit toujours etre présent");
 			}
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new IndexerException(forF.getTiers(), e);
 		}
 

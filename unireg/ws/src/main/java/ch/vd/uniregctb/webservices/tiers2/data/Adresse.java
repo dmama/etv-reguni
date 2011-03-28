@@ -5,9 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.log4j.Logger;
+
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
-import org.apache.log4j.Logger;
 
 /**
  * Contient les données métier caractérisant une adresse fiscale d'un tiers.
@@ -95,7 +97,7 @@ public class Adresse implements Range {
 			try {
 				p = serviceInfra.getPays(noOfsPays);
 			}
-			catch (ch.vd.infrastructure.service.InfrastructureException e) {
+			catch (ServiceInfrastructureException e) {
 				LOGGER.error(e, e);
 				throw new BusinessException(e);
 			}

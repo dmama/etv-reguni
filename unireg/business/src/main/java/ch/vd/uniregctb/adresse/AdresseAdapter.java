@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.adresse;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -67,12 +66,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	 */
 	private Rue getRue(int numeroRue) {
 		final Rue r;
-		try {
-			r = service.getRueByNumero(numeroRue);
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Erreur en essayant de récupérer la rue: " + numeroRue, e);
-		}
+		r = service.getRueByNumero(numeroRue);
 		if (r == null) {
 			throw new RuntimeException("La rue avec le numéro technique " + numeroRue + " est inconnue !");
 		}
@@ -84,12 +78,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	 */
 	private Localite getLocalite(int numeroLocalite) {
 		final Localite localite;
-		try {
-			localite = service.getLocaliteByONRP(numeroLocalite);
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("Impossible de trouver la localite avec le numéro  " + numeroLocalite);
-		}
+		localite = service.getLocaliteByONRP(numeroLocalite);
 		if (localite == null) {
 			throw new RuntimeException("La localité avec le numéro " + numeroLocalite + " est inconnue !");
 		}

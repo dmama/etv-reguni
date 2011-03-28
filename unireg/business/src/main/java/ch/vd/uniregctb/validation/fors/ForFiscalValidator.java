@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.validation.fors;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -8,6 +7,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -87,7 +87,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 						results.addError(String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", typeAutoriteFiscale, commune.getNomMinuscule(), commune.getNoOFSEtendu(), ff));
 					}
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					results.addError(String.format("Impossible de vérifier la validité de la commune du for %s", ff), e);
 				}
 			}
@@ -101,7 +101,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 						results.addError(String.format("Le for %s devrait être vaudois ou hors-canton", ff));
 					}
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					results.addError(String.format("Impossible de vérifier la validité du pays du for %s", ff), e);
 				}
 			}

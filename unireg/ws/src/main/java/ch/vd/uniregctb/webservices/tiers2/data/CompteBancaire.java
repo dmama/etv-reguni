@@ -1,15 +1,14 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
+import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 
 /**
@@ -125,7 +124,7 @@ public class CompteBancaire {
 				this.nomInstitution = institution.getNomInstitutionFinanciere();
 			}
 		}
-		catch (InfrastructureException ignored) {
+		catch (ServiceInfrastructureException ignored) {
 			// que faire de cette exception ?
 		}
 	}

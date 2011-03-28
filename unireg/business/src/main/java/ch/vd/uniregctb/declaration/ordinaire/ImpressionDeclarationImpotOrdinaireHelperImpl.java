@@ -47,6 +47,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -405,7 +406,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		try {
 			cedi = infraService.getCEDI();
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EditiqueException(e);
 		}
 
@@ -540,7 +541,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, declaration.getDateFin());
 			nomCommuneGestion = commune.getNomMinuscule();
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EditiqueException(e);
 		}
 

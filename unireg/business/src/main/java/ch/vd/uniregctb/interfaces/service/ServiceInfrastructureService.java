@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -48,170 +47,170 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * @return la liste des pays.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Pays> getPays() throws InfrastructureException;
+	public List<Pays> getPays() throws ServiceInfrastructureException;
 
 	/**
 	 * @param numeroOFS un numéro Ofs de pays.
 	 * @return le pays avec le numéro Ofs spécifié; ou <b>null</b> si aucun pays ne corresponds.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Pays getPays(int numeroOFS) throws InfrastructureException;
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException;
 
 	/**
 	 * Recherche un pays à partir de son code ('CH', 'FR', 'BE', ...). Voir la documentation de la méthode {@link ch.vd.infrastructure.model.Pays#getCodePays()}.
 	 *
 	 * @param codePays un code de pays ('CH', 'FR', 'BE', ...)
 	 * @return le pays avec le code pays spécifié; ou <b>null</b> si aucun pays ne corresponds.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Pays getPays(String codePays) throws InfrastructureException;
+	public Pays getPays(String codePays) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro technique de la collectivité
 	 * @return la collectivite administrative.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException;
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException;
 
 	/**
 	 * @return la collectivite administrative de l'ACI
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public CollectiviteAdministrative getACI() throws InfrastructureException;
+	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException;
 
 	/**
 	 * @return la collectivite administrative  correspondant à l'IMPOT à la source, service de l'ACI
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException;
+	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException;
 
 
 	/**
 	 * @return la collectivite administrative  SUCCESSION, service de l'ACI
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException;
+	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException;
 
 	/**
 	 * @return la collectivite administrative du CEDI
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public CollectiviteAdministrative getCEDI() throws InfrastructureException;
+	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException;
 
 	/**
 	 * @return la collectivite administrative du CAT
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public CollectiviteAdministrative getCAT() throws InfrastructureException;
+	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException;
 
 	/**
 	 * @return tous les cantons de la Suisse
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Canton> getAllCantons() throws InfrastructureException;
+	public List<Canton> getAllCantons() throws ServiceInfrastructureException;
 
 	/**
 	 * @param canton un canton
 	 * @return les communes du canton spécifié
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException;
+	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException;
 
 	/**
 	 * @return La liste des communes vaudoise (en incluant les fractions mais pas leur commune faîtière)
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Commune> getListeFractionsCommunes() throws InfrastructureException;
+	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException;
 
 	/**
 	 * @param cantonOFS le numéro Ofs d'un canton
 	 * @return les communes du canton spécifié
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Commune> getListeCommunes(int cantonOFS) throws InfrastructureException;
+	public List<Commune> getListeCommunes(int cantonOFS) throws ServiceInfrastructureException;
 
 	/**
 	 * @param oid l'id d'un office d'impôt
 	 * @return la liste des communes pour l'office d'impôt spécifié
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Commune> getListeCommunesByOID(int oid) throws InfrastructureException;
+	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException;
 
 	/**
 	 * Charge les communes et fractions de commune du canton
 	 *
 	 * @return les communes du canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Commune> getCommunesDeVaud() throws InfrastructureException;
+	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException;
 
 	/**
 	 * Charge les communes hors canton
 	 *
 	 * @return toutes les communes de Suisse, sauf celles dans le canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Commune> getCommunesHorsCanton() throws InfrastructureException;
+	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException;
 
 	/**
 	 * Charge les communes
 	 *
 	 * @return toutes les communes de Suisse
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Commune> getCommunes() throws InfrastructureException;
+	public List<Commune> getCommunes() throws ServiceInfrastructureException;
 
 	/**
 	 * @return toutes les localités de Suisse
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Localite> getLocalites() throws InfrastructureException;
+	public List<Localite> getLocalites() throws ServiceInfrastructureException;
 
 	/**
 	 * @param onrp le numéro technique de la localité
 	 * @return la localité qui corresponds à numéro technique spécifié
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Localite getLocaliteByONRP(int onrp) throws InfrastructureException;
+	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException;
 
 	/**
 	 * @param commune le numéro Ofs d'une commune
 	 * @return une localité
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException;
+	public List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException;
 
 	/**
 	 * @param localite une localité
 	 * @return les rues de la localité spécifiée
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Rue> getRues(Localite localite) throws InfrastructureException;
+	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException;
 
 	/**
 	 * @param localites une collection de localités
 	 * @return les rues des localités spécifiées
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Rue> getRues(Collection<Localite> localites) throws InfrastructureException;
+	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException;
 
 	/**
 	 * Renvoie les rues de ce canton
 	 *
 	 * @param canton un canton
 	 * @return une liste de rues
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<Rue> getRues(Canton canton) throws InfrastructureException;
+	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException;
 
 	/**
 	 * @param numero le numéro technique d'une rue
 	 * @return la rue qui correspond au numéro technique spécifié.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Rue getRueByNumero(int numero) throws InfrastructureException;
+	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException;
 
 	/**
 	 * @return la Suisse.
@@ -221,30 +220,30 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * @return la canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Canton getVaud() throws InfrastructureException;
+	public Canton getVaud() throws ServiceInfrastructureException;
 
 	/**
 	 * @param cantonOFS un numéro Ofs de canton
 	 * @return un canton
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Canton getCanton(int cantonOFS) throws InfrastructureException;
+	public Canton getCanton(int cantonOFS) throws ServiceInfrastructureException;
 
 	/**
 	 * @param sigle le sigle d'un canton ('VD', 'FR', ...)
 	 * @return un canton
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Canton getCantonBySigle(String sigle) throws InfrastructureException;
+	public Canton getCantonBySigle(String sigle) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noOfsCommune le numéro Ofs d'une commune
 	 * @return le canton dans lequel la commune existe
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException;
+	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException;
 
 	/**
 	 * Retrouve la commune avec le numéro OFS étendu donné ; si plusieurs communes correspondent, renvoie celle qui est valide à la date donnée
@@ -252,16 +251,16 @@ public interface ServiceInfrastructureService {
 	 * @param noCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
 	 * @param date      date de référence (<code>null</code> pour la date du jour)
 	 * @return Commune
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException;
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * @param localite une localité
 	 * @return la commune correspondant à la localité EN GERANT LES FRACTIONS de commune
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException;
+	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException;
 
 	/**
 	 * Résoud la commune d'une adresse civile (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)
@@ -269,9 +268,9 @@ public interface ServiceInfrastructureService {
 	 * @param adresse adresse civile dont on cherche la commune
 	 * @param date    la date de référence (<code>null</code> pour la date du jour)
 	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException;
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * Résoud la commune d'une adresse générique (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)
@@ -279,9 +278,9 @@ public interface ServiceInfrastructureService {
 	 * @param adresse adresse générique (civile, fiscale, transférée d'un autre tiers...) dont on cherche la commune
 	 * @param date    la date de référence (<code>null</code> pour la date du jour)
 	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException;
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * Retourne le numéro Ofs de la commune sur laquelle un bâtiment est construit.
@@ -291,9 +290,9 @@ public interface ServiceInfrastructureService {
 	 * @param hintNoOfsCommune le numéro Ofs de la commune d'annonce qui sera utilisé comme indice pour accélérer la recherche (par commune d'annonce, il faut entendre la commune associée à l'adresse
 	 *                         telle que retournée par le service civil. La signification métier de cette commune est encore sujette à interprétations)
 	 * @return le numéro Ofs de la commune, ou <code>null</code> si le bâtiment est inconnu.
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException;
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException;
 
 	/**
 	 * Retourne la commune sur laquelle un bâtiment est construit.
@@ -303,9 +302,9 @@ public interface ServiceInfrastructureService {
 	 * @param hintNoOfsCommune le numéro Ofs de la commune d'annonce qui sera utilisé comme indice pour accélérer la recherche (par commune d'annonce, il faut entendre la commune associée à l'adresse
 	 *                         telle que retournée par le service civil. La signification métier de cette commune est encore sujette à interprétations)
 	 * @return une commune, ou <code>null</code> si le bâtiment est inconnu.
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException;
+	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException;
 
 	/**
 	 * Résoud la commune faîtière d'une fraction de commune (renvoie la commune elle-même si ce n'est pas une fraction)
@@ -313,71 +312,72 @@ public interface ServiceInfrastructureService {
 	 * @param commune       fraction de commune
 	 * @param dateReference date de référence (au cas où...)
 	 * @return la commune faîtière de la fraction donnée à la date donnée
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws InfrastructureException;
+	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro de collectivité administrative de l'office d'impôt
 	 * @return l'office d'impôt à partir de son numéro de collectivité.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException;
+	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noCommune le numéro Ofs d'un commune
 	 * @return l'office d'impôt responsable de la commune spécifiée par son numéro OFS.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException;
+	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException;
 
 	/**
 	 * @return tous les offices d'impôt de district du canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException;
+	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException;
 
 	/**
 	 * @param rue une rue
 	 * @return <b>true</b> si la rue spécifiée est dans le canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public boolean estDansLeCanton(final Rue rue) throws InfrastructureException;
+	public boolean estDansLeCanton(final Rue rue) throws ServiceInfrastructureException;
 
 	/**
 	 * @param commune une commune
 	 * @return <b>true</b> si la commune spécifiée est dans le canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public boolean estDansLeCanton(final Commune commune) throws InfrastructureException;
+	public boolean estDansLeCanton(final Commune commune) throws ServiceInfrastructureException;
 
 	/**
+	 *
 	 * @param adresse une adresse générique
 	 * @return <b>true</b> si l'adresse spécifiée est dans le canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public boolean estDansLeCanton(AdresseGenerique adresse) throws InfrastructureException;
+	public boolean estDansLeCanton(AdresseGenerique adresse) throws ServiceInfrastructureException;
 
 	/**
 	 * @param adresse une adresse
 	 * @return <b>true</b> si l'adresse spécifiée est dans le canton de Vaud
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public boolean estDansLeCanton(Adresse adresse) throws InfrastructureException;
+	public boolean estDansLeCanton(Adresse adresse) throws ServiceInfrastructureException;
 
 	/**
 	 * @param adresse une adresse générique
 	 * @return <b>true</b> si l'adresse spécifiée est en Suisse
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public boolean estEnSuisse(AdresseGenerique adresse) throws InfrastructureException;
+	public boolean estEnSuisse(AdresseGenerique adresse) throws ServiceInfrastructureException;
 
 	/**
 	 * @param adresse une adresse
 	 * @return <b>true</b> si l'adresse spécifiée est en Suisse
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public boolean estEnSuisse(Adresse adresse) throws InfrastructureException;
+	public boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException;
 
 	public static enum Zone {
 		VAUD,
@@ -388,40 +388,40 @@ public interface ServiceInfrastructureService {
 	/**
 	 * @param adresse une adresse
 	 * @return la zone géographique de l'adresse spécifiée.
-	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	public Zone getZone(AdresseGenerique adresse) throws InfrastructureException;
+	public Zone getZone(AdresseGenerique adresse) throws ServiceInfrastructureException;
 
 	/**
 	 * @return la liste des collectivites administratives du canton de Vaud
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException;
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException;
 
 	/**
 	 * @param typesCollectivite le type de collectivité administrative
 	 * @return la liste des collectivites administratives du canton de Vaud du type spécifié
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws InfrastructureException;
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException;
 
 
 	/**
 	 * Retourne l'entité representant un pays inconnu
 	 *
 	 * @return Pays
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public Pays getPaysInconnu() throws InfrastructureException;
+	public Pays getPaysInconnu() throws ServiceInfrastructureException;
 
 	/**
 	 * Retourne l'institution financière spécifiée par son id technique.
 	 *
 	 * @param id l'id de l'institution financière
 	 * @return une institution financière ou <code>null</code> si aucune institution ne correspond à l'id spécifié.
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException;
+	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException;
 
 	/**
 	 * La ou les institutions financière enregistrées sous le numéro de clearing spécifié.
@@ -430,18 +430,18 @@ public interface ServiceInfrastructureService {
 	 *
 	 * @param noClearing un numéro de clearing
 	 * @return 0, 1 ou plusieurs institutions financières.
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException;
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException;
 
 	/**
 	 * Permet de retourner une localite a partir d'un npa
 	 *
 	 * @param npa le npa
 	 * @return la localite
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	public Localite getLocaliteByNPA(int npa) throws InfrastructureException;
+	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException;
 
 	/**
 	 * Calcule et retourne le type d'affranchissement demandé par la poste pour envoyer un courrier dans un pays particulier.
@@ -453,29 +453,29 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * @return la liste des types de régimes fiscaux qui existent pour les personnes morales.
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException;
+	List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException;
 
 	/**
 	 * @param code un code de régime fiscal
 	 * @return le régime fiscal pour le code demandé; ou <null> si le code ne correspond à aucun régime fiscal connu,
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException;
+	TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException;
 
 	/**
 	 * @return la liste des types d'états qui existent pour les personnes morales.
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException;
+	List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException;
 
 	/**
 	 * @param code un code de type d'état PM
 	 * @return le type d'état PM pour le code demandé; ou <null> si le code ne correspond à aucun type d'état connu,
-	 * @throws InfrastructureException en cas de problème
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException;
+	TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException;
 
 	/**
 	 * Construit et retourne l'url vers la page de visualisation d'un tiers dans un application fiscale connectée à Unireg.
@@ -491,13 +491,15 @@ public interface ServiceInfrastructureService {
 	 *
 	 * @param idLogiciel l'id d'un logiciel
 	 * @return un logiciel; ou <b>null</b> si aucun logiciel ne possède l'id spécifié.
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	Logiciel getLogiciel(Long idLogiciel);
+	Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException;
 
 	/**
 	 * @return la liste de tous les logiciels connus.
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	List<Logiciel> getTousLesLogiciels();
+	List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException;
 
 	/**
 	 * @param metier un domaine métier

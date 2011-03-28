@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -130,12 +129,7 @@ public class ComplementView {
 		}
 
 		final InstitutionFinanciere instit;
-		try {
-			instit = serviceInfra.getInstitutionFinanciere(noInstit.intValue());
-		}
-		catch (InfrastructureException e) {
-			throw new RuntimeException("L'institution financière avec le numéro = [" + noInstit + "] n'existe pas.");
-		}
+		instit = serviceInfra.getInstitutionFinanciere(noInstit.intValue());
 
 		return instit.getNomInstitutionFinanciere();
 	}

@@ -47,6 +47,7 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -892,7 +893,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		try {
 			pays = infraService.getPays(noOfsPays);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			LOGGER.warn("Impossible de trouver le pays avec le numéro OFS " + noOfsPays + ": on l'ignore.", e);
 			return false;
 		}
@@ -953,7 +954,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		try {
 			canton = infraService.getCantonBySigle(sigle);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			// On a pas réussi a resoudre le canton,
 			//on renvoie l'emetteur id telquel
 			canton = null;

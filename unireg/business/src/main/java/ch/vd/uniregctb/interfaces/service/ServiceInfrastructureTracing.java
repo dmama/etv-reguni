@@ -9,7 +9,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -49,7 +48,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		this.statsService = statsService;
 	}
 
-	public boolean estDansLeCanton(final Rue rue) throws InfrastructureException {
+	public boolean estDansLeCanton(final Rue rue) throws ServiceInfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
@@ -66,7 +65,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public boolean estDansLeCanton(final Commune commune) throws InfrastructureException {
+	public boolean estDansLeCanton(final Commune commune) throws ServiceInfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
@@ -84,7 +83,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public boolean estDansLeCanton(AdresseGenerique adresse) throws InfrastructureException {
+	public boolean estDansLeCanton(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
@@ -97,7 +96,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public boolean estDansLeCanton(Adresse adresse) throws InfrastructureException {
+	public boolean estDansLeCanton(Adresse adresse) throws ServiceInfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
@@ -110,7 +109,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public boolean estEnSuisse(AdresseGenerique adresse) throws InfrastructureException {
+	public boolean estEnSuisse(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
@@ -123,7 +122,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public boolean estEnSuisse(Adresse adresse) throws InfrastructureException {
+	public boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException {
 		boolean result;
 		long time = tracing.start();
 		try {
@@ -136,7 +135,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CollectiviteAdministrative getACI() throws InfrastructureException {
+	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {
@@ -149,7 +148,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
 	CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {
@@ -162,7 +161,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {
@@ -175,7 +174,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
+	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {
@@ -188,7 +187,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CollectiviteAdministrative getCAT() throws InfrastructureException {
+	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {
@@ -201,7 +200,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Canton> getAllCantons() throws InfrastructureException {
+	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		List<Canton> result;
 		long time = tracing.start();
 		try {
@@ -214,7 +213,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Canton getCanton(final int cantonOFS) throws InfrastructureException {
+	public Canton getCanton(final int cantonOFS) throws ServiceInfrastructureException {
 		Canton result;
 		long time = tracing.start();
 		try {
@@ -232,7 +231,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Canton getCantonByCommune(final int noOfsCommune) throws InfrastructureException {
+	public Canton getCantonByCommune(final int noOfsCommune) throws ServiceInfrastructureException {
 		Canton result;
 		long time = tracing.start();
 		try {
@@ -250,7 +249,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Canton getCantonBySigle(final String sigle) throws InfrastructureException {
+	public Canton getCantonBySigle(final String sigle) throws ServiceInfrastructureException {
 		Canton result;
 		long time = tracing.start();
 		try {
@@ -268,7 +267,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws InfrastructureException {
+	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws ServiceInfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
 		try {
@@ -286,7 +285,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		List<CollectiviteAdministrative> result;
 		long time = tracing.start();
 		try {
@@ -300,7 +299,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	}
 
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<EnumTypeCollectivite> typesCollectivite)
-			throws InfrastructureException {
+			throws ServiceInfrastructureException {
 		List<CollectiviteAdministrative> result;
 		long time = tracing.start();
 		try {
@@ -318,7 +317,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
@@ -331,7 +330,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws ServiceInfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
@@ -345,7 +344,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(final int egid, final RegDate date, final int hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(final int egid, final RegDate date, final int hintNoOfsCommune) throws ServiceInfrastructureException {
 		Integer result;
 		long time = tracing.start();
 		try {
@@ -364,7 +363,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	}
 
 	@Override
-	public Commune getCommuneByEgid(final int egid, final RegDate date, final int hintNoOfsCommune) throws InfrastructureException {
+	public Commune getCommuneByEgid(final int egid, final RegDate date, final int hintNoOfsCommune) throws ServiceInfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
@@ -382,7 +381,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneByLocalite(final Localite localite) throws InfrastructureException {
+	public Commune getCommuneByLocalite(final Localite localite) throws ServiceInfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
@@ -400,7 +399,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(final int noCommune, final RegDate date) throws InfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(final int noCommune, final RegDate date) throws ServiceInfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
@@ -418,7 +417,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
+	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
@@ -431,7 +430,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
+	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
@@ -444,7 +443,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Commune> getCommunes() throws InfrastructureException {
+	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
@@ -457,7 +456,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
+	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
@@ -475,7 +474,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
+	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
@@ -488,7 +487,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Commune> getListeCommunes(final int cantonOFS) throws InfrastructureException {
+	public List<Commune> getListeCommunes(final int cantonOFS) throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
@@ -506,7 +505,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Commune> getListeCommunesByOID(final int oid) throws InfrastructureException {
+	public List<Commune> getListeCommunesByOID(final int oid) throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
 		try {
@@ -524,7 +523,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneFaitiere(final Commune commune, final RegDate dateReference) throws InfrastructureException {
+	public Commune getCommuneFaitiere(final Commune commune, final RegDate dateReference) throws ServiceInfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
@@ -542,7 +541,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Localite> getLocaliteByCommune(final int commune) throws InfrastructureException {
+	public List<Localite> getLocaliteByCommune(final int commune) throws ServiceInfrastructureException {
 		List<Localite> result;
 		long time = tracing.start();
 		try {
@@ -560,7 +559,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Localite getLocaliteByONRP(final int onrp) throws InfrastructureException {
+	public Localite getLocaliteByONRP(final int onrp) throws ServiceInfrastructureException {
 		Localite result;
 		long time = tracing.start();
 		try {
@@ -578,7 +577,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Localite> getLocalites() throws InfrastructureException {
+	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		List<Localite> result;
 		long time = tracing.start();
 		try {
@@ -591,7 +590,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public OfficeImpot getOfficeImpot(final int noColAdm) throws InfrastructureException {
+	public OfficeImpot getOfficeImpot(final int noColAdm) throws ServiceInfrastructureException {
 		OfficeImpot result;
 		long time = tracing.start();
 		try {
@@ -609,7 +608,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public OfficeImpot getOfficeImpotDeCommune(final int noCommune) throws InfrastructureException {
+	public OfficeImpot getOfficeImpotDeCommune(final int noCommune) throws ServiceInfrastructureException {
 		OfficeImpot result;
 		long time = tracing.start();
 		try {
@@ -627,7 +626,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		List<OfficeImpot> result;
 		long time = tracing.start();
 		try {
@@ -640,7 +639,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Pays> getPays() throws InfrastructureException {
+	public List<Pays> getPays() throws ServiceInfrastructureException {
 		List<Pays> result;
 		long time = tracing.start();
 		try {
@@ -653,7 +652,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Pays getPays(final int numeroOFS) throws InfrastructureException {
+	public Pays getPays(final int numeroOFS) throws ServiceInfrastructureException {
 		Pays result;
 		long time = tracing.start();
 		try {
@@ -672,7 +671,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	}
 
 
-	public Pays getPays(final String codePays) throws InfrastructureException {
+	public Pays getPays(final String codePays) throws ServiceInfrastructureException {
 		Pays result;
 		long time = tracing.start();
 		try {
@@ -690,7 +689,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Pays getPaysInconnu() throws InfrastructureException {
+	public Pays getPaysInconnu() throws ServiceInfrastructureException {
 		Pays result;
 		long time = tracing.start();
 		try {
@@ -703,7 +702,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Rue getRueByNumero(final int numero) throws InfrastructureException {
+	public Rue getRueByNumero(final int numero) throws ServiceInfrastructureException {
 		Rue result;
 		long time = tracing.start();
 		try {
@@ -721,7 +720,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Rue> getRues(final Localite localite) throws InfrastructureException {
+	public List<Rue> getRues(final Localite localite) throws ServiceInfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
 		try {
@@ -739,7 +738,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Rue> getRues(final Collection<Localite> localites) throws InfrastructureException {
+	public List<Rue> getRues(final Collection<Localite> localites) throws ServiceInfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
 		try {
@@ -768,7 +767,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Rue> getRues(final Canton canton) throws InfrastructureException {
+	public List<Rue> getRues(final Canton canton) throws ServiceInfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
 		try {
@@ -799,7 +798,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Canton getVaud() throws InfrastructureException {
+	public Canton getVaud() throws ServiceInfrastructureException {
 		Canton result;
 		long time = tracing.start();
 		try {
@@ -812,7 +811,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Zone getZone(AdresseGenerique adresse) throws InfrastructureException {
+	public Zone getZone(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		Zone result;
 		long time = tracing.start();
 		try {
@@ -825,7 +824,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public InstitutionFinanciere getInstitutionFinanciere(final int id) throws InfrastructureException {
+	public InstitutionFinanciere getInstitutionFinanciere(final int id) throws ServiceInfrastructureException {
 		InstitutionFinanciere result;
 		long time = tracing.start();
 		try {
@@ -843,7 +842,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(final String noClearing) throws InfrastructureException {
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(final String noClearing) throws ServiceInfrastructureException {
 		List<InstitutionFinanciere> result;
 		long time = tracing.start();
 		try {
@@ -877,7 +876,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return null;
 	}
 
-	public Localite getLocaliteByNPA(final int npa) throws InfrastructureException {
+	public Localite getLocaliteByNPA(final int npa) throws ServiceInfrastructureException {
 		Localite result;
 		long time = tracing.start();
 		try {
@@ -913,7 +912,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		List<TypeRegimeFiscal> result;
 		long time = tracing.start();
 		try {
@@ -926,7 +925,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public TypeRegimeFiscal getTypeRegimeFiscal(final String code) throws InfrastructureException {
+	public TypeRegimeFiscal getTypeRegimeFiscal(final String code) throws ServiceInfrastructureException {
 		TypeRegimeFiscal result;
 		long time = tracing.start();
 		try {
@@ -944,7 +943,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		List<TypeEtatPM> result;
 		long time = tracing.start();
 		try {
@@ -957,7 +956,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public TypeEtatPM getTypeEtatPM(final String code) throws InfrastructureException {
+	public TypeEtatPM getTypeEtatPM(final String code) throws ServiceInfrastructureException {
 		TypeEtatPM result;
 		long time = tracing.start();
 		try {
@@ -993,7 +992,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Logiciel getLogiciel(final Long idLogiciel) {
+	public Logiciel getLogiciel(final Long idLogiciel) throws ServiceInfrastructureException {
 		Logiciel result;
 		long time = tracing.start();
 		try {
@@ -1011,7 +1010,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Logiciel> getTousLesLogiciels() {
+	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		List<Logiciel> result;
 		long time = tracing.start();
 		try {

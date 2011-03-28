@@ -13,7 +13,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheStats;
@@ -112,7 +111,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Canton> getAllCantons() throws InfrastructureException {
+	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		final List<Canton> resultat;
 
 		final KeyGetAllCantons key = new KeyGetAllCantons();
@@ -157,7 +156,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@Override
-	public Canton getCanton(int cantonOFS) throws InfrastructureException {
+	public Canton getCanton(int cantonOFS) throws ServiceInfrastructureException {
 		final Canton resultat;
 
 		final KeyGetCanton key = new KeyGetCanton(cantonOFS);
@@ -202,7 +201,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@Override
-	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException {
+	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException {
 		final Canton resultat;
 
 		final KeyGetCantonByCommune key = new KeyGetCantonByCommune(noOfsCommune);
@@ -253,7 +252,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@Override
-	public Canton getCantonBySigle(String sigle) throws InfrastructureException {
+	public Canton getCantonBySigle(String sigle) throws ServiceInfrastructureException {
 		final Canton resultat;
 
 		final KeyGetCantonBySigle key = new KeyGetCantonBySigle(sigle);
@@ -301,7 +300,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 
 	}
 
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetCollectivite key = new KeyGetCollectivite(noColAdm);
@@ -335,7 +334,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		final List<CollectiviteAdministrative> resultat;
 
 		final KeyGetCollectivitesAdministratives key = new KeyGetCollectivitesAdministratives();
@@ -388,7 +387,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws InfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		final List<CollectiviteAdministrative> resultat;
 
 		final KeyGetCollectivitesAdministrativesByTypes key = new KeyGetCollectivitesAdministrativesByTypes(typesCollectivite);
@@ -438,7 +437,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 
 	}
 
-	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		final Commune resultat;
 
 		final KeyGetCommuneByLocalite key = new KeyGetCommuneByLocalite(localite);
@@ -484,7 +483,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
 
 		final KeyGetCommunesByNumeroOfsEtendu key = new KeyGetCommunesByNumeroOfsEtendu(noCommune);
 		final Element element = cache.get(key);
@@ -531,7 +530,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 		final Integer resultat;
 
 		final KeyGetCommunesByEgid key = new KeyGetCommunesByEgid(egid, date, hintNoOfsCommune);
@@ -548,7 +547,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private synchronized List<Commune> buildListOfCommunesByNumeroOfsEtendu(KeyGetCommunesByNumeroOfsEtendu key) throws InfrastructureException {
+	private synchronized List<Commune> buildListOfCommunesByNumeroOfsEtendu(KeyGetCommunesByNumeroOfsEtendu key) throws ServiceInfrastructureException {
 		Element elt = cache.get(key);
 		if (elt == null) {
 
@@ -588,7 +587,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
+	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetCommunesDeVaud key = new KeyGetCommunesDeVaud();
@@ -622,7 +621,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
+	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetCommunesHorsCanton key = new KeyGetCommunesHorsCanton();
@@ -656,7 +655,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Commune> getCommunes() throws InfrastructureException {
+	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetCommunes key = new KeyGetCommunes();
@@ -702,7 +701,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
+	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetListeCommunes key = new KeyGetListeCommunes(canton);
@@ -737,7 +736,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
+	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		final List<Commune> resultat;
 
 		final KeyGetListeFractionsCommunes key = new KeyGetListeFractionsCommunes();
@@ -783,7 +782,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 
 	}
 
-	public Localite getLocaliteByONRP(int onrp) throws InfrastructureException {
+	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
 		final Localite resultat;
 
 		final KeyGetLocaliteByONRP key = new KeyGetLocaliteByONRP(onrp);
@@ -817,7 +816,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Localite> getLocalites() throws InfrastructureException {
+	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		final List<Localite> resultat;
 
 		final KeyGetLocalites key = new KeyGetLocalites();
@@ -861,7 +860,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
+	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		final OfficeImpot resultat;
 
 		final KeyGetOfficeImpotDeCommune key = new KeyGetOfficeImpotDeCommune(noCommune);
@@ -905,7 +904,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
+	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		final OfficeImpot resultat;
 
 		final KeyGetOfficeImpot key = new KeyGetOfficeImpot(noColAdm);
@@ -939,7 +938,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		final List<OfficeImpot> resultat;
 
 		final KeyGetOfficesImpot key = new KeyGetOfficesImpot();
@@ -973,7 +972,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Pays> getPays() throws InfrastructureException {
+	public List<Pays> getPays() throws ServiceInfrastructureException {
 		final List<Pays> resultat;
 
 		final KeyGetPays key = new KeyGetPays();
@@ -1018,7 +1017,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws InfrastructureException {
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
 		final Pays resultat;
 
 		final KeyGetPaysByNumeroOfs key = new KeyGetPaysByNumeroOfs(numeroOFS);
@@ -1069,7 +1068,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@Override
-	public Pays getPays(String codePays) throws InfrastructureException {
+	public Pays getPays(String codePays) throws ServiceInfrastructureException {
 		final Pays resultat;
 
 		final KeyGetPaysByCode key = new KeyGetPaysByCode(codePays);
@@ -1102,7 +1101,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public Pays getPaysInconnu() throws InfrastructureException {
+	public Pays getPaysInconnu() throws ServiceInfrastructureException {
 		final Pays resultat;
 
 		final KeyGetPaysInconnu key = new KeyGetPaysInconnu();
@@ -1146,7 +1145,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public Rue getRueByNumero(int numero) throws InfrastructureException {
+	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		final Rue resultat;
 
 		final KeyGetRueByNumero key = new KeyGetRueByNumero(numero);
@@ -1191,7 +1190,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Rue> getRues(Localite localite) throws InfrastructureException {
+	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		final List<Rue> resultat;
 
 		final KeyGetRueByLocalite key = new KeyGetRueByLocalite(localite);
@@ -1236,7 +1235,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Rue> getRues(Canton canton) throws InfrastructureException {
+	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		final List<Rue> resultat;
 
 		final KeyGetRueByCanton key = new KeyGetRueByCanton(canton);
@@ -1337,7 +1336,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 
-	public CollectiviteAdministrative getACI() throws InfrastructureException {
+	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetACI key = new KeyGetACI();
@@ -1353,7 +1352,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		return resultat;
 	}
 
-	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetACIImpotSource key = new KeyGetACIImpotSource();
@@ -1369,7 +1368,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		return resultat;
 	}
 
-	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetACISuccessions key = new KeyGetACISuccessions();
@@ -1403,7 +1402,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
+	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetCEDI key = new KeyGetCEDI();
@@ -1436,7 +1435,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public CollectiviteAdministrative getCAT() throws InfrastructureException {
+	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
 		final CollectiviteAdministrative resultat;
 
 		final KeyGetCAT key = new KeyGetCAT();
@@ -1469,7 +1468,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public Canton getVaud() throws InfrastructureException {
+	public Canton getVaud() throws ServiceInfrastructureException {
 		final Canton resultat;
 
 		final KeyGetVaud key = new KeyGetVaud();
@@ -1514,7 +1513,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException {
+	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 
 		final InstitutionFinanciere resultat;
 
@@ -1567,7 +1566,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException {
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 
 		final List<InstitutionFinanciere> resultat;
 
@@ -1601,7 +1600,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 
 		final List<TypeRegimeFiscal> resultat;
 
@@ -1642,7 +1641,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 
 		final TypeRegimeFiscal resultat;
 
@@ -1676,7 +1675,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 
 		final List<TypeEtatPM> resultat;
 
@@ -1717,7 +1716,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 
 		final TypeEtatPM resultat;
 
@@ -1757,7 +1756,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	/**
 	 *  {@inheritDoc}
 	 */
-	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return target.getLocaliteByNPA(npa);
 	}
 
@@ -1789,7 +1788,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		}
 	}
 
-	public Logiciel getLogiciel(Long idLogiciel) {
+	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		final Logiciel resultat;
 
 		final KeyGetLogiciel key = new KeyGetLogiciel(idLogiciel);
@@ -1819,7 +1818,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public List<Logiciel> getTousLesLogiciels() {
+	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		final List<Logiciel> resultat;
 
 		final KeyGetTousLesLogiciels key = new KeyGetTousLesLogiciels();

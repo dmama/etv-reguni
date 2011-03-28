@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
  * Règles métiers permettant de traiter les événements de déménagement intra communal.
@@ -95,7 +95,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 		catch (DonneesCivilesException e) {
 			throw new EvenementCivilException(e);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}

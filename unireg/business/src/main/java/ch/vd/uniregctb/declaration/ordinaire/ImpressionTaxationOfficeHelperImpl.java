@@ -4,23 +4,23 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 
 import noNamespace.ChemiseTODocument;
-import noNamespace.FichierImpressionDocument;
-import noNamespace.InfoDocumentDocument1;
-import noNamespace.InfoEnteteDocumentDocument1;
-import noNamespace.TypAdresse;
-import noNamespace.TypFichierImpression;
 import noNamespace.ChemiseTODocument.ChemiseTO;
 import noNamespace.ChemiseTODocument.ChemiseTO.Contrib1;
 import noNamespace.ChemiseTODocument.ChemiseTO.Contrib2;
 import noNamespace.ChemiseTODocument.ChemiseTO.Dossier;
 import noNamespace.CleRgpDocument.CleRgp;
+import noNamespace.FichierImpressionDocument;
+import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
+import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.TypAdresse;
+import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -32,19 +32,19 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
-import org.apache.log4j.Logger;
 
 public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOfficeHelper {
 
@@ -160,7 +160,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 			}
 			dossier.setOfficeImpot(nomComplet);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EditiqueException(e);
 		}
 
@@ -182,7 +182,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 			final String communeLabel = commune.getNomMinuscule();
 			dossier.setCommune(communeLabel);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			LOGGER.error("Exception lors de la recherche de la commune par numéro " + noOfsCommune, e);
 		}
 

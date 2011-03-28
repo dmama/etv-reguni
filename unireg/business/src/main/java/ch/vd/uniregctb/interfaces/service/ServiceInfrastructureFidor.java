@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,7 +15,6 @@ import ch.vd.fidor.ws.v2.Acces;
 import ch.vd.fidor.ws.v2.CommuneFiscale;
 import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -54,49 +54,54 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		this.fidorClient = fidorClient;
 	}
 
-	public List<Pays> getPays() throws InfrastructureException {
-		final Collection<ch.vd.fidor.ws.v2.Pays> list = fidorClient.getTousLesPays();
-		if (list == null || list.isEmpty()) {
-			return Collections.emptyList();
-		}
-		else {
-			final List<Pays> pays = new ArrayList<Pays>();
-			for (ch.vd.fidor.ws.v2.Pays o : list) {
-				pays.add(PaysImpl.get(o));
+	public List<Pays> getPays() throws ServiceInfrastructureException {
+		try {
+			final Collection<ch.vd.fidor.ws.v2.Pays> list = fidorClient.getTousLesPays();
+			if (list == null || list.isEmpty()) {
+				return Collections.emptyList();
 			}
-			return Collections.unmodifiableList(pays);
+			else {
+				final List<Pays> pays = new ArrayList<Pays>();
+				for (ch.vd.fidor.ws.v2.Pays o : list) {
+					pays.add(PaysImpl.get(o));
+				}
+				return Collections.unmodifiableList(pays);
+			}
+		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public CollectiviteAdministrative getACI() throws InfrastructureException {
+	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
+	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public CollectiviteAdministrative getCAT() throws InfrastructureException {
+	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<Canton> getAllCantons() throws InfrastructureException {
+	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
+	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
 			if (all == null || all.isEmpty()) {
@@ -111,12 +116,15 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 			}
 			return communes;
 		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 		catch (FidorBusinessException_Exception e) {
-			throw new InfrastructureException(e.getMessage(), e);
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 
-	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
+	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
 			if (all == null || all.isEmpty()) {
@@ -132,12 +140,15 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 			}
 			return communes;
 		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 		catch (FidorBusinessException_Exception e) {
-			throw new InfrastructureException(e.getMessage(), e);
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 
-	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
+	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
 			if (all == null || all.isEmpty()) {
@@ -152,12 +163,15 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 			}
 			return communes;
 		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 		catch (FidorBusinessException_Exception e) {
-			throw new InfrastructureException(e.getMessage(), e);
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 
-	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
+	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
 			if (all == null || all.isEmpty()) {
@@ -172,12 +186,15 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 			}
 			return communes;
 		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 		catch (FidorBusinessException_Exception e) {
-			throw new InfrastructureException(e.getMessage(), e);
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 
-	public List<Commune> getCommunes() throws InfrastructureException {
+	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
 			if (all == null || all.isEmpty()) {
@@ -190,28 +207,31 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 			}
 			return communes;
 		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 		catch (FidorBusinessException_Exception e) {
-			throw new InfrastructureException(e.getMessage(), e);
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 
-	public List<Localite> getLocalites() throws InfrastructureException {
+	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Localite getLocaliteByONRP(int onrp) throws InfrastructureException {
+	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<Rue> getRues(Localite localite) throws InfrastructureException {
+	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<Rue> getRues(Canton canton) throws InfrastructureException {
+	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Rue getRueByNumero(int numero) throws InfrastructureException {
+	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
@@ -219,90 +239,101 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Canton getVaud() throws InfrastructureException {
+	public Canton getVaud() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
 		try {
 			final CommuneFiscale c = fidorClient.getCommuneParNoOFS(noCommune, XmlUtils.regdate2xmlcal(date));
 			return CommuneImpl.get(c);
 		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 		catch (FidorBusinessException_Exception e) {
-			throw new InfrastructureException(e.getMessage(), e);
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 
-		final CommuneFiscale commune = fidorClient.getCommuneParBatiment(hintNoOfsCommune, egid, XmlUtils.regdate2xmlcal(date));
-		if (commune == null) {
-			return null;
+		try {
+			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(hintNoOfsCommune, egid, XmlUtils.regdate2xmlcal(date));
+			if (commune == null) {
+				return null;
+			}
+
+			return commune.getNoOfs();
 		}
-
-		return commune.getNoOfs();
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
-	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
+	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
+	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws InfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Pays getPaysInconnu() throws InfrastructureException {
+	public Pays getPaysInconnu() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException {
+	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException {
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
 		if (urlsApplication == null) {
 			initUrls();
+		}
+		if (urlsApplication == null) {
+			return null;
 		}
 		final String url = urlsApplication.get(application);
 		return resolve(url, tiersId, AuthenticationHelper.getCurrentOID());
@@ -366,24 +397,34 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		return url;
 	}
 
-	public Logiciel getLogiciel(Long id) {
+	public Logiciel getLogiciel(Long id) throws ServiceInfrastructureException {
 		if (id == null) {
 			return null;
 		}
-		return LogicielImpl.get(fidorClient.getLogicielDetail(id));
+		try {
+			return LogicielImpl.get(fidorClient.getLogicielDetail(id));
+		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
-	public List<Logiciel> getTousLesLogiciels() {
-		final Collection<ch.vd.fidor.ws.v2.Logiciel> list = fidorClient.getTousLesLogiciels();
-		if (list == null || list.isEmpty()) {
-			return Collections.emptyList();
-		}
-		else {
-			final List<Logiciel> logiciels = new ArrayList<Logiciel>();
-			for (ch.vd.fidor.ws.v2.Logiciel logicielFidor : list) {
-				logiciels.add(LogicielImpl.get(logicielFidor));
+	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
+		try {
+			final Collection<ch.vd.fidor.ws.v2.Logiciel> list = fidorClient.getTousLesLogiciels();
+			if (list == null || list.isEmpty()) {
+				return Collections.emptyList();
 			}
-			return Collections.unmodifiableList(logiciels);
+			else {
+				final List<Logiciel> logiciels = new ArrayList<Logiciel>();
+				for (ch.vd.fidor.ws.v2.Logiciel logicielFidor : list) {
+					logiciels.add(LogicielImpl.get(logicielFidor));
+				}
+				return Collections.unmodifiableList(logiciels);
+			}
+		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e.getMessage(), e);
 		}
 	}
 }

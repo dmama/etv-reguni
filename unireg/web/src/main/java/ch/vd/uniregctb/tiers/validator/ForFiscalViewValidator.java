@@ -9,7 +9,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -200,17 +199,12 @@ public class ForFiscalViewValidator implements Validator {
 				}
 				else if (forFiscalView.getId() == null) { // [UNIREG-3338] en cas de création d'un nouveau for fiscal, le pays doit être valide
 					final Integer noOfsPays = forFiscalView.getNumeroAutoriteFiscale();
-					try {
-						final Pays pays = infraService.getPays(noOfsPays);
-						if (pays == null) {
-							errors.rejectValue("libPays", "error.pays.inconnu");
-						}
-						else if (!pays.isValide()) {
-							errors.rejectValue("libPays", "error.pays.non.valide");
-						}
+					final Pays pays = infraService.getPays(noOfsPays);
+					if (pays == null) {
+						errors.rejectValue("libPays", "error.pays.inconnu");
 					}
-					catch (InfrastructureException e) {
-						throw new RuntimeException(e);
+					else if (!pays.isValide()) {
+						errors.rejectValue("libPays", "error.pays.non.valide");
 					}
 				}
 			}

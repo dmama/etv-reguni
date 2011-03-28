@@ -2,36 +2,33 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.text.SimpleDateFormat;
 
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-
+import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.FichierImpressionDocument;
 import noNamespace.InfoArchivageDocument;
-import noNamespace.InfoDocumentDocument1;
-import noNamespace.InfoEnteteDocumentDocument1;
-import noNamespace.SommationDIDocument;
-import noNamespace.TypAdresse;
-import noNamespace.TypFichierImpression;
-import noNamespace.TypPeriode;
-import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.InfoArchivageDocument.InfoArchivage;
+import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
+import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.SommationDIDocument;
 import noNamespace.SommationDIDocument.SommationDI;
 import noNamespace.SommationDIDocument.SommationDI.LettreSom;
+import noNamespace.TypAdresse;
+import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
+import noNamespace.TypPeriode;
 import noNamespace.TypPeriode.Entete;
 import noNamespace.TypPeriode.Entete.ImpCcn;
 import noNamespace.TypPeriode.Entete.Tit;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -40,6 +37,7 @@ import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Localite;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -154,7 +152,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 			CollectiviteAdministrative collectiviteAdministrative = null;
 			try {
 				collectiviteAdministrative = serviceInfrastructureService.getCollectivite(oid);
-			} catch (InfrastructureException e) {
+			} catch (ServiceInfrastructureException e) {
 				collectiviteAdministrative = null;
 				LOGGER.warn("Impossible de retrouver la collectivité administrative " + oid, e);
 			}
@@ -166,7 +164,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 					Localite localite;
 					try {
 						localite = serviceInfrastructureService.getLocaliteByONRP(onrp);
-					} catch (InfrastructureException e) {
+					} catch (ServiceInfrastructureException e) {
 						localite = null;
 						LOGGER.warn("Impossible de retrouver la localité dont l'onrp est " + onrp, e);
 					}

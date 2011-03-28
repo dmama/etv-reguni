@@ -22,6 +22,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -198,7 +199,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		try {
 			commune = infraService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forGestion.getDateFin());
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			commune = null;
 			LOGGER.error("Exception lors de la recherche de la commune par numéro " + numeroOfsAutoriteFiscale, e);
 		}

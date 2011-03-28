@@ -14,7 +14,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -35,6 +34,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.OuvertureForsResults.ErreurType;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -414,7 +414,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 				commune = null;
 			}
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			LOGGER.error("Impossible de récupérer la commune de l'habitant n° " + habitant.getNumero(), e);
 			throw new OuvertureForsException(habitant, ErreurType.INFRA_EXCEPTION, e);
 		}

@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -572,7 +572,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		try {
 			instit = serviceInfra.getInstitutionFinanciere(noInstit.intValue());
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new RuntimeException("L'institution financière avec le numéro = [" + noInstit + "] n'existe pas.");
 		}
 
@@ -719,7 +719,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			try {
 				commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, null);
 			}
-			catch (InfrastructureException e) {
+			catch (ServiceInfrastructureException e) {
 				throw new RuntimeException("Impossible de récupérer la commune avec le numéro Ofs = [" + noOfs + "]", e);
 			}
 			if (commune == null) {

@@ -93,7 +93,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Canton> getAllCantons() throws InfrastructureException {
+	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		List<Canton> cantons = new ArrayList<Canton>();
 		try {
 			List<?> list = serviceInfrastructure.getCantons(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
@@ -103,7 +103,10 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des cantons impossible", e);
+			throw new ServiceInfrastructureException("Acces a la liste des cantons impossible", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la liste des cantons impossible", e);
 		}
 		return Collections.unmodifiableList(cantons);
 	}
@@ -111,7 +114,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
+	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		try {
 			final List<?> list = serviceInfrastructure.getCommunes(canton.getSigleOFS());
 			List<Commune> communes = new ArrayList<Commune>();
@@ -122,12 +125,15 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			return Collections.unmodifiableList(communes);
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des communes impossible", e);
+			throw new ServiceInfrastructureException("Acces a la liste des communes impossible", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la liste des communes impossible", e);
 		}
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getCommuneByEgid' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -135,7 +141,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings({"unchecked"})
-	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
+	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		try {
 			final List<ch.vd.infrastructure.model.Commune> list = serviceInfrastructure.getCommunes(ServiceInfrastructureService.SIGLE_CANTON_VD);
 			final List<Commune> communes = new ArrayList<Commune>();
@@ -147,21 +153,24 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			return Collections.unmodifiableList(communes);
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des fractions de communes impossible", e);
+			throw new ServiceInfrastructureException("Acces a la liste des fractions de communes impossible", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la liste des fractions de communes impossible", e);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
+	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
 		return getListeCommunes(getVaud());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
+	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
 		List<Commune> communes = new ArrayList<Commune>();
 		for (Canton canton : getAllCantons()) {
 			if (!canton.getSigleOFS().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
@@ -175,7 +184,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Commune> getCommunes() throws InfrastructureException {
+	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		List<Commune> communes = new ArrayList<Commune>();
 		for (Canton canton : getAllCantons()) {
 			List<Commune> liste = getListeCommunes(canton);
@@ -206,7 +215,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	}
 
 
-	public Localite getLocaliteByNPA(int npa) throws InfrastructureException{
+	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		if (localitesByNPA==null) {
 			initLocaliteByNPA();
 		}
@@ -214,7 +223,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	}
 
 
-	private void initLocaliteByNPA() throws InfrastructureException {
+	private void initLocaliteByNPA() throws ServiceInfrastructureException {
 		List<Localite> localites = getLocalites();
 		localitesByNPA = new HashMap<Integer, Localite>();
 		for (Localite localite : localites) {
@@ -228,7 +237,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public Canton getVaud() throws InfrastructureException {
+	public Canton getVaud() throws ServiceInfrastructureException {
 
 		if (vaud == null) {
 			for (Canton c : getAllCantons()) {
@@ -241,7 +250,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 		return vaud;
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
 		List<Commune> candidates = new ArrayList<Commune>(2);
 		final List<Commune> communes = getCommunes();
 		for (Commune commune : communes) {
@@ -255,7 +264,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Pays> getPays() throws InfrastructureException {
+	public List<Pays> getPays() throws ServiceInfrastructureException {
 		List<Pays> pays = new ArrayList<Pays>();
 		try {
 			List<?> list = serviceInfrastructure.getListePays();
@@ -265,7 +274,10 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des pays", e);
+			throw new ServiceInfrastructureException("Acces a la liste des pays", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la liste des pays", e);
 		}
 		return Collections.unmodifiableList(pays);
 	}
@@ -273,7 +285,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		int numOrdreP = localite.getNoOrdre();
 		try {
 			if (numOrdreP == 540) {// 1341 Orient -> fraction l'orient 8002
@@ -303,14 +315,17 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la commune " + numOrdreP, e);
+			throw new ServiceInfrastructureException("Acces a la commune " + numOrdreP, e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la commune " + numOrdreP, e);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Localite> getLocalites() throws InfrastructureException {
+	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 
 		List<Localite> localites = new ArrayList<Localite>();
 		try {
@@ -323,7 +338,10 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Impossible de récupérer les liste des localites", e);
+			throw new ServiceInfrastructureException("Impossible de récupérer les liste des localites", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Impossible de récupérer les liste des localites", e);
 		}
 		return Collections.unmodifiableList(localites);
 	}
@@ -331,7 +349,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Rue> getRues(Localite localite) throws InfrastructureException {
+	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		List<Rue> rues = new ArrayList<Rue>();
 		try {
 			final List<?> list = serviceInfrastructure.getRues(localite.getNoOrdre());
@@ -341,7 +359,10 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des rues", e);
+			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
 		}
 		return Collections.unmodifiableList(rues);
 	}
@@ -349,7 +370,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Rue> getRues(Canton canton) throws InfrastructureException {
+	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		try {
 			ArrayList<Rue> rues = new ArrayList<Rue>();
 			final List<?> list = serviceInfrastructure.getRues(canton.getSigleOFS());
@@ -360,50 +381,62 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			return Collections.unmodifiableList(rues);
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des rues", e);
+			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Rue getRueByNumero(int numero) throws InfrastructureException {
+	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		try {
 			return RueImpl.get(serviceInfrastructure.getRueByNumero(numero));
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des rues", e);
+			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Localite getLocaliteByONRP(int numeroOrdre) throws InfrastructureException {
+	public Localite getLocaliteByONRP(int numeroOrdre) throws ServiceInfrastructureException {
 		try {
 			return LocaliteImpl.get(serviceInfrastructure.getLocalite(numeroOrdre));
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la localite", e);
+			throw new ServiceInfrastructureException("Acces a la localite", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la localite", e);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		try {
 			return CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noColAdm));
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la collectivite administrative", e);
+			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
+	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		final CollectiviteAdministrative coll = getCollectivite(noColAdm);
 		if (coll instanceof OfficeImpot) {
 			return (OfficeImpot) coll;
@@ -416,20 +449,23 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
+	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		try {
 			CollectiviteAdministrativeImpl oid = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getOidDeCommune(noCommune));
 			return (OfficeImpot) oid;
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la collectivite administrative", e);
+			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 
 		List<OfficeImpot> offices = new ArrayList<OfficeImpot>();
 		try {
@@ -443,7 +479,10 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces aux collectivites administratives", e);
+			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(offices);
 	}
@@ -465,7 +504,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings({"unchecked"})
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
 		try {
@@ -477,7 +516,10 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces aux collectivites administratives", e);
+			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(collectivites);
 
@@ -488,7 +530,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 */
 	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
-			throws InfrastructureException {
+			throws ServiceInfrastructureException {
 
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
 		try {
@@ -501,7 +543,10 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			}
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces aux collectivites administratives", e);
+			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(collectivites);
 
@@ -510,7 +555,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public Pays getPaysInconnu() throws InfrastructureException {
+	public Pays getPaysInconnu() throws ServiceInfrastructureException {
 		return getPays(8999);
 	}
 
@@ -518,38 +563,47 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 * @return la collectivite administrative de l'ACI
 	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
 	 */
-	public CollectiviteAdministrative getACI() throws InfrastructureException {
+	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
 		if (aci == null) {
 			try {
 				aci = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACI));
 			}
 			catch (RemoteException e) {
-				throw new InfrastructureException("Acces a la collectivite administrative", e);
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+			}
+			catch (InfrastructureException e) {
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 			}
 		}
 		return aci;
 	}
 
-	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
 
 		if (aciImpotSource == null) {
 			try {
 				aciImpotSource = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACIImpotSource));
 			}
 			catch (RemoteException e) {
-				throw new InfrastructureException("Acces a la collectivite administrative", e);
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+			}
+			catch (InfrastructureException e) {
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 			}
 		}
 		return aciImpotSource;
 	}
 
-	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
 		if (aciSuccessions == null) {
 			try {
 				aciSuccessions = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACISuccessions));
 			}
 			catch (RemoteException e) {
-				throw new InfrastructureException("Acces a la collectivite administrative", e);
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+			}
+			catch (InfrastructureException e) {
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 			}
 		}
 		return aciSuccessions;
@@ -559,13 +613,16 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 * @return la collectivite administrative du CEDI
 	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
 	 */
-	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
+	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
 		if (cedi == null) {
 			try {
 				cedi = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noCEDI));
 			}
 			catch (RemoteException e) {
-				throw new InfrastructureException("Acces a la collectivite administrative", e);
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+			}
+			catch (InfrastructureException e) {
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 			}
 		}
 		return cedi;
@@ -575,28 +632,34 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 * @return la collectivite administrative du CAT
 	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
 	 */
-	public CollectiviteAdministrative getCAT() throws InfrastructureException {
+	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
 		if (cat == null) {
 			try {
 				cat = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noCAT));
 			}
 			catch (RemoteException e) {
-				throw new InfrastructureException("Acces a la collectivite administrative", e);
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
+			}
+			catch (InfrastructureException e) {
+				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 			}
 		}
 		return cat;
 	}
 
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException {
+	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 		try {
 			return InstitutionFinanciereImpl.get(serviceInfrastructure.getInstitutionFinanciere(id));
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces à l'institution financière", e);
+			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
 		}
 	}
 
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException {
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		try {
 			List<?> l = serviceInfrastructure.getInstitutionsFinancieres(noClearing);
 			List<InstitutionFinanciere> list = new ArrayList<InstitutionFinanciere>(l.size());
@@ -607,11 +670,14 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			return list;
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces à l'institution financière", e);
+			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
 		}
 	}
 
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		try {
 			ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal[] types = serviceInfrastructureFiscal.getTypeRegimesFiscaux();
 			List<TypeRegimeFiscal> list = new ArrayList<TypeRegimeFiscal>(types.length);
@@ -621,11 +687,14 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			return list;
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces aux types de régimes fiscaux", e);
+			throw new ServiceInfrastructureException("Acces aux types de régimes fiscaux", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces aux types de régimes fiscaux", e);
 		}
 	}
 
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 		final List<TypeRegimeFiscal> list = getTypesRegimesFiscaux();
 		if (list != null) {
 			for (TypeRegimeFiscal type : list) {
@@ -637,7 +706,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 		return null;
 	}
 
-	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		try {
 			ch.vd.infrastructure.fiscal.model.TypeEtatPM[] types = serviceInfrastructureFiscal.getTypesEtatsPM();
 			List<TypeEtatPM> list = new ArrayList<TypeEtatPM>(types.length);
@@ -647,11 +716,14 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 			return list;
 		}
 		catch (RemoteException e) {
-			throw new InfrastructureException("Acces aux types des états PM", e);
+			throw new ServiceInfrastructureException("Acces aux types des états PM", e);
+		}
+		catch (InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces aux types des états PM", e);
 		}
 	}
 
-	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 		final List<TypeEtatPM> list = getTypesEtatsPM();
 		if (list != null) {
 			for (TypeEtatPM type : list) {
@@ -667,11 +739,11 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 		throw new NotImplementedException("La méthode 'getUrlVers' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	public Logiciel getLogiciel(Long idLogiciel) {
+	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getLogiciel' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
-	public List<Logiciel> getTousLesLogiciels() {
+	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getTousLesLogiciels' ne doit pas être appelée sur le service host-interfaces.");
 	}
 }

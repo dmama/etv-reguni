@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,13 +16,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -80,22 +78,17 @@ public class ImpressionChemisesTOProcessor {
 		final Set<Integer> nosOfsCommunes = new HashSet<Integer>();
 		final String nomOid;
 		if (noColOid != null) {
-			try {
-				final List<Commune> communes = infraService.getListeCommunesByOID(noColOid);
-				for (Commune c : communes) {
-					nosOfsCommunes.add(c.getNoOFSEtendu());
-				}
-
-				final OfficeImpot oid = infraService.getOfficeImpot(noColOid);
-				if (oid != null) {
-					nomOid = oid.getNomCourt();
-				}
-				else {
-					nomOid = noColOid.toString();
-				}
+			final List<Commune> communes = infraService.getListeCommunesByOID(noColOid);
+			for (Commune c : communes) {
+				nosOfsCommunes.add(c.getNoOFSEtendu());
 			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException(e);
+
+			final OfficeImpot oid = infraService.getOfficeImpot(noColOid);
+			if (oid != null) {
+				nomOid = oid.getNomCourt();
+			}
+			else {
+				nomOid = noColOid.toString();
 			}
 		}
 		else {

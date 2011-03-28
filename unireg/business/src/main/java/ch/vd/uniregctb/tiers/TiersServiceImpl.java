@@ -30,7 +30,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -68,6 +67,7 @@ import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -1636,7 +1636,7 @@ public class TiersServiceImpl implements TiersService {
 			// rien à faire...
 			LOGGER.warn("Impossible de déterminer l'adresse de domicile du tiers " + pp.getNumero(), e);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			// rien à faire...
 			LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
 		}
@@ -2932,7 +2932,7 @@ public class TiersServiceImpl implements TiersService {
 				oid = office.getNoColAdm();
 			}
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new RuntimeException("Impossible de déterminer l'office d'impôt de la commune avec le numéro Ofs = " + noOfsCommune);
 		}
 		return oid;
@@ -3247,7 +3247,7 @@ public class TiersServiceImpl implements TiersService {
 								Commune c2 = serviceInfra.getCommuneByNumeroOfsEtendu(ofs2, o2.getDateFin());
 								return c1.getNomMinuscule().compareTo(c2.getNomMinuscule());
 							}
-							catch (InfrastructureException e) {
+							catch (ServiceInfrastructureException e) {
 								LOGGER.warn("Impossible de trier les communes ofs=" + ofs1 + " et ofs=" + ofs2
 										+ " par nom, on trie sur le numéro Ofs à la place", e);
 								return ofs1.compareTo(ofs2);
@@ -3851,7 +3851,7 @@ public class TiersServiceImpl implements TiersService {
 						}
 					}
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + ((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
 				}
 			}
@@ -4031,7 +4031,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + collectiviteAdministrative.getNumeroCollectiviteAdministrative());
 		}
 

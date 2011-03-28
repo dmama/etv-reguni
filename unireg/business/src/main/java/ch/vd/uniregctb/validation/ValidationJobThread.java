@@ -14,7 +14,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -378,7 +378,7 @@ public class ValidationJobThread extends Thread {
 					}
 				}
 			}
-			catch (InfrastructureException e) {
+			catch (ServiceInfrastructureException e) {
 				results.addErrorAutoriteForFiscal(contribuable, f, e);
 			}
 		}

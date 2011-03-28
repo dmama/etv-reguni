@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -41,28 +40,28 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 		this.fidorService = fidorService;
 	}
 
-	public List<Canton> getAllCantons() throws InfrastructureException {
+	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		return hostService.getAllCantons();
 	}
 
-	public Canton getCanton(int cantonOFS) throws InfrastructureException {
+	public Canton getCanton(int cantonOFS) throws ServiceInfrastructureException {
 		return hostService.getCanton(cantonOFS);
 	}
 
-	public Canton getCantonBySigle(String sigle) throws InfrastructureException {
+	public Canton getCantonBySigle(String sigle) throws ServiceInfrastructureException {
 		return hostService.getCantonBySigle(sigle);
 	}
 
-	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException {
+	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException {
 		return hostService.getCantonByCommune(noOfsCommune);
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
 		return hostService.getCommuneByNumeroOfsEtendu(noCommune, date);
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 		// TODO (msi) réactiver cet appel quand fidor sera disponible en intégration
 		if (true) {
 			return null;
@@ -71,7 +70,7 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 	}
 
 	@Override
-	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 		// TODO (msi) réactiver cet appel quand fidor sera disponible en intégration
 		if (true) {
 			return null;
@@ -79,67 +78,67 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 		return fidorService.getCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
-	public List<Commune> getCommunesDeVaud() throws InfrastructureException {
+	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
 		return hostService.getCommunesDeVaud();
 	}
 
-	public List<Commune> getCommunesHorsCanton() throws InfrastructureException {
+	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
 		return hostService.getCommunesHorsCanton();
 	}
 
-	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
+	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		return hostService.getListeCommunes(canton);
 	}
 
-	public List<Commune> getListeCommunes(int cantonOFS) throws InfrastructureException {
+	public List<Commune> getListeCommunes(int cantonOFS) throws ServiceInfrastructureException {
 		return hostService.getListeCommunes(cantonOFS);
 	}
 
-	public List<Commune> getListeCommunesByOID(int oid) throws InfrastructureException {
+	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException {
 		return hostService.getListeCommunesByOID(oid);
 	}
 
-	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws InfrastructureException {
+	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws ServiceInfrastructureException {
 		return hostService.getCommuneFaitiere(commune, dateReference);
 	}
 
-	public Localite getLocaliteByONRP(int onrp) throws InfrastructureException {
+	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
 		return hostService.getLocaliteByONRP(onrp);
 	}
 
-	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException {
+	public List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
 		return hostService.getLocaliteByCommune(commune);
 	}
 
-	public List<Localite> getLocalites() throws InfrastructureException {
+	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		return hostService.getLocalites();
 	}
 
-	public List<Pays> getPays() throws InfrastructureException {
+	public List<Pays> getPays() throws ServiceInfrastructureException {
 		return fidorService.getPays();
 	}
 
-	public Pays getPays(int numeroOFS) throws InfrastructureException {
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
 		return fidorService.getPays(numeroOFS);
 	}
 
-	public Pays getPays(String codePays) throws InfrastructureException {
+	public Pays getPays(String codePays) throws ServiceInfrastructureException {
 		return fidorService.getPays(codePays);
 	}
 
-	public Rue getRueByNumero(int numero) throws InfrastructureException {
+	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		return hostService.getRueByNumero(numero);
 	}
 
-	public List<Rue> getRues(Localite localite) throws InfrastructureException {
+	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		return hostService.getRues(localite);
 	}
 
-	public List<Rue> getRues(Collection<Localite> localites) throws InfrastructureException {
+	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException {
 		return hostService.getRues(localites);
 	}
 
-	public List<Rue> getRues(Canton canton) throws InfrastructureException {
+	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		return hostService.getRues(canton);
 	}
 
@@ -147,117 +146,117 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 		return hostService.getSuisse();
 	}
 
-	public Canton getVaud() throws InfrastructureException {
+	public Canton getVaud() throws ServiceInfrastructureException {
 		return hostService.getVaud();
 	}
 
-	public CollectiviteAdministrative getACI() throws InfrastructureException {
+	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
 		return hostService.getACI();
 	}
 
-	public CollectiviteAdministrative getACIImpotSource() throws InfrastructureException {
+	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
 		return hostService.getACIImpotSource();
 	}
 
-	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
 		return hostService.getACISuccessions();
 	}
 
-	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
+	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
 		return hostService.getCEDI();
 	}
 
-	public CollectiviteAdministrative getCAT() throws InfrastructureException {
+	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
 		return hostService.getCAT();
 	}
 
-	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException {
 		return hostService.getCommuneByAdresse(adresse, date);
 	}
 
-	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws ServiceInfrastructureException {
 		return hostService.getCommuneByAdresse(adresse, date);
 	}
 
-	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		return hostService.getCollectivite(noColAdm);
 	}
 
-	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
+	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		return hostService.getOfficeImpot(noColAdm);
 	}
 
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
+	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		return hostService.getOfficeImpotDeCommune(noCommune);
 	}
 
-	public List<OfficeImpot> getOfficesImpot() throws InfrastructureException {
+	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		return hostService.getOfficesImpot();
 	}
 
-	public boolean estDansLeCanton(Commune commune) throws InfrastructureException {
+	public boolean estDansLeCanton(Commune commune) throws ServiceInfrastructureException {
 		return hostService.estDansLeCanton(commune);
 	}
 
-	public boolean estDansLeCanton(Rue rue) throws InfrastructureException {
+	public boolean estDansLeCanton(Rue rue) throws ServiceInfrastructureException {
 		return hostService.estDansLeCanton(rue);
 	}
 
-	public boolean estDansLeCanton(AdresseGenerique adresse) throws InfrastructureException {
+	public boolean estDansLeCanton(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		return hostService.estDansLeCanton(adresse);
 	}
 
-	public boolean estDansLeCanton(Adresse adresse) throws InfrastructureException {
+	public boolean estDansLeCanton(Adresse adresse) throws ServiceInfrastructureException {
 		return hostService.estDansLeCanton(adresse);
 	}
 
-	public boolean estEnSuisse(AdresseGenerique adresse) throws InfrastructureException {
+	public boolean estEnSuisse(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		return hostService.estEnSuisse(adresse);
 	}
 
-	public boolean estEnSuisse(Adresse adresse) throws InfrastructureException {
+	public boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException {
 		return hostService.estEnSuisse(adresse);
 	}
 
 
-	public Zone getZone(AdresseGenerique adresse) throws InfrastructureException {
+	public Zone getZone(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		return hostService.getZone(adresse);
 	}
 
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		return hostService.getCollectivitesAdministratives();
 	}
 
-	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException {
+	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		return hostService.getCommuneByLocalite(localite);
 	}
 
-	public Pays getPaysInconnu() throws InfrastructureException {
+	public Pays getPaysInconnu() throws ServiceInfrastructureException {
 		return hostService.getPays(8999);
 	}
 
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
-			throws InfrastructureException {
+			throws ServiceInfrastructureException {
 		return hostService.getCollectivitesAdministratives();
 	}
 
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException {
+	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 		return hostService.getInstitutionFinanciere(id);
 	}
 
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException {
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		return hostService.getInstitutionsFinancieres(noClearing);
 	}
 
-	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
+	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		return hostService.getListeFractionsCommunes();
 	}
 
-	public List<Commune> getCommunes() throws InfrastructureException {
+	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		return hostService.getCommunes();
 	}
 
-	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return hostService.getLocaliteByNPA(npa);
 	}
 
@@ -265,19 +264,19 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 		return hostService.getTypeAffranchissement(noOfsPays);
 	}
 
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws InfrastructureException {
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		return hostService.getTypesRegimesFiscaux();
 	}
 
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws InfrastructureException {
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 		return hostService.getTypeRegimeFiscal(code);
 	}
 
-	public List<TypeEtatPM> getTypesEtatsPM() throws InfrastructureException {
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		return hostService.getTypesEtatsPM();
 	}
 
-	public TypeEtatPM getTypeEtatPM(String code) throws InfrastructureException {
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 		return hostService.getTypeEtatPM(code);
 	}
 
@@ -285,11 +284,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureSer
 		return fidorService.getUrlVers(application, tiersId);
 	}
 
-	public Logiciel getLogiciel(Long idLogiciel) {
+	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		return fidorService.getLogiciel(idLogiciel);
 	}
 
-	public List<Logiciel> getTousLesLogiciels() {
+	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		return fidorService.getTousLesLogiciels();
 	}
 

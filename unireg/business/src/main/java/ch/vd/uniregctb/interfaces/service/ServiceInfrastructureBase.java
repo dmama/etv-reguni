@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -40,7 +39,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Canton getCantonBySigle(String sigle) throws InfrastructureException {
+	public Canton getCantonBySigle(String sigle) throws ServiceInfrastructureException {
 		Canton canton = null;
 		for (Canton c : getAllCantons()) {
 			if (c.getSigleOFS().equals(sigle)) {
@@ -48,7 +47,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 			}
 		}
 		if (canton == null) {
-			throw new InfrastructureException("Le canton " + sigle + " n'existe pas");
+			throw new ServiceInfrastructureException("Le canton " + sigle + " n'existe pas");
 		}
 		return canton;
 	}
@@ -56,7 +55,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * @return la liste des communes du canton de Vaud
 	 */
-	public List<Commune> getListeCommunes(int cantonOFS) throws InfrastructureException {
+	public List<Commune> getListeCommunes(int cantonOFS) throws ServiceInfrastructureException {
 		Canton canton = getCanton(cantonOFS);
 		if (canton == null) {
 			return null;
@@ -67,7 +66,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Commune> getListeCommunesByOID(int oid) throws InfrastructureException {
+	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException {
 		List<Commune> communes = new ArrayList<Commune>();
 		for (Commune c : getCommunesDeVaud()) {
 			CollectiviteAdministrative oi = getOfficeImpotDeCommune(c.getNoOFSEtendu());
@@ -81,7 +80,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Pays getPays(int numeroOFS) throws InfrastructureException {
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
 
 		Pays pays = null;
 
@@ -98,7 +97,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Pays getPays(String codePays) throws InfrastructureException {
+	public Pays getPays(String codePays) throws ServiceInfrastructureException {
 
 		// note : cette méthode est horriblement inefficace, mais comme le service infrastructure est sensé se trouver derrière un cache, on
 		// va comme ça.
@@ -147,7 +146,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException {
+	public List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
 		if ( allLocaliteCommune == null) {
 			allLocaliteCommune = new HashMap<Integer, List<Localite>>();
 		}
@@ -164,7 +163,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		return list;
 	}
 
-	private Commune getCommuneByLocaliteAdresse(Integer numeroRue, int numeroOrdrePostal) throws InfrastructureException {
+	private Commune getCommuneByLocaliteAdresse(Integer numeroRue, int numeroOrdrePostal) throws ServiceInfrastructureException {
 
 		final int numeroLocalite;
 		if (numeroRue != null && numeroRue > 0) {
@@ -187,7 +186,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		else {
 			final Localite localite = getLocaliteByONRP(numeroLocalite);
 			if (localite == null) {
-				throw new InfrastructureException("La localité avec le numéro " + numeroLocalite + " n'existe pas");
+				throw new ServiceInfrastructureException("La localité avec le numéro " + numeroLocalite + " n'existe pas");
 			}
 
 			commune = getCommuneByLocalite(localite);
@@ -216,14 +215,15 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	 * Récupère la commune attachée à une adresse, et si aucune n'est présente, ou si la commune attachée est fractionnée, déduit la commune de la localité déterminée par un numéro de rue (si disponible)
 	 * ou un numéro d'ordre poste
 	 *
+	 *
 	 * @param adresse           une adresse
 	 * @param numeroRue         une numéro de rue
 	 * @param numeroOrdrePostal un numéro d'ordre postal
 	 * @param date              la date de référence
 	 * @return la commune qui correspond à l'adresse spécifiée; ou <b>null</b> si aucune commune n'a été trouvée.
-	 * @throws InfrastructureException en cas d'erreur
+	 * @throws ServiceInfrastructureException en cas d'erreur
 	 */
-	private Commune getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal, RegDate date) throws InfrastructureException {
+	private Commune getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
 		if (adresse == null) {
 			return null;
 		}
@@ -235,7 +235,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		if (egid != null) {
 			final Commune communeAnnonce = adresse.getCommuneAdresse();
 			if (communeAnnonce == null) { // (msi, 18.03.2011) selon Thierry Declerq et Andréa Osmani, chaque adresse qui possède un egid doit aussi posséder une commune d'annonce.
-				throw new InfrastructureException("Commune d'annonce inexistante sur l'adresse [" + ReflexionUtils.toString(adresse, false) + "] qui contient pourtant le numéro de bâtiment [" + egid + "]");
+				throw new ServiceInfrastructureException("Commune d'annonce inexistante sur l'adresse [" + ReflexionUtils.toString(adresse, false) + "] qui contient pourtant le numéro de bâtiment [" + egid + "]");
 			}
 			commune = getCommuneByEgid(egid, date, communeAnnonce.getNoOFSEtendu());
 		}
@@ -261,7 +261,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
 		}
@@ -273,7 +273,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws InfrastructureException {
+	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws ServiceInfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
 		}
@@ -283,7 +283,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	}
 
 	@Override
-	public final Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws InfrastructureException {
+	public final Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 
 		// un premier appel où le cache a peu de chance d'être chaud
 		final Integer noOfs = getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
@@ -295,7 +295,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		return getCommuneByNumeroOfsEtendu(noOfs, date);
 	}
 
-	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws InfrastructureException {
+	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws ServiceInfrastructureException {
 		if (commune == null || !commune.isFraction()) {
 			return commune;
 		}
@@ -311,7 +311,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Rue> getRues(Collection<Localite> localites) throws InfrastructureException {
+	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException {
 		List<Rue> locRues = new ArrayList<Rue>();
 		for (Localite localite : localites) {
 			locRues.addAll(getRues(localite));
@@ -322,10 +322,10 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException {
+	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException {
 		final Commune commune = getCommuneByNumeroOfsEtendu(noOfsCommune, null);
 		if (commune == null) {
-			throw new InfrastructureException("La commune avec le numéro Ofs " + noOfsCommune + " n'existe pas");
+			throw new ServiceInfrastructureException("La commune avec le numéro Ofs " + noOfsCommune + " n'existe pas");
 		}
 		final String canton = commune.getSigleCanton();
 		return getCantonBySigle(canton);
@@ -334,7 +334,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Canton getCanton(int cantonOFS) throws InfrastructureException {
+	public Canton getCanton(int cantonOFS) throws ServiceInfrastructureException {
 		Canton canton = null;
 		for (Canton c : getAllCantons()) {
 			if (c.getNoOFS() == cantonOFS) {
@@ -342,7 +342,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 			}
 		}
 		if (canton == null) {
-			throw new InfrastructureException("Le canton " + cantonOFS + " n'existe pas");
+			throw new ServiceInfrastructureException("Le canton " + cantonOFS + " n'existe pas");
 		}
 		return canton;
 	}
@@ -350,7 +350,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean estDansLeCanton(final Rue rue) throws InfrastructureException {
+	public boolean estDansLeCanton(final Rue rue) throws ServiceInfrastructureException {
 		final Integer onrp = rue.getNoLocalite();
 		final Localite localite = getLocaliteByONRP(onrp);
 		return estDansLeCanton(localite.getCommuneLocalite());
@@ -359,7 +359,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean estDansLeCanton(final Commune commune) throws InfrastructureException {
+	public boolean estDansLeCanton(final Commune commune) throws ServiceInfrastructureException {
 		final String sigle = commune.getSigleCanton();
 		if (sigle == null || sigle.equals("")) {
 			final int noOfs = commune.getNoOFS();
@@ -374,7 +374,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean estDansLeCanton(AdresseGenerique adresse) throws InfrastructureException {
+	public boolean estDansLeCanton(AdresseGenerique adresse) throws ServiceInfrastructureException {
 
 		if (!estEnSuisse(adresse)) {
 			return false;
@@ -397,7 +397,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		}
 	}
 
-	public boolean estDansLeCanton(Adresse adresse) throws InfrastructureException {
+	public boolean estDansLeCanton(Adresse adresse) throws ServiceInfrastructureException {
 
 		if (!estEnSuisse(adresse)) {
 			return false;
@@ -417,9 +417,9 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean estEnSuisse(AdresseGenerique adresse) throws InfrastructureException {
+	public boolean estEnSuisse(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		if (adresse == null) {
-			throw new InfrastructureException("L'adresse est nulle");
+			throw new ServiceInfrastructureException("L'adresse est nulle");
 		}
 		final Integer noOfsPays = adresse.getNoOfsPays();
 		return noOfsPays == null || noOfsPays == noOfsSuisse; // par défaut, un pays non-renseigné correspond à la Suisse
@@ -428,9 +428,9 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean estEnSuisse(Adresse adresse) throws InfrastructureException {
+	public boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException {
 		if (adresse == null) {
-			throw new InfrastructureException("L'adresse est nulle");
+			throw new ServiceInfrastructureException("L'adresse est nulle");
 		}
 		final Integer noOfsPays = adresse.getNoOfsPays();
 		return noOfsPays == null || noOfsPays == noOfsSuisse; // par défaut, un pays non-renseigné correspond à la Suisse
@@ -440,7 +440,7 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public Zone getZone(AdresseGenerique adresse) throws InfrastructureException {
+	public Zone getZone(AdresseGenerique adresse) throws ServiceInfrastructureException {
 
 		if (estEnSuisse(adresse)) {
 			if (estDansLeCanton(adresse)) {

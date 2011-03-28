@@ -195,12 +195,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		if (adresseCourrier != null) {
 			Integer noOfsPays = adresseCourrier.getNoOfsPays();
 			Pays pays;
-			try {
-				pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays));
-			}
-			catch (InfrastructureException e) {
-				throw new RuntimeException(e);
-			}
+			pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays));
 			if (pays != null && !pays.isSuisse()) {
 				localiteOuPays = pays.getNomMinuscule();
 			}

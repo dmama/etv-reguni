@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -110,7 +110,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 
 					}
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					LOGGER.warn("Résolution de l'oid de gestion et de la commune  du contribuable " + ctb.getNumero() + " impossible", e);
 				}
 
@@ -125,10 +125,9 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 					this.communeHC = infraService.getCommuneByNumeroOfsEtendu(autoriteFiscale, date);
 					this.nomCantonHC = infraService.getCantonBySigle(communeHC.getSigleCanton()).getNomMinuscule();
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					LOGGER.warn("Résolution de la commune HC du contribuable " + ctb.getNumero() + " impossible", e);
 				}
-
 			}
 
 			final int periode = date.year();
@@ -151,7 +150,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 					}
 
 				}
-				catch (InfrastructureException e) {
+				catch (ServiceInfrastructureException e) {
 					LOGGER.warn("Résolution de de la commune en fin e période du contribuable " + ctb.getNumero() + " impossible", e);
 				}
 
