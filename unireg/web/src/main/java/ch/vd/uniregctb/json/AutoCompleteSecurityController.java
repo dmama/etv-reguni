@@ -105,15 +105,18 @@ public class AutoCompleteSecurityController extends JsonController {
 		final ListItem list = new ListItem();
 
 		if (categories.contains(Category.USER)) {
-			List<Operateur> operateurs = serviceSecuriteService.getUtilisateurs(
-					Arrays.asList(EnumTypeCollectivite.SIGLE_ACI, EnumTypeCollectivite.SIGLE_ACIA, EnumTypeCollectivite.SIGLE_ACIFD, EnumTypeCollectivite.SIGLE_ACIPP, EnumTypeCollectivite.SIGLE_CIR,
-							EnumTypeCollectivite.SIGLE_S_ACI));
+			final List<EnumTypeCollectivite> colls = Arrays.asList(EnumTypeCollectivite.SIGLE_ACI, EnumTypeCollectivite.SIGLE_ACIA, EnumTypeCollectivite.SIGLE_ACIFD,
+					EnumTypeCollectivite.SIGLE_ACIPP, EnumTypeCollectivite.SIGLE_CIR, EnumTypeCollectivite.SIGLE_S_ACI);
+			final List<Operateur> operateurs = serviceSecuriteService.getUtilisateurs(colls);
 			if (operateurs != null) {
 				for (Operateur operateur : operateurs) {
 					if (operateur.getCode().toLowerCase().startsWith(term) || StringComparator.toLowerCaseWithoutAccent(operateur.getNom()).startsWith(term) ||
 							StringComparator.toLowerCaseWithoutAccent(operateur.getPrenom()).startsWith(term)) {
 						final String label = operateur.getNom() + " " + operateur.getPrenom();
 						list.add(new Item(label, label + " (" + operateur.getCode() + ")", operateur.getCode(), String.valueOf(operateur.getIndividuNoTechnique())));
+					}
+					if (list.size() >= 50) { // [SIFISC-482] on limite à 50 le nombre de résultats retournés
+						break;
 					}
 				}
 			}
