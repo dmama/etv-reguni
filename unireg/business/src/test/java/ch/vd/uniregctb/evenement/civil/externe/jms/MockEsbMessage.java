@@ -12,6 +12,7 @@ import org.w3c.dom.Document;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.technical.esb.OperationType;
 import ch.vd.technical.esb.util.EsbDataHandler;
 
 public class MockEsbMessage implements EsbMessage {
@@ -230,6 +231,41 @@ public class MockEsbMessage implements EsbMessage {
 	}
 
 	public String getExceptionTrace() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void setOperation(OperationType operationType) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public OperationType getOperation() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void setProcessDefinitionId(String s) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public String getProcessDefinitionId() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void setProcessInstanceId(String s) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public String getProcessInstanceId() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Set<String> getCustomHeadersNames() {
 		throw new NotImplementedException();
 	}
 }
