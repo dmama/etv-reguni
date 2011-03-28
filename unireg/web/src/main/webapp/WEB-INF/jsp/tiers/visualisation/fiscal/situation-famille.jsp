@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <c:if test="${not empty command.situationsFamille || command.situationsFamilleEnErreurMessage != null}">
-	<fieldset>
+	<fieldset id="sitFamFieldset">
 		<legend><span><fmt:message key="label.situation.famille.fiscale"/></span></legend>
 
 		<c:if test="${command.situationsFamilleEnErreurMessage != null}">
@@ -16,6 +16,18 @@
 				<jsp:param name="page" value="visu"/>
 			</jsp:include>
 		</c:if>
-		
+
 	</fieldset>
 </c:if>
+
+<!--[if IE 6]>
+<script>
+	$(function() {
+		$('#isForHisto').click(function() {
+			// [SIFISC-380] on force le recalcul des widgets parce que IE6 ne détecte pas le changement autrement.
+			$('#sitFamFieldset').addClass('toresize');
+			$('#sitFamFieldset').removeClass('toresize');
+		});
+	});
+</script>
+<![endif]-->
