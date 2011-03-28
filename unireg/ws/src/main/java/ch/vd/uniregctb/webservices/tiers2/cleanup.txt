@@ -1,3 +1,4 @@
+- passer en mode 'contract-first' où les classes Java sont générées à partir du WSDL + factoriser les XSDs en dehors du WSDL.
 - supprimer les ids techniques sur les fors fiscaux et les situations de famille
 - ajouter les motifs d'ouverture début/fin d'activité diplomatique (UNIREG-911)
 - ne renseigner les dates de début/fin de validité que lorsque les fors fiscaux sont demandés (+ documentation)
@@ -10,3 +11,4 @@
 - fusionner les adresses et les adresses d'envoi (UNIREG-2546) + ne plus exposer l'historique mais seulement les valeurs courantes
 - éventuellement fusionner les structure Tiers et TiersHisto pour ne plus garder que TiersHisto.
 - rendre possible l'appel de searchTiers avec plusieurs types de contribuables (le besoin exprimé pour le moment est "PP+MC") (UNIREG-3315)
+- étudier la possibilité de réutiliser les schémas eCH (eCH-0010:addressInformationType) : http://www.ech.ch/vechweb/page?p=categoryList&site=/Standards/A%20bis%20Z
