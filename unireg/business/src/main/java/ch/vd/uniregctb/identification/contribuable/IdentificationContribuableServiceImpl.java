@@ -15,7 +15,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
@@ -267,11 +266,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 * @param personne
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 
 	private void verifierEtMettreAJourContribuable(IdentificationContribuable message, PersonnePhysique personne)
-			throws InfrastructureException {
+			throws ServiceInfrastructureException {
 		if (!personne.isHabitantVD() && REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage())
 				&& messageFromCanton(message)) {
 			CriteresPersonne criteres = message.getDemande().getPersonne();
@@ -288,10 +287,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 * @param personne
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	private void mettreAJourAdresseNonHabitant(IdentificationContribuable message, PersonnePhysique personne)
-			throws InfrastructureException {
+			throws ServiceInfrastructureException {
 		CriteresAdresse criteresAdresse = message.getDemande().getPersonne().getAdresse();
 		if (criteresAdresse != null) {
 			// Calcul de l'ONRP
@@ -348,9 +347,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private boolean messageFromCanton(IdentificationContribuable message) throws InfrastructureException {
+	private boolean messageFromCanton(IdentificationContribuable message) throws ServiceInfrastructureException {
 		String emetteur = message.getDemande().getEmetteurId();
 		Integer npa = null;
 		if (message.getDemande().getPersonne().getAdresse() != null) {

@@ -10,7 +10,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springmodules.xt.ajax.component.Component;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -79,10 +79,10 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
+	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 
 		if ( numero == null) {

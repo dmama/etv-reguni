@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
@@ -83,7 +83,7 @@ public class TacheListManagerImpl implements TacheListManager {
 		this.editiqueService = editiqueService;
 	}
 
-	private String getNomCollectiviteAdministrativeAssociee(Tache tache) throws InfrastructureException {
+	private String getNomCollectiviteAdministrativeAssociee(Tache tache) throws ServiceInfrastructureException {
 		final CollectiviteAdministrative caAssignee = tache.getCollectiviteAdministrativeAssignee();
 		if (caAssignee != null) {
 			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfrastructureService.getCollectivite(caAssignee.getNumeroCollectiviteAdministrative());
@@ -100,11 +100,11 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @param tacheCriteria
 	 * @param paramPagination
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws InfrastructureException, AdressesResolutionException {
+	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException {
 		final List<TacheListView> tachesView = new ArrayList<TacheListView>();
 
 		final TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteria);
@@ -170,7 +170,7 @@ public class TacheListManagerImpl implements TacheListManager {
 		return tachesView;
 	}
 
-	private TacheCriteria buildCoreCriteria(TacheCriteriaViewBase tacheCriteria) throws InfrastructureException {
+	private TacheCriteria buildCoreCriteria(TacheCriteriaViewBase tacheCriteria) throws ServiceInfrastructureException {
 		TacheCriteria coreCriteria = tacheCriteria.asCoreCriteria();
 		if ((tacheCriteria.getTypeTache() == null) || (tacheCriteria.getTypeTache().equals("TOUS"))) {
 			coreCriteria.setTypeTache(TypeTache.TacheNouveauDossier);
@@ -221,11 +221,11 @@ public class TacheListManagerImpl implements TacheListManager {
 	 *
 	 * @param dossierCriteria
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws InfrastructureException, AdresseException {
+	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws ServiceInfrastructureException, AdresseException {
 
 		List<NouveauDossierListView> dossiersView = new ArrayList<NouveauDossierListView>();
 
@@ -261,11 +261,11 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @param dossierCriteria
 	 * @param paramPagination
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws InfrastructureException, AdresseException {
+	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException {
 
 		final List<NouveauDossierListView> nouveauxDossiersView = new ArrayList<NouveauDossierListView>();
 		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier.toString());
@@ -301,7 +301,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * Imprime les nouveaux dossiers
 	 *
 	 * @param nouveauDossierCriteriaView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -332,10 +332,10 @@ public class TacheListManagerImpl implements TacheListManager {
 	 *
 	 * @param criterion
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public int count(TacheCriteriaView tacheCriteriaView) throws InfrastructureException {
+	public int count(TacheCriteriaView tacheCriteriaView) throws ServiceInfrastructureException {
 		TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteriaView);
 
 		return tacheDAO.count(coreCriteria);
@@ -346,10 +346,10 @@ public class TacheListManagerImpl implements TacheListManager {
 	 *
 	 * @param nouveauDossierCriteriaView
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws InfrastructureException {
+	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws ServiceInfrastructureException {
 		TacheCriteria coreCriteria = buildCoreCriteria(nouveauDossierCriteriaView);
 
 		return tacheDAO.count(coreCriteria);

@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -185,7 +184,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Alimente l'entête du document
 	 */
-	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, InfrastructureException {
+	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, ServiceInfrastructureException {
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		String prefixe = calculPrefixe(declaration);
@@ -211,10 +210,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 * @param declaration        la déclaration
 	 * @param infoEnteteDocument l'entête du document XML dont il faut compléter les informations
 	 * @return les informations de l'expéditeur
-	 * @throws InfrastructureException en cas de problème avec le service infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème avec le service infrastructure
 	 * @throws AdresseException        en cas de problème avec les adresses
 	 */
-	private Expediteur remplitExpediteur(Declaration declaration, InfoEnteteDocument infoEnteteDocument) throws AdresseException, InfrastructureException {
+	private Expediteur remplitExpediteur(Declaration declaration, InfoEnteteDocument infoEnteteDocument) throws AdresseException, ServiceInfrastructureException {
 		//
 		// Expediteur
 		//

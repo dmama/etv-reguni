@@ -30,7 +30,6 @@ import noNamespace.TypPeriode.Entete.Tit;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
@@ -45,6 +44,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -239,12 +239,12 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 *
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws RemoteException
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, InfrastructureException {
+	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, ServiceInfrastructureException {
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		String prefixe = calculPrefixe();

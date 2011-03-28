@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.rapport.manager;
 
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
@@ -62,10 +62,10 @@ public interface RapportEditManager {
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
+	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Charge les informations dans TiersView
@@ -75,9 +75,9 @@ public interface RapportEditManager {
 	 * @param rapportsPrestationHisto
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, InfrastructureException;
+	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException;
 
 }

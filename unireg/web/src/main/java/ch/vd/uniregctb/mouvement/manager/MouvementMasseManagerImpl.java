@@ -13,7 +13,6 @@ import java.util.Map;
 import org.apache.commons.lang.mutable.MutableLong;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -87,7 +86,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	}
 
 	@Transactional(readOnly = true)
-	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws InfrastructureException {
+	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws ServiceInfrastructureException {
 
 		if (view == null) {
 			return null;
@@ -145,7 +144,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	}
 
 	@Transactional(readOnly = true)
-	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws InfrastructureException {
+	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws ServiceInfrastructureException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().find(criteria, null);
 		return getViews(mvts, false);
 	}
@@ -206,7 +205,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	}
 
 	@Transactional(readOnly = true)
-	public BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau) throws InfrastructureException {
+	public BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau) throws ServiceInfrastructureException {
 		final BordereauEnvoiReceptionView view = new BordereauEnvoiReceptionView();
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(idBordereau);
 		fillView(bordereau, view);
@@ -235,7 +234,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	}
 
 	@Transactional(readOnly = true)
-	public void refreshView(BordereauEnvoiReceptionView view) throws InfrastructureException {
+	public void refreshView(BordereauEnvoiReceptionView view) throws ServiceInfrastructureException {
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(view.getId());
 		fillView(bordereau, view);
 		view.setMvts(getViews(bordereau.getContenu(), true));

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -12,6 +11,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
 import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.evenement.view.EvenementView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -30,7 +30,7 @@ public interface EvenementManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public EvenementView get(Long id) throws AdresseException, InfrastructureException;
+	public EvenementView get(Long id) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Traite un evenement civil designe par l'id

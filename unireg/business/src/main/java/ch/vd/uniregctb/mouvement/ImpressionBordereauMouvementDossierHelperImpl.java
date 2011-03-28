@@ -13,7 +13,6 @@ import noNamespace.TypFichierImpression;
 import noNamespace.TypPeriode;
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -22,6 +21,7 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -92,7 +92,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		}
 	}
 
-	private BordereauEnvoiDocument.BordereauEnvoi remplitSpecifiqueBordereauEnvoi(BordereauMouvementDossier bordereau) throws InfrastructureException {
+	private BordereauEnvoiDocument.BordereauEnvoi remplitSpecifiqueBordereauEnvoi(BordereauMouvementDossier bordereau) throws ServiceInfrastructureException {
 
 		final BordereauEnvoiDocument.BordereauEnvoi bordereauEnvoi = BordereauEnvoiDocument.Factory.newInstance().addNewBordereauEnvoi();
 
@@ -197,7 +197,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 	/**
 	 * Remplit la partie entête du document
 	 */
-	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionBordereauMouvementDossierHelperParams params) throws InfrastructureException, AdresseException {
+	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionBordereauMouvementDossierHelperParams params) throws ServiceInfrastructureException, AdresseException {
 		InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		final String prefixe = String.format("%s%s", calculePrefixe(), HAUT1);

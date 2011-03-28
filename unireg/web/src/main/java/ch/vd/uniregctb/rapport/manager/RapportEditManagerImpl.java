@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -255,10 +255,10 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
+	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {
 			return null;
@@ -302,7 +302,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, InfrastructureException {
+	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {
 			return null;

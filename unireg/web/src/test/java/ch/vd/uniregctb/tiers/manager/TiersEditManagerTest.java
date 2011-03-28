@@ -4,13 +4,13 @@ import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -195,7 +195,7 @@ public class TiersEditManagerTest extends WebTest {
 	}
 
 	@Test
-	public void testRefresh() throws AdresseException, InfrastructureException {
+	public void testRefresh() throws AdresseException, ServiceInfrastructureException {
 		TiersEditView view = tiersEditManager.getView(6789L);
 		view.getTiers().setPersonneContact("toto");
 		tiersEditManager.refresh(view, 6789L);

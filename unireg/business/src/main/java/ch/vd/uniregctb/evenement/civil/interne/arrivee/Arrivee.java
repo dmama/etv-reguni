@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -206,7 +205,7 @@ public class Arrivee extends Mouvement {
 					erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (adresse hors-Suisse ?)"));
 				}
 			}
-			catch (InfrastructureException e) {
+			catch (ServiceInfrastructureException e) {
 				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (" + e.getMessage() + ")", e));
 			}
 
@@ -214,7 +213,7 @@ public class Arrivee extends Mouvement {
 		}
 	}
 
-	private static Commune getCommuneArrivee(ServiceInfrastructureService serviceInfra, Arrivee arrivee, ArriveeType type) throws InfrastructureException {
+	private static Commune getCommuneArrivee(ServiceInfrastructureService serviceInfra, Arrivee arrivee, ArriveeType type) throws ServiceInfrastructureException {
 
 		Commune commune = null;
 
@@ -372,7 +371,7 @@ public class Arrivee extends Mouvement {
 						+ "veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
 			}
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale est introuvable (" + e.getMessage() + ")", e));
 		}
 	}
@@ -401,7 +400,7 @@ public class Arrivee extends Mouvement {
 			 * nouvelle commune secondaire ne correspond pas à la commune d'annonce")); }
 			 */
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune secondaire est introuvable (" + e.getMessage() + ")", e));
 		}
 	}
@@ -539,7 +538,7 @@ public class Arrivee extends Mouvement {
 		catch (TiersException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 	}
@@ -804,9 +803,9 @@ public class Arrivee extends Mouvement {
 	 * @param pp personne physique concernée
 	 * @return commune de l'adresse de domicile, à la date donnée, de la personne physique donnée
 	 * @throws DonneesCivilesException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, InfrastructureException {
+	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, ServiceInfrastructureException {
 		final Commune commune;
 		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
 			final AdressesCiviles adresseDomicile = new AdressesCiviles(context.getServiceCivil().getAdresses(pp.getNumeroIndividu(), date, false));
@@ -949,7 +948,7 @@ public class Arrivee extends Mouvement {
 
 			return commune == null ? null : new Pair<Commune, RegDate>(commune, dateDebutFor);
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 		catch (DonneesCivilesException e) {
@@ -1403,7 +1402,7 @@ public class Arrivee extends Mouvement {
 				return ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE;
 			}
 		}
-		catch (InfrastructureException e) {
+		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 

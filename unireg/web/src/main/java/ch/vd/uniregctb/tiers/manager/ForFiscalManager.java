@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springmodules.xt.ajax.component.Component;
 
-import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
@@ -53,10 +53,10 @@ public interface ForFiscalManager {
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
+	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Ajoute un nouveau for fiscal.

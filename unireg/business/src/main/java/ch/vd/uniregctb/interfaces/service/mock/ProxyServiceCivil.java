@@ -3,7 +3,6 @@ package ch.vd.uniregctb.interfaces.service.mock;
 import java.util.Collection;
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
  * Proxy du service civil à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance
@@ -141,7 +141,7 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.isWarmable();
 	}
 
-	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
+	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
 

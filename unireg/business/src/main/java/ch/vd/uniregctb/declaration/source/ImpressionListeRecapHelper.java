@@ -2,9 +2,9 @@ package ch.vd.uniregctb.declaration.source;
 
 import noNamespace.FichierImpressionDocument;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public interface ImpressionListeRecapHelper {
 
@@ -15,7 +15,7 @@ public interface ImpressionListeRecapHelper {
 	 * @param traitePar
 	 * @return
 	 * @throws EditiqueException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	public FichierImpressionDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException ;
 

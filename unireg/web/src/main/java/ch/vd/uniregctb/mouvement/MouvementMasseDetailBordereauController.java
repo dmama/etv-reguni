@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView;
@@ -101,7 +101,7 @@ public class MouvementMasseDetailBordereauController extends AbstractMouvementMa
 		return null;
 	}
 
-	private void doFind(HttpServletRequest request, MouvementMasseDetailBordereauView view) throws InfrastructureException {
+	private void doFind(HttpServletRequest request, MouvementMasseDetailBordereauView view) throws ServiceInfrastructureException {
 		final String typeStr = request.getParameter(TYPE);
 		final String srcStr = request.getParameter(SRC);        // format "ID/noCa"
 		final String destStr = request.getParameter(DEST);      // format "ID/noCa"

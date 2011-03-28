@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
@@ -187,7 +186,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 		return communesVaud;
 	}
 
-	public List<Commune> getListeCommunes(String cantonAsString) throws InfrastructureException {
+	public List<Commune> getListeCommunes(String cantonAsString) throws ServiceInfrastructureException {
 		if ("VD".equals(cantonAsString))
 			return communesVaud;
 		else

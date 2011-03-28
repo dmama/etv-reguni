@@ -6,12 +6,12 @@ import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
 import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
@@ -54,10 +54,10 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	 * Alimente la vue du controller
 	 * @param numeroPP
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public DossierEditRestrictionView get(Long numeroPP) throws InfrastructureException {
+	public DossierEditRestrictionView get(Long numeroPP) throws ServiceInfrastructureException {
 
 		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(numeroPP);
 

@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -28,6 +27,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -611,10 +611,10 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdresseException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException{
+	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException{
 
 		if ( numero == null) {
 			return null;

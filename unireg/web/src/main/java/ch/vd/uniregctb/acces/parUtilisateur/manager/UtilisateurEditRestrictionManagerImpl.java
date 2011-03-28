@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.general.view.UtilisateurView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
@@ -71,10 +71,10 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	/**
 	 * Alimente la vue du controller
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws InfrastructureException, AdresseException {
+	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws ServiceInfrastructureException, AdresseException {
 
 		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
 		final UtilisateurEditRestrictionView utilisateurEditRestrictionView = new UtilisateurEditRestrictionView();
@@ -96,11 +96,11 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 * @param numeroPP
 	 * @param noIndividuOperateur
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws InfrastructureException, AdressesResolutionException {
+	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException {
 		RecapPersonneUtilisateurView recapPersonneUtilisateurView = new RecapPersonneUtilisateurView();
 
 		UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);

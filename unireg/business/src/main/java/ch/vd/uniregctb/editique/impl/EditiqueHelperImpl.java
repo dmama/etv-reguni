@@ -9,7 +9,6 @@ import noNamespace.TypAdresse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -122,17 +121,17 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	 *
 	 * @param infoEnteteDocument
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws RemoteException
-	 * @throws InfrastructureException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
+	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aci = infraService.getACI();
 		return remplitExpediteur(aci, infoEnteteDocument);
 	}
 
-	private Expediteur remplitExpediteur(ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
+	private Expediteur remplitExpediteur(ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.Adresse adresse = ca.getAdresse();
 		final Commune commune = infraService.getCommuneByAdresse(adresse, null);
 
@@ -165,17 +164,17 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	 *
 	 * @param infoEnteteDocument
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws RemoteException
-	 * @throws InfrastructureException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
+	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative cat = infraService.getCAT();
 		return remplitExpediteur(cat, infoEnteteDocument);
 	}
 
-	public Expediteur remplitExpediteur(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
+	public Expediteur remplitExpediteur(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = infraService.getCollectivite(collAdm.getNumeroCollectiviteAdministrative());
 		return remplitExpediteur(ca, infoEnteteDocument);
 	}
@@ -213,7 +212,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	/**
 	 * Alimente la partie expéditeur d'une sommation de LR
 	 */
-	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
+	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException {
 		//
 		// Expediteur
 		//
@@ -253,7 +252,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		/**
 	 * Alimente la partie expéditeur d'une LR
 	 */
-	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
+	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException {
 		//
 		// Expediteur
 		//

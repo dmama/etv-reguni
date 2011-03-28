@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 
@@ -81,9 +78,9 @@ public interface AdresseManager {
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws InfrastructureException, AdresseException;
+	public TiersEditView getView(Long numero) throws ServiceInfrastructureException, AdresseException;
 
 }

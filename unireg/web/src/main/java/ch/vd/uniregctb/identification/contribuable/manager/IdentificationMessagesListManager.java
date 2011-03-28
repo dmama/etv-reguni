@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -12,6 +11,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public interface IdentificationMessagesListManager {
 
@@ -26,12 +26,12 @@ public interface IdentificationMessagesListManager {
 	 * @param typeDemande
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
 	                                                boolean nonTraiterAndSuspendu, TypeDemande typeDemande)
-			throws AdressesResolutionException, InfrastructureException;
+			throws AdressesResolutionException, ServiceInfrastructureException;
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
@@ -50,7 +50,7 @@ public interface IdentificationMessagesListManager {
 	 * Suspendre l'identification des messages
 	 *
 	 * @param identificationMessagesListView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -60,7 +60,7 @@ public interface IdentificationMessagesListManager {
 	 * Soumettre l'identification des messages
 	 *
 	 * @param identificationMessagesListView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -83,11 +83,11 @@ public interface IdentificationMessagesListManager {
 	 * @param pagination
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination)
-			throws AdressesResolutionException, InfrastructureException;
+			throws AdressesResolutionException, ServiceInfrastructureException;
 
 
 	/**
@@ -105,7 +105,7 @@ public interface IdentificationMessagesListManager {
 	 * Re soumettre l'identification des messages qui sont remis "dans le circuit" afin d'être identifié manuellement ou expèrtisé
 	 *
 	 * @param identificationMessagesListView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 

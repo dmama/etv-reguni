@@ -10,10 +10,10 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -99,7 +99,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 		return rapportFinal;
 	}
 
-	private List<Long> getOidIds() throws InfrastructureException {
+	private List<Long> getOidIds() throws ServiceInfrastructureException {
 		List<EnumTypeCollectivite> typesCollectivite = new ArrayList<EnumTypeCollectivite>();
 		typesCollectivite.add(EnumTypeCollectivite.SIGLE_CIR);
 		List<ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative> collectivites = serviceInfrastructureService

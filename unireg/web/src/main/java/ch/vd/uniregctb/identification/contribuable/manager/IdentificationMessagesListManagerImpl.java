@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.identification.contribuable.IdentifiantUtilisateur;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public class IdentificationMessagesListManagerImpl implements IdentificationMessagesListManager {
 
@@ -83,12 +83,12 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param typeDemande
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
 	                                                boolean nonTraiterAndSuspendu, TypeDemande typeDemande)
-			throws AdressesResolutionException, InfrastructureException {
+			throws AdressesResolutionException, ServiceInfrastructureException {
 		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
 		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
 		for (IdentificationContribuable identification : identifications) {
@@ -106,11 +106,11 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param pagination
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination)
-			throws AdressesResolutionException, InfrastructureException {
+			throws AdressesResolutionException, ServiceInfrastructureException {
 
 		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
 		return find(bean, pagination, false, false, false, TypeDemande.MELDEWESEN);
@@ -145,7 +145,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * Suspendre l'identification des messages
 	 *
 	 * @param identificationMessagesListView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -169,7 +169,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * Re soumettre l'identification des messages qui sont remis "dans le circuit" afin d'être identifié manuellement ou expèrtisé
 	 *
 	 * @param identificationMessagesListView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -192,7 +192,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * Soumettre l'identification des messages
 	 *
 	 * @param identificationMessagesListView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -211,9 +211,9 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 *
 	 * @param identification
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private IdentificationMessagesResultView buildView(IdentificationContribuable identification) throws InfrastructureException {
+	private IdentificationMessagesResultView buildView(IdentificationContribuable identification) throws ServiceInfrastructureException {
 		IdentificationMessagesResultView identificationMessagesResultView = new IdentificationMessagesResultView();
 		identificationMessagesResultView.setId(identification.getId());
 		if (identification.getAnnulationDate() == null) {

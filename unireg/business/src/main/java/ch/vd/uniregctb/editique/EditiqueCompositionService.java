@@ -3,12 +3,12 @@ package ch.vd.uniregctb.editique;
 import javax.jms.JMSException;
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -141,7 +141,7 @@ public interface EditiqueCompositionService {
 	 * @param declaration
 	 * @return
 	 * @throws EditiqueException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	EditiqueResultat imprimeTaxationOfficeOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException;
 

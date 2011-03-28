@@ -14,7 +14,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -27,6 +26,7 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -129,7 +129,7 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return l'id de l'office d'impôt responsable de la DI spécifiée.
 	 */
-	private int getOID(DeclarationImpotOrdinaire di) throws InfrastructureException {
+	private int getOID(DeclarationImpotOrdinaire di) throws ServiceInfrastructureException {
 		int oid = 0;
 		final Integer noCommune = di.getNumeroOfsForGestion();
 		if (noCommune != null) {

@@ -14,7 +14,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -140,10 +139,10 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	 * Point d'entrée principal pour bâtir la view détaillée pour un mouvement de dossier donné
 	 * @param mvt le mouvement depuis lequel bâtir la vue
 	 * @return la vue
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public MouvementDetailView getView(MouvementDossier mvt) throws InfrastructureException {
+	public MouvementDetailView getView(MouvementDossier mvt) throws ServiceInfrastructureException {
 		final MouvementDetailView view = buildAndFillCommonElements(mvt);
 		if (mvt instanceof ReceptionDossier) {
 			fillReceptionDossier((ReceptionDossier) mvt, view);
@@ -154,7 +153,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		return view;
 	}
 
-	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier) throws InfrastructureException {
+	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier) throws ServiceInfrastructureException {
 		if (mvts != null && mvts.size() > 0) {
 			prefetchIndividus(mvts);
 			final List<MouvementDetailView> liste = new ArrayList<MouvementDetailView>(mvts.size());
@@ -353,7 +352,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		return new InfoCollaborateur(noIndividu, nomUtilisateur, noTelephone, visaOperateur);
 	}
 
-	private void fillEnvoiDossier(EnvoiDossier envoi, MouvementDetailView view) throws InfrastructureException {
+	private void fillEnvoiDossier(EnvoiDossier envoi, MouvementDetailView view) throws ServiceInfrastructureException {
 		view.setTypeMouvement(TypeMouvement.EnvoiDossier);
 		view.setCollectiviteAdministrative(getNomCollectiviteAdministrative(envoi.getCollectiviteAdministrativeEmettrice()));
 
@@ -371,7 +370,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		}
 	}
 
-	private void fillReceptionDossier(ReceptionDossier reception, MouvementDetailView view) throws InfrastructureException {
+	private void fillReceptionDossier(ReceptionDossier reception, MouvementDetailView view) throws ServiceInfrastructureException {
 		view.setTypeMouvement(TypeMouvement.ReceptionDossier);
 		if (reception.getCollectiviteAdministrativeReceptrice() != null) {
 			final String nomCollectiviteAdm = getNomCollectiviteAdministrative(reception.getCollectiviteAdministrativeReceptrice());
@@ -405,7 +404,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setLocalisation(reception.getLocalisation());
 	}
 
-	private String getNomCollectiviteAdministrative(ch.vd.uniregctb.tiers.CollectiviteAdministrative ca) throws InfrastructureException {
+	private String getNomCollectiviteAdministrative(ch.vd.uniregctb.tiers.CollectiviteAdministrative ca) throws ServiceInfrastructureException {
 		final String nom;
 		if (ca != null) {
 			final int iNumCol = ca.getNumeroCollectiviteAdministrative();

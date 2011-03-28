@@ -15,7 +15,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -1740,9 +1739,9 @@ public class TiersManager implements MessageSourceAware {
 	 * [UNIREG-3153] Résoud les adresses fiscales et met-à-disposition la liste des vues sur ces adresses. Cette méthode gère gracieusement les exceptions dans la résolution des adresses.
 	 *
 	 * @param callback un méthode de callback qui met-à-disposition les adresses et qui reçoit les vues des adresses en retour (ou le cas échéant, les messages d'erreur).
-	 * @throws InfrastructureException en cas de problème sur le service infrastructure
+	 * @throws ServiceInfrastructureException en cas de problème sur le service infrastructure
 	 */
-	protected void resolveAdressesHisto(AdressesResolverCallback callback) throws InfrastructureException {
+	protected void resolveAdressesHisto(AdressesResolverCallback callback) throws ServiceInfrastructureException {
 
 		try {
 			List<AdresseView> adresses = new ArrayList<AdresseView>();
@@ -1785,7 +1784,7 @@ public class TiersManager implements MessageSourceAware {
 	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et
 	 * place.
 	 */
-	protected void setAdressesActives(final TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
+	protected void setAdressesActives(final TiersEditView tiersEditView, final Tiers tiers) throws ServiceInfrastructureException {
 
 		resolveAdressesHisto(new AdressesResolverCallback() {
 			public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
@@ -1809,7 +1808,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Renseigne la liste des adresses fiscales Non calculees modifiables sur le form backing object.
 	 */
-	protected void setAdressesFiscalesModifiables(final TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
+	protected void setAdressesFiscalesModifiables(final TiersEditView tiersEditView, final Tiers tiers) throws ServiceInfrastructureException {
 
 		resolveAdressesHisto(new AdressesResolverCallback() {
 			public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
@@ -1831,7 +1830,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Rempli la collection des adressesView avec les adresses fiscales historiques du type spécifié.
 	 */
-	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type) throws InfrastructureException {
+	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type) throws ServiceInfrastructureException {
 
 		final Collection<AdresseGenerique> adresses = adressesFiscalHisto.ofType(type);
 		if (adresses == null) {

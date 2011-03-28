@@ -22,7 +22,6 @@ import noNamespace.TypFichierImpression.Document;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -127,7 +126,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	 * Remplit la partie spécifique de la fiche d'ouverture de dossier
 	 *
 	 * @param contribuable
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	private ChemiseTO remplitSpecifiqueTaxationOffice(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 		final Contribuable contribuable  =  (Contribuable) declaration.getTiers();
@@ -271,12 +270,12 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	 *
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws RemoteException
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private InfoEnteteDocument remplitEnteteDocument(DeclarationImpotOrdinaire declaration, Contribuable contribuable) throws EditiqueException, AdresseException, InfrastructureException {
+	private InfoEnteteDocument remplitEnteteDocument(DeclarationImpotOrdinaire declaration, Contribuable contribuable) throws EditiqueException, AdresseException, ServiceInfrastructureException {
 
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 

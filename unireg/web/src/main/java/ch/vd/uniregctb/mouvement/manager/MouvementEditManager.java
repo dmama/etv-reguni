@@ -2,7 +2,7 @@ package ch.vd.uniregctb.mouvement.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementListView;
 
@@ -20,7 +20,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @return une vue MouvementListView
 	 */
 	@Transactional(readOnly = true)
-	public abstract MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws InfrastructureException;
+	public abstract MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws ServiceInfrastructureException;
 
 	/**
 	 * Creer une vue pour le mvt de dossier
@@ -39,7 +39,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws InfrastructureException ;
+	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws ServiceInfrastructureException ;
 
 	/**
 	 * Persiste en base le nouveau mvt de dossier

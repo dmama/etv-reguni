@@ -21,7 +21,6 @@ import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -99,7 +98,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * Remplit la partie spécifique de la fiche d'ouverture de dossier
 	 *
 	 * @param contribuable
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	private FicheOuvertureDossier remplitSpecifiqueNouveauDossier(Contribuable contribuable) throws EditiqueException {
 
@@ -232,12 +231,12 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 *
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws RemoteException
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private InfoEnteteDocument remplitEnteteDocument(Contribuable contribuable) throws AdresseException, InfrastructureException {
+	private InfoEnteteDocument remplitEnteteDocument(Contribuable contribuable) throws AdresseException, ServiceInfrastructureException {
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		String prefixe = calculPrefixe();
@@ -261,7 +260,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * Alimente un objet Document pour l'impression des nouveaux dossiers
 	 *
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	public FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();

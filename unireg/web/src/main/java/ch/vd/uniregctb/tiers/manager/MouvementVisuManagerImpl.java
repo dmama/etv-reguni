@@ -2,7 +2,7 @@ package ch.vd.uniregctb.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.manager.AbstractMouvementManagerImpl;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -20,10 +20,10 @@ public class MouvementVisuManagerImpl extends AbstractMouvementManagerImpl imple
 	 *
 	 * @param id
 	 * @return un objet MouvementDetailView
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public MouvementDetailView get(Long id) throws InfrastructureException {
+	public MouvementDetailView get(Long id) throws ServiceInfrastructureException {
 		final MouvementDossier mvt = getMouvementDossierDAO().get(id);
 		return getView(mvt);
 	}

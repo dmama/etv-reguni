@@ -61,7 +61,7 @@ public class BusinessHelper {
 //			try {
 //				ca = tiersService.getServiceInfra().getCollectivite(collectivite.getNumeroCollectiviteAdministrative().intValue());
 //			}
-//			catch (InfrastructureException e) {
+//			catch (ServiceInfrastructureException e) {
 //				throw new RuntimeException(e);
 //			}
 //			return ca.getNomComplet1();

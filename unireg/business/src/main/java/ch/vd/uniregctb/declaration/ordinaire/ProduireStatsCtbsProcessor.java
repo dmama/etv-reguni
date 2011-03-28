@@ -15,18 +15,18 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs.TypeContribuable;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
@@ -151,7 +151,7 @@ public class ProduireStatsCtbsProcessor {
 	/**
 	 * @return l'id de l'office d'impôt responsable de la commune spécifiée.
 	 */
-	private Integer getOID(Commune commune) throws InfrastructureException {
+	private Integer getOID(Commune commune) throws ServiceInfrastructureException {
 		if (commune == null) {
 			return null;
 		}
@@ -168,9 +168,9 @@ public class ProduireStatsCtbsProcessor {
 
 	/**
 	 * @return la commune du for de gestion du contribuable spécifié, ou <b>null</b> si le contribuable ne possède pas de for de gestion.
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private Commune getCommuneGestion(Contribuable ctb, int annee) throws InfrastructureException {
+	private Commune getCommuneGestion(Contribuable ctb, int annee) throws ServiceInfrastructureException {
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, RegDate.get(annee, 12, 31));
 		Commune commune = null;
 		if (forGestion != null) {
@@ -179,7 +179,7 @@ public class ProduireStatsCtbsProcessor {
 		return commune;
 	}
 
-	private Commune getCommuneDepuisFor(Contribuable ctb, int annee) throws InfrastructureException {
+	private Commune getCommuneDepuisFor(Contribuable ctb, int annee) throws ServiceInfrastructureException {
 		final ForFiscalPrincipal ffp = ctb.getDernierForFiscalPrincipalVaudoisAvant(RegDate.get(annee, 12, 31));
 		Commune commune = null;
 		if (ffp != null) {

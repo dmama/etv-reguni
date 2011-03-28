@@ -17,7 +17,6 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -34,6 +33,7 @@ import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
@@ -76,7 +76,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 */
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
-	                             WebParamPagination webParamPagination) throws AdresseException, InfrastructureException, DonneesCivilesException {
+	                             WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
 
 		final TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
@@ -263,7 +263,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @param contribuable
 	 * @return
 	 */
-	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws InfrastructureException {
+	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws ServiceInfrastructureException {
 
 		final List<MouvementDetailView> mvtsView = new ArrayList<MouvementDetailView>();
 		final Set<MouvementDossier> mvts = contribuable.getMouvementsDossier();

@@ -3,7 +3,6 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.Collection;
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -59,10 +58,10 @@ public interface ServiceCivilService {
 	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
-	 * @throws ch.vd.infrastructure.service.InfrastructureException
+	 * @throws ch.vd.infrastructure.service.ServiceInfrastructureException
 	 *          en cas d'erreur dans les données d'infrastructure
 	 */
-	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException;
+	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException;
 
 	/**
 	 * Retourne la liste des adresses, valides <b>jusqu'à</b> l'année en paramètre, pour un individu identifié par le numéro en paramètre.

@@ -2,10 +2,10 @@ package ch.vd.uniregctb.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 
@@ -27,7 +27,7 @@ public interface TiersVisuManager {
 	 * @param rapportsPrestationHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de prestation entre débiteur et sourciers
 	 * @param webParamPagination      les informations de pagination  @return un objet TiersVisuView
 	 * @return les informations de visualisation demandées.
-	 * @throws ch.vd.infrastructure.service.InfrastructureException
+	 * @throws ch.vd.infrastructure.service.ServiceInfrastructureException
 	 *          en cas de problème de connexion au service d'infrastructure.
 	 * @throws ch.vd.uniregctb.adresse.AdresseException
 	 *          en cas de problème de résolution des adresses
@@ -35,7 +35,7 @@ public interface TiersVisuManager {
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
 	                          WebParamPagination webParamPagination
-	) throws AdresseException, InfrastructureException, DonneesCivilesException;
+	) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
 
 	/**
 	 * Annule un tiers

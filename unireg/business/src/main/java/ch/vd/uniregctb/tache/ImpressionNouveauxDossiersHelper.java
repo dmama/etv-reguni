@@ -3,8 +3,9 @@ package ch.vd.uniregctb.tache;
 import java.util.List;
 
 import noNamespace.FichierImpressionDocument;
-import ch.vd.infrastructure.service.InfrastructureException;
+
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public interface ImpressionNouveauxDossiersHelper {
@@ -14,7 +15,7 @@ public interface ImpressionNouveauxDossiersHelper {
 	 *
 	 * @param contribuables
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	public FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException ;
 

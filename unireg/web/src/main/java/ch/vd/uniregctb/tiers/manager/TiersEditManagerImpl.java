@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -17,6 +16,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -55,10 +55,10 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getComplementView(Long numero) throws AdresseException, InfrastructureException {
+	public TiersEditView getComplementView(Long numero) throws AdresseException, ServiceInfrastructureException {
 
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {
@@ -119,10 +119,10 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @param numero numéro de tiers du débiteur recherché
 	 * @return un objet DebiteurEditView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, InfrastructureException {
+	public DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		if (numero == null) {
 			return null;
 		}
@@ -144,9 +144,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @param numero
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException{
+	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException{
 		TiersEditView tiersEditView = new TiersEditView();
 		refresh(tiersEditView, numero);
 		return tiersEditView;
@@ -159,9 +159,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @param numero
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public TiersEditView refresh(TiersEditView tiersEditView, Long numero) throws AdresseException, InfrastructureException {
+	public TiersEditView refresh(TiersEditView tiersEditView, Long numero) throws AdresseException, ServiceInfrastructureException {
 		if ( numero == null) {
 			return null;
 		}
@@ -258,9 +258,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 *
 	 * @param tiersEditView
 	 * @param nonHabitant
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private void setNonHabitant(TiersEditView tiersEditView, PersonnePhysique nonHabitant) throws InfrastructureException {
+	private void setNonHabitant(TiersEditView tiersEditView, PersonnePhysique nonHabitant) throws ServiceInfrastructureException {
 
 		IdentificationPersonneView idPersonneView = new IdentificationPersonneView();
 

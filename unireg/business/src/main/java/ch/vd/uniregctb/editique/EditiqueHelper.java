@@ -2,15 +2,15 @@ package ch.vd.uniregctb.editique;
 
 import java.rmi.RemoteException;
 
-import noNamespace.TypAdresse;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.TypAdresse;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -33,24 +33,24 @@ public interface EditiqueHelper {
 	 *
 	 * @param infoEnteteDocument
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws RemoteException
-	 * @throws InfrastructureException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
+	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
 
 	/**
 	 * Alimente la partie expéditeur CAT du document
 	 *
 	 * @param infoEnteteDocument
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws RemoteException
-	 * @throws InfrastructureException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
+	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
 
 
 	/**
@@ -58,9 +58,9 @@ public interface EditiqueHelper {
 	 *
 	 * @param ca
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteur(CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException;
+	public Expediteur remplitExpediteur(CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
 
 	/**
 	 * Alimente la partie Destinataire (contribuable/débiteur) du document
@@ -105,9 +105,9 @@ public interface EditiqueHelper {
 	 *  @param declaration
 	 * @param infoEnteteDocument
 	 * @param traitePar
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
+	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
 
 	/**  Renseigne la partie expediteur avec les données et régles spécifiques
 	 * à l'envoi de lR
@@ -115,8 +115,8 @@ public interface EditiqueHelper {
 	 * @param infoEnteteDocument
 	 * @param traitePar
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException;
+	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
 
 }

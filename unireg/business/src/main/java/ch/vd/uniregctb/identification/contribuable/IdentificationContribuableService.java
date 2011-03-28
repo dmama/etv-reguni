@@ -3,16 +3,16 @@ package ch.vd.uniregctb.identification.contribuable;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
@@ -93,9 +93,9 @@ public interface IdentificationContribuableService {
 	 * @param emetteurId TODO
 	 *
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	public String getNomCantonFromEmetteurId(String emetteurId) throws InfrastructureException;
+	public String getNomCantonFromEmetteurId(String emetteurId) throws ServiceInfrastructureException;
 
 
 	/**Retourne le nom d'un utilisateur traitant en fonction de sa nature

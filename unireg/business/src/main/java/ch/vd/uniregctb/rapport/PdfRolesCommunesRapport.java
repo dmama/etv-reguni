@@ -5,19 +5,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.infrastructure.service.InfrastructureException;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesResults;
-
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
 
 
 /**
@@ -111,7 +111,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private void writeCommuneParCommune(final ProduireRolesCommunesResults results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
+	private void writeCommuneParCommune(final ProduireRolesCommunesResults results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws ServiceInfrastructureException, DocumentException {
 		final List<Commune> communes = getListeCommunes(results, true);
 		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);
 

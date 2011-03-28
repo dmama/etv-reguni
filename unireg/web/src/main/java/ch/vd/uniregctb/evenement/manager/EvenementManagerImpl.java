@@ -8,7 +8,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -32,6 +31,7 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -96,10 +96,10 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 *
 	 * @param id ID d'evenement
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public EvenementView get(Long id) throws AdresseException, InfrastructureException {
+	public EvenementView get(Long id) throws AdresseException, ServiceInfrastructureException {
 
 		final EvenementView evtView = new EvenementView();
 		final EvenementCivilExterne evt = evenementCivilExterneDAO.get(id);
@@ -212,9 +212,9 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @param numero
 	 * @return
 	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
-	private TiersAssocieView createTiersAssocieView(Tiers tiers) throws AdresseException, InfrastructureException {
+	private TiersAssocieView createTiersAssocieView(Tiers tiers) throws AdresseException, ServiceInfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
 		tiersAssocie.setNumero(tiers.getNumero());
 

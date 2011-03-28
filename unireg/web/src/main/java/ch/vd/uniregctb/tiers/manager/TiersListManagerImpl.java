@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
@@ -28,7 +28,7 @@ public class TiersListManagerImpl implements TiersListManager {
 	 * @param noOfsFor
 	 * @param dateNaissance
 	 * @param numeroAssureSocial
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws NumberFormatException
 	 */
 	public void initFieldsWithParams(	TiersCriteriaView tiersCriteriaView,
@@ -39,7 +39,7 @@ public class TiersListManagerImpl implements TiersListManager {
 										String noOfsFor,
 										RegDate dateNaissance,
 										String numeroAssureSocial)
-										throws NumberFormatException, InfrastructureException {
+										throws NumberFormatException, ServiceInfrastructureException {
 
 		if (typeTiers != null) {
 			tiersCriteriaView.setTypeTiers(typeTiers);

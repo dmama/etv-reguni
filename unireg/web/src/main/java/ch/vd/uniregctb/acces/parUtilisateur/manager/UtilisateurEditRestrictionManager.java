@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.acces.parUtilisateur.manager;
 
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.security.DroitAccesException;
 
 public interface UtilisateurEditRestrictionManager {
@@ -15,10 +15,10 @@ public interface UtilisateurEditRestrictionManager {
 	/**
 	 * Alimente la vue du controller
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws InfrastructureException, AdresseException;
+	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws ServiceInfrastructureException, AdresseException;
 
 
 	/**
@@ -27,11 +27,11 @@ public interface UtilisateurEditRestrictionManager {
 	 * @param numeroPP
 	 * @param noIndividuOperateur
 	 * @return
-	 * @throws InfrastructureException
+	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws InfrastructureException, AdressesResolutionException ;
+	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException ;
 
 
 	/**

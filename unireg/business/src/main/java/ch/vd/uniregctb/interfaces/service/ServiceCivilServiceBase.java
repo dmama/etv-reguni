@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -219,7 +218,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 * @param seulementVaud <code>true</code> si on ne s'intéresse qu'aux communes vaudoises (i.e. commune <code>null</code> pour HC/HS)
 	 * @return une liste des communes de domiciles fréquentées
 	 */
-	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
+	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		final AdressesCivilesHistoriques histo = getAdressesHisto(noIndividu, strict);
 		final List<HistoriqueCommune> result = new ArrayList<HistoriqueCommune>();
 		for (Adresse adresse : histo.principales) {

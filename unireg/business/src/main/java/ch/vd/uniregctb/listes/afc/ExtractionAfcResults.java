@@ -5,11 +5,11 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -91,7 +91,7 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 	private final List<InfoCtbListe> listeSecondaire = new LinkedList<InfoCtbListe>();
 	private final List<InfoCtbIgnore> listeCtbsIgnores = new LinkedList<InfoCtbIgnore>();
 
-	private InfoCtbListe buildInfoCtbListe(Contribuable ctb, boolean assujettissementIllimite) throws InfrastructureException, CoupleInvalideException {
+	private InfoCtbListe buildInfoCtbListe(Contribuable ctb, boolean assujettissementIllimite) throws ServiceInfrastructureException, CoupleInvalideException {
 
 		final RegDate finAnnee = RegDate.get(periodeFiscale, 12, 31);
 		final ForFiscalPrincipal ffp = ctb.getDernierForFiscalPrincipalAvant(finAnnee);
@@ -138,7 +138,7 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 	}
 
 	@Override
-	public void addContribuable(Contribuable ctb) throws InfrastructureException {
+	public void addContribuable(Contribuable ctb) throws ServiceInfrastructureException {
 		addContribuable(ctb, true, true);
 	}
 
@@ -150,7 +150,7 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 		addContribuableIgnore(ctb, ASSUJETTI_SANS_FOR_VD_AU_31_12);
 	}
 
-	private void addContribuable(Contribuable ctb, boolean dansListePrincipale, boolean assujettissementIllimite) throws InfrastructureException {
+	private void addContribuable(Contribuable ctb, boolean dansListePrincipale, boolean assujettissementIllimite) throws ServiceInfrastructureException {
 		try {
 			final InfoCtbListe info = buildInfoCtbListe(ctb, assujettissementIllimite);
 			if (dansListePrincipale) {
@@ -169,12 +169,12 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 		listeCtbsIgnores.add(new InfoCtbIgnore(ctb.getNumero(), raison));
 	}
 
-	public void addContribuableLimiteHS(Contribuable ctb) throws InfrastructureException {
+	public void addContribuableLimiteHS(Contribuable ctb) throws ServiceInfrastructureException {
 		Assert.isTrue(mode == TypeExtractionAfc.REVENU || mode == TypeExtractionAfc.FORTUNE);
 		addContribuable(ctb, mode == TypeExtractionAfc.REVENU, false);
 	}
 
-	public void addContribuableLimiteHC(Contribuable ctb) throws InfrastructureException {
+	public void addContribuableLimiteHC(Contribuable ctb) throws ServiceInfrastructureException {
 		if (mode == TypeExtractionAfc.REVENU) {
 			addContribuableIgnore(ctb, HORS_CANTON);
 		}

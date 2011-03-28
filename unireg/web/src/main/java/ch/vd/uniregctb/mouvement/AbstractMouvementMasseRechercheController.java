@@ -8,9 +8,9 @@ import org.apache.commons.lang.mutable.MutableLong;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 
@@ -28,7 +28,7 @@ public abstract class AbstractMouvementMasseRechercheController extends Abstract
 
 	private static final String TABLE_ID = "mvt";
 
-	protected void doFind(HttpServletRequest request, MouvementMasseCriteriaView view) throws InfrastructureException {
+	protected void doFind(HttpServletRequest request, MouvementMasseCriteriaView view) throws ServiceInfrastructureException {
 		final WebParamPagination pagination = getParamPagination(request);
 		final MutableLong total = new MutableLong(0);
 		final Integer noCollAdmInitiatrice = getNoCollAdmFiltree();
