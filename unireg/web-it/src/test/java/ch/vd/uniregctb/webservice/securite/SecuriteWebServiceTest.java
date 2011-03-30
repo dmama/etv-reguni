@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservice.securite;
 
 import javax.xml.ws.BindingProvider;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.util.ResourceUtils;
 
 import ch.vd.uniregctb.common.WebitTest;
 import ch.vd.uniregctb.webservices.security.GetAutorisationSurDossier;
@@ -53,7 +55,8 @@ public class SecuriteWebServiceTest extends WebitTest {
 		if (service == null) {
 			LOGGER.info("Connecting to: " + securiteUrl + " with user = " + username);
 
-			SecuriteService s = new SecuriteService();
+			URL wsdlUrl = ResourceUtils.getURL("classpath:SecuriteService.wsdl");
+			SecuriteService s = new SecuriteService(wsdlUrl);
 			service = s.getSecuritePortPort();
 
 			Map<String, Object> context = ((BindingProvider) service).getRequestContext();
