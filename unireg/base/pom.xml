@@ -540,7 +540,7 @@
 	<distributionManagement>
 		<site>
 			<id>unireg.website</id>
-			<url>file:///home/hudson-unireg/website4.x/</url>
+			<url>file:///home/hudson_unireg_doc/website4.x/</url>
 		</site>
 		<repository>
 			<id>nexus.releases</id>
