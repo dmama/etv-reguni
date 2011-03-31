@@ -152,9 +152,9 @@ public class MetierServiceImpl implements MetierService {
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
 		for (RapportEntreTiers rapport : pp.getRapportsSujet()) {
 			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && rapport.getDateFin() == null) {
-				Long mcId = rapport.getObjetId();
-				results.addError("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) +
-						" appartient déjà au ménage commun n° " + FormatNumeroHelper.numeroCTBToDisplay(mcId));
+				final Long mcId = rapport.getObjetId();
+				results.addError(String.format("Le contribuable n° %s appartient déjà au ménage commun n° %s en date du %s",
+				                               FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(mcId), RegDateHelper.dateToDisplayString(dateMariage)));
 			}
 		}
 	}
@@ -165,8 +165,8 @@ public class MetierServiceImpl implements MetierService {
 		 */
 		final EnsembleTiersCouple ensemblePrincipal = tiersService.getEnsembleTiersCouple(pp, date);
 		if (ensemblePrincipal != null && ensemblePrincipal.getMenage() != null) {
-			resultat.addError("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + " appartient déjà au ménage commun n° " +
-					FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()));
+			resultat.addError(String.format("Le contribuable n° %s appartient déjà au ménage commun n° %s en date du %s",
+			                                FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()), RegDateHelper.dateToDisplayString(date)));
 		}
 		else {
 			checkRapportsMenage(pp, date, resultat);
