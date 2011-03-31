@@ -80,4 +80,8 @@ public class ListeNoteJob extends JobDefinition {
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

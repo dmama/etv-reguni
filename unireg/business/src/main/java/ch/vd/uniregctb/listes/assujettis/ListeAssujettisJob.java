@@ -131,4 +131,9 @@ public class ListeAssujettisJob extends JobDefinition {
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

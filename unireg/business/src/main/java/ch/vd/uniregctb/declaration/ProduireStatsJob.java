@@ -147,4 +147,9 @@ public class ProduireStatsJob extends JobDefinition {
 	public void setParamsApp(ParametreAppService paramsApp) {
 		this.paramsApp = paramsApp;
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

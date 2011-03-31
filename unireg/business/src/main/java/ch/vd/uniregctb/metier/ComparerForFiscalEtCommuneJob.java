@@ -72,4 +72,9 @@ public class ComparerForFiscalEtCommuneJob extends JobDefinition{
 		Audit.success("La comparaison de la commune du for et de la commune de l'adresse pour un contribuable à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

@@ -160,4 +160,8 @@ public class DumpTiersListJob extends JobDefinition {
 		return ids;
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

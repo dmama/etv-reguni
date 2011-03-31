@@ -129,4 +129,9 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		setLastRunReport(rapport);
 		Audit.success("La production des statistiques des événements reçus en date du " + RegDate.get() + " est terminée.", rapport);
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

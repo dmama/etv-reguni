@@ -94,4 +94,8 @@ public class DemandeDelaiCollectiveJob extends JobDefinition {
 		Audit.success("La demande de délai colletive a été traitée.", rapport);
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

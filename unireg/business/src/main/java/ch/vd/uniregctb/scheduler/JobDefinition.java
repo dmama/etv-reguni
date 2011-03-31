@@ -667,12 +667,26 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return dateTraitement;
 	}
 
-	public boolean isTesting(){
+	protected static boolean isTesting() {
 		return UniregModeHelper.isTestMode();
 	}
 
 	public boolean isVisible() {
 		return true;
+	}
+
+	/**
+	 * @return <code>true</code> si on doit pouvoir lancer ce job depuis l'IHM, <code>false</code> sinon
+	 */
+	public final boolean isWebStartable() {
+		return isVisible() && (isTesting() || isWebStartableInProductionMode());
+	}
+
+	/**
+	 * @return <code>true</code> si on doit pouvoir lancer ce job depuis l'IHM en dehors du mode "testing", <code>false</code> pour les jobs qui ne peuvent être lancés en production que par l'exploitation
+	 */
+	protected boolean isWebStartableInProductionMode() {
+		return false;
 	}
 
 	/**
@@ -699,6 +713,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return ids;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setLogDisabled(boolean logDisabled) {
 		this.logDisabled = logDisabled;
 	}

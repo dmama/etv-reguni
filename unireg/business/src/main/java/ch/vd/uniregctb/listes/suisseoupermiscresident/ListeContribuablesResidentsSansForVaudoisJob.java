@@ -83,4 +83,9 @@ public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition 
 		setLastRunReport(rapport);
 		Audit.success("La production des listes des contribuables suisses ou permis C avec adresse principale sur le canton mais sans for vaudois en date du " + dateTraitement + " est terminée.", rapport);
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

@@ -230,4 +230,9 @@ public class ValidationJob extends JobDefinition {
 		});
 		return rapport;
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

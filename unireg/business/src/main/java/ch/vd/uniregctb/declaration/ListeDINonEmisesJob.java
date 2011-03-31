@@ -89,4 +89,9 @@ public class ListeDINonEmisesJob extends JobDefinition {
 	public void setParamsApp(ParametreAppService paramsApp) {
 		this.paramsApp = paramsApp;
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

@@ -281,7 +281,10 @@ public class GestionBatchController extends AbstractEnhancedSimpleFormController
 		// Démarre le batch
 		try {
 			if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
-				throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+				throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			}
+			if (!job.isWebStartable()) {
+				throw new AccessDeniedException("Ce batch ne peut être lancé depuis l'IHM de l'application");
 			}
 
 			batchScheduler.startJob(jobName, params);

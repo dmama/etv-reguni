@@ -12,7 +12,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 
-public class ComparerSituationFamilleJob extends JobDefinition{
+public class ComparerSituationFamilleJob extends JobDefinition {
 
 	private SituationFamilleService situationFamilleService;
 	private RapportService rapportService;
@@ -39,17 +39,8 @@ public class ComparerSituationFamilleJob extends JobDefinition{
 		super.afterPropertiesSet();	
 	}
 
-
-	public SituationFamilleService getSituationFamilleService() {
-		return situationFamilleService;
-	}
-
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
-	}
-
-	public RapportService getRapportService() {
-		return rapportService;
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -70,5 +61,10 @@ public class ComparerSituationFamilleJob extends JobDefinition{
 		setLastRunReport(rapport);
 		Audit.success("La comparaison des situations de famille à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
+	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
 	}
 }

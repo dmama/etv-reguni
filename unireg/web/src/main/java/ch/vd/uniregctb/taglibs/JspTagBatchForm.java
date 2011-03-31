@@ -54,7 +54,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 			return "";
 		}
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		b.append("<form method=\"post\" enctype=\"multipart/form-data\" id=\"").append(job.getName()).append("\" name=\"").append(job.getName()).append("\">\n");
 		{
 			final String image = request.getContextPath() + "/images/plus.gif";
@@ -89,9 +89,16 @@ public class JspTagBatchForm extends BodyTagSupport {
 				b.append("<tr><td>(ce batch ne possède pas de paramètre)</td></tr>");
 			}
 			if (SecurityProvider.isGranted(Role.ADMIN) || SecurityProvider.isGranted(Role.TESTER)) {
-				b.append("<tr><td class=\"command\" colspan=\"4\" align=\"right\"><input id=\"start").append(job.getName()).append(
-						"\" type=\"button\" value=\"Démarrer le batch\" onclick=\"startJob('").append(job.getName())
-						.append("');\"/></td></tr>");
+
+				// [SIFISC-145] doit-on pouvoir lancer ce batch directement depuis l'IHM ?
+				if (job.getJobDefinition().isWebStartable()) {
+					b.append("<tr><td class=\"command\" colspan=\"4\" align=\"right\"><input id=\"start").append(job.getName()).append(
+							"\" type=\"button\" value=\"Démarrer le batch\" onclick=\"startJob('").append(job.getName())
+							.append("');\"/></td></tr>");
+				}
+				else {
+					b.append("<tr><td colspan=\"4\" align=\"right\"><i>Ce batch ne peut être lancé depuis l'IHM</i></td></tr>");
+				}
 			}
 			else {
 				b.append("<tr><td colspan=\"4\" align=\"right\"><i>Droits insuffisants pour lancer le batch</i></td></tr>");

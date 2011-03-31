@@ -80,4 +80,9 @@ public class ListeTachesEnIstanceParOIDJob extends JobDefinition {
 	public void setParamsApp(ParametreAppService paramsApp) {
 		this.paramsApp = paramsApp;
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }
