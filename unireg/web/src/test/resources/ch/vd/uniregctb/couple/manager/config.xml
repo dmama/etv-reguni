@@ -29,11 +29,16 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="coupleHelper" ref="coupleHelper" />
-		<property name="situationFamilleService" ref="situationFamilleService" />
+		<property name="validatorHelper" ref="validatorHelper" />
 	</bean>
 
 	<bean id="coupleHelper" class="ch.vd.uniregctb.couple.CoupleHelper">
 		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="validatorHelper" class="ch.vd.uniregctb.common.ValidatorHelperImpl">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="situationFamilleService" ref="situationFamilleService"/>
 	</bean>
 	
 </beans>

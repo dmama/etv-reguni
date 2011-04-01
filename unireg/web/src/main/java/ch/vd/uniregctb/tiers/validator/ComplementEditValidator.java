@@ -12,7 +12,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 /**
  * Validateur de l'objet du meme nom.
@@ -55,31 +55,31 @@ public class ComplementEditValidator implements Validator {
 
 				// --------- --------------Onglets Complements------------------------
 				if (StringUtils.isNotBlank(complement.getNumeroTelecopie())) {
-					if (!ValidateHelper.isNumberTel(complement.getNumeroTelecopie())) {
+					if (!ValidatorUtils.isNumberTel(complement.getNumeroTelecopie())) {
 						errors.rejectValue("tiers.numeroTelecopie", "error.telephone");
 					}
 				}
 
 				if (StringUtils.isNotBlank(complement.getNumeroTelephonePrive())) {
-					if (!ValidateHelper.isNumberTel(complement.getNumeroTelephonePrive())) {
+					if (!ValidatorUtils.isNumberTel(complement.getNumeroTelephonePrive())) {
 						errors.rejectValue("tiers.numeroTelephonePrive", "error.telephone");
 					}
 				}
 
 				if (StringUtils.isNotBlank(complement.getNumeroTelephonePortable())) {
-					if (!ValidateHelper.isNumberTel(complement.getNumeroTelephonePortable())) {
+					if (!ValidatorUtils.isNumberTel(complement.getNumeroTelephonePortable())) {
 						errors.rejectValue("tiers.numeroTelephonePortable", "error.telephone");
 					}
 				}
 
 				if (StringUtils.isNotBlank(complement.getNumeroTelephoneProfessionnel())) {
-					if (!ValidateHelper.isNumberTel(complement.getNumeroTelephoneProfessionnel())) {
+					if (!ValidatorUtils.isNumberTel(complement.getNumeroTelephoneProfessionnel())) {
 						errors.rejectValue("tiers.numeroTelephoneProfessionnel", "error.telephone");
 					}
 				}
 
 				if (StringUtils.isNotBlank(complement.getAdresseCourrierElectronique())) {
-					if (!ValidateHelper.isValidEmail(complement.getAdresseCourrierElectronique())) {
+					if (!ValidatorUtils.isValidEmail(complement.getAdresseCourrierElectronique())) {
 						errors.rejectValue("tiers.adresseCourrierElectronique", "error.email");
 					}
 				}

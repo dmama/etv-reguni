@@ -6,7 +6,7 @@ import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tache.view.TacheCriteriaView;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class TacheListValidator implements Validator {
 
@@ -18,7 +18,7 @@ public class TacheListValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 
 		TacheCriteriaView bean = (TacheCriteriaView) target;
-		if (StringUtils.isNotBlank(bean.getNumeroFormate()) && !ValidateHelper.isNumber(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroFormate()))) {
+		if (StringUtils.isNotBlank(bean.getNumeroFormate()) && !ValidatorUtils.isNumber(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroFormate()))) {
 			errors.rejectValue("numeroFormate", "error.numero");
 		}
 

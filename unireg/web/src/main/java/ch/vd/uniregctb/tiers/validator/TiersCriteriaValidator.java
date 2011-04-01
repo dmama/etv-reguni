@@ -8,7 +8,7 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 /**
  * Validateur de l'objet du m�me nom.
@@ -40,7 +40,7 @@ public class TiersCriteriaValidator implements Validator {
 		if (bean.isEmpty()) {
 			errors.reject("error.criteres.vide");
 		}
-		if (StringUtils.isNotBlank(bean.getNumeroFormatte()) && !ValidateHelper.isNumber(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroFormatte()))) {
+		if (StringUtils.isNotBlank(bean.getNumeroFormatte()) && !ValidatorUtils.isNumber(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroFormatte()))) {
 			errors.rejectValue("numeroFormatte", "error.numero");
 		}
 

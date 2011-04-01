@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.AVSValidator;
 import ch.vd.uniregctb.utils.EAN13CheckDigitOperation;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 /**
  * Validateur de l'objet du meme nom.
@@ -118,7 +118,7 @@ public class CivilEditValidator implements Validator {
 											 */
 
 						if (StringUtils.isNotBlank(tiersView.getIdentificationPersonne().getNumRegistreEtranger())) {
-							if ((!ValidateHelper.isNumber(FormatNumeroHelper.removeSpaceAndDash(tiersView.getIdentificationPersonne().getNumRegistreEtranger())))
+							if ((!ValidatorUtils.isNumber(FormatNumeroHelper.removeSpaceAndDash(tiersView.getIdentificationPersonne().getNumRegistreEtranger())))
 									|| (FormatNumeroHelper.removeSpaceAndDash(tiersView.getIdentificationPersonne().getNumRegistreEtranger())
 									.length() > 10)) {
 								errors.rejectValue("identificationPersonne.numRegistreEtranger", "error.numRegistreEtranger");

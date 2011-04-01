@@ -7,7 +7,7 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.delai.DelaiDeclarationView;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class DeclarationImpotEditDelaiValidator implements Validator {
 
@@ -24,7 +24,7 @@ public class DeclarationImpotEditDelaiValidator implements Validator {
 		}
 		else if (delaiView.getDelaiAccordeAu().isBefore(RegDate.get()) ||
 				(delaiView.getOldDelaiAccorde() != null && delaiView.getDelaiAccordeAu().isBeforeOrEqual(delaiView.getOldDelaiAccorde()))) {
-			if (!ValidateHelper.alreadyHasErrorOnField(errors, "delaiAccordeAu")) {
+			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "delaiAccordeAu")) {
 				errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
 			}
 		}
@@ -33,7 +33,7 @@ public class DeclarationImpotEditDelaiValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
 		}
 		else if (delaiView.getDateDemande().isAfter(RegDate.get())) {
-			if (!ValidateHelper.alreadyHasErrorOnField(errors, "dateDemande")) {
+			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
 				errors.rejectValue("dateDemande", "error.date.demande.future");
 			}
 		}

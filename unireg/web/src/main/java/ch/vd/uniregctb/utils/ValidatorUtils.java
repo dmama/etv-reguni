@@ -7,7 +7,7 @@ import org.springframework.validation.Errors;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 
-public class ValidateHelper {
+public class ValidatorUtils {
 
 	public static boolean isPositiveInteger(String s) {
 

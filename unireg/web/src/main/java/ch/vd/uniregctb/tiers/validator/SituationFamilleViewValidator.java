@@ -9,7 +9,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class SituationFamilleViewValidator implements Validator {
 
@@ -45,7 +45,7 @@ public class SituationFamilleViewValidator implements Validator {
 		}
 
 		if (situationFamilleView.getNombreEnfants() != null) {
-			if (!ValidateHelper.isPositiveInteger(situationFamilleView.getNombreEnfants().toString())) {
+			if (!ValidatorUtils.isPositiveInteger(situationFamilleView.getNombreEnfants().toString())) {
 				errors.rejectValue("nombreEnfants", "error.nombre.enfants.invalide");
 			}
 		}

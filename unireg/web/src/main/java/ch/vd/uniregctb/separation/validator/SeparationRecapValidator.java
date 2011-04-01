@@ -10,6 +10,7 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.ValidatorHelper;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.separation.view.SeparationRecapView;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -17,13 +18,28 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class SeparationRecapValidator implements Validator {
 
 	private MetierService metierService;
 	private TiersService tiersService;
+	private ValidatorHelper validatorHelper;
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setMetierService(MetierService metierService) {
+		this.metierService = metierService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setValidatorHelper(ValidatorHelper validatorHelper) {
+		this.validatorHelper = validatorHelper;
+	}
 
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
@@ -56,34 +72,22 @@ public class SeparationRecapValidator implements Validator {
 			}
 
 			//Validation de la séparation
-			MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getCouple().getNumero());
+			final MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getCouple().getNumero());
+			final ValidationResults results = new ValidationResults();
 
-			EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menage, dateSeparation);
-			PersonnePhysique principal = couple.getPrincipal();
-			Sexe sexePrincipal = tiersService.getSexe(principal);
-			if (principal != null && sexePrincipal == null) {
-				errors.rejectValue("premierePersonne", "error.premiere.personne.sexe.inconnnu");
-			}
-			PersonnePhysique conjoint = couple.getConjoint();
-			Sexe sexeConjoint = tiersService.getSexe(conjoint);
-			if (conjoint != null && sexeConjoint == null) {
-				errors.rejectValue("secondePersonne", "error.seconde.personne.sexe.inconnnu");
-			}
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menage, dateSeparation);
+			final PersonnePhysique principal = couple.getPrincipal();
+			validatorHelper.validateSexeConnu(principal, results);
 
-			ValidationResults results = metierService.validateSeparation(menage, dateSeparation);
-			List<String> validationErrors = results.getErrors();
-			ValidateHelper.rejectErrors(validationErrors, errors);
+			final PersonnePhysique conjoint = couple.getConjoint();
+			validatorHelper.validateSexeConnu(conjoint, results);
+
+			results.merge(metierService.validateSeparation(menage, dateSeparation));
+
+			final List<String> validationErrors = results.getErrors();
+			ValidatorUtils.rejectErrors(validationErrors, errors);
 			// mise à jour des warnings pour les afficher dans la page résultante
 			separationRecapView.setWarnings(results.getWarnings());
 		}
 	}
-
-	public void setMetierService(MetierService metierService) {
-		this.metierService = metierService;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
-
 }

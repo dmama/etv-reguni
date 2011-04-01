@@ -18,7 +18,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.AVSValidator;
 import ch.vd.uniregctb.utils.EAN13CheckDigitOperation;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 import ch.vd.uniregctb.validation.ValidationService;
 
 /**
@@ -139,7 +139,7 @@ public class TiersEditValidator implements Validator {
 											 */
 
 						if (StringUtils.isNotBlank(tiersView.getIdentificationPersonne().getNumRegistreEtranger())) {
-							if ((!ValidateHelper.isNumber(FormatNumeroHelper.removeSpaceAndDash(tiersView.getIdentificationPersonne().getNumRegistreEtranger())))
+							if ((!ValidatorUtils.isNumber(FormatNumeroHelper.removeSpaceAndDash(tiersView.getIdentificationPersonne().getNumRegistreEtranger())))
 									|| (FormatNumeroHelper.removeSpaceAndDash(tiersView.getIdentificationPersonne().getNumRegistreEtranger())
 									.length() > 10)) {
 								errors.rejectValue("identificationPersonne.numRegistreEtranger", "error.numRegistreEtranger");
@@ -152,7 +152,7 @@ public class TiersEditValidator implements Validator {
 				//Validation du tiers
 				final ValidationResults results = validationService.validate(tiers);
 				final List<String> erreurs = results.getErrors();
-				ValidateHelper.rejectErrors(erreurs, errors);
+				ValidatorUtils.rejectErrors(erreurs, errors);
 			}
 		}
 	}

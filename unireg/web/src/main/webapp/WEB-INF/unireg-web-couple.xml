@@ -41,7 +41,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="coupleHelper" ref="coupleHelper" />
-		<property name="situationFamilleService" ref="situationFamilleService" />
+		<property name="validatorHelper" ref="validatorHelper" />
 	</bean>
 
 	<bean id="annulationCoupleListController" class="ch.vd.uniregctb.annulation.couple.AnnulationCoupleListController" parent="abstractTiersListController">

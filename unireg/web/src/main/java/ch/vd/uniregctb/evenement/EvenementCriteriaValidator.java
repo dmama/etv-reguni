@@ -5,7 +5,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class EvenementCriteriaValidator implements Validator  {
 
@@ -25,7 +25,7 @@ public class EvenementCriteriaValidator implements Validator  {
 		EvenementCriteriaView bean = (EvenementCriteriaView) target;
 
 		// Numero CTB
-		if (StringUtils.isNotBlank(bean.getNumeroCTBFormatte()) && !ValidateHelper.isNumber(bean.getNumeroCTBFormatte())) {
+		if (StringUtils.isNotBlank(bean.getNumeroCTBFormatte()) && !ValidatorUtils.isNumber(bean.getNumeroCTBFormatte())) {
 			errors.rejectValue("numeroCTBFormatte", "error.numero");
 		}
 	}

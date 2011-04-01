@@ -14,7 +14,7 @@ import ch.vd.uniregctb.deces.view.DecesRecapView;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.utils.ValidateHelper;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class DecesRecapValidator implements Validator {
 
@@ -63,7 +63,7 @@ public class DecesRecapValidator implements Validator {
 				results = metierService.validateDeces(pp, RegDate.get(decesRecapView.getDateDeces()));
 			}
 			List<String> erreurs = results.getErrors();
-			ValidateHelper.rejectErrors(erreurs, errors);
+			ValidatorUtils.rejectErrors(erreurs, errors);
 		}
 	}
 

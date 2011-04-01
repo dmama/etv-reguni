@@ -190,4 +190,9 @@
      	<property name="localApp" value="${extprop.editique.localapp}" />
     </bean>
     
+	<bean id="validatorHelper" class="ch.vd.uniregctb.common.ValidatorHelperImpl">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
 </beans>

@@ -4,13 +4,16 @@ import java.util.List;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.ValidatorHelperImpl;
+import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.couple.CoupleHelper;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
@@ -26,7 +29,7 @@ import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class CoupleRecapValidatorTest extends BusinessTest {
+public class CoupleRecapValidatorTest extends WebTest {
 
 	private CoupleRecapValidator validator;
 
@@ -36,14 +39,20 @@ public class CoupleRecapValidatorTest extends BusinessTest {
 
 		final SituationFamilleService situFamilleService = getBean(SituationFamilleService.class, "situationFamilleService");
 		final MetierService metierService = getBean(MetierService.class, "metierService");
+		final MessageSource messageSource = getBean(MessageSource.class, "messageSource");
 
 		final CoupleHelper coupleHelper = new CoupleHelper();
 		coupleHelper.setTiersService(tiersService);
 
+		final ValidatorHelperImpl validatorHelper = new ValidatorHelperImpl();
+		validatorHelper.setSituationFamilleService(situFamilleService);
+		validatorHelper.setTiersService(tiersService);
+		validatorHelper.setMessageSource(messageSource);
+
 		validator = new CoupleRecapValidator();
 		validator.setCoupleHelper(coupleHelper);
 		validator.setMetierService(metierService);
-		validator.setSituationFamilleService(situFamilleService);
+		validator.setValidatorHelper(validatorHelper);
 		validator.setTiersService(tiersService);
 	}
 
@@ -90,6 +99,7 @@ public class CoupleRecapValidatorTest extends BusinessTest {
 	 * [UNIREG-1595] on ne doit pas pouvoir marier un non-habitant qui a une surcharge fiscale de la situation
 	 * de famille incompatible avec un mariage
 	 */
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMariageNonHabitantSituationFamilleIncompatible() throws Exception {
 
@@ -129,12 +139,12 @@ public class CoupleRecapValidatorTest extends BusinessTest {
 		validator.validate(view, errors);
 		Assert.assertEquals(1, errors.getErrorCount());
 
-		final List<?> fieldErrors = errors.getFieldErrors();
-		Assert.assertNotNull(fieldErrors);
-		Assert.assertEquals(1, fieldErrors.size());
+		final List<ObjectError> allErrors = errors.getAllErrors();
+		Assert.assertNotNull(allErrors);
+		Assert.assertEquals(1, allErrors.size());
 
-		final FieldError error = (FieldError) fieldErrors.get(0);
-		Assert.assertEquals("error.impossible.marier.contribuable", error.getCode());
+		final ObjectError error = allErrors.get(0);
+		Assert.assertEquals(String.format("Le contribuable n° %s ne peut pas se marier fiscalement car il(elle) est séparé(e) au fiscal", FormatNumeroHelper.numeroCTBToDisplay(ppId)), error.getDefaultMessage());
 	}
 
 }
