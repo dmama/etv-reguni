@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -65,6 +66,7 @@ import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceException;
+import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceExceptionType;
 import ch.vd.uniregctb.webservices.tiers2.impl.exception.QuittancementErreur;
 import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
@@ -639,11 +641,14 @@ public class TiersWebServiceImpl implements TiersWebService {
 		private final List<ReponseQuittancementDeclaration> reponses = new ArrayList<ReponseQuittancementDeclaration>();
 
 		public void addErrorException(DemandeQuittancementDeclaration element, Exception e) {
-			if (e instanceof RuntimeException) {
-				reponses.add(new ReponseQuittancementDeclaration(element.key, (RuntimeException) e));
+			if (e instanceof ValidationException) {
+				reponses.add(new ReponseQuittancementDeclaration(element.key, (ValidationException) e, WebServiceExceptionType.BUSINESS));
+			}
+			else if (e instanceof RuntimeException) {
+				reponses.add(new ReponseQuittancementDeclaration(element.key, (RuntimeException) e, WebServiceExceptionType.TECHNICAL));
 			}
 			else {
-				reponses.add(new ReponseQuittancementDeclaration(element.key, new RuntimeException(e.getMessage(), e)));
+				reponses.add(new ReponseQuittancementDeclaration(element.key, new RuntimeException(e.getMessage(), e), WebServiceExceptionType.TECHNICAL));
 			}
 		}
 
@@ -700,9 +705,13 @@ public class TiersWebServiceImpl implements TiersWebService {
 		catch (QuittancementErreur e) {
 			r = new ReponseQuittancementDeclaration(demande.key, e);
 		}
+		catch (ValidationException e) {
+			LOGGER.error(e, e);
+			r = new ReponseQuittancementDeclaration(demande.key, e, WebServiceExceptionType.BUSINESS);
+		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
-			r = new ReponseQuittancementDeclaration(demande.key, e);
+			r = new ReponseQuittancementDeclaration(demande.key, e, WebServiceExceptionType.TECHNICAL);
 		}
 		return r;
 	}

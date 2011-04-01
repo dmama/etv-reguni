@@ -56,10 +56,10 @@ public class ReponseQuittancementDeclaration {
 		this.exceptionMessage = e.getMessage();
 	}
 
-	public ReponseQuittancementDeclaration(DeclarationImpotOrdinaireKey key, RuntimeException e) {
+	public ReponseQuittancementDeclaration(DeclarationImpotOrdinaireKey key, RuntimeException e, WebServiceExceptionType exceptionType) {
 		this.key = key;
 		this.code = CodeQuittancement.EXCEPTION;
-		this.exceptionType = WebServiceExceptionType.TECHNICAL;
+		this.exceptionType = exceptionType;
 		this.exceptionMessage = e.getMessage();
 	}
 }
