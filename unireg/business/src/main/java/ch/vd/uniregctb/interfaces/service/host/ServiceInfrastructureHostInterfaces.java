@@ -40,7 +40,6 @@ import ch.vd.uniregctb.interfaces.model.impl.RueImpl;
 import ch.vd.uniregctb.interfaces.model.impl.TypeEtatPMImpl;
 import ch.vd.uniregctb.interfaces.model.impl.TypeRegimeFiscalImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -177,15 +176,16 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		}
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
-		List<Commune> candidates = new ArrayList<Commune>(2);
+	@Override
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+		final List<Commune> list = new ArrayList<Commune>(2);
 		final List<Commune> communes = getCommunes();
 		for (Commune commune : communes) {
-			if (commune.getNoOFSEtendu() == noCommune) {
-				candidates.add(commune);
+			if (commune.getNoOFSEtendu() == noOfsCommune) {
+				list.add(commune);
 			}
 		}
-		return ServiceInfrastructureImpl.choisirCommune(candidates, date);
+		return list;
 	}
 
 	/**

@@ -180,10 +180,14 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	}
 
 	@Override
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
 		try {
-			final CommuneFiscale c = fidorClient.getCommuneParNoOFS(noCommune, XmlUtils.regdate2xmlcal(date));
-			return CommuneImpl.get(c);
+			final List<Commune> list = new ArrayList<Commune>();
+			final List<CommuneFiscale> l = fidorClient.getCommunesHistoParNoOFS(noOfsCommune);
+			for (CommuneFiscale c : l) {
+				list.add(CommuneImpl.get(c));
+			}
+			return list;
 		}
 		catch (WebServiceException e) {
 			throw new ServiceInfrastructureException(e);

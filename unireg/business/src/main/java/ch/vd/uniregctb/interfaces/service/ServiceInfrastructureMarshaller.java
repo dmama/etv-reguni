@@ -39,8 +39,9 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 		return hostService.getAllCantons();
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
-		return hostService.getCommuneByNumeroOfsEtendu(noCommune, date);
+	@Override
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+		return hostService.getCommuneHistoByNumeroOfs(noOfsCommune);
 	}
 
 	@Override

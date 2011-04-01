@@ -164,6 +164,16 @@ public interface ServiceInfrastructureService extends ServiceInfrastructureRaw {
 	Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException;
 
 	/**
+	 * Retrouve la commune avec le numéro OFS étendu donné ; si plusieurs communes correspondent, renvoie celle qui est valide à la date donnée
+	 *
+	 * @param noCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
+	 * @param date      date de référence (<code>null</code> pour la date du jour)
+	 * @return Commune
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException;
+
+	/**
 	 * Résoud la commune d'une adresse civile (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)
 	 *
 	 * @param adresse adresse civile dont on cherche la commune

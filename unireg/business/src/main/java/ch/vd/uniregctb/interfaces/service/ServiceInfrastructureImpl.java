@@ -262,7 +262,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	 * @param dateValidite date déterminante en cas de possibilités multiples
 	 * @return une commune
 	 */
-	public static Commune choisirCommune(List<Commune> candidats, RegDate dateValidite) {
+	private static Commune choisirCommune(List<Commune> candidats, RegDate dateValidite) {
 		Commune resultat = null;
 		if (candidats != null && candidats.size() > 0) {
 			if (candidats.size() == 1) {
@@ -508,7 +508,13 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
-		return rawService.getCommuneByNumeroOfsEtendu(noCommune, date);
+		final List<Commune> list = getCommuneHistoByNumeroOfs(noCommune);
+		return choisirCommune(list, date);
+	}
+
+	@Override
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+		return rawService.getCommuneHistoByNumeroOfs(noOfsCommune);
 	}
 
 	@Override

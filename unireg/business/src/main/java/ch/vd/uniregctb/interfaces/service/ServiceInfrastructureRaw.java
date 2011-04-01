@@ -96,14 +96,13 @@ public interface ServiceInfrastructureRaw {
 	Rue getRueByNumero(int numero) throws ServiceInfrastructureException;
 
 	/**
-	 * Retrouve la commune avec le numéro OFS étendu donné ; si plusieurs communes correspondent, renvoie celle qui est valide à la date donnée
+	 * Retourne l'historique d'une commune à partir de son numéro OFS étendu donné. Cette méthode permet de gérer les 28 exceptions où deux communes se partagent le même numéro Ofs.
 	 *
-	 * @param noCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
-	 * @param date      date de référence (<code>null</code> pour la date du jour)
-	 * @return Commune
+	 * @param noOfsCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
+	 * @return une liste avec 0, 1 ou 2 (cas exceptionnel) communes.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException;
+	List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException;
 
 	/**
 	 * Retourne le numéro Ofs de la commune sur laquelle un bâtiment est construit.

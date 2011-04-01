@@ -76,6 +76,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getCommuneByNumeroOfsEtendu(noCommune, date);
 	}
 
+	@Override
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+		return target.getCommuneHistoByNumeroOfs(noOfsCommune);
+	}
+
 	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
 		return target.getCommunesDeVaud();
 	}

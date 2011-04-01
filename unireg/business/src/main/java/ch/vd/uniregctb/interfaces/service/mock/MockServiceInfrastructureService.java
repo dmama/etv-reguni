@@ -30,7 +30,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
 
 /**
@@ -282,20 +281,21 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return MockCollectiviteAdministrative.CAT;
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
-		final List<Commune> candidates = new ArrayList<Commune>(2);
+	@Override
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+		final List<Commune> list = new ArrayList<Commune>(2);
 		for (Commune c : communesVaud) {
 			int no = c.getNoOFSEtendu();
-			if (no == noCommune) {
-				candidates.add(c);
+			if (no == noOfsCommune) {
+				list.add(c);
 			}
 		}
 		for (Commune c : communesHorsCanton) {
-			if (c.getNoOFSEtendu() == noCommune) {
-				candidates.add(c);
+			if (c.getNoOFSEtendu() == noOfsCommune) {
+				list.add(c);
 			}
 		}
-		return ServiceInfrastructureImpl.choisirCommune(candidates, date);
+		return list;
 	}
 
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {

@@ -142,17 +142,18 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(final int noCommune, final RegDate date) throws ServiceInfrastructureException {
-		Commune result;
+	@Override
+	public List<Commune> getCommuneHistoByNumeroOfs(final int noOfsCommune) throws ServiceInfrastructureException {
+		List<Commune> result;
 		long time = tracing.start();
 		try {
-			result = target.getCommuneByNumeroOfsEtendu(noCommune, date);
+			result = target.getCommuneHistoByNumeroOfs(noOfsCommune);
 		}
 		finally {
-			tracing.end(time, "getCommuneByNumeroOfsEtendu", new Object() {
+			tracing.end(time, "getCommuneHistoByNumeroOfs", new Object() {
 				@Override
 				public String toString() {
-					return String.format("noCommune=%d, date=%s", noCommune, ServiceTracing.toString(date));
+					return String.format("noOfsCommune=%d", noOfsCommune);
 				}
 			});
 		}

@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -311,50 +309,44 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetCommunesByNumeroOfsEtendu {
-		int noCommune;
+	private static class KeyGetCommuneHistoByNumeroOfs {
+		int noOfsCommune;
 
-		private KeyGetCommunesByNumeroOfsEtendu(int noCommune) {
-			this.noCommune = noCommune;
+		private KeyGetCommuneHistoByNumeroOfs(int noOfsCommune) {
+			this.noOfsCommune = noOfsCommune;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetCommuneHistoByNumeroOfs that = (KeyGetCommuneHistoByNumeroOfs) o;
+			return noOfsCommune == that.noOfsCommune;
 		}
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + noCommune;
-			return result;
+			return noOfsCommune;
 		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			final KeyGetCommunesByNumeroOfsEtendu other = (KeyGetCommunesByNumeroOfsEtendu) obj;
-			return noCommune == other.noCommune;
-		}
-
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
+	@Override
+	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
+		final List<Commune> resultat;
 
-		final KeyGetCommunesByNumeroOfsEtendu key = new KeyGetCommunesByNumeroOfsEtendu(noCommune);
+		final KeyGetCommuneHistoByNumeroOfs key = new KeyGetCommuneHistoByNumeroOfs(noOfsCommune);
 		final Element element = cache.get(key);
-
-		final List<Commune> candidats;
 		if (element == null) {
-			candidats = buildListOfCommunesByNumeroOfsEtendu(key);
+			resultat = target.getCommuneHistoByNumeroOfs(noOfsCommune);
+			cache.put(new Element(key, resultat));
 		}
 		else {
-			candidats = (List<Commune>) element.getObjectValue();
+			resultat = (List<Commune>) element.getObjectValue();
 		}
 
-		return ServiceInfrastructureImpl.choisirCommune(candidats, date);
+		return resultat;
 	}
 
 	private static class KeyGetCommunesByEgid {
@@ -402,29 +394,6 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 
 		return resultat;
-	}
-
-	@SuppressWarnings({"unchecked"})
-	private synchronized List<Commune> buildListOfCommunesByNumeroOfsEtendu(KeyGetCommunesByNumeroOfsEtendu key) throws ServiceInfrastructureException {
-		Element elt = cache.get(key);
-		if (elt == null) {
-
-			List<Commune> results = new ArrayList<Commune>(2);
-			final int noCommune = key.noCommune;
-			final List<Commune> communes = getCommunes();
-			for (Commune commune : communes) {
-				if (commune.getNoOFSEtendu() == noCommune) {
-					results.add(commune);
-				}
-			}
-			results = results.size() > 0 ? results : Collections.<Commune>emptyList();
-			cache.put(new Element(key, results));
-
-			return results;
-		}
-		else {
-			return (List<Commune>) elt.getObjectValue();
-		}
 	}
 
 	private static class KeyGetCommunes {
