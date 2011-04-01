@@ -12,6 +12,7 @@ public class LogicielView {
 	private String fournisseurAdresse;
 	private long id;
 	private String libelle;
+	private String libelleComplet;
 	private LogicielMetier metier;
 	private String version;
 	private boolean certifie;
@@ -31,6 +32,7 @@ public class LogicielView {
 		this.libelle = logiciel.getLibelle();
 		this.metier = logiciel.getMetier();
 		this.version = logiciel.getVersion();
+		this.libelleComplet = logiciel.getLibelleComplet();
 	}
 
 	public String getContactMetierMail() {
@@ -119,5 +121,13 @@ public class LogicielView {
 
 	public void setCertifie(boolean certifie) {
 		this.certifie = certifie;
+	}
+
+	public String getLibelleComplet() {
+		return libelleComplet;
+	}
+
+	public void setLibelleComplet(String libelleComplet) {
+		this.libelleComplet = libelleComplet;
 	}
 }

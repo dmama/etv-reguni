@@ -22,6 +22,8 @@ public interface Logiciel {
 
 	public String getVersion();
 
+	public String getLibelleComplet();
+
 
 	public boolean isCertifie();
 }

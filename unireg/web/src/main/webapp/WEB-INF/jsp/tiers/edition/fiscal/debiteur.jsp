@@ -33,7 +33,7 @@
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 					<td>
-						<div id="div_logiciel_label" style="display:none;" ><fmt:message key="label.complement.logiciel.fournisseur" />&nbsp;:</div>
+						<div id="div_logiciel_label" style="display:none;" ><fmt:message key="label.complement.logicielPaye" />&nbsp;:</div>
 					</td>
 					<td>
 						<div id="div_logiciel_input" style="display:none;" ><form:select path="logicielId" items="${libellesLogiciel}" /></div>

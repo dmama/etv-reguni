@@ -79,6 +79,11 @@ public class LogicielImpl implements Logiciel {
 		return version;
 	}
 
+
+	public String getLibelleComplet() {
+		return fournisseur+" - "+libelle+" - "+version;
+	}
+
 	public boolean isCertifie() {
 		return certifie;
 	}

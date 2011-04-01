@@ -522,7 +522,7 @@ public class TiersMapHelper extends CommonMapHelper {
 			final HashMap<Long, String> map = new HashMap<Long, String>();
 			if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
 				for (Logiciel logiciel : listeLogiciels) {
-					map.put(logiciel.getId(), logiciel.getFournisseur());
+					map.put(logiciel.getId(), logiciel.getLibelleComplet());
 				}
 			}
 			return map;
