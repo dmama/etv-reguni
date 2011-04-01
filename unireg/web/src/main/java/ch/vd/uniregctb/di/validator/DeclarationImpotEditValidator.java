@@ -9,6 +9,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.DeclarationImpotSelectView;
@@ -53,7 +55,15 @@ public class DeclarationImpotEditValidator implements Validator {
 					DeclarationImpotOrdinaire di = diDAO.get(details.getId());
 					EtatDeclaration dernierEtat = di.getDernierEtat();
 					if (details.getRegDateRetour() != null && details.getRegDateRetour().isBefore(dernierEtat.getDateObtention())) {
-						errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
+						if(dernierEtat instanceof EtatDeclarationSommee){
+							errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
+						}
+						if(dernierEtat instanceof EtatDeclarationEmise){
+
+							errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
+
+						}
+
 					}
 				}
 			}
