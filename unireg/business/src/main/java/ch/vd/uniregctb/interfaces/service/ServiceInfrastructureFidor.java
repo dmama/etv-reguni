@@ -39,7 +39,7 @@ import ch.vd.uniregctb.webservice.fidor.FidorClient;
 /**
  * Implémentation Fidor du service d'infrastructure [UNIREG-2187].
  */
-public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
+public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureFidor.class);
 
@@ -73,34 +73,17 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		}
 	}
 
+	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
+	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
@@ -124,6 +107,7 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		}
 	}
 
+	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
@@ -148,52 +132,7 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		}
 	}
 
-	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
-		try {
-			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
-			if (all == null || all.isEmpty()) {
-				return Collections.emptyList();
-			}
-
-			final List<Commune> communes = new ArrayList<Commune>();
-			for (CommuneFiscale commune : all) {
-				if (commune.getCanton().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
-					communes.add(CommuneImpl.get(commune));
-				}
-			}
-			return communes;
-		}
-		catch (WebServiceException e) {
-			throw new ServiceInfrastructureException(e);
-		}
-		catch (FidorBusinessException_Exception e) {
-			throw new ServiceInfrastructureException(e);
-		}
-	}
-
-	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
-		try {
-			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
-			if (all == null || all.isEmpty()) {
-				return Collections.emptyList();
-			}
-
-			final List<Commune> communes = new ArrayList<Commune>();
-			for (CommuneFiscale commune : all) {
-				if (!commune.getCanton().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
-					communes.add(CommuneImpl.get(commune));
-				}
-			}
-			return communes;
-		}
-		catch (WebServiceException e) {
-			throw new ServiceInfrastructureException(e);
-		}
-		catch (FidorBusinessException_Exception e) {
-			throw new ServiceInfrastructureException(e);
-		}
-	}
-
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
@@ -215,34 +154,32 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		}
 	}
 
+	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Pays getSuisse() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	public Canton getVaud() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
+	@Override
 	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
 		try {
 			final CommuneFiscale c = fidorClient.getCommuneParNoOFS(noCommune, XmlUtils.regdate2xmlcal(date));
@@ -272,58 +209,67 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		}
 	}
 
+	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
-	public Pays getPaysInconnu() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
+	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
@@ -397,6 +343,7 @@ public class ServiceInfrastructureFidor extends ServiceInfrastructureBase {
 		return url;
 	}
 
+	@Override
 	public Logiciel getLogiciel(Long id) throws ServiceInfrastructureException {
 		if (id == null) {
 			return null;

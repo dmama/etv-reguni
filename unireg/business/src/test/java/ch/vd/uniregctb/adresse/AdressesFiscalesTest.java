@@ -5,6 +5,7 @@ import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(JUnit4ClassRunner.class)
 public class AdressesFiscalesTest {
 
-	final ServiceInfrastructureService serviceInfra = new DefaultMockServiceInfrastructureService();
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 
 	@Test
 	public void testOfType() throws Exception {

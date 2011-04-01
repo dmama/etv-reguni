@@ -31,7 +31,9 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<alias alias="serviceInfrastructureService" name="serviceInfrastructureCache"/>
+	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
+		<property name="rawService" ref="serviceInfrastructureCache" />
+	</bean>
 
 	<!-- Service Civil -->
 

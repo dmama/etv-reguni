@@ -41,6 +41,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
@@ -124,7 +125,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersDAO = new MockTiersDAO();
 
 		tiersService = new TiersServiceImpl();
-		serviceInfra = new DefaultMockServiceInfrastructureService();
+		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 		servicePM = new DefaultMockServicePM();
 		tiersService.setServiceInfra(serviceInfra);
 		tiersService.setServiceCivilService(serviceCivil);
@@ -133,7 +134,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersService.setValidationService(null);
 
 		adresseService = new AdresseServiceImpl();
-		adresseService.setServiceInfra(new DefaultMockServiceInfrastructureService());
+		adresseService.setServiceInfra(new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService()));
 		adresseService.setServiceCivilService(serviceCivil);
 		adresseService.setTiersService(tiersService);
 		adresseService.setServicePM(servicePM);

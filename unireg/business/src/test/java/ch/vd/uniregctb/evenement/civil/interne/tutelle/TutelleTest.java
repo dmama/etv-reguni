@@ -14,6 +14,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
@@ -117,7 +118,7 @@ public class TutelleTest extends WithoutSpringTest {
 	}
 
 	// Prend le mock infrastructure par défaut
-	ServiceInfrastructureService infrastructureService = new MockServiceInfrastructureService() {
+	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
 		@Override
 		protected void init() {
 			// Pays
@@ -134,7 +135,7 @@ public class TutelleTest extends WithoutSpringTest {
 			localites.add(MockLocalite.Lausanne);
 			localites.add(MockLocalite.CossonayVille);
 		}
-	};
+	});
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivilSimple = new DefaultMockServiceCivil() {

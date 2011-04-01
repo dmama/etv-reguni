@@ -33,21 +33,23 @@ import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 import ch.vd.uniregctb.stats.StatsService;
 
-public class ServiceInfrastructureCache extends ServiceInfrastructureBase implements UniregCacheInterface, InitializingBean, DisposableBean {
+@SuppressWarnings({"SimplifiableIfStatement"})
+public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, UniregCacheInterface, InitializingBean, DisposableBean {
 
 	//private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
-	private ServiceInfrastructureService target;
+	private ServiceInfrastructureRaw target;
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
-	public void setTarget(ServiceInfrastructureService target) {
+	public void setTarget(ServiceInfrastructureRaw target) {
 		this.target = target;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheManager(CacheManager manager) {
 		this.cacheManager = manager;
 		initCache();
@@ -81,14 +83,14 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCache(SERVICE_NAME, this);
+			statsService.registerCache(ServiceInfrastructureService.SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterCache(SERVICE_NAME);
+			statsService.unregisterCache(ServiceInfrastructureService.SERVICE_NAME);
 		}
 		uniregCacheManager.unregister(this);
 	}
@@ -127,147 +129,6 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		return resultat;
 	}
 
-	private static class KeyGetCanton {
-		int cantonOFS;
-
-		private KeyGetCanton(int cantonOFS) {
-			this.cantonOFS = cantonOFS;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + cantonOFS;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetCanton other = (KeyGetCanton) obj;
-			return cantonOFS == other.cantonOFS;
-		}
-	}
-
-	@Override
-	public Canton getCanton(int cantonOFS) throws ServiceInfrastructureException {
-		final Canton resultat;
-
-		final KeyGetCanton key = new KeyGetCanton(cantonOFS);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getCanton(cantonOFS);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Canton) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetCantonByCommune {
-		int noOfsCommune;
-
-		private KeyGetCantonByCommune(int noOfsCommune) {
-			this.noOfsCommune = noOfsCommune;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + noOfsCommune;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetCantonByCommune other = (KeyGetCantonByCommune) obj;
-			return noOfsCommune == other.noOfsCommune;
-		}
-	}
-
-	@Override
-	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException {
-		final Canton resultat;
-
-		final KeyGetCantonByCommune key = new KeyGetCantonByCommune(noOfsCommune);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getCantonByCommune(noOfsCommune);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Canton) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetCantonBySigle {
-		String sigle;
-
-		private KeyGetCantonBySigle(String sigle) {
-			this.sigle = sigle;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((sigle == null) ? 0 : sigle.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetCantonBySigle other = (KeyGetCantonBySigle) obj;
-			if (sigle == null) {
-				if (other.sigle != null)
-					return false;
-			}
-			else if (!sigle.equals(other.sigle))
-				return false;
-			return true;
-		}
-	}
-
-	@Override
-	public Canton getCantonBySigle(String sigle) throws ServiceInfrastructureException {
-		final Canton resultat;
-
-		final KeyGetCantonBySigle key = new KeyGetCantonBySigle(sigle);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getCantonBySigle(sigle);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Canton) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
 	private static class KeyGetCollectivite {
 		int noColAdm;
 
@@ -292,10 +153,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 			if (getClass() != obj.getClass())
 				return false;
 			KeyGetCollectivite other = (KeyGetCollectivite) obj;
-			if (noColAdm == other.noColAdm) {
-				return true;
-			}
-			return false;
+			return noColAdm == other.noColAdm;
 		}
 
 	}
@@ -496,7 +354,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 			candidats = (List<Commune>) element.getObjectValue();
 		}
 
-		return choisirCommune(candidats, date);
+		return ServiceInfrastructureImpl.choisirCommune(candidats, date);
 	}
 
 	private static class KeyGetCommunesByEgid {
@@ -567,74 +425,6 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		else {
 			return (List<Commune>) elt.getObjectValue();
 		}
-	}
-
-	private static class KeyGetCommunesDeVaud {
-
-		@Override
-		public int hashCode() {
-			return 276594334;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
-		final List<Commune> resultat;
-
-		final KeyGetCommunesDeVaud key = new KeyGetCommunesDeVaud();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getCommunesDeVaud();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (List<Commune>) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetCommunesHorsCanton {
-
-		@Override
-		public int hashCode() {
-			return 45764637;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
-		final List<Commune> resultat;
-
-		final KeyGetCommunesHorsCanton key = new KeyGetCommunesHorsCanton();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getCommunesHorsCanton();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (List<Commune>) element.getObjectValue();
-		}
-
-		return resultat;
 	}
 
 	private static class KeyGetCommunes {
@@ -988,135 +778,6 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		return resultat;
 	}
 
-	private static class KeyGetPaysByNumeroOfs {
-		int numeroOFS;
-
-		private KeyGetPaysByNumeroOfs(int numeroOFS) {
-			this.numeroOFS = numeroOFS;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + numeroOFS;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetPaysByNumeroOfs other = (KeyGetPaysByNumeroOfs) obj;
-			return numeroOFS == other.numeroOFS;
-		}
-	}
-
-	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
-		final Pays resultat;
-
-		final KeyGetPaysByNumeroOfs key = new KeyGetPaysByNumeroOfs(numeroOFS);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getPays(numeroOFS);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Pays) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetPaysByCode {
-		final String codePays;
-
-		private KeyGetPaysByCode(String codePays) {
-			this.codePays = codePays;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((codePays == null) ? 0 : codePays.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetPaysByCode other = (KeyGetPaysByCode) obj;
-			if (codePays == null) {
-				if (other.codePays != null)
-					return false;
-			}
-			else if (!codePays.equals(other.codePays))
-				return false;
-			return true;
-		}
-	}
-
-	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
-		final Pays resultat;
-
-		final KeyGetPaysByCode key = new KeyGetPaysByCode(codePays);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getPays(codePays);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Pays) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetPaysInconnu {
-
-		@Override
-		public int hashCode() {
-			return 4637292;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	public Pays getPaysInconnu() throws ServiceInfrastructureException {
-		final Pays resultat;
-
-		final KeyGetPaysInconnu key = new KeyGetPaysInconnu();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getPaysInconnu();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Pays) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
 	private static class KeyGetRueByNumero {
 		int numero;
 
@@ -1251,239 +912,6 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		return resultat;
 	}
 
-	private static class KeyGetSuisse {
-
-		@Override
-		public int hashCode() {
-			return 476372892;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	public Pays getSuisse() throws ServiceInfrastructureException {
-		final Pays resultat;
-
-		final KeyGetSuisse key = new KeyGetSuisse();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getSuisse();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Pays) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetACI {
-
-		@Override
-		public int hashCode() {
-			return 98732642;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	private static class KeyGetACISuccessions {
-
-		@Override
-		public int hashCode() {
-			return 98742653;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	private static class KeyGetACIImpotSource {
-
-		@Override
-		public int hashCode() {
-			return 98712659;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-
-	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
-		final CollectiviteAdministrative resultat;
-
-		final KeyGetACI key = new KeyGetACI();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getACI();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (CollectiviteAdministrative) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
-		final CollectiviteAdministrative resultat;
-
-		final KeyGetACIImpotSource key = new KeyGetACIImpotSource();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getACIImpotSource();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (CollectiviteAdministrative) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
-		final CollectiviteAdministrative resultat;
-
-		final KeyGetACISuccessions key = new KeyGetACISuccessions();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getACISuccessions();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (CollectiviteAdministrative) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-
-	private static class KeyGetCEDI {
-
-		@Override
-		public int hashCode() {
-			return 98732643;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
-		final CollectiviteAdministrative resultat;
-
-		final KeyGetCEDI key = new KeyGetCEDI();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getCEDI();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (CollectiviteAdministrative) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetCAT {
-
-		@Override
-		public int hashCode() {
-			return 98732644;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
-		final CollectiviteAdministrative resultat;
-
-		final KeyGetCAT key = new KeyGetCAT();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getCAT();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (CollectiviteAdministrative) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetVaud {
-
-		@Override
-		public int hashCode() {
-			return 463628289;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	public Canton getVaud() throws ServiceInfrastructureException {
-		final Canton resultat;
-
-		final KeyGetVaud key = new KeyGetVaud();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getVaud();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (Canton) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
 	private static class KeyGetInstitutionFinanciere {
 
 		int id;
@@ -1588,9 +1016,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			return true;
+			return !(o == null || getClass() != o.getClass());
 		}
 
 		@Override
@@ -1663,9 +1089,7 @@ public class ServiceInfrastructureCache extends ServiceInfrastructureBase implem
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			return true;
+			return !(o == null || getClass() != o.getClass());
 		}
 
 		@Override

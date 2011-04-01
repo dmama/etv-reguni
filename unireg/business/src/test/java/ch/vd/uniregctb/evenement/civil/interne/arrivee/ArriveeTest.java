@@ -31,6 +31,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -92,7 +93,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, habitant, 0L, null, 1234, null);
 
 		// Prend le mock infrastructure par défaut
-		ServiceInfrastructureService infrastructureService = new MockServiceInfrastructureService() {
+		ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
 			@Override
 			protected void init() {
 				// Pays
@@ -113,7 +114,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				rues.add(MockRue.CossonayVille.CheminDeRiondmorcel);
 				rues.add(MockRue.Lausanne.AvenueDeBeaulieu);
 			}
-		};
+		});
 
 		// Crée les données du mock service civil
 		ServiceCivilService serviceCivil = new MockServiceCivil() {

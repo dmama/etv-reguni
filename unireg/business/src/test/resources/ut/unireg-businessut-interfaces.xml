@@ -3,8 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Bean client interfacesService MOCK -->
-	<bean id="serviceInfrastructureServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>
-	<alias alias="serviceInfrastructureService" name="serviceInfrastructureServiceHost"/>
+	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>
 
 	<!-- Bean client ServiceCivil MOCK -->
 	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil" />

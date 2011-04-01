@@ -22,7 +22,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays Colombie = new MockPays(8424, "Colombie", "CO");
 	public static final MockPays EtatsUnis = new MockPays(8439, "Etats-Unis", "US");
 	public static final MockPays CoreeSud = new MockPays(8539, "Corée (Sud)", "KR");
-	public static final MockPays PaysInconnu = new MockPays(8999, "PaysInconnu", "INC");
+	public static final MockPays PaysInconnu = new MockPays(ServiceInfrastructureService.noPaysInconnu, "PaysInconnu", "INC");
 	public static final MockPays RDA = new MockPays(8208, "République démocratique allemande", "", false);
 
 	private final boolean valide;

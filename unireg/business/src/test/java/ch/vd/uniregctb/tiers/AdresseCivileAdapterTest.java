@@ -12,6 +12,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -23,7 +24,7 @@ import static org.junit.Assert.assertFalse;
 @RunWith(JUnit4ClassRunner.class)
 public class AdresseCivileAdapterTest {
 
-	final ServiceInfrastructureService serviceInfra = new DefaultMockServiceInfrastructureService();
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 
 	@Test
 	public void testAdaptation() throws Exception {

@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
@@ -25,7 +26,7 @@ public class SeparationTest extends WithoutSpringTest {
 	private static final long INDIVIDU_PACSE = 56789L;//david
 	
 	// Prend le mock infrastructure par défaut
-	ServiceInfrastructureService infrastructureService = new DefaultMockServiceInfrastructureService();
+	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new DefaultMockServiceCivil();

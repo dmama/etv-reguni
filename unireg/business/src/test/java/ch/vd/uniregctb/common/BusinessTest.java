@@ -29,15 +29,27 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 			super.runOnSetUp();
 		}
 		catch (Exception e) {
-			serviceCivil.tearDown();
-			servicePM.tearDown();
-			serviceInfra.tearDown();
+			if (serviceCivil != null) {
+				serviceCivil.tearDown();
+			}
+			if (servicePM != null) {
+				servicePM.tearDown();
+			}
+			if (serviceInfra != null) {
+				serviceInfra.tearDown();
+			}
 			throw e;
 		}
 		catch (Throwable t) {
-			serviceCivil.tearDown();
-			servicePM.tearDown();
-			serviceInfra.tearDown();
+			if (serviceCivil != null) {
+				serviceCivil.tearDown();
+			}
+			if (servicePM != null) {
+				servicePM.tearDown();
+			}
+			if (serviceInfra != null) {
+				serviceInfra.tearDown();
+			}
 			throw new Exception(t);
 		}
 	}

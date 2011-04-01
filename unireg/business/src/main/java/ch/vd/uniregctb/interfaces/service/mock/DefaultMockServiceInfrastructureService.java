@@ -2,14 +2,12 @@ package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.lang.reflect.Field;
 
-import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public class DefaultMockServiceInfrastructureService extends MockServiceInfrastructureService {
 
@@ -74,10 +72,5 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 
 	public static void addColAdm(MockCollectiviteAdministrative collectiviteAdministrative) {
 		staticInstance.add(collectiviteAdministrative);
-	}
-
-	@Override
-	public Pays getPaysInconnu() throws ServiceInfrastructureException {
-		return MockPays.PaysInconnu;
 	}
 }

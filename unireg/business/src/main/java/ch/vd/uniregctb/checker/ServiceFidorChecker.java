@@ -3,11 +3,11 @@ package ch.vd.uniregctb.checker;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
 
 public class ServiceFidorChecker implements ServiceChecker {
 
-	private ServiceInfrastructureService serviceFidorRaw;
+	private ServiceInfrastructureRaw serviceFidorRaw;
 	private String details;
 
 	public Status getStatus() {
@@ -28,7 +28,7 @@ public class ServiceFidorChecker implements ServiceChecker {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceFidorRaw(ServiceInfrastructureService serviceFidorRaw) {
+	public void setServiceFidorRaw(ServiceInfrastructureRaw serviceFidorRaw) {
 		this.serviceFidorRaw = serviceFidorRaw;
 	}
 }

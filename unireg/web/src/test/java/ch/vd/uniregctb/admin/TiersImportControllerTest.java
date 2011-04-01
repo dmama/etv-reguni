@@ -58,7 +58,9 @@ public class TiersImportControllerTest extends WebTest {
 			protected void init() {
 				super.init();
 				for (int i = 23; i < 100; ++i) {
-					add(new MockCollectiviteAdministrative(i, "Coll n°" + i));
+					if (getCollectivite(i) == null) {
+						add(new MockCollectiviteAdministrative(i, "Coll n°" + i));
+					}
 				}
 			}
 		});

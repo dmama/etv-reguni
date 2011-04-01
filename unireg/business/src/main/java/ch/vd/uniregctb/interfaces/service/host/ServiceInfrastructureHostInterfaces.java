@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-
 import ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal;
 import ch.vd.infrastructure.model.EnumPays;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
@@ -42,17 +39,18 @@ import ch.vd.uniregctb.interfaces.model.impl.PaysImpl;
 import ch.vd.uniregctb.interfaces.model.impl.RueImpl;
 import ch.vd.uniregctb.interfaces.model.impl.TypeEtatPMImpl;
 import ch.vd.uniregctb.interfaces.model.impl.TypeRegimeFiscalImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * @author Jean-Eric CUENDET
  *
  */
-public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBase {
+public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructureRaw {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureHostInterfaces.class);
+	//private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureHostInterfaces.class);
 
 	private ServiceInfrastructure serviceInfrastructure;
 	private ServiceInfrastructureFiscal serviceInfrastructureFiscal;
@@ -61,18 +59,6 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	 * Type de collectivite administrative OID
 	 */
 	public static final Integer TYPE_COLLECTIVITE_OID = 2;
-
-	/*
-	 * Note: on se permet de cacher l'ACI, la Suisse et le canton de Vaud à ce niveau, car il n'y a aucune chance que ces deux objets changent sans
-	 * une remise en compte majeure des institutions. Tout autre forme de caching doit être déléguée au ServiceInfrastructureCache.
-	 */
-	private Pays suisse;
-	private Canton vaud;
-	private CollectiviteAdministrative aci;
-	private CollectiviteAdministrative aciSuccessions;
-	private CollectiviteAdministrative aciImpotSource;
-	private CollectiviteAdministrative cedi;
-	private CollectiviteAdministrative cat;
 
 	private Map<Integer,Localite> localitesByNPA;
 
@@ -163,27 +149,6 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
-		return getListeCommunes(getVaud());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
-		List<Commune> communes = new ArrayList<Commune>();
-		for (Canton canton : getAllCantons()) {
-			if (!canton.getSigleOFS().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
-				List<Commune> liste = getListeCommunes(canton);
-				communes.addAll(liste);
-			}
-		}
-		return Collections.unmodifiableList(communes);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		List<Commune> communes = new ArrayList<Commune>();
 		for (Canton canton : getAllCantons()) {
@@ -192,28 +157,6 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 		}
 		return Collections.unmodifiableList(communes);
 	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Pays getSuisse() throws ServiceInfrastructureException {
-		if (suisse == null) {
-			try {
-				suisse = PaysImpl.get(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
-			}
-			catch (RemoteException e) {
-				LOGGER.error(e);
-				throw new ServiceInfrastructureException("Erreur en essayant de récupérer la Suisse (tous aux abris !)", e);
-			}
-			catch (InfrastructureException e) {
-				LOGGER.error(e);
-				throw new ServiceInfrastructureException("Erreur en essayant de récupérer la Suisse (tous aux abris !)", e);
-			}
-		}
-		return suisse;
-	}
-
 
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		if (localitesByNPA==null) {
@@ -234,22 +177,6 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Canton getVaud() throws ServiceInfrastructureException {
-
-		if (vaud == null) {
-			for (Canton c : getAllCantons()) {
-				if (c.getSigleOFS().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
-					vaud = c;
-				}
-			}
-			Assert.notNull(vaud);
-		}
-		return vaud;
-	}
-
 	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
 		List<Commune> candidates = new ArrayList<Commune>(2);
 		final List<Commune> communes = getCommunes();
@@ -258,7 +185,7 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 				candidates.add(commune);
 			}
 		}
-		return choisirCommune(candidates, date);
+		return ServiceInfrastructureImpl.choisirCommune(candidates, date);
 	}
 
 	/**
@@ -550,101 +477,6 @@ public class ServiceInfrastructureHostInterfaces extends ServiceInfrastructureBa
 		}
 		return Collections.unmodifiableList(collectivites);
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Pays getPaysInconnu() throws ServiceInfrastructureException {
-		return getPays(8999);
-	}
-
-	/**
-	 * @return la collectivite administrative de l'ACI
-	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
-	 */
-	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
-		if (aci == null) {
-			try {
-				aci = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACI));
-			}
-			catch (RemoteException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-			catch (InfrastructureException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-		}
-		return aci;
-	}
-
-	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
-
-		if (aciImpotSource == null) {
-			try {
-				aciImpotSource = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACIImpotSource));
-			}
-			catch (RemoteException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-			catch (InfrastructureException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-		}
-		return aciImpotSource;
-	}
-
-	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
-		if (aciSuccessions == null) {
-			try {
-				aciSuccessions = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACISuccessions));
-			}
-			catch (RemoteException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-			catch (InfrastructureException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-		}
-		return aciSuccessions;
-	}
-
-	/**
-	 * @return la collectivite administrative du CEDI
-	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
-	 */
-	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
-		if (cedi == null) {
-			try {
-				cedi = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noCEDI));
-			}
-			catch (RemoteException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-			catch (InfrastructureException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-		}
-		return cedi;
-	}
-
-	/**
-	 * @return la collectivite administrative du CAT
-	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
-	 */
-	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
-		if (cat == null) {
-			try {
-				cat = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noCAT));
-			}
-			catch (RemoteException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-			catch (InfrastructureException e) {
-				throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-			}
-		}
-		return cat;
 	}
 
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {

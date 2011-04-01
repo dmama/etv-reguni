@@ -3,11 +3,12 @@ package ch.vd.uniregctb.checker;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class ServiceHostInfraChecker implements ServiceChecker {
 
-	private ServiceInfrastructureService serviceInfraRaw;
+	private ServiceInfrastructureRaw serviceInfraRaw;
 	private String details;
 
 	public Status getStatus() {
@@ -28,7 +29,7 @@ public class ServiceHostInfraChecker implements ServiceChecker {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfraRaw(ServiceInfrastructureService serviceInfraRaw) {
+	public void setServiceInfraRaw(ServiceInfrastructureRaw serviceInfraRaw) {
 		this.serviceInfraRaw = serviceInfraRaw;
 	}
 }

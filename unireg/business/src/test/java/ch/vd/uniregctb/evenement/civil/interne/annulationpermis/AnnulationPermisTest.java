@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
@@ -37,7 +38,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 	private MockPermis permisRosa;
 
 	// Prend le mock infrastructure par défaut
-	ServiceInfrastructureService infrastructureService = new MockServiceInfrastructureService() {
+	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
 		@Override
 		protected void init() {
 			// Pays
@@ -58,7 +59,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 			rues.add(MockRue.CossonayVille.CheminDeRiondmorcel);
 			rues.add(MockRue.Lausanne.AvenueDeBeaulieu);
 		}
-	};
+	});
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new DefaultMockServiceCivil() {

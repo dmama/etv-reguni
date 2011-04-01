@@ -11,6 +11,7 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.type.TexteCasePostale;
@@ -21,7 +22,7 @@ import static org.junit.Assert.assertNull;
 
 public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 
-	final ServiceInfrastructureService serviceInfra = new DefaultMockServiceInfrastructureService();
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 
 	@Test
 	public void testAdresseSuisse() {

@@ -29,8 +29,9 @@ import ch.vd.uniregctb.interfaces.model.mock.MockLienCommuneBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
 
 /**
  * Mock du Host Infrastructure Service.
@@ -53,7 +54,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
  *  };
  * </pre>
  */
-public abstract class MockServiceInfrastructureService extends ServiceInfrastructureBase {
+public abstract class MockServiceInfrastructureService implements ServiceInfrastructureRaw {
 
 	// private static final Logger LOGGER = Logger.getLogger(MockServiceInfrastructureService.class);
 
@@ -63,8 +64,8 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	protected List<Commune> communesVaud = new ArrayList<Commune>();
 	protected List<Commune> communesHorsCanton = new ArrayList<Commune>();
 	protected List<Commune> communes = new ArrayList<Commune>();
-	protected List<CollectiviteAdministrative> collectivitesAdministrative = new ArrayList<CollectiviteAdministrative>();
 	protected List<Rue> rues = new ArrayList<Rue>();
+	protected Map<Integer, CollectiviteAdministrative> collectivitesAdministrative = new HashMap<Integer, CollectiviteAdministrative>();
 	protected Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<Integer, OfficeImpot>();
 	protected Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<Integer, OfficeImpot>();
 	protected Map<Integer, List<MockLienCommuneBatiment>> batimentsParEgid = null;
@@ -82,8 +83,10 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 		this.communesVaud.addAll(right.communesVaud);
 		this.communesHorsCanton.addAll(right.communesHorsCanton);
 		this.communes.addAll(right.communes);
-		this.collectivitesAdministrative.addAll(right.collectivitesAdministrative);
 		this.rues.addAll(right.rues);
+		for (Map.Entry<Integer, CollectiviteAdministrative> entry : right.collectivitesAdministrative.entrySet()) {
+			add((MockCollectiviteAdministrative) entry.getValue());
+		}
 		for (Map.Entry<Integer, OfficeImpot> entry : right.oidByNoOfsCommune.entrySet()) {
 			this.oidByNoOfsCommune.put(entry.getKey(), entry.getValue());
 		}
@@ -157,8 +160,12 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 		}
 	}
 
-	protected void add(MockCollectiviteAdministrative collectiviteAdministrative) {
-		collectivitesAdministrative.add(collectiviteAdministrative);
+	protected void add(MockCollectiviteAdministrative coladm) {
+		final Integer noColAdm = coladm.getNoColAdm();
+		if (collectivitesAdministrative.containsKey(noColAdm)) {
+			throw new RuntimeException("La collectivité avec le numéro [" + noColAdm + "] existe déjà.");
+		}
+		collectivitesAdministrative.put(noColAdm, coladm);
 	}
 
 
@@ -288,7 +295,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 				candidates.add(c);
 			}
 		}
-		return choisirCommune(candidates, date);
+		return ServiceInfrastructureImpl.choisirCommune(candidates, date);
 	}
 
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
@@ -361,15 +368,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	}
 
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
-		CollectiviteAdministrative collectivite = null;
-		for (CollectiviteAdministrative c : collectivitesAdministrative) {
-			if (c.getNoColAdm() == noColAdm) {
-				collectivite = c;
-				break;
-			}
-		}
-
-		return collectivite;
+		return collectivitesAdministrative.get(noColAdm);
 	}
 
 	/**
@@ -391,7 +390,7 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 	}
 
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
-		return collectivitesAdministrative;
+		return new ArrayList<CollectiviteAdministrative>(collectivitesAdministrative.values());
 	}
 
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
@@ -402,16 +401,12 @@ public abstract class MockServiceInfrastructureService extends ServiceInfrastruc
 		}
 
 		final List<CollectiviteAdministrative> list = new ArrayList<CollectiviteAdministrative>();
-		for (CollectiviteAdministrative ca : collectivitesAdministrative) {
+		for (CollectiviteAdministrative ca : collectivitesAdministrative.values()) {
 			if (sigles.contains(ca.getSigle())) {
 				list.add(ca);
 			}
 		}
 		return list;
-	}
-
-	public Pays getPaysInconnu() throws ServiceInfrastructureException {
-		return getPays(8999);
 	}
 
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {

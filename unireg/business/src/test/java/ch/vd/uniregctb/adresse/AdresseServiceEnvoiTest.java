@@ -668,7 +668,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.COURRIER);
 				adresse.setCommuneAdresse(MockCommune.Lausanne);
 				tribunalCantonal.setAdresse(adresse);
-				collectivitesAdministrative.add(tribunalCantonal);
+				add(tribunalCantonal);
 			}
 		});
 
@@ -928,7 +928,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				adresse.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
 				adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
 				collectivite.setAdresse(adresse);
-				collectivitesAdministrative.add(collectivite);
+				add(collectivite);
 			}
 		});
 

@@ -22,6 +22,8 @@ import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -40,6 +42,10 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 
 	public void setUpDefault() {
 		setUp(new DefaultMockServiceInfrastructureService());
+	}
+
+	public void setUp(ServiceInfrastructureRaw target) {
+		this.target = new ServiceInfrastructureImpl(target);
 	}
 
 	public void setUp(ServiceInfrastructureService target) {

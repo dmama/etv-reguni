@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -17,23 +18,59 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
+import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.LogicielMetier;
+import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
+import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 
-public abstract class ServiceInfrastructureBase implements ServiceInfrastructureService {
+/**
+ * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
+ */
+public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
+	private ServiceInfrastructureRaw rawService;
 
+	/*
+	 * Note: on se permet de cacher l'ACI, la Suisse et le canton de Vaud à ce niveau, car il n'y a aucune chance que ces deux objets changent sans
+	 * une remise en compte majeure des institutions. Tout autre forme de caching doit être déléguée au ServiceInfrastructureCache.
+	 */
+	private Pays suisse;
+	private Canton vaud;
+	private CollectiviteAdministrative aci;
+	private CollectiviteAdministrative aciSuccessions;
+	private CollectiviteAdministrative aciImpotSource;
+	private CollectiviteAdministrative cedi;
+	private CollectiviteAdministrative cat;
 	private Map<Integer, List<Localite>> allLocaliteCommune;
 
-	public ServiceInfrastructureBase() {
-		super();
+	public ServiceInfrastructureImpl() {
+	}
+
+	public ServiceInfrastructureImpl(ServiceInfrastructureRaw rawService) {
+		this.rawService = rawService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setRawService(ServiceInfrastructureRaw rawService) {
+		this.rawService = rawService;
+		this.suisse = null;
+		this.vaud = null;
+		this.aci = null;
+		this.aciSuccessions = null;
+		this.aciImpotSource = null;
+		this.cedi = null;
+		this.cat = null;
+		this.allLocaliteCommune = null;
 	}
 
 	/**
@@ -77,6 +114,48 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		return Collections.unmodifiableList(communes);
 	}
 
+	@Override
+	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
+		final List<Commune> list = new ArrayList<Commune>();
+		for (Commune commune : getCommunes()) {
+			if (ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
+				list.add(commune);
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
+		final List<Commune> list = new ArrayList<Commune>();
+		for (Commune commune : getCommunes()) {
+			if (!ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
+				list.add(commune);
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<Commune> getCommunes() throws ServiceInfrastructureException {
+		return rawService.getCommunes();
+	}
+
+	@Override
+	public List<Localite> getLocalites() throws ServiceInfrastructureException {
+		return rawService.getLocalites();
+	}
+
+	@Override
+	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
+		return rawService.getLocaliteByONRP(onrp);
+	}
+
+	@Override
+	public List<Pays> getPays() throws ServiceInfrastructureException {
+		return rawService.getPays();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -115,15 +194,75 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		return pays;
 	}
 
+	@Override
+	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
+		return rawService.getCollectivite(noColAdm);
+	}
+
+	@Override
+	public CollectiviteAdministrative getACI() throws ServiceInfrastructureException {
+		if (aci == null) {
+			aci = rawService.getCollectivite(ServiceInfrastructureService.noACI);
+		}
+		return aci;
+	}
+
+	@Override
+	public CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException {
+		if (aciImpotSource == null) {
+			aciImpotSource = rawService.getCollectivite(ServiceInfrastructureService.noACIImpotSource);
+		}
+		return aciImpotSource;
+	}
+
+	@Override
+	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
+		if (aciSuccessions == null) {
+			aciSuccessions = rawService.getCollectivite(ServiceInfrastructureService.noACISuccessions);
+		}
+		return aciSuccessions;
+	}
+
+	@Override
+	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
+		if (cedi == null) {
+			cedi = rawService.getCollectivite(ServiceInfrastructureService.noCEDI);
+		}
+		return cedi;
+	}
+
+	@Override
+	public CollectiviteAdministrative getCAT() throws ServiceInfrastructureException {
+		if (cat == null) {
+			cat = rawService.getCollectivite(ServiceInfrastructureService.noCAT);
+		}
+		return cat;
+	}
+
+	@Override
+	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
+		return rawService.getAllCantons();
+	}
+
+	@Override
+	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
+		return rawService.getListeCommunes(canton);
+	}
+
+	@Override
+	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
+		return rawService.getListeFractionsCommunes();
+	}
+
 	/**
-	 * Si la collection de candidats ne contient aucun élément, renvoie <code>null</code>, si elle contient 1 élément, renvoie celui-là,
-	 * et si elle contient plus d'un élément, renvoie le premier élément trouvé valide à la date donnée (<code>null</code>
-	 * si aucun n'est valide à la date donnée).
-	 * @param candidats liste des communes potentielles
+	 * Si la collection de candidats ne contient aucun élément, renvoie <code>null</code>, si elle contient 1 élément, renvoie celui-là, et si elle contient plus d'un élément, renvoie le premier élément
+	 * trouvé valide à la date donnée (<code>null</code> si aucun n'est valide à la date donnée).
+	 *
+	 * @param candidats    liste des communes potentielles
 	 * @param dateValidite date déterminante en cas de possibilités multiples
 	 * @return une commune
 	 */
-	protected static Commune choisirCommune(List<Commune> candidats, RegDate dateValidite) {
+	public static Commune choisirCommune(List<Commune> candidats, RegDate dateValidite) {
 		Commune resultat = null;
 		if (candidats != null && candidats.size() > 0) {
 			if (candidats.size() == 1) {
@@ -146,21 +285,26 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
-		if ( allLocaliteCommune == null) {
+	public synchronized List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
+		if (allLocaliteCommune == null) {
 			allLocaliteCommune = new HashMap<Integer, List<Localite>>();
 		}
 		List<Localite> list = allLocaliteCommune.get(commune);
-		if ( list == null) {
+		if (list == null) {
 			list = new ArrayList<Localite>();
 			for (Localite loc : getLocalites()) {
 				if (loc.getNoCommune() != null && loc.getNoCommune() == commune) {
 					list.add(loc);
 				}
 			}
-			allLocaliteCommune.put(commune,list);
+			allLocaliteCommune.put(commune, list);
 		}
 		return list;
+	}
+
+	@Override
+	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
+		return rawService.getRues(localite);
 	}
 
 	private Commune getCommuneByLocaliteAdresse(Integer numeroRue, int numeroOrdrePostal) throws ServiceInfrastructureException {
@@ -196,22 +340,6 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	}
 
 	/**
-	 * Récupère la commune attachée à une adresse
-	 * @param adresse l'adresse
-	 * @return la commune
-	 */
-	private static Commune getCommuneAttachee(AdresseAvecCommune adresse) {
-		final Commune commune;
-		if (adresse != null) {
-			commune = adresse.getCommuneAdresse();
-		}
-		else {
-			commune = null;
-		}
-		return commune;
-	}
-
-	/**
 	 * Récupère la commune attachée à une adresse, et si aucune n'est présente, ou si la commune attachée est fractionnée, déduit la commune de la localité déterminée par un numéro de rue (si disponible)
 	 * ou un numéro d'ordre poste
 	 *
@@ -235,7 +363,8 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		if (egid != null) {
 			final Commune communeAnnonce = adresse.getCommuneAdresse();
 			if (communeAnnonce == null) { // (msi, 18.03.2011) selon Thierry Declerq et Andréa Osmani, chaque adresse qui possède un egid doit aussi posséder une commune d'annonce.
-				throw new ServiceInfrastructureException("Commune d'annonce inexistante sur l'adresse [" + ReflexionUtils.toString(adresse, false) + "] qui contient pourtant le numéro de bâtiment [" + egid + "]");
+				throw new ServiceInfrastructureException(
+						"Commune d'annonce inexistante sur l'adresse [" + ReflexionUtils.toString(adresse, false) + "] qui contient pourtant le numéro de bâtiment [" + egid + "]");
 			}
 			commune = getCommuneByEgid(egid, date, communeAnnonce.getNoOFSEtendu());
 		}
@@ -283,6 +412,11 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 	}
 
 	@Override
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
+		return rawService.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
+	}
+
+	@Override
 	public final Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 
 		// un premier appel où le cache a peu de chance d'être chaud
@@ -308,6 +442,21 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		return getCommuneByNumeroOfsEtendu(idCommuneMere, dateReference);
 	}
 
+	@Override
+	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
+		return rawService.getOfficeImpot(noColAdm);
+	}
+
+	@Override
+	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
+		return rawService.getOfficeImpotDeCommune(noCommune);
+	}
+
+	@Override
+	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
+		return rawService.getOfficesImpot();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -317,6 +466,32 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 			locRues.addAll(getRues(localite));
 		}
 		return locRues;
+	}
+
+	@Override
+	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
+		return rawService.getRues(canton);
+	}
+
+	@Override
+	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
+		return rawService.getRueByNumero(numero);
+	}
+
+	@Override
+	public Pays getSuisse() throws ServiceInfrastructureException {
+		if (suisse == null) {
+			suisse = getPays(ServiceInfrastructureService.SIGLE_SUISSE);
+		}
+		return suisse;
+	}
+
+	@Override
+	public Canton getVaud() throws ServiceInfrastructureException {
+		if (vaud == null) {
+			vaud = getCantonBySigle(ServiceInfrastructureService.SIGLE_CANTON_VD);
+		}
+		return vaud;
 	}
 
 	/**
@@ -329,6 +504,16 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		}
 		final String canton = commune.getSigleCanton();
 		return getCantonBySigle(canton);
+	}
+
+	@Override
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
+		return rawService.getCommuneByNumeroOfsEtendu(noCommune, date);
+	}
+
+	@Override
+	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
+		return rawService.getCommuneByLocalite(localite);
 	}
 
 	/**
@@ -455,6 +640,36 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 		}
 	}
 
+	@Override
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
+		return rawService.getCollectivitesAdministratives();
+	}
+
+	@Override
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+		return rawService.getCollectivitesAdministratives(typesCollectivite);
+	}
+
+	@Override
+	public Pays getPaysInconnu() throws ServiceInfrastructureException {
+		return getPays(ServiceInfrastructureService.noPaysInconnu);
+	}
+
+	@Override
+	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
+		return rawService.getInstitutionFinanciere(id);
+	}
+
+	@Override
+	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
+		return rawService.getInstitutionsFinancieres(noClearing);
+	}
+
+	@Override
+	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
+		return rawService.getLocaliteByNPA(npa);
+	}
+
 	/**
 	 * [UNIREG-2243] liste hard-codée parce que l'infrastructure du host ne possède pas cette info pour l'instant
 	 */
@@ -524,6 +739,41 @@ public abstract class ServiceInfrastructureBase implements ServiceInfrastructure
 
 		// here be dragons
 		return TypeAffranchissement.MONDE;
+	}
+
+	@Override
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
+		return rawService.getTypesRegimesFiscaux();
+	}
+
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
+		return rawService.getTypeRegimeFiscal(code);
+	}
+
+	@Override
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
+		return rawService.getTypesEtatsPM();
+	}
+
+	@Override
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
+		return rawService.getTypeEtatPM(code);
+	}
+
+	@Override
+	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+		return rawService.getUrlVers(application, tiersId);
+	}
+
+	@Override
+	public Logiciel getLogiciel(Long idLogiciel) {
+		return rawService.getLogiciel(idLogiciel);
+	}
+
+	@Override
+	public List<Logiciel> getTousLesLogiciels() {
+		return rawService.getTousLesLogiciels();
 	}
 
 	public List<Logiciel> getLogicielsPour(LogicielMetier metier) {

@@ -21,6 +21,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -39,7 +40,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
 
-		final ServiceInfrastructureService infrastructureService = new DefaultMockServiceInfrastructureService();
+		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 		final ServiceCivilService serviceCivil = new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -92,7 +93,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final long noIndMadame = 2L;
 		final RegDate dateMariage = RegDate.get(1985, 7, 11);
 
-		final ServiceInfrastructureService infrastructureService = new DefaultMockServiceInfrastructureService();
+		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 		final ServiceCivilService serviceCivil = new MockServiceCivil(infrastructureService) {
 			@Override
 			protected void init() {
