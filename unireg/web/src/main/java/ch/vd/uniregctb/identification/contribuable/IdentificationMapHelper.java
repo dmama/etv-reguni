@@ -264,7 +264,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	public Map<String, String> initMapEmetteurId(final boolean isTraite) {
 
-		final Map<String, String> allEmetteur = new HashMap<String, String>();
+		final TreeMap<String, String> allEmetteur = new TreeMap<String, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<String> emetteurs = (List<String>) template.execute(new TransactionCallback() {
@@ -285,7 +285,6 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 			allEmetteur.put(emetteur, emetteur);
 		}
-
 		return allEmetteur;
 	}
 
