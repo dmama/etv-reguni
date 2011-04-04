@@ -31,7 +31,7 @@
 				<c:if test="${command.logiciel != null}">
 					<table>
 						<tr class="<unireg:nextRowClass/>" >
-							<td><fmt:message key="label.complement.logiciel.libelle.complet" />&nbsp;:</td>
+							<td><fmt:message key="label.complement.logiciel.designation" />&nbsp;:</td>
 							<td><c:out value="${command.logiciel.libelleComplet}"/></td>
 						</tr>
 					</table>
