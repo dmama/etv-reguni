@@ -27,7 +27,9 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -179,6 +181,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 
 			return new ArrayList<TiersInfo>(set);
+		}
+		catch (TooManyResultsIndexerException e) {
+			throw new BusinessException(e);
+		}
+		catch (EmptySearchCriteriaException e) {
+			throw new BusinessException(e);
 		}
 		catch (IndexerException e) {
 			LOGGER.error(e, e);

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.LuceneEngine;
@@ -62,7 +63,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		}
 
 		if (criteria.isEmpty()) {
-			throw new IndexerException("Les critères de recherche sont vides");
+			throw new EmptySearchCriteriaException("Les critères de recherche sont vides");
 		}
 
 		final List<TiersIndexedData> list;
