@@ -5,8 +5,8 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -18,7 +18,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class LeveeTutelle extends EvenementCivilInterne {
 
-	protected LeveeTutelle(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected LeveeTutelle(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 

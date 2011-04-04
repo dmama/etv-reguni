@@ -11,8 +11,8 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -53,7 +53,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	 */
 	private Commune nouvelleCommunePrincipale;
 
-	protected Demenagement(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected Demenagement(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		// il faut récupérer les adresses actuelles, ce seront les nouvelles
@@ -65,7 +65,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), evenement.getDateEvenement().getOneDayBefore(), false));
 		}
 		catch (DonneesCivilesException e) {
-			throw new EvenementCivilInterneException(e);
+			throw new EvenementCivilException(e);
 		}
 		this.ancienneAdressePrincipale = adresses.principale;
 
@@ -74,7 +74,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), evenement.getDateEvenement());
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilInterneException(e);
+			throw new EvenementCivilException(e);
 		}
 	}
 

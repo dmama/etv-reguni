@@ -8,8 +8,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -28,7 +28,7 @@ public class ChangementNom extends ChangementBase {
 
 	protected static Logger LOGGER = Logger.getLogger(ChangementNom.class);
 
-	protected ChangementNom(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected ChangementNom(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 

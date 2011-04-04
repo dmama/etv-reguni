@@ -5,7 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -21,7 +21,7 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 
-	protected Mouvement(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected Mouvement(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 

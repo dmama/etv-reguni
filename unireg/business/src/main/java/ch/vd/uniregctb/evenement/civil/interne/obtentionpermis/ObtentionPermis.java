@@ -11,8 +11,8 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -44,7 +44,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 
 	private TypePermis typePermis;
 
-	protected ObtentionPermis(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected ObtentionPermis(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		try {
@@ -52,7 +52,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 			final int anneeCourante = evenement.getDateEvenement().year();
 			final Collection<Permis> listePermis = context.getServiceCivil().getPermis(super.getNoIndividu(), anneeCourante);
 			if (listePermis == null) {
-				throw new EvenementCivilInterneException("Aucun permis trouvé dans le registre civil");
+				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
 			}
 			for (Permis permis : listePermis) {
 				if (evenement.getDateEvenement().equals(permis.getDateDebutValidite())) {
@@ -63,12 +63,12 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 
 			// si le permis n'a pas été trouvé, on lance une exception
 			if ( this.typePermis == null ) {
-				throw new EvenementCivilInterneException("Aucun permis trouvé dans le registre civil");
+				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
 			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new EvenementCivilInterneException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 
 		try {
@@ -78,7 +78,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 			if (context.getServiceInfra().estDansLeCanton(adressePrincipale)) {
 				final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale, evenement.getDateEvenement());
 				if (communePrincipale == null) {
-					throw new EvenementCivilInterneException("Incohérence dans l'adresse principale");
+					throw new EvenementCivilException("Incohérence dans l'adresse principale");
 				}
 				this.numeroOfsEtenduCommunePrincipale = communePrincipale.getNoOFSEtendu();
 			}
@@ -87,7 +87,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 			}
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilInterneException("Echec de résolution de l'adresse principale.", e);
+			throw new EvenementCivilException("Echec de résolution de l'adresse principale.", e);
 		}
 	}
 

@@ -7,7 +7,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -32,7 +32,7 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 	 */
 	private Adresse adresseCourrier;
 
-	protected EvenementCivilInterneAvecAdresses(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected EvenementCivilInterneAvecAdresses(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		// Distinction adresse principale et adresse courrier
@@ -46,7 +46,7 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 			this.adresseCourrier = adresses.courrier;
 		}
 		catch (DonneesCivilesException e) {
-			throw new EvenementCivilInterneException(e);
+			throw new EvenementCivilException(e);
 		}
 	}
 

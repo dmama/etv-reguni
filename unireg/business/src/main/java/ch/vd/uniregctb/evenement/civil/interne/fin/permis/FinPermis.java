@@ -10,8 +10,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -34,7 +34,7 @@ public class FinPermis extends EvenementCivilInterne {
 
 	private TypePermis typePermis;
 
-	protected FinPermis(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected FinPermis(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		try {
@@ -42,7 +42,7 @@ public class FinPermis extends EvenementCivilInterne {
 			final int anneeCourante = evenement.getDateEvenement().year();
 			final Collection<Permis> listePermis = context.getServiceCivil().getPermis(super.getNoIndividu(), anneeCourante);
 			if (listePermis == null) {
-				throw new EvenementCivilInterneException("Le permis n'a pas été trouvé dans le registre civil");
+				throw new EvenementCivilException("Le permis n'a pas été trouvé dans le registre civil");
 			}
 			for (Permis permis : listePermis) {
 				if (RegDateHelper.equals(permis.getDateFinValidite(), evenement.getDateEvenement())) {
@@ -53,12 +53,12 @@ public class FinPermis extends EvenementCivilInterne {
 
 			// si le permis n'a pas été trouvé, on lance une exception
 			if ( this.typePermis == null ) {
-				throw new EvenementCivilInterneException("Le permis n'a pas été trouvé dans le registre civil");
+				throw new EvenementCivilException("Le permis n'a pas été trouvé dans le registre civil");
 			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new EvenementCivilInterneException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 

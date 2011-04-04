@@ -10,8 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -35,13 +35,13 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 	/** Le type de permis obtenu. */
 	private TypePermis typePermis;
 
-	protected AnnulationPermis(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected AnnulationPermis(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		try {
 			final Collection<Permis> listePermis = super.getIndividu().getPermis();
 			if (listePermis == null) {
-				throw new EvenementCivilInterneException("Aucun permis trouvé dans le registre civil");
+				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
 			}
 			for (Permis permis : listePermis) {
 				if (getDate().equals(permis.getDateDebutValidite()) && permis.getDateAnnulation() != null) {
@@ -52,12 +52,12 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 
 			// si le permis n'a pas été trouvé, on lance une exception
 			if ( this.typePermis == null ) {
-				throw new EvenementCivilInterneException("Aucun permis trouvé dans le registre civil");
+				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
 			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new EvenementCivilInterneException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 

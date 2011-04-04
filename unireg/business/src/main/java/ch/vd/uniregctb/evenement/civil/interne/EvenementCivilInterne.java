@@ -12,8 +12,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -68,9 +68,9 @@ public abstract class EvenementCivilInterne {
 	 * @param evenement un événement civil externe
 	 * @param context   le context d'exécution de l'événement
 	 * @param options
-	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
-	protected EvenementCivilInterne(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected EvenementCivilInterne(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		this.context = context;
 
 		/* récupération des informations liés à l'événement civil */

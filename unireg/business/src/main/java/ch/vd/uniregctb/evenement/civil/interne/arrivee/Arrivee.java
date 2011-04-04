@@ -20,8 +20,8 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -71,7 +71,7 @@ public class Arrivee extends Mouvement {
 	private Commune nouvelleCommunePrincipale;
 	private Commune nouvelleCommuneSecondaire;
 
-	public Arrivee(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	public Arrivee(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 		Assert.isTrue(isEvenementArrivee(evenement.getType()));
 
@@ -83,7 +83,7 @@ public class Arrivee extends Mouvement {
 			anciennesAdresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), veilleArrivee, false));
 		}
 		catch (DonneesCivilesException e) {
-			throw new EvenementCivilInterneException(e);
+			throw new EvenementCivilException(e);
 		}
 
 		this.ancienneAdressePrincipale = anciennesAdresses.principale;
@@ -99,7 +99,7 @@ public class Arrivee extends Mouvement {
 			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire, veilleArrivee);
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilInterneException(e);
+			throw new EvenementCivilException(e);
 		}
 	}
 

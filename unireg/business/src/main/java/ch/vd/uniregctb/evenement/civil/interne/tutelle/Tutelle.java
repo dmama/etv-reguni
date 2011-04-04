@@ -11,8 +11,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -62,7 +62,7 @@ public class Tutelle extends EvenementCivilInterne {
 	 */
 	private CollectiviteAdministrative autoriteTutelaire = null;
 
-	protected Tutelle(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected Tutelle(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		/*
@@ -91,7 +91,7 @@ public class Tutelle extends EvenementCivilInterne {
 				this.autoriteTutelaire = context.getServiceInfra().getCollectivite(tutelle.getNumeroCollectiviteAutoriteTutelaire().intValue());
 			}
 			catch (ServiceInfrastructureException e) {
-				throw new EvenementCivilInterneException(String.format("Autorité tutélaire avec numéro %d introuvable", tutelle.getNumeroCollectiviteAutoriteTutelaire()), e);
+				throw new EvenementCivilException(String.format("Autorité tutélaire avec numéro %d introuvable", tutelle.getNumeroCollectiviteAutoriteTutelaire()), e);
 			}
 		}
 	}

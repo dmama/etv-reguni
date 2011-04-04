@@ -13,8 +13,8 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilInterneException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -60,7 +60,7 @@ public class Depart extends Mouvement {
 
 	private Pays paysInconnu;
 
-	protected Depart(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilInterneException {
+	protected Depart(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		if (evenement.getNumeroIndividuConjoint()!=null) {
@@ -76,7 +76,7 @@ public class Depart extends Mouvement {
 			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), dateDepart, false));
 		}
 		catch (DonneesCivilesException e) {
-			throw new EvenementCivilInterneException(e);
+			throw new EvenementCivilException(e);
 		}
 
 		this.ancienneAdressePrincipale = adresses.principale;
@@ -96,7 +96,7 @@ public class Depart extends Mouvement {
 			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilInterneException(e);
+			throw new EvenementCivilException(e);
 		}
 	}
 
