@@ -85,10 +85,7 @@ public class SituationFamille {
 			this.tarifApplicable = EnumHelper.coreToWeb(situtationMenage.getTarifApplicable());
 			this.numeroContribuablePrincipal = situtationMenage.getNumeroContribuablePrincipal();
 		}
-		else if (situation instanceof ch.vd.uniregctb.situationfamille.VueSituationFamillePersonnePhysique) {
-			ch.vd.uniregctb.situationfamille.VueSituationFamillePersonnePhysique situationsPersonne = (ch.vd.uniregctb.situationfamille.VueSituationFamillePersonnePhysique) situation;
 
-			this.etatCivil = EnumHelper.coreToWeb(situationsPersonne.getEtatCivil());
-		}
+		this.etatCivil = EnumHelper.coreToWeb(situation.getEtatCivil());
 	}
 }

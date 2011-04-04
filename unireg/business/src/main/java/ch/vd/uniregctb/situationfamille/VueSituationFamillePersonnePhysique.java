@@ -6,5 +6,4 @@ package ch.vd.uniregctb.situationfamille;
  */
 public interface VueSituationFamillePersonnePhysique extends VueSituationFamille {
 
-
 }

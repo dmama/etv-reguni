@@ -10,16 +10,20 @@ import ch.vd.uniregctb.type.EtatCivil;
 /**
  * Classe de base permettant d'adapter une situation de famille en fonction de nouvelles dates de début/fin.
  */
-public abstract class VueSituationFamilleAdapter implements VueSituationFamille {
+public abstract class VueSituationFamilleAdapter<T extends VueSituationFamille> implements VueSituationFamille {
 
-	private final VueSituationFamille target;
+	private final T target;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 
-	public VueSituationFamilleAdapter(VueSituationFamille target, RegDate dateDebut, RegDate dateFin) {
+	public VueSituationFamilleAdapter(T target, RegDate dateDebut, RegDate dateFin) {
 		this.target = target;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
+	}
+
+	protected T getTarget() {
+		return target;
 	}
 
 	public RegDate getDateDebut() {
