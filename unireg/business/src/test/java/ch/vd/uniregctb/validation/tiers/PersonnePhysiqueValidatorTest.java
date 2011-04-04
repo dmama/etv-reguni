@@ -7,8 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -24,9 +28,11 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,10 +40,18 @@ import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
 public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<PersonnePhysique> {
-	
+
+	private ValidationInterceptor validationInterceptor;
+
 	@Override
 	protected String getValidatorBeanName() {
 		return "personnePhysiqueValidator";
+	}
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 	}
 
 	@Test
@@ -707,5 +721,222 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		hab.setForsFiscaux(fors);
 		return hab;
+	}
+
+	@Test
+	public void testSansChevauchementRepresentationsLegales() throws Exception {
+
+		final class Ids {
+			long idTuteur;
+			long idCurateur;
+			long idPupille;
+		}
+
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+
+				ids.idTuteur = tuteur.getNumero();
+				ids.idCurateur = curateur.getNumero();
+				ids.idPupille = pupille.getNumero();
+				return null;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+
+				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2000, 12, 31));
+				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
+
+				final ValidationResults vr = validate(pupille);
+				assertFalse(vr.hasErrors());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testAvecChevauchementSimpleRepresentationsLegales() throws Exception {
+
+		final class Ids {
+			long idTuteur;
+			long idCurateur;
+			long idPupille;
+		}
+
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+
+				ids.idTuteur = tuteur.getNumero();
+				ids.idCurateur = curateur.getNumero();
+				ids.idPupille = pupille.getNumero();
+				return null;
+			}
+		});
+
+		validationInterceptor.setEnabled(false);
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+
+					final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+					final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+					final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+
+					addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));
+					addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
+
+					final ValidationResults vr = validate(pupille);
+					assertTrue(vr.hasErrors());
+
+					assertEquals(1, vr.getErrors().size());
+					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(0));
+
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+	}
+
+	@Test
+	@NotTransactional
+	public void testAvecChevauchementRépartiRepresentationsLegales() throws Exception {
+
+		final class Ids {
+			long idTuteur;
+			long idCurateur;
+			long idConseiller;
+			long idPupille;
+		}
+
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+				final PersonnePhysique conseiller = addNonHabitant(null, "Conseiller", null, Sexe.FEMININ);
+				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+
+				ids.idTuteur = tuteur.getNumero();
+				ids.idCurateur = curateur.getNumero();
+				ids.idConseiller = conseiller.getNumero();
+				ids.idPupille = pupille.getNumero();
+				return null;
+			}
+		});
+
+		validationInterceptor.setEnabled(false);
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+
+					final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+					final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+					final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
+					final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+
+					addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));         // |-----------------------|
+					addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));           //                      |-----------------|
+					addConseilLegal(pupille, conseiller, date(2001, 6, 1), null);                   //                                     |---------------...
+
+					final ValidationResults vr = validate(pupille);
+					assertTrue(vr.hasErrors());
+
+					assertEquals(2, vr.getErrors().size());
+					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(0));
+					assertEquals("La période [01.06.2001 ; 30.06.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(1));
+
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+	}
+
+	@Test
+	@NotTransactional
+	public void testAvecChevauchementMultipleRepresentationsLegales() throws Exception {
+
+		final class Ids {
+			long idTuteur;
+			long idCurateur;
+			long idConseiller;
+			long idPupille;
+		}
+
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+				final PersonnePhysique conseiller = addNonHabitant(null, "Conseiller", null, Sexe.FEMININ);
+				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+
+				ids.idTuteur = tuteur.getNumero();
+				ids.idCurateur = curateur.getNumero();
+				ids.idConseiller = conseiller.getNumero();
+				ids.idPupille = pupille.getNumero();
+				return null;
+			}
+		});
+
+		validationInterceptor.setEnabled(false);
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+
+					final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+					final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+					final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
+					final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+
+					addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));                 // |----------------------------|
+					addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));                   //                          |--------------------|
+					addConseilLegal(pupille, conseiller, date(2000, 6, 1), date(2001, 3, 31));              //                |---------------------|
+					addConseilLegal(pupille, tuteur, date(2001, 5, 1), null);                               //                                            |-----------...
+
+					final ValidationResults vr = validate(pupille);
+					assertTrue(vr.hasErrors());
+
+					assertEquals(2, vr.getErrors().size());
+					assertEquals("La période [01.06.2000 ; 31.03.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(0));
+					assertEquals("La période [01.05.2001 ; 30.06.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(1));
+
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 	}
 }

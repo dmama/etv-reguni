@@ -11,6 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
@@ -18,6 +20,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhysique> {
@@ -128,6 +131,68 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 				else if (pp.getHabitant() != null && !pp.getHabitant() && a instanceof AdresseCivile && a.getDateFin() == null) {
 					results.addError("L'adresse de type 'personne civile' (numéro=" + a.getId() + ", début=" + a.getDateDebut() + ", fin="
 							+ a.getDateFin() + ") n'est pas autorisée sur un non-habitant.");
+				}
+			}
+		}
+
+		return results;
+	}
+
+	@Override
+	protected ValidationResults validateRapports(PersonnePhysique tiers) {
+
+		final ValidationResults results = super.validateRapports(tiers);
+
+		// [SIFISC-124] Les mesures de tutelles sont mutuellement exclusives (= on ne peut pas en avoir plusieurs actives à un moment donné)
+		if (tiers.getRapportsSujet() != null) {
+			List<RapportEntreTiers> mesures = null;
+			for (RapportEntreTiers r : tiers.getRapportsSujet()) {
+				if (!r.isAnnule() && r instanceof RepresentationLegale) {
+					if (mesures == null) {
+						mesures = new ArrayList<RapportEntreTiers>();
+					}
+					mesures.add(r);
+				}
+			}
+			if (mesures != null) {
+				final int size = mesures.size();
+				if (size > 1) {
+					final List<DateRange> intersectingRanges = new ArrayList<DateRange>(size);
+					for (int i = 0 ; i < size - 1 ; ++ i) {
+						final DateRange mesure = mesures.get(i);
+						for (DateRange autreMesure : mesures.subList(i + 1, size)) {
+							final DateRange intersection = DateRangeHelper.intersection(mesure, autreMesure);
+							if (intersection != null) {
+								intersectingRanges.add(intersection);
+							}
+						}
+					}
+
+					if (intersectingRanges.size() > 0) {
+						Collections.sort(intersectingRanges, new DateRangeComparator<DateRange>());
+
+						final List<DateRange> merge = new ArrayList<DateRange>(intersectingRanges.size());
+						DateRange current = null;
+						for (DateRange range : intersectingRanges) {
+							if (current == null) {
+								current = range;
+							}
+							else if (DateRangeHelper.intersect(current, range) || DateRangeHelper.isCollatable(current, range)) {
+								current = new DateRangeHelper.Range(RegDateHelper.minimum(current.getDateDebut(), range.getDateDebut(), NullDateBehavior.EARLIEST),
+								                                    RegDateHelper.maximum(current.getDateFin(), range.getDateFin(), NullDateBehavior.LATEST));
+							}
+							else {
+								merge.add(current);
+								current = range;
+							}
+						}
+						merge.add(current);
+
+						// génération des messages d'erreur
+						for (DateRange range : merge) {
+							results.addError(String.format("La période %s est couverte par plusieurs mesures de tutelle", DateRangeHelper.toDisplayString(range)));
+						}
+					}
 				}
 			}
 		}
