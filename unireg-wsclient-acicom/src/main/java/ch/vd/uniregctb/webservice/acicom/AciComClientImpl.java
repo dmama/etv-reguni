@@ -17,6 +17,7 @@ import ch.vd.dfin.acicom.web.services.meldewesen.impl.MeldewesenConsultationServ
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.RecupererContenuMessage;
 
 
+@SuppressWarnings({"UnusedDeclaration"})
 public class AciComClientImpl implements AciComClient {
 
 	private static final Logger LOGGER = Logger.getLogger(AciComClientImpl.class);
@@ -47,36 +48,28 @@ public class AciComClientImpl implements AciComClient {
 		ContenuMessage contenuMessage;
 		final String businessId = infosMessage.getMessageId();
 		try {
-
 			contenuMessage = this.service.recupererContenuMessage(businessId);
-
 		}
 		catch (AciComException_Exception e) {
-			final String message = "Erreur technique d'accès à ACICOM: "+e.getMessage();
-			throw new AciComClientTechniqueException(message);
+			final String message = "Erreur technique d'accès à ACICOM";
+			throw new AciComClientTechniqueException(message, e);
 		}
 		catch (RuntimeException e) {
-			final String message = "Erreur technique d'accès à ACICOM: "+e.getMessage();
-			throw new AciComClientTechniqueException(message);
+			final String message = "Erreur technique d'accès à ACICOM";
+			throw new AciComClientTechniqueException(message, e);
 		}
-			catch (DocumentNotFoundException_Exception e) {
-			final String message = "Erreur suite à la recherche du message : "+e.getMessage();
-			throw new AciComClientDocumentNotFoundException(message);
-		}
-
-
-		if (contenuMessage != null) {
-			final String extension = contenuMessage.getExtension();
-			LOGGER.info("Type de document : " + extension);
-			return contenuMessage;
-		}
-		else {
-
-			throw new AciComClientTechniqueException("La recherche du message ayant le business ID"+businessId+" a renvoyé un contenu nul");
-
+		catch (DocumentNotFoundException_Exception e) {
+			final String message = "Aucun document ne correspond au businessID = \"" + infosMessage.getMessageId() + "\"";
+			throw new AciComClientDocumentNotFoundException(message, e);
 		}
 
+		if (contenuMessage == null) {
+			throw new AciComClientTechniqueException("La recherche du message ayant le business ID" + businessId + " a renvoyé un contenu nul");
+		}
 
+		final String extension = contenuMessage.getExtension();
+		LOGGER.info("Type de document : " + extension);
+		return contenuMessage;
 	}
 
 	public void initService() {
