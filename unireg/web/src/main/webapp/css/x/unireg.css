@@ -54,7 +54,8 @@ legend a.delete {
 
 
 .couplePremierePP, .coupleSecondePP {
-	width: 49%;
+    /* 48% autrement IE6 met les fieldsets l'un dessous l'autre */
+	width: 48%;
 }
 
 .couplePremierePP {

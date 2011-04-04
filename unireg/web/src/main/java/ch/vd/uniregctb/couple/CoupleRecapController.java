@@ -23,6 +23,7 @@ import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.couple.manager.CoupleRecapManager;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.utils.TiersNumberEditor;
 
 public class CoupleRecapController extends AbstractSimpleFormController {
 
@@ -53,6 +54,7 @@ public class CoupleRecapController extends AbstractSimpleFormController {
 		final NumberFormat numberFormat = NumberFormat.getInstance(locale);
 		numberFormat.setGroupingUsed(false); // pour éviter d'afficher des virgules dans le numéro de contribuable
 		binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, numberFormat, true));
+		binder.registerCustomEditor(Long.class, "numeroTroisiemeTiers", new TiersNumberEditor(true));
 	}
 
 	@Override
