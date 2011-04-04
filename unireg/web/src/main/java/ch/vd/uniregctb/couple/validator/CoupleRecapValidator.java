@@ -83,7 +83,7 @@ public class CoupleRecapValidator implements Validator {
 					}
 				}
 
-				if (troisieme.getNatureTiers() == NatureTiers.NonHabitant) {
+				if (troisieme != null && troisieme.getNatureTiers() == NatureTiers.NonHabitant) {
 					dateDebut = troisieme.getDateDebutActivite(); // [UNIREG-3297] on ne tient pas compte de la date affichée à l'écran
 				}
 				else {
