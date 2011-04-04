@@ -103,3 +103,8 @@ testprop.webservice.sipf.bvrplus.password=
 testprop.webservice.fidor.url=http://fidor-in.etat-de-vaud.ch/fiscalite/int-fidor/ws/v2
 testprop.webservice.fidor.username=
 testprop.webservice.fidor.password=
+
+# AciCom WebService
+testprop.webservice.acicom.message.url=http://ssv0213v:60102/fiscalite/int-acicom/services/meldewesenConsultationService
+testprop.webservice.acicom.message.username=
+testprop.webservice.acicom.message.password=

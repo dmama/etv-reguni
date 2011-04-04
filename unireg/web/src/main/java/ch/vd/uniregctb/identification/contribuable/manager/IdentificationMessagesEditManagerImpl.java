@@ -221,18 +221,13 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		if (userCourant.equals(identificationContribuable.getUtilisateurTraitant())) {
 			identificationContribuable.setUtilisateurTraitant(null);
 		}
-
-
 	}
 
 	public FichierOrigine getMessageFile(String businessId) throws AciComClientException {
 		return aciComService.getMessageFile(businessId);
 	}
 
-	public AciComService getAciComService() {
-		return aciComService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAciComService(AciComService aciComService) {
 		this.aciComService = aciComService;
 	}
