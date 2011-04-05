@@ -190,7 +190,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 
 						// génération des messages d'erreur
 						for (DateRange range : merge) {
-							results.addError(String.format("La période %s est couverte par plusieurs mesures de tutelle", DateRangeHelper.toDisplayString(range)));
+							results.addError(String.format("La période %s est couverte par plusieurs mesures tutélaires", DateRangeHelper.toDisplayString(range)));
 						}
 					}
 				}

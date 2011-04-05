@@ -808,7 +808,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 					assertTrue(vr.hasErrors());
 
 					assertEquals(1, vr.getErrors().size());
-					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(0));
+					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
 
 					return null;
 				}
@@ -867,8 +867,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 					assertTrue(vr.hasErrors());
 
 					assertEquals(2, vr.getErrors().size());
-					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(0));
-					assertEquals("La période [01.06.2001 ; 30.06.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(1));
+					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+					assertEquals("La période [01.06.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
 
 					return null;
 				}
@@ -928,8 +928,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 					assertTrue(vr.hasErrors());
 
 					assertEquals(2, vr.getErrors().size());
-					assertEquals("La période [01.06.2000 ; 31.03.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(0));
-					assertEquals("La période [01.05.2001 ; 30.06.2001] est couverte par plusieurs mesures de tutelle", vr.getErrors().get(1));
+					assertEquals("La période [01.06.2000 ; 31.03.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+					assertEquals("La période [01.05.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
 
 					return null;
 				}
