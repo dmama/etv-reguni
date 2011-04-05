@@ -13,7 +13,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 
 /**
- * Affiche les information civil d'un individu lorsque la souris est positionnée sur ses nom/prénoms.
+ * Affiche les informations civiles d'un individu lorsque la souris est positionnée sur ses nom/prénoms.
  */
 public class IdentificationIndividuTooltipController extends AbstractCommandController {
 
@@ -41,13 +41,20 @@ public class IdentificationIndividuTooltipController extends AbstractCommandCont
 			noInd = Long.parseLong(noIndAsString);
 		}
 		else {
-			final Long noCtb = Long.parseLong(request.getParameter("noCtb"));
-			noInd = manager.getNumeroIndividuFromCtb(noCtb);
+			final String noCtbAsString = request.getParameter("noCtb");
+			if (StringUtils.isNotBlank(noCtbAsString)) {
+				final Long noCtb = Long.parseLong(noCtbAsString);
+				noInd = manager.getNumeroIndividuFromCtb(noCtb);
+			}
+			else {
+				noInd = null;
+			}
 		}
 
-		final Individu individu = civilService.getIndividu(noInd, null, AttributeIndividu.NATIONALITE);
-		view.init(individu);
-
+		if (noInd != null) {
+			final Individu individu = civilService.getIndividu(noInd, null, AttributeIndividu.NATIONALITE);
+			view.init(individu);
+		}
 		return new ModelAndView("/identification/tooltip/individu", errors.getModel());
 	}
 }
