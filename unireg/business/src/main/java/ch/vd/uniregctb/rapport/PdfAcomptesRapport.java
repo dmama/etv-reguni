@@ -9,6 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -91,9 +92,15 @@ public class PdfAcomptesRapport extends PdfRapport {
 		if (size > 0) {
 
 			final StringBuilder b = new StringBuilder(300 * list.size());
-			b.append("Numéro de contribuable" + COMMA + "Nom du contribuable principal" + COMMA + "Prénom du contribuable principal" + COMMA
-					+ "For principal" + COMMA + "For de gestion" + COMMA + "Type de population" + COMMA + "Type d'impôt" + COMMA
-					+ "Période fiscale" + "\n");
+			b.append("Numéro de contribuable").append(COMMA);
+			b.append("Nom du contribuable principal").append(COMMA);
+			b.append("Prénom du contribuable principal").append(COMMA);
+			b.append("For principal").append(COMMA);
+			b.append("For de gestion").append(COMMA);
+			b.append("Type de population").append(COMMA);
+			b.append("Type d'impôt").append(COMMA);
+			b.append("Période fiscale").append(COMMA);
+			b.append("Fors secondaires").append('\n');
 
 			final String message = String.format("Génération du fichier %s", filename);
 			status.setMessage(message, 0);
@@ -209,7 +216,16 @@ public class PdfAcomptesRapport extends PdfRapport {
 		b.append(COMMA);
 
 		b.append(typeImpot).append(COMMA);
-		b.append(assujettissement.anneeFiscale);
+		b.append(assujettissement.anneeFiscale).append(COMMA);
+
+		if (assujettissement.ofsForsSecondaires.size() > 0) {
+			final Iterator<Integer> iterator = assujettissement.ofsForsSecondaires.iterator();
+			b.append(iterator.next());
+			while (iterator.hasNext()) {
+				b.append('-').append(iterator.next());
+			}
+		}
+
 		b.append('\n');
 	}
 

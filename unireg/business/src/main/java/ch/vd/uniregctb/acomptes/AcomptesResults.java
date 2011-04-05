@@ -4,12 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
@@ -21,6 +24,7 @@ import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -187,12 +191,14 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 		public final TypeContribuable typeContribuable;
 		public final Integer noOfsForPrincipal;
 		public final Integer noOfsForGestion;
+		public final Set<Integer> ofsForsSecondaires;
 		public final int anneeFiscale;
 
-		private InfoAssujettissementContribuable(TypeContribuable typeContribuable, Integer noOfsForPrincipal, Integer noOfsForGestion, int anneeFiscale) {
+		private InfoAssujettissementContribuable(TypeContribuable typeContribuable, Integer noOfsForPrincipal, Integer noOfsForGestion, Set<Integer> ofsForsSecondaires, int anneeFiscale) {
 			this.typeContribuable = typeContribuable;
 			this.noOfsForPrincipal = noOfsForPrincipal;
 			this.noOfsForGestion = noOfsForGestion;
+			this.ofsForsSecondaires = ofsForsSecondaires == null ? Collections.<Integer>emptySet() : Collections.unmodifiableSet(ofsForsSecondaires);
 			this.anneeFiscale = anneeFiscale;
 		}
 	}
@@ -215,6 +221,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 			return null;
 		}
 
+		Set<Integer> ofsForsSecondaires = null;
 		final ForGestion forGestion = this.tiersService.getForGestionActif(ctb, dateFinPeriode);
 		if (		(forGestion != null)
 				&& 	(forGestion.getSousjacent() != null)
@@ -244,6 +251,15 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 						addContribuableIgnoreNonSoumisAuxAcomptes(ctb, anneeFiscale, assujettissement.getDescription());
 						return null;
 					}
+
+					// information sur les communes des fors secondaires
+					final ForsList<ForFiscalSecondaire> forsSecondaires = assujettissement.getFors().secondaires;
+					if (!forsSecondaires.isEmpty()) {
+						ofsForsSecondaires = new TreeSet<Integer>();
+						for (ForFiscalSecondaire ffs : forsSecondaires) {
+							ofsForsSecondaires.add(ffs.getNumeroOfsAutoriteFiscale());
+						}
+					}
 				}
 				else {
 					addContribuableIgnorePasAssujetti(ctb, anneeFiscale);
@@ -259,7 +275,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 			return null;
 		}
 
-		return new InfoAssujettissementContribuable(typeContribuable, noOfsForPrincipal, noOfsForGestion, anneeFiscale);
+		return new InfoAssujettissementContribuable(typeContribuable, noOfsForPrincipal, noOfsForGestion, ofsForsSecondaires, anneeFiscale);
 	}
 
 	private void addContribuable(Contribuable ctb, String nom, String prenom) {
