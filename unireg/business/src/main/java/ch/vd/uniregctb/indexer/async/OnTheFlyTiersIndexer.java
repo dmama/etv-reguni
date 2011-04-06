@@ -88,6 +88,9 @@ public class OnTheFlyTiersIndexer {
 	public void schedule(Collection<Long> ids) {
 		try {
 			for (Long id : ids) {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Ajout de l'id [" + id + "] dans la queue...");
+				}
 				queue.put(id);
 			}
 		}
@@ -104,7 +107,7 @@ public class OnTheFlyTiersIndexer {
 	 */
 	public void sync() {
 		try {
-			LOGGER.trace("Attente du vidage de la queue...");
+			LOGGER.trace("Vidange de la queue...");
 			while (!queue.isEmpty()) {
 				Thread.sleep(10);
 			}

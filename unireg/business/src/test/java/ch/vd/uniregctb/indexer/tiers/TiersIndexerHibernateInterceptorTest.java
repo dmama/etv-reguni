@@ -1,19 +1,36 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
+import java.util.List;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import java.util.List;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.indexer.async.AsyncTiersIndexerThread;
+import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
@@ -260,6 +277,13 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testIndexationOnModifyFor() throws Exception {
 
+		LOGGER.info("==== testIndexationOnModifyFor START ====");
+
+		// On force le à TRACE pour déugger ce test qui fail de temps en temps avec Hudson
+		Logger.getLogger(OnTheFlyTiersIndexer.class).setLevel(Level.TRACE);
+		Logger.getLogger(AsyncTiersIndexerThread.class).setLevel(Level.TRACE);
+
+		LOGGER.info("==== testIndexationOnModifyFor MODIF 1 ====");
 		final long id = (Long)doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -279,6 +303,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		});
 
 		globalTiersIndexer.sync();
+		LOGGER.info("==== testIndexationOnModifyFor après SYNC 1 ====");
 
 		// On doit trouver le tiers
 		{
@@ -301,6 +326,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			assertFalse(tiers.isDirty());
 		}
 
+		LOGGER.info("==== testIndexationOnModifyFor MODIF 2 ====");
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -314,7 +340,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		});
 
 		globalTiersIndexer.sync();
-		
+		LOGGER.info("==== testIndexationOnModifyFor après SYNC 2 ====");
+
 		// On le trouve plus a Lausanne
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -336,6 +363,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			assertFalse(tiers.isDirty());
 		}
 
+		LOGGER.info("==== testIndexationOnModifyFor MODIF 3 ====");
 		// On ajoute un for
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -357,7 +385,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		});
 
 		globalTiersIndexer.sync();
-		
+		LOGGER.info("==== testIndexationOnModifyFor après SYNC 3 ====");
+
 		// Son for est maintenant a Villars
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -386,6 +415,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			assertNotNull(tiers);
 			assertFalse(tiers.isDirty());
 		}
+
+		LOGGER.info("==== testIndexationOnModifyFor END ====");
 	}
 
 	/**

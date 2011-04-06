@@ -6,7 +6,7 @@
 	<!-- log4j config pour les UT de Biz -->
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-		<param name="Threshold" value="WARN" />
+		<param name="Threshold" value="TRACE" /> <!-- Mode TRACE de manière temporaire pour débugger le test TiersIndexerHibernateInterceptorTest -->
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[ut] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
 		</layout>
