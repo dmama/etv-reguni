@@ -58,7 +58,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	private final PlatformTransactionManager transactionManager;
-	private final HibernateTemplate hibernateTemplate;
+	protected final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;

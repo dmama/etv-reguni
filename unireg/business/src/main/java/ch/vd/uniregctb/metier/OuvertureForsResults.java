@@ -3,9 +3,12 @@ package ch.vd.uniregctb.metier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.exception.ConstraintViolationException;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 
@@ -19,6 +22,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		CIVIL_EXCEPTION("le service civile a retourné une exception"), // ----------------------------------------------------------
 		INDIVIDU_INCONNU("l'individu associé à l'habitant n'existe pas"), // -------------------------------------------------------
 		UNKNOWN_EXCEPTION("une exception inconnue a été levée"), // ----------------------------------------------------------------
+		CONSTRAINT_VIOLATION_EXCEPTION("une exception de violation de contrainte base de données a été levée"), // ----------------------------------------------------------------
 		VALIDATION("le contribuable ne valide pas"), // ----------------------------------------------------------------------------
 		VALIDATION_APRES_OUVERTURE("le contribuable ne valide plus après l'ouverture de son for de majorité"), // ------------------
 		INCOHERENCE_FOR_FISCAUX("une incohérence avec les fors fiscaux a été détectée"), // ----------------------------------------
@@ -91,7 +95,15 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	}
 
 	public void addUnknownException(PersonnePhysique h, Exception e) {
-		habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
+		if (e instanceof ServiceInfrastructureException) {
+			habitantEnErrors.add(new Erreur(h.getNumero(), null, ErreurType.INFRA_EXCEPTION, e.getMessage()));
+		}
+		else if (e instanceof ConstraintViolationException) {
+			habitantEnErrors.add(new Erreur(h.getNumero(), null, ErreurType.CONSTRAINT_VIOLATION_EXCEPTION, e.getMessage()));
+		}
+		else{
+			habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
+		}
 	}
 
 	public void addUnknownException(Long habitantId, Exception e) {
@@ -101,6 +113,12 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	public void addOnCommitException(Long habitantId, Exception e) {
 		if (e instanceof ValidationException) {
 			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.VALIDATION_APRES_OUVERTURE, e.getMessage()));
+		}
+		else if (e instanceof ServiceInfrastructureException) {
+			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.INFRA_EXCEPTION, e.getMessage()));
+		}
+		else if (e instanceof ConstraintViolationException) {
+			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.CONSTRAINT_VIOLATION_EXCEPTION, e.getMessage()));
 		}
 		else {
 			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
