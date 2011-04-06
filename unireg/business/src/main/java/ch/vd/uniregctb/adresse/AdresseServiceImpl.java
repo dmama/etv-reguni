@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -1296,7 +1297,7 @@ public class AdresseServiceImpl implements AdresseService {
 		for (int i = 0; i < size; ++i) {
 			final AdresseGenerique adresse = adresses.get(i);
 			// [UNIREG-1097] la première adresse peut avoir une date de début nulle, et la dernière peut avoir une date de fin nulle.
-			final ValidationResults validationResult = DateRangeHelper.validate(adresse, (i == 0), (i == size - 1));
+			final ValidationResults validationResult = ValidationHelper.validate(adresse, (i == 0), (i == size - 1));
 			if (validationResult.hasErrors()) {
 				throw new AdresseDataException(descriptionContexte + " du tiers n°" + tiers.getNumero(), validationResult);
 			}

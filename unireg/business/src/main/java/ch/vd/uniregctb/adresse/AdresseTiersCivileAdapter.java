@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -46,7 +47,7 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 
-		final ValidationResults validationResult = DateRangeHelper.validate(this, true, true);
+		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
 		if (validationResult != null && validationResult.hasErrors()) {
 			throw new DonneesCivilesException(buildContext(adresse), validationResult.getErrors());
 		}

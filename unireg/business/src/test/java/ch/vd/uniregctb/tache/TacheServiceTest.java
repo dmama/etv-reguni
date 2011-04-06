@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -1118,9 +1119,9 @@ public class TacheServiceTest extends BusinessTest {
 			fail();
 		}
 		catch (ValidationException e) {
-			List<String> errors = e.getErrors();
+			List<ValidationMessage> errors = e.getErrors();
 			assertEquals(1, errors.size());
-			assertEquals("La date de fermeture (31.12.1990) est avant la date de début (01.01.1998) du for fiscal actif", errors.get(0));
+			assertEquals("La date de fermeture (31.12.1990) est avant la date de début (01.01.1998) du for fiscal actif", errors.get(0).getMessage());
 		}
 	}
 

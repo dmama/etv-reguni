@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import javax.persistence.NonUniqueResultException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.hqlbuilder.AbstractCriteria;
 
 /**
  * Wrapper sur le Tiers DAO normal qui permet de "booster" (de ralentir, en fait) le temps de récupération de certains tiers. Cette classe est utilisée pour les tests Dynatrace. Elle ne devrait pas
@@ -97,30 +95,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 
 	public void evict(Object o) {
 		target.evict(o);
-	}
-
-	public List<Tiers> getResultList(AbstractCriteria aCriteria) {
-		return target.getResultList(aCriteria);
-	}
-
-	public List<Tiers> getResultList(AbstractCriteria aCriteria, int aMaxResults) {
-		return target.getResultList(aCriteria, aMaxResults);
-	}
-
-	public Tiers getSingleResult(AbstractCriteria aCriteria) throws NonUniqueResultException {
-		return target.getSingleResult(aCriteria);
-	}
-
-	public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria) {
-		return target.getDistinctResultList(aCriteria);
-	}
-
-	public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria, int aMaxResults) {
-		return target.getDistinctResultList(aCriteria, aMaxResults);
-	}
-
-	public long getRowCountResult(AbstractCriteria aCriteria) {
-		return target.getRowCountResult(aCriteria);
 	}
 
 	public Tiers get(long id, boolean doNotAutoFlush) {

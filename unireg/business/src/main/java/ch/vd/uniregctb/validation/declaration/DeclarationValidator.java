@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.validation.declaration;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -15,7 +15,7 @@ public abstract class DeclarationValidator<T extends Declaration> extends Entity
 		final ValidationResults vr = new ValidationResults();
 		if (!declaration.isAnnule()) {
 
-			DateRangeHelper.validate(declaration, false, false, vr);
+			ValidationHelper.validate(declaration, false, false, vr);
 
 			final PeriodeFiscale periode = declaration.getPeriode();
 			final RegDate dateDebut = declaration.getDateDebut();

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.validation.periodicite;
 
-import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -17,7 +17,7 @@ public class PeriodiciteValidator extends EntityValidatorImpl<Periodicite> {
 		final ValidationResults results = new ValidationResults();
 
 		if (!periodicite.isAnnule()) {
-			DateRangeHelper.validate(periodicite, false, true, results);
+			ValidationHelper.validate(periodicite, false, true, results);
 
 			final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
 			if (periodiciteDecompte == null) {

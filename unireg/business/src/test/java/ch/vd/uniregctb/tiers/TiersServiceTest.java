@@ -2651,7 +2651,7 @@ public class TiersServiceTest extends BusinessTest {
 					assertEmpty(e.getWarnings());
 					assertEquals(1, e.getErrors().size());
 
-					final String erreur = e.getErrors().get(0);
+					final String erreur = e.getErrors().get(0).getMessage();
 					assertEquals("Tous les fors principaux sont déjà annulés.", erreur);
 				}
 				return null;

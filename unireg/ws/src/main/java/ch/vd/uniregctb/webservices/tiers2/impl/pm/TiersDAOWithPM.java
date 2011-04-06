@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers2.impl.pm;
 
-import javax.persistence.NonUniqueResultException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +10,6 @@ import org.hibernate.FlushMode;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.hqlbuilder.AbstractCriteria;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -100,30 +98,6 @@ public class TiersDAOWithPM implements TiersDAO {
 	}
 
 	public void evict(Object o) {
-		throw new NotImplementedException();
-	}
-
-	public List<Tiers> getResultList(AbstractCriteria aCriteria) {
-		throw new NotImplementedException();
-	}
-
-	public List<Tiers> getResultList(AbstractCriteria aCriteria, int aMaxResults) {
-		throw new NotImplementedException();
-	}
-
-	public Tiers getSingleResult(AbstractCriteria aCriteria) throws NonUniqueResultException {
-		throw new NotImplementedException();
-	}
-
-	public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria) {
-		throw new NotImplementedException();
-	}
-
-	public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria, int aMaxResults) {
-		throw new NotImplementedException();
-	}
-
-	public long getRowCountResult(AbstractCriteria aCriteria) {
 		throw new NotImplementedException();
 	}
 

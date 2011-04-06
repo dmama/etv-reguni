@@ -34,6 +34,7 @@ import org.springmodules.xt.ajax.support.UnsupportedEventException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -318,8 +319,8 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 			}
 			catch (ValidationException e) {
 				logger.debug("Validation exception catched -> redisplaying showForm : " + e.getMessage());
-				for (String s : e.getErrors()) {
-					errors.reject("global.error.msg", s);
+				for (ValidationMessage s : e.getErrors()) {
+					errors.reject("global.error.msg", s.getMessage());
 				}
 				return showForm(request, response, errors);
 			}

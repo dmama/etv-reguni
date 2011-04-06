@@ -200,6 +200,11 @@
             <artifactId>shared-base</artifactId>
 			<version>${shared-base.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.vd.registre</groupId>
+            <artifactId>shared-hibernate</artifactId>
+			<version>1.0-spring-2.5-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -735,7 +740,7 @@
 		<jstl.version>1.1.2</jstl.version>
 
 		<!-- Framework dependency versions -->
-		<shared-base.version>1.2.22</shared-base.version>
+		<shared-base.version>4.0-SNAPSHOT</shared-base.version>
 		<spring.version>2.5.6</spring.version>
 		<spring-modules.version>0.9</spring-modules.version>
 		<acegi.version>1.0.4</acegi.version>

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.indexer;
 
-import javax.persistence.NonUniqueResultException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +15,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.hqlbuilder.AbstractCriteria;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -1035,30 +1033,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 
 		public void evict(Object o) {
-		}
-
-		public List<Tiers> getResultList(AbstractCriteria aCriteria) {
-			throw new NotImplementedException();
-		}
-
-		public List<Tiers> getResultList(AbstractCriteria aCriteria, int aMaxResults) {
-			throw new NotImplementedException();
-		}
-
-		public Tiers getSingleResult(AbstractCriteria aCriteria) throws NonUniqueResultException {
-			throw new NotImplementedException();
-		}
-
-		public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria) {
-			throw new NotImplementedException();
-		}
-
-		public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria, int aMaxResults) {
-			throw new NotImplementedException();
-		}
-
-		public long getRowCountResult(AbstractCriteria aCriteria) {
-			throw new NotImplementedException();
 		}
 
 		public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {

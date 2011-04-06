@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.AbstractSpringTest;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -77,9 +78,9 @@ public class ValidationInterceptorTest extends BusinessTest {
 			Assert.fail("Une exception de validation aurait dû être levée.");
 		}
 		catch (ValidationException e) {
-			final List<String> errors = e.getErrors();
+			final List<ValidationMessage> errors = e.getErrors();
 			Assert.assertEquals(1, errors.size());
-			Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", errors.get(0));
+			Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", errors.get(0).getMessage());
 		}
 	}
 
@@ -130,9 +131,9 @@ public class ValidationInterceptorTest extends BusinessTest {
 			Assert.fail("Une exception de validation aurait dû être levée.");
 		}
 		catch (ValidationException e) {
-			final List<String> errors = e.getErrors();
+			final List<ValidationMessage> errors = e.getErrors();
 			Assert.assertEquals(1, errors.size());
-			Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", errors.get(0));
+			Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", errors.get(0).getMessage());
 		}
 	}
 
@@ -192,9 +193,9 @@ public class ValidationInterceptorTest extends BusinessTest {
 			Assert.fail("Une exception de validation aurait dû être levée.");
 		}
 		catch (ValidationException e) {
-			final List<String> errors = e.getErrors();
+			final List<ValidationMessage> errors = e.getErrors();
 			Assert.assertEquals(1, errors.size());
-			Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", errors.get(0));
+			Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", errors.get(0).getMessage());
 		}
 	}
 

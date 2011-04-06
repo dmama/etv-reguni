@@ -13,6 +13,7 @@ import org.springmodules.xt.ajax.component.Component;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -504,7 +505,9 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 				}
 				catch (ValidationException e) {
 					table = new SynchronizeActionsTable(TITRE_SYNC_ACTIONS_INVALIDES);
-					table.addErrors(e.getErrors());
+					for (ValidationMessage message : e.getErrors()) {
+						table.addError(message.getMessage());
+					}
 				}
 
 				return table;
@@ -542,7 +545,9 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 				}
 				catch (ValidationException e) {
 					table = new SynchronizeActionsTable(TITRE_SYNC_ACTIONS_INVALIDES);
-					table.addErrors(e.getErrors());
+					for (ValidationMessage message : e.getErrors()) {
+						table.addError(message.getMessage());
+					}
 				}
 
 				return table;
