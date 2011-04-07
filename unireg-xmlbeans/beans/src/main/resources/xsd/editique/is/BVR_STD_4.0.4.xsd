@@ -6,7 +6,7 @@
 <!--V4.0.1 -  15.09.08 : JVO - BVR+ pour avoir les ligne non obligatoire minOccurs="0"-->
 <!--V4.0.2 -  18.12.08 : JVO - <verseParLigne5> et <verseParLigne6> & ligneReference - ligneCodage MinOccur = 1-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="../DonneesTechniques_0.0.3.xsd"/>
+	<xs:include schemaLocation="../DonneesTechniques_0.0.4.xsd"/>
 	<xs:element name="BVRSTD">
 		<xs:complexType>
 			<xs:sequence>

@@ -9,7 +9,7 @@
 <!-- V 4.0.0 : 22.07.08 : JVO - Spéficifications - IS-->
 <!-- V 4.0.1 : 20.10.08 : JVO - <DateArrgt> et <DelaiPay> en typDatAAAAMMJJ_XXX-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="BVR_STD_4.0.3.xsd"/>
+	<xs:include schemaLocation="BVR_STD_4.0.4.xsd"/>
 	<xs:element name="BVRDouble" abstract="false">
 		<xs:annotation>
 			<xs:documentation>PFP (XXxVV01=sigle application,Px=no du projet éditique, VV=no version, 01=no du document dans le projet</xs:documentation>

@@ -2,7 +2,7 @@
 <!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
 <!--Version  0.0.1  - 03.12.08 : MSN - Factorisé les éléments communs des DIs -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DonneesTechniques_0.0.3.xsd"/>
+	<xs:include schemaLocation="DonneesTechniques_0.0.4.xsd"/>
 
 	<xs:complexType name="DIBase">
 		<!-- Attributs communs à toutes les DIs -->
@@ -43,52 +43,6 @@
 						<xs:element name="CODBARR" type="typEntier">
 							<xs:annotation>
 								<xs:documentation>Code à barres (128) :  no ctb(9), AAAA, no ordinal(2), No OID(2)</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Annexes">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Annexe_200" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>200 = H.C avec le nombre de doc 1àN</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Annexe_210" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>210 = DI Standard avec le nombre de doc 1àN </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Annexe_220" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>220 = Annexe 01 avec le nombre de doc 1àN </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Annexe_230" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>230 = Annexe 02 – 03 avec le nombre de doc 1àN </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Annexe_240" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>240 = Annexe 04–05 avec le nombre de doc 1àN  </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Annexe_250" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>250 = VaudTax avec le nombre de doc 1àN   </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Annexe_270" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>270 = DI – Dépence avec le nombre de doc 1àN   </xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Annexe_310" type="typEntier" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>310 = Annexe 01–1(2009) avec le nombre de doc 1àN   </xs:documentation>
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>

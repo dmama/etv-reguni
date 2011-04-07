@@ -3,7 +3,7 @@
 <!--Version  0.0.1  - 21.04.09 : JVO - Première version de spec Confirmation de delai-->
 <!--Version  0.0.2  - 14.07.09 : JVO - Ajout de la balise <OFS>-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DonneesTechniques_0.0.3.xsd"/>
+	<xs:include schemaLocation="DonneesTechniques_0.0.4.xsd"/>
 	<xs:element name="ConfirmationDelai">
 		<xs:annotation>
 			<xs:documentation>RGPC0801</xs:documentation>

@@ -6,13 +6,44 @@
 <!--Version  0.0.4  - 26.01.10 : JVO - New Logique XSD-->
 <!--Version 0.0.5  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour-->		
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DIRetourCivil_0.0.2.xsd"/>
+	<xs:include schemaLocation="DIRetourCivil_0.0.3.xsd"/>
 	<xs:element name="DI">
 		<!-- Description du schema pour l'impression d'une DI ordinaire -->
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="DIRetourCivil">
 					<xs:sequence>
+						<xs:element name="Annexes">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Annexe_210" type="typEntierPositif" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>210 = DI Standard avec le nombre de doc 1àN </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Annexe_220" type="typEntierPositif" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>220 = Annexe 01 avec le nombre de doc 1àN </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Annexe_230" type="typEntierPositif" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>230 = Annexe 02 – 03 avec le nombre de doc 1àN </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Annexe_240" type="typEntierPositif" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>240 = Annexe 04–05 avec le nombre de doc 1àN  </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Annexe_310" type="typEntierPositif" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>310 = Annexe 01–1(2009) avec le nombre de doc 1àN   </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
 						<xs:element name="AdresseSuite">
 							<xs:complexType>
 								<xs:sequence>

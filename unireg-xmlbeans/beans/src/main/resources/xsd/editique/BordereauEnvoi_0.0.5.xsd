@@ -3,7 +3,7 @@
 <!--Version  0.0.1  - 28.04.09 : JVO - Première version de spec Bordereau d' envoi de dossier-->
 <!--Version  0.0.2  - 11.01.10 : JVO - Modification de SPEC-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DonneesTechniques_0.0.3.xsd"/>
+	<xs:include schemaLocation="DonneesTechniques_0.0.4.xsd"/>
 	<xs:element name="BordereauEnvoi">
 		<xs:annotation>
 			<xs:documentation>RGPB0801</xs:documentation>

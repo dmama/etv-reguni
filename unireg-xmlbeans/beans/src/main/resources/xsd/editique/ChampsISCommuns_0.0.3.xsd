@@ -95,6 +95,14 @@ typDatAAAAMMJJ
 			<xs:pattern value="[\+|\-]?['|0-9]+"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="typEntierPositif">
+		<xs:annotation>
+			<xs:documentation>Entier strictement positif</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="typNumeroOffice">
 		<xs:annotation>
 			<xs:documentation>Numéro d'un OID</xs:documentation>
