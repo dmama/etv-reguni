@@ -12,3 +12,4 @@
 - éventuellement fusionner les structure Tiers et TiersHisto pour ne plus garder que TiersHisto.
 - rendre possible l'appel de searchTiers avec plusieurs types de contribuables (le besoin exprimé pour le moment est "PP+MC") (UNIREG-3315)
 - étudier la possibilité de réutiliser les schémas eCH (eCH-0010:addressInformationType) : http://www.ech.ch/vechweb/page?p=categoryList&site=/Standards/A%20bis%20Z
+- exposer le code ISO 2 caractères des pays dans les adresses (demande TAO).
