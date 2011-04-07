@@ -59,15 +59,23 @@ if [ -n "$UNE_SEULE_WEB_APP" ]; then
 
 else
 
+	# pour l'instant, aucun environnement n'a plusieurs tomcats
+	TOMCAT_PART="-cat_unireg${ENVIRONMENT}01"
+
 	# partie web
 	echo "Webapp WEB"
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "unireg-web.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "srv-access-web.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "unireg-web${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "srv-access-web${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
 
 	# partie WS
 	echo "Webapp WS"
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "unireg-ws.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "ws-access.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "srv-access-ws.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "unireg-ws${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "ws-access${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "srv-access-ws${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
 	
 fi

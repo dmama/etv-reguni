@@ -23,7 +23,8 @@ fi
 touch "$LOCK_FILE"
 
 MACHINE=logapp.etat-de-vaud.ch
-FILES="unireg-ws.log ws-access.log srv-access-ws.log"
+TOMCAT_PART="-cat_unireg${ENVIRONMENT}01"
+FILES="unireg-ws.log ws-access.log srv-access-ws.log unireg-ws${TOMCAT_PART}.log ws-access${TOMCAT_PART}.log srv-access-ws${TOMCAT_PART}.log"
 
 function fetch() {
 	WGET_OPT=""
