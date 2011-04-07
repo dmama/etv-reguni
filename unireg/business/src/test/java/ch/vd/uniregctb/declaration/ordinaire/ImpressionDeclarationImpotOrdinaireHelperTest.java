@@ -7,6 +7,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -33,7 +34,10 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -521,6 +525,19 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	}
 
+	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
+		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
+		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
+		for (ModeleFeuilleDocument feuille : listFeuille) {
+			ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
+			feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
+			feuilleEditique.setNumeroFormulaire(feuille.getNumeroFormulaire());
+			feuilleEditique.setNbreIntituleFeuille(1);
+			annexes.add(feuilleEditique);
+		}
+		return annexes;
+	}
+
 	/**
 	 * Remplit un objet pour l'impression de la partie spécifique DI
 	 * @throws Exception
@@ -529,7 +546,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testRempliQuelquesMachins() throws Exception {
 		loadDatabase("ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, null);
+		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration));
 		DIRetour.AdresseRetour cediImpression = di.getAdresseRetour();
 		assertEquals("Centre d'enregistrement", cediImpression.getADRES1RETOUR());
 		assertEquals("des déclarations d'impôt", cediImpression.getADRES2RETOUR());
@@ -553,10 +570,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("126.000.04", di.getInfoDI().getNOCANT());
 		assertEquals("10-1", di.getInfoDI().getNOOID());
 
-		assertEquals("1", di.getAnnexes().getAnnexe210());
-		assertEquals("1", di.getAnnexes().getAnnexe220());
-		assertEquals("1", di.getAnnexes().getAnnexe230());
-		assertEquals("1", di.getAnnexes().getAnnexe240());
-		assertNull(di.getAnnexes().getAnnexe310());
+		assertEquals(1, di.getAnnexes().getAnnexe210());
+		assertEquals(1, di.getAnnexes().getAnnexe220());
+		assertEquals(1, di.getAnnexes().getAnnexe230());
+		assertEquals(1, di.getAnnexes().getAnnexe240());
+		assertFalse(di.getAnnexes().isSetAnnexe310());
 	}
 }
