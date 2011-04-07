@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.editique.impl;
 
 import javax.jms.JMSException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import noNamespace.FichierImpressionDocument;
 import noNamespace.TypFichierImpression;
@@ -17,6 +19,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelper;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionDeclarationImpotOrdinaireHelper;
@@ -102,8 +105,21 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		this.impressionBordereauMouvementDossierHelper = impressionBordereauMouvementDossierHelper;
 	}
 
+	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
+		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
+		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
+		for (ModeleFeuilleDocument feuille : listFeuille) {
+			ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
+			feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
+			feuilleEditique.setNumeroFormulaire(feuille.getNumeroFormulaire());
+			feuilleEditique.setNbreIntituleFeuille(1);
+			annexes.add(feuilleEditique);
+		}
+		return annexes;
+	}
+
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, dateEvenement, null, null, false, true);
+		return imprimeDIOnline(declaration, dateEvenement, null, buildDefaultAnnexes(declaration), false, true);
 	}
 
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
@@ -140,7 +156,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final String typeDocument = impressionDIHelper.calculPrefixe(declaration);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, null);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration));
 		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
 		if (declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {

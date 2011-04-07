@@ -304,34 +304,47 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	protected DI remplitSpecifiqueDI(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		final DI di = DIDocument.Factory.newInstance().addNewDI();
-		remplitDIRetour(declaration, annexes, di);
+		remplitDIRetour(declaration, di);
 		remplitAdresseSuite(declaration, di);
 
+		final int nbAnnexes210 = getNbOfAnnexes(annexes, "210", 0, 0);
+		final int nbAnnexes220 = getNbOfAnnexes(annexes, "220", 0, 0);
+		final int nbAnnexes230 = getNbOfAnnexes(annexes, "230", 0, 0);
+		final int nbAnnexes240 = getNbOfAnnexes(annexes, "240", 0, 0);
+		final int nbAnnexes310 = getNbOfAnnexes(annexes, "310", 0, 0);
+
+		// pour être certain d'imprimer toujours quelque chose!
+		int correctionAnnexes210 = 0;
+		if (nbAnnexes210 == 0 && nbAnnexes220 == 0 && nbAnnexes230 == 0 && nbAnnexes240 == 0 && nbAnnexes310 == 0) {
+			correctionAnnexes210 = NBRE_COPIE_ANNEXE_DEFAUT;
+		}
+
+		final DI.Annexes a = di.addNewAnnexes();
+		if (nbAnnexes210 + correctionAnnexes210 > 0) {
+			a.setAnnexe210(nbAnnexes210 + correctionAnnexes210);
+		}
+		if (nbAnnexes220 > 0) {
+			a.setAnnexe220(nbAnnexes220);
+		}
+		if (nbAnnexes230 > 0) {
+			a.setAnnexe230(nbAnnexes230);
+		}
+		if (nbAnnexes240 > 0) {
+			a.setAnnexe240(nbAnnexes240);
+		}
+		if (nbAnnexes310 > 0) {
+			a.setAnnexe310(nbAnnexes310);
+		}
 		return di;
 	}
 
-	private void remplitDIBase(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes, DIBase di) throws EditiqueException {
-
+	private void remplitDIBase(DeclarationImpotOrdinaire declaration, DIBase di) throws EditiqueException {
 		remplitInfoDI(declaration, di);
-
-		if (annexes == null) {
-			annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
-			Set<ModeleFeuilleDocument> listFeuille = declaration.getModeleDocument().getModelesFeuilleDocument();
-			for (ModeleFeuilleDocument feuille : listFeuille) {
-				ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
-				feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
-				feuilleEditique.setNumeroFormulaire(feuille.getNumeroFormulaire());
-				feuilleEditique.setNbreIntituleFeuille(NBRE_COPIE_ANNEXE_DEFAUT);
-				annexes.add(feuilleEditique);
-			}
-		}
-		Assert.notNull(annexes);
-		remplitAnnexes(di, annexes);
 	}
 
-	private void remplitDIRetour(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes, DIRetour di) throws EditiqueException {
+	private void remplitDIRetour(DeclarationImpotOrdinaire declaration, DIRetour di) throws EditiqueException {
 
-		remplitDIBase(declaration, annexes, di);
+		remplitDIBase(declaration, di);
 		remplitAdresseRetour(declaration, di);
 		if (di instanceof DIRetourCivil) {
 			remplitContribuables(declaration, (DIRetourCivil) di);
@@ -447,13 +460,45 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return collAdm;
 	}
 
+	private static int getNbOfAnnexes(List<ModeleFeuilleDocumentEditique> annexes, String codeFormulaire, int valeurSiAbsent, int valeurSiZero) {
+		final int nbAnnexes;
+		if (annexes == null) {
+			nbAnnexes = valeurSiAbsent;
+		}
+		else {
+			ModeleFeuilleDocumentEditique found = null;
+			for (ModeleFeuilleDocumentEditique candidate : annexes) {
+				if (codeFormulaire.equals(candidate.getNumeroFormulaire())) {
+					found = candidate;
+					break;
+				}
+			}
+
+			if (found != null && found.getNbreIntituleFeuille() != null && found.getNbreIntituleFeuille() > 0) {
+				nbAnnexes = found.getNbreIntituleFeuille();
+			}
+			else if (found == null) {
+				nbAnnexes = valeurSiAbsent;
+			}
+			else {
+				nbAnnexes = valeurSiZero;
+			}
+		}
+		return nbAnnexes;
+	}
+
 	/**
 	 * Alimente un objet DIVDTAX
 	 */
 	private DIVDTAX remplitSpecifiqueDIVDTAX(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		final DIVDTAX divdtax = DIVDTAXDocument.Factory.newInstance().addNewDIVDTAX();
-		remplitDIRetour(declaration, annexes, divdtax);
+		remplitDIRetour(declaration, divdtax);
+
+		// retrouve le nombre d'annexes 250 (seules autorisées par la DI VDTAX), au minimum une
+		final int nbAnnexes = getNbOfAnnexes(annexes, "250", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
+		final DIVDTAX.Annexes a = divdtax.addNewAnnexes();
+		a.setAnnexe250(nbAnnexes);
 
 		return divdtax;
 	}
@@ -464,7 +509,12 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private DIDP remplitSpecifiqueDIDP(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		final DIDP didp = DIDPDocument.Factory.newInstance().addNewDIDP();
-		remplitDIRetour(declaration, annexes, didp);
+		remplitDIRetour(declaration, didp);
+
+		// retrouve le nombre d'annexes 270 (seules autorisées par la DI ICCD), au minimum une
+		final int nbAnnexes = getNbOfAnnexes(annexes, "270", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
+		final DIDP.Annexes a = didp.addNewAnnexes();
+		a.setAnnexe270(nbAnnexes);
 
 		return didp;
 	}
@@ -475,7 +525,12 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	protected DIHC remplitSpecifiqueDIHC(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		final DIHC dihc = DIHCDocument.Factory.newInstance().addNewDIHC();
-		remplitDIRetour(declaration, annexes, dihc);
+		remplitDIRetour(declaration, dihc);
+
+		// retrouve le nombre d'annexes 200 (seules autorisées par la DI HC (immeuble)), au minimum une
+		final int nbAnnexes = getNbOfAnnexes(annexes, "200", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
+		final DIHC.Annexes a = dihc.addNewAnnexes();
+		a.setAnnexe200(nbAnnexes);
 
 		return dihc;
 	}
@@ -698,89 +753,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return noavs;
 	}
 
-	private void remplitAnnexes(DIBase di, List<ModeleFeuilleDocumentEditique> annexes) {
-		final noNamespace.DIBase.Annexes annexesEditique = di.addNewAnnexes();
-		for (ModeleFeuilleDocumentEditique annexe : annexes) {
-			final Integer nombreFeuilles = annexe.getNbreIntituleFeuille();
-			if (nombreFeuilles != null && nombreFeuilles > 0) {
-				final String numeroFormulaire = annexe.getNumeroFormulaire();
-				if (numeroFormulaire.equals("210")) {
-					annexesEditique.setAnnexe210(nombreFeuilles.toString());
-				}
-				else if (numeroFormulaire.equals("220")) {
-					annexesEditique.setAnnexe220(nombreFeuilles.toString());
-				}
-				else if (numeroFormulaire.equals("230")) {
-					annexesEditique.setAnnexe230(nombreFeuilles.toString());
-				}
-				else if (numeroFormulaire.equals("240")) {
-					annexesEditique.setAnnexe240(nombreFeuilles.toString());
-				}
-				else if (numeroFormulaire.equals("310")) {
-					annexesEditique.setAnnexe310(nombreFeuilles.toString());
-				}
-				else if (numeroFormulaire.equals("200")) {
-					annexesEditique.setAnnexe200(nombreFeuilles.toString());
-				}
-				else if (numeroFormulaire.equals("250")) {
-					annexesEditique.setAnnexe250(nombreFeuilles.toString());
-				}
-				else if (numeroFormulaire.equals("270")) {
-					annexesEditique.setAnnexe270(nombreFeuilles.toString());
-				}
-			}
-		}
-	}
-
-//	/**
-//	 * Alimente la partie pied de page du document
-//	 *
-//	 * @return
-//	 */
-//	private InfoPiedDePage remplitInfoPiedDePage() {
-//		InfoPiedDePage infoPiedDePage = InfoPiedDePageDocument.Factory.newInstance().addNewInfoPiedDePage();
-//		Copie copie = infoPiedDePage.addNewCopie();
-//		String prefixe = "COPIE";
-//		copie.setPrefixe(prefixe);
-//
-//		return infoPiedDePage;
-//	}
-
-//	/**
-//	 * Alimente la partie Archivage du document
-//	 */
-//	public InfoArchivage remplitArchivage(DeclarationImpotOrdinaire declaration) {
-//		InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
-//		String prefixe = calculPrefixe(declaration) + FOLDE;
-//		infoArchivage.setPrefixe(prefixe);
-//
-//		String idDocument = construitIdDocument(declaration);
-//		infoArchivage.setIdDocument(idDocument);
-//		infoArchivage.setTypDocument("");
-//		infoArchivage.setTypDossier("003");
-//		infoArchivage.setNomApplication("FOLDERS");
-//		infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-//		String datTravail = RegDateHelper.toIndexString(RegDate.get());
-//		infoArchivage.setDatTravail(datTravail);
-//
-//		return infoArchivage;
-//	}
-
 	/**
 	 * Construit le champ idDocument
 	 */
 	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
-		/*
-		return String.format(
-				"%s %s %s %s",
-				declaration.getPeriode().getAnnee().toString(),
-				StringUtils.leftPad(declaration.getNumero().toString(), 2, '0'),
-				StringUtils.leftPad(declaration.getTiers().getNumero().toString(), 9, '0'),
-				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(
-						declaration.getLogCreationDate()
-				)
-		);
-		*/
 		return String.format(
 				"%s %s %s %s",
 				declaration.getPeriode().getAnnee().toString(),
