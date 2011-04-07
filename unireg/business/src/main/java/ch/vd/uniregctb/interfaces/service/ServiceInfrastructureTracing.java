@@ -32,7 +32,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	private ServiceInfrastructureRaw target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing(ServicePersonneMoraleService.SERVICE_NAME);
+	private final ServiceTracing tracing = new ServiceTracing(ServiceInfrastructureService.SERVICE_NAME);
 
 	public void setTarget(ServiceInfrastructureRaw target) {
 		this.target = target;
