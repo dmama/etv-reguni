@@ -6,14 +6,9 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
 
-public class RapportEntreTiersValidator extends EntityValidatorImpl<RapportEntreTiers> {
+public abstract class RapportEntreTiersValidator<T extends RapportEntreTiers> extends EntityValidatorImpl<T> {
 
-	@Override
-	protected Class<RapportEntreTiers> getValidatedClass() {
-		return RapportEntreTiers.class;
-	}
-
-	public ValidationResults validate(RapportEntreTiers ret) {
+	public ValidationResults validate(T ret) {
 		final ValidationResults vr = new ValidationResults();
 
 		if (!ret.isAnnule()) {

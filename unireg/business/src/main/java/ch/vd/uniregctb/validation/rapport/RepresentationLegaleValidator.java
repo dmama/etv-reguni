@@ -5,9 +5,8 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
 
-public class RepresentationLegaleValidator extends EntityValidatorImpl<RepresentationLegale> {
+public class RepresentationLegaleValidator extends RapportEntreTiersValidator<RepresentationLegale> {
 
 	private TiersDAO tiersDAO;
 
@@ -22,7 +21,7 @@ public class RepresentationLegaleValidator extends EntityValidatorImpl<Represent
 
 	public ValidationResults validate(RepresentationLegale ret) {
 
-		final ValidationResults vr = new ValidationResults();
+		final ValidationResults vr = super.validate(ret);
 
 		if (!ret.isAnnule()) {
 			final Tiers sujet = tiersDAO.get(ret.getSujetId());

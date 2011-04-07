@@ -23,6 +23,25 @@ public class RepresentationLegaleValidatorTest extends AbstractValidatorTest<Rep
 		return "representationLegaleValidator";
 	}
 
+	@Test
+	public void testValidateDatesTutelle() throws Exception {
+		final PersonnePhysique pupille = addNonHabitant("Dominique", "Ruette", date(1967, 1, 1), Sexe.MASCULIN);
+		final PersonnePhysique tuteur = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
+
+		// Dates ok
+		final Tutelle tutelle = new Tutelle();
+		tutelle.setSujet(pupille);
+		tutelle.setObjet(tuteur);
+		tutelle.setDateDebut(date(2000, 1, 1));
+		assertFalse(validate(tutelle).hasErrors());
+
+		// Dates ko
+		tutelle.setDateDebut(date(2000, 1, 1));
+		tutelle.setDateFin(date(1996, 12, 31));
+		assertValidation(Arrays.asList(String.format("Le rapport-entre-tiers %s possède une date de début qui est après la date de fin: début = 01.01.2000 fin = 31.12.1996", tutelle)), null,
+				validate(tutelle));
+	}
+
 	/**
 	 * [SIFISC-719] Il doit être possible d'établir une tutelle sur une personne physique
 	 */
@@ -48,7 +67,7 @@ public class RepresentationLegaleValidatorTest extends AbstractValidatorTest<Rep
 		final Tutelle tutelle = new Tutelle();
 		tutelle.setSujet(pupille);
 		tutelle.setObjet(tuteur);
-		tutelle.setDateDebut(date(2000,1,1));
+		tutelle.setDateDebut(date(2000, 1, 1));
 		assertValidation(Arrays.asList("Une représentation légale ne peut s'appliquer que sur une personne physique"), null, validate(tutelle));
 	}
 
@@ -77,9 +96,10 @@ public class RepresentationLegaleValidatorTest extends AbstractValidatorTest<Rep
 		final Curatelle curatelle = new Curatelle();
 		curatelle.setSujet(pupille);
 		curatelle.setObjet(tuteur);
-		curatelle.setDateDebut(date(2000,1,1));
+		curatelle.setDateDebut(date(2000, 1, 1));
 		assertValidation(Arrays.asList("Une représentation légale ne peut s'appliquer que sur une personne physique"), null, validate(curatelle));
 	}
+
 	/**
 	 * [SIFISC-719] Il doit être possible d'établir une conseil légal sur une personne physique
 	 */

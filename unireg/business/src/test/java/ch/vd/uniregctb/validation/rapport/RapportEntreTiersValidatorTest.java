@@ -13,7 +13,7 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 
 	@Override
 	protected String getValidatorBeanName() {
-		return "rapportEntreTiersValidator";
+		return "defaultRapportEntreTiersValidator";
 	}
 
 	@Test
