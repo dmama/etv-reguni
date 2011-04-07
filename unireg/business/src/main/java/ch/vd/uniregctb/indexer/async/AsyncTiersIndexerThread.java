@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer.async;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -153,6 +154,10 @@ public class AsyncTiersIndexerThread extends Thread {
 
 	private void indexBatch(final List<Long> batch) {
 
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("ASYNC indexation des tiers n° " + Arrays.toString(batch.toArray()) + " (La queue contient encore " + queue.size() + " tiers a indexer)");
+		}
+
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.execute(new TransactionCallback() {
 			@SuppressWarnings({"unchecked"})
@@ -240,10 +245,6 @@ public class AsyncTiersIndexerThread extends Thread {
 		}
 
 		try {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("ASYNC indexation des tiers n° " + buildTiersNumeros(tiers) + " (La queue contient encore " + queue.size()
-						+ " tiers a indexer)");
-			}
 			// on n'indexe pas les tiers liés au tiers courant lorsqu'on veut indexer toute ou une fraction déterminée
 			// de la base de données : les tiers liés vont de toutes façons se faire indexer pour eux-même.
 			final boolean followDependents = (mode == null);
