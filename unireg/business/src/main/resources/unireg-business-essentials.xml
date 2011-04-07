@@ -221,6 +221,9 @@
 	<bean id="declarationImpotSourceValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotSourceValidator" parent="declarationValidator"/>
 
 	<bean id="rapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.RapportEntreTiersValidator" parent="entityValidator"/>
+	<bean id="representationLegaleValidator" class="ch.vd.uniregctb.validation.rapport.RepresentationLegaleValidator" parent="entityValidator">
+		<property name="tiersDAO" ref="tiersDAO"/>
+	</bean>
 
 	<bean id="tacheValidator" class="ch.vd.uniregctb.validation.tache.TacheValidator" abstract="true" parent="entityValidator"/>
 	<bean id="defaultTacheValidator" class="ch.vd.uniregctb.validation.tache.DefaultTacheValidator" parent="tacheValidator"/>
