@@ -170,7 +170,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		PersonnePhysique nonHab = new PersonnePhysique(false);
 		nonHab.setNumero(1234L);
-		nonHab.setDateNaissance(RegDate.get(1965,03,12));
+		nonHab.setDateNaissance(RegDate.get(1965, 3,12));
 		nonHab.setNom("Poncet");
 		nonHab.setPrenom("Charles");
 		nonHab.setNumeroAssureSocial("432.23.654.345");
@@ -429,7 +429,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Principal 1 fermé
 		{
 			ForFiscalPrincipal forF = new ForFiscalPrincipal();
-			forF.setDateDebut(RegDate.get(1998, 3, 01));
+			forF.setDateDebut(RegDate.get(1998, 3, 1));
 			forF.setDateFin(RegDate.get(2004, 1, 31));
 			forF.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forF.setNumeroOfsAutoriteFiscale(5586); // Lausanne
@@ -498,7 +498,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// For fiscaux
 
-		RegDate dateOuverture = RegDate.get(1998, 3, 01);
+		RegDate dateOuverture = RegDate.get(1998, 3, 1);
 		RegDate dateFermeture = RegDate.get(2004, 1, 31);
 
 		// Principal 1 fermé

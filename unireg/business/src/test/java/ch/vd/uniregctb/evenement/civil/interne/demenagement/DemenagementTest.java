@@ -76,7 +76,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 	private static final RegDate DATE_VALIDE = RegDate.get(2007, 11, 19);
 	private static final RegDate DATE_LIMITE = RegDate.get(2007, 12, 28);
-	private static final RegDate DATE_JANVIER = RegDate.get(2008, 01, 01);
+	private static final RegDate DATE_JANVIER = RegDate.get(2008, 1, 1);
 	private static final RegDate DATE_ANCIENNE_ADRESSE = RegDate.get(1970, 11, 19);
 	private static final RegDate DATE_ANTERIEURE_ANCIENNE_ADRESSE = RegDate.get(1940, 11, 19);
 

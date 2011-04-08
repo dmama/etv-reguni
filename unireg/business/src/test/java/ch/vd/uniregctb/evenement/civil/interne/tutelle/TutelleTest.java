@@ -35,7 +35,7 @@ import ch.vd.uniregctb.type.TypeTutelle;
  */
 public class TutelleTest extends WithoutSpringTest {
 
-	final static private RegDate DATE_TUTELLE = RegDate.get(2008, 01, 01);
+	final static private RegDate DATE_TUTELLE = RegDate.get(2008, 1, 1);
 
 	final static private long NO_INDIVIDU_PUPILLE_AVEC_TUTEUR = 54321L;
 	final static private long NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL = 45678L;

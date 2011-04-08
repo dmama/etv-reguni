@@ -1,14 +1,14 @@
 package ch.vd.uniregctb.type;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(JUnit4ClassRunner.class)
 public class PeriodiciteDecompteTest {
@@ -173,20 +173,20 @@ public class PeriodiciteDecompteTest {
 	 * Test la methode qui calcule la date de debut de periode en fonction de la date de fin de periode et de la periodicite
 	 */
 	public void testGetDateDebutPeriode() throws Exception {
-		assertEquals(RegDate.get(2008, 01, 01), PeriodiciteDecompte.ANNUEL.getDebutPeriode(RegDate.get(2008, 12, 31)));
-		assertEquals(RegDate.get(2008, 01, 01), PeriodiciteDecompte.SEMESTRIEL.getDebutPeriode(RegDate.get(2008, 06, 30)));
-		assertEquals(RegDate.get(2008, 01, 01), PeriodiciteDecompte.TRIMESTRIEL.getDebutPeriode(RegDate.get(2008, 03, 31)));
-		assertEquals(RegDate.get(2008, 01, 01), PeriodiciteDecompte.MENSUEL.getDebutPeriode(RegDate.get(2008, 01, 31)));
+		assertEquals(RegDate.get(2008, 1, 1), PeriodiciteDecompte.ANNUEL.getDebutPeriode(RegDate.get(2008, 12, 31)));
+		assertEquals(RegDate.get(2008, 1, 1), PeriodiciteDecompte.SEMESTRIEL.getDebutPeriode(RegDate.get(2008, 6, 30)));
+		assertEquals(RegDate.get(2008, 1, 1), PeriodiciteDecompte.TRIMESTRIEL.getDebutPeriode(RegDate.get(2008, 3, 31)));
+		assertEquals(RegDate.get(2008, 1, 1), PeriodiciteDecompte.MENSUEL.getDebutPeriode(RegDate.get(2008, 1, 31)));
 	}
 
 	/**
 	 * Test la methode qui calcule la date de fin de periode en fonction de la date de debut de periode et de la periodicite
 	 */
 	public void testGetDateFinPeriode() throws Exception {
-        assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.ANNUEL.getFinPeriode(RegDate.get(2008,01,01)));
-		assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.SEMESTRIEL.getFinPeriode(RegDate.get(2008,07,01)));
-		assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(RegDate.get(2008,10,01)));
-		assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.MENSUEL.getFinPeriode(RegDate.get(2008,12,01)));
+        assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.ANNUEL.getFinPeriode(RegDate.get(2008, 1, 1)));
+		assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.SEMESTRIEL.getFinPeriode(RegDate.get(2008, 7, 1)));
+		assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(RegDate.get(2008,10, 1)));
+		assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.MENSUEL.getFinPeriode(RegDate.get(2008,12, 1)));
 
 	}
 

@@ -30,7 +30,7 @@ public class LeveeTutelleTest extends AbstractEvenementCivilInterneTest {
 
 	private static final Logger LOGGER = Logger.getLogger(LeveeTutelleTest.class);
 
-	final static private RegDate DATE_LEVEE_TUTELLE = RegDate.get(2008, 11, 07);
+	final static private RegDate DATE_LEVEE_TUTELLE = RegDate.get(2008, 11, 7);
 
 	final static private long NO_INDIVIDU_PUPILLE_AVEC_TUTEUR = 54321L;
 	final static private long NO_INDIVIDU_TUTEUR = 12345L;

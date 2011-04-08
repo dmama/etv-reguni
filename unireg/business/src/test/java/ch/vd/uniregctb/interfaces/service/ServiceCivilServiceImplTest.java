@@ -57,7 +57,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 
 		EtatCivil etatCivil1 = service.getEtatCivilActif(noIndividu, null);
 		assertNull(etatCivil1);
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(2000, 01, 13));
+		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(2000, 1, 13));
 		assertNull(etatCivil2);
 
 	}
@@ -86,7 +86,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNotNull(etatCivil1);
 		assertSame(ec1, etatCivil1);
 
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 01, 13));
+		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(etatCivil2);
 
 		EtatCivil etatCivil3 = service.getEtatCivilActif(noIndividu, RegDate.get(1989, 11, 20));
@@ -130,7 +130,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNotNull(etatCivil1);
 		assertSame(ec2, etatCivil1);
 
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 01, 13));
+		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(etatCivil2);
 
 		EtatCivil etatCivil3 = service.getEtatCivilActif(noIndividu, RegDate.get(1940, 11, 20));
@@ -172,7 +172,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNotNull(etatCivil1);
 		assertSame(ec1, etatCivil1);
 
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 01, 13));
+		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNotNull(etatCivil2);
 		assertSame(ec1, etatCivil2);
 
@@ -197,7 +197,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final Permis permis1 = service.getPermisActif(noIndividu, null);
 		assertNull(permis1);
 
-		final Permis permis2 = service.getPermisActif(noIndividu, RegDate.get(2000, 01, 13));
+		final Permis permis2 = service.getPermisActif(noIndividu, RegDate.get(2000, 1, 13));
 		assertNull(permis2);
 	}
 
@@ -225,7 +225,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNotNull(p1);
 		assertSame(permis1, p1);
 
-		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 01, 13));
+		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(p2);
 
 		final Permis p3 = service.getPermisActif(noIndividu, RegDate.get(1989, 11, 20));
@@ -257,7 +257,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final Permis p1 = service.getPermisActif(noIndividu, null);
 		assertNull(p1);
 
-		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 01, 13));
+		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(p2);
 
 		final Permis p3 = service.getPermisActif(noIndividu, RegDate.get(1989, 11, 20));
@@ -298,7 +298,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNotNull(p1);
 		assertSame(permis2, p1);
 
-		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 01, 13));
+		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(p2);
 
 		final Permis p3 = service.getPermisActif(noIndividu, RegDate.get(1940, 11, 20));
@@ -339,7 +339,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNotNull(p1);
 		assertSame(permis1, p1);
 
-		Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 01, 13));
+		Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNotNull(p2);
 		assertSame(permis1, p2);
 

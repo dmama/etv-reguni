@@ -54,9 +54,9 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 				MockIndividu james = addIndividu(1373, RegDate.get(1992, 1, 14), "Dean", "James", true);
 				MockIndividu francois = addIndividu(403399, RegDate.get(1961, 3, 12), "Lestourgie", "Francois", true);
 				MockIndividu claudine = addIndividu(222, RegDate.get(1975, 11, 30), "Duchene", "Claudine", false);
-				MockIndividu alain2 = addIndividu(111, RegDate.get(1965, 05, 21), "Dupont", "Alain", true);
-				MockIndividu miro = addIndividu(333, RegDate.get(1972, 07, 15), "Boillat dupain", "Miro", true);
-				MockIndividu claudine2 = addIndividu(444, RegDate.get(1922, 02, 12), "Duchene", "Claudine", false);
+				MockIndividu alain2 = addIndividu(111, RegDate.get(1965, 5, 21), "Dupont", "Alain", true);
+				MockIndividu miro = addIndividu(333, RegDate.get(1972, 7, 15), "Boillat dupain", "Miro", true);
+				MockIndividu claudine2 = addIndividu(444, RegDate.get(1922, 2, 12), "Duchene", "Claudine", false);
 
 				addFieldsIndividu(richard, "1234567891023", "98765432109", null);
 

@@ -31,7 +31,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class ObtentionNationaliteTest extends WithoutSpringTest {
 
-	final static private RegDate DATE_OBTENTION_NATIONALITE = RegDate.get(2008, 01, 01);
+	final static private RegDate DATE_OBTENTION_NATIONALITE = RegDate.get(2008, 1, 1);
 
 	final static private long NO_INDIVIDU_NATIONALITE_SUISSE = 54321L;
 	final static private long NO_INDIVIDU_NATIONALITE_FRANCE = 45678L;

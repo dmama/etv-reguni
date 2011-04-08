@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.declaration;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -14,6 +11,9 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
@@ -46,7 +46,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		ListeRecapCriteria criterion = new ListeRecapCriteria();
 		criterion.setPeriodicite(PeriodiciteDecompte.MENSUEL.toString());
-        RegDate dateDebutPeriode = RegDate.get(2008, 01, 01);
+        RegDate dateDebutPeriode = RegDate.get(2008, 1, 1);
 		criterion.setPeriode(dateDebutPeriode);
 		criterion.setModeCommunication(ModeCommunication.PAPIER.toString());
 		criterion.setEtat(TypeEtatDeclaration.EMISE.toString());

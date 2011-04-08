@@ -586,7 +586,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			Set<AdresseTiers> adressesPostales = new HashSet<AdresseTiers>();
 
 			AdresseSuisse adresseSuisse = new AdresseSuisse();
-			adresseSuisse.setDateDebut(RegDate.get(2005, 02, 1));
+			adresseSuisse.setDateDebut(RegDate.get(2005, 2, 1));
 			adresseSuisse.setUsage(TypeAdresseTiers.COURRIER);
 			adresseSuisse.setComplement("supplement");
 			adresseSuisse.setNumeroMaison("12b");
@@ -596,7 +596,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			adressesPostales.add(adresseSuisse);
 
 			AdresseEtrangere adresseEtrangere = new AdresseEtrangere();
-			adresseEtrangere.setDateDebut(RegDate.get(2005, 02, 1));
+			adresseEtrangere.setDateDebut(RegDate.get(2005, 2, 1));
 			adresseEtrangere.setUsage(TypeAdresseTiers.DOMICILE);
 			adresseEtrangere.setRue("Chemin des moineaux");
 			adresseEtrangere.setComplementLocalite("Paris");

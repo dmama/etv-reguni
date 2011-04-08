@@ -82,7 +82,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	public void testInitIndividuSeul() throws Exception {
 
 		final long numeroIndividu = 12345L;
-		final RegDate dateArrivee = RegDate.get(2002, 03, 15);
+		final RegDate dateArrivee = RegDate.get(2002, 3, 15);
 		final RegDate dateVeilleArrivee = dateArrivee.getOneDayBefore();
 
 		PersonnePhysique habitant = new PersonnePhysique(true);

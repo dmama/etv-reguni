@@ -1,14 +1,9 @@
 package ch.vd.uniregctb.couple;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.Date;
 import java.util.Map;
 
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
@@ -17,8 +12,12 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 
@@ -83,7 +82,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 	@NotTransactional
 	public void onSubmitAvecDateAvantForFiscal() throws Exception {
 
-		final Date dateMariage = DateHelper.getDate(2007, 02, 12);
+		final Date dateMariage = DateHelper.getDate(2007, 2, 12);
 
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -123,7 +122,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 	@NotTransactional
 	public void onSubmitAvecDateApresForFiscal() throws Exception {
 
-		final RegDate dateMariage = RegDate.get(2008, 03, 12);
+		final RegDate dateMariage = RegDate.get(2008, 3, 12);
 
 		doInNewTransaction(new TxCallback() {
 			@Override
