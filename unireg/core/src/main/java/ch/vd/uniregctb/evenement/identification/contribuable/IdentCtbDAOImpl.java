@@ -51,7 +51,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	@SuppressWarnings("unchecked")
 	private List<IdentificationContribuable> executeSearch(ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande typeDemande) {
-		String queryOrder = new String("");
+		String queryOrder;
 		if (paramPagination.getChamp() != null) {
 			queryOrder = " order by identificationContribuable." + paramPagination.getChamp();
 		}

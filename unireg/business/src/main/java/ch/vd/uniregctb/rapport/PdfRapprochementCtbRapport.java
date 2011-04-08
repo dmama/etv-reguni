@@ -1,17 +1,18 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.registrefoncier.ProprietaireRapproche;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -118,23 +119,23 @@ public class PdfRapprochementCtbRapport extends PdfRapport{
 			b.append("NomCourrier2;");
 			b.append("Résultat\n");
 			for (ProprietaireRapproche proprietaireRapproche : listeRapprochee) {
-				b.append(proprietaireRapproche.getNumeroRegistreFoncier() + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getNom()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance()) + ";");
-				b.append(proprietaireRapproche.getNumeroContribuable() + ";");
-				b.append(convertNullToEmpty(String.valueOf(proprietaireRapproche.getNumeroContribuable1())) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getNom1()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom1()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance1()) + ";");
-				b.append(convertNullToEmpty(String.valueOf(proprietaireRapproche.getNumeroContribuable2())) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getNom2()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom2()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance2()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getFormulePolitesse()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getNomCourrier1()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getNomCourrier2()) + ";");
-				b.append(convertNullToEmpty(proprietaireRapproche.getResultat()) + ";");
+				b.append(proprietaireRapproche.getNumeroRegistreFoncier()).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getNom())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance())).append(COMMA);
+				b.append(proprietaireRapproche.getNumeroContribuable()).append(COMMA);
+				b.append(convertNullToEmpty(String.valueOf(proprietaireRapproche.getNumeroContribuable1()))).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getNom1())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom1())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance1())).append(COMMA);
+				b.append(convertNullToEmpty(String.valueOf(proprietaireRapproche.getNumeroContribuable2()))).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getNom2())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom2())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance2())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getFormulePolitesse())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getNomCourrier1())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getNomCourrier2())).append(COMMA);
+				b.append(convertNullToEmpty(proprietaireRapproche.getResultat())).append(COMMA);
 				b.append("\n");
 			}
 			contenu = b.toString();

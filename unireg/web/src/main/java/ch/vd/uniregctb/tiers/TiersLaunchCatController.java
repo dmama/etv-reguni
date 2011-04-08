@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
-import java.io.OutputStreamWriter;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStreamWriter;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,7 +30,7 @@ public class TiersLaunchCatController extends AbstractController {
 		str.append("	<task name=\"Launch Cat\" action=\"execute\">\n");
 		str.append("		<execute path=\"C:\\cat\" wait=\"true\" name=\"cat.exe\">\n");
 		str.append("			<parameter>-numeroContribuable</parameter>\n");
-		str.append("			<parameter>"+numero+"</parameter>\n");
+		str.append("			<parameter>").append(numero).append("</parameter>\n");
 		str.append("		</execute>\n");
 		str.append("	</task>\n");
 		str.append("</tasklist>\n");
