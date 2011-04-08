@@ -35,8 +35,6 @@ public class DroitAccesUtilisateurView implements Annulable {
 
 		final PersonnePhysique pp = droit.getTiers();
 		this.numeroCTB = pp.getNumero();
-		this.dateNaissance = tiersService.getDateNaissance(pp);
-		this.prenomNom = tiersService.getNomPrenom(pp);
 
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(pp, null, TypeAdresseFiscale.COURRIER, false);
 		if (adresse != null) {
@@ -45,6 +43,9 @@ public class DroitAccesUtilisateurView implements Annulable {
 		else {
 			this.localite = null;
 		}
+
+		this.prenomNom = tiersService.getNomPrenom(pp);
+		this.dateNaissance = tiersService.getDateNaissance(pp);
 	}
 
 	public Long getId() {
