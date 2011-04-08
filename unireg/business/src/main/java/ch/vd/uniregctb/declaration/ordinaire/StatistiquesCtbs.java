@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -109,14 +107,14 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		 */
 		public int compareTo(Key o) {
 
-			if (oid != o.oid) {
-				if (oid == null) {
-					return 1;
-				}
-				if (o.oid == null) {
-					return -1;
-				}
+			if (oid != null && o.oid != null && !oid.equals(o.oid)) {
 				return oid - o.oid;
+			}
+			else if (oid == null && o.oid != null) {
+				return 1;
+			}
+			else if (oid != null && o.oid == null) {
+				return -1;
 			}
 
 			if ((commune == null && o.commune != null) || (commune != null && o.commune == null) || (commune != null && o.commune != null && commune.getNoOFSEtendu() != o.commune.getNoOFSEtendu())) {

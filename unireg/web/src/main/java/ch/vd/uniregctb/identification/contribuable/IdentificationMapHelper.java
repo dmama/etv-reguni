@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +13,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 
@@ -108,11 +106,11 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		final Map <Etat,String> etatsMessages = initMapEtatMessage(false);
 
-		if(etatsMessages.containsValue(Etat.A_EXPERTISER_SUSPENDU)){
+		if(etatsMessages.containsKey(Etat.A_EXPERTISER_SUSPENDU)){
 			etatsMessages.remove(Etat.A_EXPERTISER_SUSPENDU);
 		}
 
-		if(etatsMessages.containsValue(Etat.A_TRAITER_MAN_SUSPENDU)){
+		if(etatsMessages.containsKey(Etat.A_TRAITER_MAN_SUSPENDU)){
 			etatsMessages.remove(Etat.A_TRAITER_MAN_SUSPENDU);
 		}
 

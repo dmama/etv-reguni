@@ -43,7 +43,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 	}
 
 	public void unregister(UniregCacheInterface cache) {
-		map.remove(cache);
+		map.remove(cache.getName());
 	}
 
 	public Object getAttribute(String attribute) throws AttributeNotFoundException, MBeanException, ReflectionException {
