@@ -47,7 +47,7 @@ public final class StringComparator implements Comparator<String> {
 
 		// le test facile et rapide
 		//noinspection StringEquality
-		if (o1 == o2 || o1.equals(o2)) {
+		if (o1 == o2) {
 			return 0;
 		}
 
