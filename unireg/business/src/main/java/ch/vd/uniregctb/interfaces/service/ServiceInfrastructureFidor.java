@@ -185,7 +185,9 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 			final List<Commune> list = new ArrayList<Commune>();
 			final List<CommuneFiscale> l = fidorClient.getCommunesHistoParNoOFS(noOfsCommune);
 			for (CommuneFiscale c : l) {
-				list.add(CommuneImpl.get(c));
+				if (c.getNoOfs() == noOfsCommune) { // dans le cas d'une commune issue d'une fusion, on reçoit aussi les commmunes avant fusion, mais on ne les veut pas
+					list.add(CommuneImpl.get(c));
+				}
 			}
 			return list;
 		}
