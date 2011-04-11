@@ -386,12 +386,12 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		}
 
 		Assert.isEqual(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE, forFiscalView.getGenreImpot());
-		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalView.getTypeAutoriteFiscale());
 		final RegDate dateDebut = forFiscalView.getRegDateOuverture();
 		final RegDate dateFin = forFiscalView.getRegDateFermeture();
 		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
+		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
 
-		return tiersService.addForDebiteur(debiteur, dateDebut, dateFin, autoriteFiscale);
+		return tiersService.addForDebiteur(debiteur, dateDebut, dateFin, typeAutoriteFiscale, autoriteFiscale);
 	}
 
 	private ForFiscal addForAutreElementImposable(ForFiscalView forFiscalView) {

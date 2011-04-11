@@ -2466,7 +2466,7 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, int autoriteFiscale) {
+	public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale) {
 		final ForDebiteurPrestationImposable dernierForDebiteur = debiteur.getDernierForDebiteur();
 		if (dernierForDebiteur != null && dernierForDebiteur.getDateFin() == null) {
 			closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore(), false);
@@ -2476,7 +2476,7 @@ public class TiersServiceImpl implements TiersService {
 			adaptPremierePeriodicite(debiteur, dateDebut);
 		}
 
-		ForDebiteurPrestationImposable forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ForDebiteurPrestationImposable forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, typeAutoriteFiscale);
 		if (dateFin != null) {
 			forRtr = closeForDebiteurPrestationImposable(debiteur, forRtr, dateFin, true);
 		}

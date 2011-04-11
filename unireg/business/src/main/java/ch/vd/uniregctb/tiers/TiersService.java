@@ -614,7 +614,7 @@ public interface TiersService {
 	/**
 	 * Ouvre un nouveau for fiscal debiteur sur un contribuable.
 	 * <p/>
-	 * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForDebiteur(DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, int)}
+	 * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForDebiteur(DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.TypeAutoriteFiscale, int)}
 	 *
 	 * @param debiteur                 le debiteur sur lequel le nouveau for est ouvert
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
@@ -817,15 +817,16 @@ public interface TiersService {
 	                                                           MotifRattachement motifRattachement, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale);
 
 	/**
-	 * Ajoute un for fiscal débiteur sur un contribuable.
+	 * Ajoute un for fiscal débiteur sur un débiteur de prestation imposable.
 	 *
 	 * @param debiteur        un débiteur de prestations imposables
 	 * @param dateDebut       la date d'ouverture du for à créer
 	 * @param dateFin         la date de fermeture du for à créer (peut être nulle)
-	 * @param autoriteFiscale le numéro de l'autorité fiscale du for à créer (implicitement une commune vaudoise)
+	 * @param typeAutoriteFiscale le type d'autorité fiscale du for à créer
+	 * @param autoriteFiscale le numéro de l'autorité fiscale du for à créer
 	 * @return le nouveau for fiscal.
 	 */
-	ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, int autoriteFiscale);
+	ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale);
 
 	/**
 	 * Fusionne un non habitant avec un habitant
