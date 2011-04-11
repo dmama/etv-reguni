@@ -67,19 +67,23 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	}
 
 	protected CommuneImpl(CommuneFiscale target) {
-		super(target.getNoOfs(), target.getNomOfficiel().toUpperCase(), target.getNomOfficiel(), null);
+		super(target.getNoOfs(), toUpperCase(target.getNomOfficiel()), target.getNomOfficiel(), null);
 		this.dateDebut = cal2regdate(target.getDateDebutValidite());
 		this.dateFin = cal2regdate(target.getDateFinValidite());
 		this.noOFSEtendu = (target.getParentOfsId() == null ? target.getNoOfs() : target.getNoTechnique());
 		this.sigleCanton = target.getCanton();
-		this.numTechMere = target.getParentOfsId();
+		this.numTechMere = target.getParentOfsId() == null ? 0 : target.getParentOfsId();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = (target.getParentOfsId() != null);
 		this.principale = (target.getFractions() != null && !target.getFractions().isEmpty());
 	}
 
+	private static String toUpperCase(String string) {
+		return string == null ? null : string.toUpperCase();
+	}
+
 	private static RegDate cal2regdate(XMLGregorianCalendar cal) {
-		return RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
+		return cal == null ? null : RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
 	}
 
 	public RegDate getDateDebutValidite() {

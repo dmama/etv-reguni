@@ -41,20 +41,16 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
-		return hostService.getCommuneHistoByNumeroOfs(noOfsCommune);
+		return fidorService.getCommuneHistoByNumeroOfs(noOfsCommune);
 	}
 
 	@Override
 	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
-		// TODO (msi) réactiver cet appel quand fidor sera disponible en intégration
-		if (true) {
-			return null;
-		}
 		return fidorService.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
 	}
 
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
-		return hostService.getListeCommunes(canton);
+		return fidorService.getListeCommunes(canton);
 	}
 
 	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
@@ -119,11 +115,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
-		return hostService.getListeFractionsCommunes();
+		return fidorService.getListeFractionsCommunes();
 	}
 
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
-		return hostService.getCommunes();
+		return fidorService.getCommunes();
 	}
 
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
