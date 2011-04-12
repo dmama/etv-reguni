@@ -3,21 +3,23 @@
 # (rafale = tentative de quittancement, sur le ou les mêmes contribuables, toutes les 50-100 ms, pendant des heures...)
 
 FILE="$1"
-OUTPUT_ENCODING="$2"
 if [ -z "$FILE" ]; then
-	echo "Syntaxe : $(basename "$0") ws-access.log [encoding de sortie]" >&2
+	echo "Syntaxe : $(basename "$0") ws-access.log" >&2
 	exit 1
 elif [ ! -r "$FILE" ]; then
 	echo "Le fichier '$FILE' n'est pas accessible en lecture!" >&2
 	exit 1
 fi
 
+# si la méthode est directement appelée en ligne de commande (avec un tty en sortie), on n'encode pas particulièrement
+# le flux en sortie ; en revanche, si le flux de sortie n'est pas un tty (appel depuis cron), on encode en ISO-8859-1
+# pour que le mail soit bien interprété par Notes...
 function encode_output() {
-	if [ -z "$OUTPUT_ENCODING" ]; then
-		cat -
-	else
-		iconv -t "$OUTPUT_ENCODING"
-	fi
+        if tty -s <&1; then
+                cat -
+        else    
+                iconv -t iso88591
+        fi
 }
 
 function read_file() {
