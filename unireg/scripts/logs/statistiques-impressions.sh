@@ -10,6 +10,17 @@ elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
         exit 1
 fi
 
+# si la méthode est directement appelée en ligne de commande (avec un tty en sortie), on n'encode pas particulièrement
+# le flux en sortie ; en revanche, si le flux de sortie n'est pas un tty (appel depuis cron), on encode en ISO-8859-1
+# pour que le mail soit bien interprété par Notes...
+function encode_output() {
+        if [ -t 1 ]; then
+                cat -
+        else
+                iconv -t iso88591
+        fi
+}
+
 # fonction qui prend deux paramètres : le nom du fichier et l'intitulé de la date
 function compute_stats() {
 	LOG_FILE=$1
@@ -38,8 +49,8 @@ cd "$(dirname "$0")/$ENVIRONMENT/unireg-web"
 ls -1 unireg-web.log.* | grep "[0-9]\+$" | while read FILE; do
 	DATE=$(echo "$FILE" | sed -e 's/[^0-9]//g')
 	compute_stats "$FILE" "$DATE"
-done
+done | encode_output
 
 if [ -e "unireg-web.log" ]; then
 	compute_stats "unireg-web.log" "courant "
-fi
+fi | encode_output
