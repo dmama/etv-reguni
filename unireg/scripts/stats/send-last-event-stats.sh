@@ -1,6 +1,6 @@
 #! /bin/bash -
 
-if [ -z "$@" ]; then
+if [ -z "$1" ]; then
 	echo "Syntaxe : $(basename "$0") destinataire@domain.com ..." >&2
 	exit 1
 fi
@@ -27,7 +27,7 @@ function mail_body() {
 # le flux en sortie ; en revanche, si le flux de sortie n'est pas un tty (appel depuis cron), on encode en ISO-8859-1
 # pour que le mail soit bien interprété par Notes...
 function encode() {
-	if tty -s <&1; then
+	if [ -t 1 ]; then
 		cat -
 	else
 		iconv -t iso88591
