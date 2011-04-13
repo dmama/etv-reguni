@@ -37,6 +37,16 @@ function encode() {
 # cherchons le dernier rapport d'exécution du batch de statistiques des événements
 LAST_REPORT=$(find_last_report)
 if [ -n "$LAST_REPORT" ]; then
-	mail_body | mutt -a "$LAST_REPORT" -s "Statistiques des événements reçus par UNIREG en production" -- "$@"
-	echo "Le fichier $LAST_REPORT a été envoyé à $(echo "$@" | xargs | sed -e 's/ /, /g')" | encode
-fi
+	if [ -r "$LAST_REPORT" ]; then
+		MODIF_TS=$(stat --format="%Y" "$LAST_REPORT")
+		A_WEEK_AGO=$(date --date="7 days ago" +"%s")
+		if [ "$MODIF_TS" -lt "$A_WEEK_AGO" ]; then
+			echo "Le fichier $LAST_REPORT est vieux de plus d'une semaine... Il n'a donc pas été envoyé."
+		else
+			mail_body | mutt -a "$LAST_REPORT" -s "Statistiques des événements reçus par UNIREG en production" -- "$@"
+			echo "Le fichier $LAST_REPORT a été envoyé à $(echo "$@" | xargs | sed -e 's/ /, /g')"
+		fi
+	else
+		echo "Impossible de lire le fichier censé être envoyé : $LAST_REPORT"
+	fi
+fi | encode
