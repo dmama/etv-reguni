@@ -131,6 +131,15 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, MockPays.Gibraltar.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.errorsCount());
+
+			final String expectedMsg = String.format("Le pays du for fiscal %s (%s, %d) n'est pas un état souverain, mais un territoire", ffp, MockPays.Gibraltar.getNomMinuscule(), MockPays.Gibraltar.getNoOFS());
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+		{
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, MockPays.France.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);

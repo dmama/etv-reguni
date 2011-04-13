@@ -100,6 +100,9 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 					else if (pays.isSuisse()) {
 						results.addError(String.format("Le for %s devrait être vaudois ou hors-canton", ff));
 					}
+					else if (!pays.isEtatSouverain()) {
+						results.addError(String.format("Le pays du for fiscal %s (%s, %d) n'est pas un état souverain, mais un territoire", ff, pays.getNomMinuscule(), pays.getNoOFS()));
+					}
 				}
 				catch (ServiceInfrastructureException e) {
 					results.addError(String.format("Impossible de vérifier la validité du pays du for %s", ff), e);

@@ -10,6 +10,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	private static final long serialVersionUID = -6750309642346732586L;
 
 	private final boolean valide;
+	private final boolean etatSouverain;
 
 	public static PaysImpl get(ch.vd.infrastructure.model.Pays target) {
 		if (target == null) {
@@ -28,11 +29,13 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	private PaysImpl(ch.vd.infrastructure.model.Pays target) {
 		super(target);
 		this.valide = true; // tous les pays retournés par host-interfaces sont valides
+		this.etatSouverain = true; // cette information n'est pas disponible dans host-interface
 	}
 
 	private PaysImpl(ch.vd.fidor.ws.v2.Pays target) {
 		super(target.getOfsId(), target.getNomCourtFr().toUpperCase(), target.getNomCourtFr(), target.getIso2Id());
 		this.valide = target.isValide();
+		this.etatSouverain = target.isEtat() != null && target.isEtat();
 	}
 
 	public boolean isSuisse() {
@@ -41,5 +44,9 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	public boolean isValide() {
 		return valide;
+	}
+
+	public boolean isEtatSouverain() {
+		return etatSouverain;
 	}
 }
