@@ -38,7 +38,6 @@ public class PdfValidationRapport extends PdfRapport {
 					table.addLigne("Calcul des assujettissements:", Boolean.toString(results.calculateAssujettissements));
 					table.addLigne("Cohérence des dates des DIs", Boolean.toString(results.coherenceAssujetDi));
 					table.addLigne("Calcul des adresses:", Boolean.toString(results.calculateAdresses));
-					table.addLigne("Cohérence des autorités des fors fiscaux:", Boolean.toString(results.coherenceAutoritesForsFiscaux));
 				}
 			});
 		}
@@ -61,8 +60,6 @@ public class PdfValidationRapport extends PdfRapport {
 							.valueOf(results.erreursCoherenceDI.size()));
 					table.addLigne("Nombre de contribuables dont les adresses ne sont pas calculables:", String
 							.valueOf(results.erreursAdresses.size()));
-					table.addLigne("Nombre de fors fiscaux dont les types d'autorités fiscales ne sont pas cohérents:", String
-							.valueOf(results.erreursAutoritesForsFiscaux.size()));
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				}
@@ -103,15 +100,6 @@ public class PdfValidationRapport extends PdfRapport {
 			String titre = "Liste des contribuables dont les adresses ne sont pas calculables";
 			String listVide = "(aucun contribuable dont les adresses ne sont pas calculables)";
 			addListeDetaillee(writer, results.erreursAdresses.size(), titre, listVide, filename, contenu);
-		}
-
-		// Autorités fiscales
-		if (results.coherenceAutoritesForsFiscaux) {
-			String filename = "autorites_fors_fiscaux_incoherentes.csv";
-			String contenu = asCsvFile(results.erreursAutoritesForsFiscaux, filename, statusManager);
-			String titre = "Liste des fors fiscaux dont les autorités fiscales ne sont pas cohérentes";
-			String listVide = "(aucun for fiscal dont l'autorité fiscale n'est pas cohérente)";
-			addListeDetaillee(writer, results.erreursAutoritesForsFiscaux.size(), titre, listVide, filename, contenu);
 		}
 
 		close();

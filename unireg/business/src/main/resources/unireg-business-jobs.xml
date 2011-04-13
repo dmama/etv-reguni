@@ -291,7 +291,6 @@
         <property name="transactionManager" ref="transactionManager"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="adresseService" ref="adresseService"/>
-        <property name="serviceInfra" ref="serviceInfrastructureService"/>
 		<property name="paramService" ref="parametreAppService"/>
 		<property name="validationService" ref="validationService"/>
     </bean>

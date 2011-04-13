@@ -17,7 +17,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ValidationJobRapport;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -42,7 +41,6 @@ public class ValidationJob extends JobDefinition {
 	public static final String ADRESSES = "ADRESSES";
 	public static final String DI = "DI";
 	public static final String NB_THREADS = "NB_THREADS";
-	public static final String AUTORITE_FORS = "AUTORITE_FORS";
 
 	private static final int QUEUE_BY_THREAD_SIZE = 50;
 
@@ -50,7 +48,6 @@ public class ValidationJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 	private RapportService rapportService;
 	private AdresseService adresseService;
-	private ServiceInfrastructureService serviceInfra;
 	private ParametreAppService paramService;
 	private ValidationService validationService;
 
@@ -79,18 +76,11 @@ public class ValidationJob extends JobDefinition {
 		addParameterDefinition(param2, Boolean.FALSE);
 
 		final JobParam param3 = new JobParam();
-		param3.setDescription("Cohérences autorités des fors fiscaux");
-		param3.setName(AUTORITE_FORS);
-		param3.setMandatory(false);
-		param3.setType(new JobParamBoolean());
-		addParameterDefinition(param3, Boolean.FALSE);
-
-		final JobParam param4 = new JobParam();
-		param4.setDescription("Nombre de threads");
-		param4.setName(NB_THREADS);
-		param4.setMandatory(true);
-		param4.setType(new JobParamInteger());
-		addParameterDefinition(param4, 4);
+		param3.setDescription("Nombre de threads");
+		param3.setName(NB_THREADS);
+		param3.setMandatory(true);
+		param3.setType(new JobParamInteger());
+		addParameterDefinition(param3, 4);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -109,10 +99,6 @@ public class ValidationJob extends JobDefinition {
 		this.adresseService = adresseService;
 	}
 
-	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
-		this.serviceInfra = serviceInfra;
-	}
-
 	public void setParamService(ParametreAppService paramService) {
 		this.paramService = paramService;
 	}
@@ -129,7 +115,6 @@ public class ValidationJob extends JobDefinition {
 		final boolean calculateAssujettissements = getBooleanValue(params, ASSUJET);
 		final boolean coherenceAssujetDi = getBooleanValue(params, DI);
 		final boolean calculateAdresses = getBooleanValue(params, ADRESSES);
-		final boolean coherenceAutoritesForsFiscaux = getBooleanValue(params, AUTORITE_FORS);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
 		// Chargement des ids des contribuables à processer
@@ -137,8 +122,7 @@ public class ValidationJob extends JobDefinition {
 		final List<Long> ids = getCtbIds(statusManager);
 
 		// Processing des contribuables
-		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculateAssujettissements, coherenceAssujetDi,
-				calculateAdresses, coherenceAutoritesForsFiscaux);
+		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculateAssujettissements, coherenceAssujetDi, calculateAdresses);
 		processAll(ids, results, nbThreads, statusManager);
 		results.end();
 
@@ -174,7 +158,7 @@ public class ValidationJob extends JobDefinition {
 		// Création des threads de processing
 		final List<ValidationJobThread> threads = new ArrayList<ValidationJobThread>(nbThreads);
 		for (int i = 0; i < nbThreads; i++) {
-			final ValidationJobThread t = new ValidationJobThread(queue, results, tiersDAO, transactionManager, adresseService, serviceInfra, paramService, validationService);
+			final ValidationJobThread t = new ValidationJobThread(queue, results, tiersDAO, transactionManager, adresseService, paramService, validationService);
 			threads.add(t);
 			t.setName("ValidThread-" + i);
 			t.start();
@@ -194,9 +178,9 @@ public class ValidationJob extends JobDefinition {
 			if (++i % 100 == 0) {
 				int percent = (i * 100) / ids.size();
 				String message = String.format(
-						"Processing du contribuable %d => invalides(%d) / assujet.(%d) / coherence(%d) / adresses(%d) / aut.fisc.(%d) / total(%d)", id,
+						"Processing du contribuable %d => invalides(%d) / assujet.(%d) / coherence(%d) / adresses(%d) / total(%d)", id,
 						results.getNbErreursValidation(), results.getNbErreursAssujettissement(), results.getNbErreursCoherenceDI(),
-						results.getNbErreursAdresses(), results.getNbErreursAutoritesFiscales(), results.getNbCtbsTotal());
+						results.getNbErreursAdresses(), results.getNbCtbsTotal());
 				statusManager.setMessage(message, percent);
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(message);

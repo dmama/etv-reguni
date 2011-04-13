@@ -8,7 +8,6 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscal;
 
 /**
  * Contient les données brutes permettant de générer le rapport de l'exécution de la validation des tiers.
@@ -19,8 +18,7 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		INVALIDE("le contribuable ne valide pas."), // -----------------------------------------------------
 		ASSUJETTISSEMENT("l'assujettissement ne peut pas être calculé"), // --------------------------------
 		ADRESSES("les adresses n'ont pas pu être calculées"), // -------------------------------------------
-		DI("Incohérence dans les dates de DI"), // ---------------------------------------------------------
-		AUTORITE_FOR_FISCAL("L'autorité fiscale du for est incorrecte");
+		DI("Incohérence dans les dates de DI"); // ---------------------------------------------------------
 
 		private String description;
 
@@ -81,23 +79,20 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public final boolean calculateAssujettissements;
 	public final boolean coherenceAssujetDi;
 	public final boolean calculateAdresses;
-	public final boolean coherenceAutoritesForsFiscaux;
 
 	public int nbCtbsTotal;
 	public List<Erreur> erreursValidation = new ArrayList<Erreur>();
 	public List<Erreur> erreursAssujettissement = new ArrayList<Erreur>();
 	public List<Erreur> erreursCoherenceDI = new ArrayList<Erreur>();
 	public List<Erreur> erreursAdresses = new ArrayList<Erreur>();
-	public List<Erreur> erreursAutoritesForsFiscaux = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public ValidationJobResults(RegDate dateTraitement, boolean calculateAssujettissements, boolean coherenceAssujetDi,
-			boolean calculateAdresses, boolean coherenceCommunesForsFiscaux) {
+	                            boolean calculateAdresses) {
 		this.dateTraitement = dateTraitement;
 		this.calculateAssujettissements = calculateAssujettissements;
 		this.coherenceAssujetDi = coherenceAssujetDi;
 		this.calculateAdresses = calculateAdresses;
-		this.coherenceAutoritesForsFiscaux = coherenceCommunesForsFiscaux;
 	}
 
 	public int getNbCtbsTotal() {
@@ -127,12 +122,6 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public int getNbErreursAdresses() {
 		synchronized (this) {
 			return erreursAdresses.size();
-		}
-	}
-
-	public int getNbErreursAutoritesFiscales() {
-		synchronized (this) {
-			return erreursAutoritesForsFiscaux.size();
 		}
 	}
 
@@ -168,22 +157,6 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		final Erreur e = new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), exception, ErreurType.ADRESSES);
 		synchronized (this) {
 			erreursAdresses.add(e);
-		}
-	}
-
-	public void addErrorAutoriteForFiscal(Contribuable ctb, ForFiscal ff, String message) {
-		final Erreur e = new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), "For fiscal n°" + ff.getId() + ": " + message,
-				ErreurType.AUTORITE_FOR_FISCAL);
-		synchronized (this) {
-			erreursAutoritesForsFiscaux.add(e);
-		}
-	}
-
-	public void addErrorAutoriteForFiscal(Contribuable ctb, ForFiscal ff, Exception exception) {
-		final Erreur e = new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), "For fiscal n°" + ff.getId() + ": " + exception.getMessage(),
-				ErreurType.AUTORITE_FOR_FISCAL);
-		synchronized (this) {
-			erreursAutoritesForsFiscaux.add(e);
 		}
 	}
 
