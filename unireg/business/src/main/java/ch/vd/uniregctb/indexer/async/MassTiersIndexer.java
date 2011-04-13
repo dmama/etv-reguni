@@ -27,7 +27,7 @@ public class MassTiersIndexer {
 	private boolean enabled = true;
 
 	private ArrayList<AsyncTiersIndexerThread> threads;
-	private BlockingQueue<Long> queue;
+	private final BlockingQueue<Long> queue;
 
 	private long totalCpuTime;
 	private long totalUserTime;
@@ -45,7 +45,8 @@ public class MassTiersIndexer {
 		for (int i = 0; i < nbThreads; i++) {
 			AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, mode, indexer, sessionFactory, transactionManager, dialect);
 			threads.add(t);
-			t.setName("Async-" + i);
+			t.setName("Mass-" + i);
+			LOGGER.info("Démarrage du thread " + t.getName());
 			t.start();
 		}
 	}
@@ -93,7 +94,7 @@ public class MassTiersIndexer {
 		}
 
 		threads = null;
-		queue = null;
+		queue.clear();
 	}
 
 	/**

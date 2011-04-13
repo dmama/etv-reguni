@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
@@ -47,7 +48,7 @@ public class AsyncTiersIndexerThread extends Thread {
 	private boolean shutdown = false;
 	private final BlockingQueue<Long> queue;
 
-	private final Object queueDone = new Object();
+	private final MutableBoolean processingDone = new MutableBoolean(false);
 
 	private long executionTime = 0;
 
@@ -94,7 +95,10 @@ public class AsyncTiersIndexerThread extends Thread {
 	 * Demande au thread de s'arrêter. Le thread termine de vider la queue dans tous les cas.
 	 */
 	public void shutdown() {
-		shutdown = true;
+		if (!shutdown) {
+			shutdown = true;
+			sync();
+		}
 	}
 
 	/**
@@ -102,8 +106,11 @@ public class AsyncTiersIndexerThread extends Thread {
 	 */
 	public void sync() {
 		try {
-			synchronized (queueDone) {
-				queueDone.wait();
+			synchronized (processingDone) {
+				processingDone.setValue(false);
+				while (!processingDone.booleanValue()) {
+					processingDone.wait();
+				}
 			}
 		}
 		catch (InterruptedException e) {
@@ -132,7 +139,7 @@ public class AsyncTiersIndexerThread extends Thread {
 				}
 				else {
 					// le batch est null, on continue à boucler. Il n'y a pas besoin d'attendre car la méthode nextBatch le fait déjà.
-					notifyQueueDone();
+					notifyProcessingDone();
 				}
 			}
 		}
@@ -141,14 +148,15 @@ public class AsyncTiersIndexerThread extends Thread {
 			throw new RuntimeException(e);
 		}
 		finally {
-			notifyQueueDone();
+			notifyProcessingDone();
 			AuthenticationHelper.resetAuthentication();
 		}
 	}
 
-	private void notifyQueueDone() {
-		synchronized (queueDone) {
-			queueDone.notifyAll(); // notifie les threads en attente sur 'sync' qu'on a fini (momentanément) d'indexer tous les tiers de la queue
+	private void notifyProcessingDone() {
+		synchronized (processingDone) {
+			processingDone.setValue(true);
+			processingDone.notifyAll(); // notifie les threads en attente sur 'sync' qu'on a fini (momentanément) d'indexer tous les tiers de la queue
 		}
 	}
 

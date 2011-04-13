@@ -36,7 +36,7 @@ public class OnTheFlyTiersIndexer {
 
 	private int count = 0;
 	private final ArrayList<AsyncTiersIndexerThread> threads = new ArrayList<AsyncTiersIndexerThread>();
-	private BlockingQueue<Long> queue;
+	private final BlockingQueue<Long> queue;
 
 	private final Timer timer = new Timer();
 	private final TimerTask monitoring = new TimerTask() {
