@@ -68,7 +68,7 @@
 		<form:hidden path="numeroForFiscalPays" />
 		<script>
 			$(function() {
-				autocomplete_infra('pays', '#libPays', function(item) {
+				autocomplete_infra('etat', '#libPays', function(item) {
 					$('#numeroForFiscalPays').val(item ? item.id1 : null);
 					<c:if test="${param['onChange'] != null}">
 					${param['onChange']}();

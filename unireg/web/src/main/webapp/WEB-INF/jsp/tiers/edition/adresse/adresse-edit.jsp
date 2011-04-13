@@ -166,7 +166,7 @@
 								<form:errors path="paysNpa" cssClass="error"/>
 								<script>
 									$(function() {
-										autocomplete_infra('pays', '#pays', function(item) {
+										autocomplete_infra('etatOuTerritoire', '#pays', function(item) {
 											$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
 										});
 									});

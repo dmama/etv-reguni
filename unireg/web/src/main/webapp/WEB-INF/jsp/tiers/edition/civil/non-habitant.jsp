@@ -154,7 +154,7 @@
 			<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="13" size="20" />
 			<script>
 				$(function() {
-					autocomplete_infra('pays', '#tiers_libelleOfsPaysOrigine', function(item) {
+					autocomplete_infra('etatOuTerritoire', '#tiers_libelleOfsPaysOrigine', function(item) {
 						$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
 					});
 				});

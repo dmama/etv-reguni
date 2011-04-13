@@ -38,7 +38,8 @@ public class AutoCompleteInfraController extends JsonController {
 		COMMUNE,
 		COMMUNE_VD,
 		COMMUNE_HC,
-		PAYS,
+		ETAT,
+		TERRITOIRE,
 		COLLECTIVITE_ADMINISTRATIVE,
 		JUSTICES_DE_PAIX,
 		OFFICES_IMPOT
@@ -198,11 +199,12 @@ public class AutoCompleteInfraController extends JsonController {
 			}
 		}
 
-		if (categories.contains(Category.PAYS)) {
+		if (categories.contains(Category.ETAT) || categories.contains(Category.TERRITOIRE)) {
 			final List<Pays> pays = serviceInfrastructureService.getPays();
 			if (pays != null) {
+				final boolean etatsOnly = !categories.contains(Category.TERRITOIRE);
 				for (Pays p : pays) {
-					if (p.isValide()) { // [UNIREG-3338] on ne permet de sélectionner que les pays valides
+					if (p.isValide() && (!etatsOnly || p.isEtatSouverain())) { // [UNIREG-3338] on ne permet de sélectionner que les pays valides
 						if (StringComparator.toLowerCaseWithoutAccent(p.getNomMinuscule()).startsWith(term)) {
 							final String description = p.getNomMinuscule() + " (" + p.getNoOFS() + ")";
 							list.add(new Item(p.getNomMinuscule(), description, String.valueOf(p.getNoOFS())));
@@ -270,16 +272,21 @@ public class AutoCompleteInfraController extends JsonController {
 		else if ("localite".equalsIgnoreCase(category)) {
 			categories.add(Category.LOCALITE);
 		}
-		else if ("pays".equalsIgnoreCase(category)) {
-			categories.add(Category.PAYS);
+		else if ("etat".equalsIgnoreCase(category)) {
+			categories.add(Category.ETAT);
+		}
+		else if ("etatOuTerritoire".equalsIgnoreCase(category)) {
+			categories.add(Category.ETAT);
+			categories.add(Category.TERRITOIRE);
 		}
 		else if ("localiteOuPays".equalsIgnoreCase(category)) {
 			categories.add(Category.LOCALITE);
-			categories.add(Category.PAYS);
+			categories.add(Category.ETAT);
+			categories.add(Category.TERRITOIRE);
 		}
 		else if ("communeOuPays".equalsIgnoreCase(category)) {
 			categories.add(Category.COMMUNE);
-			categories.add(Category.PAYS);
+			categories.add(Category.ETAT);
 		}
 		else if ("commune".equalsIgnoreCase(category)) {
 			categories.add(Category.COMMUNE);
