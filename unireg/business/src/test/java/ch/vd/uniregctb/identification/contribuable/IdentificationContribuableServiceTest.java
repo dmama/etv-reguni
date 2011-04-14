@@ -31,17 +31,21 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -414,7 +418,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// claude doit avoir été trouvée, et traitée automatiquement
+		// zanolari doit avoir été trouvée, et traitée automatiquement
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
 		assertEquals(1, list.size());
 
@@ -432,6 +436,169 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertEquals(1, messageHandler.getSentMessages().size());
 		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
 		assertEquals(ic.getId(), sent.getId());
+
+	// création et traitement du message d'identification
+		CriteresPersonne criteress = new CriteresPersonne();
+		criteres.setPrenoms("Jean-Pierre");
+		criteres.setNom("ZANOLARI");
+		criteres.setNAVS11("97750420110");
+		criteres.setDateNaissance(date(1954, 1, 1));
+
+
+	}
+
+	@Test
+	public void testContribuableSurNAVS11Habitant() throws Exception {
+		final long noIndividuClaude = 151658 ;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1954, 1, 1), "ZANOLARI", "Jean-Pierre", true);
+				addFieldsIndividu(indClaude, "", "97750420000", "");
+
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Jean-Pierre");
+		criteres.setNom("ZANOLARI");
+		criteres.setDateNaissance(date(1954, 1, 1));
+		criteres.setNAVS11("97750420110");
+
+
+
+
+		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+
+	}
+
+	@Test
+	public void testContribuableSurNAVS11NonHabitant() throws Exception {
+		final long noIndividuClaude = 151658 ;
+		final long noIndividuAnne = 2345;
+
+
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addNonHabitant("Jean-Pierre", "ZANOLARI", date(1954, 1, 1), Sexe.MASCULIN);
+				addIdentificationPersonne(habClaude, CategorieIdentifiant.CH_AHV_AVS, "97750420000");
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Jean-Pierre");
+		criteres.setNom("ZANOLARI");
+		criteres.setDateNaissance(date(1954, 1, 1));
+		criteres.setNAVS11("97750420110");
+
+
+
+
+		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+		  // création et traitement du message d'identification
+			CriteresPersonne criteress = new CriteresPersonne();
+			criteres.setPrenoms("Jean-Pierre");
+			criteres.setNom("ZANOLARI");
+			criteres.setNAVS11("97750420110");
+			criteres.setDateNaissance(date(1954, 1, 1));
 
 	}
 

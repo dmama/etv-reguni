@@ -186,7 +186,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 		// Restriction selon les autres critères
-
+		list = filterNavs11(list,criteres);
 		list = filterSexe(list, criteres);
 		list = filterDateNaissance(list, criteres);
 		if (Phase.COMPLET == phaseSucces) {
@@ -606,10 +606,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private void updateCriteriaComplet(CriteresPersonne criteres, final TiersCriteria criteria) {
-		final String navs11 = criteres.getNAVS11();
-		if (navs11 != null) {
-			criteria.setNumeroAVS(navs11);
-		}
+
 		// [UNIREG-1630] dans tous les cas, on doit tenir compte des autres critères (autres que le numéro AVS, donc)
 		criteria.setNomRaison(concatCriteres(criteres.getPrenoms(), criteres.getNom()));
 		criteria.setTypeRechercheDuNom(TypeRecherche.EST_EXACTEMENT);
@@ -664,6 +661,45 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 		return list;
 	}
+
+	/**
+	 * Supprime toutes les personnes dont le navs11 ne correspond pas avec celle spécifié dans le message
+	 *
+	 * @param list     la liste des personnes à fitrer
+	 * @param criteres les critères de filtre
+	 * @return la liste d'entrée filtrée
+	 */
+	private List<PersonnePhysique> filterNavs11(List<PersonnePhysique> list, CriteresPersonne criteres) {
+		final String criteresNAVS11 = criteres.getNAVS11();
+		if (criteresNAVS11 != null){
+			CollectionUtils.filter(list, new Predicate() {
+				public boolean evaluate(Object object) {
+					return matchNavs11((PersonnePhysique) object, criteresNAVS11);
+				}
+
+			});
+		}
+		return list;
+	}
+
+	private boolean matchNavs11(PersonnePhysique object, String criteresNAVS11) {
+		String navs11 = tiersService.getAncienNumeroAssureSocial(object);
+		if(navs11!=null){
+			// SIFISC-790
+			// On ne considère que les 8 premiers chiffres du navs11 sans les points
+			String debutNavs11 = StringUtils.remove(navs11.substring(0,8),".");
+			String debutCritere = StringUtils.remove(criteresNAVS11.substring(0,8),".");
+			if(debutCritere.equals(debutNavs11)){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		return false;  //To change body of created methods use File | Settings | File Templates.
+	}
+
+
 
 	/**
 	 * Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
