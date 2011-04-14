@@ -18,13 +18,12 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	public static final Logger LOGGER = Logger.getLogger(EvenementCivilAsyncProcessorTest.class);
 
 	private EvenementCivilAsyncProcessorImpl asyncProcessor;
-	private MyProcessor processor;
 
 	/**
 	 * Classe anonyme pour vérifier ce qui est finalement transmis au
 	 * processeur des événements civils
 	 */
-	private static final class MyProcessor implements EvenementCivilProcessor {
+	private static class MyProcessor implements EvenementCivilProcessor {
 
 		/**
 		 * Cette collection est synchronisée afin que les appels à traiteEvenementCivil et la lecture
@@ -51,19 +50,24 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	}
 
 	@Override
-	public void onSetUp() throws Exception {
-		super.onSetUp();
+	public void onTearDown() throws Exception {
+		if (asyncProcessor != null) {
+			asyncProcessor.destroy();
+			asyncProcessor = null;
+		}
 
-		final EvenementCivilExterneDAO evtCivilExterneDAO = getBean(EvenementCivilExterneDAO.class, "evenementCivilExterneDAO");
+		super.onTearDown();
+	}
 
-		processor = new MyProcessor();
+	private void buildAsyncProcessor(EvenementCivilProcessor processor, int delaiPriseEnCompte) throws Exception {
 
 		asyncProcessor = new EvenementCivilAsyncProcessorImpl();
 
-		// cette valeur 1 (= 1 seconde) suppose que tous les événements civils qui doivent être triés (ils arrivent ici dans n'importe quel ordre)
-		// sont postés dans la même seconde
-		asyncProcessor.setDelaiPriseEnCompte(1);
-		
+		// cette valeur (en secondes) suppose que tous les événements civils qui doivent être triés (ils arrivent ici dans n'importe quel ordre)
+		// sont postés dans ce laps de temps
+		asyncProcessor.setDelaiPriseEnCompte(delaiPriseEnCompte);
+
+		final EvenementCivilExterneDAO evtCivilExterneDAO = getBean(EvenementCivilExterneDAO.class, "evenementCivilExterneDAO");
 		asyncProcessor.setEvenementCivilExterneDAO(evtCivilExterneDAO);
 		asyncProcessor.setEvenementCivilProcessor(processor);
 		asyncProcessor.setHibernateTemplate(hibernateTemplate);
@@ -72,16 +76,11 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		asyncProcessor.afterPropertiesSet();
 	}
 
-	@Override
-	public void onTearDown() throws Exception {
-		asyncProcessor.destroy();
-		asyncProcessor = null;
-
-		super.onTearDown();
-	}
-
 	@Test(timeout=10000)
 	public void testOrdreTraitement() throws Exception {
+
+		final MyProcessor processor = new MyProcessor();
+		buildAsyncProcessor(processor, 1);
 
 		final int THREADS = 10;
 		final int EVTS_PAR_THREAD = 100;
@@ -93,7 +92,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 			final int threadIndex = i;
 			final Thread thread = new Thread(new Runnable() {
 				public void run() {
-					for (int j = 0 ; j < EVTS_PAR_THREAD ; ++ j) {
+					for (int j = EVTS_PAR_THREAD - 1 ; j >= 0 ; -- j) {
 						final long id = threadIndex * EVTS_PAR_THREAD + j;
 						asyncProcessor.postEvenementCivil(id);
 					}
@@ -132,5 +131,25 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		for (int index = 0 ; index < evtsRecus.size() ; ++ index) {
 			Assert.assertEquals(index, (long) evtsRecus.get(index));
 		}
+	}
+
+	/**
+	 * Test de non-régression qui vérifie que le sync fonctionne bien comme
+	 * on s'y attend (une ancienne implémentation faisait échouer ce test)
+	 */
+	@Test
+	public void testSyncOnOneElement() throws Exception {
+		final MyProcessor processor = new MyProcessor();
+		buildAsyncProcessor(processor, 1);
+		Thread.sleep(100);      // pour laisser le temps au thread d'écoute sur la queue de démarrer
+
+		LOGGER.info("Post de l'événement civil");
+		asyncProcessor.postEvenementCivil(1);
+
+		Thread.sleep(1);        // pour laisser le temps au thread d'écoute sur la queue de récupérer l'élément sur la queue
+
+		asyncProcessor.sync();
+		LOGGER.info("Sync terminé");
+		Assert.assertEquals(1, processor.getEvenementsRecus().size());
 	}
 }

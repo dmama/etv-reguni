@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -49,6 +48,14 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 	 * toujours inférieur ou égal au nombre d'événements postés ({@link #nombreEvenementsPostes})
 	 */
 	private final AtomicInteger nombreEvenementsTraites = new AtomicInteger(0);
+
+	/**
+	 * Booléen qui indique si la queue de traitement est momentanément vide (après
+	 * que tous les éléments qui y sont passés ont été traités) ;
+	 * cet objet est signalé (par {@link #notifyAll()}) régulièrement quand c'est le cas
+	 * (utilisé dans la méthode {@link #sync()})
+	 */
+	private final MutableBoolean processingDone = new MutableBoolean(false);
 
 	/**
 	 * Sera mis à <code>true</code> dans la phase d'extinction du service
@@ -102,8 +109,6 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 		private boolean stopping = false;
 
-		private Lock traitementEnCours = new ReentrantLock();
-
 		private QueueListener() {
 			super("EvtCivil");
 		}
@@ -115,65 +120,62 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 			try {
 				while (!stopping) {
-					final EvtData data = queue.poll(5, TimeUnit.SECONDS);
+					final EvtData data = queue.poll(100, TimeUnit.MILLISECONDS);
 					if (data != null && !stopping) {
 
-						traitementEnCours.lock();
-						try {
+						if (LOGGER.isTraceEnabled()) {
+							LOGGER.trace(String.format("Nouvel événement à traiter : %d", data.evtId));
+						}
+
+						// deux possibilités :
+						// 1. l'événement est là depuis assez longtemps pour que les événements qui
+						//    sont arrivés en même temps que lui soient tous là aussi (donc ils sont dans le bon ordre, voir {@link PriorityQueue})
+						// 2. l'événement est trop récent : on ne peut pas encore être sûr que tous les événements soient bien arrivés et donc on attends encore
+						final long now = System.currentTimeMillis();
+						final long seuilPriseEnCompteEvenement = data.timestamp + delaiPriseEnCompte * 1000L;
+						if (now >= seuilPriseEnCompteEvenement) {
+
 							if (LOGGER.isTraceEnabled()) {
-								LOGGER.trace(String.format("Nouvel événement à traiter : %d", data.evtId));
+								LOGGER.trace(String.format("Lancement du traitement de l'événement %d", data.evtId));
 							}
 
-							// deux possibilités :
-							// 1. l'événement est là depuis assez longtemps pour que les événements qui
-							//    sont arrivés en même temps que lui soient tous là aussi (donc ils sont dans le bon ordre, voir {@link PriorityQueue})
-							// 2. l'événement est trop récent : on ne peut pas encore être sûr que tous les événements soient bien arrivés et donc on attends encore
-							final long now = System.currentTimeMillis();
-							final long seuilPriseEnCompteEvenement = data.timestamp + delaiPriseEnCompte * 1000L;
-							if (now >= seuilPriseEnCompteEvenement) {
+							// on traite l'événement!
+							try {
+								final long debut = System.nanoTime();
 
-								if (LOGGER.isTraceEnabled()) {
-									LOGGER.trace(String.format("Lancement du traitement de l'événement %d", data.evtId));
-								}
+								evenementCivilProcessor.traiteEvenementCivil(data.evtId, true);
 
-								// on traite l'événement!
-								try {
-									final long debut = System.nanoTime();
+								final long fin = System.nanoTime();
 
-									evenementCivilProcessor.traiteEvenementCivil(data.evtId, true);
-
-									final long fin = System.nanoTime();
-
-									if (LOGGER.isInfoEnabled()) {
-										LOGGER.info(String.format("Evenement civil %d traité en %d ms", data.evtId, (fin - debut) / 1000000L));
-									}
-								}
-								catch (Exception e) {
-									// afin de ne pas faire sauter le thread en cas de problème lors du traitement de l'événement
-									LOGGER.error(String.format("Exception reçue lors du traitement de l'événement civil %d", data.evtId), e);
-								}
-								finally {
-									nombreEvenementsTraites.incrementAndGet();
+								if (LOGGER.isInfoEnabled()) {
+									LOGGER.info(String.format("Evenement civil %d traité en %d ms", data.evtId, (fin - debut) / 1000000L));
 								}
 							}
-							else {
-
-								if (LOGGER.isTraceEnabled()) {
-									LOGGER.trace(String.format("Encore trop tôt après la réception de l'événement %d (on attend encore %d ms)", data.evtId, seuilPriseEnCompteEvenement - now));
-								}
-
-								// on se revoit un peu plus tard!
-								queue.add(data);
-
-								if (!stopping) {
-									// on attend un peu pour ne pas partir dans une boucle inutilement rapide
-									Thread.sleep(seuilPriseEnCompteEvenement - now);
-								}
+							catch (Exception e) {
+								// afin de ne pas faire sauter le thread en cas de problème lors du traitement de l'événement
+								LOGGER.error(String.format("Exception reçue lors du traitement de l'événement civil %d", data.evtId), e);
+							}
+							finally {
+								nombreEvenementsTraites.incrementAndGet();
 							}
 						}
-						finally {
-							traitementEnCours.unlock();
+						else {
+
+							if (LOGGER.isTraceEnabled()) {
+								LOGGER.trace(String.format("Encore trop tôt après la réception de l'événement %d (on attend encore %d ms)", data.evtId, seuilPriseEnCompteEvenement - now));
+							}
+
+							// on se revoit un peu plus tard!
+							queue.add(data);
+
+							if (!stopping) {
+								// on attend un peu pour ne pas partir dans une boucle inutilement rapide
+								Thread.sleep(seuilPriseEnCompteEvenement - now);
+							}
 						}
+					}
+					else if (data == null) {
+						notifyProcessingDone();
 					}
 				}
 
@@ -183,6 +185,16 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 			}
 			catch (InterruptedException e) {
 				LOGGER.error("Demande d'interruption du thread de traitement des événements civils reçus", e);
+			}
+			finally {
+				notifyProcessingDone();
+			}
+		}
+
+		private void notifyProcessingDone() {
+			synchronized (processingDone) {
+				processingDone.setValue(true);
+				processingDone.notifyAll();
 			}
 		}
 
@@ -283,7 +295,13 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 	public void postEvenementCivil(long evtId) {
 		if (!dying) {
+
 			queue.add(new EvtData(evtId, System.currentTimeMillis()));
+
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace(String.format("Evénement civil %d posté", evtId));
+			}
+
 			nombreEvenementsPostes.incrementAndGet();
 		}
 	}
@@ -312,17 +330,19 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 	 */
 	public void sync() throws InterruptedException {
 
-		LOGGER.trace("Attente que tous les événements civils soient traités");
-		while (queue.size() > 0) {
-			Thread.sleep(100);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Attente que tous les événements civils soient traités");
 		}
 
-		// on attends encore un peu pour être certain que le listener a commencé son traitement
-		Thread.sleep(10);
+		synchronized (processingDone) {
+			processingDone.setValue(false);
+			while (!processingDone.booleanValue()) {
+				processingDone.wait();
+			}
+		}
 
-		// une fois que la queue est vide, on vérifie qu'il n'y a pas de traitement en cours...
-		final Lock traitementEnCours = queueListener.traitementEnCours;
-		traitementEnCours.lock();
-		traitementEnCours.unlock();
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Tous les événements civils ont apparemment été traités");
+		}
 	}
 }
