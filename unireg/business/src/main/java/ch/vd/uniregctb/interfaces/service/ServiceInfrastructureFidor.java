@@ -118,7 +118,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 			final List<Commune> communes = new ArrayList<Commune>();
 			for (CommuneFiscale commune : all) {
 				final List<CommuneFiscale> fractions = commune.getFractions();
-				if ((fractions == null || fractions.isEmpty()) && commune.getCanton().equals(ServiceInfrastructureService.SIGLE_CANTON_VD)) {
+				if ((fractions == null || fractions.isEmpty()) && ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getCanton())) {
 					communes.add(CommuneImpl.get(commune));
 				}
 			}
