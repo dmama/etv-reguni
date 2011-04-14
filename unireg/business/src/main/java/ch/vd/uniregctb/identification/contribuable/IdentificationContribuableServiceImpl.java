@@ -687,8 +687,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if(navs11!=null){
 			// SIFISC-790
 			// On ne considère que les 8 premiers chiffres du navs11 sans les points
-			String debutNavs11 = StringUtils.remove(navs11.substring(0,8),".");
-			String debutCritere = StringUtils.remove(criteresNAVS11.substring(0,8),".");
+			String debutNavs11 = navs11.substring(0,8);
+			String debutCritere = criteresNAVS11.substring(0,8);
 			if(debutCritere.equals(debutNavs11)){
 				return true;
 			}
