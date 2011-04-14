@@ -116,7 +116,9 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		@Override
 		public void run() {
 
-			LOGGER.info("Démarrage du thread de traitement des événements civils reçus");
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Démarrage du thread de traitement des événements civils reçus");
+			}
 
 			try {
 				while (!stopping) {
@@ -178,15 +180,14 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 						notifyProcessingDone();
 					}
 				}
-
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Arrêt du thread de traitement des événements civils reçus");
-				}
 			}
 			catch (InterruptedException e) {
 				LOGGER.error("Demande d'interruption du thread de traitement des événements civils reçus", e);
 			}
 			finally {
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Arrêt du thread de traitement des événements civils reçus");
+				}
 				notifyProcessingDone();
 			}
 		}
