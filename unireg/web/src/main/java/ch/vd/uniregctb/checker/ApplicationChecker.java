@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.checker;
 
+import ch.vd.uniregctb.common.TimeHelper;
+
 public class ApplicationChecker {
 
 	private static final long startupTime = System.nanoTime();
@@ -36,42 +38,11 @@ public class ApplicationChecker {
 	}
 
 	public static String getUptimeString() {
-		return buildTimeString(getUptimeSeconds());
+		return TimeHelper.formatDuree(getUptimeSeconds() * 1000L);
 	}
 
 	public String getVersion() {
 		return version;
-	}
-
-	private static String buildTimeString(long time) {
-		StringBuilder str = new StringBuilder();
-
-		long days = time / 3600 / 24;
-		if (days > 0) {
-			str.append(days);
-			str.append(" jour(s), ");
-			time -= days * 3600 * 24;
-		}
-
-		long hours = time / 3600;
-		if (str.length() > 0 || hours > 0) {
-			str.append(hours);
-			str.append(" heure(s), ");
-			time -= hours * 3600;
-		}
-
-		long minutes = time / 60;
-		if (str.length() > 0 || minutes > 0) {
-			str.append(minutes);
-			str.append(" minute(s), ");
-			time -= minutes * 60;
-		}
-
-		long sec = time;
-		str.append(sec);
-		str.append(" seconde(s).");
-
-		return str.toString();
 	}
 
 	public void setVersion(String version) {
