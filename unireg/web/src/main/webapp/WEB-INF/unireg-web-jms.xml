@@ -49,10 +49,15 @@
 	</bean>
 
 	<!-- Versions 'hors-transaction' de l'ESB template + JMS template -->
-	<bean id="noTxConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="${extprop.esb.jms.url}" />
-		<property name="userName" value="${extprop.esb.jms.username}" />
-		<property name="password" value="${extprop.esb.jms.password}" />
+	<bean id="noTxConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="${extprop.esb.jms.url}" />
+				<property name="userName" value="${extprop.esb.jms.username}" />
+				<property name="password" value="${extprop.esb.jms.password}" />
+			</bean>
+		</property>
+		<property name="maxConnections" value="8"/>
 	</bean>
 
 	<bean id="noTxEsbJmsTemplate" class="ch.vd.uniregctb.jms.EsbTemplateTracing" lazy-init="true">

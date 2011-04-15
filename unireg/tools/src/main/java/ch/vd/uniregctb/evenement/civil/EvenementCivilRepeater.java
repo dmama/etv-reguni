@@ -22,7 +22,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
  */
 public class EvenementCivilRepeater {
 
-	private static final String ESB_URL = "failover:(tcp://spip:50900)?useExponentialBackOff=false&reconnectDelay=30000&initialReconnectDelay=10000";
+	private static final String ESB_URL = "failover:(tcp://spip:50900)";
 	private static final String ESB_USER = "smx";
 	private static final String ESB_PWD = "smx";
 	private static final String RAFT_STORE_URL = "http://raft-in.etat-de-vaud.ch/raft/store";
