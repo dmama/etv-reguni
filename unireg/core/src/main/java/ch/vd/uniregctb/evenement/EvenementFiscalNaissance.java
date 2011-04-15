@@ -25,7 +25,7 @@ public class EvenementFiscalNaissance extends EvenementFiscal {
 	}
 
 	public EvenementFiscalNaissance(PersonnePhysique enfant, Contribuable parent, RegDate dateEvenement) {
-		super(parent, dateEvenement, TypeEvenementFiscal.FIN_AUTORITE_PARENTALE, null);
+		super(parent, dateEvenement, TypeEvenementFiscal.NAISSANCE, null);
 		this.enfant = enfant;
 	}
 
