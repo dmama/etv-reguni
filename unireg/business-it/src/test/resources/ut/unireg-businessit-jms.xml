@@ -10,7 +10,7 @@
 		<property name="domain" value="fiscalite"/>
 	</bean>
 
-	<bean id="jmsConnectionFactory" class="ch.vd.uniregctb.jms.ConnectionFactoryFactoryBean">
+	<bean id="jmsConnectionFactory" class="ch.vd.technical.esb.util.ConnectionFactoryFactoryBean">
 		<property name="connectionManager" ref="jmsConnectionManager"/>
 		<property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
 	</bean>
