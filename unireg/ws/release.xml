@@ -12,6 +12,7 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<includes>
 				<include>INSTALL.doc</include>
+				<include>jmx.doc</include>
 			</includes>
 			<excludes>
 				<exclude>~*.doc</exclude>
