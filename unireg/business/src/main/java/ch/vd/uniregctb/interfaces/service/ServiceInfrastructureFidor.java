@@ -14,11 +14,11 @@ import org.springframework.util.Assert;
 import ch.vd.fidor.ws.v2.Acces;
 import ch.vd.fidor.ws.v2.CommuneFiscale;
 import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
+import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
@@ -86,14 +86,14 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	@Override
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		try {
-			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
 			if (all == null || all.isEmpty()) {
 				return Collections.emptyList();
 			}
 
 			final List<Commune> communes = new ArrayList<Commune>();
 			for (CommuneFiscale commune : all) {
-				if (commune.getCanton().equals(canton.getSigleOFS())) {
+				if (commune.getSigleCanton().equals(canton.getSigleOFS())) {
 					communes.add(CommuneImpl.get(commune));
 				}
 			}
@@ -110,7 +110,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		try {
-			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
 			if (all == null || all.isEmpty()) {
 				return Collections.emptyList();
 			}
@@ -118,7 +118,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 			final List<Commune> communes = new ArrayList<Commune>();
 			for (CommuneFiscale commune : all) {
 				final List<CommuneFiscale> fractions = commune.getFractions();
-				if ((fractions == null || fractions.isEmpty()) && ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getCanton())) {
+				if ((fractions == null || fractions.isEmpty()) && ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
 					communes.add(CommuneImpl.get(commune));
 				}
 			}
@@ -135,7 +135,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		try {
-			final List<CommuneFiscale> all = fidorClient.getCommunes(null);
+			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
 			if (all == null || all.isEmpty()) {
 				return Collections.emptyList();
 			}
@@ -203,7 +203,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
 
 		try {
-			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(hintNoOfsCommune, egid, XmlUtils.regdate2xmlcal(date));
+			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(hintNoOfsCommune, egid, reg2fidor(date));
 			if (commune == null) {
 				return null;
 			}
@@ -213,6 +213,17 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 		catch (WebServiceException e) {
 			throw new ServiceInfrastructureException(e);
 		}
+	}
+
+	private static FidorDate reg2fidor(RegDate date) {
+		if (date == null) {
+			return null;
+		}
+		FidorDate d = new FidorDate();
+		d.setYear(date.year());
+		d.setMonth(date.month());
+		d.setDay(date.day());
+		return d;
 	}
 
 	@Override

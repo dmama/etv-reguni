@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.Serializable;
 
 import ch.vd.fidor.ws.v2.CommuneFiscale;
+import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -67,11 +67,11 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	}
 
 	protected CommuneImpl(CommuneFiscale target) {
-		super(target.getNoOfs(), toUpperCase(target.getNomOfficiel()), target.getNomOfficiel(), null);
-		this.dateDebut = cal2regdate(target.getDateDebutValidite());
-		this.dateFin = cal2regdate(target.getDateFinValidite());
+		super(target.getNoOfs(), toUpperCase(target.getNomAbrege()), target.getNomAbrege(), null);
+		this.dateDebut = fidor2reg(target.getDateDebutValidite());
+		this.dateFin = fidor2reg(target.getDateFinValidite());
 		this.noOFSEtendu = (target.getParentOfsId() == null ? target.getNoOfs() : target.getNoTechnique());
-		this.sigleCanton = target.getCanton();
+		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getParentOfsId() == null ? 0 : target.getParentOfsId();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = (target.getParentOfsId() != null);
@@ -82,8 +82,8 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return string == null ? null : string.toUpperCase();
 	}
 
-	private static RegDate cal2regdate(XMLGregorianCalendar cal) {
-		return cal == null ? null : RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
+	private static RegDate fidor2reg(FidorDate date) {
+		return date == null ? null : RegDate.get(date.getYear(), date.getMonth(), date.getDay());
 	}
 
 	public RegDate getDateDebutValidite() {
