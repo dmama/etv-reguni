@@ -67,6 +67,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			serviceCivil.setUp(cache);
 
 			final long jeanNoInd = 1234;
+			final long veroNoInd = 1235;
 			final long jacquesNoInd = 1233;
 			final long martineNoInd = 1232;
 
@@ -75,13 +76,15 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 				@Override
 				protected void init() {
 					final MockIndividu enfant = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
-					addAdresse(enfant, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1975, 3, 2), null);
+					final MockIndividu enfant2 = addIndividu(veroNoInd, date(1975, 3, 2), "Jacquouille", "Véronique", false);       // soeur jumelle
 
 					final MockIndividu pere = addIndividu(jacquesNoInd, date(1948, 1, 26), "Jacquouille", "Jacques", true);
 					enfant.setPere(pere);
+					enfant2.setPere(pere);
 
 					final MockIndividu mere = addIndividu(martineNoInd, date(1948, 9, 4), "Jacquouille", "Martine", false);
 					enfant.setMere(mere);
+					enfant2.setMere(mere);
 				}
 			});
 
@@ -97,6 +100,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 
 			// On vérifie que les individus sont bien présents dans le cache
 			assertNomIndividu("Jacquouille", "Jean", cache, jeanNoInd);
+			assertNomIndividu("Jacquouille", "Véronique", cache, veroNoInd);
 			assertNomIndividu("Jacquouille", "Jacques", cache, jacquesNoInd);
 			assertNomIndividu("Jacquouille", "Martine", cache, martineNoInd);
 
@@ -105,6 +109,13 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
 					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jean");
+					individu.addHistoriqueIndividu(h);
+				}
+			});
+			doModificationIndividu(veroNoInd, new IndividuModification() {
+				@Override
+				public void modifyIndividu(MockIndividu individu) {
+					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Véronique");
 					individu.addHistoriqueIndividu(h);
 				}
 			});
@@ -125,6 +136,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 
 			// On vérifie que les individus sont toujours bien présents dans le cache avec l'ancien nom
 			assertNomIndividu("Jacquouille", "Jean", cache, jeanNoInd);
+			assertNomIndividu("Jacquouille", "Véronique", cache, veroNoInd);
 			assertNomIndividu("Jacquouille", "Jacques", cache, jacquesNoInd);
 			assertNomIndividu("Jacquouille", "Martine", cache, martineNoInd);
 
@@ -135,8 +147,10 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			final CorrectionFiliation correction = new CorrectionFiliation(jean, jeanId, null, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFSEtendu(), context);
 			assertSansErreurNiWarning(correction);
 
-			// On vérifie que les individus ont maintenant le nouveau nom (ce qui prouve que le cache des trois individu a été nettoyé)
+			// On vérifie que les individus ont maintenant le nouveau nom (ce qui prouve que le cache des trois individus a été nettoyé)
+			// (sauf pour Véronique, évidemment, puisqu'elle n'est pas concernées par la correction de filiation)
 			assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
+			assertNomIndividu("Jacquouille", "Véronique", cache, veroNoInd);
 			assertNomIndividu("Jacquard", "Jacques", cache, jacquesNoInd);
 			assertNomIndividu("Jacquard", "Martine", cache, martineNoInd);
 		}
