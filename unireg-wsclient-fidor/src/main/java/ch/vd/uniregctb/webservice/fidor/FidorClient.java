@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.webservice.fidor;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Collection;
 import java.util.List;
 
 import ch.vd.fidor.ws.v2.Acces;
 import ch.vd.fidor.ws.v2.CommuneFiscale;
 import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
+import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.fidor.ws.v2.Logiciel;
 import ch.vd.fidor.ws.v2.ParameterMap;
 import ch.vd.fidor.ws.v2.Pays;
@@ -23,7 +23,7 @@ public interface FidorClient {
 	 * @throws ch.vd.fidor.ws.v2.FidorBusinessException_Exception
 	 *          en cas d'erreur métier
 	 */
-	CommuneFiscale getCommuneParNoOFS(int ofsId, XMLGregorianCalendar date) throws FidorBusinessException_Exception;
+	CommuneFiscale getCommuneParNoOFS(int ofsId, FidorDate date) throws FidorBusinessException_Exception;
 
 	/**
 	 * Retourne une commune à partir de son numéro technique.
@@ -62,7 +62,14 @@ public interface FidorClient {
 	 * @throws ch.vd.fidor.ws.v2.FidorBusinessException_Exception
 	 *          en cas d'erreur métier
 	 */
-	List<CommuneFiscale> getCommunes(XMLGregorianCalendar date) throws FidorBusinessException_Exception;
+	List<CommuneFiscale> getCommunesValides(FidorDate date) throws FidorBusinessException_Exception;
+
+	/**
+	 * @return toutes les communes existantes ou ayant existé.
+	 * @throws ch.vd.fidor.ws.v2.FidorBusinessException_Exception
+	 *          en cas d'erreur métier
+	 */
+	List<CommuneFiscale> getToutesLesCommunes() throws FidorBusinessException_Exception;
 
 	/**
 	 * @param ofsCommune le numéro Ofs de la commune d'annonce qui a associé la bâtiment avec une adresse.
@@ -70,7 +77,7 @@ public interface FidorClient {
 	 * @param date       une date de référence
 	 * @return la commune sur laquelle est sis le bâtiment identifié par son numéro Ofs.
 	 */
-	CommuneFiscale getCommuneParBatiment(int ofsCommune, int egid, XMLGregorianCalendar date);
+	CommuneFiscale getCommuneParBatiment(int ofsCommune, int egid, FidorDate date);
 
 	/**
 	 * @param ofsId identifiant d'un pays

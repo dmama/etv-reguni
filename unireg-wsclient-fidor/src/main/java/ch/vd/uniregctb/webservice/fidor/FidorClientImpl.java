@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservice.fidor;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -16,6 +15,7 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.fidor.ws.v2.Acces;
 import ch.vd.fidor.ws.v2.CommuneFiscale;
 import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
+import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.fidor.ws.v2.FidorPortType;
 import ch.vd.fidor.ws.v2.FidorService;
 import ch.vd.fidor.ws.v2.Logiciel;
@@ -58,7 +58,7 @@ public class FidorClientImpl implements FidorClient {
 		return logiciel;
 	}
 
-	public CommuneFiscale getCommuneParNoOFS(int ofsId, XMLGregorianCalendar date) throws FidorBusinessException_Exception {
+	public CommuneFiscale getCommuneParNoOFS(int ofsId, FidorDate date) throws FidorBusinessException_Exception {
 		init();
 		return service.getCommuneParNoOFS(ofsId, date);
 	}
@@ -78,12 +78,17 @@ public class FidorClientImpl implements FidorClient {
 		return service.getCommunesHistoParNoTechnique(noTechnique);
 	}
 
-	public List<CommuneFiscale> getCommunes(XMLGregorianCalendar date) throws FidorBusinessException_Exception {
+	public List<CommuneFiscale> getCommunesValides(FidorDate date) throws FidorBusinessException_Exception {
 		init();
-		return service.getCommunes(date);
+		return service.getCommunesValides(date);
 	}
 
-	public CommuneFiscale getCommuneParBatiment(int ofsCommune, int egid, XMLGregorianCalendar date) {
+	public List<CommuneFiscale> getToutesLesCommunes() throws FidorBusinessException_Exception {
+		init();
+		return service.getToutesLesCommunes();
+	}
+
+	public CommuneFiscale getCommuneParBatiment(int ofsCommune, int egid, FidorDate date) {
 		init();
 		return service.getCommuneParBatiment(ofsCommune, egid, date);
 	}
