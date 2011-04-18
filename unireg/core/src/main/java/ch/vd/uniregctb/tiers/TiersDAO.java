@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -212,4 +213,16 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance du for fiscal avec son id renseigné.
 	 */
 	<T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal);
+
+
+	/**
+	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.
+	 *
+	 *
+	 * @param dateDebutRech Date de début de la recherche
+	 * @param dateFinRech Date de fin de la recherche
+	 * @return la liste des ids des contribuables modifiés
+	 */
+	 @Transactional(readOnly = true)
+	 public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech);
 }

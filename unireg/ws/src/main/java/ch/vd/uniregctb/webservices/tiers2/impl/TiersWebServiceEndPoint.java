@@ -46,6 +46,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetListeCtbModifies;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
@@ -584,6 +585,40 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			logout();
 			final long end = System.nanoTime();
 			logWriteAccess(params, end - start);
+		}
+	}
+
+	@Override
+	public List<Long> getListeCtbModifies(
+			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetListeCtbModifies") GetListeCtbModifies params) throws BusinessException,
+			AccessDeniedException, TechnicalException {
+	final long start = System.nanoTime();
+		try {
+			login(params.login);
+			checkGeneralReadAccess(params.login);
+			final List<Long> listIds = service.getListeCtbModifies(params);
+			return listIds;
+		}
+		catch (BusinessException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (AccessDeniedException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (TechnicalException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception lors du traitement du message " + params, e);
+			throw new TechnicalException(e);
+		}
+		finally {
+			logout();
+			final long end = System.nanoTime();
+			logReadAccess(params, end - start);
 		}
 	}
 

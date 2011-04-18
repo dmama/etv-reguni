@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.hibernate.collection.PersistentSet;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
@@ -1466,6 +1469,42 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(0, dao.getCount(IdentificationPersonne.class));
 	}
 
+	@Test
+	public void testGetListContribuablesModifies() throws Exception{
+
+		loadDatabase("tiersCtbModifies.xml");
+		final Date debut = DateHelper.getDate(2010, 12, 21);
+
+		Calendar cal = DateHelper.getCalendar(2010,12,21);
+		cal.add(Calendar.SECOND,6);
+		final Date fin1 = cal.getTime();
+
+		List<Long> listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin1);
+		Assert.assertNotNull(listId);
+		Assert.assertEquals(1, listId.size());
+
+		cal.add(Calendar.MINUTE, 35);
+		final Date fin2 = cal.getTime();
+
+		listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin2);
+		Assert.assertNotNull(listId);
+		Assert.assertEquals(2, listId.size());
+
+		cal.add(Calendar.HOUR_OF_DAY, 16);
+		final Date fin3 = cal.getTime();
+
+		listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin3);
+		Assert.assertNotNull(listId);
+		Assert.assertEquals(3, listId.size());
+
+		cal.add(Calendar.DAY_OF_WEEK, 1);
+		final Date fin4 = cal.getTime();
+
+		listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin4);
+		Assert.assertNotNull(listId);
+		Assert.assertEquals(4, listId.size());
+	}
+
 	private void assertTiersEquals(Tiers expected, Tiers actual) {
 		assertTrue("Le n°" + expected.getId() + " n'est pas égal au tiers n°" + actual.getId(), expected.equalsTo(actual));
 	}
@@ -1674,6 +1713,24 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp7.setRapportsSujet(new HashSet());
 				pp7 = (PersonnePhysique) hibernateTemplate.merge(pp7);
 
+				PersonnePhysique pp8 = new PersonnePhysique();
+				pp8.setNumero(10000005L);
+				pp8.setMouvementsDossier(new HashSet());
+				pp8.setSituationsFamille(new HashSet());
+				pp8.setDebiteurInactif(false);
+				pp8.setLogModifDate(new Timestamp(1199142000000L));
+				pp8.setIdentificationsPersonnes(new HashSet());
+				pp8.setNumeroIndividu(333524L);
+				pp8.setHabitant(true);
+				pp8.setAdressesTiers(new HashSet());
+				pp8.setDeclarations(new HashSet());
+				pp8.setDroitsAccesAppliques(new HashSet());
+				pp8.setForsFiscaux(new HashSet());
+				pp8.setRapportsObjet(new HashSet());
+				pp8.setRapportsSujet(new HashSet());
+				pp8.setLogCreationDate(DateHelper.getDate(2010,11,20));
+				pp8 = (PersonnePhysique) hibernateTemplate.merge(pp8);
+
 				AdresseSuisse as0 = new AdresseSuisse();
 				as0.setDateDebut(RegDate.get(2006, 2, 23));
 				as0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1770,6 +1827,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				ffp0.setMotifRattachement(MotifRattachement.DOMICILE);
 				ffp0.setNumeroOfsAutoriteFiscale(6200);
 				ffp0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+				ffp0.setLogCreationDate(DateHelper.getDate(2010,11,20));
 				pp0.addForFiscal(ffp0);
 				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
 

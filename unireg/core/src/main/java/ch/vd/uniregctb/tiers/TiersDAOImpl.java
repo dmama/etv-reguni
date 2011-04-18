@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -876,4 +877,65 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		Assert.notNull(forFiscal.getId());
 		return forFiscal;
 	}
+
+	@Transactional(readOnly = true)
+	public List<Long> getListeCtbModifies(final Date dateDebutRech, final Date dateFinRech) {
+				final String RequeteContribuablesModifies = //----------------------------------------------------
+				"SELECT T.NUMERO AS CTB_ID                                                " +
+						"FROM TIERS T                                                             " +
+						"JOIN FOR_FISCAL FF ON FF.TIERS_ID=T.NUMERO                               " +
+						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
+						"AND T.LOG_MDATE >= :debut                                                " +
+						"AND T.LOG_MDATE <= :fin                                                  " +
+						"                                                                         " +
+						"UNION                                                                    " +
+						"                                                                         " +
+						"SELECT FF.TIERS_ID  AS CTB_ID                                            " +
+						"FROM FOR_FISCAL FF                                                       " +
+						"WHERE FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
+						"AND FF.LOG_MDATE >= :debut                                               " +
+						"AND FF.LOG_MDATE <= :fin                                                 " +
+						"                                                                         " +
+						"UNION                                                                    " +
+						"                                                                         " +
+						"SELECT DI.TIERS_ID AS CTB_ID                                             " +
+						"FROM DECLARATION DI                                                      " +
+						"JOIN ETAT_DECLARATION ED ON ED.DECLARATION_ID = DI.ID                    " +
+						"JOIN FOR_FISCAL FF ON FF.TIERS_ID=DI.TIERS_ID                            " +
+						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
+						"AND ED.LOG_MDATE >= :debut                                               " +
+						"AND ED.LOG_MDATE <= :fin                                                 " +
+						"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
+						"ORDER BY CTB_ID                                                          ";
+
+
+		final Date dateDebut = dateDebutRech;
+		final Date dateFin = dateFinRech;
+
+
+		final List<Long> listeCtbModifies = (List<Long>) getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final SQLQuery queryObject = session.createSQLQuery(RequeteContribuablesModifies);
+
+				queryObject.setTimestamp("debut", dateDebutRech);
+				queryObject.setTimestamp("fin", dateFinRech);
+
+				final List<Object> listeResultat = queryObject.list();
+				final List<Long> resultat = new ArrayList<Long>();
+				for (Object o : listeResultat) {
+					resultat.add(((Number) o).longValue());
+				}
+
+
+				return resultat;
+
+			}
+		});
+		LOGGER.info("Date de debut: "+dateDebutRech.toString()+" Date de fin: "
+				+dateFinRech.toString()+" Nombre de ctb modifiés: " + listeCtbModifies.size());
+
+		return listeCtbModifies;
+	}
+
+
 }

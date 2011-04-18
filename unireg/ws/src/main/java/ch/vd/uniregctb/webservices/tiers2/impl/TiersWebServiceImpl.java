@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
+import javax.jws.WebParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,6 +75,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetListeCtbModifies;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
@@ -87,7 +89,8 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceImpl.class);
 
-	private static final int MAX_BATCH_SIZE = 500; // la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
+	private static final int MAX_BATCH_SIZE = 500;
+			// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
 
 	private final Context context = new Context();
 
@@ -162,6 +165,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	public void setDiService(DeclarationImpotService service) {
 		context.diService = service;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -677,9 +681,9 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		try {
 			final List<DemandeQuittancementDeclaration> demandes = params.demandes;
-			final BatchTransactionTemplate<DemandeQuittancementDeclaration,QuittancementResults> template =
+			final BatchTransactionTemplate<DemandeQuittancementDeclaration, QuittancementResults> template =
 					new BatchTransactionTemplate<DemandeQuittancementDeclaration, QuittancementResults>(demandes, demandes.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-																										context.transactionManager, null, context.hibernateTemplate);
+							context.transactionManager, null, context.hibernateTemplate);
 			final QuittancementResults rapportFinal = new QuittancementResults();
 			template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<DemandeQuittancementDeclaration, QuittancementResults>() {
 
@@ -698,6 +702,24 @@ public class TiersWebServiceImpl implements TiersWebService {
 				}
 			});
 			return rapportFinal.getReponses();
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException, AccessDeniedException, TechnicalException {
+		try {
+			final RegDate debut = DataHelper.webToCore(params.dateDebutRecherche);
+			final RegDate fin = DataHelper.webToCore(params.dateFinRecherche);
+			if (debut.isAfter(fin) ) {
+				throw new BusinessException("La date de début de recherche "+debut.toString()+" est après la date de fin " + fin.toString());
+			}
+
+			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(debut.asJavaDate(), fin.asJavaDate());
+			return listCtb;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
@@ -754,7 +776,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		if (declaration.isAnnule()) {
 			throw new QuittancementErreur(CodeQuittancement.ERREUR_DECLARATION_ANNULEE, "La déclaration a été annulée entre-temps.");
 		}
-		
+
 		final RegDate dateRetour = DataHelper.webToCore(demande.dateRetour);
 		if (RegDateHelper.isBeforeOrEqual(dateRetour, declaration.getDateExpedition(), NullDateBehavior.EARLIEST)) {
 			throw new QuittancementErreur(CodeQuittancement.ERREUR_DATE_RETOUR_INVALIDE,

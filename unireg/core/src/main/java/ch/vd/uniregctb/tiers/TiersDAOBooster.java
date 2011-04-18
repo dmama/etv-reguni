@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -207,6 +208,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 		return target.addAndSave(tiers, forFiscal);
+	}
+
+	@Override
+	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
+		return target.getListeCtbModifies(dateDebutRech,dateFinRech);
 	}
 
 	private static final String poppins = "Supercalifragilisticexpialidocious";

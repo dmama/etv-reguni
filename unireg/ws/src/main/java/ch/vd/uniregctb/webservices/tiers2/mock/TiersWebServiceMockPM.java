@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.mock;
 
+import javax.jws.WebParam;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetListeCtbModifies;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
@@ -392,6 +394,11 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
 		return target.quittancerDeclarations(params);
+	}
+
+	@Override
+	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
+		return target.getListeCtbModifies(params);
 	}
 
 	private void sortEvents(List<EvenementPM> events) {

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.cache;
 
+import javax.jws.WebParam;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetListeCtbModifies;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
@@ -143,6 +145,11 @@ public class TiersWebServiceCrashing implements TiersWebService {
 
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
+		return target.getListeCtbModifies(params);
 	}
 
 	public void doNothing(AllConcreteTiersClasses dummy) {

@@ -22,6 +22,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetListeCtbModifies;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
@@ -229,11 +230,30 @@ public interface TiersWebService {
 			AccessDeniedException, TechnicalException;
 
 	/**
+	 * Cette méthode permet de retourner les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre
+	 *
+	 * @param params les dates de début et de fin de recherche
+	 * @return  la liste des ids des contribuables modifies
+	 * @throws BusinessException en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException en cas d'erreur inattendue (bug)
+	 */
+	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+	@WebMethod
+	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
+	public List<Long> getListeCtbModifies(
+			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetListeCtbModifies") GetListeCtbModifies params) throws BusinessException,
+			AccessDeniedException, TechnicalException;
+
+	/**
 	 * Cette méthode s'assure que les classes concrètes dérivant de Tiers sont exposées dans le WSDL. Elle ne fait rien proprement dit.
+	 *
 	 * @param dummy paramètre bidon.
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
 	public void doNothing(AllConcreteTiersClasses dummy);
+
+
 }

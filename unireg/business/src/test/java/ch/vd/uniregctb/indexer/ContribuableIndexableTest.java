@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1050,6 +1051,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 			throw new NotImplementedException();
+		}
+
+		@Override
+		public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
+			return null;
 		}
 	}
 }

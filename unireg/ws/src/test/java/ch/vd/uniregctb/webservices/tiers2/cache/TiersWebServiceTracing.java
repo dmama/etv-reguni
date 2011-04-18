@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.cache;
 
+import javax.jws.WebParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetListeCtbModifies;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
@@ -45,6 +47,7 @@ public class TiersWebServiceTracing implements TiersWebService {
 	public List<SearchEvenementsPM> searchEvenementsPMCalls = new ArrayList<SearchEvenementsPM>();
 	public List<GetDebiteurInfo> getDebiteurInfoCalls = new ArrayList<GetDebiteurInfo>();
 	public List<QuittancerDeclarations> quittancerDeclarationsCalls = new ArrayList<QuittancerDeclarations>();
+	public List<GetListeCtbModifies> getListeCtbModifiesCalls = new ArrayList<GetListeCtbModifies>();
 	public List<AllConcreteTiersClasses> doNothingCalls = new ArrayList<AllConcreteTiersClasses>();
 
 	public TiersWebServiceTracing(TiersWebService target) {
@@ -110,6 +113,12 @@ public class TiersWebServiceTracing implements TiersWebService {
 		quittancerDeclarationsCalls.add(params);
 		return target.quittancerDeclarations(params);
 
+	}
+
+	@Override
+	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
+		getListeCtbModifiesCalls.add(params);
+		return target.getListeCtbModifies(params);
 	}
 
 	public void doNothing(AllConcreteTiersClasses dummy) {

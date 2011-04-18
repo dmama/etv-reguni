@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers2.impl.pm;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -202,6 +203,11 @@ public class TiersDAOWithPM implements TiersDAO {
 	}
 
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		throw new NotImplementedException();
 	}
 }
