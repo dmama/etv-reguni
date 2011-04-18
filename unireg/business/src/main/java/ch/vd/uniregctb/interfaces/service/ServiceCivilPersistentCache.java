@@ -27,7 +27,7 @@ import ch.vd.uniregctb.stats.StatsService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilPersistentCache extends ServiceCivilServiceBase implements UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean {
+public class ServiceCivilPersistentCache extends ServiceCivilServiceBase implements UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilPersistentCache.class);
 
@@ -263,5 +263,20 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 		}
 
 		return new HashSet<AttributeIndividu>(Arrays.asList(parties));
+	}
+
+	@Override
+	public ServiceCivilService getTarget() {
+		return target;
+	}
+
+	@Override
+	public ServiceCivilService getUltimateTarget() {
+		if (target instanceof ServiceCivilServiceWrapper) {
+			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+		}
+		else {
+			return target;
+		}
 	}
 }

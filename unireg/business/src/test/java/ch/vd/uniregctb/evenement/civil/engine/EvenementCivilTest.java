@@ -90,84 +90,91 @@ public class EvenementCivilTest extends BusinessTest {
 		cache.setUniregCacheManager(uniregCacheManager);
 		cache.setDataEventService(dataEventService);
 		cache.afterPropertiesSet();
-		serviceCivil.setUp(cache);
+		cache.reset();
+		try {
+			serviceCivil.setUp(cache);
 
-		final long jeanNoInd = 1234;
+			final long jeanNoInd = 1234;
 
-		// Création de l'individu
-		cache.setTarget(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
-				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						date(1975, 3, 2), null);
-			}
-		});
+			// Création de l'individu
+			cache.setTarget(new MockServiceCivil() {
+				@Override
+				protected void init() {
+					MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
+					addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+							date(1975, 3, 2), null);
+				}
+			});
 
-		// Crée le contribuable correspondant
-		final Long jeanId = (Long) doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique jean = addHabitant(jeanNoInd);
-				addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
-				return jean.getNumero();
-			}
-		});
+			// Crée le contribuable correspondant
+			final Long jeanId = (Long) doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					PersonnePhysique jean = addHabitant(jeanNoInd);
+					addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
+					return jean.getNumero();
+				}
+			});
 
-		globalTiersIndexer.sync();		
+			globalTiersIndexer.sync();
 
-		// On vérifie que le tiers est bien présent dans le cache
-		assertNomIndividu("Jacquouille", "Jean", cache, jeanNoInd);
+			// On vérifie que le tiers est bien présent dans le cache
+			assertNomIndividu("Jacquouille", "Jean", cache, jeanNoInd);
 
-		// On vérifie que le tiers est indexé correctement
-		assertNomIndexer("Jacquouille", "Jean", jeanId);
+			// On vérifie que le tiers est indexé correctement
+			assertNomIndexer("Jacquouille", "Jean", jeanId);
 
-		/*
-		 * Réception d'un événement de changement de nom au 1er janvier 2009
-		 */
+			/*
+			 * Réception d'un événement de changement de nom au 1er janvier 2009
+			 */
 
-		// Changement du nom dans le service civil (on réinitialise complétement le service pour simuler la présence de nouveaux objets
-		// comme c'est le cas avec le service de host-interface)
-		cache.setTarget(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
-				HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jean");
-				jean.addHistoriqueIndividu(h);
-				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						date(1975, 3, 2), null);
-			}
-		});
+			// Changement du nom dans le service civil (on réinitialise complétement le service pour simuler la présence de nouveaux objets
+			// comme c'est le cas avec le service de host-interface)
+			cache.setTarget(new MockServiceCivil() {
+				@Override
+				protected void init() {
+					MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
+					HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jean");
+					jean.addHistoriqueIndividu(h);
+					addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+							date(1975, 3, 2), null);
+				}
+			});
 
-		// Simulation de l'arrivée de l'événement civil
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final String body = EvenementCivilListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
-				EvenementCivilListenerTest.sendMessageSync(evenementCivilListener, body);
-				return null;
-			}
-		});
+			// Simulation de l'arrivée de l'événement civil
+			doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					final String body = EvenementCivilListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
+					EvenementCivilListenerTest.sendMessageSync(evenementCivilListener, body);
+					return null;
+				}
+			});
 
-		// L'événement civil doit avoir été traité
-		doInTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+			// L'événement civil doit avoir été traité
+			doInTransaction(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
 
-				final List<EvenementCivilExterne> evenements = evenementCivilExterneDAO.getAll();
-				assertNotNull(evenements);
-				assertEquals(1, evenements.size());
-				assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
+					final List<EvenementCivilExterne> evenements = evenementCivilExterneDAO.getAll();
+					assertNotNull(evenements);
+					assertEquals(1, evenements.size());
+					assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 
-				globalTiersIndexer.sync();
+					globalTiersIndexer.sync();
 
-				// On vérifie que le tiers a bien été mis-à-jour dans le cache ...
-				assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
-				// ... et que le tiers a bien été mis-à-jour dans l'indexeur
-				assertNomIndexer("Jacquard", "Jean", jeanId);
+					// On vérifie que le tiers a bien été mis-à-jour dans le cache ...
+					assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
+					// ... et que le tiers a bien été mis-à-jour dans l'indexeur
+					assertNomIndexer("Jacquard", "Jean", jeanId);
 
-				return null;
-			}
-		});
+					return null;
+				}
+			});
+		}
+		finally {
+			serviceCivil.tearDown();
+			cache.destroy();
+		}
 	}
 
 	/**

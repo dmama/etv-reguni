@@ -43,7 +43,11 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		eventSender.count = 0;
 
 		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, null, evenementFiscalService);
-		options = new EvenementCivilOptions(false);
+		options = buildOptions();
+	}
+
+	protected EvenementCivilOptions buildOptions() {
+		return new EvenementCivilOptions(false);
 	}
 
 	@Override

@@ -18,13 +18,14 @@ import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceWrapper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
  * Proxy du service civil à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance
  * du service civil à utiliser.
  */
-public class ProxyServiceCivil implements ServiceCivilService {
+public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServiceWrapper {
 
 	private ServiceCivilService target;
 
@@ -145,7 +146,18 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
 
+	@Override
 	public ServiceCivilService getTarget() {
 		return target;
+	}
+
+	@Override
+	public ServiceCivilService getUltimateTarget() {
+		if (target instanceof ServiceCivilServiceWrapper) {
+			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+		}
+		else {
+			return target;
+		}
 	}
 }

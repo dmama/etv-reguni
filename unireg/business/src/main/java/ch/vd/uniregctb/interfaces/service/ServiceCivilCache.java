@@ -31,7 +31,7 @@ import ch.vd.uniregctb.stats.StatsService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilCache extends ServiceCivilServiceBase implements UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean {
+public class ServiceCivilCache extends ServiceCivilServiceBase implements UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilCache.class);
 
@@ -94,6 +94,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
+		uniregCacheManager.unregister(this);
 	}
 
 	/**
@@ -297,5 +298,20 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		}
 
 		return new HashSet<AttributeIndividu>(Arrays.asList(parties));
+	}
+
+	@Override
+	public ServiceCivilService getTarget() {
+		return target;
+	}
+
+	@Override
+	public ServiceCivilService getUltimateTarget() {
+		if (target instanceof ServiceCivilServiceWrapper) {
+			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+		}
+		else {
+			return target;
+		}
 	}
 }

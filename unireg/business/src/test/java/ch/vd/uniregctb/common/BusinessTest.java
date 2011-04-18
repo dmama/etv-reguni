@@ -92,7 +92,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	}
 
 	protected void doModificationIndividu(long noIndividu, IndividuModification modifier) {
-		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getTarget()).getIndividu(noIndividu);
+		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
 		modifier.modifyIndividu(ind);
 	}
 }

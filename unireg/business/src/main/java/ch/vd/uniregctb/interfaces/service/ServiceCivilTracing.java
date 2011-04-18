@@ -28,7 +28,7 @@ import ch.vd.uniregctb.stats.StatsService;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilTracing implements ServiceCivilService, InitializingBean, DisposableBean {
+public class ServiceCivilTracing implements ServiceCivilService, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private ServiceCivilService target;
 	private StatsService statsService;
@@ -406,5 +406,20 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		return null;
+	}
+
+	@Override
+	public ServiceCivilService getTarget() {
+		return target;
+	}
+
+	@Override
+	public ServiceCivilService getUltimateTarget() {
+		if (target instanceof ServiceCivilServiceWrapper) {
+			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+		}
+		else {
+			return target;
+		}
 	}
 }
