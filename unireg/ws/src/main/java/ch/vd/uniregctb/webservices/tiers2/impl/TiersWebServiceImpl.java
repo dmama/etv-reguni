@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
-import javax.jws.WebParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +13,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -63,6 +63,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersId;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
@@ -90,7 +91,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceImpl.class);
 
 	private static final int MAX_BATCH_SIZE = 500;
-			// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
+	// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
 
 	private final Context context = new Context();
 
@@ -710,16 +711,19 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException, AccessDeniedException, TechnicalException {
-		try {
-			final RegDate debut = DataHelper.webToCore(params.dateDebutRecherche);
-			final RegDate fin = DataHelper.webToCore(params.dateFinRecherche);
-			if (debut.isAfter(fin) ) {
-				throw new BusinessException("La date de début de recherche "+debut.toString()+" est après la date de fin " + fin.toString());
-			}
+	public List<TiersId> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException, AccessDeniedException, TechnicalException {
 
-			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(debut.asJavaDate(), fin.asJavaDate());
-			return listCtb;
+
+		try {
+			if (DateHelper.isAfter(params.dateDebutRecherche, params.dateFinRecherche)) {
+				throw new BusinessException("La date de début de recherche " + params.dateDebutRecherche.toString() + " est après la date de fin " + params.dateFinRecherche);
+			}
+			final List<TiersId> listTiersId = new ArrayList<TiersId>();
+			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(params.dateDebutRecherche, params.dateFinRecherche);
+			for (Long numeroTiers : listCtb) {
+				listTiersId.add(new TiersId(numeroTiers));
+			}
+			return listTiersId;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);

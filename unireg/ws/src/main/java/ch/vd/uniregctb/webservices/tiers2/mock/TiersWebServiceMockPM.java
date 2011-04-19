@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers2.mock;
 
-import javax.jws.WebParam;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +49,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Siege;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersId;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
@@ -397,7 +397,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	}
 
 	@Override
-	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
+	public List<TiersId> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
 		return target.getListeCtbModifies(params);
 	}
 

@@ -4,9 +4,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Date;
 
 import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.tiers2.data.Date;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType

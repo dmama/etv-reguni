@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers2.cache;
 
-import javax.jws.WebParam;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +29,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersId;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
@@ -612,7 +612,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	}
 
 	@Override
-	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
+	public List<TiersId> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
 		//données mouvantes inutile de cacher
 		return target.getListeCtbModifies(params);
 	}

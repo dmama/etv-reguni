@@ -14,6 +14,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
 import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersId;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
@@ -232,6 +233,7 @@ public interface TiersWebService {
 	/**
 	 * Cette méthode permet de retourner les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre
 	 *
+	 *
 	 * @param params les dates de début et de fin de recherche
 	 * @return  la liste des ids des contribuables modifies
 	 * @throws BusinessException en cas d'erreur métier
@@ -241,7 +243,7 @@ public interface TiersWebService {
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
-	public List<Long> getListeCtbModifies(
+	public List<TiersId> getListeCtbModifies(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetListeCtbModifies") GetListeCtbModifies params) throws BusinessException,
 			AccessDeniedException, TechnicalException;
 

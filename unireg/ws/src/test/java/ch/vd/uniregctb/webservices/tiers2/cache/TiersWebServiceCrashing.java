@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers2.cache;
 
-import javax.jws.WebParam;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +16,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
 import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersId;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
@@ -148,7 +148,7 @@ public class TiersWebServiceCrashing implements TiersWebService {
 	}
 
 	@Override
-	public List<Long> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
+	public List<TiersId> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException,	AccessDeniedException, TechnicalException {
 		return target.getListeCtbModifies(params);
 	}
 

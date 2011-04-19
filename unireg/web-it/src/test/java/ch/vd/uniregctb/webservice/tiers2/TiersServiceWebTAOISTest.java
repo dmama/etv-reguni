@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.webservice.tiers2;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.webservices.tiers2.Adresse;
 import ch.vd.uniregctb.webservices.tiers2.AdresseEnvoi;
 import ch.vd.uniregctb.webservices.tiers2.BusinessException_Exception;
@@ -18,6 +23,7 @@ import ch.vd.uniregctb.webservices.tiers2.DeclarationImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.EtatCivil;
 import ch.vd.uniregctb.webservices.tiers2.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.GetListeCtbModifies;
 import ch.vd.uniregctb.webservices.tiers2.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.MenageCommunHisto;
@@ -35,6 +41,7 @@ import ch.vd.uniregctb.webservices.tiers2.Sexe;
 import ch.vd.uniregctb.webservices.tiers2.SituationFamille;
 import ch.vd.uniregctb.webservices.tiers2.TarifImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.TiersIdArray;
 import ch.vd.uniregctb.webservices.tiers2.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.TiersInfoArray;
 import ch.vd.uniregctb.webservices.tiers2.TiersPart;
@@ -78,6 +85,25 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		login.setUserId("[UT] TiersServiceWebTAOISTest");
 		login.setOid(0);
 	}
+
+	@Test
+	public void testGetListCtbModifies() throws Exception {
+
+		final GetListeCtbModifies params = new GetListeCtbModifies();
+		params.setLogin(login);
+		RegDate dateDebut = RegDate.get(2008, 1, 1);
+		RegDate dateFin = RegDate.get(2008, 1, 2);
+		XMLGregorianCalendar calDebut = regdate2xmlcal(dateDebut);
+		XMLGregorianCalendar calFin = regdate2xmlcal(dateFin);
+		params.setDateDebutRecherche(calDebut);
+		params.setDateFinRecherche(calFin);
+
+		TiersIdArray arraytTiersId= service.getListeCtbModifies(params);
+
+		assertNotNull(arraytTiersId);
+		assertEquals(9,arraytTiersId.getItem().size());
+	}
+
 
 	@Test
 	public void testGetDateArriveeSourcier() throws Exception {
@@ -1077,5 +1103,23 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		// par contre, la formule d'appel est renseignée
 		assertEquals("Madame, Monsieur", adresseEnvoi.getFormuleAppel());
+	}
+
+	public static XMLGregorianCalendar regdate2xmlcal(RegDate date) {
+		if (date == null) {
+			return null;
+		}
+		return getDataTypeFactory().newXMLGregorianCalendar(date.year(), date.month(), date.day(), 0, 0, 0, 0, DatatypeConstants.FIELD_UNDEFINED);
+	}
+
+	private static DatatypeFactory getDataTypeFactory() {
+		DatatypeFactory datatypeFactory;
+		try {
+			datatypeFactory = DatatypeFactory.newInstance();
+		}
+		catch (DatatypeConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+		return datatypeFactory;
 	}
 }

@@ -36,6 +36,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersId;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
@@ -589,14 +590,14 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	}
 
 	@Override
-	public List<Long> getListeCtbModifies(
+	public List<TiersId> getListeCtbModifies(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetListeCtbModifies") GetListeCtbModifies params) throws BusinessException,
 			AccessDeniedException, TechnicalException {
 	final long start = System.nanoTime();
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
-			final List<Long> listIds = service.getListeCtbModifies(params);
+			final List<TiersId> listIds = service.getListeCtbModifies(params);
 			return listIds;
 		}
 		catch (BusinessException e) {
