@@ -12,6 +12,8 @@
 	</tr>
 </table>
 </c:if>
+
+<%-- Les adresses fiscales --%>
 <fieldset>
 	<legend><span><fmt:message key="label.adresse.fiscales" /></span></legend>
 
@@ -22,7 +24,9 @@
 		<jsp:param name="page" value="visu"/>
 	</jsp:include>
 </fieldset>
-<fieldset>
+
+<%-- Les adresses civiles du principal --%>
+<fieldset id="adrCivPrincipalFieldset">
 	<legend>
 		<span>
 			<c:choose>
@@ -44,7 +48,8 @@
 	</jsp:include>
 </fieldset>
 
-<fieldset <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
+<%-- Les adresses civiles du conjoint --%>
+<fieldset id="adrCivConjointFieldset" <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
 	<legend><span><fmt:message key="label.adresse.civiles.membre.couple" />${command.nomPrenomConjoint}</span></legend>
 
 	<input class="noprint" name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',2);" id="isAdrHistoCivilesConjoint" />
@@ -57,7 +62,23 @@
 </fieldset>
 
 
+<!--[if IE 6]>
+<script>
+	$(function() {
+		$('#isAdrHisto').click(function() {
+			// [SIFISC-787] on force le recalcul des widgets parce que IE6 ne détecte pas le changement autrement.
+			$('#adrCivPrincipalFieldset').addClass('toresize');
+			$('#adrCivPrincipalFieldset').removeClass('toresize');
+		});
 
+		$('#isAdrHistoCiviles').click(function() {
+			// [SIFISC-787] on force le recalcul des widgets parce que IE6 ne détecte pas le changement autrement.
+			$('#adrCivConjointFieldset').addClass('toresize');
+			$('#adrCivConjointFieldset').removeClass('toresize');
+		});
+	});
+</script>
+<![endif]-->
 
 
 <!-- Fin Adresse -->
