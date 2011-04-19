@@ -1,5 +1,5 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.13 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- version 2.14 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -563,6 +563,18 @@
 					</xs:extension>
 				</xs:complexContent>
 			</xs:complexType>
+			<xs:complexType name="getListeCtbModifies">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="dateDebutRecherche" type="xs:dateTime" />
+					<xs:element name="dateFinRecherche" type="xs:dateTime" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TiersId">
+				<xs:sequence>
+					<xs:element name="id" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:complexType name="GetBatchTiersHisto">
 				<xs:sequence>
 					<xs:element name="login" type="tns:UserLogin" />
@@ -951,6 +963,11 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:TiersInfo" />
 				</xs:sequence>
 			</xs:complexType>
+			<xs:complexType final="#all" name="TiersIdArray">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:TiersId" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:complexType final="#all" name="evenementPMArray">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:evenementPM" />
@@ -984,6 +1001,8 @@
 			<xs:element name="GetBatchTiers" nillable="true" type="tns:GetBatchTiers" />
 			<xs:element name="getBatchTiersResponse" nillable="true" type="tns:BatchTiers" />
 			<xs:element name="doNothing" nillable="true" type="tns:AllConcreteTiersClasses" />
+			<xs:element name="GetListeCtbModifies" nillable="true" type="tns:getListeCtbModifies" />
+			<xs:element name="getListeCtbModifiesResponse" nillable="true" type="tns:TiersIdArray" />
 			<xs:element name="GetBatchTiersHisto" nillable="true" type="tns:GetBatchTiersHisto" />
 			<xs:element name="getBatchTiersHistoResponse" nillable="true" type="tns:BatchTiersHisto" />
 			<xs:element name="SearchEvenementsPM" nillable="true" type="tns:searchEvenementsPM" />
@@ -1011,6 +1030,10 @@
 	</wsdl:message>
 	<wsdl:message name="getTiersPeriode">
 		<wsdl:part element="tns:GetTiersPeriode" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getListeCtbModifies">
+		<wsdl:part element="tns:GetListeCtbModifies" name="params">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getBatchTiersHisto">
@@ -1047,6 +1070,10 @@
 	</wsdl:message>
 	<wsdl:message name="getTiersTypeResponse">
 		<wsdl:part element="tns:getTiersTypeResponse" name="getTiersTypeResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getListeCtbModifiesResponse">
+		<wsdl:part element="tns:getListeCtbModifiesResponse" name="getListeCtbModifiesResponse">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="TechnicalException">
@@ -1167,6 +1194,18 @@
 			</wsdl:input>
 			<wsdl:output message="tns:doNothingResponse" name="doNothingResponse">
 			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getListeCtbModifies">
+			<wsdl:input message="tns:getListeCtbModifies" name="getListeCtbModifies">
+			</wsdl:input>
+			<wsdl:output message="tns:getListeCtbModifiesResponse" name="getListeCtbModifiesResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BusinessException" name="BusinessException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:TechnicalException" name="TechnicalException">
+			</wsdl:fault>
+			<wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getBatchTiersHisto">
 			<wsdl:input message="tns:getBatchTiersHisto" name="getBatchTiersHisto">
@@ -1341,6 +1380,24 @@
 			<wsdl:output name="doNothingResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getListeCtbModifies">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getListeCtbModifies">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getListeCtbModifiesResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BusinessException">
+				<soap:fault name="BusinessException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="TechnicalException">
+				<soap:fault name="TechnicalException" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="AccessDeniedException">
+				<soap:fault name="AccessDeniedException" use="literal" />
+			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getBatchTiersHisto">
 			<soap:operation soapAction="" style="document" />
