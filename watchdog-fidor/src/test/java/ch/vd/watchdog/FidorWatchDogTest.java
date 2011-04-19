@@ -2,7 +2,6 @@ package ch.vd.watchdog;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.webservice.fidor.FidorClient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Teste que les différents déploiements de Fidor dans les différents environnements sont accessibles.
@@ -70,7 +70,8 @@ public abstract class FidorWatchDogTest {
 	@Test
 	public void testGetToutesLesCommunes() throws Exception {
 		final List<CommuneFiscale> communes = fidorClient.getToutesLesCommunes();
-		assertEquals(3025, communes.size());
+		assertNotNull(communes);
+		assertTrue(communes.size() > 3000);
 	}
 
 	private static FidorDate newDate(int year, int month, int day) {
