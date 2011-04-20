@@ -155,7 +155,15 @@
 			<script>
 				$(function() {
 					autocomplete_infra('etatOuTerritoire', '#tiers_libelleOfsPaysOrigine', function(item) {
-						$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
+						if (item) {
+							$('#tiers_numeroOfsNationalite').val(item.id1);
+							$('#tiers_libelleOfsPaysOrigine').removeClass('error');
+						}
+						else {
+							// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+							$('#tiers_libelleOfsPaysOrigine').addClass('error');
+							$('#tiers_numeroOfsNationalite').val(null);
+						}
 					});
 				});
 			</script>
@@ -173,9 +181,11 @@
 					autocomplete_infra('commune', '#tiers_libelleOfsCommuneOrigine', function(item) {
 						if (item) {
 							$('#tiers_numeroOfsCommuneOrigine').val(item.id1);
+							$('#tiers_libelleOfsCommuneOrigine').removeClass('error');
 						}
 						else {
-							$('#tiers_libelleOfsCommuneOrigine').val(null);
+							// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+							$('#tiers_libelleOfsCommuneOrigine').addClass('error');
 							$('#tiers_numeroOfsCommuneOrigine').val(null);
 						}
 					});

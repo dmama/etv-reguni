@@ -286,9 +286,10 @@ public class JspTagBatchForm extends BodyTagSupport {
 		b.append("        autocomplete_infra('communeVD', '#").append(idInputNomCommune).append("', function(item) {\n");
 		b.append("            if (item) {\n");
 		b.append("                $('#").append(idInputNoOfs).append("').val(item.id1);\n");
+		b.append("                $('#").append(idInputNomCommune).append("').removeClass('error');\n");
 		b.append("            }\n");
 		b.append("            else {\n");
-		b.append("                $('#").append(idInputNomCommune).append("').val(null);\n");
+		b.append("                $('#").append(idInputNomCommune).append("').addClass('error');\n"); // [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
 		b.append("                $('#").append(idInputNoOfs).append("').val(null);\n");
 		b.append("            }\n");
 		b.append("        });\n");
@@ -324,9 +325,10 @@ public class JspTagBatchForm extends BodyTagSupport {
 		b.append("        autocomplete_infra('officeImpot', '#").append(idInputNomOID).append("', function(item) {\n");
 		b.append("            if (item) {\n");
 		b.append("                $('#").append(idInputNoColAdm).append("').val(item.id1);\n");
+		b.append("                $('#").append(idInputNomOID).append("').removeClass('error');\n");
 		b.append("            }\n");
 		b.append("            else {\n");
-		b.append("                $('#").append(idInputNomOID).append("').val(null);\n");
+		b.append("                $('#").append(idInputNomOID).append("').addClass('error');\n"); // [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
 		b.append("                $('#").append(idInputNoColAdm).append("').val(null);\n");
 		b.append("            }\n");
 		b.append("        });\n");

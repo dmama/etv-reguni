@@ -67,9 +67,11 @@
 							autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataireEnvoi', function(item) {
 								if (item) {
 									$('#noCollAdmDestinataireEnvoi').val(item.id1); // le numéro de collectivité
+									$('#collAdmDestinataireEnvoi').removeClass('error');
 								}
 								else {
-									$('#collAdmDestinataireEnvoi').val(null);
+									// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+									$('#collAdmDestinataireEnvoi').addClass('error');
 									$('#noCollAdmDestinataireEnvoi').val(null);
 								}
 							});

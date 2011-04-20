@@ -47,11 +47,7 @@
 						return false;
 					}
 					$(function() {
-						autocomplete_infra('localiteOuPays', '#tiers-picker-localite', function(item) {
-							if (!item) {
-								$('#tiers-picker-localite').val(null);
-							}
-						});
+						autocomplete_infra('localiteOuPays', '#tiers-picker-localite');
 						$('#tiers-picker-datenaissance').datepicker({
 							showOn: "button",
 							showAnim: '',

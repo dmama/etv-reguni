@@ -39,8 +39,12 @@
 			<script>
 				$(function() {
 					autocomplete_infra('localiteOuPays', '#localiteOuPays', function(item) {
-						if (!item) {
-							$('#localiteOuPays').val(null);
+						if (item) {
+							$('#localiteOuPays').removeClass('error');
+						}
+						else {
+							// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+							$('#localiteOuPays').addClass('error');
 						}
 					});
 				});
@@ -63,9 +67,11 @@
 						autocomplete_infra('communeOuPays', '#forAll', function(item) {
 							if (item) {
 								$('#noOfsFor').val(item.id1);
+								$('#forAll').removeClass('error');
 							}
 							else {
-								$('#forAll').val(null);
+								// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+								$('#forAll').addClass('error');
 								$('#noOfsFor').val(null);
 							}						
 						});

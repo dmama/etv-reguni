@@ -27,9 +27,11 @@
 				autocomplete_infra('communeVD', '#libFractionCommune', function(item) {
 					if (item) {
 						$('#numeroForFiscalCommune').val(item.id1);
+						$('#libFractionCommune').removeClass('error');
 					}
 					else {
-						$('#libFractionCommune').val(null);
+						// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+						$('#libFractionCommune').addClass('error');
 						$('#numeroForFiscalCommune').val(null);
 					}
 					<c:if test="${param['onChange'] != null}">
@@ -49,9 +51,11 @@
 				autocomplete_infra('communeHC', '#libCommuneHorsCanton', function(item) {
 					if (item) {
 						$('#numeroForFiscalCommuneHorsCanton').val(item.id1);
+						$('#libCommuneHorsCanton').removeClass('error');
 					}
 					else {
-						$('#libCommuneHorsCanton').val(null);
+						// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+						$('#libCommuneHorsCanton').addClass('error');
 						$('#numeroForFiscalCommuneHorsCanton').val(null);
 					}
 					<c:if test="${param['onChange'] != null}">

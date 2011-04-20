@@ -319,9 +319,7 @@ input.numero-complement-npa,input.canton {
 }
 
 .erreur,.error {
-	font-size: x-small;
 	color: red;
-	font-weight: bold;
 }
 
 .global-error {

@@ -113,9 +113,11 @@
 											if (item) {
 												$('#numeroOrdrePoste').val(item.id1);
 												$('#numCommune').val(item.id2);
+												$('#localiteSuisse').removeClass('error');
 											}
 											else {
-												$('#localiteSuisse').val(null);
+												// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
+												$('#localiteSuisse').addClass('error');
 												$('#numeroOrdrePoste').val(null);
 												$('#numCommune').val(null);
 											}

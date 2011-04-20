@@ -176,9 +176,7 @@ input.numero-complement-npa,input.canton {
 }
 
 .erreur {
-	font-size: x-small;
 	color: red;
-	font-weight: bold;
 	clear: left;
 }
 
