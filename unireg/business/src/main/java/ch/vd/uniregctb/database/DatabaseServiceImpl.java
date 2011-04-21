@@ -380,12 +380,20 @@ public class DatabaseServiceImpl implements DatabaseService {
 				otherTables = Collections.emptyList();
 			}
 
+			if (status.interrupted()) {
+				return -1;
+			}
+
 			// Les données des tiers et autres données appartenant aux tiers
 			final List<ITable> tiersTables = queryDataSet(allTiersIds, connection, "Récupération des tiers", status, new QueryDataSetCallback() {
 				public QueryDataSet execute(Collection<Long> ids, DatabaseConnection connection) throws SQLException {
 					return queryTiersData(ids, parts, connection);
 				}
 			});
+
+			if (status.interrupted()) {
+				return -1;
+			}
 
 			final List<ITable> retTables;
 			if (parts.rapportsEntreTiers && !allRETIds.isEmpty()) {
@@ -406,6 +414,10 @@ public class DatabaseServiceImpl implements DatabaseService {
 			allTables.addAll(retTables);
 
 			final IDataSet dataSet = new CompositeDataSet(allTables.toArray(new ITable[allTables.size()]));
+
+			if (status.interrupted()) {
+				return -1;
+			}
 
 			// XML file into which data needs to be extracted
 			status.setMessage("Export des données en fichiers XML...");
@@ -439,7 +451,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final QueryDataSet q = callback.execute(idsList, connection);
 
 			final ITableIterator iter = q.iterator();
-			while (iter.next()) {
+			while (iter.next() && !status.interrupted()) {
 				tables.add(iter.getTable());
 			}
 		}
@@ -448,13 +460,13 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final List<List<Long>> batches = split(idsList, DEFAULT_BATCH_SIZE);
 			final int count = batches.size();
 
-			for (int i = 0; i < count; i++) {
+			for (int i = 0; i < count && !status.interrupted(); i++) {
 				status.setMessage(message + " (lot " + i + "/" + count + ")...");
 				final List<Long> batch = batches.get(i);
 				final QueryDataSet q = callback.execute(batch, connection);
 
 				final ITableIterator iter = q.iterator();
-				while (iter.next()) {
+				while (iter.next() && !status.interrupted()) {
 					tables.add(iter.getTable());
 				}
 			}
@@ -479,9 +491,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final String sql =
 					"select ID, TIERS_OBJET_ID, TIERS_SUJET_ID, TIERS_TUTEUR_ID from RAPPORT_ENTRE_TIERS where RAPPORT_ENTRE_TIERS_TYPE != 'RapportPrestationImposable' and TIERS_OBJET_ID in (:ids)"
 							+
-							" union select ID, TIERS_OBJET_ID, TIERS_SUJET_ID, TIERS_TUTEUR_ID from RAPPORT_ENTRE_TIERS where RAPPORT_ENTRE_TIERS_TYPE != 'RapportPrestationImposable' and TIERS_SUJET_ID in (:ids)"
-							+
-							" union select ID, TIERS_OBJET_ID, TIERS_SUJET_ID, TIERS_TUTEUR_ID from RAPPORT_ENTRE_TIERS where RAPPORT_ENTRE_TIERS_TYPE != 'RapportPrestationImposable' and TIERS_TUTEUR_ID in (:ids)";
+							" union select ID, TIERS_OBJET_ID, TIERS_SUJET_ID, TIERS_TUTEUR_ID from RAPPORT_ENTRE_TIERS where RAPPORT_ENTRE_TIERS_TYPE != 'RapportPrestationImposable' and TIERS_SUJET_ID in (:ids)";
 
 			NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 

@@ -1,10 +1,6 @@
 package org.dbunit.dataset;
 
 import ch.vd.uniregctb.common.StatusManager;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.ITable;
-import org.dbunit.dataset.ITableIterator;
-import org.dbunit.dataset.ITableMetaData;
 
 /**
  * Dataset iterator qui prend un status manager.
@@ -22,7 +18,7 @@ public class ManagedTableIterator implements ITableIterator {
 	}
 
 	public boolean next() throws DataSetException {
-		return target.next();
+		return target.next() && !status.interrupted();
 	}
 
 	public ITableMetaData getTableMetaData() throws DataSetException {
