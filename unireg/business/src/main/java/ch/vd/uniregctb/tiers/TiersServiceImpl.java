@@ -4091,16 +4091,16 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Set<Tiers> getLinkedTiers(LinkedEntity entity) {
+	public Set<Tiers> getLinkedTiers(LinkedEntity entity, boolean includeAnnuled) {
 		final Set<Tiers> tiers = new HashSet<Tiers>();
 		final Set<Object> visited = new HashSet<Object>(); // contient les entités et les clés déjà visitées
-		extractLinkedTiers(entity, tiers, visited);
+		extractLinkedTiers(entity, includeAnnuled, tiers, visited);
 		return tiers;
 	}
 
-	private void extractLinkedTiers(LinkedEntity entity, Set<Tiers> tiers, Set<Object> visited) {
+	private void extractLinkedTiers(LinkedEntity entity, boolean includeAnnuled, Set<Tiers> tiers, Set<Object> visited) {
 
-		final List<?> list = entity.getLinkedEntities();
+		final List<?> list = entity.getLinkedEntities(includeAnnuled);
 		if (list == null) {
 			return;
 		}
@@ -4132,7 +4132,7 @@ public class TiersServiceImpl implements TiersService {
 				tiers.add((Tiers) e);
 			}
 			else if (e instanceof LinkedEntity) {
-				extractLinkedTiers((LinkedEntity) e, tiers, visited); // récursif
+				extractLinkedTiers((LinkedEntity) e, false /* l'annulation des sous-entités est traitée séparemment, si nécessaire */, tiers, visited); // récursif
 			}
 		}
 	}

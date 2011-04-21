@@ -45,7 +45,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>();
 	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
 
-	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
+	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
 
 		if (isDisabled()) {
 			return false;
@@ -57,7 +57,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linkedEntity = (LinkedEntity) entity;
-			final Set<Tiers> tiers = tiersService.getLinkedTiers(linkedEntity);
+			final Set<Tiers> tiers = tiersService.getLinkedTiers(linkedEntity, isAnnulation);
 			for (Tiers t : tiers) {
 				if (t instanceof Contribuable) {
 					final Contribuable ctb = (Contribuable) t;

@@ -238,9 +238,9 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 
-		if (isAnnule()) {
+		if (!includeAnnuled && isAnnule()) {
 			return null;
 		}
 

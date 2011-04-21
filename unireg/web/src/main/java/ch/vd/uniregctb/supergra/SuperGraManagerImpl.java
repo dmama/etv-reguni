@@ -35,6 +35,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
+import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.Delta;
 import ch.vd.uniregctb.supergra.view.AttributeView;
 import ch.vd.uniregctb.supergra.view.CollectionView;
@@ -296,7 +297,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				}
 			}
 			else if (entity instanceof LinkedEntity) {
-				final Set<Tiers> linked = tiersService.getLinkedTiers((LinkedEntity) entity);
+				final Set<Tiers> linked = tiersService.getLinkedTiers((LinkedEntity) entity, isAnnulation(d));
 				for (Tiers t : linked) {
 					if (t != null && !tiers.containsKey(t.getId())) {
 						tiers.put(t.getId(), t);
@@ -314,6 +315,15 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// Met-à-jour la session
 		session.setTiersStates(tiersStates);
+	}
+
+	private static boolean isAnnulation(Delta delta) {
+		boolean isAnnulation = false;
+		if (delta instanceof AttributeUpdate) {
+			AttributeUpdate update = (AttributeUpdate) delta;
+			isAnnulation = "annulationDate".equals(update.getName()) && update.getOldValue() == null && update.getNewValue() != null;
+		}
+		return isAnnulation;
 	}
 
 	private void applyDeltas(List<Delta> deltas, SuperGraContext context) {

@@ -44,7 +44,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	 * Cette méthode est appelé lorsque une entité hibernate est modifié/sauvé.
 	 */
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
-			Type[] types) throws CallbackException {
+	                        Type[] types, boolean isAnnulation) throws CallbackException {
 
 		if (entity instanceof Tiers) {
 			Tiers tiers = (Tiers) entity;

@@ -1273,12 +1273,14 @@ public interface TiersService {
 	/**
 	 * Analyse le graphe des entités liées et retourne tous les tiers trouvés.
 	 *
-	 * @param entity une entité liée à d'autres entités.
+	 * @param entity         une entité liée à d'autres entités.
+	 * @param includeAnnuled <b>vrai</b> s'il faut tenir compte des liens annulés (utile dans le cas d'une annulation de rapport-entre-tiers, par exemple); ou <b>faux</b> s'il ne faut pas en tenir
+	 *                       compte.
 	 * @return l'ensemble des tiers trouvés; ou un ensemble vide si aucun tiers n'est trouvé.
 	 */
-	Set<Tiers> getLinkedTiers(LinkedEntity entity);
+	Set<Tiers> getLinkedTiers(LinkedEntity entity, boolean includeAnnuled);
 
-		/**
+	/**
 	 * permet d'adapter la date de début de validité de la première périodicité en fonction d'une date
 	 *
 	 */

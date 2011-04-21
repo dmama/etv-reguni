@@ -17,12 +17,18 @@ public interface ModificationSubInterceptor {
 	/**
 	 * Cette méthode est appelée lorsque une entité hibernate est modifié/sauvé.
 	 *
+	 * @param entity        l'entité qui a changé.
+	 * @param id            l'id de l'entité.
+	 * @param currentState  l'état après changement de l'entité.
+	 * @param previousState l'état avant changement de l'entité; ou <b>null</b> s'il s'agit d'une entité nouvellement créée.
+	 * @param propertyNames les noms de propriétés associées aux valeurs des paramètres <i>currentState</i> et <i>previousState</i>.
+	 * @param types         les types de propriétés associées aux valeurs des paramètres <i>currentState</i> et <i>previousState</i>.
+	 * @param isAnnulation  <b>vrai</b> si l'entité a été nouvellement annulée; <b>faux</b> autrement.
+	 * @return <b>vrai</b> si la méthode a modifié l'entité et qu'Hibernate doit en tenir compte; <b>faux</b> autrement.
 	 * @throws org.hibernate.CallbackException
 	 *          en cas d'exception levée dans le callback
 	 */
-	boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
-	                 Type[] types) throws CallbackException;
-
+	boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException;
 
 	/**
 	 * Cette méthode est appelée après que Hibernate ait flushé les objets modifié dans la base de données.

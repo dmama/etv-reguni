@@ -137,12 +137,38 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 			String[] propertyNames, Type[] types) {
 
 		boolean modified = false;
+		boolean isAnnulation = detectAnnulation(currentState, previousState, propertyNames);
 
 		for (ModificationSubInterceptor s : subInterceptors) {
-			modified = s.onChange(entity, id, currentState, previousState, propertyNames, types) || modified;
+			modified = s.onChange(entity, id, currentState, previousState, propertyNames, types, isAnnulation) || modified;
 		}
 
 		return modified;
+	}
+
+	/**
+	 * Détecte si l'entité vient d'être annulée
+	 *
+	 * @param currentState  l'état courant de l'entité
+	 * @param previousState l'état précédant de l'entité
+	 * @param propertyNames les noms des propriétés des états
+	 * @return <b>vrai</b> si l'entité vient d'être annulée; <b>faux</b> autrement.
+	 */
+	private static boolean detectAnnulation(Object[] currentState, Object[] previousState, String[] propertyNames) {
+		if (previousState == null) {
+			// si l'objet n'existait pas, il n'y a pas de transition non-annulé -> annulé possible.
+			return false;
+		}
+		int index = -1;
+		for (int i = 0, propertyNamesLength = propertyNames.length; i < propertyNamesLength; i++) {
+			final String name = propertyNames[i];
+			if ("annulationDate".equals(name)) {
+				index = i;
+				break;
+			}
+		}
+		// si la date d'annulation était nulle et qu'elle ne l'est plus, alors on affaire à une annulation
+		return index >= 0 && previousState[index] == null && currentState[index] != null;
 	}
 
 	private void preTransactionCommit() {

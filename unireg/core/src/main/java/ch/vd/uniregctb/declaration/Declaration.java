@@ -506,7 +506,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return tiers == null ? null : Arrays.asList(tiers);
 	}
 }

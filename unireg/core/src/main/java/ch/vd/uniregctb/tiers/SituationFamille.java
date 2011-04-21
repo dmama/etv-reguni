@@ -217,7 +217,7 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return contribuable == null ? null : Arrays.asList(contribuable);
 	}
 }

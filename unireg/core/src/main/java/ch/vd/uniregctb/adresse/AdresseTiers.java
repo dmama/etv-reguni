@@ -229,7 +229,7 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return tiers == null ? null : Arrays.asList(tiers);
 	}
 }

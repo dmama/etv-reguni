@@ -85,13 +85,13 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 	@SuppressWarnings({"unchecked"})
 	@Override
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 
-		if (isAnnule()) {
+		if (!includeAnnuled && isAnnule()) {
 			return null;
 		}
 
-		List list = super.getLinkedEntities();
+		List list = super.getLinkedEntities(includeAnnuled);
 		if (autoriteTutelaireId != null) {
 			if (list == null) {
 				list = new ArrayList<Object>();

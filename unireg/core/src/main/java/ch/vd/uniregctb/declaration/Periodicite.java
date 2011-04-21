@@ -254,7 +254,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return debiteur == null ? null : Arrays.asList(debiteur);
 	}
 }

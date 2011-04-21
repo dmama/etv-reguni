@@ -25,9 +25,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -235,7 +233,7 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return declaration == null ? null : Arrays.asList(declaration);
 	}
 

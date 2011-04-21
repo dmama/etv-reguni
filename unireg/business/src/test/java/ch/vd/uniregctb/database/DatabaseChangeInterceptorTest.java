@@ -239,6 +239,49 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertTrue(eventService.changedTiers.contains(ids.tuteur));
 	}
 
+	/**
+	 * Vérifie que l'annnulation d'un rapport-entre-tiers provoque bien l'émission d'événements de changements sur les tiers anciennement liés, alors même que le rapport est maintenant annulé.
+	 */
+	@NotTransactional
+	@Test
+	public void testDetectAnnulationRapportEntreTiers() throws Exception {
+
+		class Ids {
+			Long pupille;
+			Long tuteur;
+			Long tutelle;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pupille = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+				final PersonnePhysique tuteur = addNonHabitant("Roger", "Moore", date(1954, 3, 23), Sexe.MASCULIN);
+				final Tutelle tutelle = addTutelle(pupille, tuteur, null, date(2005, 1, 1), null);
+				ids.pupille = pupille.getId();
+				ids.tuteur = tuteur.getId();
+				ids.tutelle = tutelle.getId();
+				return null;
+			}
+		});
+
+		eventService.clear();
+
+		// on effectue une modification sur le rapport-entre-tiers
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final Tutelle tutelle = (Tutelle) hibernateTemplate.get(Tutelle.class, ids.tutelle);
+				tutelle.setAnnule(true);
+				return null;
+			}
+		});
+
+		// on vérifie que le changement effectué sur le rapport-entre-tiers a bien provoqué l'envoi d'une notification sur chacun des tiers
+		assertEquals(2, eventService.changedTiers.size());
+		assertTrue(eventService.changedTiers.contains(ids.pupille));
+		assertTrue(eventService.changedTiers.contains(ids.tuteur));
+	}
+
 	@NotTransactional
 	@Test
 	public void testDetectSituationFamilleChange() throws Exception {

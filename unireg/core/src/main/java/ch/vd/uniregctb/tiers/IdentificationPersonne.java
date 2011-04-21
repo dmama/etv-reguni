@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -139,7 +138,7 @@ public class IdentificationPersonne extends HibernateEntity implements LinkedEnt
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return personnePhysique == null ? null : Arrays.asList(personnePhysique);
 	}
 }

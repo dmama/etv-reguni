@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.hibernate.interceptor;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
@@ -47,7 +46,7 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 	}
 
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
-			Type[] types) throws CallbackException {
+	                        Type[] types, boolean isAnnulation) throws CallbackException {
 
 		boolean modified = false;
 

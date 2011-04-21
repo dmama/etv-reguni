@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -249,7 +248,7 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return declaration == null ? null : Arrays.asList(declaration);
 	}
 }

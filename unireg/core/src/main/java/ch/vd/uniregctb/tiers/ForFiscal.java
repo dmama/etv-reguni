@@ -370,7 +370,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	}
 
 	@Transient
-	public List<?> getLinkedEntities() {
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return tiers == null ? null : Arrays.asList(tiers);
 	}
 }

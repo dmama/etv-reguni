@@ -42,7 +42,7 @@
 	</bean>
 
 	<bean id="validationInterceptor" class="ch.vd.uniregctb.validation.ValidationInterceptor">
-		<property name="chainingInterceptor" ref="chainingInterceptor" />
+		<property name="parent" ref="modificationInterceptor" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="validationService" ref="validationService" />
 	</bean>

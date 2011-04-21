@@ -74,7 +74,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		}
 	}
 
-	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
+	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
 
 		if (entity instanceof Tiers) {
 			// Un tiers a été modifié en base => on envoie un événement correspondant
@@ -86,7 +86,8 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		}
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
 			final LinkedEntity child = (LinkedEntity) entity;
-			final Set<Tiers> tiers = tiersService.getLinkedTiers(child);
+			// [SIFISC-915] En cas d'annulation, on DOIT inclure les liens nouvellement annulés pour invalider correctement les caches
+			final Set<Tiers> tiers = tiersService.getLinkedTiers(child, isAnnulation);
 			for (Tiers t : tiers) {
 				onTiersChange(t.getNumero());
 			}
