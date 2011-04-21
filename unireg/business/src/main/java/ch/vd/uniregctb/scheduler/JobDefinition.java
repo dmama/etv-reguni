@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.scheduler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -697,6 +698,10 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 * @return une liste d'ids
 	 */
 	protected static List<Long> extractIdsFromCSV(byte[] csv) {
+
+		if (csv == null) {
+			return Collections.emptyList();
+		}
 
 		final String s = new String(csv);
 		final String[] lines = s.split("[;,\n]");

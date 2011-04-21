@@ -85,6 +85,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		actions.add(new AnnulerSeparation());
 		actions.add(new AnnulerDeces());
 		actions.add(new AnnulerTiers());
+		actions.add(new Exporter());
 	}
 
 	private Long numero;
@@ -849,6 +850,29 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "post:/admin/indexation.do?action=reindexTiers&id=";
+		}
+	}
+
+	private static class Exporter implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityProvider.isAnyGranted(Role.TESTER, Role.ADMIN);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return true;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Exporter";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "post:/admin/dbdump.do?action=dumptiers&tiers=";
 		}
 	}
 

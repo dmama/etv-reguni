@@ -145,7 +145,10 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	private void dumpTiers(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put(DumpTiersListJob.PARAM_TIERS_LIST, request.getParameter("tiers"));
-		
+		params.put(DumpTiersListJob.INCLUDE_DECLARATION, true);
+		params.put(DumpTiersListJob.INCLUDE_RET, true);
+		params.put(DumpTiersListJob.INCLUDE_SIT_FAM, true);
+
 		batchScheduler.startJob(DumpTiersListJob.NAME, params);
 	}
 
