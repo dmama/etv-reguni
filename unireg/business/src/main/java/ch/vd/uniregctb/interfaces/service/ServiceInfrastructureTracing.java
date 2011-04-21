@@ -390,13 +390,13 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerService(ServicePersonneMoraleService.SERVICE_NAME, tracing);
+			statsService.registerService(ServiceInfrastructureService.SERVICE_NAME, tracing);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterService(ServicePersonneMoraleService.SERVICE_NAME);
+			statsService.unregisterService(ServiceInfrastructureService.SERVICE_NAME);
 		}
 	}
 
