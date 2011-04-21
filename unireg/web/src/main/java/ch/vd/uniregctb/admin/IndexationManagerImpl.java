@@ -29,6 +29,7 @@ public class IndexationManagerImpl implements IndexationManager {
 		else {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id);
 		}
+		dataEventService.onTiersChange(id); // on force l'éviction des donées cachées pour tous les types de tiers (pas seulement pour les habitants)
 
 		// on demande la réindexation du tiers
 		tiersIndexer.schedule(id);
