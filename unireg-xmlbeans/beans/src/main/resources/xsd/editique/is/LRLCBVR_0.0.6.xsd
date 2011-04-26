@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp2 (http://www.altova.com) by xsicgd (EMBRACE) -->
+<!--Version  0.0.1  - 06.10.08 : JVO - Première version de spec LRLC-->
+<!--Version  0.0.2  - 20.11.08 : JVO - PeriodeDu et PeriodeAu en type -> typDatAAAAMMJJ-->
+<!--Version  0.0.3  - 20.11.08 : JVO - Ajout De <CodeBar>-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="BVR_STD_4.0.4.xsd"/>
+	<xs:element name="LRLCBVR">
+		<!-- Description du schema pour l'impression du document BVR-->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Periode" type="typPeriode"/>
+				<xs:element name="InfBVR">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PeriodeDu" type="typDatAAAAMMJJ"/>
+							<xs:element name="PeriodeAu" type="typDatAAAAMMJJ"/>
+							<xs:element name="DateDelai" type="typDatAAAAMMJJ">
+								<xs:annotation>
+									<xs:documentation>Ex: 20070918</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="BVRSTD"/>
+				<xs:element name="LRLC">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TitreDoc">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Libelle1" type="xs:string"/>
+										<xs:element name="Libelle2" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="NoRef" type="xs:string"/>
+							<xs:element name="Responsable" type="xs:string" nillable="true"/>
+							<xs:element name="Tel" type="xs:string" nillable="true"/>
+							<xs:element name="PeriodeDu" type="typDatAAAAMMJJ"/>
+							<xs:element name="PeriodeAu" type="typDatAAAAMMJJ"/>
+							<xs:element name="CodeBar" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Idem DI - SREG</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

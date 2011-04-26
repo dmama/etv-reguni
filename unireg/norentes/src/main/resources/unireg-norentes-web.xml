@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
+
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService"/>
+
+	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
+
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.externe.jms.MockEvenementCivilSender" />
+
+	<!-- Bean client interfacesService MOCK -->
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>
+	<alias alias="serviceInfrastructureService" name="serviceInfrastructureServiceHost"/>
+
+	<!-- Bean client ServiceCivil MOCK -->
+	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil" />
+	<alias alias="serviceCivilService" name="serviceCivilServiceHost"/>
+
+	<!-- Bean client ServicePM MOCK -->
+	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM"  />
+
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService"  />
+	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
+
+	<!-- Mock service BVR -->
+	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient">
+	</bean>
+
+		<!-- Mock service ACICOM -->
+	<bean id="aciComClient" class="ch.vd.uniregctb.webservice.acicom.MockAciComClient">
+	</bean>
+
+</beans>

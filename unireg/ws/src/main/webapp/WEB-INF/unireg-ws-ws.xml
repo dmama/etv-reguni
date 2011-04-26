@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:jaxws="http://cxf.apache.org/jaxws"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://cxf.apache.org/jaxws
+							http://cxf.apache.org/schemas/jaxws.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+    <bean id="counterRepository" class="org.apache.cxf.management.counters.CounterRepository">
+        <property name="bus" ref="cxf" />        
+    </bean>
+
+	<bean id="noOfsTranslator" class="ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl">
+		<property name="exposeNosTechniques" value="${extprop.webservice.expose.technical.ids}" />        
+	</bean>
+
+	<!-- WS - Tiers Service v2 -->
+	<jaxws:endpoint implementor="#tiersService2EndPoint" address="/tiers2" />
+
+	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">
+		<property name="service" ref="tiersService2Cache" />
+	</bean>
+
+	<bean id="tiersService2Bean" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="noOfsTranslator" ref="noOfsTranslator" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+	</bean>
+
+	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
+		<property name="target" ref="tiersService2Bean" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers2" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+	
+	<bean id="tiersService2CacheManager" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCacheManager">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="cache" ref="tiersService2Cache" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+	
+	<bean id="tiersService2Tracing" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceTracing">
+		<property name="counterRepository" ref="counterRepository" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<!-- WS - Securité Service -->
+	<jaxws:endpoint implementor="#securiteServiceBean" address="/securite" />
+
+	<bean id="securiteServiceBean" class="ch.vd.uniregctb.webservices.securite.impl.SecuriteWebServiceImpl">
+		<property name="dao" ref="droitAccesDAO" />
+	</bean>
+
+	<!-- WS - Fiscal Service -->
+	<jaxws:endpoint implementor="#fiscalServiceBean"
+					address="/fiscal"
+					wsdlLocation="/WEB-INF/ws/FiscalService.wsdl" />
+
+	<bean id="fiscalServiceBean" class="ch.vd.uniregctb.webservices.interfaces.impl.FiscalWebServiceImpl">		
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />		
+	</bean>
+
+</beans>

@@ -1,0 +1,11 @@
+<xb:config xmlns:xb="http://xml.apache.org/xmlbeans/2004/02/xbean/config">
+	<xb:namespace uri="http://vd.ch/uniregctb/evenement/schema">
+	  	<xb:suffix>XmlBean</xb:suffix>
+ 	</xb:namespace>
+ 	
+	<!-- Scan du CEDI -->	
+    <xb:namespace>
+        <xb:package>ch.vd.fiscalite.cedi</xb:package>
+    </xb:namespace>
+	
+</xb:config>

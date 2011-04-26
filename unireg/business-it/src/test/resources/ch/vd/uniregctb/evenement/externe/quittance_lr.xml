@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<evtQuittanceListe xmlns="http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1">
+	<timestampEvtQuittance>2009-12-07T09:30:47.0Z</timestampEvtQuittance>
+	<typeEvtQuittance>QUITTANCEMENT</typeEvtQuittance>
+	<origineListe>ELECTRONIQUE</origineListe>
+	<identificationListe>
+		<typeListe>LR</typeListe>
+		<numeroSequence>1</numeroSequence>
+		<numeroDebiteur>1500001</numeroDebiteur>
+		<periodeDeclaration>
+			<dateDebut>2008-01-01</dateDebut>
+			<dateFin>2008-01-31</dateFin>
+		</periodeDeclaration>
+	</identificationListe>
+</evtQuittanceListe>		

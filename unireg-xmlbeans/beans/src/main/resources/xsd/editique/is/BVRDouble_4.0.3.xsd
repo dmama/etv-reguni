@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--18.12.07 : JVO - V2.0.0 Modification de la partie Blanche pour laprise en compte des différentes possibilité. Acompte, Plan rec, BVR à la demande-->
+<!--28.03.08 : JVO - V2.0.1 Envoie de Cross avec invertion de <LibImp> <NumContr>-->
+<!--23.04.08 : JVO - V2.0.2 Rajouter le numéro BVR <NumBVR>-->
+<!--11.06.08 : JVO - V2.2.1 Modification pour XXXXXXXX du dernier BVR Double-->
+<!-- V2.2.2 : 30.06.08 : JVO - Modification mise à jours du Num version BVRSDT_2.2.2  Jira 830-->
+<!-- V2.2.3 : 04.07.08 : JVO - Suppression de l' Include de BVR_STD_2.2.2.xsd-->
+<!-- V 4.0.0 : 22.07.08 : JVO - Spéficifications - IS-->
+<!-- V 4.0.1 : 20.10.08 : JVO - <DateArrgt> et <DelaiPay> en typDatAAAAMMJJ_XXX-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="BVR_STD_4.0.4.xsd"/>
+	<xs:element name="BVRDouble" abstract="false">
+		<xs:annotation>
+			<xs:documentation>PFP (XXxVV01=sigle application,Px=no du projet éditique, VV=no version, 01=no du document dans le projet</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="BVR2X" maxOccurs="2">
+					<xs:annotation>
+						<xs:documentation>BVRDO = code fonction  de l'enregistrement</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TitreBVR">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="prefixe" type="typPrefixe"/>
+										<xs:element name="LibImp" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>IMPÔT SUR LE REVENU ET LA FORTUNE 2007</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="NumContr" type="typNumeroCtb">
+											<xs:annotation>
+												<xs:documentation>904.184.04 </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="LibDoc" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>BVR à la demande /  </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="NumBVR" type="typEntier" minOccurs="0"/>
+										<xs:element name="DateExpd" type="typDatAAAAMMJJ_XXX" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>20071129</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="DateArrgt" type="typDatAAAAMMJJ_XXX" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>20071129</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Echeance" type="typDatAAAAMMJJ_XXX" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>20071129</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="DelaiPay" type="typDatAAAAMMJJ_XXX" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>20071129</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Remarque" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Selon votre demande du 01.01.2008</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="DerBVR" type="typOui_X" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Dernier BVR. Mettre la balise uniquement pour le dernier à O (Oui)
+
+Cette info permet de distinguer le dernier BVR de la liste. 
+
+Avoir un nombre paire de BVR.
+</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element ref="BVRSTD"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
