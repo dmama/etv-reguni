@@ -54,6 +54,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 		this.fidorClient = fidorClient;
 	}
 
+	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		try {
 			final Collection<ch.vd.fidor.ws.v2.Pays> list = fidorClient.getTousLesPays();
@@ -67,6 +68,17 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 				}
 				return Collections.unmodifiableList(pays);
 			}
+		}
+		catch (WebServiceException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	@Override
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+		try {
+			ch.vd.fidor.ws.v2.Pays p = fidorClient.getPaysDetail(numeroOFS);
+			return PaysImpl.get(p);
 		}
 		catch (WebServiceException e) {
 			throw new ServiceInfrastructureException(e);

@@ -209,6 +209,11 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		return Collections.unmodifiableList(pays);
 	}
 
+	@Override
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

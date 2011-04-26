@@ -747,6 +747,46 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
+	private static class KeyGetPaysByNoOfs {
+
+		private int numeroOFS;
+
+		private KeyGetPaysByNoOfs(int numeroOFS) {
+			this.numeroOFS = numeroOFS;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetPaysByNoOfs that = (KeyGetPaysByNoOfs) o;
+			return numeroOFS == that.numeroOFS;
+		}
+
+		@Override
+		public int hashCode() {
+			return numeroOFS;
+		}
+	}
+
+	@Override
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+		final Pays resultat;
+
+		final KeyGetPaysByNoOfs key = new KeyGetPaysByNoOfs(numeroOFS);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getPays(numeroOFS);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (Pays) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
 	private static class KeyGetRueByNumero {
 		int numero;
 

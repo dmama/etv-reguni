@@ -26,6 +26,13 @@ public interface ServiceInfrastructureRaw {
 	List<Pays> getPays() throws ServiceInfrastructureException;
 
 	/**
+	 * @param numeroOFS un numéro Ofs de pays.
+	 * @return le pays avec le numéro Ofs spécifié; ou <b>null</b> si aucun pays ne corresponds.
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	Pays getPays(int numeroOFS) throws ServiceInfrastructureException;
+
+	/**
 	 * @param noColAdm le numéro technique de la collectivité
 	 * @return la collectivite administrative.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure

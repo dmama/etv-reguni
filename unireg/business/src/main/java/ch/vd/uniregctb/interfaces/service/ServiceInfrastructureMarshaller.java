@@ -65,6 +65,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 		return fidorService.getPays();
 	}
 
+	@Override
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+		return fidorService.getPays(numeroOFS);
+	}
+
 	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		return hostService.getRueByNumero(numero);
 	}

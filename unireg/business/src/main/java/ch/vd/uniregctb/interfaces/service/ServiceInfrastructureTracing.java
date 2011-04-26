@@ -298,6 +298,25 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
+	public Pays getPays(final int numeroOFS) throws ServiceInfrastructureException {
+		Pays result;
+		long time = tracing.start();
+		try {
+			result = target.getPays(numeroOFS);
+		}
+		finally {
+			tracing.end(time, "getPays", new Object() {
+				@Override
+				public String toString() {
+					return String.format("numeroOFS=%d", numeroOFS);
+				}
+			});
+		}
+
+		return result;
+	}
+
 	public Rue getRueByNumero(final int numero) throws ServiceInfrastructureException {
 		Rue result;
 		long time = tracing.start();

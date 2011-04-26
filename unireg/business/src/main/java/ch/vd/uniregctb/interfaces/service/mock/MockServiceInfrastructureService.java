@@ -229,6 +229,16 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return pays;
 	}
 
+	@Override
+	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+		for (Pays p : pays) {
+			if (p.getNoOFS() == numeroOFS) {
+				return p;
+			}
+		}
+		return null;
+	}
+
 	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}

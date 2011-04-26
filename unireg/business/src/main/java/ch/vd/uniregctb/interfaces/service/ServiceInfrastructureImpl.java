@@ -156,21 +156,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getPays();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
-
-		Pays pays = null;
-
-		List<Pays> payss = getPays();
-		for (Pays p : payss) {
-			if (p.getNoOFS() == numeroOFS) {
-				pays = p;
-				break;
-			}
-		}
-		return pays;
+		return rawService.getPays(numeroOFS);
 	}
 
 	/**

@@ -41,13 +41,6 @@ public interface ServiceInfrastructureService extends ServiceInfrastructureRaw {
 	static final String SIGLE_SUISSE = "CH";
 
 	/**
-	 * @param numeroOFS un numéro Ofs de pays.
-	 * @return le pays avec le numéro Ofs spécifié; ou <b>null</b> si aucun pays ne corresponds.
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	Pays getPays(int numeroOFS) throws ServiceInfrastructureException;
-
-	/**
 	 * Recherche un pays à partir de son code ('CH', 'FR', 'BE', ...). Voir la documentation de la méthode {@link ch.vd.infrastructure.model.Pays#getCodePays()}.
 	 *
 	 * @param codePays un code de pays ('CH', 'FR', 'BE', ...)
