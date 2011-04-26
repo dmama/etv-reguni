@@ -221,6 +221,17 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 */
 	protected void loadDatabase(final String filename) throws Exception {
 
+		File file = getFile(filename);
+		loadDataSet(file);
+	}
+
+	/**
+	 * Retourne le fichier spécifié par son nom en cherchant : <ul> <li>dans les ressources</li> <li>dans le classpath</li> <li>dans le package</li> </ul>
+	 *
+	 * @param filename un nom de fichier
+	 * @return un fichier; ou <b>null</b> si le fichier n'a pas été trouvé
+	 */
+	protected File getFile(String filename) {
 		File file = null;
 
 		// Essaie d'abord tel-quel
@@ -234,7 +245,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		// Ensuite avec classpath: devant
 		if (file == null || !file.exists()) {
 			try {
-				String name = "classpath:"+filename;
+				String name = "classpath:" + filename;
 				file = ResourceUtils.getFile(name);
 			}
 			catch (Exception ignored) {
@@ -248,14 +259,19 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 				String packageName = getClass().getPackage().getName();
 				packageName = packageName.replace('.', '/');
 
-				String name = "classpath:"+packageName+"/"+filename;
+				String name = "classpath:" + packageName + "/" + filename;
 				file = ResourceUtils.getFile(name);
 			}
 			catch (Exception ignored) {
 				// La variable file est nulle, ca nous suffit
 			}
 		}
-		loadDataSet(file);
+
+		if (!file.exists()) {
+			return null;
+		}
+
+		return file;
 	}
 
 	/**

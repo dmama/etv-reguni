@@ -199,11 +199,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.springmodules</groupId>
-			<artifactId>spring-modules-springmvc-extra</artifactId>
-			<version>${spring-modules.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>${javamail.version}</version>

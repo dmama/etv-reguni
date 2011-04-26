@@ -29,8 +29,8 @@
 	</bean>
 
 	<bean id="infoIFOSecController" class="ch.vd.uniregctb.admin.InfoIFOSecController">
-		<property name="viewName" value="admin/ifosec" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="ifoSecService" ref="ifoSecService" />
 	</bean>
 
 	<bean id="tiersInfoController" class="ch.vd.uniregctb.json.TiersInfoController">

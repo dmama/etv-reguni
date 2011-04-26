@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.admin;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -10,31 +8,29 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.DataSetException;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.admin.ScriptBean.DBUnitMode;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.document.DatabaseDump;
 import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -44,46 +40,144 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
- * Cette classe est le controlleur correspondant au cas d'utilisation "Lancer un
- * script DBUnit".
- *
- * Dans un premier temps il récupère la liste des scripts DBUnit
- * classpath:DBUnit4Import/*.xml Puis lors de la soumission du formulaire, il
- * charge et lance le script choisi, ou lance le script uploadé si le chemin
- * vers un script a été donnée dans le formulaire.
+ * Cette classe est le controlleur correspondant au cas d'utilisation "Lancer un script DBUnit".
+ * <p/>
+ * Dans un premier temps il récupère la liste des scripts DBUnit classpath:DBUnit4Import/*.xml Puis lors de la soumission du formulaire, il charge et lance le script choisi, ou lance le script uploadé
+ * si le chemin vers un script a été donnée dans le formulaire.
  *
  * @author Ludovic Bertin
- *
  */
-public class TiersImportController extends AbstractSimpleFormController {
+@Controller
+@RequestMapping(value = "/admin/tiersImport")
+public class TiersImportController {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersImportController.class);
 
 	private static final String SCRIPTS_FOLDER_PATH = "DBUnit4Import";
-	private static final String SCRIPTS_LIST_FILES = SCRIPTS_FOLDER_PATH+"/files-list.txt";
+	private static final String SCRIPTS_LIST_FILES = SCRIPTS_FOLDER_PATH + "/files-list.txt";
 
 	private TiersDAO dao;
 	private DocumentService docService;
 	private DatabaseService dbService;
 
 	private GlobalTiersIndexer globalIndexer;
-	private PlatformTransactionManager transactionManager;
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 * Cette méthode est appelée pour afficher la page qui liste les scripts DBUnit préxistants + le formulaire pour en uploader d'autres.
+	 *
+	 * @param model le modèle associé à la requête
+	 * @return le chemin vers la vue JSP qui doit être associée avec le modèle
 	 */
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String listScripts(Model model) {
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected Map referenceData(HttpServletRequest request) throws Exception {
-		Map returnedMap = new HashMap();
-		returnedMap.put("scriptFileNames", getScriptFilenames());
-		return returnedMap;
+		if (!UniregModeHelper.isTestMode()) {
+			return "redirect:/index.do";
+		}
+
+		final List<LoadableFileDescription> scriptFilenames;
+		final Collection<DatabaseDump> documents;
+		try {
+			scriptFilenames = getScriptFilenames();
+			documents = docService.getDocuments(DatabaseDump.class);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		final Integer tiersCount = dao.getCount(Tiers.class);
+
+		model.addAttribute("script", new ScriptBean());
+		model.addAttribute("listFilesName", scriptFilenames);
+		model.addAttribute("fileDumps", documents);
+		model.addAttribute("tiersCount", tiersCount);
+
+		return "admin/tiersImportForm";
+	}
+
+	/**
+	 * Cette méthode est appelée lorsque l'utilisateur choisit d'importer un fichier DBUnit préexistant (= tiers-basic,xml, pour l'instant).
+	 *
+	 * @param fileName le nom du fichier XML préexistant à charger
+	 * @param action   l'action à effectuer sur le fichier
+	 * @return une redirection vers la page de prévisualisation des tiers
+	 * @throws Exception en cas d'erreur
+	 */
+	@RequestMapping(value = "/import", method = RequestMethod.POST)
+	public String importBuiltinScript(@RequestParam("fileName") String fileName, @RequestParam("action") String action) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+		}
+
+		final String environnement = UniregModeHelper.getEnvironnement();
+		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement)) {
+			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
+			return "redirect:list.do";
+		}
+
+		if (!fileName.startsWith("/")) {
+			fileName = "/" + SCRIPTS_FOLDER_PATH + "/" + fileName;
+		}
+		final InputStream inputXML = getClass().getResourceAsStream(fileName);
+
+		if (inputXML == null) {
+			Flash.error("Impossible de trouver le script '" + HtmlUtils.htmlEscape(fileName) + "'");
+			return "redirect:list.do";
+		}
+
+		// lancement du script
+		launchDbUnit(inputXML, DBUnitMode.CLEAN_INSERT, fileName);
+
+		// tout c'est bien passé, on redirige vers la preview des données de la base
+		return "redirect:/admin/dbpreview.do";
+	}
+
+	/**
+	 * Cette méthode est appelée lorsque l'utilisateur upload un fichier DBUnit dans le but de le charger dans la base de données.
+	 *
+	 * @param script le script DBUnit (nom, données, ...) uploadé par l'utilisateur
+	 * @param result le résultat du binding (qui permet de vérifier d'éventuelles erreurs de validation)
+	 * @return une redirection vers la page de prévisualisation des tiers
+	 * @throws Exception en cas d'erreur
+	 */
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	public String importUploadedScript(@Valid ScriptBean script, BindingResult result) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+		}
+
+		final String environnement = UniregModeHelper.getEnvironnement();
+		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement)) {
+			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
+			return "redirect:list.do";
+		}
+
+		if (result.hasErrors()) {
+			Flash.error("Les erreurs suivantes ont été détectées :  " + Arrays.toString(result.getAllErrors().toArray()));
+			return "redirect:list.do";
+		}
+
+		// on regarde si un fichier a bien été uploadé
+		if (script.getScriptData() == null || script.getScriptData().isEmpty()) {
+			Flash.error("Aucun fichier n'a été spécifié ou il est vide !");
+			return "redirect:list.do";
+		}
+
+		final InputStream inputXML = new ByteArrayInputStream(script.getScriptData().getBytes());
+		Assert.notNull(inputXML);
+
+		// lancement du script
+		launchDbUnit(inputXML, script.getMode(), "<Raw data>");
+
+		// tout c'est bien passé, on redirige vers la preview des données de la base
+		return "redirect:/admin/dbpreview.do";
 	}
 
 	protected List<LoadableFileDescription> getScriptFilenames() throws Exception {
 
-		LOGGER.debug("Getting DBunit files from "+SCRIPTS_LIST_FILES);
+		LOGGER.debug("Getting DBunit files from " + SCRIPTS_LIST_FILES);
 		InputStream scriptFiles = getClass().getClassLoader().getResourceAsStream(SCRIPTS_LIST_FILES);
 
 		List<LoadableFileDescription> scriptFileNames = new ArrayList<LoadableFileDescription>();
@@ -95,11 +189,11 @@ public class TiersImportController extends AbstractSimpleFormController {
 			String[] parts = line.split(",");
 			String filename = parts[0];
 			String description = parts[1];
-			LOGGER.debug("Added file "+filename+" ("+description+") to list of loadable DBunit file");
+			LOGGER.debug("Added file " + filename + " (" + description + ") to list of loadable DBunit file");
 
 			// Juste pour vérifier que le fichier existe!
-			URL scriptFile = getClass().getClassLoader().getResource(SCRIPTS_FOLDER_PATH+"/"+filename);
-			Assert.notNull(scriptFile, "Le fichier DBunit "+filename+" n'existe pas dans le repertoire "+SCRIPTS_FOLDER_PATH);
+			URL scriptFile = getClass().getClassLoader().getResource(SCRIPTS_FOLDER_PATH + "/" + filename);
+			Assert.notNull(scriptFile, "Le fichier DBunit " + filename + " n'existe pas dans le repertoire " + SCRIPTS_FOLDER_PATH);
 
 			LoadableFileDescription descr = new LoadableFileDescription(description, filename);
 			scriptFileNames.add(descr);
@@ -107,129 +201,8 @@ public class TiersImportController extends AbstractSimpleFormController {
 			line = reader.readLine();
 		}
 
-		LOGGER.debug("Files found in "+SCRIPTS_FOLDER_PATH+": "+scriptFileNames.size());
+		LOGGER.debug("Files found in " + SCRIPTS_FOLDER_PATH + ": " + scriptFileNames.size());
 		return scriptFileNames;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-
-		if (!UniregModeHelper.isTestMode()) {
-			return new ModelAndView(new RedirectView("/index.do", true));
-		}
-
-		final ModelAndView mav = super.showForm(request, response, errors, model);
-		//HttpSession session = request.getSession();
-
-		mav.addObject("listFilesName", getScriptFilenames());
-		mav.addObject("fileDumps", docService.getDocuments(DatabaseDump.class));
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				mav.getModel().put("tiersCount", dao.getCount(Tiers.class));
-				return null;
-			}
-		});
-
-		return mav;
-	}
-
-	/**
-	 * On ajoute un custom editeur pour que Spring puisse mapper l'objet
-	 * MultiPart en un tableau de byte.
-	 *
-	 * @param request
-	 *            la requête HTTP
-	 * @param binder
-	 *            le binder Spring
-	 */
-	@Override
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
-		binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());
-	}
-
-	/**
-	 * Handler déclenché à la soumission du formulaire.
-	 *
-	 * @throws Exception
-	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-
-		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
-		}
-
-		final String environnement = UniregModeHelper.getEnvironnement();
-		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement)) {
-			flashError("Cette fonctionalité n'est disponible qu'en développement !");
-			return new ModelAndView(new RedirectView("tiersImport.do"));
-		}
-
-		// recupere la vue de confirmation
-		ModelAndView successView = super.onSubmit(request, response, command, errors);
-
-		// Déclaration d'un ByteArrayInputStream qui sera donné à DBUnit
-		InputStream inputXML = null;
-		// Récupération du bean
-		ScriptBean script = (ScriptBean) command;
-
-		String action = request.getParameter("action");
-		if (action != null && action.equals("launchUnit")) {
-			String fileName  = request.getParameter("fileName");
-			script.setScriptFileName(fileName);
-		}
-
-		String filename = "";
-		// on regarde si un script a été uploadé
-		if ((script.getScriptData() != null) && (script.getScriptData().length > 0)) {
-			filename = "<Raw data>";
-			inputXML = new ByteArrayInputStream(script.getScriptData());
-		}
-		// sinon on prend le script connu sélectionné
-		else if (script.getScriptFileName() != null) {
-
-			filename = script.getScriptFileName();
-			if (!filename.startsWith("/")) {
-				filename = "/"+SCRIPTS_FOLDER_PATH + "/" + filename;
-			}
-			inputXML = getClass().getResourceAsStream(filename);
-		}
-
-		if (inputXML != null || script.getMode() == DBUnitMode.DELETE_ALL) {
-			try {
-
-				// lancement du script
-				launchDbUnit(inputXML, script.getMode(), filename);
-
-				// tout c'est bien passé, on redirige vers la preview des données de la base
-				return new ModelAndView(new RedirectView("dbpreview.do"));
-			}
-			catch (IndexerException e) {
-				successView.addObject("scriptResult", "IndexerException");
-				successView.addObject("exception", e);
-			}
-			catch (DataSetException e) {
-				successView.addObject("scriptResult", "datasetException");
-				successView.addObject("exception", e);
-			}
-			catch (DatabaseUnitException e) {
-				successView.addObject("scriptResult", "databaseUnitException");
-				successView.addObject("exception", e);
-			}
-			catch (SQLException e) {
-				successView.addObject("scriptResult", "sqlException");
-				successView.addObject("exception", e);
-			}
-		}
-		else {
-			successView.addObject("scriptResult", "noInputStream");
-		}
-		return successView;
 	}
 
 	/**
@@ -288,9 +261,5 @@ public class TiersImportController extends AbstractSimpleFormController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDbService(DatabaseService dbService) {
 		this.dbService = dbService;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 }

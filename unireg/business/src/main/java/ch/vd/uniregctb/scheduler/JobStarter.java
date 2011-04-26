@@ -2,7 +2,6 @@ package ch.vd.uniregctb.scheduler;
 
 import java.util.HashMap;
 
-import org.acegisecurity.Authentication;
 import org.apache.log4j.Logger;
 import org.quartz.InterruptableJob;
 import org.quartz.Job;
@@ -10,6 +9,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
+import org.springframework.security.core.Authentication;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -22,7 +22,7 @@ public class JobStarter implements Job, InterruptableJob {
 	private JobDefinition job;
 
 	/**
-	 * Initialise le context de sécurité Acegi avec les rôles donnés en paramètres
+	 * Initialise le context de sécurité avec les rôles donnés en paramètres
 	 */
 	private void initializeSecurityContext() {
 		Assert.notNull(authentication, "L'authentification en peut pas être nulle");

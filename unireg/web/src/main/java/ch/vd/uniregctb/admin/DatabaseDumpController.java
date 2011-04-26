@@ -56,7 +56,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 
 		if (!UniregModeHelper.getEnvironnement().equals("Developpement")) {
 			flashError("Cette fonctionalité n'est disponible qu'en développement !");
-			return new ModelAndView(new RedirectView("tiersImport.do"));
+			return new ModelAndView(new RedirectView("tiersImport/list.do"));
 		}
 
 		final String action = request.getParameter("action");

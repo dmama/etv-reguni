@@ -3,7 +3,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-	<tiles:put name="title">Détails IFOSec de l'utilisateur <authz:authentication operation="username"/></tiles:put>
+	<tiles:put name="title">Détails IFOSec de l'utilisateur <authz:authentication property="principal.username"/></tiles:put>
 
 	<tiles:put name="body">
 
@@ -17,12 +17,19 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr><td style="font-weight: bold">Visa</td><td><c:out value="${visa}" /></td><td><authz:authentication operation="username"/></td></tr>
+					<tr><td style="font-weight: bold">Visa</td><td><c:out value="${visa}" /></td><td><authz:authentication property="principal.username"/></td></tr>
 					<tr><td style="font-weight: bold">Oid</td><td><c:out value="${oid}" /></td><td>n/a</td></tr>
 					<tr><td style="font-weight: bold">Procédures Unireg</td><td>
 						<c:forEach items="${proceduresUnireg}" var="p">
 							<c:out value="${p.code}"></c:out>
 						</c:forEach>
+						<c:if test="${not empty rolesIfoSecByPass}">
+							<span style="color: red;">(plus les procédures bypassées suivantes:
+								<c:forEach items="${rolesIfoSecByPass}" var="r">
+									<c:out value="${r.ifosecCode}"></c:out>
+								</c:forEach>
+							)</span>
+						</c:if>
 					</td><td>
 						<c:forEach items="${roles}" var="r">
 							<authz:authorize ifAnyGranted="${r.code}">

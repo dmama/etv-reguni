@@ -11,8 +11,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.util.Log4jConfigurer;
@@ -34,7 +32,6 @@ import static org.junit.Assert.assertNotNull;
  * Classe de test du listener d'événements des retours d'impression de l'éditique.
  * Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  */
-@RunWith(JUnit4ClassRunner.class)
 public class EvenementEditiqueListenerTest extends EvenementTest {
 
 	private static final String INPUT_QUEUE = "ch.vd.unireg.test.input";
@@ -81,6 +78,7 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		container.setMessageListener(listener);
 		container.setDestinationName(INPUT_QUEUE);
 		container.afterPropertiesSet();
+		container.start();
 	}
 
 	@After

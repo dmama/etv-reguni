@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.security;
 
+import java.util.Set;
+
 public interface IfoSecService {
 
 	/**
@@ -20,4 +22,13 @@ public interface IfoSecService {
 	 * Défini un bypass des procédures IfoSec (pour les environnements de développement et d'intégration uniquement).
 	 */
 	public void addBypass(IfoSecBypass bypass);
+
+	/**
+	 * Retourne la liste des rôles que l'utilisateur spécifié possède pour des raisons de bypass IFOSec (normalement uniquement pour le développement).
+	 *
+	 *
+	 * @param visa un visa d'opérateur
+	 * @return une liste de rôles bypassé. Cette liste pour être vide.
+	 */
+	public Set<Role> getBypass(String visa);
 }

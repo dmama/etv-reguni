@@ -1,18 +1,20 @@
 package ch.vd.uniregctb.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.providers.dao.AbstractUserDetailsAuthenticationProvider;
-import org.acegisecurity.userdetails.User;
-import org.acegisecurity.userdetails.UserDetails;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.apache.log4j.Logger;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import ch.vd.ati.security.AcegiUtil;
 import ch.vd.securite.model.Procedure;
 import ch.vd.securite.model.ProfilOperateur;
 
@@ -46,9 +48,9 @@ public class IFOSecAuthenticationProvider extends AbstractUserDetailsAuthenticat
     }
 
     @SuppressWarnings("unchecked")
-	protected GrantedAuthority[] createGrantedAuthorities(Authentication authentication)
+	protected Collection<GrantedAuthority> createGrantedAuthorities(Authentication authentication)
     {
-        GrantedAuthority grantedAuthoritiesIAM[] = authentication.getAuthorities();
+	    List<GrantedAuthority> grantedAuthoritiesIAM = new ArrayList<GrantedAuthority>(authentication.getAuthorities());
 
         UniregSecurityDetails details = (UniregSecurityDetails)authentication.getDetails();
         if (details == null) {
@@ -59,7 +61,7 @@ public class IFOSecAuthenticationProvider extends AbstractUserDetailsAuthenticat
         // IAM
         int authIAMLemgth = 0;
         if(grantedAuthoritiesIAM != null){
-        	authIAMLemgth = grantedAuthoritiesIAM.length;
+        	authIAMLemgth = grantedAuthoritiesIAM.size();
         }
 
 
@@ -81,17 +83,17 @@ public class IFOSecAuthenticationProvider extends AbstractUserDetailsAuthenticat
 		}
 		// IAM
 		for (int i = 0; i < authIAMLemgth; i++) {
-			codeProcedures[i + nbProcedures] = grantedAuthoritiesIAM[i].getAuthority();
+			codeProcedures[i + nbProcedures] = grantedAuthoritiesIAM.get(i).getAuthority();
 		}
 
 		// Crée les auth IAM + IfoSec
-        GrantedAuthority[] grantedAuthorities = AcegiUtil.createGrantedAuthorities( codeProcedures );
+	    List<GrantedAuthority> grantedAuthorities = createGrantedAuthorities(codeProcedures);
 
         // Logging
         if (LOGGER.isTraceEnabled()) {
 	        String logString = "";
 			for (int i = 0; i < nbAuthorities; i++) {
-				GrantedAuthority auth = grantedAuthorities[i];
+				GrantedAuthority auth = grantedAuthorities.get(i);
 				if (!logString.equals("")) {
 					logString += ":";
 				}
@@ -102,4 +104,13 @@ public class IFOSecAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
 		return grantedAuthorities;
     }
+
+	private List<GrantedAuthority> createGrantedAuthorities(final String[] roles)
+	{
+		List<GrantedAuthority> result = new ArrayList<GrantedAuthority>(roles.length);
+	    for (String role : roles) {
+		    result.add(new GrantedAuthorityImpl(role));
+	    }
+	    return result;
+	}
 }

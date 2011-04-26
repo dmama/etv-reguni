@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.adresse;
 
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 
@@ -13,7 +11,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@RunWith(JUnit4ClassRunner.class)
 public class AdresseGeneriqueAdapterTest {
 
 	@Test

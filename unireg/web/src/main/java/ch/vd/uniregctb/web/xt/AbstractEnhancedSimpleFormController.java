@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.web.xt;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -8,9 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -22,7 +21,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springmodules.web.servlet.mvc.EnhancedSimpleFormController;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springmodules.xt.ajax.AjaxAction;
 import org.springmodules.xt.ajax.AjaxEvent;
 import org.springmodules.xt.ajax.AjaxHandler;
@@ -51,7 +50,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
  * @see org.springframework.web.servlet.mvc.EnhancedSimpleFormController
  *
  */
-public abstract class AbstractEnhancedSimpleFormController extends EnhancedSimpleFormController implements AjaxHandler, MessageSourceAware {
+public abstract class AbstractEnhancedSimpleFormController extends SimpleFormController implements AjaxHandler, MessageSourceAware {
 
 	private static final Logger logger = Logger.getLogger(AbstractEnhancedSimpleFormController.class);
 

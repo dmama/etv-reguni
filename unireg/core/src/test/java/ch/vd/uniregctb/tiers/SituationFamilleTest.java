@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -10,7 +8,6 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(JUnit4ClassRunner.class)
 public class SituationFamilleTest extends WithoutSpringTest {
 
 	@Test

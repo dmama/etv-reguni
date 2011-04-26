@@ -46,11 +46,6 @@
 		<level value="ERROR" />
 	</logger>
 
-	<!-- Suppress success logging from InteractiveAuthenticationSuccessEvent -->
-	<logger name="org.acegisecurity">
-		<level value="ERROR" />
-	</logger>
-
 	<logger name="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
 		<level value="INFO" />
 	</logger>

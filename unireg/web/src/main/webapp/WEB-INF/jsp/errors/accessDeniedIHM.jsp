@@ -9,7 +9,7 @@
 	<tiles:put name="connected" type="String">
 	</tiles:put>
 	<tiles:put name="body" type="String">
-		<p>Vous ne possédez pas les droits suffisants pour accéder à cette page (compte utilisateur <b><authz:authentication operation="username"/></b>).</p>
+		<p>Vous ne possédez pas les droits suffisants pour accéder à cette page (compte utilisateur <b><authz:authentication property="principal.username"/></b>).</p>
 		<p>L'application a retourné l'erreur suivante:</p>
 		<span style="margin-left: 2em; color: red;"><c:out value="${exception.message}" /></span>
 	</tiles:put>

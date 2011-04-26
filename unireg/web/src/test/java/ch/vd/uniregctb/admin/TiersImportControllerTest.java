@@ -1,19 +1,22 @@
 package ch.vd.uniregctb.admin;
 
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -30,7 +33,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
-public class TiersImportControllerTest extends WebTest {
+public class TiersImportControllerTest extends WebTestSpring3 {
 	/**
 	 * Le nom du controller à tester.
 	 */
@@ -99,50 +102,83 @@ public class TiersImportControllerTest extends WebTest {
 		assertEquals(1, files.size());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
-	public void testShowForm() throws Exception {
+	public void testListScripts() throws Exception {
 
 		UniregModeHelper testMode = getBean(UniregModeHelper.class, "uniregModeHelper");
 		testMode.setTestMode("true");
 		request.setMethod("GET");
-		ModelAndView mav = controller.handleRequest(request, response);
+		request.setRequestURI("/admin/tiersImport/list.do");
+		ModelAndView mav = handle(request, response);
 		Map<?, ?> model = mav.getModel();
 		Assert.assertNotNull("l'objet model retourné est null", model);
 
-		List<?> list = (List<?>) model.get("scriptFileNames");
+		List<?> list = (List<?>) model.get("listFilesName");
 		Assert.assertTrue("Aucun script trouvé dans le classpath", list != null && !list.isEmpty());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	@NotTransactional
-	public void testOnSubmit() throws Exception {
+	public void testImportBuiltinScript() throws Exception {
 
 		new UniregModeHelper().setEnvironnement("Hudson");
 
+		// Les paramètres de la requête
 		request.setMethod("POST");
-		request.addParameter("scriptFileName", DB_UNIT_FILE);
-		request.addParameter("mode", "CLEAN_INSERT");
+		request.addParameter("fileName", DB_UNIT_FILE);
+		request.addParameter("action", "CLEAN_INSERT");
+		request.setRequestURI("/admin/tiersImport/import.do");
 
-		final ModelAndView mav = controller.handleRequest(request, response);
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
 		assertNotNull(mav);
 
 		// on vérifie que l'import est un succès, c'est-à-dire que la vue redirige vers la page qui affiche une prévisualisation de la base de données
-		final View view = mav.getView();
+		final String view = mav.getViewName();
 		assertNotNull(view);
-		assertInstanceOf(RedirectView.class, view);
-
-		final RedirectView rv =(RedirectView) view;
-		assertEquals("dbpreview.do", rv.getUrl());
+		assertEquals("redirect:/admin/dbpreview.do", view);
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				
+				int nbTiers = tiersDAO.getCount(Tiers.class);
+				assertEquals(119, nbTiers);
+				int nbInIndex = globalTiersSearcher.getExactDocCount();
+				assertEquals(116, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
+
+				return null;
+			}
+		});
+	}
+	@Test
+	@NotTransactional
+	public void testImportUploadedScript() throws Exception {
+
+		new UniregModeHelper().setEnvironnement("Hudson");
+
+		// On créé une requête multipart pour gérer les fichiers
+		MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
+		request.setSession(session);
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+		// Les paramètres de la requête
+		request.setMethod("POST");
+		request.addFile(new MockMultipartFile("scriptData", new FileInputStream(getFile("DBUnit4Import/" + DB_UNIT_FILE))));
+		request.addParameter("mode", "CLEAN_INSERT");
+		request.setRequestURI("/admin/tiersImport/upload.do");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// on vérifie que l'import est un succès, c'est-à-dire que la vue redirige vers la page qui affiche une prévisualisation de la base de données
+		final String view = mav.getViewName();
+		assertNotNull(view);
+		assertEquals("redirect:/admin/dbpreview.do", view);
+
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
 				int nbTiers = tiersDAO.getCount(Tiers.class);
 				assertEquals(119, nbTiers);
 				int nbInIndex = globalTiersSearcher.getExactDocCount();

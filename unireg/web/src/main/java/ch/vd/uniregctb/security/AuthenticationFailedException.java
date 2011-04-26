@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.security;
 
-import org.acegisecurity.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 public class AuthenticationFailedException extends AuthenticationException {
 

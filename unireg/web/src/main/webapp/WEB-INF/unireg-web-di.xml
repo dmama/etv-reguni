@@ -74,7 +74,7 @@
 		<property name="sessionForm" value="true" />
 		<property name="servletService" ref="servletService" />
 		<property name="copieConformeManager" ref="copieConformeManager" />
-		<property name="successView" value="../admin/tiersImport.do" /> <!-- msi: temp hack -->
+		<property name="successView" value="../admin/tiersImport/list.do" /> <!-- msi: temp hack -->
 	</bean>
 
 	<bean id="copieConformeManager" class="ch.vd.uniregctb.declaration.CopieConformeManagerImpl">

@@ -5,8 +5,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -29,7 +27,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
-@RunWith(JUnit4ClassRunner.class)
 public class EvenementFiscalSenderTest extends EvenementTest {
 
 	private final static Long NUMERO_CONTRIBUABLE = 12300002L;

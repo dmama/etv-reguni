@@ -1,25 +1,24 @@
 package ch.vd.uniregctb.security;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import ch.vd.ati.security.IAMAuthenticationProcessingFilter;
 import ch.vd.ati.security.IAMUtil;
 
 /**
- * Délégation d'authentification dans Acegi aprés l'authentification en amont
+ * Délégation d'authentification dans Spring security aprés l'authentification en amont
  * effectuée dans IAM.
  * <p>
  * Implémentation: Simplification de
@@ -35,6 +34,10 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 
 	public static final String UNIREG_IAM_FIRST = "UNIREG_IAM_FIRST";
 	public static final String UNIREG_IAM_LAST = "UNIREG_IAM_LAST";
+
+	public static final String ACEGI_SECURITY_FORM_USERNAME_KEY = "j_username";
+	public static final String ACEGI_SECURITY_FORM_PASSWORD_KEY = "j_password";
+	public static final String ACEGI_SECURITY_LAST_USERNAME_KEY = "ACEGI_SECURITY_LAST_USERNAME";
 
 	/**
 	 * La cle de username du header.
@@ -68,6 +71,8 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 	public static final String _INTERNAL_ROLES_HEADER_KEY = "_internal-iam-roles-key";
 
 	private static final String ACEGI_SECURITY_FORM_ROLES_KEY = "j_roles";
+
+	private AuthenticationManager authenticationManager = null;
 
 	public UniregIAMAuthProcessingFilter() {
 		// hack pour que la super class utilise son propre logger
@@ -127,7 +132,7 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("attemptAuthentication...done");
 		}
-		return this.getAuthenticationManager().authenticate(authRequest);
+		return this.authenticationManager.authenticate(authRequest);
 	}
 
 	/**
@@ -278,5 +283,11 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 
 	private boolean isDebug() {
 		return SecurityDebugConfig.isIamDebug();
+	}
+
+	@Override
+	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+		super.setAuthenticationManager(authenticationManager);
+		this.authenticationManager = authenticationManager;
 	}
 }

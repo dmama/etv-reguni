@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(JUnit4ClassRunner.class)
 public class AdressesFiscalesHistoTest {
 
 	@Test

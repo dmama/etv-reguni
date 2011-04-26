@@ -159,10 +159,10 @@
 	</filter>
 	<filter>
 		<filter-name>springSecurityFilter</filter-name>
-		<filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 		<init-param>
-			<param-name>targetClass</param-name>
-			<param-value>org.acegisecurity.util.FilterChainProxy</param-value>
+			<param-name>targetBeanName</param-name>
+			<param-value>filterChainProxy</param-value>
 		</init-param>
 	</filter>
 
@@ -190,10 +190,10 @@
 		<filter-name>springSecurityFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<filter-mapping>
-		<filter-name>WebPerformanceFilter</filter-name>
-		<url-pattern>*.do</url-pattern>
-	</filter-mapping>
+	<!--<filter-mapping>-->
+		<!--<filter-name>WebPerformanceFilter</filter-name>-->
+		<!--<url-pattern>*.do</url-pattern>-->
+	<!--</filter-mapping>-->
 	<!-- décommenter cette partie pour activer le logging des requêtes http 
 	<filter-mapping>
 		<filter-name>servletRequestLoggingFilter</filter-name>

@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.utils;
 
-import static org.junit.Assert.*;
-
-
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
-@RunWith(JUnit4ClassRunner.class)
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class BeanUtilsTest {
 	
 	public class Class1 {

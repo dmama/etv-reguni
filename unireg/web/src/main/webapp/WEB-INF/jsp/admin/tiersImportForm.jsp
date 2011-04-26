@@ -19,28 +19,26 @@ function submit(url, methodType, delegateName){
 		<fieldset>
 			<legend><span><fmt:message key="label.importer.tiers" /></span></legend>
 
-		    <form:form method="post" enctype="multipart/form-data" id="formBean" onsubmit="return confirm_trash_db()">
+		    <form:form id="formBean" method="post" action="upload.do" enctype="multipart/form-data"  modelAttribute="script" onsubmit="return confirm_trash_db()">
 			    <table>
 					<tr class="odd" >
-						<td>
+						<td >
 							<fmt:message key="label.admin.importScript"/>
 						</td>
-						<td><input type="file" id="scriptData" name="scriptData" size="100" />
+						<td >
+							<input type="file" id="scriptData" name="scriptData" size="50" />
 						</td>
+						<td width="1%" rowspan="2"><input type="submit" id="charger" style="padding-left:10em;padding-right:10em;padding-top:1em;padding-bottom:1em;" value="<fmt:message key="label.bouton.charger"/>"/></td>
 					</tr>
-					<tr class="even" >
-						<td><fmt:message key="label.admin.modeDBUnit"/></td>
-						<td>
+					<tr class="odd" >
+						<td/>
+						<td colspan="2">
 							<form:radiobutton path="mode" id="mode-clean-insert" value="CLEAN_INSERT"/>
 							<fmt:message key="label.admin.modeDBUnit.CLEAN_INSERT"/>
 							<br>
 							<form:radiobutton path="mode" id="mode-delete-all" value="DELETE_ALL"/>
 							<fmt:message key="label.admin.modeDBUnit.DELETE_ALL"/>
 						</td>
-					</tr>
-					<tr class="odd" >
-						<td><input type="submit" id="charger" value="<fmt:message key="label.bouton.charger"/>"/></td>
-						<td><input type="button" value="<fmt:message key="label.bouton.annuler"/>" onclick="document.location='<c:url value="/index.do"/>';"/></td>
 					</tr>
 				</table>
 			</form:form>
@@ -50,7 +48,7 @@ function submit(url, methodType, delegateName){
 		    
 		   	    <display:table 	name="listFilesName" id="descr" pagesize="20" defaultsort="2">
 					<display:column titleKey="label.admin.dbunit.action" >
-						<unireg:raccourciDemarrer id="loadFile-${descr.filename}" tooltip="Demarrer" onClick="if (confirm_trash_db()) {submit('tiersImport.do?fileName=${descr.filename}&action=launchUnit');}"/>
+						<unireg:raccourciDemarrer id="loadFile-${descr.filename}" tooltip="Demarrer" onClick="if (confirm_trash_db()) {submit('import.do?fileName=${descr.filename}&action=launchUnit');}"/>
 					</display:column>
 					<display:column titleKey="label.admin.dbunit.name" >
 						<c:out value="${descr.description}"  escapeXml="false"/>
@@ -67,11 +65,11 @@ function submit(url, methodType, delegateName){
 			</a>
 			<br/>
 			<br/>
-		    <input type="button" value="<fmt:message key="label.bouton.exporter"/>" onclick="javascript:submit('dbdump.do?action=dump');"/>
+		    <input type="button" value="<fmt:message key="label.bouton.exporter"/>" onclick="javascript:submit('${contextPath}/admin/dbdump.do?action=dump');"/>
 		    <span class="error"><fmt:message key="label.export.DBUnit.export.remark"/></span>
 		    <br/>
 			<br/>
-		    <input type="button" value="<fmt:message key="label.bouton.exporter.filesystem"/>" onclick="javascript:submit('dbdump.do?action=dump2fs');"/>
+		    <input type="button" value="<fmt:message key="label.bouton.exporter.filesystem"/>" onclick="javascript:submit('${contextPath}/admin/dbdump.do?action=dump2fs');"/>
 		    <span class="error"><fmt:message key="label.export.DBUnit.exportfs.remark"/></span>
 		    <br/>
 			<br/>
@@ -95,7 +93,7 @@ function submit(url, methodType, delegateName){
 					<c:out value="${file.fileSize}" />
 				</display:column>
 				<display:column>
-					<a href="#" onclick="if (confirm_trash_db()) {javascript:submit('dbdump.do?action=fs2import&file=<c:out value="${file.id}" />');}">
+					<a href="#" onclick="if (confirm_trash_db()) {javascript:submit('${contextPath}/admin/dbdump.do?action=fs2import&file=<c:out value="${file.id}" />');}">
 						<fmt:message key="label.bouton.reimport"/>
 					</a>
 				</display:column>

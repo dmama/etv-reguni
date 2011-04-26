@@ -1,19 +1,16 @@
 package ch.vd.uniregctb.adresse;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 
-@RunWith(JUnit4ClassRunner.class)
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 public class AdressesCivilesHistoTest {
 
 	@Test

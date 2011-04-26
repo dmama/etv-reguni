@@ -2,7 +2,7 @@ package ch.vd.uniregctb.security;
 
 import java.util.List;
 
-import org.acegisecurity.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 

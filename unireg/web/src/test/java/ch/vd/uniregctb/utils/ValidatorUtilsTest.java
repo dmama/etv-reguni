@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.utils;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
-
-@RunWith(JUnit4ClassRunner.class)
 public class ValidatorUtilsTest {
 
 	@Test

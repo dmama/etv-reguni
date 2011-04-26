@@ -92,6 +92,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		container.setMessageListener(listener);
 		container.setDestinationName(INPUT_QUEUE);
 		container.afterPropertiesSet();
+		container.start();
 
 		final EditiqueServiceImpl service = new EditiqueServiceImpl();
 		service.setSender(sender);

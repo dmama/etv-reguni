@@ -10,8 +10,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -36,7 +34,6 @@ import static org.junit.Assert.assertNull;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@RunWith(JUnit4ClassRunner.class)
 public class EvenementCediListenerTest extends EvenementTest {
 
 	private static final String INPUT_QUEUE = "ch.vd.unireg.test.input";
@@ -89,6 +86,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		container.setMessageListener(listener);
 		container.setDestinationName(INPUT_QUEUE);
 		container.afterPropertiesSet();
+		container.start();
 	}
 
 	@After

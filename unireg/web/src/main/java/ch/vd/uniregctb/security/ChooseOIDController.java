@@ -3,9 +3,9 @@ package ch.vd.uniregctb.security;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -44,7 +44,7 @@ public class ChooseOIDController extends CommonSimpleFormController {
 	 * @return le profil de sécurité de l'opérateur courant.
 	 */
 	private UniregSecurityDetails getProfilSecuriteCourant() {
-		// Récupération du contexte Acegi
+		// Récupération du contexte de sécurité
 		SecurityContext context = SecurityContextHolder.getContext();
 		if (context == null) {
 			return null;

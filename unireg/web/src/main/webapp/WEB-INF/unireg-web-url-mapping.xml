@@ -1,16 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+	<!-- ======== Config MVC Spring 3.x ======== -->
+
+	<!-- Scans within the base package of the application for @Components to configure as beans @Controller, @Service, @Configuration, etc. -->
+	<!-- (msi, 12.04.2011) Désactivé. On préfère instancier les beans des contrôleurs à la main, de manière à gérer finement l'injection des dépendances -->
+	<!--<context:component-scan base-package="ch.vd.uniregctb" />-->
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<!-- (msi, 12.04.2011) Désactivé. On préfère instancier les handlers à la main, de manière à pouvoir spécifier les intercepteurs qui vont bien (ajax, ...) -->
+	<!--<mvc:annotation-driven />-->
+
+	<!-- HandlerAdapter qui enregistre les contrôleurs spring 3.x (@Controller) dans le DispatcherServlet -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	</bean>
+
+	<!-- HandlerMapping qui utiliser les annotations @RequestMapping pour enregistrer le mapping url-contrôleur -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="ajaxInterceptor" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- ======== Config MVC Spring 2.x ======== -->
+
+	 <!-- HandlerAdapter qui enregistre les contrôleurs spring 2.x dans le DispatcherServlet -->
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="singleSession" value="false" /> <!-- [UNIREG-1521] -->
 	</bean>
-
-	<!-- default view -->
-	<bean id="urlMapping" class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
 
 	<!-- Url mapper principal de l'application Unireg. A utiliser pour tous les nouveaux contrôleurs ! -->
 	<bean id="mainUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -88,16 +117,13 @@
 				<entry key="/error.do" value-ref="errorController" />
 				<!-- Admin -->
 				<entry key="/admin/status.do" value-ref="infoController" />
-				<entry key="/admin/ifosec.do" value-ref="infoIFOSecController" />
 				<entry key="/admin/batch.do" value-ref="gestionBatchController" />
 				<entry key="/admin/audit.do" value-ref="auditLogController" />
 				<entry key="/admin/performance.do" value-ref="servicePerformanceController" />
 				<!--
 				<entry key="/admin/tracing.do" value-ref="gestionTracingController" />
-				-->			
+				-->
 				<!-- Testing -->
-				<entry key="/admin/tiersImport.do" value-ref="tiersImportController" />
-				<entry key="/admin/dbpreview.do" value-ref="databasePreviewController" />
 				<entry key="/admin/indexation.do" value-ref="gestionIndexationController" />
 				<entry key="/admin/dbdump.do" value-ref="databaseDumpController" />
 				<entry key="/admin/evenementExterne/main.do" value-ref="evenementExterneController" />
@@ -106,7 +132,7 @@
 				<entry key="/admin/evenementExterne/evolution.do" value-ref="evolutionController" />
 				<entry key="/admin/evenementExterne/civilunitaire.do" value-ref="civilUnitaireController" />
 				<entry key="/admin/norentes.do" value-ref="norentesController" />
-				
+
 				<!-- Paramétrage -->
 				<entry key="/param/application.do" value-ref="paramApplicationController" />
 				<entry key="/param/periode.do" value-ref="paramPeriodeController" />
@@ -117,7 +143,7 @@
 				<entry key="/param/feuille-add.do" value-ref="paramModeleFeuilleDocumentAddController" />
 				<entry key="/param/feuille-suppr.do" value-ref="paramModeleFeuilleDocumentSupprController" />
 				<entry key="/param/feuille-edit.do" value-ref="paramModeleFeuilleDocumentEditController" />
-				
+
 				<!-- Tiers - display -->
 				<entry key="/tiers/list.do" value-ref="tiersListController" />
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
@@ -150,7 +176,7 @@
 				<!-- Tiers - edit -->
 				<entry key="/tiers/edit.do" value-ref="tiersEditController" />
 				<!-- Evenements -->
-				<entry key="/evenement/list.do" value-ref="evenementListController" />	
+				<entry key="/evenement/list.do" value-ref="evenementListController" />
 				<entry key="/evenement/visu.do" value-ref="evenementVisuController" />
 				<!-- LR -->
 				<entry key="/lr/list.do" value-ref="lrListController" />
@@ -166,7 +192,7 @@
 				<entry key="/rapport/edit.do" value-ref="rapportEditController" />
 				<!-- Fusion -->
 				<!-- La fusion est désactivée -->
-				<!-- 
+				<!--
 				<entry key="/fusion/list-non-habitant.do" value-ref="nonHabitantListController" />
 				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
 				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />

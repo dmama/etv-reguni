@@ -1,18 +1,12 @@
 package ch.vd.uniregctb.common;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static junit.framework.Assert.failNotEquals;
-import static org.junit.Assert.assertEquals;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
-import java.util.*;
-
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -20,8 +14,13 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.RegistreSpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.BeforeTransaction;
@@ -38,9 +37,16 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AbstractSpringTest.TxCallback.TxCallbackException;
 
-@RunWith(RegistreSpringJUnit4ClassRunner.class)
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static junit.framework.Assert.failNotEquals;
+import static org.junit.Assert.assertEquals;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(transactionManager = "transactionManager")
 @TestExecutionListeners( {
+		SingleContextTestExecutionListener.class /* <-- ce listener DOIT être le premier ! */,
 		DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		TransactionalTestExecutionListener.class
@@ -239,7 +245,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		User user = new User(username, "noPwd", true, true, true, true, authorities);
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd");
 
-		/* Enregistre le context dans Acegi */
+		/* Enregistre le context de sécurité */
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
@@ -255,7 +261,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		User user = new User(username, "noPwd", true, true, true, true, array);
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", array);
 
-		/* Enregistre le context dans Acegi */
+		/* Enregistre le context de sécurité */
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 

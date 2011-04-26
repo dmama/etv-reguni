@@ -6,14 +6,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationCredentialsNotFoundException;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.ui.webapp.AuthenticationProcessingFilter;
-import org.acegisecurity.userdetails.UserDetails;
 import org.apache.log4j.Logger;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.impl.CollectiviteAdministrativeImpl;
@@ -24,7 +25,7 @@ import ch.vd.securite.model.impl.ProcedureImpl;
 import ch.vd.securite.model.impl.ProfilOperateurImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
-public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessingFilter {
+public class IFOSecAuthenticationProcessingFilter extends UsernamePasswordAuthenticationFilter {
 
 	private static final Logger LOGGER = Logger.getLogger(IFOSecAuthenticationProcessingFilter.class);
 
@@ -36,8 +37,8 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 	public IFOSecAuthenticationProcessingFilter() {
 
 		// Obligatoire, requis par la classe parente
-		setDefaultTargetUrl("/");
-		setAuthenticationFailureUrl("/authenticationFailed.do");
+		setFilterProcessesUrl("/");
+		setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/authenticationFailed.do"));
 
 		// Ce filtre n'est là que pour enrichir l'objet Authentication et au besoin demander l'OID.
 		setContinueChainBeforeSuccessfulAuthentication(true);
@@ -52,20 +53,20 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 	 */
 	@Override
 	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		setAuthenticationFailureUrl("/authenticationFailed.do");
+		setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/authenticationFailed.do"));
 		return SecurityDebugConfig.isReloadEachTime() || getProfilOperateurCourant() == null;
 	}
 
 	@Override
 	// Note (msi,bnm) : on arrive ici que si la méthode requiresAuthentication() à retourné true, c'est-à-dire que si le profile utilisateur courant est nul.
-	public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Request: " + request.getRequestURL());
 		}
-		setAuthenticationFailureUrl("/authenticationFailed.do");
+		setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/authenticationFailed.do"));
 
-		// Récupération du contexte Acegi
+		// Récupération du contexte de sécurité
 		SecurityContext context = SecurityContextHolder.getContext();
 		if (context == null) {
 			throw new AuthenticationCredentialsNotFoundException("Aucun contexte de sécurité trouvé");
@@ -83,7 +84,7 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 			oi = getOfficeImpot(request, getVisaOperateur(auth));
 		}
 		catch (MultipleOIDFoundException e) {
-			setAuthenticationFailureUrl("/chooseOID.do");
+			setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/chooseOID.do"));
 			throw e;
 		}
 
@@ -230,7 +231,7 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 	 */
 	protected void setDetails(HttpServletRequest request, Authentication auth, OfficeImpot oi) {
 
-		setAuthenticationFailureUrl("/authenticationFailed.do");
+		setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/authenticationFailed.do"));
 
 		try {
 			final String visaOperateur = getVisaOperateur(auth);
@@ -322,7 +323,7 @@ public class IFOSecAuthenticationProcessingFilter extends AuthenticationProcessi
 	 * @return le profil opérateur courant.
 	 */
 	private ProfilOperateur getProfilOperateurCourant() {
-		// Récupération du contexte Acegi
+		// Récupération du contexte de sécurité
 		SecurityContext context = SecurityContextHolder.getContext();
 		if (context == null) {
 			return null;

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.security;
 
 import java.util.Hashtable;
 
-import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.ProfilOperateur;

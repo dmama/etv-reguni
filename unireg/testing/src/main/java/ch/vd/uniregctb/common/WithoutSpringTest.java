@@ -1,15 +1,13 @@
 package ch.vd.uniregctb.common;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 import org.springframework.util.Log4jConfigurer;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Cette classe permet une compatibilité des onSetup/setUp entre les TestCase avec un ApplicationContext et sans
@@ -17,7 +15,6 @@ import org.springframework.util.Log4jConfigurer;
  * @author jec
  *
  */
-@RunWith(JUnit4ClassRunner.class)
 public abstract class WithoutSpringTest {
 
 	public WithoutSpringTest() {

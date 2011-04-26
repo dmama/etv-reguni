@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.type;
 
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -10,7 +8,6 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-@RunWith(JUnit4ClassRunner.class)
 public class PeriodiciteDecompteTest {
 
 	@Test

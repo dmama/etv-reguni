@@ -7,8 +7,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -32,7 +30,6 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@RunWith(JUnit4ClassRunner.class)
 public class EntrepriseEventListenerTest extends EvenementTest {
 
 	private static final String INPUT_QUEUE = "unireg.test.pm.input";
@@ -81,6 +78,7 @@ public class EntrepriseEventListenerTest extends EvenementTest {
 		container.setMessageListener(listener);
 		container.setDestinationName(INPUT_QUEUE);
 		container.afterPropertiesSet();
+		container.start();
 	}
 
 	@After

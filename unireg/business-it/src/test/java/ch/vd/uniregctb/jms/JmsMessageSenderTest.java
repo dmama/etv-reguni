@@ -17,8 +17,6 @@ import org.apache.activemq.pool.PooledConnectionFactoryBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -30,7 +28,6 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
 /**
  * Ce test n'est pas un vrai test: il permet juste de simuler l'envoi d'un message pour du debug manuel.
  */
-@RunWith(JUnit4ClassRunner.class)
 public class JmsMessageSenderTest {
 
 	private static final Logger LOGGER = Logger.getLogger(JmsMessageSenderTest.class);

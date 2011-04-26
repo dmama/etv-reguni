@@ -18,6 +18,8 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
+import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -182,17 +184,20 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		switch (typeForFiscal) {
 		case COMMUNE_OU_FRACTION_VD:
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
-				forFiscalView.setLibFractionCommune(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin()).getNomMinuscule());
+				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
+				forFiscalView.setLibFractionCommune(commune == null ? "" : commune.getNomMinuscule());
 			}
 			break;
 		case COMMUNE_HC:
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
-				forFiscalView.setLibCommuneHorsCanton(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin()).getNomMinuscule());
+				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
+				forFiscalView.setLibCommuneHorsCanton(commune == null ? "" : commune.getNomMinuscule());
 			}
 			break;
 		case PAYS_HS:
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
-				forFiscalView.setLibPays(serviceInfra.getPays(forFiscal.getNumeroOfsAutoriteFiscale()).getNomMinuscule());
+				final Pays pays = serviceInfra.getPays(forFiscal.getNumeroOfsAutoriteFiscale());
+				forFiscalView.setLibPays(pays == null ? "" : pays.getNomMinuscule());
 			}
 			break;
 		default:

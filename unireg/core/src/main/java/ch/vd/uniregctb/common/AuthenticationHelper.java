@@ -2,16 +2,16 @@ package ch.vd.uniregctb.common;
 
 import java.util.Stack;
 
-import ch.vd.registre.base.utils.Assert;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
-import org.acegisecurity.acls.sid.PrincipalSid;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.AbstractAuthenticationToken;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.User;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.security.UniregSecurityDetails;
 
 public class AuthenticationHelper {
@@ -34,7 +34,7 @@ public class AuthenticationHelper {
 
 		UsernamePasswordAuthenticationToken authentication = createAuthentication(username);
 
-		/* Enregistre le context dans Acegi */
+		/* Enregistre le context de sécurité */
 		setAuthentication(authentication);
 	}
 
@@ -72,7 +72,7 @@ public class AuthenticationHelper {
 		}
 		stack().push(current);
 
-		// crée et enregistre le nouveau context dans Acegi */
+		// crée et enregistre le nouveau context de sécurité */
 		setAuthentication(createAuthentication(username));
 	}
 

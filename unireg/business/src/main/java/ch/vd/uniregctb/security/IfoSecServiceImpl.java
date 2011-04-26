@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.security;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ch.vd.securite.model.Procedure;
 import ch.vd.securite.model.ProfilOperateur;
@@ -68,4 +70,22 @@ public class IfoSecServiceImpl implements IfoSecService {
 		}
 	}
 
+	@Override
+	public Set<Role> getBypass(String visa) {
+
+		Set<Role> roles = new HashSet<Role>();
+
+		if (globalBypass != null) {
+			 roles.addAll(globalBypass.getProcedures());
+		}
+
+		if (bypassPerUser != null) {
+			final IfoSecBypass bypass = bypassPerUser.get(visa);
+			if (bypass != null) {
+				roles.addAll(bypass.getProcedures());
+			}
+		}
+
+		return roles;
+	}
 }

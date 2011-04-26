@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
@@ -21,7 +19,6 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-@RunWith(JUnit4ClassRunner.class)
 public class AdresseCivileAdapterTest {
 
 	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());

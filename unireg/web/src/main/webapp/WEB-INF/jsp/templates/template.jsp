@@ -230,7 +230,7 @@ function ouvrirAide(url) {
 						<li><fmt:message key="label.action.testing" />
 							<ul>
 								<unireg:devEnv>
-									<li><a href="<c:url value='/admin/tiersImport.do'/>"><fmt:message key="title.charger.tiers" /></a></li>
+									<li><a href="<c:url value='/admin/tiersImport/list.do'/>"><fmt:message key="title.charger.tiers" /></a></li>
 								</unireg:devEnv>
 								<li><a href="<c:url value='/admin/dbpreview.do'/>"><fmt:message key="title.preview.tiers" /></a></li>
 								<%-- (msi, 11.03.2011) je pense que cet écran ne fonctionne plus depuis longtemps

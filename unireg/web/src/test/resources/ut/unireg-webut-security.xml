@@ -7,7 +7,7 @@
 	</bean>
 
 	<!-- Verifie que l'utilisateur est bien authentifié. -->
-	<bean id="ifosecAuthenticationManager" class="org.acegisecurity.providers.ProviderManager">
+	<bean id="ifosecAuthenticationManager" class="org.springframework.security.authentication.ProviderManager">
 		<property name="providers">
 			<list>
 				<ref local="ifosecAuthenticationProvider" />

@@ -4,13 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-import ch.vd.ati.security.AcegiUtil;
 import ch.vd.uniregctb.security.UniregSecurityDetails;
 import ch.vd.uniregctb.utils.UniregProperties;
 
@@ -37,7 +37,7 @@ public class LogoutController implements Controller {
 			logger.info(String.format("Fermeture de la session pour l'utilisateur %s %s", details.getIamFirstName(), details.getIamLastName()));
 		}
 
-		AcegiUtil.logout(request);
+		SecurityContextHolder.clearContext();
 
 		HttpSession session = request.getSession(false);
 		if (session != null) {

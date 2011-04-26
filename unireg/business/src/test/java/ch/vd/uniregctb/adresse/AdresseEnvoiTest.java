@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.adresse;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
-
-@RunWith(JUnit4ClassRunner.class)
 public class AdresseEnvoiTest {
 
 	@Test

@@ -7,5 +7,5 @@
 <%@ taglib prefix="tiles"	uri="http://struts.apache.org/tags-tiles" %>
 <%@ taglib prefix="spring"	uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="display"	uri="http://displaytag.sf.net" %>
-<%@ taglib prefix="authz"	uri="http://acegisecurity.org/authz" %>
+<%@ taglib prefix="authz"	uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="unireg"  uri="http://www.unireg.com/uniregTagLib"  %>

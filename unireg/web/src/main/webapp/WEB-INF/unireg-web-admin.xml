@@ -5,23 +5,15 @@
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<bean id="tiersImportController" class="ch.vd.uniregctb.admin.TiersImportController">
-		<property name="commandClass" value="ch.vd.uniregctb.admin.ScriptBean" />
-		<property name="formView" value="admin/tiersImportForm" />
-		<property name="successView" value="admin/tiersImportConfirmation" />
 		<property name="globalIndexer" ref="globalTiersIndexer" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="docService" ref="docService" />
 		<property name="dbService" ref="databaseService" />
-		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="databasePreviewController" class="ch.vd.uniregctb.admin.DatabasePreviewController">
-		<property name="commandClass" value="ch.vd.uniregctb.admin.DatabasePreview" />
-		<property name="formView" value="admin/dbpreview" />
-		<property name="successView" value="dbpreview.do" />
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
-		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<!-- Performance -->
@@ -93,7 +85,7 @@
 		<property name="docService" ref="docService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="batchScheduler" ref="batchScheduler" />
-		<property name="successView" value="tiersImport.do" />
+		<property name="successView" value="tiersImport/list.do" />
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
@@ -102,7 +94,7 @@
 		<property name="sessionForm" value="true" />
 		<property name="docService" ref="docService" />
 		<property name="servletService" ref="servletService" />
-		<property name="successView" value="../admin/tiersImport.do" /> <!-- msi: temp hack -->
+		<property name="successView" value="../admin/tiersImport/list.do" /> <!-- msi: temp hack -->
 	</bean>
 	
 	<bean id="ajaxContainer" abstract="true" parent="abstractSimpleFormController">

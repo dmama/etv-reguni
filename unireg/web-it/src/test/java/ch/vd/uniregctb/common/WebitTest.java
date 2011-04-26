@@ -101,7 +101,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 		LOGGER.info("Chargement du fichier DB unit " + filename);
 
 		// Détermine l'URL de la page d'import
-		final URL importPageUrl = new URL(baseUrl + "/admin/tiersImport.do");
+		final URL importPageUrl = new URL(baseUrl + "/admin/tiersImport/list.do");
 
 		// Détermine l'URL du fichier DB unit
 		final URL dbUnitUrl = getClass().getResource(filename);

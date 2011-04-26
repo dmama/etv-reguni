@@ -601,7 +601,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'admin
 	@Test
 	public void testAdminTiersImport() throws Exception {
-		assertPage("/admin/tiersImport.do", "Import d'un script");
+		assertPage("/admin/tiersImport/list.do", "Import d'un script");
 	}
 
 	// Page d'indexation

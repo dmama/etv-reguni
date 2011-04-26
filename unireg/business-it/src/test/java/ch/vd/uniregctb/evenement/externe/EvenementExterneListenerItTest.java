@@ -10,8 +10,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -37,8 +35,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@RunWith(JUnit4ClassRunner.class)
-public class EvenementExterneListenerTest extends EvenementTest {
+public class EvenementExterneListenerItTest extends EvenementTest {
 
 	private static final String INPUT_QUEUE = "ch.vd.unireg.test.input";
 	private static final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
@@ -93,6 +90,7 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		container.setMessageListener(listener);
 		container.setDestinationName(INPUT_QUEUE);
 		container.afterPropertiesSet();
+		container.start();
 	}
 
 	@After
