@@ -410,7 +410,7 @@
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.2</version>
+				<version>2.1</version>
 				<configuration>
 					<aggregate>true</aggregate>
 				</configuration>
@@ -669,7 +669,7 @@
 		<shared-base.version>4.0-SNAPSHOT</shared-base.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<spring-modules.version>0.9</spring-modules.version>
-		<cxf.version>2.2.8</cxf.version>
+		<cxf.version>2.3.2</cxf.version>
 		<lucene.version>3.0.1</lucene.version>
 		<activemq.version>5.4.2-fuse-02-00</activemq.version>
 		<jencks.version>2.2</jencks.version>
