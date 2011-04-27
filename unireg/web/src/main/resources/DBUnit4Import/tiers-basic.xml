@@ -29,6 +29,7 @@
     <column>AC_NOM</column>
     <column>NUMERO_CA</column>
     <column>CATEGORIE_IMPOT_SOURCE</column>
+    <column>LOGICIEL_ID</column>
     <column>MODE_COM</column>
     <column>DPI_NOM1</column>
     <column>DPI_NOM2</column>
@@ -51,15 +52,17 @@
     <column>NH_NO_OFS_NATIONALITE</column>
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
+    <column>REMARQUE</column>
+    <column>NUMERO_PM</column>
     <row>
       <value>Entreprise</value>
       <value>27769</value>
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <null/>
       <null/>
       <null/>
@@ -102,6 +105,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>DebiteurPrestationImposable</value>
@@ -109,7 +115,7 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2010-12-21 10:11:24.999]]></value>
       <value>[system]</value>
       <null/>
@@ -132,11 +138,14 @@
       <null/>
       <null/>
       <value>REGULIERS</value>
+      <null/>
       <value>PAPIER</value>
       <null/>
       <null/>
       <null/>
       <value>TRIMESTRIEL</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -161,7 +170,7 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2010-12-21 10:11:25.002]]></value>
       <value>[system]</value>
       <null/>
@@ -184,11 +193,14 @@
       <null/>
       <null/>
       <value>REGULIERS</value>
+      <null/>
       <value>PAPIER</value>
       <value>Nom1</value>
       <value>Nom2</value>
       <null/>
       <value>TRIMESTRIEL</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -235,6 +247,9 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -310,6 +325,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -339,6 +357,9 @@
       <null/>
       <null/>
       <value>3</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -414,6 +435,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -443,6 +467,9 @@
       <null/>
       <null/>
       <value>5</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -518,6 +545,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -547,6 +577,9 @@
       <null/>
       <null/>
       <value>7</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -622,6 +655,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -651,6 +687,9 @@
       <null/>
       <null/>
       <value>9</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -726,6 +765,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -755,6 +797,9 @@
       <null/>
       <null/>
       <value>11</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -830,6 +875,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -859,6 +907,9 @@
       <null/>
       <null/>
       <value>13</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -934,6 +985,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -963,6 +1017,9 @@
       <null/>
       <null/>
       <value>15</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1038,6 +1095,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1067,6 +1127,9 @@
       <null/>
       <null/>
       <value>17</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1142,6 +1205,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1171,6 +1237,9 @@
       <null/>
       <null/>
       <value>19</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1246,6 +1315,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1275,6 +1347,9 @@
       <null/>
       <null/>
       <value>21</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1350,6 +1425,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1379,6 +1457,9 @@
       <null/>
       <null/>
       <value>23</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1454,6 +1535,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1483,6 +1567,9 @@
       <null/>
       <null/>
       <value>25</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1558,6 +1645,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1587,6 +1677,9 @@
       <null/>
       <null/>
       <value>27</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1662,6 +1755,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1691,6 +1787,9 @@
       <null/>
       <null/>
       <value>29</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1766,6 +1865,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1795,6 +1897,9 @@
       <null/>
       <null/>
       <value>31</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1870,6 +1975,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1899,6 +2007,9 @@
       <null/>
       <null/>
       <value>33</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1974,6 +2085,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2003,6 +2117,9 @@
       <null/>
       <null/>
       <value>35</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2078,6 +2195,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2107,6 +2227,9 @@
       <null/>
       <null/>
       <value>37</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2182,6 +2305,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2211,6 +2337,9 @@
       <null/>
       <null/>
       <value>39</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2286,6 +2415,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2315,6 +2447,9 @@
       <null/>
       <null/>
       <value>41</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2390,6 +2525,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2419,6 +2557,9 @@
       <null/>
       <null/>
       <value>43</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2494,6 +2635,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2523,6 +2667,9 @@
       <null/>
       <null/>
       <value>45</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2598,6 +2745,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2627,6 +2777,9 @@
       <null/>
       <null/>
       <value>47</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2702,6 +2855,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2731,6 +2887,9 @@
       <null/>
       <null/>
       <value>49</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2806,6 +2965,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2835,6 +2997,9 @@
       <null/>
       <null/>
       <value>51</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2910,6 +3075,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2939,6 +3107,9 @@
       <null/>
       <null/>
       <value>53</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3014,6 +3185,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3043,6 +3217,9 @@
       <null/>
       <null/>
       <value>55</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3118,6 +3295,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3147,6 +3327,9 @@
       <null/>
       <null/>
       <value>57</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3222,6 +3405,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3251,6 +3437,9 @@
       <null/>
       <null/>
       <value>59</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3326,6 +3515,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3355,6 +3547,9 @@
       <null/>
       <null/>
       <value>61</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3430,6 +3625,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3459,6 +3657,9 @@
       <null/>
       <null/>
       <value>63</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3534,6 +3735,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3563,6 +3767,9 @@
       <null/>
       <null/>
       <value>65</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3638,6 +3845,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3667,6 +3877,9 @@
       <null/>
       <null/>
       <value>67</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3742,6 +3955,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3771,6 +3987,9 @@
       <null/>
       <null/>
       <value>69</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3846,6 +4065,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3875,6 +4097,9 @@
       <null/>
       <null/>
       <value>71</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -3950,6 +4175,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3979,6 +4207,9 @@
       <null/>
       <null/>
       <value>73</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4054,6 +4285,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4083,6 +4317,9 @@
       <null/>
       <null/>
       <value>75</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4158,6 +4395,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4187,6 +4427,9 @@
       <null/>
       <null/>
       <value>77</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4262,6 +4505,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4291,6 +4537,9 @@
       <null/>
       <null/>
       <value>79</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4366,6 +4615,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4395,6 +4647,9 @@
       <null/>
       <null/>
       <value>81</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4470,6 +4725,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4499,6 +4757,9 @@
       <null/>
       <null/>
       <value>83</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4574,6 +4835,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4603,6 +4867,9 @@
       <null/>
       <null/>
       <value>85</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4678,6 +4945,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4707,6 +4977,9 @@
       <null/>
       <null/>
       <value>87</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4782,6 +5055,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4811,6 +5087,9 @@
       <null/>
       <null/>
       <value>89</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4886,6 +5165,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4915,6 +5197,9 @@
       <null/>
       <null/>
       <value>91</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -4990,6 +5275,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5019,6 +5307,9 @@
       <null/>
       <null/>
       <value>93</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -5094,6 +5385,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5123,6 +5417,9 @@
       <null/>
       <null/>
       <value>95</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -5198,6 +5495,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5227,6 +5527,9 @@
       <null/>
       <null/>
       <value>97</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -5302,6 +5605,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5354,526 +5660,9 @@
       <null/>
       <null/>
       <null/>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>10246283</value>
       <null/>
       <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>333911</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12300001</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>333905</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12300002</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>333908</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12300003</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>327706</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12600001</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value>CCBPFRPPBDX</value>
-      <value>dupont@etat-vaud.ch</value>
-      <value>0</value>
-      <value>Chopard</value>
-      <value>0</value>
-      <null/>
-      <value>CH9308440717427290198</value>
-      <value>0219663629</value>
-      <value>0219663999</value>
-      <value>0219663623</value>
-      <value>0219663625</value>
-      <value>10</value>
-      <value><![CDATA[MAURICE DUPONT]]></value>
-      <null/>
-      <value><![CDATA[ERIC MONTAGNY]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>19710123</value>
-      <value>0</value>
-      <null/>
-      <value>Pirez</value>
-      <value>7561234567897</value>
-      <null/>
-      <null/>
-      <value>8212</value>
-      <value><![CDATA[Isidor (sourcier gris)]]></value>
-      <value>MASCULIN</value>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12600002</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value>CCBPFRPPBDX</value>
-      <value>dupont@etat-vaud.ch</value>
-      <value>0</value>
-      <value>Chopard</value>
-      <value>0</value>
-      <null/>
-      <value>CH9308440717427290198</value>
-      <value>0219663629</value>
-      <value>0219663999</value>
-      <value>0219663623</value>
-      <value>0219663625</value>
-      <value>10</value>
-      <value><![CDATA[MAURICE DUPONT]]></value>
-      <null/>
-      <value><![CDATA[ERIC MONTAGNY]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>19700123</value>
-      <value>0</value>
-      <null/>
-      <value>Martinez</value>
-      <value>7561234567897</value>
-      <null/>
-      <null/>
-      <value>8212</value>
-      <value>Conchita</value>
-      <value>FEMININ</value>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12600003</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>19531218</value>
-      <value>0</value>
-      <null/>
-      <value>Mme</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>8231</value>
-      <value>Mario</value>
-      <value>MASCULIN</value>
-    </row>
-    <row>
-      <value>MenageCommun</value>
-      <value>12600004</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12600008</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value>CCBPFRPPBDX</value>
-      <value>dupont@etat-vaud.ch</value>
-      <value>0</value>
-      <value>Chopard</value>
-      <value>1</value>
-      <null/>
-      <value>CH9308440717427290198</value>
-      <value>0219663629</value>
-      <value>0219663999</value>
-      <value>0219663623</value>
-      <value>0219663625</value>
-      <value>10</value>
-      <value><![CDATA[MAURICE DUPONT]]></value>
-      <null/>
-      <value><![CDATA[ERIC MONTAGNY]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>19700123</value>
-      <value>0</value>
-      <null/>
-      <value><![CDATA[The full i107]]></value>
-      <value>7561234567897</value>
-      <null/>
-      <null/>
-      <value>8212</value>
-      <value><![CDATA[De la mort]]></value>
-      <value>MASCULIN</value>
-    </row>
-    <row>
-      <value>PersonnePhysique</value>
-      <value>12600009</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>19770212</value>
-      <value>0</value>
-      <null/>
-      <value>Tardy</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>8201</value>
-      <value><![CDATA[Alain (HS)]]></value>
-      <value>MASCULIN</value>
     </row>
     <row>
       <value>AutreCommunaute</value>
@@ -5881,9 +5670,9 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <null/>
       <null/>
       <null/>
@@ -5926,6 +5715,559 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>10246283</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>333911</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12300001</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>333905</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12300002</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>333908</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12300003</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>327706</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12600001</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>CCBPFRPPBDX</value>
+      <value>dupont@etat-vaud.ch</value>
+      <value>0</value>
+      <value>Chopard</value>
+      <value>0</value>
+      <null/>
+      <value>CH9308440717427290198</value>
+      <value>0219663629</value>
+      <value>0219663999</value>
+      <value>0219663623</value>
+      <value>0219663625</value>
+      <value>10</value>
+      <value><![CDATA[MAURICE DUPONT]]></value>
+      <null/>
+      <value><![CDATA[ERIC MONTAGNY]]></value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>19710123</value>
+      <value>0</value>
+      <null/>
+      <value>Pirez</value>
+      <value>7561234567897</value>
+      <null/>
+      <null/>
+      <value>8212</value>
+      <value><![CDATA[Isidor (sourcier gris)]]></value>
+      <value>MASCULIN</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12600002</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>CCBPFRPPBDX</value>
+      <value>dupont@etat-vaud.ch</value>
+      <value>0</value>
+      <value>Chopard</value>
+      <value>0</value>
+      <null/>
+      <value>CH9308440717427290198</value>
+      <value>0219663629</value>
+      <value>0219663999</value>
+      <value>0219663623</value>
+      <value>0219663625</value>
+      <value>10</value>
+      <value><![CDATA[MAURICE DUPONT]]></value>
+      <null/>
+      <value><![CDATA[ERIC MONTAGNY]]></value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>19700123</value>
+      <value>0</value>
+      <null/>
+      <value>Martinez</value>
+      <value>7561234567897</value>
+      <null/>
+      <null/>
+      <value>8212</value>
+      <value>Conchita</value>
+      <value>FEMININ</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12600003</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>19531218</value>
+      <value>0</value>
+      <null/>
+      <value>Mme</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>8231</value>
+      <value>Mario</value>
+      <value>MASCULIN</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>MenageCommun</value>
+      <value>12600004</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12600008</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>CCBPFRPPBDX</value>
+      <value>dupont@etat-vaud.ch</value>
+      <value>0</value>
+      <value>Chopard</value>
+      <value>1</value>
+      <null/>
+      <value>CH9308440717427290198</value>
+      <value>0219663629</value>
+      <value>0219663999</value>
+      <value>0219663623</value>
+      <value>0219663625</value>
+      <value>10</value>
+      <value><![CDATA[MAURICE DUPONT]]></value>
+      <null/>
+      <value><![CDATA[ERIC MONTAGNY]]></value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>19700123</value>
+      <value>0</value>
+      <null/>
+      <value><![CDATA[The full i107]]></value>
+      <value>7561234567897</value>
+      <null/>
+      <null/>
+      <value>8212</value>
+      <value><![CDATA[De la mort]]></value>
+      <value>MASCULIN</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12600009</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>19770212</value>
+      <value>0</value>
+      <null/>
+      <value>Tardy</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>8201</value>
+      <value><![CDATA[Alain (HS)]]></value>
+      <value>MASCULIN</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -5933,9 +6275,9 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <null/>
       <null/>
       <value>0</value>
@@ -5968,6 +6310,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
       <value>19520123</value>
       <value>0</value>
       <null/>
@@ -5978,6 +6321,8 @@
       <value>8100</value>
       <value>Michel</value>
       <value>MASCULIN</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -5985,9 +6330,9 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <null/>
       <value>pascaline@descloux.ch</value>
       <value>0</value>
@@ -6021,11 +6366,14 @@
       <null/>
       <null/>
       <null/>
+      <null/>
       <value>1</value>
       <null/>
       <null/>
       <null/>
       <value>674417</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -6037,9 +6385,9 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <null/>
       <null/>
       <null/>
@@ -6052,6 +6400,7 @@
       <null/>
       <null/>
       <value>10</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -6082,6 +6431,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -6089,9 +6440,9 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <null/>
       <null/>
       <null/>
@@ -6104,6 +6455,7 @@
       <null/>
       <null/>
       <value>10</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -6134,6 +6486,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -6141,9 +6495,9 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <null/>
       <null/>
       <null/>
@@ -6177,11 +6531,14 @@
       <null/>
       <null/>
       <null/>
+      <null/>
       <value>1</value>
       <null/>
       <null/>
       <null/>
       <value>325631</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -6193,9 +6550,9 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>CCBPFRPPBDX</value>
       <value>dupont@etat-vaud.ch</value>
       <value>0</value>
@@ -6238,6 +6595,9 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <null/>
     </row>
   </table>
   <table name="SITUATION_FAMILLE">
@@ -6253,144 +6613,144 @@
     <column>DATE_FIN</column>
     <column>ETAT_CIVIL</column>
     <column>NOMBRE_ENFANTS</column>
+    <column>TIERS_PRINCIPAL_ID</column>
     <column>TARIF_APPLICABLE</column>
     <column>CTB_ID</column>
-    <column>TIERS_PRINCIPAL_ID</column>
     <row>
       <value>SituationFamille</value>
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19601020</value>
       <value>19850214</value>
       <value>CELIBATAIRE</value>
       <value>0</value>
       <null/>
-      <value>12300001</value>
       <null/>
+      <value>12300001</value>
     </row>
     <row>
       <value>SituationFamille</value>
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19610209</value>
       <value>19850214</value>
       <value>CELIBATAIRE</value>
       <value>0</value>
       <null/>
-      <value>12300002</value>
       <null/>
+      <value>12300002</value>
     </row>
     <row>
       <value>SituationFamille</value>
       <value>3</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20050829</value>
       <null/>
       <value>CELIBATAIRE</value>
       <value>0</value>
       <null/>
-      <value>12300003</value>
       <null/>
+      <value>12300003</value>
     </row>
     <row>
       <value>SituationFamille</value>
       <value>4</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19790624</value>
       <null/>
       <value>CELIBATAIRE</value>
       <value>0</value>
       <null/>
-      <value>34807810</value>
       <null/>
+      <value>34807810</value>
     </row>
     <row>
       <value>SituationFamilleMenageCommun</value>
       <value>5</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19850215</value>
       <value>19850601</value>
       <value>MARIE</value>
       <value>0</value>
+      <value>12300002</value>
       <null/>
       <value>86006202</value>
-      <value>12300002</value>
     </row>
     <row>
       <value>SituationFamilleMenageCommun</value>
       <value>6</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19850602</value>
       <null/>
       <value>MARIE</value>
       <value>1</value>
+      <value>12300002</value>
       <null/>
       <value>86006202</value>
-      <value>12300002</value>
     </row>
     <row>
       <value>SituationFamille</value>
       <value>9</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <null/>
       <value>CELIBATAIRE</value>
       <value>0</value>
       <null/>
-      <value>12600001</value>
       <null/>
+      <value>12600001</value>
     </row>
     <row>
       <value>SituationFamilleMenageCommun</value>
       <value>10</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:15.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19900703</value>
       <null/>
       <value>MARIE</value>
       <value>2</value>
+      <value>12600003</value>
       <value>NORMAL</value>
       <value>12600004</value>
-      <value>12600003</value>
     </row>
   </table>
   <table name="REMARQUE">
@@ -6427,10 +6787,10 @@
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:04.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19850215</value>
       <null/>
       <value>86006202</value>
@@ -6446,10 +6806,10 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:04.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19850215</value>
       <null/>
       <value>86006202</value>
@@ -6465,10 +6825,10 @@
       <value>3</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:04.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <value>20080625</value>
       <value>1678432</value>
@@ -6484,10 +6844,10 @@
       <value>4</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:04.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <null/>
       <value>1678432</value>
@@ -6503,10 +6863,10 @@
       <value>5</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:04.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19900703</value>
       <null/>
       <value>12600004</value>
@@ -6522,10 +6882,10 @@
       <value>6</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:04.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060223</value>
       <null/>
       <value>12300002</value>
@@ -6541,10 +6901,10 @@
       <value>7</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:13:04.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20000101</value>
       <null/>
       <value>1678432</value>
@@ -6557,7 +6917,6 @@
     </row>
   </table>
   <table name="PERIODICITE">
-    <column>PERIODICITE_TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -6568,9 +6927,9 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>PERIODE_DECOMPTE</column>
+    <column>PERIODICITE_TYPE</column>
     <column>DEBITEUR_ID</column>
     <row>
-      <value>TRIMESTRIEL</value>
       <value>34551397</value>
       <null/>
       <null/>
@@ -6581,10 +6940,10 @@
       <value>20080101</value>
       <null/>
       <null/>
+      <value>TRIMESTRIEL</value>
       <value>1678432</value>
     </row>
     <row>
-      <value>TRIMESTRIEL</value>
       <value>34551398</value>
       <null/>
       <null/>
@@ -6595,6 +6954,7 @@
       <value>20080401</value>
       <null/>
       <null/>
+      <value>TRIMESTRIEL</value>
       <value>1678439</value>
     </row>
   </table>
@@ -6611,80 +6971,80 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2002</value>
     </row>
     <row>
       <value>3</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2003</value>
     </row>
     <row>
       <value>4</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2004</value>
     </row>
     <row>
       <value>5</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2005</value>
     </row>
     <row>
       <value>6</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2006</value>
     </row>
     <row>
       <value>7</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2007</value>
     </row>
     <row>
       <value>8</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2008</value>
     </row>
     <row>
       <value>9</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:53.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>2009</value>
     </row>
   </table>
@@ -6705,10 +7065,10 @@
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20030430</value>
       <value>20030331</value>
       <value>20030131</value>
@@ -6719,10 +7079,10 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20030630</value>
       <value>20030331</value>
       <value>20030131</value>
@@ -6733,10 +7093,10 @@
       <value>3</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20030630</value>
       <value>20030331</value>
       <value>20030131</value>
@@ -6747,10 +7107,10 @@
       <value>4</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20030630</value>
       <value>20030331</value>
       <value>20030131</value>
@@ -6761,10 +7121,10 @@
       <value>5</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20030630</value>
       <value>20030331</value>
       <value>20030131</value>
@@ -6775,10 +7135,10 @@
       <value>6</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20040430</value>
       <value>20040331</value>
       <value>20040131</value>
@@ -6789,10 +7149,10 @@
       <value>7</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20040630</value>
       <value>20040331</value>
       <value>20040131</value>
@@ -6803,10 +7163,10 @@
       <value>8</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20040630</value>
       <value>20040331</value>
       <value>20040131</value>
@@ -6817,10 +7177,10 @@
       <value>9</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20040630</value>
       <value>20040331</value>
       <value>20040131</value>
@@ -6831,10 +7191,10 @@
       <value>10</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20040630</value>
       <value>20040331</value>
       <value>20040131</value>
@@ -6845,10 +7205,10 @@
       <value>11</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20050430</value>
       <value>20050331</value>
       <value>20050131</value>
@@ -6859,10 +7219,10 @@
       <value>12</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20050630</value>
       <value>20050331</value>
       <value>20050131</value>
@@ -6873,10 +7233,10 @@
       <value>13</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20050630</value>
       <value>20050331</value>
       <value>20050131</value>
@@ -6887,10 +7247,10 @@
       <value>14</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20050630</value>
       <value>20050331</value>
       <value>20050131</value>
@@ -6901,10 +7261,10 @@
       <value>15</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20050630</value>
       <value>20050331</value>
       <value>20050131</value>
@@ -6915,10 +7275,10 @@
       <value>16</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060430</value>
       <value>20060331</value>
       <value>20060131</value>
@@ -6929,10 +7289,10 @@
       <value>17</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060630</value>
       <value>20060331</value>
       <value>20060131</value>
@@ -6943,10 +7303,10 @@
       <value>18</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060630</value>
       <value>20060331</value>
       <value>20060131</value>
@@ -6957,10 +7317,10 @@
       <value>19</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060630</value>
       <value>20060331</value>
       <value>20060131</value>
@@ -6971,10 +7331,10 @@
       <value>20</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060630</value>
       <value>20060331</value>
       <value>20060131</value>
@@ -6985,10 +7345,10 @@
       <value>21</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070430</value>
       <value>20070331</value>
       <value>20070131</value>
@@ -6999,10 +7359,10 @@
       <value>22</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070630</value>
       <value>20070331</value>
       <value>20070131</value>
@@ -7013,10 +7373,10 @@
       <value>23</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070630</value>
       <value>20070331</value>
       <value>20070131</value>
@@ -7027,10 +7387,10 @@
       <value>24</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070630</value>
       <value>20070331</value>
       <value>20070131</value>
@@ -7041,10 +7401,10 @@
       <value>25</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070630</value>
       <value>20070331</value>
       <value>20070131</value>
@@ -7055,10 +7415,10 @@
       <value>26</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080430</value>
       <value>20080331</value>
       <value>20080131</value>
@@ -7069,10 +7429,10 @@
       <value>27</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080630</value>
       <value>20080331</value>
       <value>20080131</value>
@@ -7083,10 +7443,10 @@
       <value>28</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080630</value>
       <value>20080331</value>
       <value>20080131</value>
@@ -7097,10 +7457,10 @@
       <value>29</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080630</value>
       <value>20080331</value>
       <value>20080131</value>
@@ -7111,10 +7471,10 @@
       <value>30</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080630</value>
       <value>20080331</value>
       <value>20080131</value>
@@ -7125,10 +7485,10 @@
       <value>31</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20090430</value>
       <value>20090331</value>
       <value>20090131</value>
@@ -7139,10 +7499,10 @@
       <value>32</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20090630</value>
       <value>20090331</value>
       <value>20090131</value>
@@ -7153,10 +7513,10 @@
       <value>33</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20090630</value>
       <value>20090331</value>
       <value>20090131</value>
@@ -7167,10 +7527,10 @@
       <value>34</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20090630</value>
       <value>20090331</value>
       <value>20090131</value>
@@ -7181,10 +7541,10 @@
       <value>35</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20090630</value>
       <value>20090331</value>
       <value>20090131</value>
@@ -7195,10 +7555,10 @@
       <value>36</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20100430</value>
       <value>20100331</value>
       <value>20100131</value>
@@ -7209,10 +7569,10 @@
       <value>37</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20100630</value>
       <value>20100331</value>
       <value>20100131</value>
@@ -7223,10 +7583,10 @@
       <value>38</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20100630</value>
       <value>20100331</value>
       <value>20100131</value>
@@ -7237,10 +7597,10 @@
       <value>39</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20100630</value>
       <value>20100331</value>
       <value>20100131</value>
@@ -7251,10 +7611,10 @@
       <value>40</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:44.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20100630</value>
       <value>20100331</value>
       <value>20100131</value>
@@ -7496,10 +7856,10 @@
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
       <value>7</value>
     </row>
@@ -7507,10 +7867,10 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_VAUDTAX</value>
       <value>7</value>
     </row>
@@ -7518,10 +7878,10 @@
       <value>3</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_DEPENSE</value>
       <value>7</value>
     </row>
@@ -7529,10 +7889,10 @@
       <value>4</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
       <value>7</value>
     </row>
@@ -7540,10 +7900,10 @@
       <value>5</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
       <value>8</value>
     </row>
@@ -7551,10 +7911,10 @@
       <value>6</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_VAUDTAX</value>
       <value>8</value>
     </row>
@@ -7562,10 +7922,10 @@
       <value>7</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_DEPENSE</value>
       <value>8</value>
     </row>
@@ -7573,10 +7933,10 @@
       <value>8</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
       <value>8</value>
     </row>
@@ -7584,10 +7944,10 @@
       <value>9</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
       <value>9</value>
     </row>
@@ -7595,10 +7955,10 @@
       <value>10</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_VAUDTAX</value>
       <value>9</value>
     </row>
@@ -7606,10 +7966,10 @@
       <value>11</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_DEPENSE</value>
       <value>9</value>
     </row>
@@ -7617,10 +7977,10 @@
       <value>12</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
       <value>9</value>
     </row>
@@ -7628,10 +7988,10 @@
       <value>101</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
       <value>7</value>
     </row>
@@ -7639,10 +7999,10 @@
       <value>105</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
       <value>8</value>
     </row>
@@ -7650,10 +8010,10 @@
       <value>109</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:08.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
       <value>9</value>
     </row>
@@ -7673,10 +8033,10 @@
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
       <value>1</value>
@@ -7685,10 +8045,10 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
       <value>1</value>
@@ -7697,10 +8057,10 @@
       <value>3</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
       <value>1</value>
@@ -7709,10 +8069,10 @@
       <value>4</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
       <value>1</value>
@@ -7721,10 +8081,10 @@
       <value>5</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
       <value>2</value>
@@ -7733,10 +8093,10 @@
       <value>6</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
       <value>3</value>
@@ -7745,10 +8105,10 @@
       <value>10</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
       <value>3</value>
@@ -7757,10 +8117,10 @@
       <value>11</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
       <value>4</value>
@@ -7769,10 +8129,10 @@
       <value>12</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
       <value>5</value>
@@ -7781,10 +8141,10 @@
       <value>13</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
       <value>5</value>
@@ -7793,10 +8153,10 @@
       <value>14</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
       <value>5</value>
@@ -7805,10 +8165,10 @@
       <value>15</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
       <value>5</value>
@@ -7817,10 +8177,10 @@
       <value>16</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
       <value>6</value>
@@ -7829,10 +8189,10 @@
       <value>17</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
       <value>7</value>
@@ -7841,10 +8201,10 @@
       <value>18</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
       <value>7</value>
@@ -7853,10 +8213,10 @@
       <value>19</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
       <value>7</value>
@@ -7865,10 +8225,10 @@
       <value>20</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
       <value>7</value>
@@ -7877,10 +8237,10 @@
       <value>21</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
       <value>7</value>
@@ -7889,10 +8249,10 @@
       <value>22</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
       <value>8</value>
@@ -7901,10 +8261,10 @@
       <value>23</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
       <value>9</value>
@@ -7913,10 +8273,10 @@
       <value>24</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
       <value>9</value>
@@ -7925,10 +8285,10 @@
       <value>25</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
       <value>9</value>
@@ -7937,10 +8297,10 @@
       <value>26</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
       <value>9</value>
@@ -7949,10 +8309,10 @@
       <value>27</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe 1-1]]></value>
       <value>310</value>
       <value>9</value>
@@ -7961,10 +8321,10 @@
       <value>28</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
       <value>10</value>
@@ -7973,10 +8333,10 @@
       <value>29</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
       <value>11</value>
@@ -7985,10 +8345,10 @@
       <value>30</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:18.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
       <value>12</value>
@@ -8019,10 +8379,10 @@
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:57.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>CH_AHV_AVS</value>
       <value>15489652357</value>
       <value>12600001</value>
@@ -8031,10 +8391,10 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:57.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>CH_ZAR_RCE</value>
       <value>0784.7621/5</value>
       <value>12600001</value>
@@ -8064,10 +8424,10 @@
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8084,10 +8444,10 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19790209</value>
       <value>19850214</value>
       <value>REVENU_FORTUNE</value>
@@ -8104,10 +8464,10 @@
       <value>4</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19970624</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8124,10 +8484,10 @@
       <value>5</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19850215</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8144,10 +8504,10 @@
       <value>6</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19781020</value>
       <value>19850214</value>
       <value>REVENU_FORTUNE</value>
@@ -8164,10 +8524,10 @@
       <value>7</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20020212</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8184,10 +8544,10 @@
       <value>8</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20020212</value>
       <value>20071231</value>
       <value>REVENU_FORTUNE</value>
@@ -8204,10 +8564,10 @@
       <value>9</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8224,10 +8584,10 @@
       <value>10</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080415</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8244,10 +8604,10 @@
       <value>11</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070101</value>
       <value>20071231</value>
       <value>DEBITEUR_PRESTATION_IMPOSABLE</value>
@@ -8264,10 +8624,10 @@
       <value>12</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080323</value>
       <null/>
       <value>DEBITEUR_PRESTATION_IMPOSABLE</value>
@@ -8284,10 +8644,10 @@
       <value>13</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060605</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8304,10 +8664,10 @@
       <value>14</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060605</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8324,10 +8684,10 @@
       <value>15</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>19711218</value>
       <value>19900702</value>
       <value>REVENU_FORTUNE</value>
@@ -8344,10 +8704,10 @@
       <value>80</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20040701</value>
       <null/>
       <value>REVENU_FORTUNE</value>
@@ -8364,10 +8724,10 @@
       <value>107</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20010212</value>
       <value>20020211</value>
       <value>REVENU_FORTUNE</value>
@@ -8384,10 +8744,10 @@
       <value>108</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20000212</value>
       <value>20010211</value>
       <value>REVENU_FORTUNE</value>
@@ -8408,6 +8768,7 @@
     <column>LOG_CUSER</column>
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
+    <column>DATE_TRAITEMENT</column>
     <column>DATE_DEMANDE</column>
     <column>EMETTEUR_ID</column>
     <column>MESSAGE_ID</column>
@@ -8436,6 +8797,7 @@
     <column>SEXE</column>
     <column>PRIO_EMETTEUR</column>
     <column>PRIO_UTILISATEUR</column>
+    <column>DEMANDE_TYPE</column>
     <column>TYPE_MESSAGE</column>
     <column>ETAT</column>
     <column>BUSINESS_ID</column>
@@ -8449,118 +8811,8 @@
     <column>ERREUR_TYPE</column>
     <column>NO_CONTRIBUABLE</column>
     <column>NO_MENAGE_COMMUN</column>
-    <column>WORK_USER</column>
-    <column>DEMANDE_TYPE</column>
-    <column>DATE_TRAITEMENT</column>
     <column>TRAITEMENT_USER</column>
-    <row>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <value>Test</value>
-      <value>1</value>
-      <value>MANUEL_SANS_ACK</value>
-      <value>2008</value>
-      <null/>
-      <value>1234567890123</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>19730711</value>
-      <value>Larousse</value>
-      <value>Lora</value>
-      <null/>
-      <value>NON_PRIORITAIRE</value>
-      <value>0</value>
-      <value>ssk-3001-000101</value>
-      <value>EXCEPTION</value>
-      <value>123456</value>
-      <value>Test</value>
-      <value>Test</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>2</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-02-21 00:00:00.0]]></value>
-      <value>Test</value>
-      <value>2</value>
-      <value>MANUEL_SANS_ACK</value>
-      <value>2008</value>
-      <null/>
-      <value>9876543210789</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>19780921</value>
-      <value><![CDATA[Le Brun]]></value>
-      <value>Jacques</value>
-      <null/>
-      <value>NON_PRIORITAIRE</value>
-      <value>0</value>
-      <value>ssk-3001-000101</value>
-      <value>A_TRAITER_MANUELLEMENT</value>
-      <value>654321</value>
-      <value>Test</value>
-      <value>Test</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
+    <column>WORK_USER</column>
   </table>
   <table name="EVENEMENT_FISCAL">
     <column>EVT_TYPE</column>
@@ -8579,6 +8831,7 @@
     <column>DATE_DEBUT_PERIODE</column>
     <column>DATE_FIN_PERIODE</column>
     <column>TIERS_ID</column>
+    <column>ENFANT_ID</column>
   </table>
   <table name="EVENEMENT_EXTERNE">
     <column>EVENT_TYPE</column>
@@ -8608,6 +8861,7 @@
     <column>LOG_CUSER</column>
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
+    <column>COMMENTAIRE_TRAITEMENT</column>
     <column>DATE_EVENEMENT</column>
     <column>DATE_TRAITEMENT</column>
     <column>ETAT</column>
@@ -8622,8 +8876,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
       <null/>
       <value>20071025</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
@@ -8693,9 +8948,11 @@
     <column>NOM_DOCUMENT</column>
     <column>DATE_IMPR_CHEMISE_TO</column>
     <column>DELAI_RETOUR_IMPRIME</column>
+    <column>LIBRE</column>
     <column>NUMERO</column>
     <column>NO_OFS_FOR_GESTION</column>
     <column>QUALIFICATION</column>
+    <column>RETOUR_COLL_ADMIN_ID</column>
     <column>TYPE_CTB</column>
     <column>MODE_COM</column>
     <column>PERIODICITE</column>
@@ -8703,17 +8960,15 @@
     <column>MODELE_DOC_ID</column>
     <column>PERIODE_ID</column>
     <column>TIERS_ID</column>
-    <column>RETOUR_COLL_ADMIN_ID</column>
-    <column>LIBRE</column>
     <row>
       <value>LR</value>
       <value>1</value>
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080101</value>
       <value>20080331</value>
       <null/>
@@ -8723,14 +8978,14 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
       <value>PAPIER</value>
       <value>TRIMESTRIEL</value>
       <null/>
       <null/>
       <value>8</value>
       <value>1678432</value>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>DI</value>
@@ -8738,16 +8993,18 @@
       <null/>
       <null/>
       <value><![CDATA[2006-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20050101</value>
       <value>20051231</value>
       <null/>
       <null/>
       <null/>
+      <value>0</value>
       <value>1</value>
       <value>5652</value>
+      <null/>
       <null/>
       <value>VAUDOIS_ORDINAIRE</value>
       <null/>
@@ -8756,8 +9013,6 @@
       <value>1</value>
       <value>5</value>
       <value>86006202</value>
-      <null/>
-      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -8765,16 +9020,18 @@
       <null/>
       <null/>
       <value><![CDATA[2007-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060101</value>
       <value>20061231</value>
       <null/>
       <null/>
       <null/>
+      <value>0</value>
       <value>1</value>
       <value>5652</value>
+      <null/>
       <null/>
       <value>VAUDOIS_ORDINAIRE</value>
       <null/>
@@ -8783,8 +9040,6 @@
       <value>1</value>
       <value>6</value>
       <value>86006202</value>
-      <null/>
-      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -8792,16 +9047,18 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070101</value>
       <value>20071231</value>
       <null/>
       <null/>
       <null/>
+      <value>0</value>
       <value>1</value>
       <value>5652</value>
+      <null/>
       <null/>
       <value>VAUDOIS_ORDINAIRE</value>
       <null/>
@@ -8810,8 +9067,6 @@
       <value>2</value>
       <value>7</value>
       <value>86006202</value>
-      <null/>
-      <value>0</value>
     </row>
     <row>
       <value>LR</value>
@@ -8819,11 +9074,13 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080401</value>
       <value>20080630</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8837,8 +9094,6 @@
       <null/>
       <value>8</value>
       <value>1678432</value>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>LR</value>
@@ -8846,11 +9101,13 @@
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080401</value>
       <value>20080630</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8864,8 +9121,6 @@
       <null/>
       <value>8</value>
       <value>1678439</value>
-      <null/>
-      <null/>
     </row>
   </table>
   <table name="TACHE">
@@ -9016,6 +9271,7 @@
     </row>
   </table>
   <table name="ETAT_DECLARATION">
+    <column>TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -9024,138 +9280,149 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>DATE_OBTENTION</column>
-    <column>TYPE</column>
+    <column>DATE_ENVOI_COURRIER</column>
     <column>DECLARATION_ID</column>
     <row>
+      <value>EMISE</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080320</value>
-      <value>EMISE</value>
+      <null/>
       <value>1</value>
     </row>
     <row>
+      <value>EMISE</value>
       <value>2</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060115</value>
-      <value>EMISE</value>
+      <null/>
       <value>2</value>
     </row>
     <row>
+      <value>RETOURNEE</value>
       <value>3</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060413</value>
-      <value>RETOURNEE</value>
+      <null/>
       <value>2</value>
     </row>
     <row>
+      <value>EMISE</value>
       <value>4</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070116</value>
-      <value>EMISE</value>
+      <null/>
       <value>3</value>
     </row>
     <row>
+      <value>SOMMEE</value>
       <value>5</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070915</value>
-      <value>SOMMEE</value>
+      <null/>
       <value>3</value>
     </row>
     <row>
+      <value>ECHUE</value>
       <value>6</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20071101</value>
-      <value>ECHUE</value>
+      <null/>
       <value>3</value>
     </row>
     <row>
+      <value>EMISE</value>
       <value>7</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20070115</value>
-      <value>EMISE</value>
+      <null/>
       <value>4</value>
     </row>
     <row>
+      <value>SOMMEE</value>
       <value>8</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080515</value>
-      <value>SOMMEE</value>
+      <null/>
       <value>1</value>
     </row>
     <row>
+      <value>EMISE</value>
       <value>9</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080620</value>
-      <value>EMISE</value>
+      <null/>
       <value>5</value>
     </row>
     <row>
+      <value>RETOURNEE</value>
       <value>10</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080525</value>
-      <value>RETOURNEE</value>
+      <null/>
       <value>1</value>
     </row>
     <row>
+      <value>EMISE</value>
       <value>18</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080320</value>
-      <value>EMISE</value>
+      <null/>
       <value>15</value>
     </row>
   </table>
@@ -9177,9 +9444,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <null/>
       <null/>
@@ -9191,9 +9458,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <null/>
       <null/>
@@ -9205,9 +9472,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <value>20060220</value>
       <value>20060220</value>
@@ -9219,9 +9486,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <null/>
       <null/>
@@ -9233,9 +9500,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <null/>
       <null/>
@@ -9247,9 +9514,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <value>20080412</value>
       <value>20080412</value>
@@ -9261,9 +9528,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <null/>
       <null/>
@@ -9275,9 +9542,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>0</value>
       <value>20080625</value>
       <value>20080625</value>
@@ -9316,10 +9583,10 @@
       <value>1</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:28.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2007-12-21 00:00:00.0]]></value>
-      <value>Testeur</value>
+      <value>tiers-basic</value>
       <null/>
       <value>TRAITE</value>
       <value>327706</value>
@@ -9334,10 +9601,10 @@
       <value>2</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
+      <value><![CDATA[2011-04-27 14:12:28.0]]></value>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <value>Testeur</value>
+      <value>tiers-basic</value>
       <null/>
       <value>TRAITE</value>
       <null/>
@@ -9360,6 +9627,7 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>USAGE_TYPE</column>
+    <column>AUTRE_TIERS_ID</column>
     <column>TYPE</column>
     <column>STYPE</column>
     <column>COMPLEMENT</column>
@@ -9375,19 +9643,19 @@
     <column>NUMERO_ORDRE_POSTE</column>
     <column>NUMERO_RUE</column>
     <column>TIERS_ID</column>
-    <column>AUTRE_TIERS_ID</column>
     <row>
       <value>AdresseSuisse</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20020212</value>
       <null/>
       <value>COURRIER</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -9403,7 +9671,6 @@
       <value>104</value>
       <value>83404</value>
       <value>12900001</value>
-      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9411,12 +9678,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <null/>
       <value>COURRIER</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -9432,7 +9700,6 @@
       <null/>
       <value>32296</value>
       <value>12600001</value>
-      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9440,12 +9707,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080415</value>
       <null/>
       <value>COURRIER</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -9461,7 +9729,6 @@
       <value>104</value>
       <value>35365</value>
       <value>12600002</value>
-      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9469,12 +9736,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <null/>
       <value>COURRIER</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -9490,7 +9758,6 @@
       <value>571</value>
       <null/>
       <value>12600003</value>
-      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9498,12 +9765,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20080129</value>
       <null/>
       <value>COURRIER</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -9519,7 +9787,6 @@
       <value>571</value>
       <null/>
       <value>12600004</value>
-      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9527,12 +9794,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060221</value>
       <null/>
       <value>COURRIER</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -9548,7 +9816,6 @@
       <value>104</value>
       <value>35365</value>
       <value>12600008</value>
-      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9556,12 +9823,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
+      <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <null/>
+      <value>tiers-basic</value>
       <value>20060701</value>
       <null/>
       <value>COURRIER</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -9577,7 +9845,6 @@
       <null/>
       <value>32296</value>
       <value>12600009</value>
-      <null/>
     </row>
   </table>
 </dataset>
