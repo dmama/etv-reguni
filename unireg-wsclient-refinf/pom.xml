@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-wsclient-refinf</artifactId>
 	<packaging>jar</packaging>
-	<version>3.1.2</version>
+	<version>3.1.3</version>
 
 	<name>Unireg - Client WS RefInf</name>
 	<description>Unireg - Client Java pour le web-service RefInf</description>
@@ -44,8 +44,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -109,11 +109,11 @@
 	
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2010</copyright.year>
+		<copyright.year>2011</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<spring.version>2.5.6</spring.version>
-		<cxf.version>2.2.8</cxf.version>
+		<spring.version>3.0.5.RELEASE</spring.version>
+		<cxf.version>2.3.3-fuse-01-09</cxf.version>
 		<log4j.version>1.2.14</log4j.version>
 		<junit.version>4.4</junit.version>
 	</properties>
