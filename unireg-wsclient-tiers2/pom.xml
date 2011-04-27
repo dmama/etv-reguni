@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-wsclient-tiers2</artifactId>
 	<packaging>jar</packaging>
-	<version>2.14.2</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService2.wsdl ! -->
+	<version>2.14.3</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService2.wsdl ! -->
 
 	<name>Unireg - Client WS Tiers v2</name>
 	<description>Unireg - Client Java pour le web-service Tiers v2 de Unireg</description>
@@ -109,11 +109,11 @@
 	
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2009</copyright.year>
+		<copyright.year>2011</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.0.5.RELEASE</spring.version>
-		<cxf.version>2.3.2</cxf.version>
+		<cxf.version>2.3.3-fuse-01-09</cxf.version>
 		<log4j.version>1.2.14</log4j.version>
 		<junit.version>4.4</junit.version>
 	</properties>
