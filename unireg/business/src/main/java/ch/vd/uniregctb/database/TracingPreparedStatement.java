@@ -115,6 +115,7 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 	}
 
 	public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
+		//noinspection deprecation
 		target.setUnicodeStream(parameterIndex, x, length);
 	}
 

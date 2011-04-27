@@ -22,7 +22,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
@@ -482,8 +481,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
                 criteria.setProjection(Projections.property("numero"));
                 DetachedCriteria subCriteria = DetachedCriteria.forClass(ForFiscal.class);
                 subCriteria.setProjection(Projections.id());
-                subCriteria.add(Expression.isNull("dateFin"));
-                subCriteria.add(Expression.eqProperty("tiers.numero", Criteria.ROOT_ALIAS + ".numero"));
+                subCriteria.add(Restrictions.isNull("dateFin"));
+                subCriteria.add(Restrictions.eqProperty("tiers.numero", Criteria.ROOT_ALIAS + ".numero"));
                 criteria.add(Subqueries.notExists(subCriteria));
                 return criteria.list();
             }
@@ -512,7 +511,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
                     return true;
                 Criteria criteria = s.createCriteria(getPersistentClass());
                 criteria.setProjection(Projections.rowCount());
-                criteria.add(Expression.eq("numero", id));
+                criteria.add(Restrictions.eq("numero", id));
                 Integer count = (Integer) criteria.uniqueResult();
                 return count > 0;
             }

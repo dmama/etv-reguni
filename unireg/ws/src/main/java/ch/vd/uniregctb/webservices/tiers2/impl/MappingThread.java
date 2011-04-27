@@ -48,6 +48,7 @@ public class MappingThread extends Thread {
 		this.callback = callback;
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@Override
 	public void run() {
 

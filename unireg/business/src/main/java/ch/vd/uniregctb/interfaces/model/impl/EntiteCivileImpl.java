@@ -53,11 +53,13 @@ public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 
 		@Override
 		public String getLieu() {
+			//noinspection deprecation
 			return target.getLieu();
 		}
 
 		@Override
 		public String getLocalite() {
+			//noinspection deprecation
 			return target.getLocalite();
 		}
 
@@ -73,6 +75,7 @@ public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 
 		@Override
 		public String getNpa() {
+			//noinspection deprecation
 			return target.getNpa();
 		}
 
@@ -108,6 +111,7 @@ public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 
 		@Override
 		public Integer getNumeroOfsRue() {
+			//noinspection deprecation
 			return target.getNumeroOfsRue();
 		}
 

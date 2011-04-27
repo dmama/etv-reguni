@@ -30,6 +30,7 @@ public class ManagedDataSet implements IDataSet {
 	}
 
 	public ITable[] getTables() throws DataSetException {
+		//noinspection deprecation
 		return target.getTables();
 	}
 

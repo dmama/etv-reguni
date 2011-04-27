@@ -36,6 +36,7 @@ public class AbstractMouvementManagerTest extends BusinessTest {
 	}
 
 	@Test
+	@SuppressWarnings({"unchecked"})
 	public void testDestructionMouvementsTropVieux() throws Exception {
 
 		final long noAchille = addNonHabitant("Achille", "Talon", RegDate.get(1956, 12, 4), Sexe.MASCULIN).getNumero();

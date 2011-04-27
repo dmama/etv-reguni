@@ -460,16 +460,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		try {
 			IDataSetProducer producer;
 			if (format == ProducerType.Xml) {
-				producer = new XmlProducer(new InputSource(src.toURL().toString()));
+				producer = new XmlProducer(new InputSource(src.toURI().toURL().toString()));
 			}
 			else if (format == ProducerType.Cvs) {
 				producer = new CsvProducer(src);
 			}
 			else if (format == ProducerType.Flat) {
-				producer = new FlatXmlProducer(new InputSource(src.toURL().toString()));
+				producer = new FlatXmlProducer(new InputSource(src.toURI().toURL().toString()));
 			}
 			else if (format == ProducerType.Dtd) {
-				producer = new FlatDtdProducer(new InputSource(src.toURL().toString()));
+				producer = new FlatDtdProducer(new InputSource(src.toURI().toURL().toString()));
 			}
 			else {
 				throw new IllegalArgumentException("Type must be either 'flat'(default), 'xml', 'csv' or 'dtd' but was: " + format);

@@ -5,9 +5,9 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import java.sql.SQLException;
@@ -31,7 +31,7 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				Criteria criteria = session.createCriteria(EvenementExterne.class);
 				criteria.setProjection(Projections.rowCount());
-				criteria.add(Expression.eq("businessId", businessId));
+				criteria.add(Restrictions.eq("businessId", businessId));
 				Integer count = (Integer) criteria.uniqueResult();
 				return count > 0;
 			}
@@ -50,7 +50,7 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 					criteria.addOrder(Order.desc("dateEvenement"));
 				}
 				if (etatEvenementExternes != null && etatEvenementExternes.length > 0) {
-					criteria.add(Expression.in("etat", etatEvenementExternes));
+					criteria.add(Restrictions.in("etat", etatEvenementExternes));
 				}
 				return criteria.list();
 			}

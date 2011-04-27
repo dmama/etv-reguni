@@ -8,8 +8,8 @@ import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
@@ -45,7 +45,7 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				Criteria criteria = session.createCriteria(getPersistentClass());
 				criteria.setProjection(Projections.rowCount());
-				criteria.add(Expression.eq("noContribuable", numeroCtb));
+				criteria.add(Restrictions.eq("noContribuable", numeroCtb));
 				Integer count = (Integer) criteria.uniqueResult();
 				return count.intValue() > 0;
 			}

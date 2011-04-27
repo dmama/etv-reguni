@@ -163,7 +163,7 @@ public abstract class BusinessItTestApplication {
 	 */
 	private void loadDataSet(final File file) throws Exception {
 
-		final String filepath = file.toURL().toString();
+		final String filepath = file.toURI().toURL().toString();
 		LOGGER.info("Loading database from file = " + filepath);
 
 		if (filepath.endsWith(".zip")) {
