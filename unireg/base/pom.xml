@@ -654,7 +654,7 @@
 		<unireg-ws.log4j.location>file:${ch.vd.appDir}/${unireg-ws.appname}/config/unireg-log4j.xml</unireg-ws.log4j.location>
 
 		<!-- Application settings -->
-		<copyright.year>2010</copyright.year>
+		<copyright.year>2011</copyright.year>
 		<dao.framework>hibernate</dao.framework>
 		<web.framework>spring</web.framework>
 		<amp.genericCore>true</amp.genericCore>
@@ -669,7 +669,7 @@
 		<shared-base.version>4.0-SNAPSHOT</shared-base.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<spring-modules.version>0.9</spring-modules.version>
-		<cxf.version>2.3.2</cxf.version>
+		<cxf.version>2.3.3-fuse-01-09</cxf.version>
 		<lucene.version>3.0.1</lucene.version>
 		<activemq.version>5.4.2-fuse-02-00</activemq.version>
 		<jencks.version>2.2</jencks.version>

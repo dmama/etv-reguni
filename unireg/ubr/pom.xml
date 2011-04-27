@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-batch</artifactId>
-			<version>1.2</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
