@@ -72,12 +72,12 @@ public interface FidorClient {
 	List<CommuneFiscale> getToutesLesCommunes() throws FidorBusinessException_Exception;
 
 	/**
-	 * @param ofsCommune le numéro Ofs de la commune d'annonce qui a associé la bâtiment avec une adresse.
+	 *
 	 * @param egid       le numéro de bâtiment
 	 * @param date       une date de référence
 	 * @return la commune sur laquelle est sis le bâtiment identifié par son numéro Ofs.
 	 */
-	CommuneFiscale getCommuneParBatiment(int ofsCommune, int egid, FidorDate date);
+	CommuneFiscale getCommuneParBatiment(int egid, FidorDate date);
 
 	/**
 	 * @param ofsId identifiant d'un pays

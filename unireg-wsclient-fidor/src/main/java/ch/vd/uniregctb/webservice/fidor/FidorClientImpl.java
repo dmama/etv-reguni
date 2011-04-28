@@ -88,9 +88,9 @@ public class FidorClientImpl implements FidorClient {
 		return service.getToutesLesCommunes();
 	}
 
-	public CommuneFiscale getCommuneParBatiment(int ofsCommune, int egid, FidorDate date) {
+	public CommuneFiscale getCommuneParBatiment(int egid, FidorDate date) {
 		init();
-		return service.getCommuneParBatiment(ofsCommune, egid, date);
+		return service.getCommuneParBatiment(egid, date);
 	}
 
 	public Pays getPaysDetail(long ofsId) {
