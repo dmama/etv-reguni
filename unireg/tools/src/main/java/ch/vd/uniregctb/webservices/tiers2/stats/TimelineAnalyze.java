@@ -15,12 +15,20 @@ class TimelineAnalyze extends Analyze {
 
 	private final Map<String, List<TimelineData>> results = new HashMap<String, List<TimelineData>>();
 
+	private boolean excludeCache;
 	private int lastPeriodeIndex = 0;
+
+	/**
+	 * @param excludeCache <b>vrai</b> si les appels qui tombent dans le cache (temps de réponse = 0 ms) doivent être ignorés; <b>faux</b> s'il faut prendre en compte tous les appels.
+	 */
+	TimelineAnalyze(boolean excludeCache) {
+		this.excludeCache = excludeCache;
+	}
 
 	public void addCall(Call call) {
 
 		final long milliseconds = call.getMilliseconds() / call.getTiersCount();
-		if (milliseconds == 0) {
+		if (excludeCache && milliseconds == 0) {
 			// on ignore les appels qui prennent 0 millisecondes : il s'agit de valeurs non-représentatives retournées pas le cache.
 			return;
 		}
@@ -94,7 +102,7 @@ class TimelineAnalyze extends Analyze {
 		long count = 0;
 		for (int i = 0, timeSize = data.size(); i < timeSize; i++) {
 			final TimelineData range = data.get(i);
-			minValues.append(range.getMin());
+			minValues.append(range.getMin() == Long.MAX_VALUE ? 0 : range.getMin());
 			if (i < timeSize - 1) {
 				minValues.append(',');
 			}
@@ -107,9 +115,7 @@ class TimelineAnalyze extends Analyze {
 				avgValues.append(',');
 			}
 			max = Math.max(max, range.getMax());
-			if (range.getMin() > 0) {
-				min = Math.min(min, range.getMin());
-			}
+			min = Math.min(min, range.getMin());
 			total += range.getTotal();
 			count += range.getCount();
 		}
@@ -117,13 +123,14 @@ class TimelineAnalyze extends Analyze {
 		final String valuesRange = "0," + max;
 
 		final String averageLabel = "average%20(" + (total / count) + "%20ms)";
-		final String minLabel = "min%20(" + min + "%20ms)";
+		final String minLabel = "min%20(" + (min == Long.MAX_VALUE ? 0 : min) + "%20ms)";
 		final String maxLabel = "max%20(" + max + "%20ms)";
+		final String title = "%20-%20Response%20Time%20Line%20" + (excludeCache ? "(Uncached)%20" : "(Cached)%20") + "(min/max/avg%20ms/quarter%20hour)";
 		final String url =
 				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x&chxtc=1,4")
 						.append("&chs=1000x200").append("&cht=lc").append("&chco=000000,008000,AA0033").append("&chds=").append(valuesRange).append("&chd=t:").append(avgValues).append("|")
 						.append(minValues).append("|").append(maxValues).append("&chdl=").append(averageLabel).append("|").append(minLabel).append("|").append(maxLabel).append("&chg=-1.3,-1,1,1")
-						.append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method).append("%20-%20Response%20Time%20Line%20(min/max/avg%20ms/quarter%20hour)").toString();
+						.append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method).append(title).toString();
 		return new Chart(url, 1000, 200);
 	}
 
@@ -151,6 +158,6 @@ class TimelineAnalyze extends Analyze {
 
 	@Override
 	String name() {
-		return "timeline";
+		return  excludeCache ? "timeline_uncached" : "timeline";
 	}
 }

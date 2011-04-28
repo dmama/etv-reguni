@@ -47,7 +47,8 @@ public class WsAccessAnalyzer {
 			analyzer.registerAnalyze(new LoadAnalyze());
 		}
 		if (timeline) {
-			analyzer.registerAnalyze(new TimelineAnalyze());
+			analyzer.registerAnalyze(new TimelineAnalyze(true));
+			analyzer.registerAnalyze(new TimelineAnalyze(false));
 		}
 		if (distribution) {
 			analyzer.registerAnalyze(new DistributionAnalyze());

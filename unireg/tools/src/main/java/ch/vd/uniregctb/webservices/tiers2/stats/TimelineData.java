@@ -26,12 +26,7 @@ class TimelineData implements Comparable<TimelineData> {
 	}
 
 	public long getMin() {
-		if (min == Long.MAX_VALUE) {
-			return 0;
-		}
-		else {
-			return min;
-		}
+		return min;
 	}
 
 	public long getMax() {
