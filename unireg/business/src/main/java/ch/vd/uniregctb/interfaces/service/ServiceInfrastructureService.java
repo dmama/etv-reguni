@@ -191,12 +191,10 @@ public interface ServiceInfrastructureService extends ServiceInfrastructureRaw {
 	 *
 	 * @param egid             un numéro de bâtiment
 	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
-	 * @param hintNoOfsCommune le numéro Ofs de la commune d'annonce qui sera utilisé comme indice pour accélérer la recherche (par commune d'annonce, il faut entendre la commune associée à l'adresse
-	 *                         telle que retournée par le service civil. La signification métier de cette commune est encore sujette à interprétations)
 	 * @return une commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException;
+	Commune getCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * Résoud la commune faîtière d'une fraction de commune (renvoie la commune elle-même si ce n'est pas une fraction)

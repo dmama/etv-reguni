@@ -212,10 +212,10 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
 
 		try {
-			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(hintNoOfsCommune, egid, reg2fidor(date));
+			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(egid, reg2fidor(date));
 			if (commune == null) {
 				return null;
 			}

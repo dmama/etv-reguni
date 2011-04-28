@@ -214,7 +214,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 		// avant fusion civile/fiscale
 		{
-			final Commune commune = service.getCommuneByEgid(immeuble, date(2011, 4, 1), MockCommune.Riex.getNoOFSEtendu());
+			final Commune commune = service.getCommuneByEgid(immeuble, date(2011, 4, 1));
 			assertNotNull(commune);
 			assertEquals(MockCommune.Riex.getNoOFSEtendu(), commune.getNoOFSEtendu());
 			assertEquals("Riex", commune.getNomMinuscule());
@@ -222,7 +222,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 		// après fusion civile MAIS avant fusion fiscale
 		{
-			final Commune commune = service.getCommuneByEgid(immeuble, date(2011, 10, 1), MockCommune.Riex.getNoOFSEtendu());
+			final Commune commune = service.getCommuneByEgid(immeuble, date(2011, 10, 1));
 			assertNotNull(commune);
 			assertEquals(MockCommune.Riex.getNoOFSEtendu(), commune.getNoOFSEtendu());
 			assertEquals("Riex", commune.getNomMinuscule());
@@ -230,7 +230,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 		// après fusion civile ET après fusion fiscale
 		{
-			final Commune commune = service.getCommuneByEgid(immeuble, date(2012, 1, 1), MockCommune.Riex.getNoOFSEtendu());
+			final Commune commune = service.getCommuneByEgid(immeuble, date(2012, 1, 1));
 			assertNotNull(commune);
 			assertEquals(MockCommune.BourgEnLavaux.getNoOFSEtendu(), commune.getNoOFSEtendu());
 			// FIXME (msi) en attente de la résolution de SIFISC-628 : assertEquals("Bourg-en-Lavaux", commune.getNomMinuscule());

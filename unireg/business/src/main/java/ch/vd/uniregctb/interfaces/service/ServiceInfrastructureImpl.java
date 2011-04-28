@@ -15,7 +15,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
@@ -349,12 +348,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		// 1er choix : l'egid
 		final Integer egid = adresse.getEgid();
 		if (egid != null) {
-			final Commune communeAnnonce = adresse.getCommuneAdresse();
-			if (communeAnnonce == null) { // (msi, 18.03.2011) selon Thierry Declerq et Andréa Osmani, chaque adresse qui possède un egid doit aussi posséder une commune d'annonce.
-				throw new ServiceInfrastructureException(
-						"Commune d'annonce inexistante sur l'adresse [" + ReflexionUtils.toString(adresse, false) + "] qui contient pourtant le numéro de bâtiment [" + egid + "]");
-			}
-			commune = getCommuneByEgid(egid, date, communeAnnonce.getNoOFSEtendu());
+			commune = getCommuneByEgid(egid, date);
 		}
 
 		// 2ème choix : la commune attachée à l'adresse
@@ -400,15 +394,15 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
-		return rawService.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+		return rawService.getNoOfsCommuneByEgid(egid, date);
 	}
 
 	@Override
-	public final Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
+	public final Commune getCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
 
-		// un premier appel où le cache a peu de chance d'être chaud
-		final Integer noOfs = getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
+		// un premier appel pour récupérer le numéro Ofs de la commune
+		final Integer noOfs = getNoOfsCommuneByEgid(egid, date);
 		if (noOfs == null) {
 			return null;
 		}

@@ -106,17 +106,17 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(final int egid, final RegDate date, final int hintNoOfsCommune) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(final int egid, final RegDate date) throws ServiceInfrastructureException {
 		Integer result;
 		long time = tracing.start();
 		try {
-			result = target.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
+			result = target.getNoOfsCommuneByEgid(egid, date);
 		}
 		finally {
 			tracing.end(time, "getNoOfsCommuneByEgid", new Object() {
 				@Override
 				public String toString() {
-					return String.format("egid=%d, date=%s, hintNoOfsCommune=%d", egid, ServiceTracing.toString(date), hintNoOfsCommune);
+					return String.format("egid=%d, date=%s", egid, ServiceTracing.toString(date));
 				}
 			});
 		}

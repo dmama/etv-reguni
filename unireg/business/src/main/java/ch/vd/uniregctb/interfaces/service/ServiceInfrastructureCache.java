@@ -352,12 +352,10 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	private static class KeyGetCommunesByEgid {
 		final int egid;
 		final RegDate date;
-		final int hintNoOfsCommune;
 
-		private KeyGetCommunesByEgid(int egid, RegDate date, int hintNoOfsCommune) {
+		private KeyGetCommunesByEgid(int egid, RegDate date) {
 			this.egid = egid;
 			this.date = date;
-			this.hintNoOfsCommune = hintNoOfsCommune;
 		}
 
 		@Override
@@ -367,26 +365,26 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 			final KeyGetCommunesByEgid that = (KeyGetCommunesByEgid) o;
 
-			return egid == that.egid && hintNoOfsCommune == that.hintNoOfsCommune && !(date != null ? !date.equals(that.date) : that.date != null);
+			if (egid != that.egid) return false;
+			return !(date != null ? !date.equals(that.date) : that.date != null);
 		}
 
 		@Override
 		public int hashCode() {
 			int result = egid;
 			result = 31 * result + (date != null ? date.hashCode() : 0);
-			result = 31 * result + hintNoOfsCommune;
 			return result;
 		}
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
 		final Integer resultat;
 
-		final KeyGetCommunesByEgid key = new KeyGetCommunesByEgid(egid, date, hintNoOfsCommune);
+		final KeyGetCommunesByEgid key = new KeyGetCommunesByEgid(egid, date);
 		final Element element = cache.get(key);
 		if (element == null) {
-			resultat = target.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
+			resultat = target.getNoOfsCommuneByEgid(egid, date);
 			cache.put(new Element(key, resultat));
 		}
 		else {

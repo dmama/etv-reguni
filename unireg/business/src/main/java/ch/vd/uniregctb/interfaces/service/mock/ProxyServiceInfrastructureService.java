@@ -182,13 +182,13 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
-		return target.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+		return target.getNoOfsCommuneByEgid(egid, date);
 	}
 
 	@Override
-	public Commune getCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
-		return target.getCommuneByEgid(egid, date, hintNoOfsCommune);
+	public Commune getCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+		return target.getCommuneByEgid(egid, date);
 	}
 
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
