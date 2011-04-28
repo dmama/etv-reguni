@@ -666,7 +666,7 @@
 		<jstl.version>1.1.2</jstl.version>
 
 		<!-- Framework dependency versions -->
-		<shared-base.version>4.0-SNAPSHOT</shared-base.version>
+		<shared-base.version>4.0.0</shared-base.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<spring-modules.version>0.9</spring-modules.version>
 		<cxf.version>2.3.3-fuse-01-09</cxf.version>
