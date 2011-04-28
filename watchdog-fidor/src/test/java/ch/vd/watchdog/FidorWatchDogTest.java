@@ -40,7 +40,7 @@ public abstract class FidorWatchDogTest {
 	public void testGetLogiciel() {
 		final Logiciel logiciel = fidorClient.getLogicielDetail(11);
 		assertNotNull(logiciel);
-		assertEquals("Interiware", logiciel.getFournisseur());
+		assertEquals("Geste Informatique", logiciel.getFournisseur());
 	}
 
 	@Test
