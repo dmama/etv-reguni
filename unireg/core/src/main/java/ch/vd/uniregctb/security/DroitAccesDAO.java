@@ -28,6 +28,13 @@ public interface DroitAccesDAO extends GenericDAO<DroitAcces, Long> {
 	 */
 	List<DroitAcces> getDroitsAcces(long noIndividuOperateur);
 
+		/**
+	 * Renvoie la liste des ids des  droits d'acces d'un utilisateur
+	 * @param noIndividuOperateur
+	 * @return  la liste des ids des droits d'accès
+	 */
+	List<Long> getIdsDroitsAcces(long noIndividuOperateur);
+
 	/**
 	 * @return la liste de tous les droits d'accès existant sur le tiers spécifié.
 	 */

@@ -48,6 +48,14 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 		return list;
 	}
 
+	@Override
+	public List<Long> getIdsDroitsAcces(long noIndividuOperateur) {
+		Object[] criteria = {noIndividuOperateur};
+		String query = " select da.id from DroitAcces da where da.noIndividuOperateur = ? ";
+		List<Long> list = getHibernateTemplate().find(query, criteria);
+		return list;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

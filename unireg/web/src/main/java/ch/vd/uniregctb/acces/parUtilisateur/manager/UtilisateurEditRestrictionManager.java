@@ -6,6 +6,7 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.security.DroitAccesException;
 
@@ -49,5 +50,14 @@ public interface UtilisateurEditRestrictionManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(RecapPersonneUtilisateurView recapPersonneUtilisateurView) throws DroitAccesException ;
+
+	/**
+	 * Demande l'export des droits d'accès d'un utilisateur
+	 *
+	 * @param operateurId l'id de l'operateur pour lequel on veux exporter les droits
+	 * @return la demande d'extraction
+	 */
+	@Transactional(readOnly = true)
+	public ExtractionJob exportListeDroitsAcces( Long operateurId);
 
 }

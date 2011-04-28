@@ -14,6 +14,7 @@ import ch.vd.uniregctb.acces.parUtilisateur.manager.UtilisateurEditRestrictionMa
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
@@ -26,6 +27,9 @@ public class UtilisateurEditRestrictionController extends AbstractSimpleFormCont
 	private final String NUMERO_PARAMETER_NAME = "noIndividuOperateur";
 
 	public final static String TARGET_ANNULER_RESTRICTION = "annulerRestriction";
+
+	private final String EXPORTER = "exporter";
+
 
 	private UtilisateurEditRestrictionManager utilisateurEditRestrictionManager;
 
@@ -98,7 +102,13 @@ public class UtilisateurEditRestrictionController extends AbstractSimpleFormCont
 				}
 			}
 		}
-		return new ModelAndView( new RedirectView("/acces/restrictions-utilisateur.do?noIndividuOperateur=" + utilisateurEditRestrictionView.getUtilisateur().getNumeroIndividu(), true));
+		if (request.getParameter(EXPORTER) != null) {
+			String numeroParam = request.getParameter(NUMERO_PARAMETER_NAME);
+			final Long numero = Long.parseLong(numeroParam);
+			final ExtractionJob job = utilisateurEditRestrictionManager.exportListeDroitsAcces(numero);
+			flash(String.format("Demande d'export enregistrée (%s)", job.getDescription()));
+		}
+		return new ModelAndView(new RedirectView("/acces/restrictions-utilisateur.do?noIndividuOperateur=" + utilisateurEditRestrictionView.getUtilisateur().getNumeroIndividu(), true));
 
 	}
 }

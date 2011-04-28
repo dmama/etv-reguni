@@ -65,6 +65,7 @@
 		<property name="droitAccesService" ref="droitAccesService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService"  ref="tiersService" />
+		<property name="extractionService"  ref="extractionService" />
 	</bean>
 
 	<bean id="selectUtilisateurValidator" class="ch.vd.uniregctb.acces.parUtilisateur.validator.SelectUtilisateurValidator" >

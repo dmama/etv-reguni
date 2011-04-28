@@ -80,6 +80,9 @@
 		<!-- Fin Liste des restrictions -->
 		<!-- Debut Bouton -->
 		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='select-utilisateur.do';" />
+		<c:if test="${not empty command.restrictions}">
+			<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>
+		</c:if>
 		<!-- Fin Bouton -->
 		&nbsp;
 	</form:form>
