@@ -29,7 +29,6 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.EntityKey;
 import org.hibernate.impl.SessionImpl;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -41,10 +40,6 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
 
-/**
- *
- *
- */
 public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDAO {
 
     private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
@@ -56,6 +51,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         super(Tiers.class);
     }
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDialect(Dialect dialect) {
 		this.dialect = dialect;
 	}
@@ -140,7 +136,6 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional(readOnly = true)
     public List<Tiers> getBatch(final Collection<Long> ids, final Set<Parts> parts) {
 
         return (List<Tiers>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
@@ -804,15 +799,16 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return menages;
     }
 
+	@SuppressWarnings({"unchecked"})
 	public Contribuable getContribuable(final DebiteurPrestationImposable debiteur) {
 		return (Contribuable) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-		    public Object doInHibernate(Session session) throws HibernateException {
+		    public Contribuable doInHibernate(Session session) throws HibernateException {
 		        Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
 		        query.setParameter("dpiId", debiteur.getId());
 			    final FlushMode mode = session.getFlushMode();
 			    try {
 			        session.setFlushMode(FlushMode.MANUAL);
-				    return query.uniqueResult();
+				    return (Contribuable) query.uniqueResult();
 			    }
 			    finally {
 			        session.setFlushMode(mode);
@@ -821,10 +817,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		});
 	}
 
+	@SuppressWarnings({"unchecked"})
 	public List<Long> getListeDebiteursSansPeriodicites() {
 		return (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Query q = session.createQuery("select d.numero from DebiteurPrestationImposable d where size(d.periodicites) = 0");
+				final Query q = session.createQuery("select d.numero from DebiteurPrestationImposable d where size(d.periodicites) = 0");
 				return q.list();
 			}
 		});
@@ -877,40 +874,35 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return forFiscal;
 	}
 
-	@Transactional(readOnly = true)
+	@SuppressWarnings({"unchecked"})
 	public List<Long> getListeCtbModifies(final Date dateDebutRech, final Date dateFinRech) {
-				final String RequeteContribuablesModifies = //----------------------------------------------------
-				"SELECT T.NUMERO AS CTB_ID                                                " +
-						"FROM TIERS T                                                             " +
-						"JOIN FOR_FISCAL FF ON FF.TIERS_ID=T.NUMERO                               " +
-						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
-						"AND T.LOG_MDATE >= :debut                                                " +
-						"AND T.LOG_MDATE <= :fin                                                  " +
-						"                                                                         " +
-						"UNION                                                                    " +
-						"                                                                         " +
-						"SELECT FF.TIERS_ID  AS CTB_ID                                            " +
-						"FROM FOR_FISCAL FF                                                       " +
-						"WHERE FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
-						"AND FF.LOG_MDATE >= :debut                                               " +
-						"AND FF.LOG_MDATE <= :fin                                                 " +
-						"                                                                         " +
-						"UNION                                                                    " +
-						"                                                                         " +
-						"SELECT DI.TIERS_ID AS CTB_ID                                             " +
-						"FROM DECLARATION DI                                                      " +
-						"JOIN ETAT_DECLARATION ED ON ED.DECLARATION_ID = DI.ID                    " +
-						"JOIN FOR_FISCAL FF ON FF.TIERS_ID=DI.TIERS_ID                            " +
-						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
-						"AND ED.LOG_MDATE >= :debut                                               " +
-						"AND ED.LOG_MDATE <= :fin                                                 " +
-						"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
-						"ORDER BY CTB_ID                                                          ";
-
-
-		final Date dateDebut = dateDebutRech;
-		final Date dateFin = dateFinRech;
-
+		final String RequeteContribuablesModifies = //----------------------------------------------------
+		"SELECT T.NUMERO AS CTB_ID                                                " +
+				"FROM TIERS T                                                             " +
+				"JOIN FOR_FISCAL FF ON FF.TIERS_ID=T.NUMERO                               " +
+				"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
+				"AND T.LOG_MDATE >= :debut                                                " +
+				"AND T.LOG_MDATE <= :fin                                                  " +
+				"                                                                         " +
+				"UNION                                                                    " +
+				"                                                                         " +
+				"SELECT FF.TIERS_ID AS CTB_ID                                             " +
+				"FROM FOR_FISCAL FF                                                       " +
+				"WHERE FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                    " +
+				"AND FF.LOG_MDATE >= :debut                                               " +
+				"AND FF.LOG_MDATE <= :fin                                                 " +
+				"                                                                         " +
+				"UNION                                                                    " +
+				"                                                                         " +
+				"SELECT DI.TIERS_ID AS CTB_ID                                             " +
+				"FROM DECLARATION DI                                                      " +
+				"JOIN ETAT_DECLARATION ED ON ED.DECLARATION_ID = DI.ID                    " +
+				"JOIN FOR_FISCAL FF ON FF.TIERS_ID=DI.TIERS_ID                            " +
+				"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
+				"AND ED.LOG_MDATE >= :debut                                               " +
+				"AND ED.LOG_MDATE <= :fin                                                 " +
+				"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
+				"ORDER BY CTB_ID                                                          ";
 
 		final List<Long> listeCtbModifies = (List<Long>) getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
@@ -920,18 +912,18 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				queryObject.setTimestamp("fin", dateFinRech);
 
 				final List<Object> listeResultat = queryObject.list();
-				final List<Long> resultat = new ArrayList<Long>();
+				final List<Long> resultat = new ArrayList<Long>(listeResultat.size());
 				for (Object o : listeResultat) {
 					resultat.add(((Number) o).longValue());
 				}
 
-
 				return resultat;
-
 			}
 		});
-		LOGGER.info("Date de debut: "+dateDebutRech.toString()+" Date de fin: "
-				+dateFinRech.toString()+" Nombre de ctb modifiés: " + listeCtbModifies.size());
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info(String.format("Date de debut: %s ; Date de fin: %s ; Nombre de ctb modifiés: %d", dateDebutRech, dateFinRech, listeCtbModifies.size()));
+		}
 
 		return listeCtbModifies;
 	}

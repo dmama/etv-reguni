@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
 
@@ -61,7 +59,6 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 *            les collections associées aux tiers à précharger.
 	 * @return une liste de tiers
 	 */
-	@Transactional(readOnly = true)
 	List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts);
 
 	/**
@@ -223,6 +220,5 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param dateFinRech Date de fin de la recherche
 	 * @return la liste des ids des contribuables modifiés
 	 */
-	 @Transactional(readOnly = true)
 	 public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech);
 }

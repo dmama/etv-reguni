@@ -355,7 +355,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				nonHab.setNom("Bla");
 				nonHab.setPrenom("Bli");
 
-				nonHab = (PersonnePhysique) dao.save(nonHab);
+				dao.save(nonHab);
 				return null;
 			}
 		});
@@ -1236,7 +1236,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void testGetBatchMaximumDepasse() throws Exception {
 		final List<Long> ids = new ArrayList<Long>(600);
 		for (int i = 0; i < 600; ++i) {
-			ids.add(Long.valueOf(i));
+			ids.add((long) i);
 		}
 		try {
 			dao.getBatch(ids, null);
@@ -1279,7 +1279,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					paul.addForFiscal(f);
 				}
-				paul = (PersonnePhysique) hibernateTemplate.merge(paul);
+				paul = hibernateTemplate.merge(paul);
 
 				PersonnePhysique janine = new PersonnePhysique(false);
 				janine.setNom("Janine");
@@ -1296,15 +1296,15 @@ public class TiersDAOTest extends CoreDAOTest {
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					janine.addForFiscal(f);
 				}
-				janine = (PersonnePhysique) hibernateTemplate.merge(janine);
+				janine = hibernateTemplate.merge(janine);
 
-				MenageCommun menage = (MenageCommun) hibernateTemplate.merge(new MenageCommun());
+				MenageCommun menage = hibernateTemplate.merge(new MenageCommun());
 				{
 					RapportEntreTiers rapport = new AppartenanceMenage();
 					rapport.setDateDebut(dateMariage);
 					rapport.setObjet(menage);
 					rapport.setSujet(paul);
-					rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
+					rapport = hibernateTemplate.merge(rapport);
 
 					menage.addRapportObjet(rapport);
 					paul.addRapportSujet(rapport);
@@ -1313,7 +1313,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					rapport.setDateDebut(dateMariage);
 					rapport.setObjet(menage);
 					rapport.setSujet(janine);
-					rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
+					rapport = hibernateTemplate.merge(rapport);
 
 					menage.addRapportObjet(rapport);
 					janine.addRapportSujet(rapport);
@@ -1382,7 +1382,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					pp = (PersonnePhysique) dao.save(pp);
 
 					RapportPrestationImposable r = new RapportPrestationImposable(RegDate.get(2000, 1, 1), null, pp, dpi);
-					r = (RapportPrestationImposable) dao.save(r);
+					dao.save(r);
 				}
 
 				return dpi.getNumero();
@@ -1475,32 +1475,32 @@ public class TiersDAOTest extends CoreDAOTest {
 		loadDatabase("tiersCtbModifies.xml");
 		final Date debut = DateHelper.getDate(2010, 12, 21);
 
-		Calendar cal = DateHelper.getCalendar(2010,12,21);
+		final Calendar cal = DateHelper.getCalendar(2010, 12, 21);
 		cal.add(Calendar.SECOND,6);
 		final Date fin1 = cal.getTime();
 
-		List<Long> listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin1);
+		List<Long> listId = tiersDAO.getListeCtbModifies(debut,fin1);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(1, listId.size());
 
 		cal.add(Calendar.MINUTE, 35);
 		final Date fin2 = cal.getTime();
 
-		listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin2);
+		listId = tiersDAO.getListeCtbModifies(debut,fin2);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(2, listId.size());
 
 		cal.add(Calendar.HOUR_OF_DAY, 16);
 		final Date fin3 = cal.getTime();
 
-		listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin3);
+		listId = tiersDAO.getListeCtbModifies(debut,fin3);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(3, listId.size());
 
 		cal.add(Calendar.DAY_OF_WEEK, 1);
 		final Date fin4 = cal.getTime();
 
-		listId = (List<Long>) tiersDAO.getListeCtbModifies(debut,fin4);
+		listId = tiersDAO.getListeCtbModifies(debut,fin4);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(4, listId.size());
 	}
@@ -1530,7 +1530,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp0.setForsFiscaux(new HashSet());
 				pp0.setRapportsObjet(new HashSet());
 				pp0.setRapportsSujet(new HashSet());
-				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+				pp0 = hibernateTemplate.merge(pp0);
 
 				DebiteurPrestationImposable dpi0 = new DebiteurPrestationImposable();
 				dpi0.setNumero(1001234L);
@@ -1545,7 +1545,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				dpi0.setForsFiscaux(new HashSet());
 				dpi0.setRapportsObjet(new HashSet());
 				dpi0.setRapportsSujet(new HashSet());
-				dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+				dpi0 = hibernateTemplate.merge(dpi0);
 
 				Entreprise e0 = new Entreprise();
 				e0.setNumero(9876L);
@@ -1558,7 +1558,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				e0.setForsFiscaux(new HashSet());
 				e0.setRapportsObjet(new HashSet());
 				e0.setRapportsSujet(new HashSet());
-				e0 = (Entreprise) hibernateTemplate.merge(e0);
+				e0 = hibernateTemplate.merge(e0);
 
 				PersonnePhysique pp1 = new PersonnePhysique();
 				pp1.setNumero(10007890L);
@@ -1575,7 +1575,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp1.setForsFiscaux(new HashSet());
 				pp1.setRapportsObjet(new HashSet());
 				pp1.setRapportsSujet(new HashSet());
-				pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+				pp1 = hibernateTemplate.merge(pp1);
 
 				MenageCommun mc0 = new MenageCommun();
 				mc0.setNumero(10008901L);
@@ -1588,7 +1588,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				mc0.setForsFiscaux(new HashSet());
 				mc0.setRapportsObjet(new HashSet());
 				mc0.setRapportsSujet(new HashSet());
-				mc0 = (MenageCommun) hibernateTemplate.merge(mc0);
+				mc0 = hibernateTemplate.merge(mc0);
 
 				PersonnePhysique pp2 = new PersonnePhysique();
 				pp2.setNumero(10001111L);
@@ -1611,7 +1611,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp2.setForsFiscaux(new HashSet());
 				pp2.setRapportsObjet(new HashSet());
 				pp2.setRapportsSujet(new HashSet());
-				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+				pp2 = hibernateTemplate.merge(pp2);
 
 				AutreCommunaute ac0 = new AutreCommunaute();
 				ac0.setNumero(2002222L);
@@ -1626,7 +1626,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				ac0.setForsFiscaux(new HashSet());
 				ac0.setRapportsObjet(new HashSet());
 				ac0.setRapportsSujet(new HashSet());
-				ac0 = (AutreCommunaute) hibernateTemplate.merge(ac0);
+				ac0 = hibernateTemplate.merge(ac0);
 
 				PersonnePhysique pp3 = new PersonnePhysique();
 				pp3.setNumero(10000010L);
@@ -1643,7 +1643,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp3.setForsFiscaux(new HashSet());
 				pp3.setRapportsObjet(new HashSet());
 				pp3.setRapportsSujet(new HashSet());
-				pp3 = (PersonnePhysique) hibernateTemplate.merge(pp3);
+				pp3 = hibernateTemplate.merge(pp3);
 
 				PersonnePhysique pp4 = new PersonnePhysique();
 				pp4.setNumero(10000001L);
@@ -1660,7 +1660,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp4.setForsFiscaux(new HashSet());
 				pp4.setRapportsObjet(new HashSet());
 				pp4.setRapportsSujet(new HashSet());
-				pp4 = (PersonnePhysique) hibernateTemplate.merge(pp4);
+				pp4 = hibernateTemplate.merge(pp4);
 
 				PersonnePhysique pp5 = new PersonnePhysique();
 				pp5.setNumero(10000002L);
@@ -1677,7 +1677,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp5.setForsFiscaux(new HashSet());
 				pp5.setRapportsObjet(new HashSet());
 				pp5.setRapportsSujet(new HashSet());
-				pp5 = (PersonnePhysique) hibernateTemplate.merge(pp5);
+				pp5 = hibernateTemplate.merge(pp5);
 
 				PersonnePhysique pp6 = new PersonnePhysique();
 				pp6.setNumero(10000004L);
@@ -1694,7 +1694,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp6.setForsFiscaux(new HashSet());
 				pp6.setRapportsObjet(new HashSet());
 				pp6.setRapportsSujet(new HashSet());
-				pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+				pp6 = hibernateTemplate.merge(pp6);
 
 				PersonnePhysique pp7 = new PersonnePhysique();
 				pp7.setNumero(10000005L);
@@ -1711,7 +1711,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp7.setForsFiscaux(new HashSet());
 				pp7.setRapportsObjet(new HashSet());
 				pp7.setRapportsSujet(new HashSet());
-				pp7 = (PersonnePhysique) hibernateTemplate.merge(pp7);
+				pp7 = hibernateTemplate.merge(pp7);
 
 				PersonnePhysique pp8 = new PersonnePhysique();
 				pp8.setNumero(10000005L);
@@ -1729,7 +1729,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp8.setRapportsObjet(new HashSet());
 				pp8.setRapportsSujet(new HashSet());
 				pp8.setLogCreationDate(DateHelper.getDate(2010,11,20));
-				pp8 = (PersonnePhysique) hibernateTemplate.merge(pp8);
+				pp8 = hibernateTemplate.merge(pp8);
 
 				AdresseSuisse as0 = new AdresseSuisse();
 				as0.setDateDebut(RegDate.get(2006, 2, 23));
@@ -1739,7 +1739,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				as0.setPermanente(false);
 				as0.setUsage(TypeAdresseTiers.COURRIER);
 				pp0.addAdresseTiers(as0);
-				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+				pp0 = hibernateTemplate.merge(pp0);
 
 				AdresseSuisse as1 = new AdresseSuisse();
 				as1.setDateDebut(RegDate.get(2005, 2, 23));
@@ -1750,7 +1750,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				as1.setPermanente(false);
 				as1.setUsage(TypeAdresseTiers.COURRIER);
 				pp0.addAdresseTiers(as1);
-				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+				pp0 = hibernateTemplate.merge(pp0);
 
 				AdresseSuisse as2 = new AdresseSuisse();
 				as2.setDateDebut(RegDate.get(2006, 2, 23));
@@ -1760,7 +1760,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				as2.setPermanente(false);
 				as2.setUsage(TypeAdresseTiers.COURRIER);
 				pp2.addAdresseTiers(as2);
-				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+				pp2 = hibernateTemplate.merge(pp2);
 
 				AdresseSuisse as3 = new AdresseSuisse();
 				as3.setDateDebut(RegDate.get(2006, 2, 23));
@@ -1770,7 +1770,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				as3.setPermanente(false);
 				as3.setUsage(TypeAdresseTiers.COURRIER);
 				dpi0.addAdresseTiers(as3);
-				dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+				dpi0 = hibernateTemplate.merge(dpi0);
 
 				AdresseSuisse as4 = new AdresseSuisse();
 				as4.setDateDebut(RegDate.get(2006, 2, 23));
@@ -1780,14 +1780,14 @@ public class TiersDAOTest extends CoreDAOTest {
 				as4.setPermanente(false);
 				as4.setUsage(TypeAdresseTiers.COURRIER);
 				e0.addAdresseTiers(as4);
-				e0 = (Entreprise) hibernateTemplate.merge(e0);
+				e0 = hibernateTemplate.merge(e0);
 
 				AppartenanceMenage am0 = new AppartenanceMenage();
 				am0.setLogModifDate(new Timestamp(1199142000000L));
 				am0.setDateDebut(RegDate.get(2006, 9, 1));
 				am0.setObjetId(10008901L);
 				am0.setSujetId(10006789L);
-				am0 = (AppartenanceMenage) hibernateTemplate.merge(am0);
+				am0 = hibernateTemplate.merge(am0);
 				pp0.addRapportSujet(am0);
 				mc0.addRapportObjet(am0);
 
@@ -1796,7 +1796,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				am1.setDateDebut(RegDate.get(2006, 9, 1));
 				am1.setObjetId(10008901L);
 				am1.setSujetId(10007890L);
-				am1 = (AppartenanceMenage) hibernateTemplate.merge(am1);
+				am1 = hibernateTemplate.merge(am1);
 				pp1.addRapportSujet(am1);
 				mc0.addRapportObjet(am1);
 
@@ -1805,7 +1805,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				rpi0.setDateDebut(RegDate.get(2000, 1, 1));
 				rpi0.setObjetId(1001234L);
 				rpi0.setSujetId(10001111L);
-				rpi0 = (RapportPrestationImposable) hibernateTemplate.merge(rpi0);
+				rpi0 = hibernateTemplate.merge(rpi0);
 				pp2.addRapportSujet(rpi0);
 				dpi0.addRapportObjet(rpi0);
 
@@ -1814,7 +1814,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				cis0.setDateDebut(RegDate.get(2000, 1, 1));
 				cis0.setObjetId(1001234L);
 				cis0.setSujetId(10006789L);
-				cis0 = (ContactImpotSource) hibernateTemplate.merge(cis0);
+				cis0 = hibernateTemplate.merge(cis0);
 				pp0.addRapportSujet(cis0);
 				dpi0.addRapportObjet(cis0);
 
@@ -1829,7 +1829,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				ffp0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 				ffp0.setLogCreationDate(DateHelper.getDate(2010,11,20));
 				pp0.addForFiscal(ffp0);
-				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+				pp0 = hibernateTemplate.merge(pp0);
 
 				ForFiscalSecondaire ffs0 = new ForFiscalSecondaire();
 				ffs0.setDateFin(RegDate.get(2006, 8, 31));
@@ -1842,21 +1842,21 @@ public class TiersDAOTest extends CoreDAOTest {
 				ffs0.setNumeroOfsAutoriteFiscale(8212);
 				ffs0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 				pp0.addForFiscal(ffs0);
-				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+				pp0 = hibernateTemplate.merge(pp0);
 
 				IdentificationPersonne ip0 = new IdentificationPersonne();
 				ip0.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
 				ip0.setIdentifiant("15489652357");
 				ip0.setLogModifDate(new Timestamp(1199142000000L));
 				pp2.addIdentificationPersonne(ip0);
-				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+				pp2 = hibernateTemplate.merge(pp2);
 
 				IdentificationPersonne ip1 = new IdentificationPersonne();
 				ip1.setCategorieIdentifiant(CategorieIdentifiant.CH_ZAR_RCE);
 				ip1.setIdentifiant("99999999");
 				ip1.setLogModifDate(new Timestamp(1199142000000L));
 				pp2.addIdentificationPersonne(ip1);
-				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+				pp2 = hibernateTemplate.merge(pp2);
 
 				return null;
 			}
