@@ -20,7 +20,7 @@ import ch.vd.uniregctb.validation.ValidationInterceptor;
 public class SuperGraContext {
 
 	private final Session session;
-	private boolean forCommit;
+	private final boolean forCommit;
 	private final ValidationInterceptor validationInterceptor;
 	private final Map<EntityKey, HibernateEntity> newlyCreated = new HashMap<EntityKey, HibernateEntity>();
 	private final Set<RapportEntreTiers> scheduledForSave = new HashSet<RapportEntreTiers>();

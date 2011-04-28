@@ -115,7 +115,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 	}
 
 	private void traiteLR(IdentifiantDeclaration id, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
-		final DeclarationImpotSource lr = (DeclarationImpotSource) hibernateTemplate.get(DeclarationImpotSource.class, id.getNumeroDeclaration());
+		final DeclarationImpotSource lr = hibernateTemplate.get(DeclarationImpotSource.class, id.getNumeroDeclaration());
 
 		// traitement de la LR
 		traiteLR(lr, dateTraitement, rapport);

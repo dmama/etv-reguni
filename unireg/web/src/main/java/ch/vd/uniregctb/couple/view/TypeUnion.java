@@ -35,7 +35,7 @@ public enum TypeUnion {
 	/**
 	 * Map permettant d'accéder au type d'union par son code.
 	 */
-	private static Map<Integer, TypeEvenementCivil> typesByCode = null;
+	private static final Map<Integer, TypeEvenementCivil> typesByCode;
 
 	static {
 		typesByCode = new HashMap<Integer, TypeEvenementCivil>();

@@ -52,7 +52,7 @@ public class ChartValues {
 		return total;
 	}
 
-	private static String simpleEncoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	private static final String simpleEncoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 	/**
 	 * from http://code.google.com/apis/chart/docs/data_formats.html#encoding_data
@@ -72,8 +72,8 @@ public class ChartValues {
 		return chartData.toString();
 	}
 	// Same as simple encoding, but for extended encoding.
-	private static String EXTENDED_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.";
-	private static double EXTENDED_MAP_LENGTH = EXTENDED_MAP.length();
+	private static final String EXTENDED_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.";
+	private static final double EXTENDED_MAP_LENGTH = EXTENDED_MAP.length();
 
 	/**
 	 * from http://code.google.com/apis/chart/docs/data_formats.html#encoding_data

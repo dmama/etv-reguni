@@ -26,7 +26,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	public static final String SERVICE_NAME = "JDBC";
 
 	private DataSource target;
-	private ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
+	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
 	private StatsService statsService;
 	private boolean enabled;
 

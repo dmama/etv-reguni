@@ -32,11 +32,11 @@ public class ComparerSituationFamilleProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	final Logger LOGGER = Logger.getLogger(ComparerSituationFamilleProcessor.class);
-	private ServiceCivilService serviceCivil;
+	private final ServiceCivilService serviceCivil;
 	private final PlatformTransactionManager transactionManager;
-	private SituationFamilleDAO situationFamilleDAO;
-	private TiersService tiersService;
-	private int batchSize = BATCH_SIZE;
+	private final SituationFamilleDAO situationFamilleDAO;
+	private final TiersService tiersService;
+	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ComparerSituationFamilleResults> rapport = new ThreadLocal<ComparerSituationFamilleResults>();
 
 	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil,SituationFamilleDAO situationFamilleDAO,TiersService tiersService, PlatformTransactionManager transactionManager) {

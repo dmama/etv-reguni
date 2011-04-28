@@ -10,12 +10,12 @@ import net.sf.ehcache.Statistics;
  */
 public class EhCacheStats implements CacheStats {
 
-	private Long hitsPercent;
-	private long hitsCount;
-	private long totalCount;
-	private long timeToIdle;
-	private long timeToLive;
-	private int maxElements;
+	private final Long hitsPercent;
+	private final long hitsCount;
+	private final long totalCount;
+	private final long timeToIdle;
+	private final long timeToLive;
+	private final int maxElements;
 
 	public EhCacheStats(Ehcache cache) {
 
@@ -32,6 +32,9 @@ public class EhCacheStats implements CacheStats {
 		this.totalCount = total;
 		if (total > 0) {
 			this.hitsPercent = (hits * 100) / total;
+		}
+		else {
+			this.hitsPercent = null;
 		}
 	}
 

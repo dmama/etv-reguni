@@ -53,9 +53,9 @@ public enum ModeImposition {
 	 */
 	INDIGENT("Indigent", "Imposition ordinaire");
 
-	private String texte;
+	private final String texte;
 
-	private String texteEnrichi;
+	private final String texteEnrichi;
 
 	private ModeImposition(String format, String formatEnrichi) {
 		this.texte = format;

@@ -237,7 +237,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	}
 
 	@Override
-	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur(){
+	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur() {
 		return identificationMapHelper.initMapPrioriteEmetteur(false);
-	};
+	}
 }

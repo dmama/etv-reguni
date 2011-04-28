@@ -44,7 +44,7 @@ public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long>
 	public PeriodeFiscale getPeriodeFiscaleByYear(final int year) {
 
 		final Object[] params = new Object[] {
-			Integer.valueOf(year)
+				year
 		};
 
 		/**

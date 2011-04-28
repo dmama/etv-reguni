@@ -11,7 +11,7 @@ public class Audit {
 	private static final Logger LOGGER = Logger.getLogger(Audit.class);
 
 	private static AuditLineDAO dao;
-	private static String PREFIX = "[AUDIT] ";
+	private static final String PREFIX = "[AUDIT] ";
 
 	public static void success(String message) {
 		logAuditLine(AuditLevel.SUCCESS, message, null, null);

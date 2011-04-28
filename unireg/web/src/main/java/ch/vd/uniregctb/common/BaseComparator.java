@@ -11,12 +11,12 @@ public class BaseComparator<T> implements Comparator<T> {
     /**
      *
      */
-    private static final Integer FACTOR_DEFAULT = new Integer(1);
+    private static final Integer FACTOR_DEFAULT = 1;
 
     /**
      *
      */
-    private static final Integer FACTOR_INVERSE = new Integer(-1);
+    private static final Integer FACTOR_INVERSE = -1;
 
     /**
      * Use this collator.
@@ -49,7 +49,7 @@ public class BaseComparator<T> implements Comparator<T> {
         factor = new Integer[ascending.length];
         for (int i = 0; i < ascending.length; i++) {
             factor[i] = FACTOR_DEFAULT;
-            if (!ascending[i].booleanValue()) {
+            if (!ascending[i]) {
                 factor[i] = FACTOR_INVERSE;
             }
         }
@@ -90,7 +90,7 @@ public class BaseComparator<T> implements Comparator<T> {
             val2 = getProperty(object2, property);
             returnValue = checkNullsAndCompare(val1, val2);
             if (returnValue != 0) {
-                return returnValue * factor[i].intValue();
+                return returnValue * factor[i];
             }
         }
         return returnValue;

@@ -195,7 +195,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 		doc.setSubPath(subpath);
 
 		doc.setFileSize(f.length());
-		doc = (Document) hibernateTemplate.merge(doc);
+		doc = hibernateTemplate.merge(doc);
 		docs.add(doc);
 	}
 
@@ -203,7 +203,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	 * {@inheritDoc}
 	 */
 	public Document get(Long id) throws Exception {
-		return (Document) hibernateTemplate.get(Document.class, id);
+		return hibernateTemplate.get(Document.class, id);
 	}
 
 	/**
@@ -307,7 +307,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 		}
 
 		doc.setFileSize(file.length());
-		return (T) hibernateTemplate.merge(doc);
+		return hibernateTemplate.merge(doc);
 	}
 
 	/**

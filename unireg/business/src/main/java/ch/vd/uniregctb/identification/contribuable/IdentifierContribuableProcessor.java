@@ -29,10 +29,10 @@ public class IdentifierContribuableProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	final Logger LOGGER = Logger.getLogger(IdentifierContribuableProcessor.class);
-	private IdentificationContribuableService identService;
-	private IdentCtbDAO identCtbDAO;
+	private final IdentificationContribuableService identService;
+	private final IdentCtbDAO identCtbDAO;
 	private final PlatformTransactionManager transactionManager;
-	private int batchSize = BATCH_SIZE;
+	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<IdentifierContribuableResults> rapport = new ThreadLocal<IdentifierContribuableResults>();
 
 	public IdentifierContribuableProcessor(IdentificationContribuableService identService, IdentCtbDAO identCtbDAO, PlatformTransactionManager transactionManager) {

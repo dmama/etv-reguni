@@ -10,17 +10,17 @@ import ch.vd.uniregctb.supergra.EntityType;
  */
 public class AttributeView {
 
-	private String name;
-	private String displayName;
+	private final String name;
+	private final String displayName;
 	private Object value;
-	private Class<?> type;
+	private final Class<?> type;
 	/**
 	 * Type d'entité si le {@link #type} est {@link EntityKey}.
 	 */
 	private EntityType entityType;
 	private boolean parentForeignKey;
-	private boolean collection;
-	private boolean readonly;
+	private final boolean collection;
+	private final boolean readonly;
 
 	public AttributeView(String name, Class<?> type, Object value, boolean isParentForeignKey, boolean isCollection, boolean isReadonly) {
 		this.name = name;

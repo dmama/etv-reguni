@@ -10,18 +10,18 @@ public class LocaliteImpl implements Localite, Serializable {
 
 	private static final long serialVersionUID = 2998886376392463517L;
 	
-	private Commune commune = null;
+	private final Commune commune;
 	private final RegDate dateFin;
-	private Integer chiffreComplementaire;
-	private Integer complementNPA;
-	private Integer npa;
-	private Integer noCommune;
-	private Integer noOrdre;
-	private String nomAbregeMajuscule;
-	private String nomAbregeMinuscule;
-	private String nomCompletMajuscule;
-	private String nomCompletMinuscule;
-	private boolean valide;
+	private final Integer chiffreComplementaire;
+	private final Integer complementNPA;
+	private final Integer npa;
+	private final Integer noCommune;
+	private final Integer noOrdre;
+	private final String nomAbregeMajuscule;
+	private final String nomAbregeMinuscule;
+	private final String nomCompletMajuscule;
+	private final String nomCompletMinuscule;
+	private final boolean valide;
 
 	public static LocaliteImpl get(ch.vd.infrastructure.model.Localite target) {
 		if (target == null) {

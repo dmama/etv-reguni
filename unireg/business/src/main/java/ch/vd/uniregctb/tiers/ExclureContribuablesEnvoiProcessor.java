@@ -75,7 +75,7 @@ public class ExclureContribuablesEnvoiProcessor {
 
 		for (Long id : batch) {
 
-			final Contribuable ctb = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+			final Contribuable ctb = hibernateTemplate.get(Contribuable.class, id);
 			if (ctb == null) {
 				rapport.addErrorCtbInconnu(id);
 				continue;

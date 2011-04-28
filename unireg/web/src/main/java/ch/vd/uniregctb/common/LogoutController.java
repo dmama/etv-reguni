@@ -21,7 +21,7 @@ import ch.vd.uniregctb.utils.UniregProperties;
  * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
 public class LogoutController implements Controller {
-	private static Logger logger = Logger.getLogger(LogoutController.class);
+	private static final Logger logger = Logger.getLogger(LogoutController.class);
 
 	private UniregProperties uniregProperties;
 

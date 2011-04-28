@@ -10,7 +10,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public abstract class TiersModeImpositionResolver implements ModeImpositionResolver {
 
-	private TiersService tiersService;
+	private final TiersService tiersService;
 	
 	public TiersModeImpositionResolver(TiersService tiersService) {
 		this.tiersService = tiersService;

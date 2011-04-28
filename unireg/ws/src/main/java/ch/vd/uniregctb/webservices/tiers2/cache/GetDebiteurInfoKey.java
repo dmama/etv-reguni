@@ -2,7 +2,7 @@ package ch.vd.uniregctb.webservices.tiers2.cache;
 
 class GetDebiteurInfoKey extends CacheKey {
 
-	public int periodeFiscale;
+	public final int periodeFiscale;
 
 	GetDebiteurInfoKey(long tiersNumber, int periodeFiscale) {
 		super(tiersNumber);

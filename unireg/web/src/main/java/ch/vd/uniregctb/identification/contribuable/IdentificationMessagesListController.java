@@ -32,7 +32,7 @@ public class IdentificationMessagesListController extends AbstractIdentification
 	private static final String EFFACER_PARAMETER_VALUE = "effacer";
 	public static final String IDENTIFICATION_CRITERIA_NAME = "identificationCriteria";
 	public static final String RESULT_SIZE_NAME = "resultSize";
-	public static final Integer PAGE_SIZE = new Integer(25);
+	public static final Integer PAGE_SIZE = 25;
 	public static final String IDENTIFICATION_LIST_ATTRIBUTE_NAME = "identifications";
 	public static final String IDENTIFICATION_LIST_ATTRIBUTE_SIZE = "identificationsSize";
 	private static final String TABLE_IDENTIFICATION_ID = "message";
@@ -106,11 +106,11 @@ public class IdentificationMessagesListController extends AbstractIdentification
 			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false,true, TypeDemande.MELDEWESEN);
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(identificationMessagesListManager.count(bean, false, false,true, TypeDemande.MELDEWESEN)));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, false, true, TypeDemande.MELDEWESEN));
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(0));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, 0);
 		}
 		mav.addObject(IDENTIFICATION_EN_COURS_MESSAGE, false);
 		mav.addObject(IDENTIFICATION_GESTION_MESSAGE, true);
@@ -191,6 +191,6 @@ public class IdentificationMessagesListController extends AbstractIdentification
 	@Override
 	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur(){
 		return identificationMapHelper.initMapPrioriteEmetteur(false);
-	};
+	}
 
 }

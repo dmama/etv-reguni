@@ -65,7 +65,7 @@ class PartsAnalyze extends Analyze {
 		}
 	}
 
-	private Map<String, MethodData> results = new HashMap<String, MethodData>();
+	private final Map<String, MethodData> results = new HashMap<String, MethodData>();
 
 	@Override
 	void addCall(Call call) {

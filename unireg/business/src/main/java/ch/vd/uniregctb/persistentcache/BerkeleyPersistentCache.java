@@ -41,7 +41,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 	private TupleBinding<Long> secKeyBinding;
 	private SerialBinding<ObjectKey> keyBinding;
 	private int cachePercent = 5;
-	private SimpleCacheStats stats = new SimpleCacheStats();
+	private final SimpleCacheStats stats = new SimpleCacheStats();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHomeDirectory(String homeDirectory) {

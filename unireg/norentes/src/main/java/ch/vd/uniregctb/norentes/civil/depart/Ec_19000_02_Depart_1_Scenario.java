@@ -164,7 +164,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 			// For ouvert sur PaysInconnu
 			final ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal)list.get(list.size()-1);
 			assertEquals(dateDepartBex.addDays(1), ffpOuvert.getDateDebut(), "Le for sur Le pay inconnue n'est pas ouvert à la bonne date");
-			assertEquals(new Integer(NumOfsPaysInconnue), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Zurich");
+			assertEquals(NumOfsPaysInconnue, ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Zurich");
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");
 			assertEquals(GenreImpot.REVENU_FORTUNE, ffpOuvert.getGenreImpot(), "Le GenreImpot du for est faux");
 			assertEquals(ModeImposition.ORDINAIRE, ffpOuvert.getModeImposition(), "Le ModeImposition du for est faux");

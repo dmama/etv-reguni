@@ -267,7 +267,7 @@ public class PerfsClient {
 			iter = new PerfsAccessFileIterator(accessFile);
 		}
 		else {
-			iter = new PerfsAccessFileIterator(accessFile, queriesCount.intValue());
+			iter = new PerfsAccessFileIterator(accessFile, queriesCount);
 		}
 
 		// Crée les threads

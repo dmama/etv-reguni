@@ -13,12 +13,12 @@ import ch.vd.registre.base.utils.Assert;
  * Statistiques d'un appel au web-service.
  */
 class Call {
-	private String user;
-	private String method;
-	private long milliseconds;
-	private int tiersCount;
-	private HourMinutes timestamp;
-	private List<String> parts;
+	private final String user;
+	private final String method;
+	private final long milliseconds;
+	private final int tiersCount;
+	private final HourMinutes timestamp;
+	private final List<String> parts;
 
 	Call(String user, String method, long milliseconds, int tiersCount, HourMinutes timestamp, List<String> parts) {
 		this.user = user;

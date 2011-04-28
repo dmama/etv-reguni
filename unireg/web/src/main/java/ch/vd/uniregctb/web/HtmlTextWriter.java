@@ -9,7 +9,7 @@ import ch.vd.uniregctb.web.io.TextWriter;
 
 public class HtmlTextWriter extends TextWriter {
 
-    static HtmlTag[] tags = { new HtmlTag(HtmlTextWriterTag.Unknown, "", TagType.Block),
+    static final HtmlTag[] tags = { new HtmlTag(HtmlTextWriterTag.Unknown, "", TagType.Block),
             new HtmlTag(HtmlTextWriterTag.A, "a", TagType.Inline),
             new HtmlTag(HtmlTextWriterTag.Acronym, "acronym", TagType.Inline),
             new HtmlTag(HtmlTextWriterTag.Address, "address", TagType.Block),
@@ -107,7 +107,7 @@ public class HtmlTextWriter extends TextWriter {
             new HtmlTag(HtmlTextWriterTag.Wbr, "wbr", TagType.SelfClosing),
             new HtmlTag(HtmlTextWriterTag.Xml, "xml", TagType.Block), };
 
-    static HtmlAttribute[] htmlattrs = { new HtmlAttribute(HtmlTextWriterAttribute.Accesskey, "accesskey"),
+    static final HtmlAttribute[] htmlattrs = { new HtmlAttribute(HtmlTextWriterAttribute.Accesskey, "accesskey"),
             new HtmlAttribute(HtmlTextWriterAttribute.Align, "align"),
             new HtmlAttribute(HtmlTextWriterAttribute.Alt, "alt"),
             new HtmlAttribute(HtmlTextWriterAttribute.Background, "background"),
@@ -164,7 +164,7 @@ public class HtmlTextWriter extends TextWriter {
 
     };
 
-    static HtmlStyle[] htmlstyles = { new HtmlStyle(HtmlTextWriterStyle.BackgroundColor, "background-color"),
+    static final HtmlStyle[] htmlstyles = { new HtmlStyle(HtmlTextWriterStyle.BackgroundColor, "background-color"),
             new HtmlStyle(HtmlTextWriterStyle.BackgroundImage, "background-image"),
             new HtmlStyle(HtmlTextWriterStyle.BorderCollapse, "border-collapse"),
             new HtmlStyle(HtmlTextWriterStyle.BorderColor, "border-color"),
@@ -880,7 +880,7 @@ public class HtmlTextWriter extends TextWriter {
 
     TextWriter b;
 
-    String tab_string;
+    final String tab_string;
 
     boolean newline;
 
@@ -965,11 +965,11 @@ public class HtmlTextWriter extends TextWriter {
     }
 
     static class HtmlTag {
-        public HtmlTextWriterTag key;
+        public final HtmlTextWriterTag key;
 
-        public String name;
+        public final String name;
 
-        public TagType tag_type;
+        public final TagType tag_type;
 
         public HtmlTag(HtmlTextWriterTag k, String n, TagType tt) {
             key = k;
@@ -979,9 +979,9 @@ public class HtmlTextWriter extends TextWriter {
     }
 
     static class HtmlStyle {
-        public HtmlTextWriterStyle key;
+        public final HtmlTextWriterStyle key;
 
-        public String name;
+        public final String name;
 
         public HtmlStyle(HtmlTextWriterStyle k, String n) {
             key = k;
@@ -990,9 +990,9 @@ public class HtmlTextWriter extends TextWriter {
     }
 
     static class HtmlAttribute {
-        public HtmlTextWriterAttribute key;
+        public final HtmlTextWriterAttribute key;
 
-        public String name;
+        public final String name;
 
         public HtmlAttribute(HtmlTextWriterAttribute k, String n) {
             key = k;

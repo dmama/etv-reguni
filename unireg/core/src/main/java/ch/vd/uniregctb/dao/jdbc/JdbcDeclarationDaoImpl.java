@@ -32,7 +32,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 
 public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 
-	private JdbcEtatDeclarationDao etatDeclarationDao = new JdbcEtatDeclarationDaoImpl();
+	private final JdbcEtatDeclarationDao etatDeclarationDao = new JdbcEtatDeclarationDaoImpl();
 
 	@SuppressWarnings({"unchecked"})
 	public Declaration get(long forId, boolean withEtats, JdbcTemplate template) {
@@ -170,11 +170,11 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 				"TYPE_CTB " + // 25
 				"from DECLARATION";
 
-		private JdbcPeriodeFiscaleDao pfDao = new JdbcPeriodeFiscaleDaoImpl();
-		private JdbcModeleDocumentDao mdDao = new JdbcModeleDocumentDaoImpl();
-		private Map<Long, PeriodeFiscale> periodesCache = new HashMap<Long, PeriodeFiscale>();
-		private Map<Long, ModeleDocument> docCache = new HashMap<Long, ModeleDocument>();
-		private JdbcTemplate template;
+		private final JdbcPeriodeFiscaleDao pfDao = new JdbcPeriodeFiscaleDaoImpl();
+		private final JdbcModeleDocumentDao mdDao = new JdbcModeleDocumentDaoImpl();
+		private final Map<Long, PeriodeFiscale> periodesCache = new HashMap<Long, PeriodeFiscale>();
+		private final Map<Long, ModeleDocument> docCache = new HashMap<Long, ModeleDocument>();
+		private final JdbcTemplate template;
 
 		private DeclarationMapper(JdbcTemplate template) {
 			this.template = template;

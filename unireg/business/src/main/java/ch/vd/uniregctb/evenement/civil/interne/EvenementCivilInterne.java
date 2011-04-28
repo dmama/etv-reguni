@@ -37,29 +37,29 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public abstract class EvenementCivilInterne {
 
 	public static long NO_OFS_FRACTION = 0;
-	public static long NO_OFS_FRACTION_SENTIER = 8000;
+	public static final long NO_OFS_FRACTION_SENTIER = 8000;
 	public static long NO_OFS_L_ABBAYE = 5871;
 	public static long NO_OFS_LE_CHENIT = 5872;
 
 	// L'individu principal.
-	private Long noIndividu;
-	private Long principalPPId;
+	private final Long noIndividu;
+	private final Long principalPPId;
 	private Individu individuPrincipal;
 
 	// Le conjoint (mariage ou pacs).
-	private Long noIndividuConjoint;
-	private Long conjointPPId;
+	private final Long noIndividuConjoint;
+	private final Long conjointPPId;
 	private Individu conjoint;
 
-	private TypeEvenementCivil type;
-	private RegDate date;
-	private Long numeroEvenement;
-	private Integer numeroOfsCommuneAnnonce;
+	private final TypeEvenementCivil type;
+	private final RegDate date;
+	private final Long numeroEvenement;
+	private final Integer numeroOfsCommuneAnnonce;
 
 	// Info pour initialiser les individus de manière lazy
 	private int anneeReference;
 	private AttributeIndividu[] parts;
-	protected EvenementCivilContext context;
+	protected final EvenementCivilContext context;
 
 	/**
 	 * Construit un événement civil interne sur la base d'un événement civil externe.

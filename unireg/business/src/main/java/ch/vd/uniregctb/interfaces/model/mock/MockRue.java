@@ -169,8 +169,8 @@ public class MockRue implements Rue {
 	}
 
 	private final MockLocalite localite;
-	private String designationCourrier;
-	private Integer noRue;
+	private final String designationCourrier;
+	private final Integer noRue;
 
 	public MockRue(MockLocalite localite, String designationCourrier, Integer noRue) {
 		this.designationCourrier = designationCourrier;

@@ -17,7 +17,7 @@ public class TutelleImpl implements Tutelle, Serializable {
 	private final Individu tuteur;
 	private final TuteurGeneral tuteurGeneral;
 	private final String libelleMotif;
-	private int noSequence;
+	private final int noSequence;
 	private final String nomAutoriteTutelaire;
 	private final Long numeroCollectiviteAutoriteTutelaire;
 	private final TypeTutelle typeTutelle;

@@ -46,7 +46,7 @@ public enum TexteCasePostale {
 	 */
 	CASELLA_POSTALE("Casella Postale %d");
 
-	private String format;
+	private final String format;
 
 	TexteCasePostale(String format) {
 		this.format = format;

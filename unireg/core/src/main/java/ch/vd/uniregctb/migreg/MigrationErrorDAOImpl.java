@@ -47,7 +47,7 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 				criteria.setProjection(Projections.rowCount());
 				criteria.add(Restrictions.eq("noContribuable", numeroCtb));
 				Integer count = (Integer) criteria.uniqueResult();
-				return count.intValue() > 0;
+				return count > 0;
 			}
 		});
 	}
@@ -97,7 +97,7 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 	public List<MigrationError> getMigregErrorsInCtbRange(int ctbStart, int ctbEnd) {
 		List<MigrationError> list = null;
 		if (ctbStart > 0 && ctbEnd > 0) {
-			list = getHibernateTemplate().find("FROM MigrationError AS migreg WHERE migreg.noContribuable >= ? AND migreg.noContribuable <= ?", new Object[] { ctbStart, ctbEnd } );
+			list = getHibernateTemplate().find("FROM MigrationError AS migreg WHERE migreg.noContribuable >= ? AND migreg.noContribuable <= ?",  ctbStart, ctbEnd );
 		}
 		else if (ctbStart > 0) {
 			list = getHibernateTemplate().find("FROM MigrationError AS migreg WHERE migreg.noContribuable >= ?", ctbStart);

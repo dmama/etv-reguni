@@ -28,7 +28,7 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
  */
 public class DataEventJmsListener extends EsbMessageListener implements MonitorableMessageListener {
 
-	private static Logger LOGGER = Logger.getLogger(DataEventJmsListener.class);
+	private static final Logger LOGGER = Logger.getLogger(DataEventJmsListener.class);
 
 	private DataEventService dataEventService;
 

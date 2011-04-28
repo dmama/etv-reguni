@@ -23,8 +23,6 @@ import ch.vd.uniregctb.type.TypeAdressePM;
 
 public class MockPersonneMorale implements PersonneMorale {
 
-	private static final long serialVersionUID = -8639829263196146440L;
-
 	private RegDate debut;
 	private RegDate fin;
 	private String nomContact;
@@ -52,14 +50,14 @@ public class MockPersonneMorale implements PersonneMorale {
 	private List<ForPM> forsFiscauxPrincipaux = new ArrayList<ForPM>();
 	private List<ForPM> forsFiscauxSecondaires = new ArrayList<ForPM>();
 
-	public static MockPersonneMorale NestleSuisse = new MockPersonneMorale(27769, "Nestlé Suisse S.A.", "S.A.", "Myriam Steiner", RegDate.get(1996, 12, 18), null);
-	public static MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", RegDate.get(1901, 1, 1), null);
-	public static MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, RegDate.get(1901, 1, 1), null);
-	public static MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, RegDate.get(1901, 1, 1), null);
-	public static MockPersonneMorale JalHolding = new MockPersonneMorale(1314, "JAL HOLDING", "Jal holding S.A.", null, "en liquidation", "S.A.", "R. Borgo", RegDate.get(1975, 12, 24), null);
-	public static MockPersonneMorale EvianRussie = new MockPersonneMorale(7777, "Evian Water Russia", "Distributor (Evian Water)", "LLC PepsiCo Holdings", "Free Economic Zone Sherrizone", "S.A.", "Dimitri Vokda", RegDate.get(1966, 11, 10), null);
-	public static MockPersonneMorale BanqueCoopBale = new MockPersonneMorale(15489, "BANQUE COOP", "Bank Coop AG (Banque Coop SA)", "(Banca Coop SA)", "(Bank Coop Ltd)", "S.A.", "H. Roller", null, null);
-	public static MockPersonneMorale KhatAnstalt = new MockPersonneMorale(13433, "KHAT ANSTALT", "Khat Anstalt", null, null, "S.A.", null, null, null);
+	public static final MockPersonneMorale NestleSuisse = new MockPersonneMorale(27769, "Nestlé Suisse S.A.", "S.A.", "Myriam Steiner", RegDate.get(1996, 12, 18), null);
+	public static final MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", RegDate.get(1901, 1, 1), null);
+	public static final MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, RegDate.get(1901, 1, 1), null);
+	public static final MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, RegDate.get(1901, 1, 1), null);
+	public static final MockPersonneMorale JalHolding = new MockPersonneMorale(1314, "JAL HOLDING", "Jal holding S.A.", null, "en liquidation", "S.A.", "R. Borgo", RegDate.get(1975, 12, 24), null);
+	public static final MockPersonneMorale EvianRussie = new MockPersonneMorale(7777, "Evian Water Russia", "Distributor (Evian Water)", "LLC PepsiCo Holdings", "Free Economic Zone Sherrizone", "S.A.", "Dimitri Vokda", RegDate.get(1966, 11, 10), null);
+	public static final MockPersonneMorale BanqueCoopBale = new MockPersonneMorale(15489, "BANQUE COOP", "Bank Coop AG (Banque Coop SA)", "(Banca Coop SA)", "(Bank Coop Ltd)", "S.A.", "H. Roller", null, null);
+	public static final MockPersonneMorale KhatAnstalt = new MockPersonneMorale(13433, "KHAT ANSTALT", "Khat Anstalt", null, null, "S.A.", null, null, null);
 
 	static {
 		{
@@ -415,10 +413,6 @@ public class MockPersonneMorale implements PersonneMorale {
 
 	public void setTitulaireCompte(String titulaireCompte) {
 		this.titulaireCompte = titulaireCompte;
-	}
-
-	public static void setNestleSuisse(MockPersonneMorale nestleSuisse) {
-		NestleSuisse = nestleSuisse;
 	}
 
 	public void setDebut(RegDate debut) {

@@ -18,7 +18,7 @@ public class DebiteurEditView {
 	private Boolean sansListeRecapitulative;
 	private PeriodiciteDecompte periodiciteCourante;
 	private PeriodeDecompte periodeDecompte;
-	private ComplementView complement;
+	private final ComplementView complement;
 	private Long logicielId;
 
 	public DebiteurEditView() {

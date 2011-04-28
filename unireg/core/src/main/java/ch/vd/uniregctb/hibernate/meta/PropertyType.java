@@ -33,8 +33,8 @@ public abstract class PropertyType {
 		byJavaType.put(timestampPropType.getJavaType(), timestampPropType);
 	}
 
-	protected Class<?> javaType;
-	private int sqlType;
+	protected final Class<?> javaType;
+	private final int sqlType;
 
 	PropertyType(Class<?> javaType, int sqlType) {
 		this.javaType = javaType;

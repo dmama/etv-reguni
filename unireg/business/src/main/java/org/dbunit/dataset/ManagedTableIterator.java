@@ -9,8 +9,8 @@ import ch.vd.uniregctb.common.StatusManager;
  */
 public class ManagedTableIterator implements ITableIterator {
 
-	private ITableIterator target;
-	private StatusManager status;
+	private final ITableIterator target;
+	private final StatusManager status;
 
 	public ManagedTableIterator(ITableIterator target, StatusManager status) {
 		this.target = target;

@@ -34,37 +34,35 @@ public class DeclarationImpotEditValidator implements Validator {
 
 		if (target instanceof DeclarationImpotDetailView) {
 			final DeclarationImpotDetailView details = (DeclarationImpotDetailView) target;
-			if (details != null) {
-				if (details.getId() == null) {
-					if (details.getDelaiAccorde() == null) {
-						ValidationUtils.rejectIfEmpty(errors, "delaiAccorde", "error.delai.accorde.vide");
-						details.setImprimable(true);
-					}
-					else {
-						if (details.getRegDelaiAccorde().isBefore(RegDate.get()) ||
-								details.getRegDelaiAccorde().isAfter(RegDate.get().addMonths(6))) {
-							errors.rejectValue("delaiAccorde", "error.delai.accorde.invalide");
-							details.setImprimable(true);
-						}
-					}
+			if (details.getId() == null) {
+				if (details.getDelaiAccorde() == null) {
+					ValidationUtils.rejectIfEmpty(errors, "delaiAccorde", "error.delai.accorde.vide");
+					details.setImprimable(true);
 				}
 				else {
-					if (details.getRegDateRetour() != null && details.getRegDateRetour().isAfter(RegDate.get())) {
-						errors.rejectValue("dateRetour", "error.date.retour.future");
+					if (details.getRegDelaiAccorde().isBefore(RegDate.get()) ||
+							details.getRegDelaiAccorde().isAfter(RegDate.get().addMonths(6))) {
+						errors.rejectValue("delaiAccorde", "error.delai.accorde.invalide");
+						details.setImprimable(true);
 					}
-					DeclarationImpotOrdinaire di = diDAO.get(details.getId());
-					EtatDeclaration dernierEtat = di.getDernierEtat();
-					if (details.getRegDateRetour() != null && details.getRegDateRetour().isBefore(dernierEtat.getDateObtention())) {
-						if(dernierEtat instanceof EtatDeclarationSommee){
-							errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
-						}
-						if(dernierEtat instanceof EtatDeclarationEmise){
+				}
+			}
+			else {
+				if (details.getRegDateRetour() != null && details.getRegDateRetour().isAfter(RegDate.get())) {
+					errors.rejectValue("dateRetour", "error.date.retour.future");
+				}
+				DeclarationImpotOrdinaire di = diDAO.get(details.getId());
+				EtatDeclaration dernierEtat = di.getDernierEtat();
+				if (details.getRegDateRetour() != null && details.getRegDateRetour().isBefore(dernierEtat.getDateObtention())) {
+					if(dernierEtat instanceof EtatDeclarationSommee){
+						errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
+					}
+					if(dernierEtat instanceof EtatDeclarationEmise){
 
-							errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
-
-						}
+						errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
 
 					}
+
 				}
 			}
 		}

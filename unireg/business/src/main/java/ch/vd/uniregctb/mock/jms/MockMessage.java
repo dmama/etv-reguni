@@ -85,7 +85,7 @@ public class MockMessage implements Message {
             throw new JMSException("key doesn't exist.");
         }
         try {
-            return ((Boolean) properties.get(key)).booleanValue();
+            return (Boolean) properties.get(key);
         } catch (Exception ex) {
             throw new MessageFormatException(ex.getMessage());
         }
@@ -100,7 +100,7 @@ public class MockMessage implements Message {
             throw new JMSException("key doesn't exist.");
         }
         try {
-            return ((Byte) properties.get(key)).byteValue();
+            return (Byte) properties.get(key);
         } catch (Exception ex) {
             throw new MessageFormatException(ex.getMessage());
         }
@@ -115,7 +115,7 @@ public class MockMessage implements Message {
             throw new JMSException("key doesn't exist.");
         }
         try {
-            return ((Double) properties.get(key)).doubleValue();
+            return (Double) properties.get(key);
         } catch (Exception ex) {
             throw new MessageFormatException(ex.getMessage());
         }
@@ -145,7 +145,7 @@ public class MockMessage implements Message {
             throw new JMSException("key doesn't exist.");
         }
         try {
-            return ((Integer) properties.get(key)).intValue();
+            return (Integer) properties.get(key);
         } catch (Exception ex) {
             throw new MessageFormatException(ex.getMessage());
         }
@@ -255,7 +255,7 @@ public class MockMessage implements Message {
     public final short getShortProperty(String key) throws JMSException {
         Object obj = properties.get(key);
         if (obj != null) {
-            return ((Short) obj).shortValue();
+            return (Short) obj;
         }
         return 0;
     }
@@ -283,35 +283,35 @@ public class MockMessage implements Message {
      */
     public final void setBooleanProperty(String key, boolean value)
             throws JMSException {
-        properties.put(key, Boolean.valueOf(value));
+        properties.put(key, value);
     }
 
     /**
      * {@inheritDoc}
      */
     public final void setByteProperty(String key, byte value) throws JMSException {
-        properties.put(key, new Byte(value));
+        properties.put(key, value);
     }
 
     /**
      * {@inheritDoc}
      */
     public final void setDoubleProperty(String key, double value) throws JMSException {
-        properties.put(key, new Double(value));
+        properties.put(key, value);
     }
 
     /**
      * {@inheritDoc}
      */
     public final void setFloatProperty(String key, float value) throws JMSException {
-        properties.put(key, new Float(value));
+        properties.put(key, value);
     }
 
     /**
      * {@inheritDoc}
      */
     public final void setIntProperty(String key, int value) throws JMSException {
-        properties.put(key, new Integer(value));
+        properties.put(key, value);
     }
 
     /**
@@ -388,7 +388,7 @@ public class MockMessage implements Message {
      * {@inheritDoc}
      */
     public final void setLongProperty(String key, long value) throws JMSException {
-        properties.put(key, new Long(value));
+        properties.put(key, value);
     }
 
     /**
@@ -402,7 +402,7 @@ public class MockMessage implements Message {
      * {@inheritDoc}
      */
     public final void setShortProperty(String key, short value) throws JMSException {
-        properties.put(key, new Short(value));
+        properties.put(key, value);
     }
 
     /**

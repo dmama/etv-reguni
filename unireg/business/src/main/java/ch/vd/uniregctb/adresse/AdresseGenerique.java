@@ -60,7 +60,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		 */
 		CONTRIBUABLE(false);
 
-		private boolean representation;
+		private final boolean representation;
 
 		SourceType(boolean representation) {
 			this.representation = representation;

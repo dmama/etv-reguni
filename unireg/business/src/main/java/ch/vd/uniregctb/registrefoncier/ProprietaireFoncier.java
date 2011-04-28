@@ -2,13 +2,6 @@ package ch.vd.uniregctb.registrefoncier;
 
 import ch.vd.registre.base.date.RegDate;
 
-/**
- * Created by IntelliJ IDEA.
- * User: baba
- * Date: Nov 2, 2009
- * Time: 11:56:29 AM
- * To change this template use File | Settings | File Templates.
- */
 public class ProprietaireFoncier {
 
     private long numeroRegistreFoncier;

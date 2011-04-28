@@ -195,5 +195,5 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		@Override
 	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur(){
 		return identificationMapHelper.initMapPrioriteEmetteur(true);
-	};
+	}
 }

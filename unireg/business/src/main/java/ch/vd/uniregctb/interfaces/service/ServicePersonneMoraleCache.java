@@ -131,7 +131,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	}
 
 	private static class GetPersonneMoraleByIdKey {
-		private long id;
+		private final long id;
 
 		private GetPersonneMoraleByIdKey(long id) {
 			this.id = id;
@@ -192,7 +192,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	}
 
 	private static class GetEtablissementByIdKey {
-		private long id;
+		private final long id;
 
 		private GetEtablissementByIdKey(long id) {
 			this.id = id;

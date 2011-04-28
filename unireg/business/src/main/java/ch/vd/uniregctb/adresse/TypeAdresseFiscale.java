@@ -13,9 +13,9 @@ public enum TypeAdresseFiscale {
 	DOMICILE(TypeAdresseTiers.DOMICILE),
 	POURSUITE_AUTRE_TIERS(null);
 
-	TypeAdresseTiers coreType;
+	private final TypeAdresseTiers coreType;
 
-	TypeAdresseFiscale(TypeAdresseTiers coreType) {
+	private TypeAdresseFiscale(TypeAdresseTiers coreType) {
 		this.coreType = coreType;
 	}
 

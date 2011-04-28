@@ -23,8 +23,8 @@ public class ConfirmCopieController extends AbstractSimpleFormController {
 
 	protected final Logger LOGGER = Logger.getLogger(ConfirmCopieController.class);
 
-	private final String NUMERO_OPERATEUR_REFERENCE_PARAMETER_NAME = "noOperateurReference";
-	private final String NUMERO_OPERATEUR_DESTINATION_PARAMETER_NAME = "noOperateurDestination";
+	private static final String NUMERO_OPERATEUR_REFERENCE_PARAMETER_NAME = "noOperateurReference";
+	private static final String NUMERO_OPERATEUR_DESTINATION_PARAMETER_NAME = "noOperateurDestination";
 
 	public final static String BOUTON_COPIER = "copier";
 	public final static String BOUTON_TRANSFERER = "transferer";

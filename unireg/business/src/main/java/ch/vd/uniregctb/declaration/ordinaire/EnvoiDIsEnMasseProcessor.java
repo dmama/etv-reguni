@@ -537,7 +537,7 @@ public class EnvoiDIsEnMasseProcessor {
 		di.setTiers(contribuable);
 		di.setNumero(nbDecls + 1);
 
-		di = (DeclarationImpotOrdinaire) hibernateTemplate.merge(di); // force le save de la DI pour s'assurer qu'elle reçoit un id
+		di = hibernateTemplate.merge(di); // force le save de la DI pour s'assurer qu'elle reçoit un id
 
 		// [UNIREG-1791] On met-à-jour le cache de manière à détecter deux déclarations qui se chevauchent.
 		dcache.addDeclaration(di);

@@ -110,7 +110,7 @@ public class EnvoiLRsEnMasseProcessor {
 	}
 
 	private void traiteDebiteur(Long id, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
-		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id);
+		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, id);
 		if (isdebiteurSansPeriodiciteUnique(dpi)) {
 			traiteDebiteur(dpi, dateFinPeriode, rapport);
 			rapport.addDebiteur(dpi);

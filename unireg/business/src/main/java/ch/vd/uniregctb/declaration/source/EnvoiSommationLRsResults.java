@@ -16,7 +16,7 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 
 	public static class Traite extends Info {
 
-		private DateRange periodeLr;
+		private final DateRange periodeLr;
 
 		public Traite(long noCtb, DeclarationImpotSource lr) {
 			super(noCtb, null, DateRangeHelper.toDisplayString(lr));

@@ -20,7 +20,7 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		ADRESSES("les adresses n'ont pas pu être calculées"), // -------------------------------------------
 		DI("Incohérence dans les dates de DI"); // ---------------------------------------------------------
 
-		private String description;
+		private final String description;
 
 		private ErreurType(String description) {
 			this.description = description;
@@ -81,10 +81,10 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public final boolean calculateAdresses;
 
 	public int nbCtbsTotal;
-	public List<Erreur> erreursValidation = new ArrayList<Erreur>();
-	public List<Erreur> erreursAssujettissement = new ArrayList<Erreur>();
-	public List<Erreur> erreursCoherenceDI = new ArrayList<Erreur>();
-	public List<Erreur> erreursAdresses = new ArrayList<Erreur>();
+	public final List<Erreur> erreursValidation = new ArrayList<Erreur>();
+	public final List<Erreur> erreursAssujettissement = new ArrayList<Erreur>();
+	public final List<Erreur> erreursCoherenceDI = new ArrayList<Erreur>();
+	public final List<Erreur> erreursAdresses = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public ValidationJobResults(RegDate dateTraitement, boolean calculateAssujettissements, boolean coherenceAssujetDi,

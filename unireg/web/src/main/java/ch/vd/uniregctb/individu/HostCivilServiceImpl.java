@@ -61,7 +61,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	public IndividuView getIndividu(Long numeroIndividu) {
 		IndividuView indCible = null;
 
-		Individu indSource = getServiceCivilService().getIndividu(numeroIndividu.longValue(), null);
+		Individu indSource = getServiceCivilService().getIndividu(numeroIndividu, null);
 
 		if (indSource == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
@@ -124,7 +124,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 */
 	private void traitePermis(Long numeroIndividu, IndividuView indCible) {
 		List<PermisView> lPermisView = new ArrayList<PermisView>();
-		Collection<Permis> colPermis = getServiceCivilService().getPermis(numeroIndividu.longValue(), DateHelper.getCurrentYear());
+		Collection<Permis> colPermis = getServiceCivilService().getPermis(numeroIndividu, DateHelper.getCurrentYear());
 		for (Permis permis : colPermis) {
 			PermisView permisView = new PermisView();
 			if (permis.getTypePermis() != null) {
@@ -175,7 +175,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 * Origine
 	 */
 	private void traiteOrigine(Long numeroIndividu, IndividuView indCible) {
-		Origine origine = getServiceCivilService().getOrigine(numeroIndividu.longValue(), DateHelper.getCurrentYear());
+		Origine origine = getServiceCivilService().getOrigine(numeroIndividu, DateHelper.getCurrentYear());
 		if (origine != null) {
 			Commune commune = origine.getCommune();
 			if (commune != null) {
@@ -192,7 +192,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 */
 	private void traiteNationalite(Long numeroIndividu, IndividuView indCible) {
 
-		final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu.longValue(), DateHelper.getCurrentYear());
+		final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, DateHelper.getCurrentYear());
 		if (nationalites == null) {
 			return;
 		}

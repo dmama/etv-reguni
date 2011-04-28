@@ -22,7 +22,7 @@ public class JdbcPeriodeFiscaleDaoImpl implements JdbcPeriodeFiscaleDao {
 
 	private static final PeriodeFiscaleMapper ROW_MAPPER = new PeriodeFiscaleMapper();
 
-	private JdbcParametrePeriodeFiscaleDao ppfDao = new JdbcParametrePeriodeFiscaleDaoImpl();
+	private final JdbcParametrePeriodeFiscaleDao ppfDao = new JdbcParametrePeriodeFiscaleDaoImpl();
 
 	public PeriodeFiscale get(long periodeId, JdbcTemplate template) {
 

@@ -10,9 +10,9 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
  */
 public class AdresseAdapter implements Adresse {
 
-	private Adresse target;
-	private RegDate debut;
-	private RegDate fin;
+	private final Adresse target;
+	private final RegDate debut;
+	private final RegDate fin;
 
 	public AdresseAdapter(Adresse target, RegDate debut, RegDate fin) {
 		this.target = target;

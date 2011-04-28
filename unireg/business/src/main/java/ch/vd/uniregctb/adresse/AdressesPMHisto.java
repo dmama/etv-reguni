@@ -17,9 +17,9 @@ import ch.vd.uniregctb.type.TypeAdressePM;
  */
 public class AdressesPMHisto {
 
-	public List<AdresseEntreprise> sieges = new ArrayList<AdresseEntreprise>();
-	public List<AdresseEntreprise> courriers = new ArrayList<AdresseEntreprise>();
-	public List<AdresseEntreprise> facturation = new ArrayList<AdresseEntreprise>();
+	public final List<AdresseEntreprise> sieges = new ArrayList<AdresseEntreprise>();
+	public final List<AdresseEntreprise> courriers = new ArrayList<AdresseEntreprise>();
+	public final List<AdresseEntreprise> facturation = new ArrayList<AdresseEntreprise>();
 
 	public void add(AdresseEntreprise adresse) {
 		if (TypeAdressePM.SIEGE == adresse.getType()) {

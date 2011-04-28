@@ -20,7 +20,7 @@ import java.util.Map;
 public class BatchTiersHisto {
 
 	@XmlElement(required = true)
-	public List<BatchTiersHistoEntry> entries = new ArrayList<BatchTiersHistoEntry>();
+	public final List<BatchTiersHistoEntry> entries = new ArrayList<BatchTiersHistoEntry>();
 
 	public BatchTiersHisto() {
 	}

@@ -5,7 +5,7 @@ package ch.vd.uniregctb.webservices.tiers2.cache;
  */
 class GetTiersPeriodeKey extends CacheKey {
 
-	public int periode;
+	public final int periode;
 
 	public GetTiersPeriodeKey(long tiersNumber, int periode) {
 		super(tiersNumber);

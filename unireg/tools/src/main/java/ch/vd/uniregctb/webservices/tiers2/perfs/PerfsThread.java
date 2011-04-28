@@ -56,7 +56,7 @@ public class PerfsThread extends Thread {
 
 	public static abstract class Query {
 
-		protected UserLogin login = new UserLogin();
+		protected final UserLogin login = new UserLogin();
 
 		protected Set<TiersPart> parts = null;
 		protected final FileWriter outputFilename;

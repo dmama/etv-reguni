@@ -15,27 +15,27 @@ public class TiersIndexedData implements Serializable {
 
 	//private static final Logger LOGGER = Logger.getLogger(TiersIndexableData.class);
 
-	private String tiersType;
-	private String numero;
-	private String dateNaissance;
-	private String dateDeces;
-	private String nom1;
-	private String nom2;
-	private String roleLigne1;
-	private String roleLigne2;
-	private Date dateOuvertureFor;
-	private Date dateFermetureFor;
-	private String rue;
-	private String npa;
-	private String localite;
-	private String pays;
-	private String localiteOuPays;
-	private String forPrincipal;
-	private String categorieImpotSource;
-	private boolean annule;
-	private boolean debiteurInactif;
-	private Boolean dansLeCanton;
-	private Integer noOfsCommuneDomicile;
+	private final String tiersType;
+	private final String numero;
+	private final String dateNaissance;
+	private final String dateDeces;
+	private final String nom1;
+	private final String nom2;
+	private final String roleLigne1;
+	private final String roleLigne2;
+	private final Date dateOuvertureFor;
+	private final Date dateFermetureFor;
+	private final String rue;
+	private final String npa;
+	private final String localite;
+	private final String pays;
+	private final String localiteOuPays;
+	private final String forPrincipal;
+	private final String categorieImpotSource;
+	private final boolean annule;
+	private final boolean debiteurInactif;
+	private final Boolean dansLeCanton;
+	private final Integer noOfsCommuneDomicile;
 
 	public TiersIndexedData(Document doc) {
 		tiersType = getDocValue(LuceneEngine.F_DOCSUBTYPE, doc);

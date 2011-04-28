@@ -20,7 +20,7 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 		EXCEPTION(EXCEPTION_DESCRIPTION), // -------------------------------------------------------------------
 		COLLISION_DECLARATION("une DI existe déjà, mais elle ne correspond pas à la période d'imposition calculée");
 
-		private String description;
+		private final String description;
 
 		private ErreurType(String description) {
 			this.description = description;
@@ -40,7 +40,7 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 		DECL_DEJA_EXISTANTE("la déclaration existe déjà"), // --------------------------------------------------
 		PAS_ASSUJETTI("le contribuable n'est pas assujetti au rôle ordinaire");
 
-		private String description;
+		private final String description;
 
 		private IgnoreType(String description) {
 			this.description = description;
@@ -84,7 +84,7 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 		TACHE_ENVOI_ANNULEE("La tâche d'envoi de déclaration préexistante a été annulée."),
 		TACHE_ANNULATION_CREE("Une tâche d'annulation de la déclaration préexistante a été créée.");
 
-		private String description;
+		private final String description;
 
 		private TraiteType(String description) {
 			this.description = description;
@@ -114,9 +114,9 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	public final int annee;
 	public final RegDate dateTraitement;
 	public int nbCtbsTotal;
-	public List<Traite> traites = new ArrayList<Traite>();
-	public List<Ignore> ignores = new ArrayList<Ignore>();
-	public List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Traite> traites = new ArrayList<Traite>();
+	public final List<Ignore> ignores = new ArrayList<Ignore>();
+	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public DeterminationDIsResults(int annee, RegDate dateTraitement) {

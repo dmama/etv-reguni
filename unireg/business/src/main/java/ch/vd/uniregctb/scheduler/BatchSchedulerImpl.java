@@ -47,7 +47,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 
 	public static final String IMMEDIATE_TRIGGER = "ImmediateTrigger";
 
-	private AtomicInteger triggerCount = new AtomicInteger(0);
+	private final AtomicInteger triggerCount = new AtomicInteger(0);
 	private Scheduler scheduler = null;
 	private int timeoutOnStopAll = 5;       // en minutes, le temps d'attente maximal lors d'un appel à stopAllRunningJobs()
 	private final Map<String, JobDefinition> jobs = new HashMap<String, JobDefinition>();

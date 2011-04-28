@@ -59,7 +59,7 @@ public class MouvementServiceImpl implements MouvementService {
 
 	private BordereauMouvementDossier creerBordereau() {
 		final BordereauMouvementDossier bordereau = new BordereauMouvementDossier();
-		return (BordereauMouvementDossier) hibernateTemplate.merge(bordereau);
+		return hibernateTemplate.merge(bordereau);
 	}
 
 	/**

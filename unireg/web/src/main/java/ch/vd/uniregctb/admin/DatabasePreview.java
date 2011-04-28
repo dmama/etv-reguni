@@ -9,7 +9,7 @@ import java.util.Map;
 public class DatabasePreview {
 
 	Map<Class,List<InfoTiers>> infoTiers;
-	List<Class> tiersTypes = new ArrayList<Class>();
+	final List<Class> tiersTypes = new ArrayList<Class>();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public List<Class> getTiersTypes() {

@@ -18,9 +18,9 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private AdresseGenerique target;
-	private Source source;
-	private boolean isDefault;
-	private boolean isAnnule;
+	private final Source source;
+	private final boolean isDefault;
+	private final boolean isAnnule;
 
 	/**
 	 * @param adresse   l'adresse générique à adapter

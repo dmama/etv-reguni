@@ -13,7 +13,7 @@ import ch.vd.registre.base.utils.Assert;
 class LoadPoint implements Comparable<LoadPoint> {
 
 	private final Periode periode;
-	private Map<String, MutableLong> countPerUser = new HashMap<String, MutableLong>();
+	private final Map<String, MutableLong> countPerUser = new HashMap<String, MutableLong>();
 	private long totalCount;
 
 	LoadPoint(Periode periode) {

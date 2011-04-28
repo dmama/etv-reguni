@@ -5,9 +5,9 @@ import java.util.Set;
 
 public class MeasurePoint implements Comparable<MeasurePoint> {
 	
-	private HashMap<String, MeasurePoint> children = new HashMap<String, MeasurePoint>();
+	private final HashMap<String, MeasurePoint> children = new HashMap<String, MeasurePoint>();
 	
-	private String description;
+	private final String description;
 	private int nbCalls = 0;
 	private long callsTime = 0;
 

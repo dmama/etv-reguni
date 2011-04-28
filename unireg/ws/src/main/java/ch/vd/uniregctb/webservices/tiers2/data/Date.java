@@ -24,19 +24,19 @@ public class Date implements Comparable<Date> {
 	 * Year on four digits (e.g. 1337, 2001, 2400, ...).
 	 */
 	@XmlElement(required = true)
-	public int year;
+	public final int year;
 
 	/**
 	 * Month (1..12). In case of partial date, the value may be 0.
 	 */
 	@XmlElement(required = true)
-	public int month;
+	public final int month;
 
 	/**
 	 * Day of the month (1..31). In case of partial date, the value is 0.
 	 */
 	@XmlElement(required = true)
-	public int day;
+	public final int day;
 
 	public Date() {
 		this.year = 0;

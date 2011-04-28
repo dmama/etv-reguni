@@ -31,7 +31,7 @@ public class IdentifierContribuableResults extends JobResults<Long, IdentifierCo
 
 	public static class Erreur  {
 
-		public Long messageId;
+		public final Long messageId;
 		public final String raison;
 
 		public Erreur(Long messageId, String raison) {
@@ -64,9 +64,9 @@ public class IdentifierContribuableResults extends JobResults<Long, IdentifierCo
 
 	public final RegDate dateTraitement;
 	public int nbMessagesTotal;
-	public List<Identifie> identifies = new ArrayList<Identifie>();
-	public List<NonIdentifie> nonIdentifies = new ArrayList<NonIdentifie>();
-	public List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Identifie> identifies = new ArrayList<Identifie>();
+	public final List<NonIdentifie> nonIdentifies = new ArrayList<NonIdentifie>();
+	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public IdentifierContribuableResults(RegDate dateTraitement) {

@@ -33,9 +33,9 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 		}
 	}
 
-	private String NON_ASSUJETTI_OU_SOURCIER_PUR = "Non-assujetti ou sourcier pur";
-	private String HORS_CANTON = "Hors canton";
-	private String ASSUJETTI_SANS_FOR_VD_AU_31_12 = "Assujetti sans for vaudois au 31 décembre";
+	private static final String NON_ASSUJETTI_OU_SOURCIER_PUR = "Non-assujetti ou sourcier pur";
+	private static final String HORS_CANTON = "Hors canton";
+	private static final String ASSUJETTI_SANS_FOR_VD_AU_31_12 = "Assujetti sans for vaudois au 31 décembre";
 
 	public static abstract class InfoCtbBase {
 		public final long noCtb;

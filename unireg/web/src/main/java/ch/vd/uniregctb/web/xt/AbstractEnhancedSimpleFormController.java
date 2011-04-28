@@ -200,9 +200,7 @@ public abstract class AbstractEnhancedSimpleFormController extends SimpleFormCon
 					if (logger.isTraceEnabled()) {
 						logger.trace(new StringBuilder("Invoking method: ").append(m));
 					}
-					response = (AjaxResponse) m.invoke(this, new Object[] {
-						event
-					});
+					response = (AjaxResponse) m.invoke(this, event);
 				}
 				else {
 					logger.error("You need to call the supports() method first!");

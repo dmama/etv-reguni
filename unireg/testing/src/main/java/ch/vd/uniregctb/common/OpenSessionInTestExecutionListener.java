@@ -27,7 +27,7 @@ public class OpenSessionInTestExecutionListener extends AbstractTestExecutionLis
 	private FlushMode flushMode = FlushMode.AUTO;
 	private boolean singleSession = true;
 
-	private static Logger logger = Logger.getLogger(OpenSessionInTestExecutionListener.class);
+	private static final Logger logger = Logger.getLogger(OpenSessionInTestExecutionListener.class);
 
 	private boolean participate = false;
 
@@ -86,7 +86,7 @@ public class OpenSessionInTestExecutionListener extends AbstractTestExecutionLis
 		if (logger.isDebugEnabled()) {
 			logger.debug("Using SessionFactory '" + getSessionFactoryBeanName() + "' for OpenSessionInTestExecutionListener");
 		}
-		return (SessionFactory) beanFactory.getBean(getSessionFactoryBeanName(), SessionFactory.class);
+		return beanFactory.getBean(getSessionFactoryBeanName(), SessionFactory.class);
 	}
 
 	protected Session getSession(SessionFactory sessionFactory) throws DataAccessResourceFailureException {

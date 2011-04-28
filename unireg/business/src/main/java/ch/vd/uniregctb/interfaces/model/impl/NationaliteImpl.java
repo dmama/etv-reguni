@@ -13,7 +13,7 @@ public class NationaliteImpl implements Nationalite, Serializable {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final Pays pays;
-	private int noSequence;
+	private final int noSequence;
 
 	public static NationaliteImpl get(ch.vd.registre.civil.model.Nationalite target) {
 		if (target == null) {

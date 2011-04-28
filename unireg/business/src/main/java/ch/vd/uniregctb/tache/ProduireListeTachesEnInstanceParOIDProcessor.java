@@ -106,7 +106,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 				.getCollectivitesAdministratives(typesCollectivite);
 		List<Long> listId = new ArrayList<Long>();
 		for (ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteAdministrative : collectivites) {
-			listId.add(new Long(collectiviteAdministrative.getNoColAdm()));
+			listId.add((long) collectiviteAdministrative.getNoColAdm());
 		}
 		Collections.sort(listId);
 		return listId;

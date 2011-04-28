@@ -32,9 +32,9 @@ public class JdbcHibernateEntityDaoGenerator {
 	protected static final Logger LOGGER = Logger.getLogger(JdbcHibernateEntityDaoGenerator.class);
 
 	private String table;
-	private Class<?> baseClass;
-	private List<MetaEntity> entities = new ArrayList<MetaEntity>();
-	private Map<String, Property> allProperties = new HashMap<String, Property>();
+	private final Class<?> baseClass;
+	private final List<MetaEntity> entities = new ArrayList<MetaEntity>();
+	private final Map<String, Property> allProperties = new HashMap<String, Property>();
 
 	public JdbcHibernateEntityDaoGenerator(Class... hibernateEntities) throws Exception {
 

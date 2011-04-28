@@ -342,7 +342,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 						param1 = java.util.Date.class;
 					} else if (value instanceof Integer) {
 						param1 = Long.class;
-						value = new Long((Integer) value);
+						value = ((Integer) value).longValue();
 					}
 
 					m = c.getMethod(methodName, param1);

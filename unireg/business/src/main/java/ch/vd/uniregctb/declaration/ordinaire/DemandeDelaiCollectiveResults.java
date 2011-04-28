@@ -23,7 +23,7 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 		DI_SOMMEE("La déclaration a déjà été sommée"), // ----------------------------------------------------
 		DI_ECHUE("La déclaration est déjà échue");
 
-		private String description;
+		private final String description;
 
 		private ErreurType(String description) {
 			this.description = description;
@@ -37,7 +37,7 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 	public enum IgnoreType {
 		DELAI_DEJA_SUPERIEUR("Le délai accordé est supérieur à celui spécifié");
 
-		private String description;
+		private final String description;
 
 		private IgnoreType(String description) {
 			this.description = description;
@@ -52,7 +52,7 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 		public final ErreurType raison;
 
 		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super((noCtb == null ? 0 : noCtb.longValue()), officeImpotID, details);
+			super((noCtb == null ? 0 : noCtb), officeImpotID, details);
 			this.raison = raison;
 		}
 
@@ -87,16 +87,16 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 	}
 
 	// paramètre d'entrée
-	public int annee;
+	public final int annee;
 	public final RegDate dateDelai;
 	public final RegDate dateTraitement;
 	public final List<Long> ctbsIds;
 
 	// données de sortie
 	public int nbCtbsTotal;
-	public List<Traite> traites = new ArrayList<Traite>();
-	public List<Ignore> ignores = new ArrayList<Ignore>();
-	public List<Erreur> errors = new ArrayList<Erreur>();
+	public final List<Traite> traites = new ArrayList<Traite>();
+	public final List<Ignore> ignores = new ArrayList<Ignore>();
+	public final List<Erreur> errors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public DemandeDelaiCollectiveResults(int annee, RegDate dateDelai, List<Long> ctbsIds, RegDate dateTraitement) {

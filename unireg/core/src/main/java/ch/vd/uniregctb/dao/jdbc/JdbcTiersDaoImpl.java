@@ -49,13 +49,13 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 
 	private static final TiersMapper ROW_MAPPER = new TiersMapper();
 
-	private JdbcAdresseTiersDao adresseDao = new JdbcAdresseTiersDaoImpl();
-	private JdbcDeclarationDao declarationDao = new JdbcDeclarationDaoImpl();
-	private JdbcForFiscalDao forFiscalDao = new JdbcForFiscalDaoImpl();
-	private JdbcRapportEntreTiersDao retDao = new JdbcRapportEntreTiersDaoImpl();
-	private JdbcSituationFamilleDao sfDao = new JdbcSituationFamilleDaoImpl();
-	private JdbcIdentificationPersonneDao ipDao = new JdbcIdentificationPersonneDaoImpl();
-	private JdbcPeriodiciteDao pDao = new JdbcPeriodiciteDaoImpl();
+	private final JdbcAdresseTiersDao adresseDao = new JdbcAdresseTiersDaoImpl();
+	private final JdbcDeclarationDao declarationDao = new JdbcDeclarationDaoImpl();
+	private final JdbcForFiscalDao forFiscalDao = new JdbcForFiscalDaoImpl();
+	private final JdbcRapportEntreTiersDao retDao = new JdbcRapportEntreTiersDaoImpl();
+	private final JdbcSituationFamilleDao sfDao = new JdbcSituationFamilleDaoImpl();
+	private final JdbcIdentificationPersonneDao ipDao = new JdbcIdentificationPersonneDaoImpl();
+	private final JdbcPeriodiciteDao pDao = new JdbcPeriodiciteDaoImpl();
 
 	private DataSource dataSource;
 

@@ -8,9 +8,9 @@ import ch.vd.uniregctb.tiers.*;
 public class CoupleHelper {
 
 	public class Couple {
-		private TypeUnion typeUnion;
-		private Contribuable premierTiers;
-		private Contribuable secondTiers;
+		private final TypeUnion typeUnion;
+		private final Contribuable premierTiers;
+		private final Contribuable secondTiers;
 		
 		public Couple(TypeUnion typeUnion, Contribuable premierTiers, Contribuable secondTiers) {
 			this.typeUnion = typeUnion;

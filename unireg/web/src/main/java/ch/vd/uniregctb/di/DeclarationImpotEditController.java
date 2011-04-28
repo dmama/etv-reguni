@@ -334,7 +334,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			if (delaiRetourEnJours != null) {
 				Integer iDelaiRetourEnJours = new Integer(delaiRetourEnJours);
 				RegDate dateJour = RegDate.get();
-				RegDate delaiAccorde = dateJour.addDays(iDelaiRetourEnJours.intValue());
+				RegDate delaiAccorde = dateJour.addDays(iDelaiRetourEnJours);
 				diDetailView.setDelaiAccorde(delaiAccorde);
 			}
 

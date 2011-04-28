@@ -33,7 +33,7 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 		String mimetype = servletContext.getMimeType(fileName);
 		response.setContentType(mimetype);
 		if (contentLength != null) {
-			response.setContentLength(contentLength.intValue());
+			response.setContentLength(contentLength);
 		}
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 

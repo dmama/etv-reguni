@@ -14,7 +14,7 @@ import org.apache.commons.lang.mutable.MutableLong;
  */
 class LoadAnalyze extends Analyze {
 
-	private Map<String, LoadData> results = new HashMap<String, LoadData>();
+	private final Map<String, LoadData> results = new HashMap<String, LoadData>();
 
 	public void addCall(Call call) {
 

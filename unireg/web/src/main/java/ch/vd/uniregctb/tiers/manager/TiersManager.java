@@ -797,7 +797,7 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected Rue getRueByNumero(Integer numeroRue) {
 		try {
-			return getServiceInfrastructureService().getRueByNumero(numeroRue.intValue());
+			return getServiceInfrastructureService().getRueByNumero(numeroRue);
 		}
 		catch (ServiceInfrastructureException e) {
 			LOGGER.error("Impossible de trouver la rue avec le numéro = " + numeroRue, e);

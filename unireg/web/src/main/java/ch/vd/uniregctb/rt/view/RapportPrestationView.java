@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class RapportPrestationView implements Comparable<RapportPrestationView> {
 
-	private static BaseComparator<RapportPrestationView> comparator = new BaseComparator<RapportPrestationView>(new String[] {
+	private static final BaseComparator<RapportPrestationView> comparator = new BaseComparator<RapportPrestationView>(new String[] {
 			"annule", "dateDebut"
 	}, new Boolean[] {
 			true, true

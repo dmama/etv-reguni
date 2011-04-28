@@ -125,7 +125,7 @@ public class ProduireStatsCtbsProcessor {
 
 		Contribuable ctb = null;
 		try {
-			ctb = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+			ctb = hibernateTemplate.get(Contribuable.class, id);
 
 			final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, rapport.annee);
 			if (assujettissements == null || assujettissements.isEmpty()) {

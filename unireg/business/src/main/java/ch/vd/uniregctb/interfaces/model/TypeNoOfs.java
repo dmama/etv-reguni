@@ -5,5 +5,5 @@ package ch.vd.uniregctb.interfaces.model;
 */
 public enum TypeNoOfs {
 	COMMUNE_CH,
-	PAYS_HS;
+	PAYS_HS
 }

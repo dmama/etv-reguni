@@ -824,16 +824,17 @@ public class MetierServiceImpl implements MetierService {
 		else {
 			// vérification que le ménage soit bien incomplet
 			checkMenageIsNotComplete(menage, results);
+
+			RegDate dateMariage = date;
+			RapportEntreTiers rapport = menage.getRapportObjetValidAt(date, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			if (rapport != null) {
+				dateMariage = rapport.getDateDebut();
+			}
+			if (!RegDateHelper.equals(date, dateMariage)) {
+				results.addError("La date ne correspond pas à celle du mariage.");
+			}
 		}
 
-		RegDate dateMariage = date;
-		RapportEntreTiers rapport = menage.getRapportObjetValidAt(date, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-		if (rapport != null) {
-			dateMariage = rapport.getDateDebut();
-		}
-		if (!RegDateHelper.equals(date, dateMariage)) {
-			results.addError("La date ne correspond pas à celle du mariage.");
-		}
 		return results;
 	}
 

@@ -5,13 +5,13 @@ package ch.vd.uniregctb.hibernate.meta;
  */
 public class Property implements Comparable<Property> {
 
-	private String name;
-	private PropertyType type;
-	private String columnName;
-	private String discriminatorValue;
-	private boolean primaryKey;
-	private boolean parentForeignKey;
-	private boolean collection;
+	private final String name;
+	private final PropertyType type;
+	private final String columnName;
+	private final String discriminatorValue;
+	private final boolean primaryKey;
+	private final boolean parentForeignKey;
+	private final boolean collection;
 	private int index;
 
 	public Property(String name, PropertyType type, String columnName, String discriminatorValue, boolean primaryKey, boolean parentForeignKey, boolean collection) {

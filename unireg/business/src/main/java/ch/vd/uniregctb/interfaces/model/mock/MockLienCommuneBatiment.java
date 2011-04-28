@@ -7,10 +7,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class MockLienCommuneBatiment implements DateRange {
 
-	private MockCommune commune;
-	private MockBatiment batiment;
-	private RegDate dateDebut;
-	private RegDate dateFin;
+	private final MockCommune commune;
+	private final MockBatiment batiment;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
 
 	MockLienCommuneBatiment(MockCommune commune, MockBatiment batiment, RegDate dateDebut, RegDate dateFin) {
 		this.commune = commune;

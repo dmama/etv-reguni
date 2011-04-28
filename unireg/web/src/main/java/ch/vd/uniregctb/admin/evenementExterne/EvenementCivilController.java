@@ -24,7 +24,7 @@ import ch.vd.uniregctb.web.xt.AbstractEnhancedSimpleFormController;
 
 public class EvenementCivilController extends AbstractEnhancedSimpleFormController {
 
-	private static Logger logger = Logger.getLogger(EvenementCivilController.class);
+	private static final Logger logger = Logger.getLogger(EvenementCivilController.class);
 
 	private EvenementCivilSender evtCivilSender;
 

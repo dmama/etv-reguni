@@ -247,7 +247,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		}
 
 		Integer periodeFiscale = identificationContribuableCriteria.getPeriodeFiscale();
-		if ((periodeFiscale != null) && (periodeFiscale.intValue() != -1)) {
+		if ((periodeFiscale != null) && (periodeFiscale != -1)) {
 			queryWhere += " and identificationContribuable.demande.periodeFiscale = ? ";
 			criteria.add(periodeFiscale);
 		}

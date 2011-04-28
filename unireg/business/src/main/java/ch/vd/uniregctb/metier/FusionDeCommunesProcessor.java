@@ -150,7 +150,7 @@ public class FusionDeCommunesProcessor {
 
 	protected void traiteTiers(Long id, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
 
-		final Tiers tiers = (Tiers) hibernateTemplate.get(Tiers.class, id);
+		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
 		Assert.notNull(tiers);
 
 		rapport.nbTiersTotal++;

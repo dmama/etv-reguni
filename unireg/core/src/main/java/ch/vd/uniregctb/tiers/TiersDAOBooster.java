@@ -29,7 +29,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 
 	private TiersDAO target;
 	private String filename;
-	private Set<Long> boostedIds = new HashSet<Long>();
+	private final Set<Long> boostedIds = new HashSet<Long>();
 
 	public void setTarget(TiersDAO target) {
 		this.target = target;

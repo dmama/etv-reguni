@@ -21,7 +21,7 @@ import ch.vd.uniregctb.common.XmlUtils;
  */
 public class DataEventJmsSender implements DataEventListener, InitializingBean {
 
-	private static Logger LOGGER = Logger.getLogger(DataEventJmsSender.class);
+	private static final Logger LOGGER = Logger.getLogger(DataEventJmsSender.class);
 
 	private String outputQueue;
 	private EsbJmsTemplate esbTemplate;

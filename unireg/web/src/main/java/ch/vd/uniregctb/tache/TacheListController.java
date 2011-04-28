@@ -32,7 +32,7 @@ public class TacheListController extends AbstractTacheController {
 	private static final String TABLE_TACHE_ID = "tache";
 	public static final String TACHE_CRITERIA_NAME = "tacheCriteria";
 	public static final String RESULT_SIZE_NAME = "resultSize";
-	public static final Integer PAGE_SIZE = new Integer(25);
+	public static final Integer PAGE_SIZE = 25;
 	public static final String TACHE_LIST_ATTRIBUTE_NAME = "taches";
 
 	private TacheListManager tacheListManager;
@@ -83,11 +83,11 @@ public class TacheListController extends AbstractTacheController {
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_TACHE_ID, PAGE_SIZE);
 			final List<TacheListView> tachesView = tacheListManager.find(bean, pagination);
 			mav.addObject(TACHE_LIST_ATTRIBUTE_NAME, tachesView);
-			mav.addObject(RESULT_SIZE_NAME, new Integer(tacheListManager.count(bean)));
+			mav.addObject(RESULT_SIZE_NAME, tacheListManager.count(bean));
 		}
 		else {
 			mav.addObject(TACHE_LIST_ATTRIBUTE_NAME, new ArrayList<TacheListView>());
-			mav.addObject(RESULT_SIZE_NAME, Integer.valueOf(0));
+			mav.addObject(RESULT_SIZE_NAME, 0);
 		}
 
 		TracingManager.end(tp);

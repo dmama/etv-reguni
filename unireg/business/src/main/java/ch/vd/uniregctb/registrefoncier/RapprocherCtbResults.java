@@ -35,7 +35,7 @@ public class RapprocherCtbResults extends JobResults<Long, RapprocherCtbResults>
 	public int nbIndviduInconnu=0;
 	public int nbPlusDeDeuxIndividu=0;
 
-	public List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
 
 	public static class Erreur extends Info {
 		public final ErreurType raison;

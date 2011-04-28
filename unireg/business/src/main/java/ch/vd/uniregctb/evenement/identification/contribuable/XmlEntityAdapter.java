@@ -130,11 +130,11 @@ public abstract class XmlEntityAdapter {
 		xml.setNoPolice(adresse.getNoPolice());
 		xml.setNPAEtranger(adresse.getNpaEtranger());
 		final Integer npaSuisse = adresse.getNpaSuisse();
-		xml.setNPASuisse(npaSuisse == null ? 0 : npaSuisse.intValue());
+		xml.setNPASuisse(npaSuisse == null ? 0 : npaSuisse);
 		final Integer noOrdrePosteSuisse = adresse.getNoOrdrePosteSuisse();
-		xml.setNPASuisseId(noOrdrePosteSuisse == null ? 0 : noOrdrePosteSuisse.intValue());
+		xml.setNPASuisseId(noOrdrePosteSuisse == null ? 0 : noOrdrePosteSuisse);
 		final Integer numeroCasePostale = adresse.getNumeroCasePostale();
-		xml.setNumeroCasePostale(numeroCasePostale == null ? 0 : numeroCasePostale.intValue());
+		xml.setNumeroCasePostale(numeroCasePostale == null ? 0 : numeroCasePostale);
 		xml.setPays(adresse.getCodePays());
 		xml.setRue(adresse.getRue());
 		xml.setTexteCasePostale(adresse.getTexteCasePostale());

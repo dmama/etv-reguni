@@ -181,7 +181,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	private class BatchThread extends Thread {
 
 		private final String principal;
-		private R rapportFinal;
+		private final R rapportFinal;
 		private final BatchTransactionTemplate.BatchCallback<E, R> action;
 		private final BlockingQueueIterator iterator = new BlockingQueueIterator();
 

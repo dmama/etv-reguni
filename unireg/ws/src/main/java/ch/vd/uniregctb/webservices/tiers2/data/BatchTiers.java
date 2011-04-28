@@ -22,7 +22,7 @@ import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 public class BatchTiers {
 
 	@XmlElement(required = true)
-	public List<BatchTiersEntry> entries = new ArrayList<BatchTiersEntry>();
+	public final List<BatchTiersEntry> entries = new ArrayList<BatchTiersEntry>();
 
 	public BatchTiers(BatchTiersEntry unique) {
 		entries.add(unique);

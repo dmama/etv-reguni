@@ -23,22 +23,22 @@ public class AddSubEntity extends Delta {
 	/**
 	 * La clé de l'entité parente sur laquelle on ajoute une sous-entité dans une collection
 	 */
-	private EntityKey key;
+	private final EntityKey key;
 
 	/**
 	 * Le nom de la collection sur l'entité parente
 	 */
-	private String collName;
+	private final String collName;
 
 	/**
 	 * La classe de la sous-entité à ajouter
 	 */
-	private Class subClass;
+	private final Class subClass;
 
 	/**
 	 * L'id de la sous-entité à ajouter
 	 */
-	private Long id;
+	private final Long id;
 
 	public AddSubEntity(EntityKey key, String collName, Class subClass, Long id) {
 		this.key = key;

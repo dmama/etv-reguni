@@ -7,8 +7,8 @@ import ch.vd.registre.base.validation.ValidationResults;
  */
 public class TiersState {
 
-	private EntityKey key;
-	private ValidationResults validationResults;
+	private final EntityKey key;
+	private final ValidationResults validationResults;
 
 	public TiersState(EntityKey key, ValidationResults validationResults) {
 		this.key = key;

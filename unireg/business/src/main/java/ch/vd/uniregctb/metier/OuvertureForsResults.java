@@ -73,8 +73,8 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	public int nbHabitantsMineurs;
 	public int nbHabitantsDecedes;
 	public int nbHabitantsHorsVD;
-	public List<Traite> habitantTraites = new ArrayList<Traite>();
-	public List<Erreur> habitantEnErrors = new ArrayList<Erreur>();
+	public final List<Traite> habitantTraites = new ArrayList<Traite>();
+	public final List<Erreur> habitantEnErrors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public OuvertureForsResults(RegDate dateTraitement) {

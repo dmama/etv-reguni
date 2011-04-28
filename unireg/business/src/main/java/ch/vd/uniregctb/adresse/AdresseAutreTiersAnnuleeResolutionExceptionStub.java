@@ -14,8 +14,8 @@ import ch.vd.uniregctb.interfaces.model.Commune;
  */
 public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseGenerique {
 
-	private AdresseAutreTiers target;
-	private Source source;
+	private final AdresseAutreTiers target;
+	private final Source source;
 
 	public AdresseAutreTiersAnnuleeResolutionExceptionStub(AdresseAutreTiers target) {
 		Assert.isTrue(target.isAnnule()); // si l'adresse autre tiers n'est pas annulée, l'exception de résolution des adresses doit être remontée !

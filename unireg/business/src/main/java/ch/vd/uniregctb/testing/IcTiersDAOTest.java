@@ -24,7 +24,7 @@ public class IcTiersDAOTest extends InContainerTest {
 		{
 			List<Tiers> list = getTiersDAO().getAll();
 			Assert.isEqual(1, list.size());
-			Assert.isEqual(new Long(id), list.get(0).getNumero());
+			Assert.isEqual(id, list.get(0).getNumero());
 		}
 
 		{

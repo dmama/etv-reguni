@@ -88,7 +88,7 @@ public class Ec_1000_01_NaissanceScenario extends EvenementCivilScenario {
 		assertEquals(1, list.size(), "");
 
 		PersonnePhysique pierre = (PersonnePhysique)list.get(0);
-		assertEquals(new Long(123), pierre.getNumeroIndividu(), "");
+		assertEquals((long) 123, pierre.getNumeroIndividu(), "");
 		assertEquals(0, pierre.getForsFiscaux().size(), "");
 		assertEquals(0, pierre.getAdressesTiers().size(), "");
 	}

@@ -108,8 +108,8 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	}
 
 	private static class KeyGetDroitAcces {
-		String visaOperateur;
-		long tiersId;
+		final String visaOperateur;
+		final long tiersId;
 
 		public KeyGetDroitAcces(String visaOperateur, long tiersId) {
 			this.visaOperateur = visaOperateur;
@@ -254,9 +254,9 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	}
 
 	private static class KeyIsGranted {
-		Role role;
-		String visaOperateur;
-		int codeCollectivite;
+		final Role role;
+		final String visaOperateur;
+		final int codeCollectivite;
 
 		public KeyIsGranted(Role role, String visaOperateur, int codeCollectivite) {
 			this.role = role;

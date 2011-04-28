@@ -167,7 +167,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 				.getNombreEnfants(), sf.getEtatCivil());
 		assertEquals(dateDebut, sf.getDateDebut(), message);
 		assertEquals(dateFin, sf.getDateFin(), message);
-		assertEquals(Integer.valueOf(nbEnfants), sf.getNombreEnfants(), message);
+		assertEquals(nbEnfants, sf.getNombreEnfants(), message);
 		assertEquals(etatCivil, sf.getEtatCivil(), message);
 	}
 

@@ -146,7 +146,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 	
 	class CorrectionForsProcessor extends BatchCallback<Long, JobResults> {
 		
-		private int currentBatch = 0;
+		private final int currentBatch = 0;
 		private int analyses = 0;
 		private int rouverts = 0;
 		private int erreurs = 0;

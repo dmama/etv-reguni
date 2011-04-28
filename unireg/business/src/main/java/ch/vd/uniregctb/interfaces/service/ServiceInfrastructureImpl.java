@@ -667,7 +667,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * [UNIREG-2243] liste hard-codée parce que l'infrastructure du host ne possède pas cette info pour l'instant
 	 */
-	private static Set<Integer> affEurope = new HashSet<Integer>();
+	private static final Set<Integer> affEurope = new HashSet<Integer>();
 
 	static {
 		affEurope.add(8201); // Albanie

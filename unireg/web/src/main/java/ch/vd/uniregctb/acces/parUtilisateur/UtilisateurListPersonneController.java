@@ -55,7 +55,7 @@ public class UtilisateurListPersonneController extends AbstractTiersListControll
 		String noIndividuOperateurParam = request.getParameter(UTILISATEUR_PARAMETER_NAME);
 		long noIndividuOperateur = 0;
 		if (noIndividuOperateurParam != null) {
-			noIndividuOperateur = Long.valueOf(noIndividuOperateurParam).longValue();
+			noIndividuOperateur = Long.valueOf(noIndividuOperateurParam);
 		}
 
 		UtilisateurListPersonneView bean = (UtilisateurListPersonneView) session.getAttribute(PERSONNE_CRITERIA_NAME);

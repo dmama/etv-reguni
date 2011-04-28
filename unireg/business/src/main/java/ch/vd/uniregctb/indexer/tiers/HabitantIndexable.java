@@ -19,7 +19,7 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 
 	public static final String SUB_TYPE = "habitant";
 
-	private Individu individu;
+	private final Individu individu;
 
 	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique hab, Individu individu) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, hab);

@@ -11,7 +11,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
  */
 public class BasicTiersPickerFilter implements TiersPickerFilter {
 
-	private String description;
+	private final String description;
 	private TiersCriteria.TypeVisualisation typeVisualisation;
 	private TiersCriteria.TypeTiers typeTiers;
 	private boolean inclureI107;

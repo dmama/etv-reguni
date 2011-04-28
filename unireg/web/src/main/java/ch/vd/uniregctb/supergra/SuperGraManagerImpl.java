@@ -72,7 +72,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private ValidationService validationService;
 	private ValidationInterceptor validationInterceptor;
 	private List<String> annotatedClass;
-	private Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new HashMap<EntityType, List<Class<? extends HibernateEntity>>>();
+	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new HashMap<EntityType, List<Class<? extends HibernateEntity>>>();
 
 	/**
 	 * Les propriétés qui ne doivent pas être changées, même en mode SuperGra.

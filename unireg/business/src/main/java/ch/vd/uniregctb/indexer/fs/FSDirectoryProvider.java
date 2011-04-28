@@ -13,7 +13,7 @@ public class FSDirectoryProvider extends DirectoryProvider {
 
 	private static final Logger LOGGER = Logger.getLogger(FSDirectoryProvider.class);
 
-	private String indexPath;
+	private final String indexPath;
 
 	public FSDirectoryProvider(String path) throws IndexerException {
 		indexPath = path;

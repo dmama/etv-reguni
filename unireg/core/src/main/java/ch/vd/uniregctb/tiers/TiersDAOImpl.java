@@ -396,7 +396,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
         List<Long> list;
         if (ctbStart > 0 && ctbEnd > 0) {
-            list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ? AND tiers.numero <= ?", new Object[]{ctbStart, ctbEnd});
+            list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ? AND tiers.numero <= ?", ctbStart, ctbEnd);
         } else if (ctbStart > 0) {
             list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ?", ctbStart);
         } else if (ctbEnd > 0) {
@@ -720,7 +720,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
     public Contribuable getContribuableByNumero(Long numeroContribuable) {
         LOGGER.debug("Recherche du contribuable dont le numéro est:" + numeroContribuable);
-        return (Contribuable) getHibernateTemplate().get(Contribuable.class, numeroContribuable);
+        return getHibernateTemplate().get(Contribuable.class, numeroContribuable);
     }
 
     /**
@@ -728,7 +728,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
      */
     public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
         LOGGER.debug("Recherche du Debiteur Prestation Imposable dont le numéro est:" + numeroDPI);
-        return (DebiteurPrestationImposable) getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
+        return getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
     }
 
     /**

@@ -156,7 +156,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 	protected void traiteHabitant(Long id, RegDate dateReference) {
 
-		PersonnePhysique habitant = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		PersonnePhysique habitant = hibernateTemplate.get(PersonnePhysique.class, id);
 
 		++rapport.nbHabitantsTotal;
 

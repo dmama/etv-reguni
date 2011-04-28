@@ -49,9 +49,9 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 	private PlatformTransactionManager transactionManager;
 
-	private static String valide = "VALIDE";
+	private static final String valide = "VALIDE";
 
-	private static String annulee = "ANNULEE";
+	private static final String annulee = "ANNULEE";
 
 	/** Service des événements fiscaux */
 	private EvenementFiscalService evenementFiscalService;
@@ -366,7 +366,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 				Set<MenageCommun> menages = new HashSet<MenageCommun>();
 				for (RapportEntreTiers rapportSujet : rapportsSujet) {
 					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportSujet.getType() && !rapportSujet.isAnnule()) {
-						final MenageCommun menage =(MenageCommun) hibernateTemplate.get(MenageCommun.class, rapportSujet.getObjetId());
+						final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, rapportSujet.getObjetId());
 						menages.add(menage);
 					}
 				}

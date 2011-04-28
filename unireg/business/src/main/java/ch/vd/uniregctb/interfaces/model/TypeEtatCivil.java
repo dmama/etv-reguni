@@ -13,7 +13,7 @@ public enum TypeEtatCivil {
 	SEPARE(ch.vd.uniregctb.type.EtatCivil.SEPARE),
 	VEUF(ch.vd.uniregctb.type.EtatCivil.VEUF);
 
-	private ch.vd.uniregctb.type.EtatCivil core;
+	private final ch.vd.uniregctb.type.EtatCivil core;
 
 	TypeEtatCivil(ch.vd.uniregctb.type.EtatCivil core) {
 		this.core = core;

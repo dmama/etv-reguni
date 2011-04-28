@@ -59,7 +59,6 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 	private long noHabAmelie;
 	private long noHabStephanie;
 	private long noHabJoseph;
-	;
 	private long noMenage1;
 	private long noMenage2;
 	private long noMenage3;

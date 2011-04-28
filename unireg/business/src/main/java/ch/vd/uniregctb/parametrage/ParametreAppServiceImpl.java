@@ -29,7 +29,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	private ParametreAppDAO dao;
 	private PlatformTransactionManager transactionManager;
 
-	Map<ParametreEnum, ParametreApp> parametres = new HashMap<ParametreEnum, ParametreApp>();
+	private final Map<ParametreEnum, ParametreApp> parametres = new HashMap<ParametreEnum, ParametreApp>();
 
 	/**
 	 * Initialisation des parametres

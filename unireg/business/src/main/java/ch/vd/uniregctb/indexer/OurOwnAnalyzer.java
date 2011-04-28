@@ -16,7 +16,7 @@ public abstract class OurOwnAnalyzer extends Analyzer {
 
 		if (result != null) {
 			try {
-				TermAttribute att = (TermAttribute) result.getAttribute(TermAttribute.class);
+				TermAttribute att = result.getAttribute(TermAttribute.class);
 				LOGGER.debug("* " + result.getClass().getSimpleName());
 				while (result.incrementToken()) {
 					LOGGER.debug(att.term());

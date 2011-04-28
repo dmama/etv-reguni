@@ -21,14 +21,14 @@ public class DelaisServiceImpl implements DelaisService {
 	/**
 	 * {@link Set} des jours fériés
 	 */
-	private static Set<RegDate> joursFeries = new HashSet<RegDate>();
+	private static final Set<RegDate> joursFeries = new HashSet<RegDate>();
 	
 	/**
 	 * Set de {@link RegDate} partielles contenant les années pour lesquelles les jours fériés ont
 	 * été initialisés
 	 *   
 	 */
-	private static Set<RegDate> joursFeriesInitialisesPourAnnees = new HashSet<RegDate>();
+	private static final Set<RegDate> joursFeriesInitialisesPourAnnees = new HashSet<RegDate>();
 	
 
 	/* (non-Javadoc)

@@ -31,7 +31,7 @@ public class UniregBlacklistFilter extends TokenFilter {
 
 	protected UniregBlacklistFilter(TokenStream input) {
 		super(input);
-		att = (TermAttribute) getAttribute(TermAttribute.class);
+		att = getAttribute(TermAttribute.class);
 	}
 
 	@Override

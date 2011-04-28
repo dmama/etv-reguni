@@ -17,8 +17,8 @@ public enum EntityType {
 	ModeleDocument(ch.vd.uniregctb.declaration.ModeleDocument.class, "modèle de document"),
 	PeriodeFiscale(ch.vd.uniregctb.declaration.PeriodeFiscale.class, "période fiscale");
 
-	private Class<?> hibernateClass;
-	private String displayName;
+	private final Class<?> hibernateClass;
+	private final String displayName;
 
 	EntityType(Class<?> hibernateClass, String displayName) {
 		this.hibernateClass = hibernateClass;

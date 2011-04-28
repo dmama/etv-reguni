@@ -14,7 +14,7 @@ import ch.vd.uniregctb.scheduler.JobParamInteger;
 
 public class EvenementExterneHandlerJob extends JobDefinition {
 
-	public static String NAME = "EvenementExterneHandlerJob";
+	public static final String NAME = "EvenementExterneHandlerJob";
 	private static final String CATEGORIE = "Events";
 
 	private EvenementExterneProcessor evenementExterneProcessor;

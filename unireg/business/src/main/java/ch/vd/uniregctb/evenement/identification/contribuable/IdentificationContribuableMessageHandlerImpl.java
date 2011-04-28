@@ -30,7 +30,7 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
  */
 public class IdentificationContribuableMessageHandlerImpl extends EsbMessageListener implements IdentificationContribuableMessageHandler, MonitorableMessageListener {
 
-	private static Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageHandlerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageHandlerImpl.class);
 
 	private String outputQueue;
 	private EsbMessageFactory esbMessageFactory;

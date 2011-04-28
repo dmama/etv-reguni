@@ -39,7 +39,7 @@ public class AuditLogBean {
 				this.document = null;
 			}
 			else {
-				this.document = (Document) hibernateTemplate.get(Document.class, documentId);
+				this.document = hibernateTemplate.get(Document.class, documentId);
 			}
 		}
 

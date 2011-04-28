@@ -79,9 +79,9 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 
 	// résultats
 	public int nbTiersTotal;
-	public List<Long> tiersTraites = new ArrayList<Long>();
-	public List<Ignore> tiersIgnores = new ArrayList<Ignore>();
-	public List<Erreur> tiersEnErrors = new ArrayList<Erreur>();
+	public final List<Long> tiersTraites = new ArrayList<Long>();
+	public final List<Ignore> tiersIgnores = new ArrayList<Ignore>();
+	public final List<Erreur> tiersEnErrors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public FusionDeCommunesResults(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement) {

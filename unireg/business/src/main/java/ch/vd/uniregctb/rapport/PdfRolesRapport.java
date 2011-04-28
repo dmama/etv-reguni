@@ -32,7 +32,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 
 	private static final int MAX_ROLES_PAR_FICHIER = 50000;
 
-	private ServiceInfrastructureService infraService;
+	private final ServiceInfrastructureService infraService;
 
 	public PdfRolesRapport(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;

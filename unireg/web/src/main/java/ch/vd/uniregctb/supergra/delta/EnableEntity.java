@@ -9,7 +9,7 @@ import ch.vd.uniregctb.supergra.SuperGraContext;
  */
 public class EnableEntity extends Delta {
 
-	private EntityKey key;
+	private final EntityKey key;
 
 	public EnableEntity(EntityKey key) {
 		this.key = key;

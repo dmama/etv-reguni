@@ -143,8 +143,8 @@ public class IFOSecAuthenticationProcessingFilter extends UsernamePasswordAuthen
 	}
 
 	private static class OfficeImpot {
-		private Integer id;
-		private String sigle;
+		private final Integer id;
+		private final String sigle;
 
 		private OfficeImpot(Integer id, String sigle) {
 			this.id = id;

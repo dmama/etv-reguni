@@ -10,9 +10,9 @@ public enum EvenementExterneType {
 	Quittancement(EmmetteurType.ImpotSource, QuittanceType.class),
 	CivilUnitaire(EmmetteurType.RegistreCivil, EvtRegCivilDocument.EvtRegCivil.class);
 
-	private Class<?> evenementRootClass;
+	private final Class<?> evenementRootClass;
 
-	private EmmetteurType emmetteur;
+	private final EmmetteurType emmetteur;
 
 	private EvenementExterneType( EmmetteurType emmetteur,Class<?> evenementRootClass) {
 		this.emmetteur = emmetteur;

@@ -5,7 +5,7 @@ public enum LogicielMetier {
 	ECH_99("ech-99"),
 	EMPACI("empaci");
 
-	private String format;
+	private final String format;
 
 	LogicielMetier(String format) {
 		this.format = format;

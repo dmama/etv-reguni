@@ -91,12 +91,12 @@ public enum TypeEvenementCivil {
 	/**
 	 * Si ce flag est levé, alors l'événement civil doit être complètement ignoré
 	 */
-	private boolean ignore;
+	private final boolean ignore;
 
 	/**
 	 * Map permettant d'accéder à un type d'événement par son code.
 	 */
-	private static Map<Integer, TypeEvenementCivil> typesByCode = null;
+	private static final Map<Integer, TypeEvenementCivil> typesByCode;
 
 	static {
 		typesByCode = new HashMap<Integer, TypeEvenementCivil>();

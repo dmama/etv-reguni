@@ -12,14 +12,14 @@ import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
  */
 public class ServiceStats {
 
-	private long lastCallTime;
-	private Long totalPing;
-	private Long totalTime;
-	private Long totalCount;
-	private Long recentPing;
-	private Long recentTime;
-	private Long recentCount;
-	private Map<String, ServiceStats> detailedData = new HashMap<String, ServiceStats>();
+	private final long lastCallTime;
+	private final Long totalPing;
+	private final Long totalTime;
+	private final Long totalCount;
+	private final Long recentPing;
+	private final Long recentTime;
+	private final Long recentCount;
+	private final Map<String, ServiceStats> detailedData = new HashMap<String, ServiceStats>();
 
 	public ServiceStats(ServiceTracingInterface rawService) {
 		this.lastCallTime = rawService.getLastCallTime();

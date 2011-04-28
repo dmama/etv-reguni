@@ -9,8 +9,8 @@ import ch.vd.uniregctb.common.StatusManager;
  */
 public class ManagedDataSet implements IDataSet {
 
-	private IDataSet target;
-	private StatusManager status;
+	private final IDataSet target;
+	private final StatusManager status;
 
 	public ManagedDataSet(IDataSet target, StatusManager status) {
 		this.target = target;

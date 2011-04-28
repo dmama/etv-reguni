@@ -15,7 +15,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION);
 
-		private String description;
+		private final String description;
 
 		private ErreurType(String description) {
 			this.description = description;
@@ -50,7 +50,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		HORS_SUISSE("hors suisse"),
 		SOURCIER_PUR("sourcier");
 
-		private String description;
+		private final String description;
 
 		private TypeContribuable(String description) {
 			this.description = description;
@@ -145,8 +145,8 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 
 	// Données de processing
 	public int nbCtbsTotal = 0;
-	public List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
-	public Map<Key, Value> stats = new HashMap<Key, Value>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
+	public final Map<Key, Value> stats = new HashMap<Key, Value>();
 
 	public StatistiquesCtbs(int annee, RegDate dateTraitement) {
 		this.annee = annee;
@@ -166,7 +166,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	public void addErrorException(Contribuable ctb, Exception e) {
 		Long numero = (ctb == null ? null : ctb.getNumero());
 		Integer officeImpotId = (ctb == null ? null : ctb.getOfficeImpotId());
-		ctbsEnErrors.add(new Erreur(numero, officeImpotId, ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(numero != null ? numero : -1, officeImpotId, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
 	public void addErrorException(Long numero, Exception e) {

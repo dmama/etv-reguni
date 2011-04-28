@@ -113,8 +113,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 
 		Assert.notNull(id, "L'id doit être spécifié.");
 
-		final SituationFamilleMenageCommun situation = (SituationFamilleMenageCommun) hibernateTemplate.get(
-				SituationFamilleMenageCommun.class, id);
+		final SituationFamilleMenageCommun situation = hibernateTemplate.get(SituationFamilleMenageCommun.class, id);
 		Assert.notNull(situation, "La situation de famille n'existe pas.");
 
 		if (situation.getTarifApplicable() != TarifImpotSource.DOUBLE_GAIN) {

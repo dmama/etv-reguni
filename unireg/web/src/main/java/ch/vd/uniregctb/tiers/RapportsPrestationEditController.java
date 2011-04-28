@@ -84,7 +84,7 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
 		ModelAndView mav = super.showForm(request, response, errors, model);
 
-		mav.addObject(PAGE_SIZE_NAME, Integer.valueOf(PAGE_SIZE));
+		mav.addObject(PAGE_SIZE_NAME, PAGE_SIZE);
 		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
 		if (idParam != null && !idParam.equals("")) {
 			Long numeroDebiteur = Long.parseLong(idParam);

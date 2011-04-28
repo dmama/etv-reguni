@@ -35,7 +35,7 @@ public class TraiterEvenementExterneResult  extends JobResults<Long, TraiterEven
 
 	public static class Erreur  {
 
-		public Long evenementId;
+		public final Long evenementId;
 		public final String raison;
 
 		public Erreur(Long evenementId, String raison) {
@@ -50,8 +50,8 @@ public class TraiterEvenementExterneResult  extends JobResults<Long, TraiterEven
 	public static class Traite extends InfoEvenement {
 		//Specifique aux LR, a générifier au besoin dans le futur
 
-		public RegDate debut;
-		public RegDate fin;
+		public final RegDate debut;
+		public final RegDate fin;
 		public final String action;
 
 
@@ -76,9 +76,9 @@ public class TraiterEvenementExterneResult  extends JobResults<Long, TraiterEven
 	public final RegDate dateTraitement;
 	public int nbEvenementTotal;
 	public int nbEvenementTotalProcesses;
-	public List<Traite> traites = new ArrayList<Traite>();
-	public List<Ignores> ignores = new ArrayList<Ignores>();
-	public List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Traite> traites = new ArrayList<Traite>();
+	public final List<Ignores> ignores = new ArrayList<Ignores>();
+	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public TraiterEvenementExterneResult(RegDate dateTraitement) {

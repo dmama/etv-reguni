@@ -259,7 +259,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			// For ouvert sur Danemark
 			final ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal) list.get(list.size()-1);
 			assertEquals(dateDepartBex.addDays(1), ffpOuvert.getDateDebut(), "Le for sur Danemark n'est pas ouvert à la bonne date");
-			assertEquals(new Integer(numOfsPaysDepart), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Zurich");
+			assertEquals(numOfsPaysDepart, ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Zurich");
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");
 			assertEquals(GenreImpot.REVENU_FORTUNE, ffpOuvert.getGenreImpot(), "Le GenreImpot du for est faux");
 			assertEquals(ModeImposition.ORDINAIRE, ffpOuvert.getModeImposition(), "Le ModeImposition du for est faux");

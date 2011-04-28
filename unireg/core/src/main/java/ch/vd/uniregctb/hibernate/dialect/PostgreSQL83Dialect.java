@@ -334,10 +334,10 @@ public class PostgreSQL83Dialect extends Dialect {
 	 * Constraint-name extractor for Postgres contraint violation exceptions.
 	 * Orginally contributed by Denny Bartelt.
 	 */
-	private static ViolatedConstraintNameExtracter EXTRACTER = new TemplatedViolatedConstraintNameExtracter() {
+	private static final ViolatedConstraintNameExtracter EXTRACTER = new TemplatedViolatedConstraintNameExtracter() {
 		public String extractConstraintName(SQLException sqle) {
 			try {
-				int sqlState = Integer.valueOf( JDBCExceptionHelper.extractSqlState(sqle)).intValue();
+				int sqlState = Integer.valueOf(JDBCExceptionHelper.extractSqlState(sqle));
 				switch (sqlState) {
 					// CHECK VIOLATION
 					case 23514: return extractUsingTemplate("violates check constraint \"","\"", sqle.getMessage());

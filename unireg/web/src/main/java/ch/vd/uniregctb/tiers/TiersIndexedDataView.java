@@ -10,7 +10,7 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 
 public class TiersIndexedDataView implements Annulable {
 
-	private TiersIndexedData data;
+	private final TiersIndexedData data;
 	private String urlTaoPP;
 	private String urlTaoBA;
 	private String urlTaoIS;

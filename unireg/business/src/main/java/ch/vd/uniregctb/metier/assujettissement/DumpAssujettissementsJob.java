@@ -93,7 +93,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	}
 
 	private void process(Long id, FileWriter file) throws IOException {
-		final Contribuable ctb = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+		final Contribuable ctb = hibernateTemplate.get(Contribuable.class, id);
 		if (ctb == null) {
 			file.write("contribuable not found\n");
 			return;

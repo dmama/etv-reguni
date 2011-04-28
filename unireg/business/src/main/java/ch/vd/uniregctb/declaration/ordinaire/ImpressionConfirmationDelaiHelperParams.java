@@ -5,11 +5,11 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 
 public class ImpressionConfirmationDelaiHelperParams {
 	
-	private DeclarationImpotOrdinaire di;
-	private RegDate dateAccord;
-	private String traitePar;
-	private String tel;
-	private String adrMsg;
+	private final DeclarationImpotOrdinaire di;
+	private final RegDate dateAccord;
+	private final String traitePar;
+	private final String tel;
+	private final String adrMsg;
 	
 	
 

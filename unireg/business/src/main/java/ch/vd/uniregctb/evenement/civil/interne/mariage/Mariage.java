@@ -34,7 +34,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public class Mariage extends EvenementCivilInterne {
 
-	protected static Logger LOGGER = Logger.getLogger(Mariage.class);
+	protected static final Logger LOGGER = Logger.getLogger(Mariage.class);
 
 	/**
 	 * Le nouveau conjoint de l'individu concerné par le mariage.

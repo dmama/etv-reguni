@@ -73,7 +73,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private ServiceInfrastructureService infraService;
 	private IdentificationContribuableMessageHandler messageHandler;
 	private PlatformTransactionManager transactionManager;
-	private static String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
+	private static final String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
 	private ServiceSecuriteService serviceSecuriteService;
 
 	public PlatformTransactionManager getTransactionManager() {
@@ -501,7 +501,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private void soumettreMessageNCS(IdentificationContribuable message) {
-		//To change body of created methods use File | Settings | File Templates.
+		// to be implemented...
 	}
 
 	private void soumettreMessageMeldewesen(IdentificationContribuable message) {

@@ -71,7 +71,7 @@ public enum EtatCivil {
 	 */
 	PARTENARIAT_DISSOUS_DECES ("Partenariat dissous décès");
 
-	private String format;
+	private final String format;
 
 	EtatCivil(String format) {
 		this.format = format;

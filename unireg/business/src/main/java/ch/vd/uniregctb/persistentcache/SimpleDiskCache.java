@@ -32,7 +32,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 
 	private String storeDir;
 	private static final String jvmName = ManagementFactory.getRuntimeMXBean().getName();
-	private SimpleCacheStats stats = new SimpleCacheStats();
+	private final SimpleCacheStats stats = new SimpleCacheStats();
 
 	public void setStoreDir(String storeDir) {
 		this.storeDir = storeDir;

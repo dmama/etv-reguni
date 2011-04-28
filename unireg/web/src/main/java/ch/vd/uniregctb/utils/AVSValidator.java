@@ -331,7 +331,7 @@ public final class AVSValidator implements Serializable {
 
 		String numAVS = FormatNumeroHelper.removeSpaceAndDash(input);
 
-		if (numAVS != null && numAVS.length() == 0) {
+		if (numAVS == null || numAVS.length() == 0) {
 			return null;
 		}
 

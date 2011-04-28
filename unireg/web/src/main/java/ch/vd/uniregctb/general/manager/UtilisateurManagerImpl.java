@@ -24,7 +24,7 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 
 		Operateur operateur = serviceSecuriteService.getOperateur(noIndividuOperateur);
 		UtilisateurView utilisateurView = new UtilisateurView();
-		utilisateurView.setNumeroIndividu(Long.valueOf(noIndividuOperateur));
+		utilisateurView.setNumeroIndividu(noIndividuOperateur);
 		String prenomNom = "";
 		if (operateur != null) {
 			if (operateur.getPrenom() != null) {

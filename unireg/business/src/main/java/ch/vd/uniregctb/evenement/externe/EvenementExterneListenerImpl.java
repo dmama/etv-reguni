@@ -141,7 +141,7 @@ public class EvenementExterneListenerImpl extends EsbMessageListener implements 
 				q.setDateFin(cal2regdate(dateFin));
 				q.setType(TypeQuittance.valueOf(evtQuittanceListe.getTypeEvtQuittance().toString()));
 				final int numeroDebiteur = evtQuittanceListe.getIdentificationListe().getNumeroDebiteur();
-				q.setTiersId(Long.valueOf(numeroDebiteur));
+				q.setTiersId((long) numeroDebiteur);
 
 				event = q;
 			}

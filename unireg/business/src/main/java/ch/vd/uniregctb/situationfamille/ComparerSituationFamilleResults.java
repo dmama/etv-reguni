@@ -56,9 +56,9 @@ public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSi
 		}
 	}
 
-	public List<SituationsDifferentes> listeSituationsDifferentes = new ArrayList<SituationsDifferentes>();
+	public final List<SituationsDifferentes> listeSituationsDifferentes = new ArrayList<SituationsDifferentes>();
 	public boolean interrompu;
-	public List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public int nbSituationTotal;
 	public final RegDate dateTraitement;
 

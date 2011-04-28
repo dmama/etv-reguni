@@ -25,7 +25,7 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
  */
 public class EntrepriseEventListener extends EsbMessageListener implements MonitorableMessageListener {
 
-	private static Logger LOGGER = Logger.getLogger(EntrepriseEventListener.class);
+	private static final Logger LOGGER = Logger.getLogger(EntrepriseEventListener.class);
 
 	private GlobalTiersIndexer indexer;
 	private DataEventService dataEventService;

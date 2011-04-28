@@ -10,7 +10,7 @@ import ch.vd.uniregctb.supergra.SuperGraContext;
  */
 public class DisableEntity extends Delta {
 
-	private EntityKey key;
+	private final EntityKey key;
 
 	public DisableEntity(EntityKey key) {
 		Assert.notNull(key);

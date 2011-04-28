@@ -58,7 +58,7 @@ public enum CategorieImpotSource {
 	 */
 	LOI_TRAVAIL_AU_NOIR("Loi sur le travail au noir");
 
-	private String texte;
+	private final String texte;
 
 	private CategorieImpotSource(String texte) {
 		this.texte = texte;

@@ -69,7 +69,7 @@ public class DocumentController extends AbstractSimpleFormController {
 		// On veut que la réponse provoque un téléchargement de fichier
 		docService.readDoc(doc, new DocumentService.ReadDocCallback<Document>() {
 			public void readDoc(Document doc, InputStream is) throws Exception {
-				servletService.downloadAsFile(doc.getFileName(), is, Integer.valueOf((int)doc.getFileSize()), response);
+				servletService.downloadAsFile(doc.getFileName(), is, (int) doc.getFileSize(), response);
 			}
 		});
 

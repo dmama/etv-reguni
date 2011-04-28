@@ -12,7 +12,7 @@ import org.springframework.util.Assert;
 
 public class TracingManager {
 
-	public static Logger LOGGER = Logger.getLogger(TracingManager.class);
+	public static final Logger LOGGER = Logger.getLogger(TracingManager.class);
 
 	private static boolean isActive = false;
 
@@ -183,7 +183,7 @@ public class TracingManager {
 		Stack<TracePoint> points = threadStacks.get(threadId);
 		if (points == null) {
 			points = new Stack<TracePoint>();
-			threadStacks.put(new Long(threadId), points);
+			threadStacks.put(threadId, points);
 		}
 		return points;
 	}

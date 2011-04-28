@@ -41,9 +41,9 @@ public class MetaEntity {
 
 	protected static final Logger LOGGER = Logger.getLogger(MetaEntity.class);
 
-	private String table;
-	private String discriminant;
-	private Class<?> type;
+	private final String table;
+	private final String discriminant;
+	private final Class<?> type;
 	private Sequence sequence;
 	private List<Property> properties;
 

@@ -16,8 +16,8 @@ import ch.vd.uniregctb.type.ModeImposition;
  */
 public class FusionMenagesResolver extends MariageModeImpositionResolver implements ModeImpositionResolver {
 
-	private MenageCommun premierMenage;
-	private MenageCommun secondMenage;
+	private final MenageCommun premierMenage;
+	private final MenageCommun secondMenage;
 	
 	public FusionMenagesResolver(TiersService tiersService, MenageCommun premierMenage, MenageCommun secondMenage) {
 		super(tiersService, null);

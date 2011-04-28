@@ -17,7 +17,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 	public enum ErreurType {
 		EXCEPTION("une exception est apparue pendant le traitement de la déclaration"); // ----------------
 
-		private String description;
+		private final String description;
 
 		private ErreurType(String description) {
 			this.description = description;
@@ -125,8 +125,8 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 
 	// Données de processing
 	public int nbDIsTotal = 0;
-	public List<Erreur> disEnErrors = new ArrayList<Erreur>();
-	public Map<Key, Value> stats = new HashMap<Key, Value>();
+	public final List<Erreur> disEnErrors = new ArrayList<Erreur>();
+	public final Map<Key, Value> stats = new HashMap<Key, Value>();
 
 	public StatistiquesDIs(int annee, RegDate dateTraitement) {
 		this.annee = annee;
@@ -147,7 +147,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 		final Tiers tiers = di.getTiers();
 		final Long numero = (tiers == null ? null : tiers.getNumero());
 		final Integer oid = (tiers == null ? null : tiers.getOfficeImpotId());
-		disEnErrors.add(new Erreur(numero, oid, ErreurType.EXCEPTION, e.getMessage()));
+		disEnErrors.add(new Erreur(numero != null ? numero : -1, oid, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
 	public void addErrorException(Long numero, Exception e) {

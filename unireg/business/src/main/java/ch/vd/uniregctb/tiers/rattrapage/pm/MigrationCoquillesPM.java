@@ -204,7 +204,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 			this.dateTraitement = dateTraitement;
 		}
 
-		public RegDate dateTraitement;
+		public final RegDate dateTraitement;
 		/**
 		 * Nombre total de personnes morales à migrer
 		 */

@@ -114,7 +114,7 @@ public class EchoirDIsProcessor {
 
 		Assert.notNull(id, "L'id doit être spécifié.");
 
-		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+		final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 		Assert.notNull(di, "La déclaration n'existe pas.");
 
 		final EtatDeclaration etat = di.getDernierEtat();

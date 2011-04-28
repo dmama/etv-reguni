@@ -57,16 +57,16 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	// private static final Logger LOGGER = Logger.getLogger(MockServiceInfrastructureService.class);
 
-	protected List<Pays> pays = new ArrayList<Pays>();
-	protected List<Canton> cantons = new ArrayList<Canton>();
-	protected List<Localite> localites = new ArrayList<Localite>();
-	protected List<Commune> communesVaud = new ArrayList<Commune>();
-	protected List<Commune> communesHorsCanton = new ArrayList<Commune>();
-	protected List<Commune> communes = new ArrayList<Commune>();
-	protected List<Rue> rues = new ArrayList<Rue>();
-	protected Map<Integer, CollectiviteAdministrative> collectivitesAdministrative = new HashMap<Integer, CollectiviteAdministrative>();
-	protected Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<Integer, OfficeImpot>();
-	protected Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<Integer, OfficeImpot>();
+	protected final List<Pays> pays = new ArrayList<Pays>();
+	protected final List<Canton> cantons = new ArrayList<Canton>();
+	protected final List<Localite> localites = new ArrayList<Localite>();
+	protected final List<Commune> communesVaud = new ArrayList<Commune>();
+	protected final List<Commune> communesHorsCanton = new ArrayList<Commune>();
+	protected final List<Commune> communes = new ArrayList<Commune>();
+	protected final List<Rue> rues = new ArrayList<Rue>();
+	protected final Map<Integer, CollectiviteAdministrative> collectivitesAdministrative = new HashMap<Integer, CollectiviteAdministrative>();
+	protected final Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<Integer, OfficeImpot>();
+	protected final Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<Integer, OfficeImpot>();
 	protected Map<Integer, List<MockLienCommuneBatiment>> batimentsParEgid = null;
 
 	public MockServiceInfrastructureService() {

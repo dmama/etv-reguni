@@ -13,7 +13,7 @@ import ch.vd.registre.base.utils.Assert;
  */
 class TimelineAnalyze extends Analyze {
 
-	private Map<String, List<TimelineData>> results = new HashMap<String, List<TimelineData>>();
+	private final Map<String, List<TimelineData>> results = new HashMap<String, List<TimelineData>>();
 
 	private int lastPeriodeIndex = 0;
 

@@ -20,7 +20,7 @@ import ch.vd.registre.base.utils.Assert;
 
 public class NorentesContext {
 
-	private static Logger logger = Logger.getLogger(NorentesContext.class);
+	private static final Logger logger = Logger.getLogger(NorentesContext.class);
 
 	private final NorentesScenario scenario;
 

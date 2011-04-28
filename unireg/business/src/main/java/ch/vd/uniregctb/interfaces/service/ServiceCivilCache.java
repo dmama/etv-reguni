@@ -122,8 +122,8 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 
 		private static final long serialVersionUID = 4747282643L;
 
-		private long noIndividu;
-		private int annee;
+		private final long noIndividu;
+		private final int annee;
 
 		private GetIndividuKey(long noIndividu, int annee) {
 			this.noIndividu = noIndividu;

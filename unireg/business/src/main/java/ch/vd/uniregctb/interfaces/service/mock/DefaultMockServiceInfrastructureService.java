@@ -11,7 +11,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 
 public class DefaultMockServiceInfrastructureService extends MockServiceInfrastructureService {
 
-	protected static MockServiceInfrastructureService staticInstance = new MockServiceInfrastructureService() {
+	protected static final MockServiceInfrastructureService staticInstance = new MockServiceInfrastructureService() {
 		@Override
 		protected void init() {
 		}

@@ -124,7 +124,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 		rapport.nbCtbsTotal++;
 
-		final Contribuable tiers = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+		final Contribuable tiers = hibernateTemplate.get(Contribuable.class, id);
 		if (tiers == null) {
 			rapport.addErrorCtbInconnu(id);
 			return;

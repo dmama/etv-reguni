@@ -34,9 +34,9 @@ public enum Canton {
 	GE(25, "Genève"),
 	JU(26, "Jura");
 
-	private int noOfS;
+	private final int noOfS;
 
-	private String nom;
+	private final String nom;
 
 	private Canton(int noOfs, String nom){
 		this.noOfS=noOfs;

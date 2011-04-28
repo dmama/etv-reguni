@@ -229,7 +229,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	private class TxInterceptor implements Synchronization {
 
-		private Transaction transaction;
+		private final Transaction transaction;
 
 		public TxInterceptor(Transaction transaction) {
 			this.transaction = transaction;

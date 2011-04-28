@@ -37,7 +37,7 @@ public enum TypeEtatDeclaration {
 	 */
 	RETOURNEE("retournée");
 
-	private String description;
+	private final String description;
 
 	TypeEtatDeclaration(String description) {
 		this.description = description;

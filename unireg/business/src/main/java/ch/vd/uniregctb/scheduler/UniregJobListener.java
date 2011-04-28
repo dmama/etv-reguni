@@ -9,7 +9,7 @@ public class UniregJobListener implements JobListener {
 
 	private static final Logger LOGGER = Logger.getLogger(UniregJobListener.class);
 
-	private JobDefinition job;
+	private final JobDefinition job;
 
 	public UniregJobListener(JobDefinition job) {
 		this.job = job;

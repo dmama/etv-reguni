@@ -30,7 +30,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	private ModificationInterceptor parent;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
-	private ThreadLocal<Data> data = new ThreadLocal<Data>();
+	private final ThreadLocal<Data> data = new ThreadLocal<Data>();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParent(ModificationInterceptor parent) {

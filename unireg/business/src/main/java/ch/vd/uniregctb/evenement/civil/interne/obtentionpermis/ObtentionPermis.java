@@ -35,7 +35,7 @@ import ch.vd.uniregctb.type.TypePermis;
 public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 
 	/** LOGGER log4J */
-	protected static Logger LOGGER = Logger.getLogger(ObtentionPermis.class);
+	protected static final Logger LOGGER = Logger.getLogger(ObtentionPermis.class);
 
 	/**
 	 * le numero OFS étendu de la commune vaudoise de l'adresse principale

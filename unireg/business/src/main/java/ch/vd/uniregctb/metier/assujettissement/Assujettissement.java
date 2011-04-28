@@ -1112,7 +1112,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		MotifFor motifDebut;
 		MotifFor motifFin;
 		Type type;
-		TypeAutoriteFiscale typeAut;
+		final TypeAutoriteFiscale typeAut;
 
 		private Data(RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, Type type, TypeAutoriteFiscale typeAut) {
 			this.debut = debut;

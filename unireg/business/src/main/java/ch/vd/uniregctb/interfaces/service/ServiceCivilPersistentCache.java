@@ -106,8 +106,8 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 
 		private static final long serialVersionUID = -8068187058991985334L;
 
-		private long noIndividu;
-		private int annee;
+		private final long noIndividu;
+		private final int annee;
 
 		private GetIndividuKey(long noIndividu, int annee) {
 			this.noIndividu = noIndividu;

@@ -28,7 +28,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private static final int BATCH_SIZE = 100;
 
 	final Logger LOGGER = Logger.getLogger(EvenementExterneProcessorImpl.class);
-	private int batchSize = BATCH_SIZE;
+	private final int batchSize = BATCH_SIZE;
 	private EvenementExterneDAO evenementExterneDAO;
 	private EvenementExterneService evenementExterneService;
 	private PlatformTransactionManager transactionManager;

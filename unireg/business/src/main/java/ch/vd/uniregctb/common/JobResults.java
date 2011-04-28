@@ -74,7 +74,7 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 
 		List<String> noms;
 
-		final Contribuable tiers = (Contribuable) hibernateTemplate.get(Contribuable.class, noCtb);
+		final Contribuable tiers = hibernateTemplate.get(Contribuable.class, noCtb);
 		if (tiers == null) {
 			noms = Collections.emptyList();
 		}

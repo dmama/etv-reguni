@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.TypeMigRegError;
 @Table(name = "MIGREG_ERROR")
 public class MigrationError {
 
-	private static Logger LOGGER = Logger.getLogger(MigrationError.class);
+	private static final Logger LOGGER = Logger.getLogger(MigrationError.class);
 
 	private static final int MESSAGE_MAX_LENGTH = 255;
 

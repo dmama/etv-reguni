@@ -53,7 +53,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 	public IdentificationMessagesStatsView getView() {
 		IdentificationMessagesStatsView identificationMessagesStatsView = new IdentificationMessagesStatsView();
 		identificationMessagesStatsView.setTypeMessage(TOUS);
-		identificationMessagesStatsView.setPeriodeFiscale(Integer.valueOf(-1));
+		identificationMessagesStatsView.setPeriodeFiscale(-1);
 		return identificationMessagesStatsView;
 	}
 

@@ -15,10 +15,10 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
  * Contient toutes les adresses civiles d'un individu regroupées par type
  */
 public class AdressesCivilesHistoriques {
-	public List<Adresse> principales = new ArrayList<Adresse>();
-	public List<Adresse> courriers = new ArrayList<Adresse>();
-	public List<Adresse> secondaires = new ArrayList<Adresse>();
-	public List<Adresse> tutelles = new ArrayList<Adresse>();
+	public final List<Adresse> principales = new ArrayList<Adresse>();
+	public final List<Adresse> courriers = new ArrayList<Adresse>();
+	public final List<Adresse> secondaires = new ArrayList<Adresse>();
+	public final List<Adresse> tutelles = new ArrayList<Adresse>();
 
 	public List<Adresse> ofType(TypeAdresseCivil type) {
 		if (TypeAdresseCivil.PRINCIPALE == type) {

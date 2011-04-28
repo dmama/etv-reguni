@@ -24,8 +24,8 @@ import org.springframework.web.util.HtmlUtils;
 
 class Analyzer {
 
-	private List<Analyze> analyzes = new ArrayList<Analyze>();
-	private Set<String> methods = new HashSet<String>();
+	private final List<Analyze> analyzes = new ArrayList<Analyze>();
+	private final Set<String> methods = new HashSet<String>();
 
 	public void registerAnalyze(Analyze a) {
 		analyzes.add(a);

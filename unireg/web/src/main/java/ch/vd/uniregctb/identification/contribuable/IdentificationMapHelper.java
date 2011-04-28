@@ -74,11 +74,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<PrioriteEmetteur> itPriorite = listesPriorites.iterator();
-		while (itPriorite.hasNext()) {
-			PrioriteEmetteur prioriteEmetteur = itPriorite.next();
-			final String libellePriorite = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur +prioriteEmetteur);
-			allPrioriteEmetteur .put(prioriteEmetteur, libellePriorite);
+		for (PrioriteEmetteur prioriteEmetteur : listesPriorites) {
+			final String libellePriorite = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur + prioriteEmetteur);
+			allPrioriteEmetteur.put(prioriteEmetteur, libellePriorite);
 		}
 
 		return allPrioriteEmetteur;
@@ -152,9 +150,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<Etat> itEtat = typesMessage.iterator();
-		while (itEtat.hasNext()) {
-			Etat etat = itEtat.next();
+		for (Etat etat : typesMessage) {
 			String libelleEtat = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyEtatMessage + etat);
 			mapEtat.put(etat, libelleEtat);
 		}
@@ -178,9 +174,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<String> itMessages = typesMessage.iterator();
-		while (itMessages.hasNext()) {
-			String typeMessage = itMessages.next();
+		for (String typeMessage : typesMessage) {
 			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
 			mapMessage.put(typeMessage, typeMessageValeur);
 		}
@@ -211,9 +205,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<String> itMessages = typesMessage.iterator();
-		while (itMessages.hasNext()) {
-			String typeMessage = itMessages.next();
+		for (String typeMessage : typesMessage) {
 			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
 			mapMessage.put(typeMessage, typeMessageValeur);
 		}
@@ -238,9 +230,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<String> itUser = listVisaUser.iterator();
-		while (itUser.hasNext()) {
-			String visaUser = itUser.next();
+		for (String visaUser : listVisaUser) {
 			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(visaUser);
 			visaUser = identifiantUtilisateur.getVisa();
 			String nom = identifiantUtilisateur.getNomComplet();
@@ -277,10 +267,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<String> itEmetteurs = emetteurs.iterator();
-		while (itEmetteurs.hasNext()) {
-			String emetteur = itEmetteurs.next();
-
+		for (String emetteur : emetteurs) {
 			allEmetteur.put(emetteur, emetteur);
 		}
 		return allEmetteur;
@@ -320,11 +307,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<Integer> itPeriode = periodes.iterator();
-		while (itPeriode.hasNext()) {
-			Integer periode = itPeriode.next();
-
-			allPeriodeFiscale .put(periode, Integer.toString(periode));
+		for (Integer periode : periodes) {
+			allPeriodeFiscale.put(periode, Integer.toString(periode));
 		}
 
 		return allPeriodeFiscale;
@@ -348,11 +332,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			}
 		});
 
-		Iterator<Integer> itPeriode = periodes.iterator();
-		while (itPeriode.hasNext()) {
-			Integer periode = itPeriode.next();
-
-			allPeriodeFiscale .put(periode, Integer.toString(periode));
+		for (Integer periode : periodes) {
+			allPeriodeFiscale.put(periode, Integer.toString(periode));
 		}
 
 		return allPeriodeFiscale;

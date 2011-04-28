@@ -240,7 +240,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 
 
 	public static class Erreur extends InfoContribuable {
-		public String message;
+		public final String message;
 
 		public Erreur(long id, String message) {
 			super(id);
@@ -248,13 +248,13 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 		}
 	}
 
-	public RegDate dateTraitement;
+	public final RegDate dateTraitement;
 	public boolean interrompu;
 	public int nbContribuable;
 	public int periode;
 
-	public List<InfoContribuableAvecNote> listeContribuableAvecNote = new ArrayList<InfoContribuableAvecNote>();
-	public List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<InfoContribuableAvecNote> listeContribuableAvecNote = new ArrayList<InfoContribuableAvecNote>();
+	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 
 	public ListeNoteResults(RegDate dateTraitement, int periode) {
 		this.dateTraitement = dateTraitement;

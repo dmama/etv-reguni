@@ -26,7 +26,7 @@ public class ContenuMessageWrapper implements FichierOrigine{
      *     byte[]
      */
     public void setContent(byte[] value) {
-        this.content = ((byte[]) value);
+        this.content = value;
     }
 
     /**
@@ -81,7 +81,7 @@ public class ContenuMessageWrapper implements FichierOrigine{
 		this.content = contenu.getContent();
 		this.extension = contenu.getExtension();
 		this.mimeType = contenu.getMimeType();
-	};
+	}
 
 
 }

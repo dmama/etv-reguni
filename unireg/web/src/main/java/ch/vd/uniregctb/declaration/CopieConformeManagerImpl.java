@@ -34,7 +34,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public InputStream getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException {
 
-		final EtatDeclaration etat = (EtatDeclaration) hibernateTemplate.get(EtatDeclaration.class, idEtatSomme);
+		final EtatDeclaration etat = hibernateTemplate.get(EtatDeclaration.class, idEtatSomme);
 		Assert.notNull(etat);
 		Assert.isEqual(TypeEtatDeclaration.SOMMEE, etat.getEtat());
 

@@ -52,7 +52,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 
 		if (parametreTypeMessage == null && parametrePeriode == null && parametreEtat == null) {
 			identificationMessagesListView.setTypeMessage(TOUS);
-			identificationMessagesListView.setPeriodeFiscale(Integer.valueOf(-1));
+			identificationMessagesListView.setPeriodeFiscale(-1);
 			identificationMessagesListView.setPrioriteEmetteur(TOUS);
 			identificationMessagesListView.setEtatMessage(TOUS);
 		}
@@ -153,7 +153,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
-				IdentificationContribuable identificationContribuable = identCtbDAO.get(new Long(identificationMessagesListView.getTabIdsMessages()[i]));
+				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationMessagesListView.getTabIdsMessages()[i]);
 				if (Etat.A_TRAITER_MANUELLEMENT == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MAN_SUSPENDU);
 				}
@@ -177,7 +177,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
-				IdentificationContribuable identificationContribuable = identCtbDAO.get(new Long(identificationMessagesListView.getTabIdsMessages()[i]));
+				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationMessagesListView.getTabIdsMessages()[i]);
 				if (Etat.A_TRAITER_MAN_SUSPENDU == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 				}
@@ -200,7 +200,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
-				IdentificationContribuable identificationContribuable = identCtbDAO.get(new Long(identificationMessagesListView.getTabIdsMessages()[i]));
+				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationMessagesListView.getTabIdsMessages()[i]);
 				identCtbService.soumettre(identificationContribuable);
 			}
 		}
@@ -238,7 +238,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		if (identification.getDemande() != null) {
 			identificationMessagesResultView.setDateMessage(identification.getDemande().getDate());
 			identificationMessagesResultView.setEmetteurId(identification.getDemande().getEmetteurId());
-			identificationMessagesResultView.setPeriodeFiscale(Integer.valueOf(identification.getDemande().getPeriodeFiscale()));
+			identificationMessagesResultView.setPeriodeFiscale(identification.getDemande().getPeriodeFiscale());
 			identificationMessagesResultView.setTypeMessage(identification.getDemande().getTypeMessage());
 			if (identification.getDemande().getPersonne() != null) {
 				identificationMessagesResultView.setNavs13(FormatNumeroHelper.formatNumAVS(identification.getDemande().getPersonne().getNAVS13()));

@@ -46,11 +46,11 @@ public class ListeNoteProcessor {
 	final Logger LOGGER = Logger.getLogger(ListeNoteProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
-	private HibernateTemplate hibernateTemplate;
-	private TiersService tiersService;
-	private AdresseService adresseService;
-	private ServiceInfrastructureService infraService;
-	private int batchSize = BATCH_SIZE;
+	private final HibernateTemplate hibernateTemplate;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
+	private final ServiceInfrastructureService infraService;
+	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ListeNoteResults> rapport = new ThreadLocal<ListeNoteResults>();
 	private Map<Long, List<ForFiscalSecondaire>> mapInfo;
 
@@ -258,10 +258,10 @@ public class ListeNoteProcessor {
 	}
 
 	private class InfoForFerme implements DateRange {
-		public long numeroCtb;
-		public long idFor;
+		public final long numeroCtb;
+		public final long idFor;
 		public RegDate dateDebut;
-		public RegDate dateFin;
+		public final RegDate dateFin;
 
 		private InfoForFerme(long numeroCtb, long idFor, RegDate dateFin) {
 			this.numeroCtb = numeroCtb;

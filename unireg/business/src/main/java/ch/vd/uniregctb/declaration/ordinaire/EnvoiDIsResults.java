@@ -48,7 +48,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 		public final ErreurType raison;
 
 		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super((noCtb == null ? 0 : noCtb.longValue()), officeImpotID, details);
+			super((noCtb == null ? 0 : noCtb), officeImpotID, details);
 			this.raison = raison;
 		}
 

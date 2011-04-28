@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class QuittancementController extends AbstractEnhancedSimpleFormController {
 
-	private static Logger logger = Logger.getLogger(QuittancementController.class);
+	private static final Logger logger = Logger.getLogger(QuittancementController.class);
 
 	private EvenementExterneService evenementExterneService;
 

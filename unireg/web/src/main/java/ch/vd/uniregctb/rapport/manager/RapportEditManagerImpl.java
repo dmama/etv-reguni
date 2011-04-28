@@ -269,30 +269,25 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		if (tiers != null){
-			tiersEditView.setTiers(tiers);
-			TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
-			tiersEditView.setTiersGeneral(tiersGeneralView);
-			tiersEditView.setDossiersApparentes(getRapports(tiers));
-			if (tiers instanceof Contribuable) {
-				Contribuable contribuable = (Contribuable) tiers;
-				tiersEditView.setDebiteurs(getDebiteurs(contribuable));
-			}
-
-			//gestion des droits d'édition
-			boolean allowed = false;
-			Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-			allowed = setDroitEdition(tiers, allowedOnglet);
-
-			tiersEditView.setAllowedOnglet(allowedOnglet);
-			tiersEditView.setAllowed(allowed);
-
-			if(!allowed){
-				tiersEditView.setTiers(null);
-			}
+		tiersEditView.setTiers(tiers);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
+		tiersEditView.setTiersGeneral(tiersGeneralView);
+		tiersEditView.setDossiersApparentes(getRapports(tiers));
+		if (tiers instanceof Contribuable) {
+			Contribuable contribuable = (Contribuable) tiers;
+			tiersEditView.setDebiteurs(getDebiteurs(contribuable));
 		}
-		else {
-			tiersEditView.setAllowed(true);
+
+		//gestion des droits d'édition
+		boolean allowed = false;
+		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
+		allowed = setDroitEdition(tiers, allowedOnglet);
+
+		tiersEditView.setAllowedOnglet(allowedOnglet);
+		tiersEditView.setAllowed(allowed);
+
+		if(!allowed){
+			tiersEditView.setTiers(null);
 		}
 
 		return tiersEditView;

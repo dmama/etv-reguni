@@ -34,6 +34,7 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 		this.sql = cap(sql);
 	}
 
+	@Override
 	public ResultSet executeQuery() throws SQLException {
 		long start = tracing.start();
 		try {
@@ -44,6 +45,7 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 		}
 	}
 
+	@Override
 	public int executeUpdate() throws SQLException {
 		long start = tracing.start();
 		try {
@@ -54,141 +56,163 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 		}
 	}
 
+	@Override
 	public void setNull(int parameterIndex, int sqlType) throws SQLException {
 		target.setNull(parameterIndex, sqlType);
 	}
 
+	@Override
 	public void setBoolean(int parameterIndex, boolean x) throws SQLException {
 		target.setBoolean(parameterIndex, x);
 	}
 
+	@Override
 	public void setByte(int parameterIndex, byte x) throws SQLException {
 		target.setByte(parameterIndex, x);
 	}
 
+	@Override
 	public void setShort(int parameterIndex, short x) throws SQLException {
 		target.setShort(parameterIndex, x);
 	}
 
+	@Override
 	public void setInt(int parameterIndex, int x) throws SQLException {
 		target.setInt(parameterIndex, x);
 	}
 
+	@Override
 	public void setLong(int parameterIndex, long x) throws SQLException {
 		target.setLong(parameterIndex, x);
 	}
 
+	@Override
 	public void setFloat(int parameterIndex, float x) throws SQLException {
 		target.setFloat(parameterIndex, x);
 	}
 
+	@Override
 	public void setDouble(int parameterIndex, double x) throws SQLException {
 		target.setDouble(parameterIndex, x);
 	}
 
+	@Override
 	public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException {
 		target.setBigDecimal(parameterIndex, x);
 	}
 
+	@Override
 	public void setString(int parameterIndex, String x) throws SQLException {
 		target.setString(parameterIndex, x);
 	}
 
+	@Override
 	public void setBytes(int parameterIndex, byte[] x) throws SQLException {
 		target.setBytes(parameterIndex, x);
 	}
 
+	@Override
 	public void setDate(int parameterIndex, Date x) throws SQLException {
 		target.setDate(parameterIndex, x);
 	}
 
+	@Override
 	public void setTime(int parameterIndex, Time x) throws SQLException {
 		target.setTime(parameterIndex, x);
 	}
 
+	@Override
 	public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
 		target.setTimestamp(parameterIndex, x);
 	}
 
+	@Override
 	public void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException {
 		target.setAsciiStream(parameterIndex, x, length);
 	}
 
+	@Override
 	public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
 		//noinspection deprecation
 		target.setUnicodeStream(parameterIndex, x, length);
 	}
 
+	@Override
 	public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException {
 		target.setBinaryStream(parameterIndex, x, length);
 	}
 
+	@Override
 	public void clearParameters() throws SQLException {
 		target.clearParameters();
 	}
 
+	@Override
 	public void setObject(int parameterIndex, Object x, int targetSqlType, int scale) throws SQLException {
 		target.setObject(parameterIndex, x, targetSqlType, scale);
 	}
 
 	@Override
 	public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setAsciiStream(parameterIndex, x, length);
 	}
 
 	@Override
 	public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setBinaryStream(parameterIndex, x, length);
 	}
 
 	@Override
 	public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setCharacterStream(parameterIndex, reader, length);
 	}
 
 	@Override
 	public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setAsciiStream(parameterIndex, x);
 	}
 
 	@Override
 	public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setBinaryStream(parameterIndex, x);
 	}
 
 	@Override
 	public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setCharacterStream(parameterIndex, reader);
 	}
 
 	@Override
 	public void setNCharacterStream(int parameterIndex, Reader value) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setNCharacterStream(parameterIndex, value);
 	}
 
 	@Override
 	public void setClob(int parameterIndex, Reader reader) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setClob(parameterIndex, reader);
 	}
 
 	@Override
 	public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setBlob(parameterIndex, inputStream);
 	}
 
 	@Override
 	public void setNClob(int parameterIndex, Reader reader) throws SQLException {
-		//To change body of implemented methods use File | Settings | File Templates.
+		target.setNClob(parameterIndex, reader);
 	}
 
+	@Override
 	public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
 		target.setObject(parameterIndex, x, targetSqlType);
 	}
 
+	@Override
 	public void setObject(int parameterIndex, Object x) throws SQLException {
 		target.setObject(parameterIndex, x);
 	}
 
+	@Override
 	public boolean execute() throws SQLException {
 		long start = tracing.start();
 		try {
@@ -199,54 +223,67 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 		}
 	}
 
+	@Override
 	public void addBatch() throws SQLException {
 		target.addBatch();
 	}
 
+	@Override
 	public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
 		target.setCharacterStream(parameterIndex, reader, length);
 	}
 
+	@Override
 	public void setRef(int i, Ref x) throws SQLException {
 		target.setRef(i, x);
 	}
 
+	@Override
 	public void setBlob(int i, Blob x) throws SQLException {
 		target.setBlob(i, x);
 	}
 
+	@Override
 	public void setClob(int i, Clob x) throws SQLException {
 		target.setClob(i, x);
 	}
 
+	@Override
 	public void setArray(int i, Array x) throws SQLException {
 		target.setArray(i, x);
 	}
 
+	@Override
 	public ResultSetMetaData getMetaData() throws SQLException {
 		return target.getMetaData();
 	}
 
+	@Override
 	public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException {
 		target.setDate(parameterIndex, x, cal);
 	}
 
+	@Override
 	public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException {
 		target.setTime(parameterIndex, x, cal);
 	}
 
+	@Override
 	public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
 		target.setTimestamp(parameterIndex, x, cal);
 	}
 
+	@Override
 	public void setNull(int paramIndex, int sqlType, String typeName) throws SQLException {
 		target.setNull(paramIndex, sqlType, typeName);
 	}
 
+	@Override
 	public void setURL(int parameterIndex, URL x) throws SQLException {
 		target.setURL(parameterIndex, x);
 	}
 
+	@Override
 	public ParameterMetaData getParameterMetaData() throws SQLException {
 		return target.getParameterMetaData();
 	}

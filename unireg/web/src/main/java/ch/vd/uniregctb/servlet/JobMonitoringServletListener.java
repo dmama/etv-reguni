@@ -27,7 +27,7 @@ public class JobMonitoringServletListener implements ServletContextListener {
 		final Object objCtxt = sce.getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (objCtxt instanceof WebApplicationContext) {
 			final WebApplicationContext ctxt = (WebApplicationContext) objCtxt;
-			final BatchScheduler scheduler = (BatchScheduler) ctxt.getBean(beanName, BatchScheduler.class);
+			final BatchScheduler scheduler = ctxt.getBean(beanName, BatchScheduler.class);
 			scheduler.stopAllRunningJobs();
 		}
 		else {

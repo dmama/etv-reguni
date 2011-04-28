@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CorrectionFlagHabitantSurMenagesResults extends CorrectionFlagHabitantAbstractResults<CorrectionFlagHabitantSurMenagesResults> {
 
-	private List<ContribuableErreur> erreurs = new LinkedList<ContribuableErreur>();
+	private final List<ContribuableErreur> erreurs = new LinkedList<ContribuableErreur>();
 
 	public void sort() {
 		Collections.sort(erreurs, COMPARATOR);

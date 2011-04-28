@@ -128,7 +128,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetCollectivite {
-		int noColAdm;
+		final int noColAdm;
 
 		private KeyGetCollectivite(int noColAdm) {
 			this.noColAdm = noColAdm;
@@ -208,7 +208,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetCollectivitesAdministrativesByTypes {
 
-		Set<EnumTypeCollectivite> types;
+		final Set<EnumTypeCollectivite> types;
 
 		public KeyGetCollectivitesAdministrativesByTypes(List<EnumTypeCollectivite> types) {
 			this.types = new HashSet<EnumTypeCollectivite>(types);
@@ -260,8 +260,8 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetCommuneByLocalite {
-		int numOrdre; // nécessaire pour distinguer les fractions de communes
-		int noCommune;
+		final int numOrdre; // nécessaire pour distinguer les fractions de communes
+		final int noCommune;
 
 		public KeyGetCommuneByLocalite(Localite localite) {
 			this.numOrdre = localite.getNoOrdre();
@@ -310,7 +310,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetCommuneHistoByNumeroOfs {
-		int noOfsCommune;
+		final int noOfsCommune;
 
 		private KeyGetCommuneHistoByNumeroOfs(int noOfsCommune) {
 			this.noOfsCommune = noOfsCommune;
@@ -350,9 +350,9 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetCommunesByEgid {
-		int egid;
-		RegDate date;
-		int hintNoOfsCommune;
+		final int egid;
+		final RegDate date;
+		final int hintNoOfsCommune;
 
 		private KeyGetCommunesByEgid(int egid, RegDate date, int hintNoOfsCommune) {
 			this.egid = egid;
@@ -431,7 +431,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetListeCommunes {
-		int noOfsCanton;
+		final int noOfsCanton;
 
 		public KeyGetListeCommunes(Canton canton) {
 			this.noOfsCanton = canton.getNoOFS();
@@ -513,7 +513,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 
 	private static class KeyGetLocaliteByONRP {
-		int onrp;
+		final int onrp;
 
 		private KeyGetLocaliteByONRP(int onrp) {
 			this.onrp = onrp;
@@ -592,7 +592,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetOfficeImpotDeCommune {
-		int noCommune;
+		final int noCommune;
 
 		private KeyGetOfficeImpotDeCommune(int noCommune) {
 			this.noCommune = noCommune;
@@ -636,7 +636,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetOfficeImpot {
-		int noColAdm;
+		final int noColAdm;
 
 		private KeyGetOfficeImpot(int noColAdm) {
 			this.noColAdm = noColAdm;
@@ -749,7 +749,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetPaysByNoOfs {
 
-		private int numeroOFS;
+		private final int numeroOFS;
 
 		private KeyGetPaysByNoOfs(int numeroOFS) {
 			this.numeroOFS = numeroOFS;
@@ -788,7 +788,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetRueByNumero {
-		int numero;
+		final int numero;
 
 		private KeyGetRueByNumero(int numero) {
 			this.numero = numero;
@@ -832,7 +832,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetRueByLocalite {
-		int noOrdre;
+		final int noOrdre;
 
 		public KeyGetRueByLocalite(Localite localite) {
 			this.noOrdre = localite.getNoOrdre();
@@ -877,7 +877,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private static class KeyGetRueByCanton {
-		int noOfs;
+		final int noOfs;
 
 		public KeyGetRueByCanton(Canton canton) {
 			this.noOfs = canton.getNoOFS();
@@ -923,7 +923,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetInstitutionFinanciere {
 
-		int id;
+		final int id;
 
 		public KeyGetInstitutionFinanciere(int id) {
 			this.id = id;
@@ -969,7 +969,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetInstitutionsFinancieres {
 
-		String noClearing;
+		final String noClearing;
 
 		public KeyGetInstitutionsFinancieres(String noClearing) {
 			this.noClearing = noClearing;
@@ -1054,7 +1054,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetTypeRegimeFiscal {
 
-		private String code;
+		private final String code;
 
 		private KeyGetTypeRegimeFiscal(String code) {
 			this.code = code;
@@ -1127,7 +1127,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetTypeEtatPM {
 
-		private String code;
+		private final String code;
 
 		private KeyGetTypeEtatPM(String code) {
 			this.code = code;
@@ -1200,7 +1200,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetLogiciel {
 
-		private Long id;
+		private final Long id;
 
 		private KeyGetLogiciel(Long id) {
 			this.id = id;

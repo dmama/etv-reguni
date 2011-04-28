@@ -21,7 +21,7 @@ import ch.vd.uniregctb.web.xt.component.SimpleText;
 import ch.vd.uniregctb.web.xt.handler.BreakLineComponent;
 
 public class TiersPickerResultsTable extends Table {
-	private String buttonId;
+	private final String buttonId;
 
 	public TiersPickerResultsTable(List<TiersIndexedData> list, String buttonId) {
 		this.buttonId = buttonId;

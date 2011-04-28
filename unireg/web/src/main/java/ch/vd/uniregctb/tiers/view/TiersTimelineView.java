@@ -124,7 +124,7 @@ public class TiersTimelineView {
 	 * Représente la table contenant la "timeline"
 	 */
 	public static class Table {
-		public List<Row> rows = new ArrayList<Row>();
+		public final List<Row> rows = new ArrayList<Row>();
 
 		public List<Row> getRows() {
 			return rows;

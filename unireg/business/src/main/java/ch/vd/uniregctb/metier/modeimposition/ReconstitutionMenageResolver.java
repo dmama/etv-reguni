@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.ModeImposition;
  */
 public class ReconstitutionMenageResolver extends MariageModeImpositionResolver implements ModeImpositionResolver {
 
-	private MenageCommun menage;
+	private final MenageCommun menage;
 
 	public ReconstitutionMenageResolver(TiersService tiersService, MenageCommun menage) {
 		super(tiersService, null);

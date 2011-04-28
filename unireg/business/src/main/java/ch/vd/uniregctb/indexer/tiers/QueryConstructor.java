@@ -20,7 +20,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class QueryConstructor {
 
-	private static int INTIAL_NAME_LEN = 2;
+	private static final int INTIAL_NAME_LEN = 2;
 
 	private static final BooleanClause.Occur should = BooleanClause.Occur.SHOULD;
 	private static final BooleanClause.Occur must = BooleanClause.Occur.MUST;

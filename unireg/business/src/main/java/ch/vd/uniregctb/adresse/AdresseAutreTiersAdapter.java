@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
  */
 public class AdresseAutreTiersAdapter extends BaseAdresseGeneriqueAdapter {
 
-	private Long id;
+	private final Long id;
 
 	/**
 	 * @param adresse        l'adresse de type 'autre tiers' (et qui appartient au tiers courant)

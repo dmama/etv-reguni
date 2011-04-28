@@ -49,9 +49,9 @@ public enum ParametreEnum {
 		entierPositif, annee, jourDansAnnee, jourDansMois, delaisEnJour, delaisEnMois
 	}
 
-	private Type type;
-	private String defaut;
-	private boolean resetable;
+	private final Type type;
+	private final String defaut;
+	private final boolean resetable;
 
 	private ParametreEnum(String d, Type t, boolean resetable) {
 		defaut = d;

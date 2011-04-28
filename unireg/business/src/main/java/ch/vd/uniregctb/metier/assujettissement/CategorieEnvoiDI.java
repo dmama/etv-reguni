@@ -53,9 +53,9 @@ public enum CategorieEnvoiDI {
 	DIPLOMATE_SUISSE_IMMEUBLE_COMPLETE(TypeContribuable.DIPLOMATE_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, "Diplomate Suisse avec immeuble (DI complète)"),
 	DIPLOMATE_SUISSE_IMMEUBLE_VAUDTAX(TypeContribuable.DIPLOMATE_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, "Diplomate Suisse avec immeuble (DI VaudTax)");
 
-	private TypeContribuable typeContribuable;
-	private TypeDocument typeDocument;
-	private String description;
+	private final TypeContribuable typeContribuable;
+	private final TypeDocument typeDocument;
+	private final String description;
 
 	private CategorieEnvoiDI(TypeContribuable typeContribuable, TypeDocument typeDocument, String description) {
 		this.typeContribuable = typeContribuable;

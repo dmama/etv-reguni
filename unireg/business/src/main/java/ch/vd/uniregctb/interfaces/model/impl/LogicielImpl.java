@@ -5,17 +5,17 @@ import ch.vd.uniregctb.interfaces.model.LogicielMetier;
 
 public class LogicielImpl implements Logiciel {
 
-	private String contactMetierMail;
-	private String contactMetierNom;
-	private String contactTechniqueMail;
-	private String contactTechniqueNom;
-	private String fournisseur;
-	private String fournisseurAdresse;
-	private long id;
-	private String libelle;
-	private LogicielMetier metier;
-	private String version;
-	private boolean certifie;
+	private final String contactMetierMail;
+	private final String contactMetierNom;
+	private final String contactTechniqueMail;
+	private final String contactTechniqueNom;
+	private final String fournisseur;
+	private final String fournisseurAdresse;
+	private final long id;
+	private final String libelle;
+	private final LogicielMetier metier;
+	private final String version;
+	private final boolean certifie;
 
 	public static LogicielImpl get(ch.vd.fidor.ws.v2.Logiciel target) {
 		if (target == null) {

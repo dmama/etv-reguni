@@ -94,9 +94,9 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 
 	// Données de processing
 	public int nbSituationsTotal;
-	public List<Situation> situationsTraitees = new ArrayList<Situation>();
-	public List<Ignore> situationsIgnorees = new ArrayList<Ignore>();
-	public List<Erreur> situationsEnErrors = new ArrayList<Erreur>();
+	public final List<Situation> situationsTraitees = new ArrayList<Situation>();
+	public final List<Ignore> situationsIgnorees = new ArrayList<Ignore>();
+	public final List<Erreur> situationsEnErrors = new ArrayList<Erreur>();
 
 	public boolean interrompu;
 

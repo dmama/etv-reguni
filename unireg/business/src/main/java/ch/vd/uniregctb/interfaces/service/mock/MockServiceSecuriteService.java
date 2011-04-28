@@ -44,7 +44,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	public Operateur getOperateur(long individuNoTechnique) {
-		return operatorsByIndividu.get(Long.valueOf(individuNoTechnique));
+		return operatorsByIndividu.get(individuNoTechnique);
 	}
 
 	public Operateur getOperateur(String visa) {
@@ -53,7 +53,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 
 	protected void addOperateur(String visa, long noIndividu, String... roles) {
 		final MockOperateur o = new MockOperateur(visa, noIndividu);
-		operatorsByIndividu.put(Long.valueOf(noIndividu), o);
+		operatorsByIndividu.put(noIndividu, o);
 		operatorsByVisa.put(visa, o);
 
 		final ProfilOperateurImpl profile = new ProfilOperateurImpl();

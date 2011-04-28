@@ -20,10 +20,10 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 
 	public static class Info {
 		protected static final String COMMA = ";";
-		private Long noTiers;
-		private Integer anneePeriode;
-		private RegDate diDateDebut;
-		private RegDate diDateFin;
+		private final Long noTiers;
+		private final Integer anneePeriode;
+		private final RegDate diDateDebut;
+		private final RegDate diDateFin;
 		
 		private Info(DeclarationImpotOrdinaire di) {
 			noTiers = di.getTiers().getNumero();
@@ -80,7 +80,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	}
 	
 	public static class ErrorInfo extends Info {
-		private String cause;
+		private final String cause;
 		
 		private ErrorInfo(DeclarationImpotOrdinaire di, String cause) {
 			super(di);
@@ -111,12 +111,12 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	private RegDate dateTraitement;
 	private boolean miseSousPliImpossible;
 	private boolean interrompu;
-	private List<ErrorInfo> sommationsEnErreur = new ArrayList<ErrorInfo>();
-	private Map<Integer, List<Info>> sommationsParPeriode = new HashMap<Integer, List<Info>>();
-	private List<Info> disContribuablesNonAssujettis = new ArrayList<Info>();
-	private List<Info> disContribuablesSourcierPur = new ArrayList<Info>();
-	private List<Info> disContribuablesIndigents = new ArrayList<Info>();
-	private List<Info> disOptionnelles = new ArrayList<Info>();
+	private final List<ErrorInfo> sommationsEnErreur = new ArrayList<ErrorInfo>();
+	private final Map<Integer, List<Info>> sommationsParPeriode = new HashMap<Integer, List<Info>>();
+	private final List<Info> disContribuablesNonAssujettis = new ArrayList<Info>();
+	private final List<Info> disContribuablesSourcierPur = new ArrayList<Info>();
+	private final List<Info> disContribuablesIndigents = new ArrayList<Info>();
+	private final List<Info> disOptionnelles = new ArrayList<Info>();
 
 	public void addAll(EnvoiSommationsDIsResults right) {
 		this.sommationsEnErreur.addAll(right.sommationsEnErreur);

@@ -280,7 +280,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 			assertEquals(dateArriveeOrbe, ffp.getDateDebut(), "Le for sur Orbe n'est pas ouvert à la bonne date");
 			assertNull(ffp.getDateFin(), "Le for sur Bex est fermé");
-			assertEquals(new Integer(communeArriveeOrbe), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Orbe");
+			assertEquals(communeArriveeOrbe, ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Orbe");
 			assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement(), "Le MotifRattachement du for est faux");
 			assertEquals(GenreImpot.REVENU_FORTUNE, ffp.getGenreImpot(), "Le GenreImpot du for est faux");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le ModeImposition du for est faux");
@@ -301,7 +301,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 			// For ouvert sur Orbe
 			ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal)list.get(list.size()-1);
 			assertEquals(RegDate.get(2006, 4, 12), ffpOuvert.getDateDebut(), "Le for sur Orbe n'est pas ouvert à la bonne date");
-			assertEquals(new Integer(communeArriveeOrbe), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Orbe");
+			assertEquals(communeArriveeOrbe, ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Orbe");
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");
 			assertEquals(GenreImpot.REVENU_FORTUNE, ffpOuvert.getGenreImpot(), "Le GenreImpot du for est faux");
 			assertEquals(ModeImposition.ORDINAIRE, ffpOuvert.getModeImposition(), "Le ModeImposition du for est faux");
@@ -328,7 +328,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 			PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabFanny);
 			List<ForFiscal> list = hab.getForsFiscauxSorted();
-			assertEquals(new Integer(0), list.size(), "Fanny a des fors alors qu'elle est mineure");
+			assertEquals(0, list.size(), "Fanny a des fors alors qu'elle est mineure");
 		}
 	}
 

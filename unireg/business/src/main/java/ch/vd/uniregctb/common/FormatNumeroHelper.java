@@ -182,7 +182,7 @@ public class FormatNumeroHelper {
 		if (noRef != null) {
 			noRef = StringUtils.reverse(noRef);
 		}
-		int tailleNoReference = noRef.length();
+		int tailleNoReference = noRef != null ? noRef.length() : 0;
 		int nbreSeparateurs = tailleNoReference / block;
 		for (int i=0; i<nbreSeparateurs; i++) {
 			noRefFormate = noRefFormate + StringUtils.substring(noRef, 0, block) ;

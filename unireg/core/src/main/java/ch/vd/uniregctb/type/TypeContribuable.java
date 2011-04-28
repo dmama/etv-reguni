@@ -47,9 +47,9 @@ public enum TypeContribuable {
 	 */
 	DIPLOMATE_SUISSE("diplomate suisse", "DS");
 
-	private String description;
+	private final String description;
 
-	private String descriptionAcomptes;
+	private final String descriptionAcomptes;
 
 	private TypeContribuable(String description, String descriptionAcomptes) {
 		this.description = description;

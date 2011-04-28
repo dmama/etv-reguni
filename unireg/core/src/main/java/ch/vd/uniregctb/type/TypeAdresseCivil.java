@@ -11,7 +11,7 @@ public enum TypeAdresseCivil {
 	COURRIER(EnumTypeAdresse.COURRIER),
 	TUTEUR(EnumTypeAdresse.TUTELLE);
 
-	private EnumTypeAdresse host;
+	private final EnumTypeAdresse host;
 
 	TypeAdresseCivil(EnumTypeAdresse host) {
 		this.host = host;

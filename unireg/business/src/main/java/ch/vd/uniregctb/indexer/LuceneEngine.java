@@ -101,7 +101,7 @@ public abstract class LuceneEngine {
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
 			stream.incrementToken();
-			TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+			TermAttribute att = stream.getAttribute(TermAttribute.class);
 			token = att.term();
 		}
 		catch (Exception e) {
@@ -152,7 +152,7 @@ public abstract class LuceneEngine {
 
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
-			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+			final TermAttribute att = stream.getAttribute(TermAttribute.class);
 
 			while (stream.incrementToken()) {
 				if (minLength == 0 || att.termLength() >= minLength) {
@@ -214,7 +214,7 @@ public abstract class LuceneEngine {
 
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
-			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+			final TermAttribute att = stream.getAttribute(TermAttribute.class);
 
 			while (stream.incrementToken()) {
 				if (minLength == 0 || att.termLength() >= minLength) {
@@ -274,7 +274,7 @@ public abstract class LuceneEngine {
 
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
-			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+			final TermAttribute att = stream.getAttribute(TermAttribute.class);
 
 			while (stream.incrementToken()) {
 				final Query q = new TermQuery(newTerm(field, att));
@@ -338,7 +338,7 @@ public abstract class LuceneEngine {
 			// We don't want the tokens to be too much changed by the Analyzer
 			// in Fuzzy
 			TokenStream stream = getTokenStream(value, getStandardAnalyzer());
-			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+			final TermAttribute att = stream.getAttribute(TermAttribute.class);
 
 			while (stream.incrementToken()) {
 				Query query = new FuzzyQuery(newTerm(field, att));

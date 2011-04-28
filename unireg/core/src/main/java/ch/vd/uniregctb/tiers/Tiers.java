@@ -1290,7 +1290,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
 			if (di.getNumero() == null) {
 				int numero = 0;
-				final int annee = declaration.getPeriode().getAnnee().intValue();
+				final int annee = declaration.getPeriode().getAnnee();
 				for (Declaration d : declarations) {
 					if (d.getPeriode().getAnnee() == annee) {
 						++numero;

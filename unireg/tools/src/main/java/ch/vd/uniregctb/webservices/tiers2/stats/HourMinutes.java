@@ -5,8 +5,8 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.utils.Assert;
 
 class HourMinutes implements Comparable<HourMinutes> {
-	private int hour;
-	private int minutes;
+	private final int hour;
+	private final int minutes;
 
 	public HourMinutes(int hour, int minutes) {
 		Assert.isTrue(0 <= hour && hour < 24);

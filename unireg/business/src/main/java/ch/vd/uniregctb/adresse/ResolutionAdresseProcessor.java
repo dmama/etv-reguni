@@ -30,11 +30,11 @@ public class ResolutionAdresseProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	final Logger LOGGER = Logger.getLogger(ResolutionAdresseProcessor.class);
-	private AdresseService adresseService;
-	private AdresseTiersDAO adressetiersDAO;
-	private ServiceInfrastructureService infraService;
+	private final AdresseService adresseService;
+	private final AdresseTiersDAO adressetiersDAO;
+	private final ServiceInfrastructureService infraService;
 	private final PlatformTransactionManager transactionManager;
-	private int batchSize = BATCH_SIZE;
+	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ResolutionAdresseResults> rapport = new ThreadLocal<ResolutionAdresseResults>();
 
 	public ResolutionAdresseProcessor(AdresseService adresseService, AdresseTiersDAO adressetiersDAO, ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager) {

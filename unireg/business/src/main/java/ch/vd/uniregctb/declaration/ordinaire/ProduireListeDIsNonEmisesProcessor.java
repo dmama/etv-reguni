@@ -141,7 +141,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		rapport.nbCtbsTotal++;
 
-		final Contribuable contribuable = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+		final Contribuable contribuable = hibernateTemplate.get(Contribuable.class, id);
 		if (validationService.validate(contribuable).hasErrors()) {
 			LOGGER.info("Le ctb n'a pas pu recevoir de DI car il est invalide");
 			return;

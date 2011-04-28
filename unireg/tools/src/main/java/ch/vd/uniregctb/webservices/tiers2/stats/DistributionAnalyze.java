@@ -13,7 +13,7 @@ import ch.vd.registre.base.utils.Assert;
  */
 class DistributionAnalyze extends Analyze {
 
-	private Map<String, List<DistributionData>> results = new HashMap<String, List<DistributionData>>();
+	private final Map<String, List<DistributionData>> results = new HashMap<String, List<DistributionData>>();
 
 	public void addCall(Call call) {
 

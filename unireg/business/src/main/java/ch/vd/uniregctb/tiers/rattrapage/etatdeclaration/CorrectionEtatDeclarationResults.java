@@ -58,7 +58,7 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 	public int nbDeclarationsTotal;
 	public int nbEtatsTotal;
 	public final List<Doublon> doublons = new ArrayList<Doublon>();
-	public List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public void addEtatsAvantTraitement(Collection<EtatDeclaration> etats) {

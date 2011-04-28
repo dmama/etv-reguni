@@ -7,7 +7,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public class EvenementCivilHandlerJob extends JobDefinition {
 
-	public static String NAME = "EvenementCivilHandlerJob";
+	public static final String NAME = "EvenementCivilHandlerJob";
 	private static final String CATEGORIE = "Events";
 
 	private EvenementCivilProcessor processor = null;

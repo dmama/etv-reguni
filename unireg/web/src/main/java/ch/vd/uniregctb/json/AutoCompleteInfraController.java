@@ -49,11 +49,11 @@ public class AutoCompleteInfraController extends JsonController {
 		/**
 		 * Chaîne de caractères utilisée dans le champ d'autocompletion
 		 */
-		private String label;
+		private final String label;
 		/**
 		 * Chaîne de caractères utilisée dans la liste (dropdown) des valeurs disponibles
 		 */
-		private String desc;
+		private final String desc;
 		/**
 		 * Identifiant optionnel pouvant être affecté à un autre champ (généralement caché).
 		 */

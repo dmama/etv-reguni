@@ -22,7 +22,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class TiersIndexable {
 
-	private Logger LOGGER = Logger.getLogger(TiersIndexable.class);
+	private final Logger LOGGER = Logger.getLogger(TiersIndexable.class);
 
 	public static final String TYPE = "tiers";
 

@@ -6,11 +6,11 @@ import java.util.Map;
 import ch.vd.uniregctb.web.io.TextWriter;
 
 public class XhtmlTextWriter extends HtmlTextWriter {
-	Map<String, Boolean> common_attrs = new Hashtable<String, Boolean>(DefaultCommonAttributes.length);
-	Map<String, Boolean> suppress_common_attrs = new Hashtable<String, Boolean>(DefaultSuppressCommonAttributes.length);
-	Map<String, Map<String, Boolean>> element_specific_attrs = new Hashtable<String, Map<String, Boolean>>();
+	final Map<String, Boolean> common_attrs = new Hashtable<String, Boolean>(DefaultCommonAttributes.length);
+	final Map<String, Boolean> suppress_common_attrs = new Hashtable<String, Boolean>(DefaultSuppressCommonAttributes.length);
+	final Map<String, Map<String, Boolean>> element_specific_attrs = new Hashtable<String, Map<String, Boolean>>();
 
-	Map<String, Boolean> attr_render = new Hashtable<String, Boolean>();
+	final Map<String, Boolean> attr_render = new Hashtable<String, Boolean>();
 
 	// XhtmlMobileDocType doc_type;
 

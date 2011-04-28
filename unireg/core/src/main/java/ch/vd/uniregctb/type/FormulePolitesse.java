@@ -77,7 +77,7 @@ public enum FormulePolitesse {
 		}
 	};
 
-	private String format;
+	private final String format;
 
 	FormulePolitesse(String format) {
 		this.format = format;

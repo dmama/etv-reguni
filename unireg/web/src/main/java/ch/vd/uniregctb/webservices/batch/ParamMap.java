@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
 public class ParamMap {
 
 	@XmlElement(required = true)
-	public List<ParamMapEntry> entries = new ArrayList<ParamMapEntry>();
+	public final List<ParamMapEntry> entries = new ArrayList<ParamMapEntry>();
 
 	public ParamMap() {
 	}
