@@ -52,7 +52,6 @@
     <column>NH_NO_OFS_NATIONALITE</column>
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
-    <column>REMARQUE</column>
     <column>NUMERO_PM</column>
     <row>
       <value>Entreprise</value>
@@ -75,7 +74,6 @@
       <null/>
       <null/>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -162,7 +160,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>DebiteurPrestationImposable</value>
@@ -217,7 +214,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -247,7 +243,6 @@
       <null/>
       <null/>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -327,7 +322,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -357,7 +351,6 @@
       <null/>
       <null/>
       <value>3</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -437,7 +430,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -467,7 +459,6 @@
       <null/>
       <null/>
       <value>5</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -547,7 +538,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -577,7 +567,6 @@
       <null/>
       <null/>
       <value>7</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -657,7 +646,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -687,7 +675,6 @@
       <null/>
       <null/>
       <value>9</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -767,7 +754,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -797,7 +783,6 @@
       <null/>
       <null/>
       <value>11</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -877,7 +862,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -907,7 +891,6 @@
       <null/>
       <null/>
       <value>13</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -987,7 +970,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1017,7 +999,6 @@
       <null/>
       <null/>
       <value>15</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1097,7 +1078,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1127,7 +1107,6 @@
       <null/>
       <null/>
       <value>17</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1207,7 +1186,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1237,7 +1215,6 @@
       <null/>
       <null/>
       <value>19</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1317,7 +1294,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1347,7 +1323,6 @@
       <null/>
       <null/>
       <value>21</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1427,7 +1402,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1457,7 +1431,6 @@
       <null/>
       <null/>
       <value>23</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1537,7 +1510,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1567,7 +1539,6 @@
       <null/>
       <null/>
       <value>25</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1647,7 +1618,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1677,7 +1647,6 @@
       <null/>
       <null/>
       <value>27</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1757,7 +1726,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1787,7 +1755,6 @@
       <null/>
       <null/>
       <value>29</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1867,7 +1834,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -1897,7 +1863,6 @@
       <null/>
       <null/>
       <value>31</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1977,7 +1942,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2007,7 +1971,6 @@
       <null/>
       <null/>
       <value>33</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2087,7 +2050,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2117,7 +2079,6 @@
       <null/>
       <null/>
       <value>35</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2197,7 +2158,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2227,7 +2187,6 @@
       <null/>
       <null/>
       <value>37</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2307,7 +2266,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2337,7 +2295,6 @@
       <null/>
       <null/>
       <value>39</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2417,7 +2374,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2447,7 +2403,6 @@
       <null/>
       <null/>
       <value>41</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2527,7 +2482,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2557,7 +2511,6 @@
       <null/>
       <null/>
       <value>43</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2637,7 +2590,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2667,7 +2619,6 @@
       <null/>
       <null/>
       <value>45</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2747,7 +2698,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2777,7 +2727,6 @@
       <null/>
       <null/>
       <value>47</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2857,7 +2806,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2887,7 +2835,6 @@
       <null/>
       <null/>
       <value>49</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -2967,7 +2914,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -2997,7 +2943,6 @@
       <null/>
       <null/>
       <value>51</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3077,7 +3022,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3107,7 +3051,6 @@
       <null/>
       <null/>
       <value>53</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3187,7 +3130,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3217,7 +3159,6 @@
       <null/>
       <null/>
       <value>55</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3297,7 +3238,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3327,7 +3267,6 @@
       <null/>
       <null/>
       <value>57</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3407,7 +3346,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3437,7 +3375,6 @@
       <null/>
       <null/>
       <value>59</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3517,7 +3454,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3547,7 +3483,6 @@
       <null/>
       <null/>
       <value>61</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3627,7 +3562,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3657,7 +3591,6 @@
       <null/>
       <null/>
       <value>63</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3737,7 +3670,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3767,7 +3699,6 @@
       <null/>
       <null/>
       <value>65</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3847,7 +3778,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3877,7 +3807,6 @@
       <null/>
       <null/>
       <value>67</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3957,7 +3886,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3987,7 +3915,6 @@
       <null/>
       <null/>
       <value>69</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4067,7 +3994,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4097,7 +4023,6 @@
       <null/>
       <null/>
       <value>71</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4177,7 +4102,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4207,7 +4131,6 @@
       <null/>
       <null/>
       <value>73</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4287,7 +4210,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4317,7 +4239,6 @@
       <null/>
       <null/>
       <value>75</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4397,7 +4318,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4427,7 +4347,6 @@
       <null/>
       <null/>
       <value>77</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4507,7 +4426,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4537,7 +4455,6 @@
       <null/>
       <null/>
       <value>79</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4617,7 +4534,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4647,7 +4563,6 @@
       <null/>
       <null/>
       <value>81</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4727,7 +4642,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4757,7 +4671,6 @@
       <null/>
       <null/>
       <value>83</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4837,7 +4750,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4867,7 +4779,6 @@
       <null/>
       <null/>
       <value>85</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -4947,7 +4858,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -4977,7 +4887,6 @@
       <null/>
       <null/>
       <value>87</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5057,7 +4966,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5087,7 +4995,6 @@
       <null/>
       <null/>
       <value>89</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5167,7 +5074,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5197,7 +5103,6 @@
       <null/>
       <null/>
       <value>91</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5277,7 +5182,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5307,7 +5211,6 @@
       <null/>
       <null/>
       <value>93</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5387,7 +5290,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5417,7 +5319,6 @@
       <null/>
       <null/>
       <value>95</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5497,7 +5398,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5527,7 +5427,6 @@
       <null/>
       <null/>
       <value>97</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5607,7 +5506,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -5662,7 +5560,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>AutreCommunaute</value>
@@ -5691,7 +5588,6 @@
       <null/>
       <value>ASS</value>
       <value><![CDATA[Communaute XYZ]]></value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5772,7 +5668,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -5822,7 +5717,6 @@
       <null/>
       <null/>
       <value>333905</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5882,7 +5776,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -5932,7 +5825,6 @@
       <null/>
       <null/>
       <value>327706</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -5992,7 +5884,6 @@
       <value><![CDATA[Isidor (sourcier gris)]]></value>
       <value>MASCULIN</value>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -6046,7 +5937,6 @@
       <value>8212</value>
       <value>Conchita</value>
       <value>FEMININ</value>
-      <null/>
       <null/>
     </row>
     <row>
@@ -6102,7 +5992,6 @@
       <value>Mario</value>
       <value>MASCULIN</value>
       <null/>
-      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -6125,7 +6014,6 @@
       <null/>
       <null/>
       <value>10</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -6212,7 +6100,6 @@
       <value><![CDATA[De la mort]]></value>
       <value>MASCULIN</value>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -6266,7 +6153,6 @@
       <value>8201</value>
       <value><![CDATA[Alain (HS)]]></value>
       <value>MASCULIN</value>
-      <null/>
       <null/>
     </row>
     <row>
@@ -6322,7 +6208,6 @@
       <value>Michel</value>
       <value>MASCULIN</value>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -6372,7 +6257,6 @@
       <null/>
       <null/>
       <value>674417</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -6432,7 +6316,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -6482,7 +6365,6 @@
       <null/>
       <null/>
       <value>325740</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -6542,7 +6424,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -6568,7 +6449,6 @@
       <value><![CDATA[MAURICE DUPONT]]></value>
       <null/>
       <value><![CDATA[ERIC MONTAGNY]]></value>
-      <null/>
       <null/>
       <null/>
       <null/>
