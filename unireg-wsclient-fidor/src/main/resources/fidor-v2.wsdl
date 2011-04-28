@@ -34,6 +34,8 @@
 			<xs:element name="getToutesLesCommunesResponse" type="tns:getToutesLesCommunesResponse" />
 			<xs:element name="getUrl" type="tns:getUrl" />
 			<xs:element name="getUrlResponse" type="tns:getUrlResponse" />
+			<xs:element name="isCommuneFusionVaudoiseParNoOFSDate" type="tns:isCommuneFusionVaudoiseParNoOFSDate" />
+			<xs:element name="isCommuneFusionVaudoiseParNoOFSDateResponse" type="tns:isCommuneFusionVaudoiseParNoOFSDateResponse" />
 			<xs:complexType name="getCommuneParNomOfficiel">
 				<xs:sequence>
 					<xs:element minOccurs="0" name="nom" type="xs:string" />
@@ -57,17 +59,16 @@
 					<xs:element minOccurs="0" name="dateDebutValidite" type="tns:fidorDate" />
 					<xs:element minOccurs="0" name="dateFinValidite" type="tns:fidorDate" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="fractions" nillable="true" type="tns:communeFiscale" />
+					<xs:element minOccurs="0" name="noOFSFaitiere" type="xs:int" />
 					<xs:element minOccurs="0" name="noOfs" type="xs:int" />
 					<xs:element minOccurs="0" name="noTechnique" type="xs:int" />
-					<xs:element minOccurs="0" name="noTechniqueFaitiere" type="xs:int" />
-					<xs:element minOccurs="0" name="nomAbrege" type="xs:string" />
-					<xs:element minOccurs="0" name="parentOfsId" type="xs:int" />
+					<xs:element minOccurs="0" name="nomCourt" type="xs:string" />
+					<xs:element minOccurs="0" name="nomOfficiel" type="xs:string" />
 					<xs:element minOccurs="0" name="sigleCanton" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="getCommuneParBatiment">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="numeroOfs" type="xs:int" />
 					<xs:element minOccurs="0" name="egid" type="xs:int" />
 					<xs:element minOccurs="0" name="dateReference" type="tns:fidorDate" />
 				</xs:sequence>
@@ -222,6 +223,17 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="logicielsList" type="tns:logiciel" />
 				</xs:sequence>
 			</xs:complexType>
+			<xs:complexType name="isCommuneFusionVaudoiseParNoOFSDate">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="numeroOFS" type="xs:int" />
+					<xs:element minOccurs="0" name="dateReference" type="tns:fidorDate" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="isCommuneFusionVaudoiseParNoOFSDateResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="isFusionEnCours" type="xs:boolean" />
+				</xs:sequence>
+			</xs:complexType>
 			<xs:complexType name="getCommuneParNoOFS">
 				<xs:sequence>
 					<xs:element name="numeroOFS" type="xs:int" />
@@ -336,6 +348,10 @@
 		<wsdl:part element="tns:getCommunesParNoOFS" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
+	<wsdl:message name="isCommuneFusionVaudoiseParNoOFSDate">
+		<wsdl:part element="tns:isCommuneFusionVaudoiseParNoOFSDate" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
 	<wsdl:message name="getTousLesPays">
 		<wsdl:part element="tns:getTousLesPays" name="parameters">
 		</wsdl:part>
@@ -350,6 +366,10 @@
 	</wsdl:message>
 	<wsdl:message name="getCommuneParNoTechniqueResponse">
 		<wsdl:part element="tns:getCommuneParNoTechniqueResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="isCommuneFusionVaudoiseParNoOFSDateResponse">
+		<wsdl:part element="tns:isCommuneFusionVaudoiseParNoOFSDateResponse" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getTousLesLogiciels">
@@ -408,12 +428,12 @@
 		<wsdl:part element="tns:getCommunesParFusion" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="FidorBusinessException">
-		<wsdl:part element="tns:FidorBusinessException" name="FidorBusinessException">
-		</wsdl:part>
-	</wsdl:message>
 	<wsdl:message name="getCommuneParNoOFS">
 		<wsdl:part element="tns:getCommuneParNoOFS" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="FidorBusinessException">
+		<wsdl:part element="tns:FidorBusinessException" name="FidorBusinessException">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getCommuneParNoTechnique">
@@ -534,6 +554,14 @@
 			</wsdl:input>
 			<wsdl:output message="tns:getTousLesLogicielsResponse" name="getTousLesLogicielsResponse">
 			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="isCommuneFusionVaudoiseParNoOFSDate">
+			<wsdl:input message="tns:isCommuneFusionVaudoiseParNoOFSDate" name="isCommuneFusionVaudoiseParNoOFSDate">
+			</wsdl:input>
+			<wsdl:output message="tns:isCommuneFusionVaudoiseParNoOFSDateResponse" name="isCommuneFusionVaudoiseParNoOFSDateResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:FidorBusinessException" name="FidorBusinessException">
+			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getCommuneParNoOFS">
 			<wsdl:input message="tns:getCommuneParNoOFS" name="getCommuneParNoOFS">
@@ -684,6 +712,18 @@
 			<wsdl:output name="getTousLesLogicielsResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="isCommuneFusionVaudoiseParNoOFSDate">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="isCommuneFusionVaudoiseParNoOFSDate">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="isCommuneFusionVaudoiseParNoOFSDateResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="FidorBusinessException">
+				<soap:fault name="FidorBusinessException" use="literal" />
+			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getCommuneParNoOFS">
 			<soap:operation soapAction="" style="document" />
