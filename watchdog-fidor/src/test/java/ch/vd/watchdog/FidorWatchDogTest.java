@@ -47,7 +47,7 @@ public abstract class FidorWatchDogTest {
 	public void testGetCommuneParNoOFS() throws Exception {
 		final CommuneFiscale commune = fidorClient.getCommuneParNoOFS(5586, newDate(2000, 1, 1));
 		assertNotNull(commune);
-		assertEquals("Lausanne", commune.getNomAbrege());
+		assertEquals("Lausanne", commune.getNomOfficiel());
 	}
 
 	@Test
@@ -57,14 +57,14 @@ public abstract class FidorWatchDogTest {
 
 		final CommuneFiscale commune = communes.get(0);
 		assertNotNull(commune);
-		assertEquals("Lausanne", commune.getNomAbrege());
+		assertEquals("Lausanne", commune.getNomOfficiel());
 	}
 
 	@Test
 	public void testGetCommuneParBatiment() throws Exception {
-		final CommuneFiscale commune = fidorClient.getCommuneParBatiment(5608, 280011227, newDate(2000, 1, 1));
+		final CommuneFiscale commune = fidorClient.getCommuneParBatiment(280011227, newDate(2000, 1, 1));
 		assertNotNull(commune);
-		assertEquals("Riex", commune.getNomAbrege());
+		assertEquals("Riex", commune.getNomOfficiel());
 	}
 
 	@Test
