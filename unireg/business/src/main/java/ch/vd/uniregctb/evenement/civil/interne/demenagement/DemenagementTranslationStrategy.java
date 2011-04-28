@@ -87,8 +87,8 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 			final Integer egidApres = adresseApres.principale.getEgid();
 
 
-			final Commune communeAvant = (egidAvant == null ? null : context.getServiceInfra().getCommuneByEgid(egidAvant, veilleDemenagement, event.getNumeroOfsCommuneAnnonce()));
-			final Commune communeApres = (egidApres == null ? null : context.getServiceInfra().getCommuneByEgid(egidApres, jourDemenagement, event.getNumeroOfsCommuneAnnonce()));
+			final Commune communeAvant = (egidAvant == null ? null : context.getServiceInfra().getCommuneByEgid(egidAvant, veilleDemenagement));
+			final Commune communeApres = (egidApres == null ? null : context.getServiceInfra().getCommuneByEgid(egidApres, jourDemenagement));
 
 			return new Communes(communeAvant, communeApres);
 		}

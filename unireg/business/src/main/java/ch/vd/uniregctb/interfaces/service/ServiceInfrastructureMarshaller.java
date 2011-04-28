@@ -45,8 +45,8 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public Integer getNoOfsCommuneByEgid(int egid, RegDate date, int hintNoOfsCommune) throws ServiceInfrastructureException {
-		return fidorService.getNoOfsCommuneByEgid(egid, date, hintNoOfsCommune);
+	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+		return fidorService.getNoOfsCommuneByEgid(egid, date);
 	}
 
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {

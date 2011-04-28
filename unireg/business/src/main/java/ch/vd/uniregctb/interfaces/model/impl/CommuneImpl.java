@@ -67,14 +67,14 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	}
 
 	protected CommuneImpl(CommuneFiscale target) {
-		super(target.getNoOfs(), toUpperCase(target.getNomAbrege()), target.getNomAbrege(), null);
+		super(target.getNoOfs(), toUpperCase(target.getNomOfficiel()), target.getNomOfficiel(), null);
 		this.dateDebut = fidor2reg(target.getDateDebutValidite());
 		this.dateFin = fidor2reg(target.getDateFinValidite());
-		this.noOFSEtendu = (target.getParentOfsId() == null ? target.getNoOfs() : target.getNoTechnique());
+		this.noOFSEtendu = (target.getNoOFSFaitiere() == null ? target.getNoOfs() : target.getNoTechnique());
 		this.sigleCanton = target.getSigleCanton();
-		this.numTechMere = target.getParentOfsId() == null ? 0 : target.getParentOfsId();
+		this.numTechMere = target.getNoOFSFaitiere() == null ? 0 : target.getNoOFSFaitiere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
-		this.fraction = (target.getParentOfsId() != null);
+		this.fraction = (target.getNoOFSFaitiere() != null);
 		this.principale = (target.getFractions() != null && !target.getFractions().isEmpty());
 	}
 
