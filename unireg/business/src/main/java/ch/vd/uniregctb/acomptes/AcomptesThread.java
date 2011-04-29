@@ -19,7 +19,7 @@ public class AcomptesThread extends ListesThread<AcomptesResults> {
                           TiersService tiersService, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
                           TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
-        super(queue, status, compteur, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate,
+        super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
                 new AcomptesResults(dateTraitement, nombreThreads, anneeFiscale, tiersService));
     }
 

@@ -31,7 +31,7 @@ public class ExtractionAfcThread extends ListesThread<ExtractionAfcResults> {
 	public ExtractionAfcThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur, ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersService tiersService,
 	                           ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, RegDate dateTraitement,
 	                           int periodeFiscale, TypeExtractionAfc mode, int nbThreads) {
-		super(queue, status, compteur, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate, new ExtractionAfcResults(dateTraitement, periodeFiscale, mode, nbThreads, tiersService, infraService));
+		super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate, new ExtractionAfcResults(dateTraitement, periodeFiscale, mode, nbThreads, tiersService, infraService));
 		this.periodeFiscale = periodeFiscale;
 		this.mode = mode;
 	}

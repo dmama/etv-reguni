@@ -28,7 +28,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
-import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
@@ -48,8 +47,6 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
-	private final TiersService tiersService;
-
     private final AtomicInteger compteur;
 
     private final HibernateTemplate hibernateTemplate;
@@ -66,13 +63,12 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
     public ListesThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur,
                         ServiceCivilCacheWarmer serviceCivilCacheWarmer,
-                        TiersService tiersService, PlatformTransactionManager transactionManager,
+                        PlatformTransactionManager transactionManager,
                         TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, T results) {
         this.queue = queue;
         this.status = status;
         this.compteur = compteur;
 	    this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
-	    this.tiersService = tiersService;
 	    this.hibernateTemplate = hibernateTemplate;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         this.tiersDAO = tiersDAO;

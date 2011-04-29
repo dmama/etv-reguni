@@ -20,7 +20,7 @@ public class ListeAssujettisThreads extends ListesThread<ListeAssujettisResults>
                                   boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee, ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersService tiersService,
 	                              PlatformTransactionManager transactionManager, TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
-		super(queue, status, compteur, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate,
+		super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
 		      new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, tiersService));
 	}
 }

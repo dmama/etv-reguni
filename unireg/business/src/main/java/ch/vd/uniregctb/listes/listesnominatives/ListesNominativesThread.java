@@ -35,7 +35,7 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
                                    AdresseService adresseService, ServiceCivilCacheWarmer serviceCivilCacheWarmer, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
                                    TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
-        super(queue, status, compteur, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate,
+        super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
                 new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService));
 
 	    this.adressesIncluses = adressesIncluses;
