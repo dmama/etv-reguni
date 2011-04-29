@@ -82,9 +82,9 @@
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-			<groupId>quartz</groupId>
+			<groupId>org.opensymphony.quartz</groupId>
 			<artifactId>quartz</artifactId>
-			<version>1.5.2</version>
+			<version>1.6.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
