@@ -134,13 +134,13 @@ public abstract class TimeHelper {
 			parts.add(String.format("%d %s", days, pluralize(days, "jour")));
 		}
 		if (hours > 0) {
-			parts.add(String.format("%s %s", hours, pluralize(hours, "heure")));
+			parts.add(String.format("%d %s", hours, pluralize(hours, "heure")));
 		}
 		if (minutes > 0) {
-			parts.add(String.format("%s %s", minutes, pluralize(minutes, "minute")));
+			parts.add(String.format("%d %s", minutes, pluralize(minutes, "minute")));
 		}
 		if (seconds > 0 || (days == 0 && hours == 0 && minutes == 0)) {
-			parts.add(String.format("%s %s", seconds, pluralize(seconds, "seconde")));
+			parts.add(String.format("%d %s", seconds, pluralize(seconds, "seconde")));
 		}
 		final int nbParts = parts.size();
 		if (nbParts == 1) {
