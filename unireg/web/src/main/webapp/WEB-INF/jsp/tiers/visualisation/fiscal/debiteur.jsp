@@ -25,7 +25,7 @@
 		</tr>
 	</table>
 </fieldset>
-<c:if test="${command.tiers.modeCommunication != 'PAPIER'}">
+<c:if test="${command.tiers.modeCommunication == 'ELECTRONIQUE'}">
 	<fieldset>
 			<legend><span><fmt:message key="label.complement.logicielPaye" /></span></legend>
 				<c:if test="${command.logiciel != null}">
