@@ -65,7 +65,8 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 					else if (!commune.isPrincipale()) {
 						// vérification que la commune est bien valide sur toute la période
 						final DateRange validiteCommune = new DateRangeHelper.Range(commune.getDateDebutValidite(), commune.getDateFinValidite());
-						if (!DateRangeHelper.within(ff, validiteCommune)) {
+						final DateRange validiteFor = new DateRangeHelper.Range(ff.getDateDebut(), ff.getDateFin() == null ? RegDate.get() : ff.getDateFin());      // on ne considère que la période passée des fors encore actifs
+						if (!DateRangeHelper.within(validiteFor, validiteCommune)) {
 							final String debutValiditeCommune = validiteCommune.getDateDebut() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateDebut());
 							final String finValiditeCommune = validiteCommune.getDateFin() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateFin());
 							results.addWarning(String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",

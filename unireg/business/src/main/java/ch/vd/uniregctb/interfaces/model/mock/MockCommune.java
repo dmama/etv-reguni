@@ -58,7 +58,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final RegDate veilleFusion2011 = dateFusion2011.getOneDayBefore();
 
 	// -- Villette, Grandvaux, Cully, Riey, Epesses => Bourg-en-Lavaux
-	public static final MockCommune Villette = new MockCommune(5612, "Villette", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011){};
+	public static final MockCommune Villette = new MockCommune(5612, "Villette", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
 	public static final MockCommune Grandvaux = new MockCommune(5605, "Grandvaux", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
 	public static final MockCommune Cully = new MockCommune(5602, "Cully", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
 	public static final MockCommune Riex = new MockCommune(5608, "Riex", VAUD, MockOfficeImpot.OID_LAVAUX, null, veilleFusion2011);
@@ -73,6 +73,9 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	// quelques communes non-éternelles
 	public static final MockCommune Malapalud = new MockCommune(5526, "Malapalud", VAUD, MockOfficeImpot.OID_ECHALLENS, null, RegDate.get(2008, 12, 31));
 	public static final MockCommune ValDeTravers = new MockCommune(6512, "Val-de-Travers", NEUCHATEL, null, RegDate.get(2009, 1, 1), null);
+
+	// Une commune fictive dont la date de fin de validité existe mais est TOUJOURS dans le futur
+	public static final MockCommune Mirage = new MockCommune(Integer.MAX_VALUE, "Mirage", VAUD, MockOfficeImpot.OID_PM, null, RegDate.get().getLastDayOfTheMonth());
 
 	// commune avec fractions de commmunes
 	public static final MockCommune LAbbaye = new CommuneFractionnee(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);

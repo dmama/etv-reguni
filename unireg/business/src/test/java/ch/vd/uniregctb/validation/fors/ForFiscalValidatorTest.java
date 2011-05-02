@@ -33,6 +33,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ff);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 
 			final String expectedMsg = String.format("Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas", ff, commune.getNomMinuscule(), commune.getNoOFSEtendu());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
@@ -47,6 +48,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.warningsCount());
+			Assert.assertEquals(0, vr.errorsCount());
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
@@ -59,6 +61,28 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
+			Assert.assertEquals(0, vr.errorsCount());
+		}
+	}
+
+	@Test
+	public void testDateFinValiditeCommuneDansFutur() throws Exception {
+		final Commune commune = MockCommune.Mirage;
+		Assert.assertTrue(commune.getDateFinValidite().isAfterOrEqual(RegDate.get()));
+		{
+			// le for est encore ouvert à droite : en théorie, puisque la commune a une date de fin, cela devrait donner une erreur, mais en fait non, car cette date est dans le futur
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(0, vr.warningsCount());
+			Assert.assertEquals(0, vr.errorsCount());
+		}
+		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), RegDate.get(2010, 12, 31), commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(0, vr.warningsCount());
+			Assert.assertEquals(0, vr.errorsCount());
 		}
 	}
 
@@ -70,6 +94,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.warningsCount());
+			Assert.assertEquals(0, vr.errorsCount());
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
@@ -82,6 +107,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
+			Assert.assertEquals(0, vr.errorsCount());
 		}
 	}
 
@@ -93,6 +119,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 
 			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomMinuscule(), commune.getNoOFSEtendu(), ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
@@ -103,6 +130,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 
 			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomMinuscule(), commune.getNoOFSEtendu(), ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
@@ -117,6 +145,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 
 			final String expectedMsg = String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure", ffp, ffp.getNumeroOfsAutoriteFiscale());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
@@ -126,6 +155,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 
 			final String expectedMsg = String.format("Le for %s devrait être vaudois ou hors-canton", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
@@ -135,6 +165,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 
 			final String expectedMsg = String.format("Le pays du for fiscal %s (%s, %d) n'est pas un état souverain, mais un territoire", ffp, MockPays.Gibraltar.getNomMinuscule(), MockPays.Gibraltar.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
@@ -144,6 +175,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 		}
 	}
 }
