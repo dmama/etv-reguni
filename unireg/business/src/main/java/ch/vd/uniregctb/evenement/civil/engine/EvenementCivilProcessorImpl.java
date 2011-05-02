@@ -118,31 +118,13 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 					// On enlève les erreurs précédentes
 					evenementCivilExterne.getErreurs().clear();
 
-					Assert.notNull(evenementCivilExterne.getType(), "le type de l'événement n'est pas renseigné");
-					Assert.notNull(evenementCivilExterne.getDateEvenement(), "La date de l'événement n'est pas renseigné");
-					Assert.notNull(evenementCivilExterne.getNumeroOfsCommuneAnnonce(), "Le numero de la commune d'annonce n'est pas renseigné");
-
-					// Controle la commune OFS
-					int numeroOFS = evenementCivilExterne.getNumeroOfsCommuneAnnonce();
-					if (numeroOFS != 0) {
-						Commune c;
-						try {
-							c = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOFS, evenementCivilExterne.getDateEvenement());
-						}
-						catch (ServiceInfrastructureException e) {
-							LOGGER.error(e, e);
-							c = null;
-						}
-						if (c == null) {
-							// Commune introuvable => Exception
-							throw new IllegalArgumentException("La commune avec le numéro OFS " + numeroOFS + " n'existe pas");
-						}
-					}
-
 					// Traitement de l'événement
-					Audit.info(
-							evenementCivilExterne.getId(), String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType().name()));
-					traiteEvenement(evenementCivilExterne, refreshCache, erreurs, warnings);
+					try {
+						traiteEvenement(evenementCivilExterne, refreshCache, erreurs, warnings);
+					}
+					catch (EvenementCivilException e) {
+						throw new RuntimeException(e);
+					}
 
 					return traiteErreurs(evenementCivilExterne, erreurs, warnings);
 				}
@@ -155,11 +137,21 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			result = (Long) template.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
 
+					final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
+
+					// [SIFISC-982] En cas d'erreur ayant provoqué le rollback de la transaction, on veut quand même garder (autant que possible) les liens vers
+					// les personnes physiques. Pour cela, on va chercher on nouvelle fois ces derniers par le numéro d'individu.
+					try {
+						fillHabitants(evenementCivilExterne);
+					}
+					catch (Exception e1) {
+						LOGGER.error("Impossible d'établir les liens vers les personnes physiques", e1);
+					}
+
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 					erreurs.add(new EvenementCivilExterneErreur(e));
 
-					final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
 					evenementCivilExterne.getErreurs().clear();
 					return traiteErreurs(evenementCivilExterne, erreurs, warnings);
 				}
@@ -170,6 +162,56 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Renseigne sur un événement les liens vers les habitants à partir des numéros d'individus.
+	 *
+	 * @param event un événement
+	 */
+	private void fillHabitants(EvenementCivilExterne event) {
+
+		final Long noIndPrincipal = event.getNumeroIndividuPrincipal();
+		if (noIndPrincipal != null) {
+			final Long principalID = tiersDAO.getNumeroPPByNumeroIndividu(noIndPrincipal, true);
+			event.setHabitantPrincipalId(principalID);
+		}
+
+		final Long noIndConj = event.getNumeroIndividuConjoint();
+		if (noIndConj != null) {
+			final Long conjointID = tiersDAO.getNumeroPPByNumeroIndividu(noIndConj, true);
+			event.setHabitantConjointId(conjointID);
+		}
+	}
+
+	/**
+	 * Vérifie qu'un événement possède bien les données minimales attendues sur celui-ci
+	 * @param event un événement
+	 */
+	private void assertEvenement(EvenementCivilExterne event) {
+
+		Assert.notNull(event.getType(), "le type de l'événement n'est pas renseigné");
+		Assert.notNull(event.getDateEvenement(), "La date de l'événement n'est pas renseigné");
+		Assert.notNull(event.getNumeroOfsCommuneAnnonce(), "Le numero de la commune d'annonce n'est pas renseigné");
+
+		// Controle la commune OFS
+		int numeroOFS = event.getNumeroOfsCommuneAnnonce();
+		if (numeroOFS != 0) {
+			Commune c;
+			try {
+				c = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOFS, event.getDateEvenement());
+			}
+			catch (ServiceInfrastructureException e) {
+				LOGGER.error(e, e);
+				c = null;
+			}
+			if (c == null) {
+				// Commune introuvable => Exception
+				throw new IllegalArgumentException("La commune avec le numéro OFS " + numeroOFS + " n'existe pas");
+			}
+		}
+
+		Assert.notNull(event.getNumeroIndividuPrincipal(), "Le numéro d'individu de l'événement ne peut pas être nul");
 	}
 
 	private Long traiteErreurs(EvenementCivilExterne evenementCivilExterne, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
@@ -210,69 +252,60 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		return result;
 	}
 
-	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final List<EvenementCivilExterneErreur> erreurs, final List<EvenementCivilExterneErreur> warnings) {
-		try {
-//			LOGGER.debug("evenementCivilData.getNumeroIndividuPrincipal()");
+	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final List<EvenementCivilExterneErreur> erreurs,
+	                             final List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
-			// On complète l'événement à la volée (on est obligé de le faire ici dans tous les cas, car le tiers
-			// correspondant peut avoir été créé entre la réception de l'événement et son re-traitement).
-			final Long noIndPrinc = evenementCivilExterne.getNumeroIndividuPrincipal();
-			Assert.notNull(noIndPrinc, "Le numéro d'individu de l'événement ne peut pas être nul");
+		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType().name());
+		Audit.info(evenementCivilExterne.getId(), message);
 
-			final Long principalID = tiersDAO.getNumeroPPByNumeroIndividu(noIndPrinc, true);
-			evenementCivilExterne.setHabitantPrincipalId(principalID);
+		assertEvenement(evenementCivilExterne);
 
-			final Long noIndConj = evenementCivilExterne.getNumeroIndividuConjoint();
-			if (noIndConj != null) {
-				final Long conjointID = tiersDAO.getNumeroPPByNumeroIndividu(noIndConj, true);
-				evenementCivilExterne.setHabitantConjointId(conjointID);
-			}
+		// On complète l'événement à la volée (on est obligé de le faire ici dans tous les cas, car le tiers
+		// correspondant peut avoir été créé entre la réception de l'événement et son re-traitement).
+		fillHabitants(evenementCivilExterne);
 
-			final EvenementCivilOptions options = new EvenementCivilOptions(refreshCache);
-			final EvenementCivilInterne event = evenementCivilTranslator.toInterne(evenementCivilExterne, options);
+		final Long noIndPrinc = evenementCivilExterne.getNumeroIndividuPrincipal();
+		final Long noIndConj = evenementCivilExterne.getNumeroIndividuConjoint();
 
-			/* 2.1 - lancement de la validation */
-			event.checkCompleteness(erreurs, warnings);
+		// On converti l'événement externe en événement interne, qui contient tout l'information nécessaire à l'exécution de l'événement.
+		final EvenementCivilOptions options = new EvenementCivilOptions(refreshCache);
+		final EvenementCivilInterne event = evenementCivilTranslator.toInterne(evenementCivilExterne, options);
 
-			/* 2.2 - lancement de la validation */
-			if (erreurs.isEmpty()) {
-				event.validate(erreurs, warnings);
-				/* 2.3 - lancement du traitement */
-				if (erreurs.isEmpty()) {
-					final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = event.handle(warnings);
+		// 2.1 - lancement de la validation
+		event.checkCompleteness(erreurs, warnings);
+		if (!erreurs.isEmpty()) {
+			Audit.error(event.getNumeroEvenement(), "l'événement est incomplet");
+			return;
+		}
 
-					// adaptation des données dans l'événement civil en cas de création de nouveaux habitants
-					if (nouveauxHabitants != null) {
-						if (nouveauxHabitants.getFirst() != null && noIndPrinc != null && noIndPrinc > 0L) {
-							if (evenementCivilExterne.getHabitantPrincipalId() == null) {
-								evenementCivilExterne.setHabitantPrincipalId(nouveauxHabitants.getFirst().getId());
-							}
-							else {
-								Assert.isEqual(evenementCivilExterne.getHabitantPrincipalId(), nouveauxHabitants.getFirst().getNumero());
-							}
-						}
-						if (nouveauxHabitants.getSecond() != null && noIndConj != null && noIndConj > 0L) {
-							if (evenementCivilExterne.getHabitantConjointId() == null) {
-								evenementCivilExterne.setHabitantConjointId(nouveauxHabitants.getSecond().getId());
-							}
-							else {
-								Assert.isEqual(evenementCivilExterne.getHabitantConjointId(), nouveauxHabitants.getSecond().getNumero());
-							}
-						}
-					}
+		// 2.2 - lancement de la validation
+		event.validate(erreurs, warnings);
+		if (!erreurs.isEmpty()) {
+			Audit.error(event.getNumeroEvenement(), "l'événement n'est pas valide");
+			return;
+		}
+
+		// 2.3 - lancement du traitement
+		final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = event.handle(warnings);
+
+		// adaptation des données dans l'événement civil en cas de création de nouveaux habitants
+		if (nouveauxHabitants != null) {
+			if (nouveauxHabitants.getFirst() != null && noIndPrinc != null && noIndPrinc > 0L) {
+				if (evenementCivilExterne.getHabitantPrincipalId() == null) {
+					evenementCivilExterne.setHabitantPrincipalId(nouveauxHabitants.getFirst().getId());
 				}
 				else {
-					Audit.error(event.getNumeroEvenement(), "l'événement n'est pas valide");
+					Assert.isEqual(evenementCivilExterne.getHabitantPrincipalId(), nouveauxHabitants.getFirst().getNumero());
 				}
 			}
-			else {
-				Audit.error(event.getNumeroEvenement(), "l'événement est incomplet");
+			if (nouveauxHabitants.getSecond() != null && noIndConj != null && noIndConj > 0L) {
+				if (evenementCivilExterne.getHabitantConjointId() == null) {
+					evenementCivilExterne.setHabitantConjointId(nouveauxHabitants.getSecond().getId());
+				}
+				else {
+					Assert.isEqual(evenementCivilExterne.getHabitantConjointId(), nouveauxHabitants.getSecond().getNumero());
+				}
 			}
-		}
-		catch (EvenementCivilException e) {
-			LOGGER.debug("Impossible d'adapter l'événement civil : " + evenementCivilExterne.getId(), e);
-			erreurs.add(new EvenementCivilExterneErreur(e));
-			Audit.error(evenementCivilExterne.getId(), e);
 		}
 	}
 

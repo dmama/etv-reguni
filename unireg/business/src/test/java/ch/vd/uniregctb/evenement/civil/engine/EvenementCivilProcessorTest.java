@@ -720,7 +720,77 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
 
+	/**
+	 * [SIFISC-982] Vérifie que les exceptions levées dans les événements civils internes sont bien interceptées par le processor d'événements civils, et que les liens entre l'événement civil et les
+	 * personnes physiques correspondantes sont bien préservés.
+	 */
+	@Test
+	@NotTransactional
+	public void testExceptionDansEvenementCivilInterne() throws Exception {
 
+		final long noIndividuMonsieur = 12457319L;
+		final long evtId = 1234567890L;
+
+		// on crée un individu avec un contribuable associé
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuMonsieur, date(1966, 3, 12), "Fussnacht", "Cyril", true);
+			}
+		});
+
+		final Long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividuMonsieur);
+				return pp.getNumero();
+			}
+		});
+		assertNotNull(ppId);
+
+		// création et traitement d'un événement civil qui lève une exception (= suppression d'individu qui doit être traitée manuellement)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				EvenementCivilExterne evt = new EvenementCivilExterne();
+				evt.setId(evtId);
+				evt.setType(TypeEvenementCivil.SUP_INDIVIDU);
+				evt.setDateEvenement(date(2011, 1, 1));
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividuPrincipal(noIndividuMonsieur);
+				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+				evt = evenementCivilExterneDAO.save(evt);
+				return evt;
+			}
+		});
+		traiteEvenements();
+
+		// on vérifie que :
+		//  - l'événement est en erreur
+		//  - que l'événement civil a été correctement associé avec son individu
+		//  - que le message d'erreur est bien renseigné
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final EvenementCivilExterneCriteria criterion = new EvenementCivilExterneCriteria();
+				criterion.setNumeroIndividu(noIndividuMonsieur);
+				final List<EvenementCivilExterne> evts = evenementCivilExterneDAO.find(criterion, null);
+				assertNotNull(evts);
+				assertEquals(1, evts.size());
+
+				final EvenementCivilExterne externe = evts.get(0);
+				assertNotNull(externe);
+				assertEquals(TypeEvenementCivil.SUP_INDIVIDU, externe.getType());
+				assertEquals(EtatEvenementCivil.EN_ERREUR, externe.getEtat());
+				assertEquals(1, externe.getErreurs().size());
+				assertEquals(ppId, externe.getHabitantPrincipalId());
+
+				final EvenementCivilExterneErreur erreur = externe.getErreurs().iterator().next();
+				assertNotNull(erreur);
+				assertEquals("Veuillez effectuer cette opération manuellement", erreur.getMessage());
+				return null;
+			}
+		});
 	}
 }
