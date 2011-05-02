@@ -67,7 +67,7 @@ public class RapportEditController extends AbstractRapportPrestationController {
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
-			errors.reject(e.getMessage());
+			errors.reject("", e.getMessage());
 			return showForm(request, response, errors);
 		}
 
