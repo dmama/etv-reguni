@@ -36,7 +36,12 @@
 						<div id="div_logiciel_label" style="display:none;" ><fmt:message key="label.complement.logicielPaye" />&nbsp;:</div>
 					</td>
 					<td>
-						<div id="div_logiciel_input" style="display:none;" ><form:select path="logicielId" items="${libellesLogiciel}" /></div>
+						<div id="div_logiciel_input" style="display:none;" >
+							<form:select path="logicielId">
+								<form:option value=""/>
+								<form:options items="${libellesLogiciel}"/>
+							</form:select>
+						</div>
 					</td>
 		</tr>
 	</table>
