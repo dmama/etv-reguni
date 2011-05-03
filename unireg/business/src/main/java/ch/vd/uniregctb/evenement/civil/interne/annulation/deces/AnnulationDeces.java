@@ -8,13 +8,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -79,7 +79,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * Obtention du tiers correspondant à l'ancient defunt.
@@ -107,28 +107,33 @@ public class AnnulationDeces extends EvenementCivilInterne {
 			 * Si le tiers MenageCommun n'est pas trouvé, la base fiscale est inconsistente => mise en erreur de l'événement
 			 */
 			if (menageComplet == null || menageComplet.getMenage() == null) {
-				throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
+				throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 			}
 
 			/*
 			 * Vérification de la cohérence
 			 */
 			if (!menageComplet.estComposeDe(defunt, veuf)) {
-				throw new EvenementCivilHandlerException(
+				throw new EvenementCivilException(
 						"Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");
 			}
 		}
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * Obtention du tiers correspondant a l'ancient defunt.
 		 */
 		PersonnePhysique defunt = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
 
-		context.getMetierService().annuleDeces(defunt, getDate());
+		try {
+			context.getMetierService().annuleDeces(defunt, getDate());
+		}
+		catch (MetierServiceException e) {
+			throw new EvenementCivilException(e.getMessage(), e);
+		}
 		return null;
 	}
 }

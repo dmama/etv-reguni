@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -110,7 +111,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testAnnulationPermisHandlerCelibataire() {
+	public void testAnnulationPermisHandlerCelibataire() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis C de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
@@ -127,7 +128,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testAnnulationPermisHandlerCelibataireMaisPermisNonC() {
+	public void testAnnulationPermisHandlerCelibataireMaisPermisNonC() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis non C de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
@@ -159,7 +160,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testAnnulationPermisHandlerMarieSeul() {
+	public void testAnnulationPermisHandlerMarieSeul() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
@@ -215,7 +216,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testPermisHandlerMarieADeux() {
+	public void testPermisHandlerMarieADeux() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié à deux.");
 		Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);

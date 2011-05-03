@@ -3,11 +3,12 @@ package ch.vd.uniregctb.separation.manager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.separation.view.SeparationRecapView;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -71,7 +72,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 	 * @param separationRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(SeparationRecapView separationRecapView) {
+	public void save(SeparationRecapView separationRecapView) throws MetierServiceException {
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getCouple().getNumero());
 		final RegDate dateSeparation = separationRecapView.getDateSeparation();
 

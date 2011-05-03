@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -44,7 +45,7 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 	}
 	
 	@Test
-	public void testAnnulationSeparationMarieSeul() {
+	public void testAnnulationSeparationMarieSeul() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de séparation d'une personne mariée seule");
 	
 		final RegDate dateSeparation = date(2000, 9, 12);
@@ -79,7 +80,7 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 	}
 
 	@Test
-	public void testAnnulationSeparation() {
+	public void testAnnulationSeparation() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de séparation d'un couple de contribuables mariés");
 		
 		final RegDate dateSeparation = date(2004, 3, 2);

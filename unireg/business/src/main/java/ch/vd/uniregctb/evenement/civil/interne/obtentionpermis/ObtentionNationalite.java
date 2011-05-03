@@ -12,7 +12,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -82,7 +81,7 @@ public class ObtentionNationalite extends ObtentionPermisCOuNationaliteSuisse {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		if (TypeEvenementCivil.NATIONALITE_SUISSE == getType()) {
 			super.validateSpecific(erreurs, warnings);
@@ -90,7 +89,7 @@ public class ObtentionNationalite extends ObtentionPermisCOuNationaliteSuisse {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		// quelque soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
 		// il faut mettre à jour la nationalité chez nous

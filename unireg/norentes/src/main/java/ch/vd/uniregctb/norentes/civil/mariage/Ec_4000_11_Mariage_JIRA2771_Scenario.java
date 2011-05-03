@@ -5,7 +5,6 @@ import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -13,6 +12,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -179,16 +179,15 @@ public class Ec_4000_11_Mariage_JIRA2771_Scenario extends EvenementCivilScenario
 		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
-	@Etape(id=2, descr="tentative de Reconstitution du ménage commun à partir des deux ménages communs incomplets")
+	@Etape(id = 2, descr = "tentative de Reconstitution du ménage commun à partir des deux ménages communs incomplets")
 	public void step2() throws Exception {
-		 try {
+		try {
 			metierService.fusionneMenages((MenageCommun) tiersDAO.get(noMenageAlfredo), (MenageCommun) tiersDAO.get(noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
 			Assert.fail();
-		 }
-		 catch (EvenementCivilHandlerException e){
-		  Assert.hasText(e.getMessage());
 		}
-
+		catch (MetierServiceException e) {
+			Assert.hasText(e.getMessage());
+		}
 	}
 
 	@Check(id=2, descr="Vérifie que la reconstitution du ménage commun n'a pas été faite")

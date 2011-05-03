@@ -12,7 +12,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -76,14 +75,14 @@ public class Naissance extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		if ( FiscalDateHelper.isMajeurAt(getIndividu(), RegDate.get()) ) {
 			erreurs.add(new EvenementCivilExterneErreur("L'individu ne devrait pas être majeur à la naissance"));
 		}
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		LOGGER.debug("Traitement de la naissance de l'individu : " + getNoIndividu() );
 
 		try {
@@ -118,7 +117,7 @@ public class Naissance extends EvenementCivilInterne {
 		}
 		catch (Exception e) {
 			LOGGER.debug("Erreur lors de la sauvegarde du nouveau tiers", e);
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 }

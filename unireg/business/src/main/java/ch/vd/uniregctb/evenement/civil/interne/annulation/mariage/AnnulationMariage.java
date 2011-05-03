@@ -10,7 +10,6 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -55,7 +55,7 @@ public class AnnulationMariage extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		// Cas d'annulation de mariage
 		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
@@ -67,7 +67,7 @@ public class AnnulationMariage extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
 		final PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
 
@@ -75,17 +75,17 @@ public class AnnulationMariage extends EvenementCivilInterne {
 		final EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate());
 		// Vérification de la cohérence
 		if (menageComplet == null) {
-			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
+			throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 		}
 		else if (!menageComplet.contient(principal)) {
-			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
+			throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 		}
 		else {
 			// Récupération du tiers MenageCommun
 			MenageCommun menage = menageComplet.getMenage();
 			// Si le tiers MenageCommun n'est pas trouvé, la base fiscale est inconsistente => mise en erreur de l'événement
 			if (menage == null) {
-				throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
+				throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 			}
 		}
 
@@ -97,7 +97,12 @@ public class AnnulationMariage extends EvenementCivilInterne {
 		}
 
 		// Traitement de l'annulation de mariage
-		context.getMetierService().annuleMariage(principal, conjoint, getDate(), getNumeroEvenement());
+		try {
+			context.getMetierService().annuleMariage(principal, conjoint, getDate(), getNumeroEvenement());
+		}
+		catch (MetierServiceException e) {
+			throw new EvenementCivilException(e.getMessage(), e);
+		}
 
 		// On signale que le conjoint a changé dans le registre civil (=> va rafraîchir le cache des individus)
 		if (conjoint != null && conjoint.isHabitantVD()) {

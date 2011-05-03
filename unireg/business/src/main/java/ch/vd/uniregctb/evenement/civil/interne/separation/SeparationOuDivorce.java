@@ -10,7 +10,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -74,7 +74,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		Individu individu = getIndividu();
 
@@ -172,7 +172,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	 * @param conjoint son conjoint
 	 * @return
 	 */
-	protected boolean isSeparesFiscalement(RegDate date, PersonnePhysique habitant, PersonnePhysique conjoint) {
+	protected boolean isSeparesFiscalement(RegDate date, PersonnePhysique habitant, PersonnePhysique conjoint) throws EvenementCivilException {
 
 		MenageCommun menage = getService().findMenageCommun(habitant, date);
 		if (menage != null) {
@@ -188,16 +188,16 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 			if (forFiscalMenage != null && forFiscalMenage.isValidAt(date)) {
 				// le for du ménage est ouvert, vérification que ceux des tiers sont fermés
 				if (forFiscalPremier != null && forFiscalPremier.getDateFin() == null) {
-					throw new EvenementCivilHandlerException("Le for du ménage [" + menage + "] est ouvert, celui de l'habitant [" +
+					throw new EvenementCivilException("Le for du ménage [" + menage + "] est ouvert, celui de l'habitant [" +
 							habitant.getNumero() + "] est aussi ouvert");
 				}
 				if (forFiscalDeuxieme != null && forFiscalDeuxieme.getDateFin() == null) {
-					throw new EvenementCivilHandlerException("Le for du ménage [" + menage + "] est ouvert, celui de l'habitant [" +
+					throw new EvenementCivilException("Le for du ménage [" + menage + "] est ouvert, celui de l'habitant [" +
 							conjoint.getNumero() + "] est aussi ouvert");
 				}
 			}
 			else {
-				throw new EvenementCivilHandlerException(String.format("Le ménage commun [%s] ne possède pas de for principal le %s", menage, RegDateHelper.dateToDisplayString(date)));
+				throw new EvenementCivilException(String.format("Le ménage commun [%s] ne possède pas de for principal le %s", menage, RegDateHelper.dateToDisplayString(date)));
 			}
 
 			return false;
@@ -211,7 +211,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		long numeroIndividu = getNoIndividu();
 		RegDate dateEvenement = getDate();
@@ -229,7 +229,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		return null;
 	}
 
-	private void handleSeparation(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) {
+	private void handleSeparation(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		// Obtention du premier tiers.
 		final PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());
@@ -245,7 +245,12 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 			final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(menageComplet.getPrincipal().getNumeroIndividu(), dateEvt);
 			final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
 			// traitement de la séparation
-			context.getMetierService().separe(menageCommun, dateEvt, null, etatCivilUnireg, false, evenement.getNumeroEvenement());
+			try {
+				context.getMetierService().separe(menageCommun, dateEvt, null, etatCivilUnireg, false, evenement.getNumeroEvenement());
+			}
+			catch (MetierServiceException e) {
+				throw new EvenementCivilException(e.getMessage(), e);
+			}
 		}
 	}
 }

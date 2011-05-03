@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.annulation.couple.view.AnnulationCoupleRecapView;
+import ch.vd.uniregctb.metier.MetierServiceException;
 
 public interface AnnulationCoupleRecapManager {
 
@@ -23,7 +24,7 @@ public interface AnnulationCoupleRecapManager {
 	 * @param annulationCoupleRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void save(AnnulationCoupleRecapView annulationCoupleRecapView);
+	void save(AnnulationCoupleRecapView annulationCoupleRecapView) throws MetierServiceException;
 
 	/**
 	 *

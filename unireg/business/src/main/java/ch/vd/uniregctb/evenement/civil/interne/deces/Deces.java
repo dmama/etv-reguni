@@ -11,13 +11,13 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -75,7 +75,7 @@ public class Deces extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		// Aucune validation spécifique
 
@@ -105,10 +105,10 @@ public class Deces extends EvenementCivilInterne {
 			 * Vérification de la cohérence
 			 */
 			if (menageComplet == null) {
-				throw new EvenementCivilHandlerException("L'individu est marié ou en partenariat enregistré mais ne possède pas de ménage commun");
+				throw new EvenementCivilException("L'individu est marié ou en partenariat enregistré mais ne possède pas de ménage commun");
 			}
 			if (!menageComplet.estComposeDe(defunt, veuf)) {
-				throw new EvenementCivilHandlerException(
+				throw new EvenementCivilException(
 						"Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");
 			}
 
@@ -121,7 +121,7 @@ public class Deces extends EvenementCivilInterne {
 			 * Si le tiers MenageCommun n'est pas trouvé, la base fiscale est inconsistente => mise en erreur de l'événement
 			 */
 			if (menage == null) {
-				throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
+				throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 			}
 		}
 
@@ -133,7 +133,7 @@ public class Deces extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * Obtention du tiers correspondant au defunt.
@@ -167,12 +167,17 @@ public class Deces extends EvenementCivilInterne {
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != getDate().year()) {
 					// si plus d'1 jour d'écart ou sur une PF différente : KO (evt en Erreur --> pour traitement par la Cellule vérif de la date de décès)
-					throw new EvenementCivilHandlerException("La date de décès diffère de celle dans le fiscal");
+					throw new EvenementCivilException("La date de décès diffère de celle dans le fiscal");
 				}
 			}
 		}
 
-		context.getMetierService().deces(defunt, getDate(), null, getNumeroEvenement());
+		try {
+			context.getMetierService().deces(defunt, getDate(), null, getNumeroEvenement());
+		}
+		catch (MetierServiceException e) {
+			throw new EvenementCivilException(e.getMessage(), e);
+		}
 		return null;
 	}
 }

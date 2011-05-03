@@ -3,7 +3,7 @@ package ch.vd.uniregctb.annulation.deces.manager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.metier.MetierServiceException;
 
 public interface AnnulationDecesRecapManager {
 
@@ -26,7 +26,7 @@ public interface AnnulationDecesRecapManager {
 	 * @param annulationDecesRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(AnnulationDecesRecapView annulationDecesRecapView);
+	public void save(AnnulationDecesRecapView annulationDecesRecapView) throws MetierServiceException;
 
 
 	/**

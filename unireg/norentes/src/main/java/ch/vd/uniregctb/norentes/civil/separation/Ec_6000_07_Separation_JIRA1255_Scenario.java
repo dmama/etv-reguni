@@ -4,13 +4,13 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -175,7 +175,7 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 		try {
 			metierService.separe((MenageCommun) tiersDAO.get(noMenage), dateSeparation, null, EtatCivil.SEPARE, true, null);
 		}
-		catch(EvenementCivilHandlerException eche) {
+		catch(MetierServiceException eche) {
 			errorFound = true;
 			errorMessage = eche.getMessage();
 		}

@@ -35,7 +35,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -329,7 +329,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 				errors.reject("global.error.msg", e.getMessage());
 				return showForm(request, response, errors);
 			}
-			catch (EvenementCivilHandlerException e){
+			catch (EvenementCivilException e){
 				logger.debug("EvenementCivilHandler exception catched -> redisplaying showForm : " + e.getMessage());
 				errors.reject("global.error.msg", e.getMessage());
 				return showForm(request, response, errors);

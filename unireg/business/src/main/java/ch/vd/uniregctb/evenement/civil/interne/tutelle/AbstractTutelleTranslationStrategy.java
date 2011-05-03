@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne.tutelle;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -10,7 +10,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public abstract class AbstractTutelleTranslationStrategy implements EvenementCivilTranslationStrategy {
 
-	protected RapportEntreTiers getRapportTutelleOuvert(PersonnePhysique pupille, RegDate date) throws EvenementCivilHandlerException {
+	protected RapportEntreTiers getRapportTutelleOuvert(PersonnePhysique pupille, RegDate date) throws EvenementCivilException {
 		
 		RapportEntreTiers tutelle = null;
 		int nombreRapportTutelleOuverts = 0;
@@ -24,7 +24,7 @@ public abstract class AbstractTutelleTranslationStrategy implements EvenementCiv
 			}
 		}
 		if (nombreRapportTutelleOuverts > 1)
-			throw new EvenementCivilHandlerException("Plus d'un rapport tutelle, curatelle ou conseil légal actif a été trouvé");
+			throw new EvenementCivilException("Plus d'un rapport tutelle, curatelle ou conseil légal actif a été trouvé");
 		return tutelle;
 	}
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -76,9 +75,9 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		doInNewTransaction(new TransactionCallback(){
-
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				reconciliation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
 
@@ -86,7 +85,6 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
 
 				reconciliation.handle(warnings);
-
 				return null;
 			}
 		});
@@ -132,9 +130,9 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		doInNewTransaction(new TransactionCallback(){
-
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				reconciliation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
 
@@ -142,7 +140,6 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
 
 				reconciliation.handle(warnings);
-
 				return null;
 			}
 		});
@@ -194,14 +191,12 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		doInNewTransaction(new TransactionCallback(){
-
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				reconciliation.checkCompleteness(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
-
 				reconciliation.validate(erreurs, warnings);
-
 				return null;
 			}
 		});

@@ -14,7 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee.ArriveeType;
@@ -2922,7 +2922,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			arrivee.handle(warnings);
 			Assert.fail("L'événement d'arrivée aurait dû lever une erreur parce que le non-habitant trouvé n'est pas complet");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			final String message = "Un non-habitant (n°" + ids.roger + ") qui possède le même prénom/nom que l'individu a été trouvé, " +
 					"mais la date de naissance n'est pas renseignée. Veuillez vérifier manuellement.";
 			assertEquals(message, e.getMessage());

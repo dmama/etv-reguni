@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -62,7 +62,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * @return la liste des warnings reçus
 	 * @throws ErrorFoundException si des erreurs ont été levées dans les méthode checkCompleteness ou validate du handler
 	 */
-	private List<EvenementCivilExterneErreur> sendEvent(AnnulationArrivee evt) throws ErrorFoundException {
+	private List<EvenementCivilExterneErreur> sendEvent(AnnulationArrivee evt) throws ErrorFoundException, EvenementCivilException {
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -177,7 +177,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais il a un for non-annulé!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -311,7 +311,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais il a un for non-annulé!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -470,7 +470,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur (et son conjoint aussi), mais il a un for non-annulé sur le ménage!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -526,7 +526,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais son conjoint ne l'est pas!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -585,7 +585,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais son conjoint ne l'est pas!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -643,7 +643,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est certes mineur, mais son conjoint ne l'est pas!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -691,7 +691,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est majeur!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -730,7 +730,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est majeur!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 
@@ -768,7 +768,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			sendEvent(evt);
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu est majeur avec en plus un for non-annulé!");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("Veuillez effectuer cette opération manuellement", e.getMessage());
 		}
 

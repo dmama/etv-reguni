@@ -13,7 +13,6 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -171,14 +170,14 @@ public abstract class EvenementCivilInterne {
 
 	public abstract void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings);
 
-	public final void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public final void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		validateCommon(erreurs);
 		if (erreurs.isEmpty()) {
 			validateSpecific(erreurs, warnings);
 		}
 	}
 
-	public abstract Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException;
+	public abstract Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
 
 	/**
 	 * Validation commune l'objet target passé en paramètre.
@@ -186,7 +185,7 @@ public abstract class EvenementCivilInterne {
 	 * @param erreurs les éventuelles erreurs trouvées (out)
 	 * @param warnings les éventuels warnings trouvés (out)
 	 */
-	protected abstract void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings);
+	protected abstract void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
 
 	private void validateCommon(List<EvenementCivilExterneErreur> erreurs) {
 
@@ -325,10 +324,10 @@ public abstract class EvenementCivilInterne {
 	/**
 	 * @param noIndividu un numéro d'individu
 	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu.
-	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
 	 *          si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu) throws EvenementCivilHandlerException {
+	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu) throws EvenementCivilException {
 		return getPersonnePhysiqueOrThrowException(noIndividu, false);
 	}
 
@@ -337,12 +336,12 @@ public abstract class EvenementCivilInterne {
 	 * @param doNotAutoFlush si vrai, les modifications courantes de la session hibernate ne sont pas flushées dans le base (évite d'incrémenter le numéro de version, mais si l'habitant vient d'être créé
 	 *                       et n'existe pas encore en base, il ne sera pas trouvé).
 	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu.
-	 * @throws EvenementCivilHandlerException si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
+	 * @throws EvenementCivilException si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu, boolean doNotAutoFlush) throws EvenementCivilHandlerException {
+	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu, boolean doNotAutoFlush) throws EvenementCivilException {
 		final PersonnePhysique habitant = context.getTiersDAO().getPPByNumeroIndividu(noIndividu, doNotAutoFlush);
 		if (habitant == null) {
-			throw new EvenementCivilHandlerException("L'habitant avec le numéro d'individu = " + noIndividu
+			throw new EvenementCivilException("L'habitant avec le numéro d'individu = " + noIndividu
 					+ " n'existe pas dans le registre.");
 		}
 		return habitant;
@@ -467,12 +466,12 @@ public abstract class EvenementCivilInterne {
 	 * Vérifie la non-existence d'un Tiers.
 	 *
 	 * @param noIndividu
-	 * @throws EvenementCivilHandlerException
+	 * @throws EvenementCivilException
 	 *             si un ou plusieurs tiers sont trouvés
 	 */
-	protected void verifieNonExistenceTiers(Long noIndividu) throws EvenementCivilHandlerException {
+	protected void verifieNonExistenceTiers(Long noIndividu) throws EvenementCivilException {
 		if (context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu) != null) {
-			throw new EvenementCivilHandlerException("Le tiers existe déjà avec cet individu " + noIndividu
+			throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + noIndividu
 					+ " alors que c'est une naissance");
 		}
 	}

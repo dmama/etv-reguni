@@ -518,8 +518,9 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil de décès
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final Individu ind = serviceCivil.getIndividu(noIndividu, 2400);
 				final Deces deces = createValidDeces(ind, null, dateDeces);
 

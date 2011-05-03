@@ -10,7 +10,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -51,7 +50,7 @@ public class Reconciliation extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		Individu individu = getIndividu();
 
@@ -110,7 +109,7 @@ public class Reconciliation extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		try {
 			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
@@ -122,7 +121,7 @@ public class Reconciliation extends EvenementCivilInterne {
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur lors du traitement de réconciliation", e);
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 }

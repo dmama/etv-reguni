@@ -12,7 +12,6 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -110,7 +109,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * La date de début de la nouvelle adresse principale de l’individu est
@@ -144,7 +143,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * Dans le cas d'une commune normale, rien a faire. Traitement
@@ -219,25 +218,25 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 
 				EnsembleTiersCouple ensembleTiersCouple = getService().getEnsembleTiersCouple(habitant, dateEvenement);
 				if (!ensembleTiersCouple.estComposeDe(habitant, conjoint)) {
-					throw new EvenementCivilHandlerException(
+					throw new EvenementCivilException(
 							"Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");
 				}
 
 				EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
 				if (etatCivilIndividu == null) {
-					throw new EvenementCivilHandlerException("Impossible de récupérer l'état civil courant de l'individu");
+					throw new EvenementCivilException("Impossible de récupérer l'état civil courant de l'individu");
 				}
 
 				TypeEtatCivil typeEtatCivilIndividu = etatCivilIndividu.getTypeEtatCivil();
 				ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
 				if (forPrincipalHabitant != null && typeEtatCivilIndividu != TypeEtatCivil.SEPARE) {
-					throw new EvenementCivilHandlerException(
+					throw new EvenementCivilException(
 							"l'habitant possède un for principal actif alors qu'il a un conjoint et qu'il n'est pas séparé");
 				}
 
 				ForFiscalPrincipal forPrincipalConjoint = conjoint.getForFiscalPrincipalAt(null);
 				if (forPrincipalConjoint != null && typeEtatCivilIndividu != TypeEtatCivil.SEPARE) {
-					throw new EvenementCivilHandlerException(
+					throw new EvenementCivilException(
 							"le conjoint possède un for principal actif");
 				}
 

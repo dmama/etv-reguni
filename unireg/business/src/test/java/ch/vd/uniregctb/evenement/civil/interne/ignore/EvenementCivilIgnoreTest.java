@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
@@ -25,7 +26,7 @@ public class EvenementCivilIgnoreTest extends AbstractEvenementCivilInterneTest 
 	}
 
 	@Test
-	public void testHandle() {
+	public void testHandle() throws EvenementCivilException {
 		final EvenementCivilInterne evt = new EvenementCivilIgnore(TypeEvenementCivil.ETAT_COMPLET, context);
 
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

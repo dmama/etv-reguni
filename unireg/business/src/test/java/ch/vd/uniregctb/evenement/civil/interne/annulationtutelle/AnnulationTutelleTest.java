@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -64,7 +65,7 @@ public class AnnulationTutelleTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testHandlerAvecTuteur() {
+	public void testHandlerAvecTuteur() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de tutelle avec un tuteur.");
 

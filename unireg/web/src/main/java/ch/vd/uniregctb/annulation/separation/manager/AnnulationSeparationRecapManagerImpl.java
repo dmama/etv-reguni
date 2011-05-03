@@ -9,6 +9,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -97,7 +98,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 	 * @param annulationSeparationRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public MenageCommun save(AnnulationSeparationRecapView annulationSeparationRecapView) {
+	public MenageCommun save(AnnulationSeparationRecapView annulationSeparationRecapView) throws MetierServiceException {
 		PersonnePhysique premierPP = (PersonnePhysique) tiersService.getTiers(annulationSeparationRecapView.getPremierePersonne().getNumero());
 
 		EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(premierPP, annulationSeparationRecapView.getDateSeparation().getOneDayBefore());

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.separation.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.separation.view.SeparationRecapView;
 
 
@@ -23,7 +24,7 @@ public interface SeparationRecapManager {
 	 * @param separationRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void save(SeparationRecapView separationRecapView);
+	void save(SeparationRecapView separationRecapView) throws MetierServiceException;
 
 	/**
 	 * @param noTiers le numéro du tiers dont on veut connaître l'activité au niveau des fors principaux

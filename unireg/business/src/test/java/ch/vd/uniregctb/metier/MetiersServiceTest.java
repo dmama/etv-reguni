@@ -14,7 +14,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -318,12 +317,12 @@ public class MetiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
-try {
+		try {
 			metierService.fusionneMenages((MenageCommun) tiersDAO.get(ids.noMenageAlfredo), (MenageCommun) tiersDAO.get(ids.noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
 			ch.vd.registre.base.utils.Assert.fail();
-		 }
-		 catch (EvenementCivilHandlerException e){
-		  ch.vd.registre.base.utils.Assert.hasText(e.getMessage());
+		}
+		catch (MetierServiceException e) {
+			ch.vd.registre.base.utils.Assert.hasText(e.getMessage());
 		}
 	}
 
@@ -446,8 +445,9 @@ try {
 		final RegDate dateDeces = date(2009, 8, 12);
 
 		// petite vérification et décès de monsieur
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
 				Assert.assertFalse(mc.getBlocageRemboursementAutomatique());
 				Assert.assertEquals(1, mc.getForsFiscaux().size());
@@ -888,7 +888,7 @@ try {
 					metierService.separe(mc, dateSeparation, "test", null, true, null);
 					fail("La séparation aurait dû partir en erreur puisque l'on passe pour Georgette d'un couple vaudois à un for hors-Suisse");
 				}
-				catch (EvenementCivilHandlerException e) {
+				catch (MetierServiceException e) {
 					final String attendu = String.format(
 							"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
 							FormatNumeroHelper.numeroCTBToDisplay(ids.georgette), FormatNumeroHelper.numeroCTBToDisplay(ids.menage));
@@ -1839,8 +1839,9 @@ try {
 		});
 
 		// traitement du décès de monsieur
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique mr = (PersonnePhysique) tiersService.getTiers(ids.mrId);
 				metierService.deces(mr, dateDeces, "Décès de Monsieur", 1L);
 				return null;
@@ -1916,11 +1917,11 @@ try {
 		});
 
 		// décès fiscal
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.isHabitantVD());
-
 				metierService.deces(pp, dateDecesFiscal, "Décédé", null);
 				return null;
 			}
@@ -1965,11 +1966,11 @@ try {
 		});
 
 		// décès fiscal
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.isHabitantVD());
-
 				metierService.deces(pp, dateDeces, "Décédé", null);
 				return null;
 			}
@@ -2019,8 +2020,8 @@ try {
 		});
 
 		// impact fiscal du décès
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.isHabitantVD());
 
@@ -2047,8 +2048,9 @@ try {
 		});
 
 		// impact fiscal de l'annulation de décès
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				metierService.annuleDeces(pp, dateDeces);
 				return null;
@@ -2101,11 +2103,11 @@ try {
 		});
 
 		// impact fiscal du décès
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.isHabitantVD());
-
 				metierService.deces(pp, dateDeces, "Décédé", 1L);
 				return null;
 			}
@@ -2129,8 +2131,9 @@ try {
 		});
 
 		// impact fiscal de l'annulation de décès
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				metierService.annuleDeces(pp, dateDeces);
 				return null;
@@ -2182,8 +2185,9 @@ try {
 		});
 
 		// impact fiscal du décès
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.isHabitantVD());
 
@@ -2193,8 +2197,8 @@ try {
 		});
 
 		// vérification de l'impact fiscal et annulation fiscale du décès
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.isHabitantVD());
 				Assert.assertEquals(dateDeces, tiersService.getDateDeces(pp));
@@ -2240,8 +2244,8 @@ try {
 		}
 
 		// on crée les deux célibataires, avec monsieur propriétaire d'un immeuble vendu à la veille de son mariage, puis on enregistre le mariage
-		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
 				addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -2387,8 +2391,8 @@ try {
 		});
 
 		// annulation du mariage
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
 				final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(mc, null);
@@ -2406,8 +2410,8 @@ try {
 		});
 
 		// test de résultat -> le for de monsieur devrait avoir été ré-ouvert
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.idMonsieur);
 				Assert.assertNotNull(m);
@@ -2458,8 +2462,8 @@ try {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Long doInTransaction(TransactionStatus status) {
+		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
 				Assert.assertNotNull(m);
@@ -2544,8 +2548,8 @@ try {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Long doInTransaction(TransactionStatus status) {
+		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
 				Assert.assertNotNull(m);
@@ -2646,8 +2650,8 @@ try {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Long doInTransaction(TransactionStatus status) {
+		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
 				Assert.assertNotNull(m);
@@ -2749,8 +2753,8 @@ try {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Long doInTransaction(TransactionStatus status) {
+		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
 				Assert.assertNotNull(m);

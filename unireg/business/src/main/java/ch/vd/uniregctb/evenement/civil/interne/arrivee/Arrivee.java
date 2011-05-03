@@ -21,7 +21,6 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -194,7 +193,7 @@ public class Arrivee extends Mouvement {
 		try {
 			type = getArriveeType(serviceInfra, this);
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			erreurs.add(new EvenementCivilExterneErreur(e));
 		}
 		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE) {
@@ -263,7 +262,7 @@ public class Arrivee extends Mouvement {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * Validation des adresses
@@ -283,7 +282,7 @@ public class Arrivee extends Mouvement {
 				Assert.fail();
 			}
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			erreurs.add(new EvenementCivilExterneErreur(e));
 		}
 
@@ -406,7 +405,7 @@ public class Arrivee extends Mouvement {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		if (isIndividuEnMenage(getIndividu(), getDate())) {
 			return handleIndividuEnMenage(this, warnings);
@@ -416,11 +415,11 @@ public class Arrivee extends Mouvement {
 		}
 	}
 
-	private boolean isIndividuEnMenage(Individu individu, RegDate date ) {
+	private boolean isIndividuEnMenage(Individu individu, RegDate date ) throws EvenementCivilException {
 		// Récupération de l'état civil de l'individu
 		final EtatCivil etatCivil = individu.getEtatCivil(date);
 		if (etatCivil == null) {
-			throw new EvenementCivilHandlerException("Impossible de déterminer l'état civil de l'individu " + individu.getNoTechnique() +
+			throw new EvenementCivilException("Impossible de déterminer l'état civil de l'individu " + individu.getNoTechnique() +
 					" à la date " + RegDateHelper.dateToDisplayString(date));
 		}
 		return EtatCivilHelper.estMarieOuPacse(etatCivil);
@@ -429,7 +428,7 @@ public class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrivée d'un contribuable seul.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuSeul(Arrivee arrivee, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuSeul(Arrivee arrivee, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		try {
 			final Individu individu = arrivee.getIndividu();
@@ -536,10 +535,10 @@ public class Arrivee extends Mouvement {
 			return nouvelHabitant.booleanValue() ? new Pair<PersonnePhysique, PersonnePhysique>(habitant, null) : null;
 		}
 		catch (TiersException e) {
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 
@@ -618,7 +617,7 @@ public class Arrivee extends Mouvement {
 	/**
 	 * @param nouveau rempli en sortie, à <code>true</code> si un nouvel habitant a été créé, et <code>false</code> sinon
 	 */
-	private PersonnePhysique getOrCreateHabitant(Individu individu, RegDate dateEvenement, long evenementId, FindBehavior behavior, MutableBoolean nouveau) {
+	private PersonnePhysique getOrCreateHabitant(Individu individu, RegDate dateEvenement, long evenementId, FindBehavior behavior, MutableBoolean nouveau) throws EvenementCivilException {
 
 		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
 		final PersonnePhysique habitant;
@@ -651,7 +650,7 @@ public class Arrivee extends Mouvement {
 						message.append("le sexe n'est pas renseigné.");
 					}
 					message.append(" Veuillez vérifier manuellement.");
-					throw new EvenementCivilHandlerException(message.toString());
+					throw new EvenementCivilException(message.toString());
 				}
 				else {
 					// [UNIREG-1603] le candidat correspond parfaitement aux critères
@@ -680,7 +679,7 @@ public class Arrivee extends Mouvement {
 				}
 
 				final String message = String.format("Plusieurs tiers non-habitants assujettis potentiels trouvés (%s)", b.toString());
-				throw new EvenementCivilHandlerException(message);
+				throw new EvenementCivilException(message);
 			}
 		}
 
@@ -721,7 +720,7 @@ public class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrive d'un contribuable en ménage commun.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuEnMenage(Arrivee arrivee, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuEnMenage(Arrivee arrivee, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		final Individu individu = arrivee.getIndividu();
 		Assert.notNull(individu); // prérequis
@@ -836,7 +835,7 @@ public class Arrivee extends Mouvement {
 	 * @param ensemble ensemble du ménage et des personnes physiques le composant
 	 * @return une commune selon les règles édictées plus haut
 	 */
-	private Pair<Commune, RegDate> getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique arrivant, EnsembleTiersCouple ensemble) {
+	private Pair<Commune, RegDate> getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique arrivant, EnsembleTiersCouple ensemble) throws EvenementCivilException {
 
 		final RegDate dateArrivee = arrivee.getDate();
 		try {
@@ -850,7 +849,7 @@ public class Arrivee extends Mouvement {
 			if (ffpArrivee != null && ffpArrivee.getDateFin() != null) {
 				// un for existe, mais le for est déjà fermé... il ya eu d'autres modifications déjà après la date d'arrivée
 				// -> a régler manuellement
-				throw new EvenementCivilHandlerException("Il y a eu d'autres changements déjà pris en compte après l'arrivée");
+				throw new EvenementCivilException("Il y a eu d'autres changements déjà pris en compte après l'arrivée");
 			}
 			else if (ffpArrivee != null) {
 
@@ -885,7 +884,7 @@ public class Arrivee extends Mouvement {
 								b.append(nomAncienneCommune).append(" -> ").append(nomNouvelleCommune).append(" au ").append(communes.get(i).getDateDebut());
 							}
 
-							throw new EvenementCivilHandlerException(String.format("Le contribuable %d a déjà déménagé plus d'une fois après l'arrivée de son conjoint (%s)", autre.getNumero(), b.toString()));
+							throw new EvenementCivilException(String.format("Le contribuable %d a déjà déménagé plus d'une fois après l'arrivée de son conjoint (%s)", autre.getNumero(), b.toString()));
 						}
 						else {
 							// un seul déménagement...
@@ -916,7 +915,7 @@ public class Arrivee extends Mouvement {
 
 			// aucun vaudois -> erreur !!
 			if (!principalVaudois && !conjointVaudois) {
-				throw new EvenementCivilHandlerException(String.format("Aucun membre du ménage %d n'a une adresse de domicile vaudoise", menage.getNumero()));
+				throw new EvenementCivilException(String.format("Aucun membre du ménage %d n'a une adresse de domicile vaudoise", menage.getNumero()));
 			}
 			else if (!conjointVaudois) {
 				commune = residencePrincipal;
@@ -949,10 +948,10 @@ public class Arrivee extends Mouvement {
 			return commune == null ? null : new Pair<Commune, RegDate>(commune, dateDebutFor);
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 		catch (DonneesCivilesException e) {
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 
@@ -972,7 +971,8 @@ public class Arrivee extends Mouvement {
 	 * @param menageCommun le ménage commun
 	 * @param warnings liste des erreurs à peupler en cas de problème
 	 */
-	private void createOrUpdateForFiscalPrincipalOnCouple(final Arrivee arrivee, final PersonnePhysique arrivant,final MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) {
+	private void createOrUpdateForFiscalPrincipalOnCouple(final Arrivee arrivee, final PersonnePhysique arrivant,final MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) throws
+			EvenementCivilException {
 
 		Assert.notNull(arrivee);
 		Assert.notNull(menageCommun);
@@ -999,12 +999,12 @@ public class Arrivee extends Mouvement {
 
 			// pour un couple, le for principal est toujours sur le ménage commun
 			if (ffpHabitantPrincipal != null) {
-				throw new EvenementCivilHandlerException(String.format("Le contribuable principal [%s] du ménage [%s] possède un for fiscal principal individuel",
+				throw new EvenementCivilException(String.format("Le contribuable principal [%s] du ménage [%s] possède un for fiscal principal individuel",
 						FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()),
 						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
 			}
 			if (ffpHabitantConjoint != null) {
-				throw new EvenementCivilHandlerException(String.format("Le conjoint [%s] du ménage [%s] possède un for fiscal principal individuel",
+				throw new EvenementCivilException(String.format("Le conjoint [%s] du ménage [%s] possède un for fiscal principal individuel",
 						FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),
 						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
 			}
@@ -1069,7 +1069,7 @@ public class Arrivee extends Mouvement {
 			}
 		}
 		catch (TiersException e) {
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 
@@ -1082,10 +1082,10 @@ public class Arrivee extends Mouvement {
 	 * @param dateDebutMenage date de début des nouveaux rapports d'appartenance ménage en cas de création de ménage
 	 * @param evenementId ID technique de l'événement d'arrivée
 	 * @return
-	 * @throws EvenementCivilHandlerException
+	 * @throws EvenementCivilException
 	 *             si les deux habitants appartiennent à des ménages différents
 	 */
-	private MenageCommun getOrCreateMenageCommun(final PersonnePhysique habitantPrincipal, PersonnePhysique habitantConjoint, RegDate dateEvenement, RegDate dateDebutMenage, long evenementId) throws EvenementCivilHandlerException {
+	private MenageCommun getOrCreateMenageCommun(final PersonnePhysique habitantPrincipal, PersonnePhysique habitantConjoint, RegDate dateEvenement, RegDate dateDebutMenage, long evenementId) throws EvenementCivilException {
 
 		final MenageCommun menageCommun;
 		final MenageCommun menageCommunHabitantPrincipal = getMenageCommunActif(habitantPrincipal);
@@ -1096,7 +1096,7 @@ public class Arrivee extends Mouvement {
 			/*
 			 * Les deux contribuables appartiennent chacun à un ménage différent de l'autre
 			 */
-			throw new EvenementCivilHandlerException("L'individu et le conjoint ne partagent pas le même ménage commun");
+			throw new EvenementCivilException("L'individu et le conjoint ne partagent pas le même ménage commun");
 		}
 		else if (menageCommunHabitantPrincipal == null && menageCommunHabitantConjoint == null) {
 
@@ -1170,12 +1170,12 @@ public class Arrivee extends Mouvement {
 				if (autrePersonne != null) {
 					if (habitantConjoint == null) {
 						// [UNIREG-1184] marié seul dans le civil
-						throw new EvenementCivilHandlerException(
+						throw new EvenementCivilException(
 								String.format("L'individu principal [%d] est en ménage commun avec une personne [%d] dans le fiscal alors qu'il est marié seul dans le civil",
 										habitantPrincipal.getNumero(), autrePersonne.getNumero()));
 					}
 					else {
-						throw new EvenementCivilHandlerException(
+						throw new EvenementCivilException(
 								String.format("L'individu principal [%d] est en ménage commun avec une personne [%d] autre que son conjoint [%d]",
 										habitantPrincipal.getNumero(), autrePersonne.getNumero(), habitantConjoint.getNumero()));
 					}
@@ -1212,7 +1212,7 @@ public class Arrivee extends Mouvement {
 				if (autrePersonne != null) {
 					final String message = String.format("L'individu conjoint [%s] est en ménage commun avec une personne [%s] autre que son individu principal[%s]",
 														habitantConjoint, autrePersonne, habitantPrincipal);
-					throw new EvenementCivilHandlerException(message);
+					throw new EvenementCivilException(message);
 				}
 
 				/*
@@ -1240,10 +1240,10 @@ public class Arrivee extends Mouvement {
 	 * @param personne
 	 *            la personne de référence du ménage commun
 	 * @return l'autre personne du ménage, ou null si le ménage ne possède qu'une personne
-	 * @throws EvenementCivilHandlerException
+	 * @throws EvenementCivilException
 	 *             si plus d'une autre personne est trouvée (ménage à trois, ah là là...)
 	 */
-	private PersonnePhysique getAutrePersonneDuMenage(MenageCommun menageCommun, PersonnePhysique personne) throws EvenementCivilHandlerException {
+	private PersonnePhysique getAutrePersonneDuMenage(MenageCommun menageCommun, PersonnePhysique personne) throws EvenementCivilException {
 
 		final RapportEntreTiers rapportAutrePersonne = getAppartenanceAuMenageAutrePersonne(menageCommun, personne);
 		if (rapportAutrePersonne == null) {
@@ -1261,11 +1261,11 @@ public class Arrivee extends Mouvement {
 	 * @param personne
 	 *            la personne de référence du ménage commun
 	 * @return le rapport au ménage actif de l'autre personne du ménage, ou null si le ménage ne possède qu'une personne
-	 * @throws EvenementCivilHandlerException
+	 * @throws EvenementCivilException
 	 *             si plus d'une autre personne est trouvée (ménage à trois, ah là là...)
 	 */
 	private RapportEntreTiers getAppartenanceAuMenageAutrePersonne(MenageCommun menageCommun, PersonnePhysique personne)
-			throws EvenementCivilHandlerException {
+			throws EvenementCivilException {
 
 		RapportEntreTiers appartenanceAutrePersonne = null;
 
@@ -1277,7 +1277,7 @@ public class Arrivee extends Mouvement {
 				if (!rapportObjet.getSujetId().equals(personne.getId())) {
 					if (appartenanceAutrePersonne != null) {
 						final String message = String.format("Plus d'un conjoint trouvé pour le ménage commun [%s]", menageCommun);
-						throw new EvenementCivilHandlerException(message);
+						throw new EvenementCivilException(message);
 					}
 					appartenanceAutrePersonne = rapportObjet;
 				}
@@ -1292,10 +1292,10 @@ public class Arrivee extends Mouvement {
 	 * @param personne
 	 *            la personne potentiellement rattachée à un ménage commun
 	 * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
-	 * @throws EvenementCivilHandlerException
+	 * @throws EvenementCivilException
 	 *             si plus d'un ménage commun est trouvé.
 	 */
-	private MenageCommun getMenageCommunActif(PersonnePhysique personne) throws EvenementCivilHandlerException {
+	private MenageCommun getMenageCommunActif(PersonnePhysique personne) throws EvenementCivilException {
 
 		if (personne == null) {
 			return null;
@@ -1312,7 +1312,7 @@ public class Arrivee extends Mouvement {
 					 * le rapport de l'apartenance a été trouvé, on en déduit donc le tiers ménage
 					 */
 					if (menageCommun != null) {
-						throw new EvenementCivilHandlerException("Plus d'un ménage commun trouvé pour la personne = ["
+						throw new EvenementCivilException("Plus d'un ménage commun trouvé pour la personne = ["
 								+ personne.toString() + "]");
 					}
 					menageCommun = (MenageCommun) context.getTiersDAO().get(rapportSujet.getObjetId());
@@ -1332,7 +1332,7 @@ public class Arrivee extends Mouvement {
 	 *            son conjoint
 	 * @return le ménage commun trouvé, ou null si aucun trouvé.
 	 */
-	private MenageCommun getAncienMenageCommun(PersonnePhysique principal, PersonnePhysique conjoint) {
+	private MenageCommun getAncienMenageCommun(PersonnePhysique principal, PersonnePhysique conjoint) throws EvenementCivilException {
 
 		MenageCommun ancienMenage = null;
 
@@ -1356,7 +1356,7 @@ public class Arrivee extends Mouvement {
 								message = "Plus d'un ménage commun trouvé pour le contribuable [" + principal.getNumero() + "]";
 							}
 
-							throw new EvenementCivilHandlerException(message);
+							throw new EvenementCivilException(message);
 						}
 						ancienMenage = menage;
 					}
@@ -1373,11 +1373,11 @@ public class Arrivee extends Mouvement {
 	 * @param arrivee
 	 *            l'objet d'arrivée à traiter
 	 * @return le type d'arrivée déterminé
-	 * @throws EvenementCivilHandlerException
+	 * @throws EvenementCivilException
 	 *             si aucune des deux communes d'arrivée n'est dans le canton
 	 *
 	 */
-	protected static ArriveeType getArriveeType(ServiceInfrastructureService serviceInfra, Arrivee arrivee) throws EvenementCivilHandlerException {
+	protected static ArriveeType getArriveeType(ServiceInfrastructureService serviceInfra, Arrivee arrivee) throws EvenementCivilException {
 		final TypeEvenementCivil type = arrivee.getType();
 		if (type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC || type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS
 				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE) {
@@ -1403,10 +1403,10 @@ public class Arrivee extends Mouvement {
 			}
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
+			throw new EvenementCivilException(e.getMessage(), e);
 		}
 
-		throw new EvenementCivilHandlerException("Aucune des adresses (principale ou secondaire) n'a changé");
+		throw new EvenementCivilException("Aucune des adresses (principale ou secondaire) n'a changé");
 	}
 
 	protected MotifFor getMotifOuverture(Arrivee arrivee) {

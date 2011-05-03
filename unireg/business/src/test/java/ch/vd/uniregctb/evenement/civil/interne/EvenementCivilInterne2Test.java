@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -47,7 +47,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		}
 
 		@Override
-		protected void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		protected void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		}
 
 		@Override
@@ -55,7 +55,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		}
 
 		@Override
-		public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+		public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 			return null;
 		}
 	}
@@ -176,7 +176,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	}
 
 	@Test
-	public void testValidateCommon() {
+	public void testValidateCommon() throws EvenementCivilException {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400);

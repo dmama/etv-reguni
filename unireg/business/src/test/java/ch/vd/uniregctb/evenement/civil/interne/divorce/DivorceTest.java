@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -110,7 +111,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
-	public void testDivorcePersonneMarieeSeule() {
+	public void testDivorcePersonneMarieeSeule() throws EvenementCivilException {
 	
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne mariée seule.");
 		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, 2008);
@@ -245,7 +246,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
-	public void testDivorcePersonneSepare() {
+	public void testDivorcePersonneSepare() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne déjà séparée.");
 		Individu separe = serviceCivil.getIndividu(INDIVIDU_SEPARE, 2008);

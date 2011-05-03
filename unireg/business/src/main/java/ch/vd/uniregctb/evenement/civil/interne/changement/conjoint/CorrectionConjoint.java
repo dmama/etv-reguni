@@ -8,12 +8,12 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -37,7 +37,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		final RegDate date = getDate();
 
@@ -89,7 +89,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		final Individu individu = getIndividu();
 		final PersonnePhysique habitant = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(individu.getNoTechnique());
@@ -125,9 +125,15 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 
 	}
 
-	private void handleFusionMenages(final EnsembleTiersCouple coupleHabitant, final EnsembleTiersCouple coupleConjoint, final EtatCivil etatCivilFamille, List<EvenementCivilExterneErreur> warnings) {
+	private void handleFusionMenages(final EnsembleTiersCouple coupleHabitant, final EnsembleTiersCouple coupleConjoint, final EtatCivil etatCivilFamille,
+	                                 List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
-		context.getMetierService().fusionneMenages(coupleHabitant.getMenage(), coupleConjoint.getMenage(), null, etatCivilFamille);
+		try {
+			context.getMetierService().fusionneMenages(coupleHabitant.getMenage(), coupleConjoint.getMenage(), null, etatCivilFamille);
+		}
+		catch (MetierServiceException e) {
+			throw new EvenementCivilException(e.getMessage(), e);
+		}
 		addCommonWarnings(warnings);
 	}
 

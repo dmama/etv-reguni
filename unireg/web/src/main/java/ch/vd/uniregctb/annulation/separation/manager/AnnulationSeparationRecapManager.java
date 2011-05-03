@@ -3,6 +3,7 @@ package ch.vd.uniregctb.annulation.separation.manager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.annulation.separation.view.AnnulationSeparationRecapView;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 
 public interface AnnulationSeparationRecapManager {
@@ -23,7 +24,7 @@ public interface AnnulationSeparationRecapManager {
 	 * @param annulationSeparationRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	MenageCommun save(AnnulationSeparationRecapView annulationSeparationRecapView);
+	MenageCommun save(AnnulationSeparationRecapView annulationSeparationRecapView) throws MetierServiceException;
 
 
 	/**

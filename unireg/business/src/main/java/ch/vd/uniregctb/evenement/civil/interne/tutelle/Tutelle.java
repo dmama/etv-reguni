@@ -12,7 +12,6 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -115,19 +114,19 @@ public class Tutelle extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * Un pupille ne peut être à la fois sous tutelle d'un tuteur et de l'office du tuteur général.
 		 * Cas qui peut arriver suite à un bug coriace dans ILF1
 		 */
 		if  (getTuteur() != null && getTuteurGeneral() != null) {
-			throw new EvenementCivilHandlerException("Un pupille ne peut être à la fois sous tutelle d'un tuteur et de l'office du tuteur général");
+			throw new EvenementCivilException("Un pupille ne peut être à la fois sous tutelle d'un tuteur et de l'office du tuteur général");
 		}
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		// Récupération de la pupille
 		final PersonnePhysique pupille = getPersonnePhysiqueOrThrowException(getNoIndividu());
@@ -155,7 +154,7 @@ public class Tutelle extends EvenementCivilInterne {
 
 		// La tutelle n'est rattachée ni à un tuteur personne physique, ni à l'Office du Tuteur Général ==> ERREUR
 		if (tuteurPersonnePhysique == null && officeTuteurGeneral == null) {
-			throw new EvenementCivilHandlerException("La tutelle n'est rattachée ni à un tuteur ordinaire, ni à l'Office du Tuteur Général");
+			throw new EvenementCivilException("La tutelle n'est rattachée ni à un tuteur ordinaire, ni à l'Office du Tuteur Général");
 		}
 
 		final TypeRapportEntreTiers mesureExistante = getTutelleExistante(pupille, tuteurPersonnePhysique, officeTuteurGeneral, getDate());
@@ -243,7 +242,7 @@ public class Tutelle extends EvenementCivilInterne {
 	 * @param autoriteTutelaire justice de paix qui a ordonné la représentation légale (optionelle)
 	 * @param typeTutelle le type de représentation légale
 	 */
-	private RepresentationLegale creeRepresentationLegale(RegDate dateEvenement, PersonnePhysique pupille, Tiers representant, ch.vd.uniregctb.tiers.CollectiviteAdministrative autoriteTutelaire, TypeTutelle typeTutelle)  throws EvenementCivilHandlerException {
+	private RepresentationLegale creeRepresentationLegale(RegDate dateEvenement, PersonnePhysique pupille, Tiers representant, ch.vd.uniregctb.tiers.CollectiviteAdministrative autoriteTutelaire, TypeTutelle typeTutelle)  throws EvenementCivilException {
 
 		Assert.notNull(pupille);
 		Assert.notNull(representant);
@@ -264,13 +263,13 @@ public class Tutelle extends EvenementCivilInterne {
 			break;
 
 		default :
-			throw new EvenementCivilHandlerException("Ce type de tutelle n'est pas pris en charge : " + typeTutelle);
+			throw new EvenementCivilException("Ce type de tutelle n'est pas pris en charge : " + typeTutelle);
 		}
 
 		return rapport;
 	}
 
-	public static RapportEntreTiers getRapportTutelleOuvert(PersonnePhysique pupille, RegDate date) throws EvenementCivilHandlerException {
+	public static RapportEntreTiers getRapportTutelleOuvert(PersonnePhysique pupille, RegDate date) throws EvenementCivilException {
 
 		RapportEntreTiers tutelle = null;
 		int nombreRapportTutelleOuverts = 0;
@@ -284,7 +283,7 @@ public class Tutelle extends EvenementCivilInterne {
 			}
 		}
 		if (nombreRapportTutelleOuverts > 1)
-			throw new EvenementCivilHandlerException("Plus d'un rapport tutelle, curatelle ou conseil légal actif a été trouvé");
+			throw new EvenementCivilException("Plus d'un rapport tutelle, curatelle ou conseil légal actif a été trouvé");
 		return tutelle;
 	}
 

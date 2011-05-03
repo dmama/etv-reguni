@@ -46,9 +46,11 @@ public interface MetierService {
 	 * 
 	 * @return
 	 */
-	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement);
+	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+			MetierServiceException;
 
-	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement);
+	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+			MetierServiceException;
 	
 	/**
 	 * Vérifie que la réconstitution d'un ménage incomplet peut être faite.
@@ -113,7 +115,7 @@ public interface MetierService {
 	 *            l'état civil à utiliser dans la situation de famille
 	 * @return le ménage mis à jour.
 	 */
-	public MenageCommun fusionneMenages(MenageCommun menagePrincipal, MenageCommun menageConjoint, String remarque, EtatCivil etatCivilFamille);
+	public MenageCommun fusionneMenages(MenageCommun menagePrincipal, MenageCommun menageConjoint, String remarque, EtatCivil etatCivilFamille) throws MetierServiceException;
 	
 	/**
 	 * Annule un mariage.
@@ -127,7 +129,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le mariage
 	 */
-	public void annuleMariage(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement);
+	public void annuleMariage(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) throws MetierServiceException;
 
 	/**
 	 * Vérifie que deux personnes physiques sont mariés puis séparés et peuvent donc se reconcilier.
@@ -158,7 +160,8 @@ public interface MetierService {
 	 *            (optionnel) le numéro d'événement civil déclenchant la réconciliation
 	 * @return le ménage commun.
 	 */
-	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, Long numeroEvenement);
+	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, Long numeroEvenement) throws
+			MetierServiceException;
 	
 	/**
 	 * Annule la réconciliation d'un couple.
@@ -172,7 +175,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le mariage
 	 */
-	public void annuleReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement);
+	public void annuleReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) throws MetierServiceException;
 
 	/**
 	 * Test si la PP est majeur ou non à la date de référence spécifiée
@@ -229,7 +232,8 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant la séparation
 	 */
-	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement);
+	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+			MetierServiceException;
 
 	/**
 	 * Annule la séparation de(s) personne(s) appartenant au ménage commun.
@@ -241,7 +245,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant la séparation
 	 */
-	public void annuleSeparation(MenageCommun menage, RegDate date, Long numeroEvenement);
+	public void annuleSeparation(MenageCommun menage, RegDate date, Long numeroEvenement) throws MetierServiceException;
 
 	public ValidationResults validateDeces(PersonnePhysique defunt, RegDate date);
 
@@ -257,7 +261,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le décès
 	 */
-	public void deces(PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement);
+	public void deces(PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) throws MetierServiceException;
 
 	/**
 	 * Annule un décès.
@@ -267,7 +271,7 @@ public interface MetierService {
 	 * @param date
 	 *            la date de décès
 	 */
-	public void annuleDeces(PersonnePhysique tiers, RegDate date);
+	public void annuleDeces(PersonnePhysique tiers, RegDate date) throws MetierServiceException;
 
 	public ValidationResults validateVeuvage(PersonnePhysique veuf, RegDate date);
 
@@ -283,7 +287,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le veuvage
 	 */
-	public void veuvage(PersonnePhysique veuf, RegDate dateVeuvage, String remarque, Long numeroEvenement);
+	public void veuvage(PersonnePhysique veuf, RegDate dateVeuvage, String remarque, Long numeroEvenement) throws MetierServiceException;
 
 	/**
 	 * Annule un veuvage.
@@ -295,7 +299,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant l'annulation
 	 */
-	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement);
+	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement) throws MetierServiceException;
 
 	/**Permet de sortir la liste des contribuables ayant un for sur une commune differente de celle de leur adresse.
 	 *

@@ -15,7 +15,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -336,7 +336,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			});
 			fail("Le changement d'année de la date de majorité aurait dû lever une exception.");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			assertEquals(
 					"L'ancienne (27.04.2009) et la nouvelle date de majorité (27.04.2008) ne tombent pas sur la même année. Veuillez vérifier les DIs.",
 					e.getMessage());

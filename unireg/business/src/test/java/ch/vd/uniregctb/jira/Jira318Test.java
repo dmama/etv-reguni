@@ -1,14 +1,12 @@
 package ch.vd.uniregctb.jira;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-
-import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -18,6 +16,9 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
 
 public class Jira318Test extends BusinessTest {
 
@@ -77,7 +78,7 @@ public class Jira318Test extends BusinessTest {
 	}
 
 	@Test
-	public void testCreateCoupleFrom2NonHabitantOK() {
+	public void testCreateCoupleFrom2NonHabitantOK() throws MetierServiceException {
 
 		RegDate dateOuvFor = RegDate.get(2008, 5, 1);
 		RegDate dateMariageOK = RegDate.get(2008, 6, 1);

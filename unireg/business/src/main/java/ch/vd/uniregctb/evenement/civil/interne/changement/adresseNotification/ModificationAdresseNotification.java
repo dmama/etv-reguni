@@ -11,7 +11,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -37,21 +36,21 @@ public class ModificationAdresseNotification extends ChangementBase {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 	}
 
-	private Commune getCommuneAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilHandlerException {
+	private Commune getCommuneAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilException {
 		try {
 			final AdressesCiviles adresses = context.getAdresseService().getAdressesCiviles(pp, date, false);
 			return context.getServiceInfra().getCommuneByAdresse(adresses.principale, date);
 		}
 		catch (ServiceInfrastructureException e) {
 			final String msg = String.format("Impossible de trouver la commune de l'adresse principale au %s de l'individu %d", RegDateHelper.dateToDisplayString(date), pp.getNumeroIndividu());
-			throw new EvenementCivilHandlerException(msg, e);
+			throw new EvenementCivilException(msg, e);
 		}
 		catch (AdresseException e) {
 			final String msg = String.format("Impossible de résoudre les adresses civiles au %s de l'individu %d", RegDateHelper.dateToDisplayString(date), pp.getNumeroIndividu());
-			throw new EvenementCivilHandlerException(msg, e);
+			throw new EvenementCivilException(msg, e);
 		}
 	}
 
@@ -61,14 +60,14 @@ public class ModificationAdresseNotification extends ChangementBase {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		final long noIndividu = getNoIndividu();
 		Audit.info(getNumeroEvenement(), String.format("%s de l'individu : %d", getType().getDescription(), noIndividu));
 
 		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		if (pp == null) {
-			throw new EvenementCivilHandlerException("Impossible de retrouver le tiers correspondant à l'individu " + noIndividu);
+			throw new EvenementCivilException("Impossible de retrouver le tiers correspondant à l'individu " + noIndividu);
 		}
 
 		if (TypeEvenementCivil.CORREC_ADRESSE == getType()) {
@@ -109,7 +108,7 @@ public class ModificationAdresseNotification extends ChangementBase {
 
 					final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'indidivu %d (ctb %s)",
 													RegDateHelper.dateToDisplayString(dateTraitement), noIndividu, FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-					throw new EvenementCivilHandlerException(msg);
+					throw new EvenementCivilException(msg);
 				}
 			}
 			else {
@@ -117,7 +116,7 @@ public class ModificationAdresseNotification extends ChangementBase {
 				// de l'individu, donc il faut aller chercher la commune de domicile...
 				final Commune commune = getCommuneAtDate(pp, dateTraitement);
 				if (commune == null || commune.getNoOFSEtendu() != ofsCommune) {
-					throw new EvenementCivilHandlerException("Evénement de correction d'adresse avec changement de commune");
+					throw new EvenementCivilException("Evénement de correction d'adresse avec changement de commune");
 				}
 			}
 		}

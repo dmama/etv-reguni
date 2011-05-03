@@ -11,6 +11,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
@@ -248,7 +249,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testDemenagementVaudoisSansChangementOfficeImpot() {
+	public void testDemenagementVaudoisSansChangementOfficeImpot() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
@@ -280,7 +281,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 
 @Test
-	public void testDemenagementVaudoisAvecChangementOfficeImpot() {
+	public void testDemenagementVaudoisAvecChangementOfficeImpot() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);

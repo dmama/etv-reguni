@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -83,7 +84,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
-	public void testAnnulationNationaliteHandlerCelibataire() {
+	public void testAnnulationNationaliteHandlerCelibataire() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
@@ -113,7 +114,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
-	public void testAnnulationNationaliteHandlerCelibataireNonSuisse() {
+	public void testAnnulationNationaliteHandlerCelibataireNonSuisse() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité non suisse de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
@@ -147,7 +148,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
-	public void testAnnulationNationaliteHandlerMarieSeul() {
+	public void testAnnulationNationaliteHandlerMarieSeul() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
@@ -203,7 +204,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
-	public void testAnnulationNationaliteHandlerMarieADeux() {
+	public void testAnnulationNationaliteHandlerMarieADeux() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2007);

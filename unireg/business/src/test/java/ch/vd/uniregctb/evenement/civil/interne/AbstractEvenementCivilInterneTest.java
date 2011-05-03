@@ -5,12 +5,11 @@ import java.util.List;
 
 import junit.framework.Assert;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -63,8 +62,9 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	}
 
 	protected void launchEvent(final EvenementCivilInterne evtCivil, final List<EvenementCivilExterneErreur> erreurs, final List<EvenementCivilExterneErreur> warnings) throws Exception {
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				evtCivil.checkCompleteness(erreurs, warnings);
 				if (erreurs.isEmpty()) {
 					evtCivil.validate(erreurs, warnings);
@@ -91,7 +91,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		try {
 			launchEvent(evt, erreurs, warnings);
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			erreurs.add(new EvenementCivilExterneErreur(e));
 		}
 

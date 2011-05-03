@@ -3,6 +3,7 @@ package ch.vd.uniregctb.deces.manager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.deces.view.DecesRecapView;
+import ch.vd.uniregctb.metier.MetierServiceException;
 
 /**
  *
@@ -27,7 +28,7 @@ public interface DecesRecapManager {
 	 * @param decesRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void save(DecesRecapView decesRecapView);
+	void save(DecesRecapView decesRecapView) throws MetierServiceException;
 
 	/**
 	 * @param numeroCtb numéro de tiers du contribuable dont on veut savoir s'il est décédé

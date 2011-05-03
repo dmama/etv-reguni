@@ -15,7 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -996,7 +996,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			handleDepart(depart, erreurs, warnings);
 			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
 		}
 
@@ -1052,7 +1052,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			handleDepart(depart, erreurs, warnings);
 			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
 		}
 
@@ -1111,7 +1111,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			handleDepart(depart, erreurs, warnings);
 			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
-		catch (EvenementCivilHandlerException e) {
+		catch (EvenementCivilException e) {
 			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
 		}
 
@@ -1392,7 +1392,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * @param depart
 	 * @return le fort fiscal après le traitement du départ
 	 */
-	private ForFiscalPrincipal handleDepart(Depart depart) {
+	private ForFiscalPrincipal handleDepart(Depart depart) throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -1417,7 +1417,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * @param depart
 	 * @return le fort fiscal après le traitement du départ
 	 */
-	private void handleDepartSimple(Depart depart) {
+	private void handleDepartSimple(Depart depart) throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -1433,7 +1433,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		}
 	}
 
-	private void handleDepart(Depart depart, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	private void handleDepart(Depart depart, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		depart.checkCompleteness(erreurs, warnings);
 		depart.validate(erreurs, warnings);
 		depart.handle(warnings);

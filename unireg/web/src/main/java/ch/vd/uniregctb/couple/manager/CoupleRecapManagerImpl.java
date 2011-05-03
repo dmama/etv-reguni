@@ -14,6 +14,7 @@ import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -220,7 +221,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param rapportView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public MenageCommun save(CoupleRecapView coupleRecapView) {
+	public MenageCommun save(CoupleRecapView coupleRecapView) throws MetierServiceException {
 
 		final PersonnePhysique premierPP = (PersonnePhysique) tiersService.getTiers(coupleRecapView.getPremierePersonne().getNumero());
 		final PersonnePhysique secondPP;

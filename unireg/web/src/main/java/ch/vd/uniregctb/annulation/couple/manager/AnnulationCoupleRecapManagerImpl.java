@@ -1,13 +1,14 @@
 package ch.vd.uniregctb.annulation.couple.manager;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.annulation.couple.view.AnnulationCoupleRecapView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -79,7 +80,7 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 	 * @param annulationCoupleRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(AnnulationCoupleRecapView annulationCoupleRecapView) {
+	public void save(AnnulationCoupleRecapView annulationCoupleRecapView) throws MetierServiceException {
 		final EnsembleTiersCouple couple = getEnsembleTiersCouple(annulationCoupleRecapView.getCouple().getNumero(), annulationCoupleRecapView.getDateMenageCommun());
 		metierService.annuleMariage(couple.getPrincipal(), couple.getConjoint(), annulationCoupleRecapView.getDateMenageCommun(), null);
 	}

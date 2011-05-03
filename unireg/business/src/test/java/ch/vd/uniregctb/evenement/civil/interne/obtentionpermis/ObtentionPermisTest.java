@@ -330,8 +330,9 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
 				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS());
 
@@ -392,8 +393,9 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
 				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.ANNUEL);
 

@@ -14,7 +14,6 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -148,12 +147,12 @@ public class Depart extends Mouvement {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(getNoIndividu());
 		if (pp == null) {
 			// si on ne connaissait pas le gaillard, c'est un problème
-			throw new EvenementCivilHandlerException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + getNoIndividu());
+			throw new EvenementCivilException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + getNoIndividu());
 		}
 
 		final MotifFor motifFermeture = findMotifFermeture(this);
@@ -173,7 +172,7 @@ public class Depart extends Mouvement {
 					return null;
 				}
 				else {
-					throw new EvenementCivilHandlerException("La commune de départ n'a pas été trouvée");
+					throw new EvenementCivilException("La commune de départ n'a pas été trouvée");
 				}
 			}
 
@@ -358,22 +357,17 @@ public class Depart extends Mouvement {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		/*
 		 * Validation des adresses
 		 */
-		try {
-			if (getType() == TypeEvenementCivil.DEPART_COMMUNE) {
-				Audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
-				validateDepartAdressePrincipale(this, erreurs);
-			}
-			else { // depart.getType() == TypeEvenementCivil.DEPART_SECONDAIRE
-				Audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
-				validateDepartAdresseSecondaire(this, erreurs);
-			}
+		if (getType() == TypeEvenementCivil.DEPART_COMMUNE) {
+			Audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
+			validateDepartAdressePrincipale(this, erreurs);
 		}
-		catch (EvenementCivilHandlerException e) {
-			erreurs.add(new EvenementCivilExterneErreur(e));
+		else { // depart.getType() == TypeEvenementCivil.DEPART_SECONDAIRE
+			Audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
+			validateDepartAdresseSecondaire(this, erreurs);
 		}
 
 		/*

@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -43,7 +44,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 	}
 	
 	@Test
-	public void testAnnulationReconciliationMarieSeul() {
+	public void testAnnulationReconciliationMarieSeul() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement d'annulation de réconciliation d'une personne mariée seule");
 		
@@ -106,7 +107,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 	}
 
 	@Test
-	public void testAnnulationReconciliationCouple() {
+	public void testAnnulationReconciliationCouple() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement d'annulation de réconciliation d'une personne mariée et dont le conjoint est connu");
 		

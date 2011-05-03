@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -159,7 +160,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testVeuvageNonSuisse() {
+	public void testVeuvageNonSuisse() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un non suisse marié seul.");
 		
@@ -232,7 +233,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
-	public void testVeuvageMarieSeulAvecForPosterieur() {
+	public void testVeuvageMarieSeulAvecForPosterieur() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un habitant marié seul ayant un for fiscal principal ouvert après la date de veuvage.");
 		

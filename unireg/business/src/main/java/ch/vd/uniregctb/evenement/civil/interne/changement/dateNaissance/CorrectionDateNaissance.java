@@ -11,7 +11,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -46,11 +45,11 @@ public class CorrectionDateNaissance extends ChangementBase {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		Audit.info(getNumeroEvenement(), String.format("Correction de la date de naissance de l'individu : %d", getNoIndividu()));
 
@@ -73,7 +72,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 					// Lève une erreur si la nouvelle date de majorité ne tombe pas sur la même année que l'ancienne (il y a certainement des
 					// DIs et d'autres choses à mettre-à-jour)
 					if (ancienneDateMajorite.year() != nouvelleDateMajorite.year() && !pp.getDeclarations().isEmpty()) {
-						throw new EvenementCivilHandlerException("L'ancienne (" + RegDateHelper.dateToDisplayString(ancienneDateMajorite)
+						throw new EvenementCivilException("L'ancienne (" + RegDateHelper.dateToDisplayString(ancienneDateMajorite)
 								+ ") et la nouvelle date de majorité (" + RegDateHelper.dateToDisplayString(nouvelleDateMajorite)
 								+ ") ne tombent pas sur la même année. Veuillez vérifier les DIs.");
 					}

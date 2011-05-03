@@ -78,9 +78,9 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
 				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
 
@@ -161,9 +161,9 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
 				final AnnulationDeces annulation = createValidAnnulationDeces(individu);
 
@@ -271,9 +271,9 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, 2008);
 				final AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);

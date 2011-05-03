@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.norentes.common.NorentesException;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -153,7 +154,7 @@ public class Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 	}
 
 	@Etape(id=3, descr="Création du mariage entre le nouvel habitant et le non habitant à une date anterieur à l'arrive")
-	public void etape3() {
+	public void etape3() throws MetierServiceException {
 		
 		final PersonnePhysique rafa = (PersonnePhysique) tiersDAO.get(noCtbRafa);
 		final PersonnePhysique maria = (PersonnePhysique) tiersDAO.get(noCtbMaria);

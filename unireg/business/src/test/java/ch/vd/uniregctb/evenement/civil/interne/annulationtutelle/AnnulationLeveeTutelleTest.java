@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -113,7 +113,7 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
-	public void testAnnulationLeveeTutelleAvecErreur() {
+	public void testAnnulationLeveeTutelleAvecErreur() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de levée de tutelle avec des données erronées.");
 
@@ -133,7 +133,7 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 		try {
 			annulationLeveeTutelle.handle(warnings);
 		}
-		catch (EvenementCivilHandlerException eche) {
+		catch (EvenementCivilException eche) {
 			errorFound = true;
 		}
 		assertTrue("Une erreur aurait dû se produire", errorFound);

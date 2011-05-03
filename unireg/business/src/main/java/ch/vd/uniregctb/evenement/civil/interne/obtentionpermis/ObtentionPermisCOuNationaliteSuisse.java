@@ -12,7 +12,6 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -56,7 +55,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*
 		 * L'evenenement est mis en erreur dans les cas suivants
@@ -95,7 +94,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 * Traite l'événement passé en paramètre.
 	 *
 	 */
-	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = getIndividu();
 		final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
@@ -111,12 +110,12 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		if (forPrincipalHabitant != null) { //individu seul assujetti
 			final EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
 			if (etatCivilIndividu == null) {
-				throw new EvenementCivilHandlerException("Impossible de récupérer l'état civil courant de l'individu");
+				throw new EvenementCivilException("Impossible de récupérer l'état civil courant de l'individu");
 			}
 
 			if (EtatCivilHelper.estMarieOuPacse(etatCivilIndividu)){
 				//le for devrait être sur le menage commun
-				throw new EvenementCivilHandlerException("Un individu avec conjoint non séparé possède un for principal individuel actif");
+				throw new EvenementCivilException("Un individu avec conjoint non séparé possède un for principal individuel actif");
 			}
 
 			final ModeImposition modeImposition = forPrincipalHabitant.getModeImposition();
@@ -160,7 +159,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		else { //individu majeur non assujetti
 			final EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
 			if (etatCivilIndividu == null) {
-				throw new EvenementCivilHandlerException("Impossible de récupérer l'état civil courant de l'individu");
+				throw new EvenementCivilException("Impossible de récupérer l'état civil courant de l'individu");
 			}
 
 			int noOfsEtendu = 0;
@@ -184,9 +183,9 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 					}
 				}
 				catch (AdresseException e) {
-					throw new EvenementCivilHandlerException("Impossible de récupérer l'adresse", e);
+					throw new EvenementCivilException("Impossible de récupérer l'adresse", e);
 				} catch (ServiceInfrastructureException e) {
-					throw new EvenementCivilHandlerException("Impossible de récupérer la commune", e);
+					throw new EvenementCivilException("Impossible de récupérer la commune", e);
 				}
 			}
 			else {
@@ -198,7 +197,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 					}
 				}
 				catch (ServiceInfrastructureException e) {
-					throw new EvenementCivilHandlerException("Impossible de récupérer la commune", e);
+					throw new EvenementCivilException("Impossible de récupérer la commune", e);
 				}
 			}
 
@@ -215,7 +214,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 						Audit.info(getNumeroEvenement(), "Ouverture du for principal du ménage au rôle ordinaire");
 					}
 					else {
-						throw new EvenementCivilHandlerException("L'individu est marié ou en partenariat enregistré mais ne possède pas de ménage commun");
+						throw new EvenementCivilException("L'individu est marié ou en partenariat enregistré mais ne possède pas de ménage commun");
 					}
 				}
 				else { // le for est ouvert sur l'individu

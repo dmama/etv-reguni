@@ -17,6 +17,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CheckedTransactionCallback;
+import ch.vd.uniregctb.common.CheckedTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
@@ -93,15 +95,15 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 		Long result;
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final CheckedTransactionTemplate template = new CheckedTransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 		try {
 			// on ajoute le numéro de l'événement civil comme suffix à l'utilisateur principal, de manière à faciliter le tracing
 			AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evenementCivilId));
 
 			// Tout d'abord, on essaie de traiter l'événement
-			result = (Long) template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
+			result = template.execute(new CheckedTransactionCallback<Long>() {
+				public Long doInTransaction(TransactionStatus status) throws Exception {
 
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -119,12 +121,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 					evenementCivilExterne.getErreurs().clear();
 
 					// Traitement de l'événement
-					try {
-						traiteEvenement(evenementCivilExterne, refreshCache, erreurs, warnings);
-					}
-					catch (EvenementCivilException e) {
-						throw new RuntimeException(e);
-					}
+					traiteEvenement(evenementCivilExterne, refreshCache, erreurs, warnings);
 
 					return traiteErreurs(evenementCivilExterne, erreurs, warnings);
 				}
@@ -132,36 +129,49 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		}
 		catch (final Exception e) {
 			LOGGER.error("Erreur lors du traitement de l'événement : " + evenementCivilId, e);
-
-			// En cas d'exception, on met-à-jour la liste d'erreur pour l'événement 
-			result = (Long) template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
-
-					final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
-
-					// [SIFISC-982] En cas d'erreur ayant provoqué le rollback de la transaction, on veut quand même garder (autant que possible) les liens vers
-					// les personnes physiques. Pour cela, on va chercher on nouvelle fois ces derniers par le numéro d'individu.
-					try {
-						fillHabitants(evenementCivilExterne);
-					}
-					catch (Exception e1) {
-						LOGGER.error("Impossible d'établir les liens vers les personnes physiques", e1);
-					}
-
-					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-					erreurs.add(new EvenementCivilExterneErreur(e));
-
-					evenementCivilExterne.getErreurs().clear();
-					return traiteErreurs(evenementCivilExterne, erreurs, warnings);
-				}
-			});
+			result = traiteRollbackSurException(evenementCivilId, e);
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
 
 		return result;
+	}
+
+	/**
+	 * En cas d'exception, on met-à-jour la liste d'erreur pour l'événement
+	 *
+	 * @param evenementCivilId l'id d'un événement civil
+	 * @param exception        l'exception qui a provoqué le rollback
+	 * @return le numéro d'individu principal concerné par l'événement civil
+	 */
+	private Long traiteRollbackSurException(final Long evenementCivilId, final Exception exception) {
+
+		final TransactionTemplate t = new TransactionTemplate(transactionManager);
+		t.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+
+		return t.execute(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
+
+				// [SIFISC-982] En cas d'erreur ayant provoqué le rollback de la transaction, on veut quand même garder (autant que possible) les liens vers
+				// les personnes physiques. Pour cela, on va chercher on nouvelle fois ces derniers par le numéro d'individu.
+				try {
+					fillHabitants(evenementCivilExterne);
+				}
+				catch (Exception e1) {
+					LOGGER.error("Impossible d'établir les liens vers les personnes physiques", e1);
+				}
+
+				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				erreurs.add(new EvenementCivilExterneErreur(exception));
+
+				evenementCivilExterne.getErreurs().clear();
+				return traiteErreurs(evenementCivilExterne, erreurs, warnings);
+			}
+		});
 	}
 
 	/**

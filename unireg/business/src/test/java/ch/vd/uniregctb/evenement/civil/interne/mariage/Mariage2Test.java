@@ -103,8 +103,9 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		final Lists lists = new Lists();
 
 		// mariage (devrait fonctionner même si monsieur est connu comme séparé - son divorce n'est pas encore connu du canton...)
-		doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, 2009);
 				final Mariage mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
 

@@ -2697,8 +2697,9 @@ public class TacheServiceTest extends BusinessTest {
 		assertEmpty(tacheDAO.find(ids.menage));
 
 		// Effectue un divorce
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.menage);
 				metierService.separe(menage, date(2008, 11, 15), null, EtatCivil.DIVORCE, false, null);
 				return null;

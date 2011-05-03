@@ -10,6 +10,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -93,7 +94,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	 * @param annulationDecesRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(AnnulationDecesRecapView annulationDecesRecapView) {
+	public void save(AnnulationDecesRecapView annulationDecesRecapView) throws MetierServiceException {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(annulationDecesRecapView.getPersonne().getNumero());
 		if (isVeuvageMarieSeul(pp)) {
 			final RegDate dateVeuvage = annulationDecesRecapView.getDateVeuvage();

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 
 /**
@@ -51,7 +52,7 @@ public interface CoupleRecapManager {
 	 * @param rapportView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public MenageCommun save(CoupleRecapView coupleRecapView) ;
+	public MenageCommun save(CoupleRecapView coupleRecapView) throws MetierServiceException;
 
 	/**
 	 * Determine si la personne identifiée par son numéro est en ménage commun

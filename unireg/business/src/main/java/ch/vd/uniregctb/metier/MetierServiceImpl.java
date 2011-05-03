@@ -25,7 +25,6 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -224,7 +223,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement,
-	                                             boolean changeHabitantFlag) {
+	                                             boolean changeHabitantFlag) throws MetierServiceException {
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
 
@@ -239,7 +238,7 @@ public class MetierServiceImpl implements MetierService {
 			imposition = mariageResolver.resolve(menageCommun, dateEffective, null);
 		}
 		catch (ModeImpositionResolverException ex) {
-			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
+			throw new MetierServiceException(ex.getMessage(), ex);
 		}
 
 		// si le mode d'imposition a pu être déterminé
@@ -366,7 +365,7 @@ public class MetierServiceImpl implements MetierService {
 						}
 
 						final String msg = String.format("Le contribuable %s possède déjà un for ouvert après la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(noCtb));
-						throw new EvenementCivilHandlerException(msg);
+						throw new MetierServiceException(msg);
 					}
 					else {
 						final ForFiscalPrincipal ffpPrincipal = principal.getForFiscalPrincipalAt(dateEffective);
@@ -382,7 +381,7 @@ public class MetierServiceImpl implements MetierService {
 							else {
 								final String msg =
 										String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()));
-								throw new EvenementCivilHandlerException(msg);
+								throw new MetierServiceException(msg);
 							}
 						}
 
@@ -402,7 +401,7 @@ public class MetierServiceImpl implements MetierService {
 								else {
 									final String msg =
 											String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
-									throw new EvenementCivilHandlerException(msg);
+									throw new MetierServiceException(msg);
 								}
 							}
 						}
@@ -692,7 +691,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag,
-	                          Long numeroEvenement) {
+	                          Long numeroEvenement) throws MetierServiceException {
 		/*
 		 * Création d'un tiers MenageCommun
 		 */
@@ -771,7 +770,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille,
-	                                    boolean changeHabitantFlag, Long numeroEvenement) {
+	                                    boolean changeHabitantFlag, Long numeroEvenement) throws MetierServiceException {
 		/*
 		 * Création des rapports entre tiers ménage commun
 		 */
@@ -881,7 +880,7 @@ public class MetierServiceImpl implements MetierService {
 			imposition = reconstitutionResolver.resolve(pp, date, null);
 		}
 		catch (ModeImpositionResolverException ex) {
-			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
+			throw new EvenementCivilException(ex.getMessage(), ex);
 		}
 
 		// si le nouveau mode d'imposition a pu être déterminé et n'est pas le même
@@ -961,7 +960,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public MenageCommun fusionneMenages(MenageCommun menagePrincipal, MenageCommun menageConjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
+	public MenageCommun fusionneMenages(MenageCommun menagePrincipal, MenageCommun menageConjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) throws MetierServiceException {
 
 		final MenageCommun menageChoisi = getMenageForFusion(menagePrincipal, menageConjoint);
 		final MenageCommun autreMenage = (menageChoisi == menagePrincipal ? menageConjoint : menagePrincipal);
@@ -981,7 +980,7 @@ public class MetierServiceImpl implements MetierService {
 			imposition = fusionResolver.resolve(menageChoisi, dateDebut, null);
 		}
 		catch (ModeImpositionResolverException ex) {
-			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
+			throw new MetierServiceException(ex.getMessage(), ex);
 		}
 
 		/*
@@ -996,7 +995,7 @@ public class MetierServiceImpl implements MetierService {
 		if (isTiersActifFiscalement(autreMenage)) {
 			final String messageErreur = String.format("le ménage n°%s  du contribuable n°%s  ne peut pas être annulé car il possède un for ou une déclaration non annule(e) ",
 					FormatNumeroHelper.numeroCTBToDisplay(autreMenage.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
-			throw new EvenementCivilHandlerException(messageErreur);
+			throw new MetierServiceException(messageErreur);
 		}
 		else {
 			// annulation du ménage n'ayant plus d'intérêt
@@ -1087,22 +1086,22 @@ public class MetierServiceImpl implements MetierService {
 
 	}
 
-	public void annuleMariage(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) {
+	public void annuleMariage(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) throws MetierServiceException {
 		annuleCouple(principal, conjoint, date, numeroEvenement, false);
 	}
 
-	private void annuleCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement, boolean annulationMenage) {
+	private void annuleCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement, boolean annulationMenage) throws MetierServiceException {
 		// Recherche l'existence d'un ménage commun
 		RapportEntreTiers dernierRapportMenage = principal.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 		if (dernierRapportMenage == null) {
-			throw new EvenementCivilHandlerException("Aucun ménage n'a pas été trouvé");
+			throw new MetierServiceException("Aucun ménage n'a pas été trouvé");
 		}
 		else {
 			if (!date.equals(dernierRapportMenage.getDateDebut())) {
-				throw new EvenementCivilHandlerException("La date du dernier rapport entre tiers ne correspond pas à celle de l'événement");
+				throw new MetierServiceException("La date du dernier rapport entre tiers ne correspond pas à celle de l'événement");
 			}
 			else if (dernierRapportMenage.getDateFin() != null) {
-				throw new EvenementCivilHandlerException("Il y a eu d'autres opérations après le mariage/réconciliation");
+				throw new MetierServiceException("Il y a eu d'autres opérations après le mariage/réconciliation");
 			}
 		}
 		MenageCommun menage = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
@@ -1115,19 +1114,19 @@ public class MetierServiceImpl implements MetierService {
 			else {
 				message += " du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero());
 			}
-			throw new EvenementCivilHandlerException(message);
+			throw new MetierServiceException(message);
 		}
 
 		final ForFiscalPrincipal dernierFFP = menage.getDernierForFiscalPrincipal();
 		if (dernierFFP != null && !date.equals(dernierFFP.getDateDebut())) {
-			throw new EvenementCivilHandlerException("Il y a eu d'autres opérations après le mariage/réconciliation");
+			throw new MetierServiceException("Il y a eu d'autres opérations après le mariage/réconciliation");
 		}
 
 		/*
 		 * Si appelé depuis l'IHM, vérifie que la situation de famille depuis le mariage n'a pas été surchargée
 		 */
 		if (numeroEvenement == null && !isValidSituationFamille(date, menage)) {
-			throw new EvenementCivilHandlerException("La situation de famille a changée depuis le mariage/réconciliation. Veuillez corriger cela avant de procéder à cette annulation.");
+			throw new MetierServiceException("La situation de famille a changée depuis le mariage/réconciliation. Veuillez corriger cela avant de procéder à cette annulation.");
 		}
 
 		// Annulation des rapports entre tiers créés à la date effective
@@ -1161,14 +1160,14 @@ public class MetierServiceImpl implements MetierService {
 	 * @param pp   personne physique sur laquelle le ou les fors doivent être ré-ouverts
 	 * @param date date du mariage que l'on annule maintenant
 	 */
-	private void reouvreForsFermesPourMariage(PersonnePhysique pp, RegDate date) {
+	private void reouvreForsFermesPourMariage(PersonnePhysique pp, RegDate date) throws MetierServiceException {
 		final List<ForFiscalPrincipal> forsFiscaux = pp.getForsFiscauxPrincipauxOuvertsApres(date);
 
 		// s'il y a au moins un for principal non-annulé ouvert après la date du mariage
 		// que l'on annule, c'est qu'il y a un gros problème...
 		for (ForFiscalPrincipal ffp : forsFiscaux) {
 			if (!ffp.isAnnule()) {
-				throw new EvenementCivilHandlerException(String.format("Le tiers %s a déjà un for ouvert après la date du mariage annulé", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero())));
+				throw new MetierServiceException(String.format("Le tiers %s a déjà un for ouvert après la date du mariage annulé", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero())));
 			}
 		}
 
@@ -1271,7 +1270,8 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, Long numeroEvenement) {
+	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, Long numeroEvenement) throws
+			MetierServiceException {
 
 		/*
 		 * Recherche du dernier ménage
@@ -1296,7 +1296,7 @@ public class MetierServiceImpl implements MetierService {
 			else {
 				message += " du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero());
 			}
-			throw new EvenementCivilHandlerException(message);
+			throw new MetierServiceException(message);
 		}
 
 		/*
@@ -1315,7 +1315,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 
-	public void annuleReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) {
+	public void annuleReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) throws MetierServiceException {
 		annuleCouple(principal, conjoint, date, numeroEvenement, false);
 	}
 
@@ -1399,9 +1399,10 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
-	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) {
+	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+			MetierServiceException {
 		if (menage == null) {
-			throw new EvenementCivilHandlerException("Le ménage est null");
+			throw new MetierServiceException("Le ménage est null");
 		}
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
@@ -1448,11 +1449,11 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	private void updateSituationFamilleSeparation(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivil) {
+	private void updateSituationFamilleSeparation(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivil) throws MetierServiceException {
 		if (menageCommun.getSituationsFamilleSorted() != null) {
 			for (SituationFamille sf : menageCommun.getSituationsFamilleSorted()) {
 				if (sf.getDateDebut().isAfter(date)) {
-					throw new EvenementCivilHandlerException("Des situations famille actives existent après la date de séparation. Veuillez les annuler manuellement.");
+					throw new MetierServiceException("Des situations famille actives existent après la date de séparation. Veuillez les annuler manuellement.");
 				}
 			}
 		}
@@ -1498,9 +1499,9 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	public void annuleSeparation(MenageCommun menage, RegDate date, Long numeroEvenement) {
+	public void annuleSeparation(MenageCommun menage, RegDate date, Long numeroEvenement) throws MetierServiceException {
 		if (menage == null) {
-			throw new EvenementCivilHandlerException("Le ménage est null");
+			throw new MetierServiceException("Le ménage est null");
 		}
 
 		/*
@@ -1509,7 +1510,7 @@ public class MetierServiceImpl implements MetierService {
 		final RapportEntreTiers dernierRapportMenage = menage.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 
 		if (dernierRapportMenage == null) {
-			throw new EvenementCivilHandlerException("Aucun rapport trouvé pour le ménage");
+			throw new MetierServiceException("Aucun rapport trouvé pour le ménage");
 		}
 		// vérification que d'autres opérations n'aient été faites aprés le décès
 		if (NullDateBehavior.EARLIEST.compare(dernierRapportMenage.getDateFin(), date) > 0) {
@@ -1531,17 +1532,17 @@ public class MetierServiceImpl implements MetierService {
 				else {
 					message += " du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero());
 				}
-				throw new EvenementCivilHandlerException(message);
+				throw new MetierServiceException(message);
 			}
 		}
 		else {
-			throw new EvenementCivilHandlerException("La date de séparation n'est pas correcte");
+			throw new MetierServiceException("La date de séparation n'est pas correcte");
 		}
 		/*
 		 * Si appelé depuis l'IHM, vérifie que la situation de famille depuis la séparation n'a pas été surchargée
 		 */
 		if (numeroEvenement == null && !isValidSituationFamille(date, menage)) {
-			throw new EvenementCivilHandlerException("La situation de famille a changée depuis la séparation. Veuillez corriger cela avant de procéder à cette annulation.");
+			throw new MetierServiceException("La situation de famille a changée depuis la séparation. Veuillez corriger cela avant de procéder à cette annulation.");
 		}
 
 		/*
@@ -1644,7 +1645,7 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
 	                                                                        ModeImpositionResolver modeImpositionResolver, boolean changeHabitantFlag, Long numeroEvenement,
-	                                                                        boolean autoriseSortieDuCantonVersEtranger) {
+	                                                                        boolean autoriseSortieDuCantonVersEtranger) throws MetierServiceException {
 
 		try {
 			// [UNIREG-2143] prendre en compte l'adresse de domicile pour établissement du for
@@ -1672,7 +1673,7 @@ public class MetierServiceImpl implements MetierService {
 					// pas de commune identifiable -> c'est une erreur grave (adresse suisse sans commune...)
 					final String message = String.format("Commune non identifiable pour l'adresse de domicile du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
 							RegDateHelper.dateToDisplayString(date));
-					throw new EvenementCivilHandlerException(message);
+					throw new MetierServiceException(message);
 				}
 			}
 			else {
@@ -1690,7 +1691,7 @@ public class MetierServiceImpl implements MetierService {
 						final String message = String.format(
 								"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
 								FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
-						throw new EvenementCivilHandlerException(message);
+						throw new MetierServiceException(message);
 					}
 				}
 			}
@@ -1711,10 +1712,10 @@ public class MetierServiceImpl implements MetierService {
 			return null;
 		}
 		catch (ModeImpositionResolverException ex) {
-			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
+			throw new MetierServiceException(ex.getMessage(), ex);
 		}
 		catch (ServiceInfrastructureException ex) {
-			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
+			throw new MetierServiceException(ex.getMessage(), ex);
 		}
 	}
 
@@ -1817,7 +1818,7 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
-	public void deces(PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) {
+	public void deces(PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) throws MetierServiceException {
 		veuvageDeces(null, defunt, date, remarque, numeroEvenement);
 	}
 
@@ -1883,7 +1884,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	public void annuleDeces(PersonnePhysique tiers, RegDate date) {
+	public void annuleDeces(PersonnePhysique tiers, RegDate date) throws MetierServiceException {
 
 		/*
 		 * Recherche du dernier ménage
@@ -1912,7 +1913,7 @@ public class MetierServiceImpl implements MetierService {
 					else {
 						message += " du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero());
 					}
-					throw new EvenementCivilHandlerException(message);
+					throw new MetierServiceException(message);
 				}
 			}
 		}
@@ -2119,7 +2120,7 @@ public class MetierServiceImpl implements MetierService {
 	 * @param remarque        (nullable) remarque à ajouter aux tiers couple et personnes physiques
 	 * @param numeroEvenement (nullable) numéro d'événement si le traitement fait suite à l'arrivée d'un événement civil
 	 */
-	private void veuvageDeces(PersonnePhysique veuf, PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) {
+	private void veuvageDeces(PersonnePhysique veuf, PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) throws MetierServiceException {
 
 		//
 		// on récupère d'abord le ménage commun et ses éléments constitutifs qui nous manqueraient encore
@@ -2136,7 +2137,7 @@ public class MetierServiceImpl implements MetierService {
 								FormatNumeroHelper.numeroCTBToDisplay(menageComplet.getMenage().getNumero()),
 								FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
 								FormatNumeroHelper.numeroCTBToDisplay(veuf.getNumero()));
-						throw new EvenementCivilHandlerException(msg);
+						throw new MetierServiceException(msg);
 					}
 				}
 				else {
@@ -2279,7 +2280,7 @@ public class MetierServiceImpl implements MetierService {
 		doUpdateSituationFamilleDeces(defunt, veuf, menageComplet != null ? menageComplet.getMenage() : null, date);
 	}
 
-	public void veuvage(PersonnePhysique veuf, RegDate date, String remarque, Long numeroEvenement) {
+	public void veuvage(PersonnePhysique veuf, RegDate date, String remarque, Long numeroEvenement) throws MetierServiceException {
 		veuvageDeces(veuf, null, date, remarque, numeroEvenement);
 	}
 
@@ -2299,7 +2300,7 @@ public class MetierServiceImpl implements MetierService {
 		return false;
 	}
 
-	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement) {
+	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement) throws MetierServiceException {
 
 		/*
 		 * Recherche du dernier ménage
@@ -2310,7 +2311,7 @@ public class MetierServiceImpl implements MetierService {
 		final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 		final EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.contient(tiers)) {
-			throw new EvenementCivilHandlerException("Le dernier ménage n'est pas composé du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
+			throw new MetierServiceException("Le dernier ménage n'est pas composé du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		}
 		final PersonnePhysique conjointDecede = ensembleTiersCouple.getConjoint(tiers);
 
@@ -2351,7 +2352,7 @@ public class MetierServiceImpl implements MetierService {
 			tiersService.reopenForsClosedAt(date, MotifFor.VEUVAGE_DECES, menageCommun);
 		}
 		else {
-			throw new EvenementCivilHandlerException("Opération erronée: aucun veuvage à la date " + RegDateHelper.dateToDisplayString(date));
+			throw new MetierServiceException("Opération erronée: aucun veuvage à la date " + RegDateHelper.dateToDisplayString(date));
 		}
 
 		cancelSituationFamillePP(lendemain, tiers);

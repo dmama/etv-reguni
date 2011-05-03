@@ -7,6 +7,7 @@ import ch.vd.uniregctb.deces.view.DecesRecapView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -61,7 +62,7 @@ public class DecesRecapManagerImpl implements DecesRecapManager  {
 	 * @param decesRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(DecesRecapView decesRecapView) {
+	public void save(DecesRecapView decesRecapView) throws MetierServiceException {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(decesRecapView.getPersonne().getNumero());
 
 		if (decesRecapView.isMarieSeul() && decesRecapView.isVeuf()) {

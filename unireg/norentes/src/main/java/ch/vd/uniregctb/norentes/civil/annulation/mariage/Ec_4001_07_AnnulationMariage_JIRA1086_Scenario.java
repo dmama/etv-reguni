@@ -5,13 +5,13 @@ import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -162,7 +162,7 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 		try {
 			metierService.annuleMariage(tiersDAO.getHabitantByNumeroIndividu(noIndJaime), tiersDAO.getHabitantByNumeroIndividu(noIndDeborah), dateMariage, null);
 		}
-		catch (EvenementCivilHandlerException ece) {
+		catch (MetierServiceException ece) {
 			this.errorMessage = ece.getMessage();
 		}
 
