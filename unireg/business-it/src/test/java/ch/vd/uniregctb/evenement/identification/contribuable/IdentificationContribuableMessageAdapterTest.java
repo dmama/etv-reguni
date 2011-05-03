@@ -21,6 +21,8 @@ import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.ErrorType;
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
@@ -34,6 +36,7 @@ import ch.vd.uniregctb.type.Sexe;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Classe de test du handler de messages d'identification de contribuables. Cette classe nécessite une connexion à l'ESB de développement
@@ -48,6 +51,33 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	private static final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
 	private IdentificationContribuableMessageHandlerImpl handler;
 	private DefaultMessageListenerContainer container;
+	private EsbTemplateWithErrorCollector esbTemplateWithErrorCollector;
+
+	private static class EsbTemplateWithErrorCollector extends EsbJmsTemplate {
+
+		private static final class ErrorDescription {
+			public final EsbMessage msg;
+			public final String errorMessage;
+			public final Exception exception;
+			public final ErrorType errorType;
+			public final String errorCode;
+
+			private ErrorDescription(EsbMessage msg, String errorMessage, Exception exception, ErrorType errorType, String errorCode) {
+				this.msg = msg;
+				this.errorMessage = errorMessage;
+				this.exception = exception;
+				this.errorType = errorType;
+				this.errorCode = errorCode;
+			}
+		}
+
+		public final List<ErrorDescription> collectedErrors = new ArrayList<ErrorDescription>();
+
+		@Override
+		public void sendError(EsbMessage esbMessage, String errorMessage, Exception exception, ErrorType errorType, String errorCode) throws Exception {
+			collectedErrors.add(new ErrorDescription(esbMessage, errorMessage, exception, errorType, errorCode));
+		}
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -62,7 +92,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
 
-		esbTemplate = new EsbJmsTemplate();
+		esbTemplateWithErrorCollector = new EsbTemplateWithErrorCollector();
+		esbTemplate = esbTemplateWithErrorCollector;
 		esbTemplate.setConnectionFactory(jmsConnectionManager);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
@@ -347,5 +378,35 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertNull(adresse.getRue());
 		assertNull(adresse.getTexteCasePostale());
 		assertNull(adresse.getTypeAdresse());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationAvecDateFarfelue() throws Exception {
+
+		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+
+		handler.setDemandeHandler(new DemandeHandler() {
+			public void handleDemande(IdentificationContribuable message) {
+				messages.add(message);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_date_farfelue.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend l'erreur
+		while (esbTemplateWithErrorCollector.collectedErrors.isEmpty()) {
+			Thread.sleep(100);
+		}
+		assertEquals(0, messages.size());
+		assertEquals(1, esbTemplateWithErrorCollector.collectedErrors.size());
+
+		final EsbTemplateWithErrorCollector.ErrorDescription error = esbTemplateWithErrorCollector.collectedErrors.get(0);
+		assertNotNull(error);
+		assertTrue(error.errorMessage.contains("Year in date {2965.01.24} is not valid"));
 	}
 }

@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
+import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +68,10 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		// pour la statistique
 		nbMessagesRecus.incrementAndGet();
 
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info(String.format("Arrivée d'une demande d'identification de contribuable (BusinessID='%s')", msg.getBusinessId()));
+		}
+
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("message=" + msg.getBodyAsString());
 		}
@@ -93,22 +98,29 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		else {
 
 			// Traitement du message
-			final IdentificationContribuable message = XmlEntityAdapter.xml2entity(doc.getIdentificationCTB());
-			final EsbHeader header = new EsbHeader();
-			header.setBusinessUser(msg.getBusinessUser());
-			header.setBusinessId(msg.getBusinessId());
-			header.setReplyTo(msg.getServiceReplyTo());
-			message.setHeader(header);
-
-			Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
-
-			AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ")");
 			try {
-				demandeHandler.handleDemande(message);
-				hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'authentification
+				final IdentificationContribuable message = XmlEntityAdapter.xml2entity(doc.getIdentificationCTB());
+				final EsbHeader header = new EsbHeader();
+				header.setBusinessUser(msg.getBusinessUser());
+				header.setBusinessId(msg.getBusinessId());
+				header.setReplyTo(msg.getServiceReplyTo());
+				message.setHeader(header);
+
+				Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
+
+				AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ")");
+				try {
+					demandeHandler.handleDemande(message);
+					hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'authentification
+				}
+				finally {
+					AuthenticationHelper.popPrincipal();
+				}
 			}
-			finally {
-				AuthenticationHelper.popPrincipal();
+			catch (XmlException e) {
+				// problème au moment de la conversion de l'XML en entité
+				LOGGER.error("Erreur dans le message XML reçu", e);
+				getEsbTemplate().sendError(msg, e.getMessage(), e, ErrorType.BUSINESS, "");
 			}
 		}
 	}
