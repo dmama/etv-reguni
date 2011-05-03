@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.xmlbeans.XmlException;
+
 import ch.vd.fiscalite.registre.identificationContribuable.DatePartielleType;
 import ch.vd.fiscalite.registre.identificationContribuable.EnAttenteIdentifManuelType;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
@@ -186,29 +188,28 @@ public abstract class XmlEntityAdapter {
 	}
 
 	private static Calendar entity2xml(int periodeFiscale) {
-		GregorianCalendar cal = new GregorianCalendar();
+		final GregorianCalendar cal = new GregorianCalendar();
 		cal.set(Calendar.YEAR, periodeFiscale);
 		return cal;
 	}
 
-	public static IdentificationContribuable xml2entity(IdentificationCTB xml) {
-		IdentificationContribuable entity = new IdentificationContribuable();
+	public static IdentificationContribuable xml2entity(IdentificationCTB xml) throws XmlException {
+		final IdentificationContribuable entity = new IdentificationContribuable();
 		entity.setDemande(xml2entity(xml.getDemande()));
 		return entity;
 	}
 
-	private static Demande xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande xml) {
+	private static Demande xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande xml) throws XmlException {
 		if (xml == null) {
 			return null;
 		}
-		Demande entity = new Demande();
+		final Demande entity = new Demande();
 		entity.setDate(DateHelper.getCurrentDate());
 		entity.setEmetteurId(xml.getDemande().getEmetteurId());
 		entity.setMessageId(xml.getDemande().getMessageId());
 		entity.setPeriodeFiscale(xml.getDemande().getPeriodeFiscale().get(GregorianCalendar.YEAR));
 		entity.setPersonne(xml2entity(xml.getPersonne()));
-		final PrioriteEmetteur prioriteEmetteur = xml.getDemande().getPrioriteEmetteur() ? PrioriteEmetteur.PRIORITAIRE
-				: PrioriteEmetteur.NON_PRIORITAIRE;
+		final PrioriteEmetteur prioriteEmetteur = xml.getDemande().getPrioriteEmetteur() ? PrioriteEmetteur.PRIORITAIRE : PrioriteEmetteur.NON_PRIORITAIRE;
 		entity.setPrioriteEmetteur(prioriteEmetteur);
 
 		entity.setModeIdentification(translateModeIdentification(xml.getDemande().getModeIdentification()));
@@ -233,11 +234,11 @@ public abstract class XmlEntityAdapter {
 
 	}
 
-	private static CriteresPersonne xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande.Personne xml) {
+	private static CriteresPersonne xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande.Personne xml) throws XmlException {
 		if (xml == null) {
 			return null;
 		}
-		CriteresPersonne entity = new CriteresPersonne();
+		final CriteresPersonne entity = new CriteresPersonne();
 		entity.setAdresse(xml2entity(xml.getAdresse()));
 		final RegDate dateNaissance = xml2regdate(xml.getDateNaissance());
 		entity.setDateNaissance(dateNaissance);
@@ -257,7 +258,7 @@ public abstract class XmlEntityAdapter {
 		if (xml == null) {
 			return null;
 		}
-		CriteresAdresse entity = new CriteresAdresse();
+		final CriteresAdresse entity = new CriteresAdresse();
 		entity.setChiffreComplementaire(xml.getChiffreComplementaire());
 		entity.setCodePays(xml.getPays());
 		entity.setLieu(xml.getLieu());
@@ -308,7 +309,7 @@ public abstract class XmlEntityAdapter {
 		}
 	}
 
-	private static RegDate xml2regdate(DatePartielleType date) {
+	private static RegDate xml2regdate(DatePartielleType date) throws XmlException {
 		if (date == null) {
 			return null;
 		}
@@ -318,18 +319,33 @@ public abstract class XmlEntityAdapter {
 			final int year = anneeMoisJour.get(Calendar.YEAR);
 			final int month = anneeMoisJour.get(Calendar.MONTH) + 1;
 			final int day = anneeMoisJour.get(Calendar.DAY_OF_MONTH);
-			return RegDate.get(year, month, day);
+			try {
+				return RegDate.get(year, month, day);
+			}
+			catch (IllegalArgumentException e) {
+				throw new XmlException(e.getMessage());
+			}
 		}
 
 		final Calendar anneeMois = date.getAnneeMois();
 		if (anneeMois != null) {
 			final int year = anneeMois.get(Calendar.YEAR);
 			final int month = anneeMois.get(Calendar.MONTH) + 1;
-			return RegDate.get(year, month);
+			try {
+				return RegDate.get(year, month);
+			}
+			catch (IllegalArgumentException e) {
+				throw new XmlException(e.getMessage());
+			}
 		}
 
 		final Calendar annee = date.getAnnee();
-		Assert.notNull(annee);
-		return RegDate.get(annee.get(Calendar.YEAR));
+		try {
+			Assert.notNull(annee);
+			return RegDate.get(annee.get(Calendar.YEAR));
+		}
+		catch (IllegalArgumentException e) {
+			throw new XmlException(e.getMessage());
+		}
 	}
 }
