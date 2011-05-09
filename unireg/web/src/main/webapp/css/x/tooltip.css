@@ -1,22 +1,11 @@
 
-
-
-
-.formInfo a, .formInfo a:active, formInfo a:visited{
+.formInfo {
 	background-color:#E3F2E9;
 	font-size: 1.3em;
 	font-weight:bold;
 	padding:1px 2px;
 	margin-left:5px;
-	color:#000000;
-	text-decoration: none;
 }
-
-.formInfo a:hover{
-	color:#660000;
-	text-decoration: none;
-}
-
 
 #tooltip-main {
 	border: 2px solid #CCCCCC;
