@@ -80,14 +80,14 @@ testprop.esb.jms.password=smx
 testprop.esb.raft.store=http://ssv0309v:41000/raft/store
 
 # Queues JMS
-testprop.jms.queue.evtCedi=unireg.test.retourDi-${extprop.jdbc.username}
-testprop.jms.queue.evtExterne=unireg.test.evtExterne-${extprop.jdbc.username}
-testprop.jms.queue.evtFiscal=unireg.test.publierEvtRegFiscal-${extprop.jdbc.username}
-testprop.jms.queue.editique.input=unireg.test.retourImpression-${extprop.jdbc.username}
-testprop.jms.queue.ident.ctb.input=unireg.test.identificationCtb.input-${extprop.jdbc.username}
-testprop.jms.queue.ident.ctb.output=unireg.test.identificationCtb.output-${extprop.jdbc.username}
-testprop.jms.queue.pm.event.input=unireg.test.evtRegPM-${extprop.jdbc.username}
-testprop.jms.queue.evtIAM=unireg.test.evtInfoDebiteur-${extprop.jdbc.username}
+testprop.jms.queue.evtCedi=unireg.test.retourDi-${testprop.jdbc.username}
+testprop.jms.queue.evtExterne=unireg.test.evtExterne-${testprop.jdbc.username}
+testprop.jms.queue.evtFiscal=unireg.test.publierEvtRegFiscal-${testprop.jdbc.username}
+testprop.jms.queue.editique.input=unireg.test.retourImpression-${testprop.jdbc.username}
+testprop.jms.queue.ident.ctb.input=unireg.test.identificationCtb.input-${testprop.jdbc.username}
+testprop.jms.queue.ident.ctb.output=unireg.test.identificationCtb.output-${testprop.jdbc.username}
+testprop.jms.queue.pm.event.input=unireg.test.evtRegPM-${testprop.jdbc.username}
+testprop.jms.queue.evtIAM=unireg.test.evtInfoDebiteur-${testprop.jdbc.username}
 
 #
 # Configuration d'Unireg
