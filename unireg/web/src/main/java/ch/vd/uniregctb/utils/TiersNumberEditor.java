@@ -5,7 +5,6 @@ import java.beans.PropertyEditorSupport;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
 
 /**
  * Editeur spécialisé pour les numéros de tiers/contribuable.
@@ -29,9 +28,6 @@ public class TiersNumberEditor extends PropertyEditorSupport {
 			text = text.replaceAll("[^\\d]", "");
 			try {
 				final Long id = Long.valueOf(text);
-				if (id > Contribuable.CTB_GEN_LAST_ID) {
-					throw new IllegalArgumentException("Le numéro de tiers " + text + " est plus grand que le maximum autorisé");
-				}
 				setValue(id);
 			}
 			catch (NumberFormatException e) {
