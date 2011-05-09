@@ -1,3 +1,8 @@
+/* [SIFISC-938] workaround for jQuery bug #4111 (http://bugs.jqueryui.com/ticket/4111) */
+#ui-datepicker-div {
+	display:none;
+}
+
 #header {
 	background-image: url(fond_header_1_120.gif);
 	background-repeat: repeat-x;
