@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -32,7 +31,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class EntrepriseEventListenerTest extends EvenementTest {
 
-	private static final String INPUT_QUEUE = "unireg.test.pm.input";
+	private String INPUT_QUEUE;
 	private DefaultMessageListenerContainer container;
 	private MockDataEventService dataEventService;
 	private MockTiersIndexer indexer;
@@ -40,7 +39,7 @@ public class EntrepriseEventListenerTest extends EvenementTest {
 	@Before
 	public void setUp() throws Exception {
 
-		Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
+		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.pm.event.input");
 
 		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
 		jmsConnectionManager.setBrokerURL("tcp://ssv0309v:50900");

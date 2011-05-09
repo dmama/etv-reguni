@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.evenement;
 
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.uniregctb.utils.UniregProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,6 +23,32 @@ public abstract class EvenementTest {
 	protected EsbJmsTemplate esbTemplate;
 
 	protected EsbMessageFactory esbMessageFactory;
+	protected UniregProperties uniregProperties;
+
+	protected EvenementTest() {
+		initLog4j();
+		initProps();
+	}
+
+	private void initLog4j() {
+		try {
+			Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
+		}
+		catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void initProps() {
+		try {
+			uniregProperties = new UniregProperties();
+			uniregProperties.setFilename("file:../base/unireg-ut.properties");
+			uniregProperties.afterPropertiesSet();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	protected void clearQueue(String queueName) throws Exception {
 		while (esbTemplate.receive(queueName) != null) {}

@@ -35,7 +35,7 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
 	private EvenementFiscalSender sender;
-	private final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";         // doit-être identique au nom donné dans le fichier Spring!
+	private String OUTPUT_QUEUE;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -43,6 +43,9 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 		sender = getBean(EvenementFiscalSender.class, "evenementFiscalSenderPourTest");
+
+		// doit-être identique au nom donné dans le fichier Spring!
+		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtFiscal");
 
 		clearQueue(OUTPUT_QUEUE);
 

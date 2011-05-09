@@ -15,7 +15,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -36,15 +35,14 @@ import static org.junit.Assert.assertNotNull;
  */
 public class EvenementIAMListenerTest extends EvenementTest {
 
-	private static final String INPUT_QUEUE = "ch.vd.unireg.test.input";
-	private static final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
+	private String INPUT_QUEUE;
 	private EvenementIAMListenerImpl listener;
 	private DefaultMessageListenerContainer container;
 
 	@Before
 	public void setUp() throws Exception {
 
-		Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
+		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtIAM");
 
 		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
 		jmsConnectionManager.setBrokerURL("tcp://ssv0309v:50900");
@@ -61,7 +59,6 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
 
-		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
 		// flush est vraiment la seule méthode appelée...
