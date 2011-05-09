@@ -161,7 +161,7 @@ public class CoupleRecapValidatorTest extends WebTest {
 		class Ids {
 			long tiers1;
 			long tiers2;
-			long tiersInexistant = 123454321L;
+			long tiersInexistant = 12345432L;
 		}
 		final Ids ids = new Ids();
 
@@ -194,6 +194,51 @@ public class CoupleRecapValidatorTest extends WebTest {
 
 		final ObjectError error = allErrors.get(0);
 		assertEquals("error.tiers.inexistant", error.getCode());
+	}
+
+	/**
+	 * [SIFISC-1142] Vérifie que le validator détecte lorsque le numéro de tiers est plus grand le max autorisé.
+	 */
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testValideTiers3NumeroTropGrand() throws Exception {
+
+		class Ids {
+			long tiers1;
+			long tiers2;
+			long tiersInexistant = 123454321L;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique tiers1 = addNonHabitant("Alfred", "Dutuyau", date(1977, 3, 3), Sexe.MASCULIN);
+				final PersonnePhysique tiers2 = addNonHabitant("Georgette", "Dutuyau", date(1977, 3, 3), Sexe.FEMININ);
+				ids.tiers1 = tiers1.getId();
+				ids.tiers2 = tiers2.getId();
+				return null;
+			}
+		});
+
+		// création du couple
+		final CoupleRecapView view = new CoupleRecapView();
+		view.setNouveauCtb(false);
+		view.setDateCoupleExistant(date(2009, 6, 8));
+		view.setPremierePersonne(new TiersGeneralView(ids.tiers1));
+		view.setSecondePersonne(new TiersGeneralView(ids.tiers2));
+		view.setNumeroTroisiemeTiers(ids.tiersInexistant);
+		view.setTypeUnion(TypeUnion.COUPLE);
+
+		final Errors errors = new BeanPropertyBindingResult(view, "view");
+		validator.validate(view, errors);
+		assertEquals(1, errors.getErrorCount());
+
+		final List<ObjectError> allErrors = errors.getAllErrors();
+		assertNotNull(allErrors);
+		assertEquals(1, allErrors.size());
+
+		final ObjectError error = allErrors.get(0);
+		assertEquals("error.numero.tiers.trop.grand", error.getCode());
 	}
 
 }
