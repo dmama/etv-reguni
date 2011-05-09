@@ -17,6 +17,7 @@ import ch.vd.uniregctb.couple.CoupleRecapPickerFilter;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -68,12 +69,17 @@ public class CoupleRecapValidator implements Validator {
 		final RegDate dateDebut;
 		final String dateDebutField;
 		if ((typeUnion == TypeUnion.COUPLE || typeUnion == TypeUnion.SEUL) && !coupleRecapView.isNouveauCtb()) {
-			if (coupleRecapView.getNumeroTroisiemeTiers() == null) {
+			final Long numeroTroisiemeTiers = coupleRecapView.getNumeroTroisiemeTiers();
+			if (numeroTroisiemeTiers == null) {
 				errors.rejectValue("numeroTroisiemeTiers", "error.aucun.contribuable.existant");
 				dateDebut = coupleRecapView.getDateCoupleExistant();
 			}
+			else if (numeroTroisiemeTiers > Contribuable.CTB_GEN_LAST_ID) {
+				errors.rejectValue("numeroTroisiemeTiers", "error.numero.tiers.trop.grand");
+				dateDebut = coupleRecapView.getDateCoupleExistant();
+			}
 			else {
-				final Tiers troisieme = tiersService.getTiers(coupleRecapView.getNumeroTroisiemeTiers());
+				final Tiers troisieme = tiersService.getTiers(numeroTroisiemeTiers);
 				if (troisieme == null) {
 					errors.rejectValue("numeroTroisiemeTiers", "error.tiers.inexistant");
 				}
