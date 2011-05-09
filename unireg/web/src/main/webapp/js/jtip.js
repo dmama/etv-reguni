@@ -1,9 +1,9 @@
 /**
- * Active les tooltips ajax sur tous les liens de la page ayant la classe 'jTip'.
+ * Active les tooltips ajax sur tous les objets de la page ayant la classe 'jTip'.
  *
  * Exemple de tooltip ajax :
  *
- *     <a href="#" title="<c:url value="/htm/forPrincipalActif.htm?width=375"/>" class="jTip">?</a>
+ *     <span class="jTip" title="<c:url value="/htm/forPrincipalActif.htm?width=375"/>">?</span>
  */
 function activate_ajax_tooltips() {
 	$(".jTip").tooltip({

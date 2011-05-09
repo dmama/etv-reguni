@@ -80,7 +80,7 @@
 			</td>
 			<td><fmt:message key="label.for.principal.actif" />&nbsp;:</td>
 			<td><form:checkbox path="forPrincipalActif" />
-			<span class="formInfo"><a href="#" title="<c:url value="/htm/forPrincipalActif.htm?width=375"/>" class="jTip" id="forPrincipalActif2">?</a></span></td>
+			<span class="jTip formInfo" title="<c:url value="/htm/forPrincipalActif.htm?width=375"/>" id="forPrincipalActif2">?</span></td>
 		</tr>
 	</c:if>
 	<c:if test="${typeRecherche != 'couple'}">
@@ -94,7 +94,7 @@
 		</td>
 		<td width="25%"><fmt:message key="label.numero.avs" />&nbsp;:</td>
 		<td width="25%"><form:input path="numeroAVS" id="numeroAVS" />
-		<span class="formInfo"><a href="#" title="<c:url value="/htm/critereNAVS.htm?width=375"/>" class="jTip" id="numeroAVS2">?</a></span></td>
+		<span class="jTip formInfo" title="<c:url value="/htm/critereNAVS.htm?width=375"/>" id="numeroAVS2">?</span></td>
 	</tr>
 	</c:if>
 	<c:if test="${typeRecherche == 'principale' }">
