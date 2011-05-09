@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.fiscalite.registre.evenementFiscalV1.ModeImpositionEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
@@ -34,14 +33,13 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 
 	private final static Long NUMERO_CONTRIBUABLE = 12300002L;
 
-	private static final String INPUT_QUEUE = "ch.vd.unireg.test.input";
-	private static final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
+	private  String OUTPUT_QUEUE;
 	private EvenementFiscalSenderImpl sender;
 
 	@Before
 	public void setUp() throws Exception {
 
-		Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
+		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtFiscal");
 
 		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
 		jmsConnectionManager.setBrokerURL("tcp://ssv0309v:50900");
@@ -62,7 +60,6 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 		}
 
 		clearQueue(OUTPUT_QUEUE);
-		clearQueue(INPUT_QUEUE);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evenementFiscalMaster-v1.xsd")});

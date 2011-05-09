@@ -45,7 +45,6 @@ public class EditiqueServiceTest extends BusinessItTest {
 
 	public static final Logger LOGGER = Logger.getLogger(EditiqueServiceTest.class);
 
-	private static final String INPUT_QUEUE = "test.unireg.retourImpression";
 	private static final String OUTPUT_QUEUE = "imprimer";
 
 	private EditiqueCompositionServiceImpl composition;
@@ -68,6 +67,8 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final StatsService statsService = getBean(StatsService.class, "statsService");
 
 		// On setup à la main le reste (= le mininum de beans pour faire passer le test)
+		final String INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.editique.input");
+
 		final EvenementEditiqueSenderImpl sender = new EvenementEditiqueSenderImpl();
 		sender.setEsbMessageFactory(esbMessageFactory);
 		sender.setEsbTemplate(esbTemplate);
