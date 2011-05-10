@@ -81,8 +81,9 @@ public class Debiteur extends Tiers {
 		this.sansRappel = DataHelper.coreToWeb(debiteur.getSansRappel());
 		this.sansListRecapitulative = DataHelper.coreToWeb(debiteur.getSansListeRecapitulative());
 		this.contribuableAssocie = debiteur.getContribuableId();
-		this.logicielId = debiteur.getLogicielId();
-
+		if (this.modeCommunication == ModeCommunication.ELECTRONIQUE) {
+			this.logicielId = debiteur.getLogicielId();
+		}
 		if (parts != null && parts.contains(TiersPart.PERIODICITES)) {
 			this.periodicites = new ArrayList<Periodicite>();
 			for (ch.vd.uniregctb.declaration.Periodicite periodicite : debiteur.getPeriodicitesNonAnnules(true)) {
