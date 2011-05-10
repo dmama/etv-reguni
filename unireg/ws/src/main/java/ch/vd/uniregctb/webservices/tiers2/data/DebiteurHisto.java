@@ -131,7 +131,9 @@ public class DebiteurHisto extends TiersHisto {
 		this.sansRappel = DataHelper.coreToWeb(debiteur.getSansRappel());
 		this.sansListRecapitulative = DataHelper.coreToWeb(debiteur.getSansListeRecapitulative());
 		this.contribuableAssocie = debiteur.getContribuableId();
-		this.logicielId = debiteur.getLogicielId();
+		if (this.modeCommunication == ModeCommunication.ELECTRONIQUE) {
+			this.logicielId = debiteur.getLogicielId();
+		}
 	}
 
 	/**
