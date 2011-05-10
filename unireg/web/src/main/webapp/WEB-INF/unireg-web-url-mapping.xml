@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
-        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<!-- ======== Config MVC Spring 3.x ======== -->
 
@@ -148,7 +143,6 @@
 				<entry key="/tiers/list.do" value-ref="tiersListController" />
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
-				<entry key="/tiers/timeline.do" value-ref="tiersTimelineController" />
 				<entry key="/tiers/lr.do" value-ref="lrVisuController" />
 				<entry key="/tiers/di.do" value-ref="diVisuController" />
 				<entry key="/fiscal/for.do" value-ref="tiersForController" />

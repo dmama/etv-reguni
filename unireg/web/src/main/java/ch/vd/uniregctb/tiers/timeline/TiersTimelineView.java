@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.uniregctb.tiers.timeline;
 
 import java.util.ArrayList;
 import java.util.List;

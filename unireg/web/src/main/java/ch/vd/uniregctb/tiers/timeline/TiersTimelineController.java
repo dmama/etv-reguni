@@ -1,7 +1,5 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.uniregctb.tiers.timeline;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,12 +7,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.validation.BindException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -23,18 +21,28 @@ import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.tiers.view.TiersTimelineView;
-import ch.vd.uniregctb.tiers.view.TiersTimelineView.Table;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
+import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.timeline.TiersTimelineView.Table;
 
 /**
  * Contrôleur pour l'affichage de l'historique des fors fiscaux et des assujettissements d'un contribuable
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class TiersTimelineController extends AbstractTiersController {
+@Controller
+public class TiersTimelineController {
 
 	private final Logger LOGGER = Logger.getLogger(TiersTimelineController.class);
 
@@ -44,69 +52,45 @@ public class TiersTimelineController extends AbstractTiersController {
 	public final static String DESCRIPTION = "description";
 
 	private TiersDAO dao;
-
 	private AdresseService adresseService;
 	private TiersService tiersService;
 
-	private PlatformTransactionManager transactionManager;
+	@RequestMapping(value = "/tiers/timeline.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String index(Model mav,
+	                    @RequestParam(ID_PARAMETER) Long id,
+	                    @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
+	                    @RequestParam(value = TITLE, required = false) String title,
+	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws Exception {
+		final TiersTimelineView bean = new TiersTimelineView();
+		ControllerUtils.checkAccesDossierEnLecture(id);
+		bean.setTiersId(id);
 
-		final TiersTimelineView bean = (TiersTimelineView) super.formBackingObject(request);
-
-		final Long id = extractLongParam(request, ID_PARAMETER);
-		if (id != null) {
-			checkAccesDossierEnLecture(id);
-			bean.setTiersId(id);
-		}
-
-		final Boolean forPrint = extractBooleanParam(request, FOR_PRINT);
-		if (forPrint != null){
+		if (forPrint != null) {
 			bean.setForPrint(forPrint);
 		}
 
-		final String title = request.getParameter(TITLE);
 		if (title != null) {
 			bean.setTitle(title);
 		}
 
-		final String description = request.getParameter(DESCRIPTION);
 		if (description != null) {
 			bean.setDescription(description);
 		}
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				fillTimeline(bean);
-				return null;
-			}
-		});
-
-		return bean;
-	}
-
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
-
-		TiersTimelineView bean = (TiersTimelineView) command;
-		checkAccesDossierEnLecture(bean.getTiersId());
 		fillTimeline(bean);
+		mav.addAttribute("command", bean);
 
-		return super.onSubmit(request, response, command, errors);
+		return "tiers/visualisation/fiscal/timeline";
 	}
 
 	/**
-	 * A partir d'une liste de ranges (qui peuvent se recouvrir), détermine la liste triées par ordre croissant des dates de début et de fin
-	 * des ranges. Chaque date n'apparaît qu'une fois dans la liste.
-	 * <p>
-	 * <b>Note:</b> Si au moins un des ranges possède une date de début nulle, la première date de la liste est nulle. De même, si au moins
-	 * un des ranges possède une date de fin nulle, la dernière date de la liste est nulle.
-	 *
+	 * A partir d'une liste de ranges (qui peuvent se recouvrir), détermine la liste triées par ordre croissant des dates de début et de fin des ranges. Chaque date n'apparaît qu'une fois dans la liste.
+	 * <p/>
+	 * <b>Note:</b> Si au moins un des ranges possède une date de début nulle, la première date de la liste est nulle. De même, si au moins un des ranges possède une date de fin nulle, la dernière date
+	 * de la liste est nulle.
+	 * <p/>
 	 * <pre>
 	 * Ranges d'entrées:
 	 * +----------------------+                           +----------------+
@@ -222,7 +206,7 @@ public class TiersTimelineController extends AbstractTiersController {
 		ranges.addAll(assujettissements);
 		ranges.addAll(periodesImposition);
 		ranges.addAll(forsGestion);
-		
+
 		final List<DateRange> periodes = new ArrayList<DateRange>();
 		final List<RegDate> boundaries = extractBoundaries(ranges);
 		RegDate previous = null;
@@ -283,9 +267,5 @@ public class TiersTimelineController extends AbstractTiersController {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 }

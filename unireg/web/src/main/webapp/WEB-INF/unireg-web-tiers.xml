@@ -52,15 +52,10 @@
 		<property name="manager" ref="tiersVisuManager" />
 	</bean>
 
-	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.TiersTimelineController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersTimelineView" />
-		<property name="formView" value="tiers/visualisation/timeline" />
-		<property name="successView" value="tiers/visualisation/timeline" />
+	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.timeline.TiersTimelineController">
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
-		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="tiersEditController" class="ch.vd.uniregctb.tiers.TiersEditController" parent="abstractTiersController">
