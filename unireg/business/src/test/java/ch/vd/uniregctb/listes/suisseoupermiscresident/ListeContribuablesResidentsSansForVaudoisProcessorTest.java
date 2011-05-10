@@ -292,4 +292,35 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		Assert.assertEquals(ppId, ignore.ctbId);
 		Assert.assertEquals(ListeContribuablesResidentsSansForVaudoisResults.CauseIgnorance.DOMICILE_NON_VAUDOIS, ignore.cause);
 	}
+
+	@Test
+	@NotTransactional
+	public void testTiersAnnule() throws Exception {
+
+		// mise en place civile (vide, où sont-ils tous partis ???)
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Ronald", "Weasley", null, Sexe.MASCULIN);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
+				pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
+				pp.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				pp.setAnnule(true);
+				return pp.getNumero();
+			}
+		});
+
+		// un tiers annulé ne doit pas être vu du tout...
+		final ListeContribuablesResidentsSansForVaudoisResults result = processor.run(date(2011, 1, 1), 1, null);
+		Assert.assertNotNull(result);
+		Assert.assertEquals(0, result.getContribuablesIdentifies().size());
+		Assert.assertEquals(0, result.getListeErreurs().size());
+		Assert.assertEquals(0, result.getContribuablesIgnores().size());
+	}
 }
