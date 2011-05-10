@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.audit;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,16 +9,16 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hsqldb.Types;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
@@ -28,8 +29,6 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 
 public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {
-
-	private static final Logger LOGGER = Logger.getLogger(AuditLineDAOImpl.class);
 
 	private Dialect dialect;
 	private DataSource dataSource;
@@ -147,12 +146,14 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	 */
 	public void insertLineInNewTx(final AuditLine line) {
 
-		doWithNewConnection(new Callback<Object>() {
-			public Object execute(Connection connection) throws SQLException {
-				final long id = getNextId(connection);
+		final JdbcTemplate template = new JdbcTemplate(dataSource);
+		template.execute(new ConnectionCallback<Object>() {
+			@Override
+			public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+				final long id = getNextId(con);
 				final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
 
-				final PreparedStatement stat = connection.prepareStatement("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
+				final PreparedStatement stat = con.prepareStatement("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
 				stat.setLong(1, id);
 				stat.setString(2, line.getLevel().toString());
 				stat.setObject(3, line.getDocumentId(), Types.BIGINT);
@@ -166,30 +167,6 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 				return null;
 			}
 		});
-	}
-
-	private static interface Callback<T> {
-		T execute(Connection connection) throws SQLException;
-	}
-
-	private <T> T doWithNewConnection(Callback<T> callback) {
-		try {
-			final Connection con = dataSource.getConnection();
-			try {
-				return callback.execute(con);
-			}
-			finally {
-				con.close();
-			}
-		}
-		catch (RuntimeException e) {
-			LOGGER.error(e, e);
-			throw e;
-		}
-		catch (SQLException e) {
-			LOGGER.error(e, e);
-			throw new RuntimeException(e);
-		}
 	}
 
 	private long getNextId(Connection con) throws SQLException {
@@ -217,13 +194,15 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 	public int purge(final RegDate seuilPurge) {
 		Assert.notNull(seuilPurge);
-		return doWithNewConnection(new Callback<Integer>() {
-			public Integer execute(Connection connection) throws SQLException {
+
+		final JdbcTemplate template = new JdbcTemplate(dataSource);
+		return template.execute(new ConnectionCallback<Integer>() {
+			@Override
+			public Integer doInConnection(Connection con) throws SQLException, DataAccessException {
 				final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
-				final PreparedStatement stat = connection.prepareStatement("delete from AUDIT_LOG WHERE LOG_DATE < ?");
+				final PreparedStatement stat = con.prepareStatement("delete from AUDIT_LOG WHERE LOG_DATE < ?");
 				stat.setTimestamp(1, seuilTimestamp);
-				stat.execute();
-				return stat.getUpdateCount();
+				return stat.executeUpdate();
 			}
 		});
 	}
