@@ -76,7 +76,7 @@
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDaoSupport">
-		<property name="dataSource" ref="rawDataSource" />
+		<property name="dataSource" ref="dataSource" />
 		<property name="dialect" ref="hibernateDialect" />
 	</bean>
 

@@ -67,18 +67,4 @@
 		<property name="password" value="${extprop.jdbc.password}" />
 	</bean>
 
-	<!-- JNDI DataSource for J2EE environments -->
-	<!-- TODO (msi) essayer de supprimer cette data-source et d'utiliser RequiresNew, la config Hibernate a changé et devrait maintenant le permettre -->
-	<bean id="rawDataSource" class="ch.vd.uniregctb.datasource.UniregDataSource" destroy-method="close">
-		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
-		<property name="url" value="jdbc:oracle:thin:@${extprop.jdbc.server}:${extprop.jdbc.port}:${extprop.jdbc.instance}" />
-		<property name="username" value="${extprop.jdbc.username}" />
-		<property name="password" value="${extprop.jdbc.password}" />
-		<!--
-		<property name="defaultAutoCommit" value="false" />
-		-->
-		<property name="initialSize" value="1" />
-		<property name="maxActive" value="-1" />
-	</bean>
-	
 </beans>
