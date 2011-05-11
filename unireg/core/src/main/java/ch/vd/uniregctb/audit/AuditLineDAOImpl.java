@@ -7,14 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
-import org.hsqldb.Types;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -28,7 +27,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 
-public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {
+public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements AuditLineDAO {
 
 	private Dialect dialect;
 	private DataSource dataSource;
@@ -154,16 +153,21 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 				final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
 
 				final PreparedStatement stat = con.prepareStatement("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
-				stat.setLong(1, id);
-				stat.setString(2, line.getLevel().toString());
-				stat.setObject(3, line.getDocumentId(), Types.BIGINT);
-				stat.setObject(4, line.getEvenementId(), Types.BIGINT);
-				stat.setObject(5, line.getThreadId(), Types.BIGINT);
-				stat.setObject(6, line.getMessage(), Types.VARCHAR);
-				stat.setTimestamp(7, now);
-				stat.setObject(8, AuthenticationHelper.getCurrentPrincipal(), Types.VARCHAR);
+				try {
+					stat.setLong(1, id);
+					stat.setString(2, line.getLevel().toString());
+					stat.setObject(3, line.getDocumentId(), Types.BIGINT);
+					stat.setObject(4, line.getEvenementId(), Types.BIGINT);
+					stat.setObject(5, line.getThreadId(), Types.BIGINT);
+					stat.setObject(6, line.getMessage(), Types.VARCHAR);
+					stat.setTimestamp(7, now);
+					stat.setObject(8, AuthenticationHelper.getCurrentPrincipal(), Types.VARCHAR);
 
-				stat.execute();
+					stat.execute();
+				}
+				finally {
+					stat.close();
+				}
 				return null;
 			}
 		});
@@ -171,9 +175,14 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 	private long getNextId(Connection con) throws SQLException {
 		final Statement stat = con.createStatement();
-		final ResultSet rs = stat.executeQuery(nextValSql);
-		Assert.isTrue(rs.next());
-		return rs.getLong(1);
+		try {
+			final ResultSet rs = stat.executeQuery(nextValSql);
+			Assert.isTrue(rs.next());
+			return rs.getLong(1);
+		}
+		finally {
+			stat.close();
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -201,8 +210,13 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 			public Integer doInConnection(Connection con) throws SQLException, DataAccessException {
 				final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
 				final PreparedStatement stat = con.prepareStatement("delete from AUDIT_LOG WHERE LOG_DATE < ?");
-				stat.setTimestamp(1, seuilTimestamp);
-				return stat.executeUpdate();
+				try {
+					stat.setTimestamp(1, seuilTimestamp);
+					return stat.executeUpdate();
+				}
+				finally {
+					stat.close();
+				}
 			}
 		});
 	}

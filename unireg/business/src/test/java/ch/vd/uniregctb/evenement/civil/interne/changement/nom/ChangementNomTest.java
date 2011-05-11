@@ -159,8 +159,13 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				Connection con = dataSource.getConnection();
 				try {
-					Statement st = con.createStatement();
-					st.execute("update TIERS set INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " where NUMERO = 6792");
+					final Statement st = con.createStatement();
+					try {
+						st.execute("update TIERS set INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " where NUMERO = 6792");
+					}
+					finally {
+						st.close();
+					}
 				}
 				finally {
 					con.close();
