@@ -14,6 +14,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.DeclarationImpotSelectView;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class DeclarationImpotEditValidator implements Validator {
 
@@ -53,7 +54,7 @@ public class DeclarationImpotEditValidator implements Validator {
 						errors.rejectValue("dateRetour", "error.date.retour.future");
 					}
 					DeclarationImpotOrdinaire di = diDAO.get(details.getId());
-					EtatDeclaration dernierEtat = di.getDernierEtat();
+					EtatDeclaration dernierEtat = getDernierEtatEmisOuSommee(di);
 					if (details.getRegDateRetour() != null && details.getRegDateRetour().isBefore(dernierEtat.getDateObtention())) {
 						if(dernierEtat instanceof EtatDeclarationSommee){
 							errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
@@ -69,4 +70,18 @@ public class DeclarationImpotEditValidator implements Validator {
 			}
 		}
 	}
+
+	private EtatDeclaration getDernierEtatEmisOuSommee(DeclarationImpotOrdinaire di) {
+		EtatDeclaration emis = di.getEtatDeclarationActif(TypeEtatDeclaration.EMISE);
+		EtatDeclaration sommee = di.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
+	    //On aura toujours un état émis sur une déclaration sinon bug
+		if(sommee == null){
+			return  emis;
+
+		}else{
+			return sommee;
+		}
+	}
+
+
 }
