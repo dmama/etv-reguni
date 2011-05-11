@@ -74,6 +74,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		asyncProcessor.setTransactionManager(transactionManager);
 		asyncProcessor.setFetchAwaitingEventsOnStart(false);
 		asyncProcessor.afterPropertiesSet();
+		asyncProcessor.startQueueListener();
 	}
 
 	@Test(timeout=10000)
