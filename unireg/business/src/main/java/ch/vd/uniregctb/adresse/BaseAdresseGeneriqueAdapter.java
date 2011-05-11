@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.interfaces.model.Commune;
 
 /*
@@ -28,7 +27,9 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	 * @param isDefault vrai si l'adresse représente une adresse par défaut
 	 */
 	public BaseAdresseGeneriqueAdapter(AdresseGenerique adresse, Source source, Boolean isDefault) {
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException("L'adresse doit être renseignée !");
+		}
 		this.target = adresse;
 		this.dateDebut = adresse.getDateDebut();
 		this.dateFin = adresse.getDateFin();
@@ -46,7 +47,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		}
 		this.isAnnule = adresse.isAnnule();
 		optimize();
-		if (!adresse.isAnnule()) {
+		if (!this.isAnnule) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		}
 	}
@@ -58,7 +59,9 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	 * @param isDefault vrai si l'adresse représente une adresse par défaut
 	 */
 	public BaseAdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Boolean isDefault) {
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException("L'adresse doit être renseignée !");
+		}
 		this.target = adresse;
 		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
 		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
@@ -71,7 +74,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		}
 		this.isAnnule = adresse.isAnnule();
 		optimize();
-		if (!adresse.isAnnule()) {
+		if (!this.isAnnule) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		}
 	}
@@ -84,7 +87,9 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	 * @param isDefault vrai si l'adresse représente une adresse par défaut
 	 */
 	public BaseAdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Source source, Boolean isDefault) {
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException("L'adresse doit être renseignée !");
+		}
 		this.target = adresse;
 		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
 		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
@@ -102,7 +107,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		}
 		this.isAnnule = adresse.isAnnule();
 		optimize();
-		if (!adresse.isAnnule()) {
+		if (!this.isAnnule) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		}
 	}
@@ -116,7 +121,9 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	 * @param isAnnule  vrai si l'adresse représente une adresse annulée
 	 */
 	public BaseAdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Source source, Boolean isDefault, Boolean isAnnule) {
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException("L'adresse doit être renseignée !");
+		}
 		this.target = adresse;
 		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
 		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
@@ -139,7 +146,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 			this.isAnnule = isAnnule;
 		}
 		optimize();
-		if (!adresse.isAnnule()) {
+		if (!this.isAnnule) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		}
 	}

@@ -197,6 +197,11 @@
 		</dependency>
         <dependency>
             <groupId>ch.vd.registre</groupId>
+            <artifactId>shared-date</artifactId>
+			<version>1.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.vd.registre</groupId>
             <artifactId>shared-base</artifactId>
 			<version>${shared-base.version}</version>
         </dependency>

@@ -65,6 +65,17 @@ public interface AdresseService {
 	public abstract AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException;
 
 	/**
+	 * Calcul et retourne l'historique des adresses fiscales avec le détail complet des couches qui le composent.
+	 *
+	 * @param tiers  le tiers dont on recherche les adresses
+	 * @param strict si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
+	 *               (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @return l'historique des adresses fiscales sous forme de sandwich de couches d'adresses.
+	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
+	 */
+	public abstract AdressesFiscalesSandwich getAdressesFiscalesSandwich(Tiers tiers, boolean strict) throws AdresseException;
+
+	/**
 	 * Retourne l'historique des adresses civiles du tiers spécifié. Ou <b>null</b> si le tiers n'en possède pas.
 	 *
 	 * @param tiers  un tiers dont on veut extraite l'historique des adresses civiles.
@@ -73,6 +84,7 @@ public interface AdresseService {
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	public AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException;
+
 	/**
 	 * Retourne l'adresse 'représentation' du représentant du tiers spécifié.
 	 *
@@ -84,8 +96,7 @@ public interface AdresseService {
 	 * @return les adresses demandée, ou <b>null</b> si le tiers ne possède pas de représentant.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public AdresseGenerique getAdresseRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date, boolean strict)
-			throws AdresseException;
+	public AdresseGenerique getAdresseRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Crée et retourne l'adresse d'envoi formattée (six lignes) pour un tiers donné.

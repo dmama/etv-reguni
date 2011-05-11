@@ -51,7 +51,7 @@
 			</table>
 		</div>
 
-		<table id="timeline">
+		<table class="timeline">
 			<tr>
 				<th>Période</th>
 				<th>Fors Principaux</th>

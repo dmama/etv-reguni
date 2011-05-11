@@ -58,6 +58,11 @@
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 
+	<bean id="adresseTimelineController" class="ch.vd.uniregctb.tiers.timeline.AdresseTimelineController">
+		<property name="tiersDao" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
 	<bean id="tiersEditController" class="ch.vd.uniregctb.tiers.TiersEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />

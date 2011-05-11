@@ -513,12 +513,12 @@ table.postit tr.bottom td {
  * Timeline stuff
  */
 
-#timeline, #legend {
+.timeline, #legend {
 	width: auto;
 	border-spacing: 0.5em;
 }
 
-#timeline th {
+.timeline th {
 	border: thin;
 	border-style: solid;
 	padding: 0.3em;
@@ -526,47 +526,81 @@ table.postit tr.bottom td {
 	background-color: #FFFFCC;
 }
 
-#timeline td {
+.timeline td {
 	padding: 2px;
 	text-align: center;
 }
 
-#timeline td.periode {
+.timeline td.periode {
 	border: thin;
 	border-style: solid;
 	border-color: #996633;
 	background-color: #FFFFCC;
 }
 
-#timeline td.principal_vd, #legend td.principal_vd {
+.timeline td.principal_vd, #legend td.principal_vd {
 	background-color: #99FF66;
 }
 
-#timeline td.principal_hc, #legend td.principal_hc {
+.timeline td.principal_hc, #legend td.principal_hc {
 	background-color: #FFCC66;
 }
 
-#timeline td.principal_hs, #legend td.principal_hs {
+.timeline td.principal_hs, #legend td.principal_hs {
 	background-color: #CC6666;
 }
 
-#timeline td.secondaire {
+.timeline td.secondaire {
 	background-color: #CCCC99;
 }
 
-#timeline td.gestion {
+.timeline td.gestion {
 	background-color: #CCDD99;
 }
 
-#timeline td.assujettissement {
+.timeline td.assujettissement {
 	background-color: #99CCCC;
 }
 
-#timeline td.periodeImposition {
+.timeline td.periodeImposition {
 	background-color: #CC99CC;
 }
 
-#timeline td.filler {
+.timeline td.civile, #legend td.civile {
+	background-color: #99FF66;
+}
+
+.timeline td.fiscale, #legend td.fiscale {
+	background-color: #99CCCC;
+}
+
+.timeline td.representation, #legend td.representation {
+	background-color: #FFCC66;
+}
+
+.timeline td.tutelle, .timeline td.curatelle, .timeline td.conseil_legal,
+#legend td.tutelle, #legend td.curatelle, #legend td.conseil_legal {
+	background-color: #CC6666;
+}
+
+.timeline td.principal, #legend td.principal {
+	background-color: #CC99CC;
+}
+
+.timeline td.conjoint, #legend td.conjoint {
+	background-color: #BA55D3;
+}
+
+.timeline td.pm, #legend td.pm {
+	background-color: #CCDD99;
+}
+
+.timeline td.contribuable, #legend td.contribuable {
+	color: white;
+	background-color: #556B2F;
+}
+
+.timeline td.filler {
 	border: 0px;
 }
 

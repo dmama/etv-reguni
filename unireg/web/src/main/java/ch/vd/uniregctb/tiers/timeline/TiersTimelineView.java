@@ -31,91 +31,46 @@ public class TiersTimelineView {
 	private String description;
 
 	/**
-	 * Représente une cellule dans la table
-	 */
-	public static class Cell {
-
-		public static final Cell FILLER = new Cell(true, false);
-		public static final Cell SPAN = new Cell(false, true);
-
-		public final boolean filler; // si vrai, la cellule est vide
-		public final boolean span; // si vrai, la cellule est "remplie" par le span d'un range
-
-		public int longueurAffichage;
-		public final DateRange range;
-
-		private Cell(boolean filler, boolean span) {
-			this.filler = filler;
-			this.span = span;
-			this.range = null;
-			this.longueurAffichage = -1;
-		}
-
-		public Cell(DateRange range) {
-			this.filler = false;
-			this.span = false;
-			this.range = range;
-			this.longueurAffichage = 0;
-		}
-
-		public boolean isFiller() {
-			return filler;
-		}
-
-		public boolean isSpan() {
-			return span;
-		}
-
-		public int getLongueurAffichage() {
-			return longueurAffichage;
-		}
-
-		public DateRange getRange() {
-			return range;
-		}
-	}
-
-	/**
 	 * Représente une ligne dans la table
 	 */
 	public static class Row {
 		public final DateRange periode;
-		public Cell forPrincipal;
-		public final List<Cell> forsSecondaires = new ArrayList<Cell>(1);
-		public Cell forGestion;
-		public Cell assujettissement;
-		public Cell periodeImposition;
+		public TimelineCell forPrincipal;
+		public final List<TimelineCell> forsSecondaires = new ArrayList<TimelineCell>(1);
+		public TimelineCell forGestion;
+		public TimelineCell assujettissement;
+		public TimelineCell periodeImposition;
 
 		public Row(DateRange periode) {
 			this.periode = periode;
-			this.forPrincipal = Cell.FILLER;
-			this.forsSecondaires.add(Cell.FILLER);
-			this.forGestion = Cell.FILLER;
-			this.assujettissement = Cell.FILLER;
-			this.periodeImposition = Cell.FILLER;
+			this.forPrincipal = TimelineCell.FILLER;
+			this.forsSecondaires.add(TimelineCell.FILLER);
+			this.forGestion = TimelineCell.FILLER;
+			this.assujettissement = TimelineCell.FILLER;
+			this.periodeImposition = TimelineCell.FILLER;
 		}
 
 		public DateRange getPeriode() {
 			return periode;
 		}
 
-		public Cell getForPrincipal() {
+		public TimelineCell getForPrincipal() {
 			return forPrincipal;
 		}
 
-		public List<Cell> getForsSecondaires() {
+		public List<TimelineCell> getForsSecondaires() {
 			return forsSecondaires;
 		}
 
-		public Cell getForGestion() {
+		public TimelineCell getForGestion() {
 			return forGestion;
 		}
 
-		public Cell getAssujettissement() {
+		public TimelineCell getAssujettissement() {
 			return assujettissement;
 		}
 
-		public Cell getPeriodeImposition() {
+		public TimelineCell getPeriodeImposition() {
 			return periodeImposition;
 		}
 	}
@@ -153,17 +108,17 @@ public class TiersTimelineView {
 		 * Ajoute un range dans la colonne "fors principaux"
 		 */
 		public void addForPrincipal(DateRange range) {
-			Cell c = new Cell(range);
+			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
 				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
-					Assert.isTrue(r.forPrincipal == Cell.FILLER);
+					Assert.isTrue(r.forPrincipal == TimelineCell.FILLER);
 					r.forPrincipal = c;
 					longueur++;
 				}
 				else if (DateRangeHelper.within(r.periode, range)) {
-					Assert.isTrue(r.forPrincipal == Cell.FILLER);
-					r.forPrincipal = Cell.SPAN;
+					Assert.isTrue(r.forPrincipal == TimelineCell.FILLER);
+					r.forPrincipal = TimelineCell.SPAN;
 					longueur++;
 				}
 			}
@@ -174,17 +129,17 @@ public class TiersTimelineView {
 		 * Ajoute un range dans la colonne "fors gestion"
 		 */
 		public void addForGestion(DateRange range) {
-			Cell c = new Cell(range);
+			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
 				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
-					Assert.isTrue(r.forGestion == Cell.FILLER);
+					Assert.isTrue(r.forGestion == TimelineCell.FILLER);
 					r.forGestion = c;
 					longueur++;
 				}
 				else if (DateRangeHelper.within(r.periode, range)) {
-					Assert.isTrue(r.forGestion == Cell.FILLER);
-					r.forGestion = Cell.SPAN;
+					Assert.isTrue(r.forGestion == TimelineCell.FILLER);
+					r.forGestion = TimelineCell.SPAN;
 					longueur++;
 				}
 			}
@@ -195,17 +150,17 @@ public class TiersTimelineView {
 		 * Ajoute un range dans la colonne "assujettissements"
 		 */
 		public void addAssujettissement(DateRange range) {
-			Cell c = new Cell(range);
+			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
 				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
-					Assert.isTrue(r.assujettissement == Cell.FILLER);
+					Assert.isTrue(r.assujettissement == TimelineCell.FILLER);
 					r.assujettissement = c;
 					longueur++;
 				}
 				else if (DateRangeHelper.within(r.periode, range)) {
-					Assert.isTrue(r.assujettissement == Cell.FILLER);
-					r.assujettissement = Cell.SPAN;
+					Assert.isTrue(r.assujettissement == TimelineCell.FILLER);
+					r.assujettissement = TimelineCell.SPAN;
 					longueur++;
 				}
 			}
@@ -216,17 +171,17 @@ public class TiersTimelineView {
 		 * Ajoute un range dans la colonne "périodes d'imposition"
 		 */
 		public void addPeriodeImposition(DateRange range) {
-			Cell c = new Cell(range);
+			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
 				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
-					Assert.isTrue(r.periodeImposition == Cell.FILLER);
+					Assert.isTrue(r.periodeImposition == TimelineCell.FILLER);
 					r.periodeImposition = c;
 					longueur++;
 				}
 				else if (DateRangeHelper.within(r.periode, range)) {
-					Assert.isTrue(r.periodeImposition == Cell.FILLER);
-					r.periodeImposition = Cell.SPAN;
+					Assert.isTrue(r.periodeImposition == TimelineCell.FILLER);
+					r.periodeImposition = TimelineCell.SPAN;
 					longueur++;
 				}
 			}
@@ -263,7 +218,7 @@ public class TiersTimelineView {
 				collision = false;
 				for (int i = debut; i <= fin; ++i) {
 					Row r = rows.get(i);
-					if (r.forsSecondaires.get(level) != Cell.FILLER) {
+					if (r.forsSecondaires.get(level) != TimelineCell.FILLER) {
 						collision = true;
 						break;
 					}
@@ -279,16 +234,16 @@ public class TiersTimelineView {
 			}
 
 			// ajout du for
-			Cell c = new Cell(range);
+			TimelineCell c = new TimelineCell(range);
 
 			for (int i = debut; i <= fin; ++i) {
 				Row r = rows.get(i);
-				Assert.isTrue(r.forsSecondaires.get(level) == Cell.FILLER);
+				Assert.isTrue(r.forsSecondaires.get(level) == TimelineCell.FILLER);
 				if (i == debut) {
 					r.forsSecondaires.set(level, c);
 				}
 				else {
-					r.forsSecondaires.set(level, Cell.SPAN);
+					r.forsSecondaires.set(level, TimelineCell.SPAN);
 				}
 			}
 
@@ -300,7 +255,7 @@ public class TiersTimelineView {
 		 */
 		private void addForSecondaireLevel() {
 			for (Row r : rows) {
-				r.forsSecondaires.add(Cell.FILLER);
+				r.forsSecondaires.add(TimelineCell.FILLER);
 			}
 		}
 	}

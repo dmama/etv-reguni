@@ -233,7 +233,8 @@ public class AdresseMixer {
 	private static boolean hasAdresseAnnulee(List<AdresseGenerique> adresses) {
 		boolean annulee = false;
 		if (adresses != null) {
-			for (AdresseGenerique a : adresses) {
+			for (int i = 0, adressesSize = adresses.size(); i < adressesSize; i++) {
+				final AdresseGenerique a = adresses.get(i);
 				if (a.isAnnule()) {
 					annulee = true;
 					break;
@@ -242,4 +243,58 @@ public class AdresseMixer {
 		}
 		return annulee;
 	}
+
+	/**
+	 * Détermine les trous dans une collection d'adresses de base et calcule les adresses qui permettraient de boucher ces trous.
+	 *
+	 * @param adresses les adresses de base (qui peuvent posséder des trous)
+	 * @param defaults une ou plusieurs collections d'adresses utilisées comme source pour boucher les trous. La première collection d'adresse sera utilisée prioritairement pour boucher les trous, puis
+	 *                 les autres par ordre décroissant de priorité.
+	 * @return une liste d'adresses qui peuvent être utilisées pour boucher les trous de la collection d'adresses de base; ou <b>null</b> si la collection de base ne possède aucun trou.
+	 */
+	public static List<AdresseGenerique> determineBoucheTrous(List<AdresseGenerique> adresses, List<AdresseGenerique>... defaults) {
+		if (defaults == null || defaults.length == 0) {
+			return null;
+		}
+
+		if (DateRangeHelper.isFull(adresses)) {
+			// il n'y a pas de trou dans le sandwich -> inutile d'essayer d'appliquer des valeurs par défaut
+			return null;
+		}
+
+		// on calcule la vue à plat de la couche d'adresses par défaut
+		List<AdresseGenerique> adressesDefault = new ArrayList<AdresseGenerique>();
+		for (int i = defaults.length - 1; i >= 0; i--) {
+
+			final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>();
+			for (AdresseGenerique a : defaults[i]) {
+				if (a.isAnnule()) {
+					// on ne prend pas en compte les adresses annulées comme défaut
+					continue;
+				}
+				if (a.getSource().getType().isRepresentation()) {
+					// [UNIREG-3025] on ne prend pas en compte les adresse de représentation comme défaut
+					continue;
+				}
+				list.add(a);
+			}
+
+			if (!list.isEmpty()) {
+				adressesDefault = AdresseMixer.override(adressesDefault, list, null, null);
+			}
+		}
+
+		if (adressesDefault.isEmpty()) {
+			return null;
+		}
+
+		// on détermine les trous dans le sandwich qui peuvent être comblés par les adresses par défaut
+		return DateRangeHelper.subtract(adressesDefault, adresses, new DateRangeHelper.AdapterCallback<AdresseGenerique>() {
+			@Override
+			public AdresseGenerique adapt(AdresseGenerique range, RegDate debut, RegDate fin) {
+				return new AdresseGeneriqueAdapter(range, debut, fin, null, null);
+			}
+		});
+	}
+
 }

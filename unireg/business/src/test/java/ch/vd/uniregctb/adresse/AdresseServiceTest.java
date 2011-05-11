@@ -230,18 +230,13 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1,
-						1), date(1987, 12, 11));
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
-						date(2001, 6, 4), null);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), date(1987, 12, 11));
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, date(1987, 12, 12), date(2001, 6, 3));
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6, 4), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980,
-						1, 1), date(1987, 12, 11));
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						date(1987, 12, 12), null);
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), date(1987, 12, 11));
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, date(1987, 12, 12), null);
 			}
 		});
 
@@ -6620,5 +6615,102 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Grand-Rue", adresseEnvoi2010.getLigne4());
 		assertEquals("1337 Vallorbe", adresseEnvoi2010.getLigne5());
 		assertNull(adresseEnvoi2010.getLigne6());
+	}
+
+	/**
+	 * Cas d'application des adresses par défaut au niveau du civile : adresses courrier manquantes.
+	 *
+	 * <pre>
+	 *                                                    +--------------------------+----------------------
+	 * Adresses civiles principale:                       | Lausanne                 | Cossonay-Ville
+	 *                                                    +--------------------------+----------------------
+	 *                                                    ¦- 2001.07.01  2006.06.30 -¦- 2006.07.01
+	 *                                                    ¦                          ¦
+	 *                                -----------------------------------------------+----------------------
+	 * Adresses civiles courrier:       Lausanne                                     | Cossonay-Ville
+	 *                                -----------------------------------------------+----------------------
+	 *                                                    :              2006.06.30 -¦- 2006.07.01
+	 *                                                    :                          ¦
+	 *                                                    :                          ¦
+	 * Adresses résultantes:                              :                          ¦
+	 *                                -----------------------------------------------+----------------------
+	 *  - courrier/représentation       Lausanne                                     | Cossonay-Ville
+	 *                                -----------------------------------------------+----------------------
+	 *                                                    :              2006.06.30 -¦- 2006.07.01
+	 *                                                    :                          ¦
+	 *                                --------------------+--------------------------+----------------------
+	 *  - poursuite/domicile            Lausanne (défaut) | Lausanne                 | Cossonay-Ville
+	 *                                --------------------+--------------------------+----------------------
+	 *                                         2001.06.30-¦- 2001.07.01  2006.06.30 -¦- 2006.07.01
+	 * </pre>
+	 */
+	@Test
+	public void testGetAdressesFiscalesSandwichCasParticulierDefautsSurAdressesCiviles() throws Exception {
+
+		final long noIndividu = 1;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2001, 7, 1), date(2006, 6, 30));
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, date(2006, 7, 1), null);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, null, date(2006, 6, 30));
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, date(2006, 7, 1), null);
+			}
+		});
+
+		// Crée un habitant sans adresse fiscale surchargée
+		final PersonnePhysique habitant = addHabitant(noIndividu);
+
+		final AdressesFiscalesSandwich sandwich = adresseService.getAdressesFiscalesSandwich(habitant, false);
+		assertNotNull(sandwich);
+
+		// Test du résultat global
+
+		final AdressesFiscalesHisto adresses = sandwich.emballe();
+		assertNotNull(sandwich);
+
+		assertEquals(2, adresses.courrier.size());
+		assertAdresse(null, date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(0));
+		assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, adresses.courrier.get(1));
+
+		assertEquals(3, adresses.domicile.size());
+		assertAdresse(null, date(2001, 6, 30), "Lausanne", SourceType.CIVILE, true, adresses.domicile.get(0));
+		assertAdresse(date(2001, 7, 1), date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, adresses.domicile.get(1));
+		assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, adresses.domicile.get(2));
+
+		assertAdressesEquals(adresses.courrier, adresses.representation);
+		assertAdressesEquals(adresses.domicile, adresses.poursuite);
+
+		// Test des différentes couches
+		{
+			final List<AdresseSandwich.Couche> couches = sandwich.courrier.decortique();
+			assertNotNull(couches);
+			assertEquals(1, couches.size());
+
+			final AdresseSandwich.Couche c0 = couches.get(0);
+			assertNotNull(c0);
+
+			final List<AdresseGenerique> a = c0.getAdresses();
+			assertEquals(2, a.size());
+			assertAdresse(null, date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, a.get(0));
+			assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, a.get(1));
+		}
+
+		{
+			final List<AdresseSandwich.Couche> couches = sandwich.domicile.decortique();
+			assertNotNull(couches);
+			assertEquals(1, couches.size());
+
+			final AdresseSandwich.Couche c0 = couches.get(0);
+			assertNotNull(c0);
+
+			final List<AdresseGenerique> a = c0.getAdresses();
+			assertEquals(3, a.size());
+			assertAdresse(null, date(2001, 6, 30), "Lausanne", SourceType.CIVILE, true, a.get(0)); // <-- défaut en provenance de l'adresse courrier
+			assertAdresse(date(2001, 7, 1), date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, a.get(1));
+			assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, a.get(2));
+		}
 	}
 }

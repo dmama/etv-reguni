@@ -14,9 +14,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationHelper;
@@ -73,7 +71,6 @@ public class AdresseServiceImpl implements AdresseService {
 	private static final int MAX_CALL_DEPTH = 20;
 	private static final int OPTIONALITE_CASE_POSTALE = 1;
 	private static final int OPTIONALITE_COMPLEMENT = 2;
-
 
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
@@ -806,11 +803,14 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException {
 		return getAdressesFiscalHisto(tiers, true, 0, strict);
+	}
+
+	@Override
+	public AdressesFiscalesSandwich getAdressesFiscalesSandwich(Tiers tiers, boolean strict) throws AdresseException {
+		return getAdressesFiscalesSandwich(tiers, true, 0, strict);
 	}
 
 	/**
@@ -826,37 +826,45 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean inclureRepresentation, int callDepth, boolean strict) throws AdresseException {
 
+		final AdressesFiscalesSandwich sandwich = getAdressesFiscalesSandwich(tiers, inclureRepresentation, callDepth, strict);
+		if (sandwich == null) {
+			return null;
+		}
+
+		return sandwich.emballe();
+	}
+
+	private AdressesFiscalesSandwich getAdressesFiscalesSandwich(Tiers tiers, boolean inclureRepresentation, int callDepth, boolean strict) throws AdresseException {
+
 		if (tiers == null) {
 			return null;
 		}
 
-		AdressesFiscalesHisto adresses = new AdressesFiscalesHisto();
+		final AdressesFiscalesSandwich adresses = new AdressesFiscalesSandwich();
 
-		/*
-		 * Récolte des adresses en provenance du host
-		 */
+		// Récolte des adresses en provenance du registre civil/registre PM
 		if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			final AdressesPMHisto adressesPM = getAdressesPMHisto(entreprise);
-			final RegDate debut = adressesPM.getVeryFirstDate();
-			final RegDate fin = adressesPM.getVeryLastDate();
 
-			adresses.courrier = initAdressesPMHisto(entreprise, adressesPM.courriers, debut, fin, adressesPM.sieges);
-			adresses.domicile = initAdressesPMHisto(entreprise, adressesPM.sieges, debut, fin, adressesPM.courriers);
+			final List<AdresseGenerique> courriers = initAdressesPMHisto(entreprise, adressesPM.courriers, adressesPM.sieges);
+			final List<AdresseGenerique> sieges = initAdressesPMHisto(entreprise, adressesPM.sieges, adressesPM.courriers);
 
-			adresses.representation = adresses.courrier;
-			adresses.poursuite = adresses.domicile;
+			adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+			adresses.domicile.addCouche(AdresseCouche.CIVILE, sieges, null, null);
+			adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+			adresses.poursuite.addCouche(AdresseCouche.CIVILE, sieges, null, null);
 		}
 		else {
 			final AdressesCivilesHisto adressesCiviles = getAdressesCivilesHisto(tiers, strict);
-			final RegDate debut = adressesCiviles.getVeryFirstDate();
-			final RegDate fin = adressesCiviles.getVeryLastDate();
 
-			adresses.courrier = initAdressesCivilesHisto(tiers, adressesCiviles.courriers, debut, fin, adressesCiviles.principales, strict);
-			adresses.domicile = initAdressesCivilesHisto(tiers, adressesCiviles.principales, debut, fin, adressesCiviles.courriers, strict);
+			final List<AdresseGenerique> courriers = initAdressesCivilesHisto(tiers, adressesCiviles.courriers, adressesCiviles.principales, strict);
+			final List<AdresseGenerique> principales = initAdressesCivilesHisto(tiers, adressesCiviles.principales, adressesCiviles.courriers, strict);
 
-			adresses.representation = adresses.courrier;
-			adresses.poursuite = adresses.domicile;
+			adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+			adresses.domicile.addCouche(AdresseCouche.CIVILE, principales, null, null);
+			adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+			adresses.poursuite.addCouche(AdresseCouche.CIVILE, principales, null, null);
 		}
 
 		/*
@@ -870,10 +878,10 @@ public class AdresseServiceImpl implements AdresseService {
 
 			if (adressesPrincipal != null) {
 				final AdresseGenerique.Source source = new AdresseGenerique.Source(SourceType.PRINCIPAL, tiers);
-				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, source, true, callDepth + 1, strict);
-				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation, source, true, callDepth + 1, strict);
-				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, source, true, callDepth + 1, strict);
-				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, source, true, callDepth + 1, strict);
+				ajouteCoucheAdressesTiers(tiers, adresses.courrier, AdresseCouche.PRINCIPAL, adressesPrincipal.courrier, source, true, callDepth + 1, strict);
+				ajouteCoucheAdressesTiers(tiers, adresses.representation, AdresseCouche.PRINCIPAL, adressesPrincipal.representation, source, true, callDepth + 1, strict);
+				ajouteCoucheAdressesTiers(tiers, adresses.poursuite, AdresseCouche.PRINCIPAL, adressesPrincipal.poursuite, source, true, callDepth + 1, strict);
+				ajouteCoucheAdressesTiers(tiers, adresses.domicile, AdresseCouche.PRINCIPAL, adressesPrincipal.domicile, source, true, callDepth + 1, strict);
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
@@ -884,59 +892,58 @@ public class AdresseServiceImpl implements AdresseService {
 			if (contribuable != null) {
 				final AdressesFiscalesHisto adressesContribuable = getAdressesFiscalHisto(contribuable, true, callDepth + 1, strict);
 				final AdresseGenerique.Source source = new AdresseGenerique.Source(SourceType.CONTRIBUABLE, contribuable);
-				adresses.courrier = surchargeAdressesHisto(adresses.courrier, adressesContribuable.courrier, source, true);
-				adresses.representation = surchargeAdressesHisto(adresses.representation, adressesContribuable.representation, source, true);
-				adresses.poursuite = surchargeAdressesHisto(adresses.poursuite, adressesContribuable.poursuite, source, true);
-				adresses.domicile = surchargeAdressesHisto(adresses.domicile, adressesContribuable.domicile, source, true);
+				adresses.courrier.addCouche(AdresseCouche.CONTRIBUABLE, adressesContribuable.courrier, source, true);
+				adresses.representation.addCouche(AdresseCouche.CONTRIBUABLE, adressesContribuable.representation, source, true);
+				adresses.poursuite.addCouche(AdresseCouche.CONTRIBUABLE, adressesContribuable.poursuite, source, true);
+				adresses.domicile.addCouche(AdresseCouche.CONTRIBUABLE, adressesContribuable.domicile, source, true);
 			}
 		}
 
-		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
-		appliqueDefautsAdressesFiscalesHisto(adresses);
+		// Applique les défauts sur les adresses issues de la couche civile, de manière à avoir une adresse valide pour chaque type d'adresse
+		adresses.appliqueDefauts(AdresseCouche.DEFAUTS_CIVILES);
 
 		if (inclureRepresentation) {
 			// Si le tiers concerné possède un representant, on surchage avec l'adresse du représentant
 			final List<AdresseGenerique> adressesRepresentant = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.REPRESENTATION, callDepth + 1, strict);
-			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesRepresentant, null, null);
+			adresses.courrier.addCouche(AdresseCouche.REPRESENTANT, adressesRepresentant, null, null);
 
 			// Si le tiers concerné possède un conseil légal, on surchage avec l'adresse du représentant
 			final List<AdresseGenerique> adressesConseil = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.CONSEIL_LEGAL, callDepth + 1, strict);
-			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesConseil, null, null);
-
-			// Si le tiers concerné est sous tutelle, on surchage les adresses courrier avec les adresses représentation du tuteur
-			final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.TUTELLE, callDepth + 1, strict);
-			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesTuteur, null, null);
+			adresses.courrier.addCouche(AdresseCouche.CONSEIL_LEGAL, adressesConseil, null, null);
 
 			// Si le tiers concerné est sous curatelle, on surchage les adresses courrier avec les adresses représentation du curateur
 			final List<AdresseGenerique> adressesCuratelle = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.CURATELLE, callDepth + 1, strict);
-			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesCuratelle, null, null);
+			adresses.courrier.addCouche(AdresseCouche.CURATELLE, adressesCuratelle, null, null);
+
+			// Si le tiers concerné est sous tutelle, on surchage les adresses courrier avec les adresses représentation du tuteur
+			final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.TUTELLE, callDepth + 1, strict);
+			adresses.courrier.addCouche(AdresseCouche.TUTEUR, adressesTuteur, null, null);
 
 			// [UNIREG-1808] Si le tiers concerné possède un représentant avec exécution forcée, on surcharge les adresses de poursuite avec les adresses du représentant
 			final List<AdresseGenerique> adressesRepresentantExecutionForcee = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, callDepth + 1, strict);
-			adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesRepresentantExecutionForcee, null, null);
+			adresses.poursuite.addCouche(AdresseCouche.REPRESENTANT_EXEC_FORCEE, adressesRepresentantExecutionForcee, null, null);
 
 			// [UNIREG-1808] Si le tiers concerné est sous tutelle, on surchage les adresses poursuite avec les adresses de l'autorité tutelaire
 			final List<AdresseGenerique> adressesAutoriteTutelaire = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, callDepth + 1, strict);
-			adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesAutoriteTutelaire, null, null);
+			adresses.poursuite.addCouche(AdresseCouche.TUTEUR, adressesAutoriteTutelaire, null, null);
 
 			// [UNIREG-1808]
-			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
-			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesConseil), null, null); // [UNIREG-3203]
-			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesCuratelle), null, null);
-			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesTuteur), null, null);
+			adresses.poursuiteAutreTiers.addCouche(AdresseCouche.REPRESENTANT_EXEC_FORCEE, adressesRepresentantExecutionForcee, null, null);
+			adresses.poursuiteAutreTiers.addCouche(AdresseCouche.CONSEIL_LEGAL, removeSourceConjoint(adressesConseil), null, null); // [UNIREG-3203]
+			adresses.poursuiteAutreTiers.addCouche(AdresseCouche.CURATELLE, removeSourceConjoint(adressesCuratelle), null, null);
+			adresses.poursuiteAutreTiers.addCouche(AdresseCouche.TUTEUR, removeSourceConjoint(adressesTuteur), null, null);
 		}
 
 		// [UNIREG-3025] les adresses spécifiques sont toujours prioritaires sur les adresses de représentation
 		final AdressesTiersHisto adressesTiers = TiersHelper.getAdressesTiersHisto(tiers);
-		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, null, null, callDepth + 1, strict);
-		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, null, null, callDepth + 1, strict);
-		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, null, null, callDepth + 1, strict);
-		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, null, null, callDepth + 1, strict);
-		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, null, null, callDepth + 1, strict);
+		ajouteCoucheAdressesTiers(tiers, adresses.courrier, AdresseCouche.FISCALE, adressesTiers.courrier, null, null, callDepth + 1, strict);
+		ajouteCoucheAdressesTiers(tiers, adresses.representation, AdresseCouche.FISCALE, adressesTiers.representation, null, null, callDepth + 1, strict);
+		ajouteCoucheAdressesTiers(tiers, adresses.domicile, AdresseCouche.FISCALE, adressesTiers.domicile, null, null, callDepth + 1, strict);
+		ajouteCoucheAdressesTiers(tiers, adresses.poursuite, AdresseCouche.FISCALE, adressesTiers.poursuite, null, null, callDepth + 1, strict);
+		ajouteCoucheAdressesTiers(tiers, adresses.poursuiteAutreTiers, AdresseCouche.FISCALE, adressesTiers.poursuite, null, null, callDepth + 1, strict);
 
-		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
-		appliqueDefautsAdressesFiscalesHisto(adresses);
-
+		// Applique les défauts sur l'ensemble des adresses, de manière à avoir une adresse valide pour chaque type d'adresse
+		adresses.appliqueDefauts(AdresseCouche.DEFAUTS_FISCALES);
 		return adresses;
 	}
 
@@ -957,60 +964,6 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 		}
 		return list;
-	}
-
-	/**
-	 * Applique les règles de gestion des adresses par défaut sur les adresses fiscales historiques spécifiées.
-	 * <p>
-	 * Les règles sont les suivantes:
-	 * <ul>
-	 * <li>Pour les  adresses <i>courrier</i>, les défauts sont : <i>domicile</i>, <i>représentation</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>domicile</i>, les défauts sont : <i>poursuite</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * <li>Pour les  adresses <i>représentation</i>, les défauts sont : <i>courrier</i>, <i>domicile</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>poursuite</i>, les défauts sont : <i>domicile</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * </ul>
-	 *
-	 * @param adresses les adresses fiscales
-	 */
-	private void appliqueDefautsAdressesFiscalesHisto(AdressesFiscalesHisto adresses) {
-
-		adresses.courrier = appliqueDefautsAdressesFiscalesHisto(adresses.courrier, adresses.domicile);
-		adresses.courrier = appliqueDefautsAdressesFiscalesHisto(adresses.courrier, adresses.representation);
-		adresses.courrier = appliqueDefautsAdressesFiscalesHisto(adresses.courrier, adresses.poursuite);
-
-		adresses.domicile = appliqueDefautsAdressesFiscalesHisto(adresses.domicile, adresses.poursuite);
-		adresses.domicile = appliqueDefautsAdressesFiscalesHisto(adresses.domicile, adresses.courrier);
-		adresses.domicile = appliqueDefautsAdressesFiscalesHisto(adresses.domicile, adresses.representation);
-
-		adresses.representation = appliqueDefautsAdressesFiscalesHisto(adresses.representation, adresses.courrier);
-		adresses.representation = appliqueDefautsAdressesFiscalesHisto(adresses.representation, adresses.domicile);
-		adresses.representation = appliqueDefautsAdressesFiscalesHisto(adresses.representation, adresses.poursuite);
-
-		adresses.poursuite = appliqueDefautsAdressesFiscalesHisto(adresses.poursuite, adresses.domicile);
-		adresses.poursuite = appliqueDefautsAdressesFiscalesHisto(adresses.poursuite, adresses.courrier);
-		adresses.poursuite = appliqueDefautsAdressesFiscalesHisto(adresses.poursuite, adresses.representation);
-	}
-
-	private List<AdresseGenerique> appliqueDefautsAdressesFiscalesHisto(List<AdresseGenerique> adresses, List<AdresseGenerique> defaults) {
-		if (defaults != null && defaults.size() > 0) {
-			List<AdresseGenerique> d = new ArrayList<AdresseGenerique>();
-			for (AdresseGenerique a : defaults) {
-				if (a.isAnnule()) {
-					// on ne prend pas en compte les adresses annulées comme défaut
-					continue;
-				}
-				if (a.getSource().getType().isRepresentation()) {
-					// [UNIREG-3025] on ne prend pas en compte les adresse de représentation comme défaut
-					continue;
-				}
-				// met le flag 'defaut' à vrai
-				d.add(new AdresseGeneriqueAdapter(a, null, null, true));
-			}
-			return AdresseMixer.override(d, adresses, null, null);
-		}
-		else {
-			return adresses;
-		}
 	}
 
 	/**
@@ -1622,66 +1575,6 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Complète les adresses de base avec les adresses civiles spécifiées entre la date de début et de celle de fin. Cette méthode part du principe qu'il n'existe aucune adresse de base dans la plage
-	 * [debut; fin].
-	 *
-	 * @param tiers          le tiers qui possède les adresses civiles
-	 * @param adressesBase   les adresses de base sur lesquelles seront ajoutées les adresses civiles
-	 * @param debut          la date de début de la plage à compléter
-	 * @param fin            la date de fin (comprise) de la plage à compléter
-	 * @param adresseCiviles les adresses civiles utilisées pour compléter les adresses de base
-	 * @param strict         si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
-	 * @throws AdresseException en cas de problème dans le traitement
-	 */
-	private void fillAdressesCivilesSlice(Tiers tiers, List<AdresseGenerique> adressesBase, RegDate debut, RegDate fin, List<Adresse> adresseCiviles, boolean strict) throws AdresseException {
-		for (Adresse adresse : adresseCiviles) {
-			final RegDate adresseDebut = adresse.getDateDebut();
-			final RegDate adresseFin = adresse.getDateFin();
-
-			if ((adresseDebut == null || fin == null || adresseDebut.isBeforeOrEqual(fin))
-					&& (adresseFin == null || debut == null || adresseFin.isAfterOrEqual(debut))) {
-				RegDate debutValidite = RegDateHelper.maximum(adresseDebut, debut, NullDateBehavior.EARLIEST);
-				RegDate finValidite = RegDateHelper.minimum(adresseFin, fin, NullDateBehavior.LATEST);
-				try {
-					final AdresseCivileAdapter a = new AdresseCivileAdapter(adresse, tiers, debutValidite, finValidite, true, serviceInfra);
-					adressesBase.add(a);
-				}
-				catch (DonneesCivilesException e) {
-					if (strict) {
-						throw new AdresseDataException(e);
-					}
-					// en mode non-strict, on ignore simplement l'adresse en erreur
-				}
-			}
-		}
-	}
-
-	/**
-	 * Complète les adresses de base avec les adresses PM spécifiées entre la date de début et de celle de fin. Cette méthode part du principe qu'il n'existe aucune adresse de base dans la plage [debut;
-	 * fin].
-	 *
-	 * @param entreprise   l'entreprise qui possède les adresses PM
-	 * @param adressesBase les adresses de base sur lesquelles seront ajoutées les adresses PM
-	 * @param debut        la date de début de la plage à compléter
-	 * @param fin          la date de fin (comprise) de la plage à compléter
-	 * @param adressePM    les adresses PM utilisées pour compléter les adresses de base
-	 */
-	private void fillAdressesPMSlice(Entreprise entreprise, List<AdresseGenerique> adressesBase, RegDate debut, RegDate fin, List<AdresseEntreprise> adressePM) {
-		for (AdresseEntreprise adresse : adressePM) {
-			final RegDate adresseDebut = adresse.getDateDebutValidite();
-			final RegDate adresseFin = adresse.getDateFinValidite();
-
-			if ((adresseDebut == null || fin == null || adresseDebut.isBeforeOrEqual(fin))
-					&& (adresseFin == null || debut == null || adresseFin.isAfterOrEqual(debut))) {
-				RegDate debutValidite = RegDateHelper.maximum(adresseDebut, debut, NullDateBehavior.EARLIEST);
-				RegDate finValidite = RegDateHelper.minimum(adresseFin, fin, NullDateBehavior.LATEST);
-				final AdresseGenerique.Source source = new AdresseGenerique.Source(SourceType.PM, entreprise);
-				adressesBase.add(new AdressePMAdapter(adresse, debutValidite, finValidite, source, true));
-			}
-		}
-	}
-
-	/**
 	 * Converti les adresses civiles spécifiées en adresses fiscales.
 	 * <p/>
 	 * La régle de mapping entre les adresses civiles et fiscales est :
@@ -1697,27 +1590,37 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Tutelle         (non-mappée)
 	 * </pre>
 	 *
-	 *
 	 * @param tiers le tiers qui possède les adresses civiles
 	 * @param adressesCiviles        les adresses civiles de base
-	 * @param dateDebutHisto         la date de début de la plage à convertir
-	 * @param dateFinHisto           la date de fin (comprise) de la plage à convertir
 	 * @param adressesCivilesDefault les adresses civiles par défaut utilisées pour boucher les trous dans les adresses civiles de base
 	 * @param strict                 si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return les adresses génériques qui représentent les adresses civiles.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> initAdressesCivilesHisto(Tiers tiers, List<Adresse> adressesCiviles, RegDate dateDebutHisto, RegDate dateFinHisto, List<Adresse> adressesCivilesDefault,
-	                                                        boolean strict) throws AdresseException {
+	private List<AdresseGenerique> initAdressesCivilesHisto(Tiers tiers, List<Adresse> adressesCiviles, List<Adresse> adressesCivilesDefault, boolean strict) throws AdresseException {
 
-		/*
-		 * Adapte la liste des adresses civiles
-		 */
+		// Adapte la liste des adresses civiles
+		final List<AdresseGenerique> adresses = adapteAdressesCiviles(tiers, adressesCiviles, false, strict);
+		final List<AdresseGenerique> defauts = adapteAdressesCiviles(tiers, adressesCivilesDefault, true, strict);
+
+		// Détermine les trous éventuels et construit la liste des adresses pour les boucher
+		final List<AdresseGenerique> boucheTrous = AdresseMixer.determineBoucheTrous(adresses, defauts);
+
+		// Bouche tous les éventuels trous avec les adresses par défaut
+		if (boucheTrous != null) {
+			adresses.addAll(boucheTrous);
+			Collections.sort(adresses, new DateRangeComparator<AdresseGenerique>());
+		}
+
+		return adresses;
+	}
+
+	private List<AdresseGenerique> adapteAdressesCiviles(Tiers tiers, List<Adresse> adressesCiviles, boolean isDefault, boolean strict) throws AdresseDataException {
 		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
 
 		for (Adresse adresse : adressesCiviles) {
 			try {
-				adresses.add(new AdresseCivileAdapter(adresse, tiers, false, serviceInfra));
+				adresses.add(new AdresseCivileAdapter(adresse, tiers, isDefault, serviceInfra));
 			}
 			catch (DonneesCivilesException e) {
 				if (strict) {
@@ -1726,41 +1629,6 @@ public class AdresseServiceImpl implements AdresseService {
 				// en mode non-strict, on ignore simplement l'adresse en erreur
 			}
 		}
-
-
-		/*
-		 * Bouche tous les éventuels trous avec les adresses par défaut
-		 */
-		List<AdresseGenerique> defaults = new ArrayList<AdresseGenerique>();
-
-		if (adresses.size() > 0) {
-			RegDate courante = dateDebutHisto;
-			for (AdresseGenerique adresse : adresses) {
-
-				final RegDate debut = adresse.getDateDebut();
-				final boolean trouDetecte = (courante == null && debut != null)
-						|| (courante != null && debut != null && courante.isBefore(debut));
-
-				if (trouDetecte) {
-					fillAdressesCivilesSlice(tiers, defaults, courante, debut, adressesCivilesDefault, strict);
-				}
-
-				final RegDate fin = adresse.getDateFin();
-				courante = (fin == null ? null : fin.getOneDayAfter());
-			}
-			if ((dateFinHisto == null && courante != null) || (dateFinHisto != null && courante != null && courante.isBefore(dateFinHisto))) {
-				fillAdressesCivilesSlice(tiers, defaults, courante, dateFinHisto, adressesCivilesDefault, strict);
-			}
-		}
-		else {
-			fillAdressesCivilesSlice(tiers, defaults, dateDebutHisto, dateFinHisto, adressesCivilesDefault, strict);
-		}
-
-		if (defaults.size() > 0) {
-			adresses.addAll(defaults);
-			Collections.sort(adresses, new DateRangeComparator<AdresseGenerique>());
-		}
-
 		return adresses;
 	}
 
@@ -1779,79 +1647,55 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Facturation     (non-mappée)
 	 * </pre>
 	 *
-	 *
 	 * @param entreprise l'entreprise qui possède les adresses PM
 	 * @param adressesPM        les adresses PM de base
-	 * @param dateDebutHisto    la date de début de la plage à convertir
-	 * @param dateFinHisto      la date de fin (comprise) de la plage à convertir
 	 * @param adressesPMDefault les adresses PM par défaut utilisées pour boucher les trous dans les adresses PM de base
 	 * @return les adresses génériques qui représentent les adresses PM.
 	 */
-	private List<AdresseGenerique> initAdressesPMHisto(Entreprise entreprise, List<AdresseEntreprise> adressesPM, RegDate dateDebutHisto, RegDate dateFinHisto,
-	                                                   List<AdresseEntreprise> adressesPMDefault) {
+	private List<AdresseGenerique> initAdressesPMHisto(Entreprise entreprise, List<AdresseEntreprise> adressesPM, List<AdresseEntreprise> adressesPMDefault) {
 
-		/*
-		 * Adapte la liste des adresses civiles
-		 */
-		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
-		for (AdresseEntreprise adresse : adressesPM) {
-			adresses.add(new AdressePMAdapter(adresse, entreprise, false));
-		}
+		// Adapte la liste des adresses civiles
+		List<AdresseGenerique> adresses = adapteAdressesPM(entreprise, adressesPM, false);
+		List<AdresseGenerique> defauts = adapteAdressesPM(entreprise, adressesPMDefault, true);
 
-		/*
-		 * Bouche tous les éventuels trous avec les adresses par défaut
-		 */
-		List<AdresseGenerique> defaults = new ArrayList<AdresseGenerique>();
+		// Détermine les trous éventuels et construit la liste des adresses pour les boucher
+		final List<AdresseGenerique> boucheTrous = AdresseMixer.determineBoucheTrous(adresses, defauts);
 
-		if (adresses.size() > 0) {
-			RegDate courante = dateDebutHisto;
-			for (AdresseGenerique adresse : adresses) {
-
-				final RegDate debut = adresse.getDateDebut();
-				final boolean trouDetecte = (courante == null && debut != null)
-						|| (courante != null && debut != null && courante.isBefore(debut));
-
-				if (trouDetecte) {
-					fillAdressesPMSlice(entreprise, defaults, courante, debut, adressesPMDefault);
-				}
-
-				final RegDate fin = adresse.getDateFin();
-				courante = (fin == null ? null : fin.getOneDayAfter());
-			}
-			if ((dateFinHisto == null && courante != null) || (dateFinHisto != null && courante != null && courante.isBefore(dateFinHisto))) {
-				fillAdressesPMSlice(entreprise, defaults, courante, dateFinHisto, adressesPMDefault);
-			}
-		}
-		else {
-			fillAdressesPMSlice(entreprise, defaults, dateDebutHisto, dateFinHisto, adressesPMDefault);
-		}
-
-		if (defaults.size() > 0) {
-			adresses.addAll(defaults);
+		// Bouche tous les éventuels trous avec les adresses par défaut
+		if (boucheTrous != null) {
+			adresses.addAll(boucheTrous);
 			Collections.sort(adresses, new DateRangeComparator<AdresseGenerique>());
 		}
 
 		return adresses;
 	}
 
+	private List<AdresseGenerique> adapteAdressesPM(Entreprise entreprise, List<AdresseEntreprise> adressesPM, boolean isDefault) {
+		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
+		for (AdresseEntreprise adresse : adressesPM) {
+			adresses.add(new AdressePMAdapter(adresse, entreprise, isDefault));
+		}
+		return adresses;
+	}
+
 	/**
-	 * Surcharge la liste d'adresses spécifiées avec une liste d'adresse de tiers.
+	 * Ajoute une couche au sandwich des adresses.
 	 *
 	 * @param tiers               un tiers dont on veut calculer les adresses
 	 * @param adresses            les adresses génériques de base
+	 * @param nomCouche           le nom de la couche du sandwich
 	 * @param adressesSurchargees une liste d'adresses tiers à utiliser comme surcharge sur les adresses de base
 	 * @param sourceSurcharge     valeur de surcharge pour les adresses surchargées, ou <b>null</b> pour garder la source des adresses originelles.
 	 * @param defaultSurcharge    valeur de surcharge pour les adresses surchargées, ou <b>null</b> pour garder le défaut des adresses originelles.
 	 * @param callDepth           paramètre technique pour éviter les récursions infinies
 	 * @param strict              si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
-	 * @return les adresses génériques résultant de la surcharge des adresses de base avec les adresses de surcharge.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> surchargeAdressesTiersHisto(Tiers tiers, List<AdresseGenerique> adresses, List<AdresseTiers> adressesSurchargees, AdresseGenerique.Source sourceSurcharge, Boolean defaultSurcharge,
-	                                                           int callDepth, boolean strict) throws AdresseException {
+	private void ajouteCoucheAdressesTiers(Tiers tiers, AdresseSandwich adresses, AdresseCouche nomCouche, List<AdresseTiers> adressesSurchargees, AdresseGenerique.Source sourceSurcharge,
+	                                       Boolean defaultSurcharge, int callDepth, boolean strict) throws AdresseException {
 
 		if (adressesSurchargees == null || adressesSurchargees.size() == 0) {
-			return adresses;
+			return;
 		}
 
 		List<AdresseGenerique> adresseSurchargeesGeneriques = new ArrayList<AdresseGenerique>();
@@ -1859,21 +1703,7 @@ public class AdresseServiceImpl implements AdresseService {
 			adresseSurchargeesGeneriques.add(resolveAdresseSurchargee(tiers, adresse, callDepth + 1, strict));
 		}
 
-		return AdresseMixer.override(adresses, adresseSurchargeesGeneriques, sourceSurcharge, defaultSurcharge);
-	}
-
-	/**
-	 * Surcharge la liste d'adresses spécifiées avec une autre liste d'adresse.
-	 *
-	 * @param adresses            les adresses génériques de base
-	 * @param adressesSurchargees une liste d'adresses génériques à utiliser comme surcharge sur les adresses de base
-	 * @param source              la source des adresses de surcharge
-	 * @param isDefault           <b>vrai</b> si les adresses de surcharge sont des adresses par défaut, <b>faux</b> si ce n'est pas le cas et <b>null</b> si cette information est inconnue.
-	 * @return les adresses génériques résultant de la surcharge des adresses de base avec les adresses de surcharge.
-	 */
-	private List<AdresseGenerique> surchargeAdressesHisto(List<AdresseGenerique> adresses, List<AdresseGenerique> adressesSurchargees,
-	                                                      AdresseGenerique.Source source, Boolean isDefault) {
-		return AdresseMixer.override(adresses, adressesSurchargees, source, isDefault);
+		adresses.addCouche(nomCouche, adresseSurchargeesGeneriques, sourceSurcharge, defaultSurcharge);
 	}
 
 	/**

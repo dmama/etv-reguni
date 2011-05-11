@@ -9,6 +9,12 @@
 			<unireg:raccourciModifier link="../adresses/edit.do?id=${command.tiers.numero}" tooltip="Modifier les adresses" display="label.bouton.modifier"/>
 		</c:if>	
 		</td>
+
+		<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+			<td id="timeline" align="right">
+				<a href='<c:url value="/adresses/timeline.do?id=" /><c:out value="${command.tiers.numero}" />'><fmt:message key="title.vue.chronologique"/></a>
+			</td>
+		</authz:authorize>
 	</tr>
 </table>
 </c:if>
