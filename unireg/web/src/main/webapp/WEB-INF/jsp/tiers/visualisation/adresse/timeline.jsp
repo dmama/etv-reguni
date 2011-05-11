@@ -97,9 +97,7 @@
 											<c:set var="range" value="${cell.range}" />
 											<td class="<c:out value="${fn:toLowerCase(range.source.type)}" />" rowspan="<c:out value="${cell.longueurAffichage}" />">
 												<span class="staticTip" id="range-${cellCounter}">
-													<c:out value="${range.rue}"/>
-													<br/>
-													<c:out value="${range.localiteComplete}"/>
+													<c:out value="${range.rue}"/> <c:out value="${range.numero}"/><br/><c:out value="${range.numeroPostal}"/> <c:out value="${range.localiteComplete}"/>
 												</span>
 												<div id="range-${cellCounter}-tooltip" style="display:none;">
 													Id : <b><c:out value="${range.id}"/></b><br/>
