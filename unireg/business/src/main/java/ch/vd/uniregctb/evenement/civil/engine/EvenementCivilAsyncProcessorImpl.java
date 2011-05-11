@@ -12,6 +12,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,6 +23,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
@@ -28,7 +32,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 /**
  * Processeur asynchrone de traitement des événements civils
  */
-public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProcessor, InitializingBean, DisposableBean {
+public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProcessor, InitializingBean, DisposableBean, ApplicationListener {
 
 	public static final Logger LOGGER = Logger.getLogger(EvenementCivilAsyncProcessorImpl.class);
 
@@ -65,7 +69,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 	/**
 	 * Moteur de traitement des événements civils qui sortent de la queue
 	 */
-	private QueueListener queueListener;
+	private QueueListener queueListener = null;
 
 	/**
 	 * Délai, en secondes, de latence pour s'assurer que les événements dans la queue
@@ -243,7 +247,8 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 		// deux choses : on récupère au démarrage tous les événements "a traiter" de la base de données
 		// et on les programme pour un re-traitement, puis on démarre le service qui écoute sur la queue
-		// et qui traite effectivement les événements
+		// et qui traite effectivement les événements (en fait, ce démarrage sera fait une fois que tout
+		// le contexte Spring aura été chargé, voir {@link #onApplicationEvent()})
 		if (fetchAwaitingEventsOnStart) {
 
 			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
@@ -277,10 +282,6 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 				}
 			});
 		}
-
-		// on peut maintenant démarrer le listener de la queue
-		queueListener = new QueueListener();
-		queueListener.start();
 	}
 
 	public void destroy() throws Exception {
@@ -289,9 +290,25 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		dying = true;
 
 		// le listener aussi
-		queueListener.requestStop();
-		queueListener.join();
-		queueListener = null;
+		if (queueListener != null) {
+			queueListener.requestStop();
+			queueListener.join();
+			queueListener = null;
+		}
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (queueListener == null && event instanceof ContextRefreshedEvent) {
+			// on peut maintenant démarrer le listener de la queue
+			startQueueListener();
+		}
+	}
+
+	protected void startQueueListener() {
+		Assert.isNull(queueListener);
+		queueListener = new QueueListener();
+		queueListener.start();
 	}
 
 	public void postEvenementCivil(long evtId) {
