@@ -234,11 +234,16 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Connection con = dataSource.getConnection();
+				final Connection con = dataSource.getConnection();
 				try {
 
-					Statement stat = con.createStatement();
-					stat.execute("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = " + ids.jean);
+					final Statement stat = con.createStatement();
+					try {
+						stat.execute("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = " + ids.jean);
+					}
+					finally {
+						stat.close();
+					}
 				}
 				finally {
 					con.close();

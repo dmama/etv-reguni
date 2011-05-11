@@ -49,13 +49,23 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 			con = rawDataSource.getConnection();
 
 			for (String d : drops) {
-				PreparedStatement st = con.prepareStatement(d);
-				st.execute();
+				final PreparedStatement st = con.prepareStatement(d);
+				try {
+					st.execute();
+				}
+				finally {
+					st.close();
+				}
 			}
 
 			for (String c : creates) {
-				PreparedStatement st = con.prepareStatement(c);
-				st.execute();
+				final PreparedStatement st = con.prepareStatement(c);
+				try {
+					st.execute();
+				}
+				finally {
+					st.close();
+				}
 			}
 		}
 		finally {
