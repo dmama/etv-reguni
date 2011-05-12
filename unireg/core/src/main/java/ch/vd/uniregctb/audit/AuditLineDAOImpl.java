@@ -162,8 +162,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 					stat.setObject(6, line.getMessage(), Types.VARCHAR);
 					stat.setTimestamp(7, now);
 					stat.setObject(8, AuthenticationHelper.getCurrentPrincipal(), Types.VARCHAR);
-
-					stat.execute();
+					stat.executeUpdate();
 				}
 				finally {
 					stat.close();
