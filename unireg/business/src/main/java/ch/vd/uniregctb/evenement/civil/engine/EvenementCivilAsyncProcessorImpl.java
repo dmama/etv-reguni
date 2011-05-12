@@ -10,11 +10,8 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,7 +29,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 /**
  * Processeur asynchrone de traitement des événements civils
  */
-public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProcessor, InitializingBean, DisposableBean, ApplicationListener {
+public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProcessor, InitializingBean, SmartLifecycle {
 
 	public static final Logger LOGGER = Logger.getLogger(EvenementCivilAsyncProcessorImpl.class);
 
@@ -284,31 +281,28 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		}
 	}
 
-	public void destroy() throws Exception {
+	private void startQueueListener() {
+		Assert.isNull(queueListener);
+		queueListener = new QueueListener();
+		queueListener.start();
+	}
 
+	private void doStop() {
 		// c'est la fin... on arrête tout!
 		dying = true;
 
 		// le listener aussi
 		if (queueListener != null) {
 			queueListener.requestStop();
-			queueListener.join();
+			try {
+				queueListener.join();
+			}
+			catch (InterruptedException e) {
+				// on aura essayé...
+				LOGGER.warn("Attente le l'arrêt de l'écoute sur la queue des événements civils interrompue", e);
+			}
 			queueListener = null;
 		}
-	}
-
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (queueListener == null && event instanceof ContextRefreshedEvent) {
-			// on peut maintenant démarrer le listener de la queue
-			startQueueListener();
-		}
-	}
-
-	protected void startQueueListener() {
-		Assert.isNull(queueListener);
-		queueListener = new QueueListener();
-		queueListener.start();
 	}
 
 	public void postEvenementCivil(long evtId) {
@@ -362,5 +356,38 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Tous les événements civils ont apparemment été traités");
 		}
+	}
+
+	@Override
+	public boolean isAutoStartup() {
+		return true;
+	}
+
+	@Override
+	public void stop(Runnable callback) {
+		doStop();
+		callback.run();
+	}
+
+	@Override
+	public void start() {
+		if (queueListener == null) {
+			startQueueListener();
+		}
+	}
+
+	@Override
+	public void stop() {
+		doStop();
+	}
+
+	@Override
+	public boolean isRunning() {
+		return queueListener != null && queueListener.isAlive();
+	}
+
+	@Override
+	public int getPhase() {
+		return Integer.MAX_VALUE;   // as late as possible during starting process
 	}
 }

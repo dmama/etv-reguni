@@ -52,7 +52,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	@Override
 	public void onTearDown() throws Exception {
 		if (asyncProcessor != null) {
-			asyncProcessor.destroy();
+			asyncProcessor.stop();
 			asyncProcessor = null;
 		}
 
@@ -74,7 +74,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		asyncProcessor.setTransactionManager(transactionManager);
 		asyncProcessor.setFetchAwaitingEventsOnStart(false);
 		asyncProcessor.afterPropertiesSet();
-		asyncProcessor.startQueueListener();
+		asyncProcessor.start();
 	}
 
 	@Test(timeout=10000)
