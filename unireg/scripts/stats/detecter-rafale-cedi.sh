@@ -4,23 +4,15 @@
 
 FILE="$1"
 if [ -z "$FILE" ]; then
-	echo "Syntaxe : $(basename "$0") ws-access.log" >&2
+	echo "Syntaxe : $(basename "$0") ws-access.log toto@vd.ch [titi@vd.ch ...]" >&2
 	exit 1
 elif [ ! -r "$FILE" ]; then
 	echo "Le fichier '$FILE' n'est pas accessible en lecture!" >&2
 	exit 1
 fi
 
-# si la méthode est directement appelée en ligne de commande (avec un tty en sortie), on n'encode pas particulièrement
-# le flux en sortie ; en revanche, si le flux de sortie n'est pas un tty (appel depuis cron), on encode en ISO-8859-1
-# pour que le mail soit bien interprété par Notes...
-function encode_output() {
-        if [ -t 1 ]; then
-                cat -
-        else    
-                iconv -t iso88591
-        fi
-}
+# seuls les adresses mails sont maintenant dans "$@"
+shift
 
 function read_file() {
 	if [[ "$1" =~ \.lzma$ ]]; then
@@ -43,7 +35,7 @@ TS_SEUIL=$(date +"%Y%m%d%H%M%S" --date "$PERIODE_MINUTES minutes ago")
 ANALYSIS=$(read_file "$FILE" | grep "\[cedi\]" | grep "QuittancerDeclaration" | filter_timestamp $TS_SEUIL | sed -e 's/QuittanceDeclarationDemande/\n/g' | grep "DeclarationImpotOrdinaireKey" | sed -e 's/[^0-9 ]\+//g' | awk '{ print $1 "-" $2 "-" $3; }' | sort | uniq -c | awk '$1 > 49 { print $0; }')
 
 # si la variable est vide, il n'y a plus rien à faire
-if [ -n "$ANALYSIS" ]; then
+MSG=$(if [ -n "$ANALYSIS" ]; then
 
 	echo "Ceci est un message automatique..."
 	echo
@@ -55,4 +47,12 @@ if [ -n "$ANALYSIS" ]; then
 	echo
 	echo "Votre registre fiscal."
 
-fi | encode_output
+fi)
+
+if [ -n "$MSG" ]; then
+	if [ -z "$@" ]; then
+		echo "$MSG"
+	else
+		echo "$MSG" | mutt -s "Alerte de quittancement de DI" -- "$@"
+	fi
+fi
