@@ -231,8 +231,8 @@ public class AutoCompleteInfraController extends JsonController {
 			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(Arrays.asList(EnumTypeCollectivite.SIGLE_JPAIX));
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
-					if (StringComparator.toLowerCaseWithoutAccent(c.getNomCourt()).startsWith(term)) {
-						final String nomComplet = c.getNomComplet1() + " " + c.getNomComplet2();
+					final String nomComplet = String.format("%s %s", c.getNomComplet1(), c.getNomComplet2());
+					if (StringComparator.toLowerCaseWithoutAccent(nomComplet).startsWith(term)) {
 						list.add(new Item(nomComplet, nomComplet, String.valueOf(c.getNoColAdm())));
 					}
 				}
