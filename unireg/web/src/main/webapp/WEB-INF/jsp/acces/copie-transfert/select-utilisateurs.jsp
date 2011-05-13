@@ -19,7 +19,7 @@
 							<form:hidden path="numeroUtilisateurReference" id="numeroUtilisateurReference"  />
 							<script>
 								$(function() {
-									autocomplete_security('user', '#utilisateurReference', function(item) {
+									autocomplete_security('user', '#utilisateurReference', false, function(item) {
 										if (item) {
 											$('#numeroUtilisateurReference').val(item.id2); // le numéro technique
 										}
@@ -42,7 +42,7 @@
 							<form:hidden path="numeroUtilisateurDestination" id="numeroUtilisateurDestination"  />
 							<script>
 								$(function() {
-									autocomplete_security('user', '#utilisateurDestination', function(item) {
+									autocomplete_security('user', '#utilisateurDestination', false, function(item) {
 										if (item) {
 											$('#numeroUtilisateurDestination').val(item.id2); // le numéro technique
 										}
