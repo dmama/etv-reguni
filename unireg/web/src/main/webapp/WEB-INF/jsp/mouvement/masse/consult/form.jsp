@@ -57,16 +57,8 @@
             <form:hidden path="noCollAdmDestinataire" id="noCollAdmDestinataire"  />
 			<script>
 				$(function() {
-					autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataire', function(item) {
-						if (item) {
-							$('#noCollAdmDestinataire').val(item.id1); // le numéro de collectivité
-							$('#collAdmDestinataire').removeClass('error');
-						}
-						else {
-							// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
-							$('#collAdmDestinataire').addClass('error');
-							$('#noCollAdmDestinataire').val(null);
-						}
+					autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataire', true, function(item) {
+						$('#noCollAdmDestinataire').val(item ? item.id1 : null); // le numéro de collectivité
 					});
 				});
 			</script>
@@ -77,7 +69,7 @@
             <form:hidden path="noIndividuDestinataire" id="noIndividuDestinataire"  />
 			<script>
 				$(function() {
-					autocomplete_security('user', '#individuDestinataire', function(item) {
+					autocomplete_security('user', '#individuDestinataire', false, function(item) {
 						if (item) {
 							$('#noIndividuDestinataire').val(item.id2); // le numéro technique
 						}
@@ -114,7 +106,7 @@
             <form:hidden path="noIndividuReception" id="noIndividuReception"  />
 			<script>
 				$(function() {
-					autocomplete_security('user', '#individuReception', function(item) {
+					autocomplete_security('user', '#individuReception', false, function(item) {
 						if (item) {
 							$('#noIndividuReception').val(item.id2); // le numéro technique
 						}

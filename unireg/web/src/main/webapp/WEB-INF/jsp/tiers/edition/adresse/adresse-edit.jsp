@@ -109,15 +109,12 @@
 								<form:hidden path="numCommune" id="numCommune"  />
 								<script>
 									$(function() {
-										autocomplete_infra('localite', '#localiteSuisse', function(item) {
+										autocomplete_infra('localite', '#localiteSuisse', true, function(item) {
 											if (item) {
 												$('#numeroOrdrePoste').val(item.id1);
 												$('#numCommune').val(item.id2);
-												$('#localiteSuisse').removeClass('error');
 											}
 											else {
-												// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
-												$('#localiteSuisse').addClass('error');
 												$('#numeroOrdrePoste').val(null);
 												$('#numCommune').val(null);
 											}
@@ -125,7 +122,7 @@
 											$('#rue').val('');
 
 											// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence
-											autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', function(i) {
+											autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', false, function(i) {
 												if (i) {
 													$('#numeroRue').val(i.id1);
 													$('#numeroOrdrePoste').val(i.id2);
@@ -168,7 +165,7 @@
 								<form:errors path="paysNpa" cssClass="error"/>
 								<script>
 									$(function() {
-										autocomplete_infra('etatOuTerritoire', '#pays', function(item) {
+										autocomplete_infra('etatOuTerritoire', '#pays', false, function(item) {
 											$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
 										});
 									});
@@ -183,7 +180,7 @@
 							<form:hidden path="numeroRue" id="numeroRue"/>
 							<script>
 								$(function() {
-									autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', function(i) {
+									autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', false, function(i) {
 										if (i) {
 											$('#numeroRue').val(i.id1);
 											$('#numeroOrdrePoste').val(i.id2);

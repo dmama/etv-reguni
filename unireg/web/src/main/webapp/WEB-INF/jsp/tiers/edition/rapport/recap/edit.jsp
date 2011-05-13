@@ -67,16 +67,8 @@
 						<form:hidden path="autoriteTutelaireId" id="autoriteTutelaireId" />
 						<script>
 							$(function() {
-								autocomplete_infra('justicePaix', '#nomAutoriteTutelaire', function(item) {
-									if (item) {
-										$('#autoriteTutelaireId').val(item.id1);
-										$('#nomAutoriteTutelaire').removeClass('error');
-									}
-									else {
-										// [SIFISC-832] la valeur saisie est inconnue : on le signal en changeant la couleur du champs
-										$('#nomAutoriteTutelaire').addClass('error');
-										$('#autoriteTutelaireId').val(null);
-									}
+								autocomplete_infra('justicePaix', '#nomAutoriteTutelaire', true, function(item) {
+									$('#autoriteTutelaireId').val(item ? item.id1 : null);
 								});
 							});
 						</script>

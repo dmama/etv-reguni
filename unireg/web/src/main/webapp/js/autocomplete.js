@@ -3,10 +3,11 @@
  *
  * @param category    		la catégorie de données utilisées comme autocompletion. Voir la classe java AutoCompleteInfraController pour les catégories supportées.
  * @param input     		le champ de saisie texte (ou son id) sur lequel l'autocompletion sera effective
+ * @param validateSelection	active le validation de la selection, qui devient rouge si le texte saisi ne correspond à aucune valeur connue ([SIFISC-832])
  * @param on_change(item)   une function callback (optionnelle) appelée lorsqu'une valeur a été choisie par l'utilisateur
  */
-function autocomplete_infra(category, input, on_change) {
-	autocomplete("/autocomplete/infra.do?category=" + category, input, on_change);
+function autocomplete_infra(category, input, validateSelection, on_change) {
+	autocomplete("/autocomplete/infra.do?category=" + category, input, validateSelection, on_change);
 }
 
 /**
@@ -14,10 +15,11 @@ function autocomplete_infra(category, input, on_change) {
  *
  * @param category    		la catégorie de données utilisées comme autocompletion. Voir la classe java AutoCompleteSecurityController pour les catégories supportées.
  * @param input     		le champ de saisie texte (ou son id) sur lequel l'autocompletion sera effective
+ * @param validateSelection	active le validation de la selection, qui devient rouge si le texte saisi ne correspond à aucune valeur connue ([SIFISC-832])
  * @param on_change(item)   une function callback (optionnelle) appelée lorsqu'une valeur a été choisie par l'utilisateur
  */
-function autocomplete_security(category, input, on_change) {
-	autocomplete("/autocomplete/security.do?category=" + category, input, on_change);
+function autocomplete_security(category, input, validateSelection, on_change) {
+	autocomplete("/autocomplete/security.do?category=" + category, input, validateSelection, on_change);
 }
 
 /**
@@ -25,9 +27,10 @@ function autocomplete_security(category, input, on_change) {
  *
  * @param url               l'url d'accès à la source des données d'autocompletion,
  * @param input     		le champ de saisie texte (ou son id) sur lequel l'autocompletion sera effective
+ * @param validateSelection	active le validation de la selection, qui devient rouge si le texte saisi ne correspond à aucune valeur connue ([SIFISC-832])
  * @param on_change(item)   une function callback (optionnelle) appelée lorsqu'une valeur a été choisie par l'utilisateur
  */
-function autocomplete(url, input, on_change) {
+function autocomplete(url, input, validateSelection, on_change) {
 
 	var input = $(input);
 
@@ -37,6 +40,9 @@ function autocomplete(url, input, on_change) {
 	input.autocomplete({
 		source: getContextPath() + url,
 		open: function(event, ui) {
+			if (validateSelection) {
+				input.removeClass('error');
+			}
 			selected = null;
 			is_open = true;
 		},
@@ -52,6 +58,9 @@ function autocomplete(url, input, on_change) {
 		},
 		close: function(event, ui) {
 			is_open = false;
+			if (validateSelection && selected == null) {
+				input.addClass('error');
+			}
 			// à la fermeture de l'auto-complete, on notifie de la valeur sélectionnée
 			if (on_change) {
 				on_change(selected);
@@ -72,6 +81,9 @@ function autocomplete(url, input, on_change) {
 			return;
 		}
 		// si l'utilisateur a modifié le champ sans que l'autocompletion s'active, on force la notification en fin d'édition
+		if (validateSelection && selected == null) {
+			input.addClass('error');
+		}
 		if (on_change) {
 			on_change(selected);
 		}
