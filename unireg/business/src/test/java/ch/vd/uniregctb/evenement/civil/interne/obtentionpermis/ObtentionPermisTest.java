@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
@@ -26,15 +25,24 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+
 /**
  * @author Ludovic BERTIN <mailto:ludovic.bertin@gmail.com>
  * <a>
  */
+@SuppressWarnings({"JavaDoc"})
 public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 	private static final Logger LOGGER = Logger.getLogger(ObtentionPermisTest.class);
@@ -70,9 +78,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
-	/**
-	 * @param tiers
-	 */
 	@Test
 	public void testObtentionPermisHandlerSourcierCelibataire() throws Exception {
 
@@ -92,27 +97,24 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", erreurs.isEmpty());
+		assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
 		final PersonnePhysique julie  = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", julie);
+		assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", julie);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.assertNotNull("Les for fiscaux de Julie ont disparu", julie.getForsFiscaux());
-		Assert.assertNotNull("Julie devrait encore avoir un for principal actif après l'obtention de permis", julie.getForFiscalPrincipalAt(null));
-		Assert.assertEquals(ModeImposition.ORDINAIRE, julie.getForFiscalPrincipalAt(null).getModeImposition());
+		assertNotNull("Les for fiscaux de Julie ont disparu", julie.getForsFiscaux());
+		assertNotNull("Julie devrait encore avoir un for principal actif après l'obtention de permis", julie.getForFiscalPrincipalAt(null));
+		assertEquals(ModeImposition.ORDINAIRE, julie.getForFiscalPrincipalAt(null).getModeImposition());
 
-		Assert.assertEquals(date(1986, 5, 1), julie.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
+		assertEquals(date(1986, 5, 1), julie.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
-	/**
-	 * @param tiers
-	 */
 	@Test
 	public void testObtentionPermisHandlerSourcierCelibataireMaisPermisNonC() throws Exception {
 
@@ -132,27 +134,24 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", erreurs.isEmpty());
+		assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
 		final PersonnePhysique julie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", julie);
+		assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", julie);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.assertNotNull("Les for fiscaux de Julie ont disparus", julie.getForsFiscaux());
-		Assert.assertNotNull("Julie devrait encore avoir un for principal actif après l'obtention de permis", julie.getForFiscalPrincipalAt(null));
-		Assert.assertEquals("Julie devrait encore son for principal actif inchangé après l'obtention de permis autre que C", ModeImposition.SOURCE, julie.getForFiscalPrincipalAt(null).getModeImposition());
+		assertNotNull("Les for fiscaux de Julie ont disparus", julie.getForsFiscaux());
+		assertNotNull("Julie devrait encore avoir un for principal actif après l'obtention de permis", julie.getForFiscalPrincipalAt(null));
+		assertEquals("Julie devrait encore son for principal actif inchangé après l'obtention de permis autre que C", ModeImposition.SOURCE, julie.getForFiscalPrincipalAt(null).getModeImposition());
 
-		Assert.assertNull(julie.getReindexOn()); // [UNIREG-1979] pas de permis C, pas de réindexation dans le futur
+		assertNull(julie.getReindexOn()); // [UNIREG-1979] pas de permis C, pas de réindexation dans le futur
 	}
 
-	/**
-	 * @param tiers
-	 */
 	@Test
 	public void testObtentionPermisHandlerSourcierMarieSeul() throws Exception {
 
@@ -178,16 +177,16 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		 * Test de récupération du Tiers
 		 */
 		final PersonnePhysique pierre = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL);
-		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", pierre);
+		assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", pierre);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.assertEquals("Les for fiscaux de Pierre ont disparus", 1, pierre.getForsFiscaux().size());
-		Assert.assertNull("Pierre ne doit toujours pas avoir de for principal actif après l'obtention de nationalité suisse", pierre.getForFiscalPrincipalAt(null));
+		assertEquals("Les for fiscaux de Pierre ont disparus", 1, pierre.getForsFiscaux().size());
+		assertNull("Pierre ne doit toujours pas avoir de for principal actif après l'obtention de nationalité suisse", pierre.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : pierre.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
+				assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
@@ -201,23 +200,20 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
-		Assert.assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
+		assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
 
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
 		// 25-06-2009 (PBO) : selon la spéc la date d'ouverture du nouveau for doit être faite le 1er jour du mois qui suit l'événement
-		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis", DATE_OBTENTION_PERMIS, forCommun.getDateDebut());
-		Assert.assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
+		assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis", DATE_OBTENTION_PERMIS, forCommun.getDateDebut());
+		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 
-		Assert.assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
+		assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
-	/**
-	 * @param tiers
-	 */
 	@Test
 	public void testObtentionPermisHandlerSourcierMarieADeux() throws Exception {
 
@@ -237,36 +233,36 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de marié seul.", erreurs.isEmpty());
+		assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de marié seul.", erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
 		final PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_MARIE);
-		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", momo);
+		assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", momo);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.assertNull("Momo ne doit toujours pas avoir de for principal actif après l'obtention de permis", momo.getForFiscalPrincipalAt(null));
+		assertNull("Momo ne doit toujours pas avoir de for principal actif après l'obtention de permis", momo.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : momo.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
+				assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
 		 * Test de récupération du Conjoint
 		 */
 		final PersonnePhysique bea = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_MARIE_CONJOINT);
-		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", bea);
+		assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", bea);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.assertNull("Béa ne doit toujours pas avoir de for principal actif après  l'obtention de permis",  bea.getForFiscalPrincipalAt(null));
+		assertNull("Béa ne doit toujours pas avoir de for principal actif après  l'obtention de permis",  bea.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : bea.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
+				assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
@@ -280,18 +276,18 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
-		Assert.assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
+		assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
 
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
 		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",  forCommun);
+		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",  forCommun);
 		// 25-06-2009 (PBO) : selon la spéc la date d'ouverture du nouveau for doit être faite le 1er jour du mois qui suit l'événement
-		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis", DATE_OBTENTION_PERMIS, forCommun.getDateDebut());
-		Assert.assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
+		assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis", DATE_OBTENTION_PERMIS, forCommun.getDateDebut());
+		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 
-		Assert.assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
+		assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
 	private ObtentionPermis createValidObtentionPermis(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale) {
@@ -325,7 +321,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				Assert.assertNull(pp.getCategorieEtranger());
+				assertNull(pp.getCategorieEtranger());
 				return pp.getNumero();
 			}
 		});
@@ -339,15 +335,15 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
 				obtentionPermis.checkCompleteness(erreurs, warnings);
-				org.junit.Assert.assertTrue(erreurs.isEmpty());
-				org.junit.Assert.assertTrue(warnings.isEmpty());
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
 
 				obtentionPermis.validate(erreurs, warnings);
-				org.junit.Assert.assertTrue(erreurs.isEmpty());
-				org.junit.Assert.assertTrue(warnings.isEmpty());
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
 
 				obtentionPermis.handle(warnings);
-				org.junit.Assert.assertTrue(warnings.isEmpty());
+				assertTrue(warnings.isEmpty());
 
 				return null;
 			}
@@ -356,9 +352,9 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				org.junit.Assert.assertNotNull(pp);
-				org.junit.Assert.assertFalse(pp.isHabitantVD());
-				org.junit.Assert.assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
+				assertNotNull(pp);
+				assertFalse(pp.isHabitantVD());
+				assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
 				return null;
 			}
 		});
@@ -387,7 +383,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				Assert.assertNull(pp.getCategorieEtranger());
+				assertNull(pp.getCategorieEtranger());
 				return pp.getNumero();
 			}
 		});
@@ -401,15 +397,15 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
 				obtentionPermis.checkCompleteness(erreurs, warnings);
-				org.junit.Assert.assertTrue(erreurs.isEmpty());
-				org.junit.Assert.assertTrue(warnings.isEmpty());
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
 
 				obtentionPermis.validate(erreurs, warnings);
-				org.junit.Assert.assertTrue(erreurs.isEmpty());
-				org.junit.Assert.assertTrue(warnings.isEmpty());
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
 
 				obtentionPermis.handle(warnings);
-				org.junit.Assert.assertTrue(warnings.isEmpty());
+				assertTrue(warnings.isEmpty());
 
 				return null;
 			}
@@ -418,9 +414,153 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				org.junit.Assert.assertNotNull(pp);
-				org.junit.Assert.assertFalse(pp.isHabitantVD());
-				org.junit.Assert.assertEquals(CategorieEtranger._02_PERMIS_SEJOUR_B, pp.getCategorieEtranger());
+				assertNotNull(pp);
+				assertFalse(pp.isHabitantVD());
+				assertEquals(CategorieEtranger._02_PERMIS_SEJOUR_B, pp.getCategorieEtranger());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-1199] Vérifie que l'obtention d'un permis C et le passage du mode d'imposition source à ordinaire provoque bien la réindexation dans le futur (= à la fin du mois) du contribuable.
+	 */
+	@Test
+	@NotTransactional
+	public void testDateReindexationSuiteObtentionPermisEtablissementSourcier() throws Exception {
+
+		final RegDate dateNaissance = date(1977, 5, 23);
+		final RegDate dateArrivee = date(2002, 1, 1);
+		final RegDate dateObtentionPermis = RegDate.get();
+		final RegDate dateDebutMoisProchain = RegDate.get(dateObtentionPermis.year(), dateObtentionPermis.month(), 1).addMonths(1);
+
+		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
+				addNationalite(julie, MockPays.France, dateNaissance, null, 1);
+				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
+				addPermis(julie, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermis.getOneDayBefore(), 1, false);
+				addPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, 2, false);
+			}
+		});
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
+				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				assertNull(pp.getCategorieEtranger());
+				assertNull(pp.getReindexOn());
+				return pp.getNumero();
+			}
+		});
+
+		// Traitement de l'événement d'obtention de permis d'établissement
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS());
+
+				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+
+				obtentionPermis.checkCompleteness(erreurs, warnings);
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
+
+				obtentionPermis.validate(erreurs, warnings);
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
+
+				obtentionPermis.handle(warnings);
+				assertTrue(warnings.isEmpty());
+				return null;
+			}
+		});
+
+		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertEquals(dateDebutMoisProchain, pp.getReindexOn()); // [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire
+				assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-1199] Vérifie que l'obtention d'un permis C sur un contribuable non-assujetti (sourcier implicite( provoque bien la réindexation dans le futur (= à la fin du mois) du contribuable.
+	 */
+	@Test
+	@NotTransactional
+	public void testDateReindexationSuiteObtentionPermisEtablissementSourcierImplicite() throws Exception {
+
+		final RegDate dateNaissance = date(1977, 5, 23);
+		final RegDate dateArrivee = date(2002, 1, 1);
+		final RegDate dateObtentionPermis = RegDate.get();
+		final RegDate dateDebutMoisProchain = RegDate.get(dateObtentionPermis.year(), dateObtentionPermis.month(), 1).addMonths(1);
+
+		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
+				addNationalite(julie, MockPays.France, dateNaissance, null, 1);
+				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
+				addPermis(julie, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermis.getOneDayBefore(), 1, false);
+				addPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, 2, false);
+			}
+		});
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
+				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+				assertNull(pp.getCategorieEtranger());
+				assertNull(pp.getReindexOn());
+				return pp.getNumero();
+			}
+		});
+
+		// Traitement de l'événement d'obtention de permis d'établissement
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS());
+
+				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+
+				obtentionPermis.checkCompleteness(erreurs, warnings);
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
+
+				obtentionPermis.validate(erreurs, warnings);
+				assertTrue(erreurs.isEmpty());
+				assertTrue(warnings.isEmpty());
+
+				obtentionPermis.handle(warnings);
+				assertTrue(warnings.isEmpty());
+				return null;
+			}
+		});
+
+		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				// [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire (le calcul de l'assujettissement détermine
+				// que le contribuable était sourcier à cause du mode d'ouverture 'obtention de permis C', même s'il n'y a pas de for principal source explicite)
+				assertEquals(dateDebutMoisProchain, pp.getReindexOn());
+				assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
 				return null;
 			}
 		});
