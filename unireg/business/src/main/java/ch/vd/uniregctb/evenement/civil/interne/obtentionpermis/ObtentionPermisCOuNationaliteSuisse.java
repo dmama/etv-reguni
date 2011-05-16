@@ -28,6 +28,8 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
@@ -88,6 +90,26 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		contribuable.scheduleReindexationOn(debutMoisProchain);
 
 		openForFiscalPrincipal(contribuable, dateOuverture, reference.getTypeAutoriteFiscale(), reference.getNumeroOfsAutoriteFiscale(), reference.getMotifRattachement(), motifOuverture, nouveauModeImposition, changeHabitantFlag);
+	}
+
+	/**
+	 * Ouvre un nouveau for fiscal principal (vaudois + imposition ordinaire) sur un contribuable  non-assujetti (= aucun for fiscal) suite à l'obtention d'un permis C. Ce contribuable est considéré
+	 * comme sourcier <b>implicite</b> par l'algorithme de calcul de l'assujettissement puisqu'il devient ordinaire suite à l'obtention d'un permis C (voir [SIFISC-1199]).
+	 *
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param changeHabitantFlag       vrai s'il faut changer en habitant le contribuable spécifié.
+	 * @return le nouveau for fiscal principal
+	 */
+	private ForFiscalPrincipal openForFiscalPrincipalChangementModeImpositionImplicite(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale,
+	                                                                                   boolean changeHabitantFlag) {
+		// [UNIREG-1979][SIFISC-1199] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
+		final RegDate debutMoisProchain = RegDate.get(dateOuverture.year(), dateOuverture.month(), 1).addMonths(1);
+		contribuable.scheduleReindexationOn(debutMoisProchain);
+
+		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale, MotifRattachement.DOMICILE, MotifFor.PERMIS_C_SUISSE,
+				ModeImposition.ORDINAIRE, changeHabitantFlag);
 	}
 
 	/**
@@ -210,7 +232,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				//TODO chercher dans les adresses si arrivée après obtention permis pour ouvrir le for à la date d'arrivée (pas de for ouvert car bridage IS)
 				if (EtatCivilHelper.estMarieOuPacse(etatCivilIndividu)) { // le for est ouvert sur le ménage commun
 					if (menage != null) {
-						openForFiscalPrincipalDomicileVaudoisOrdinaire(menage, dateEvenement, noOfsEtendu, MotifFor.PERMIS_C_SUISSE, true);
+						openForFiscalPrincipalChangementModeImpositionImplicite(menage, dateEvenement, noOfsEtendu, true);
 						Audit.info(getNumeroEvenement(), "Ouverture du for principal du ménage au rôle ordinaire");
 					}
 					else {
@@ -218,7 +240,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 					}
 				}
 				else { // le for est ouvert sur l'individu
-					openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateEvenement, noOfsEtendu, MotifFor.PERMIS_C_SUISSE, true);
+					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, dateEvenement, noOfsEtendu, true);
 					Audit.info(getNumeroEvenement(), "Ouverture du for principal de l'individu au rôle ordinaire");
 				}
 			}
