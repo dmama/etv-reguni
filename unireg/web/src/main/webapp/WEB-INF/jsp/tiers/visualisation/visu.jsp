@@ -210,7 +210,7 @@
 		 	 * Vue imprimable : affichage les contenus des tabs l'un dessus l'autre
 		 	 */
 		 	function showPrintView() {
-		 		$('#menuTiersTabs').hide();
+		 		$('#menuTiersTabs').css('display', 'none');
 		 		$('.ui-tabs-hide').addClass('tabs_previously_hidden');
 		 		$('.ui-tabs-hide').removeClass('ui-tabs-hide');
 		 		$("#tabnav-disable").hide();
@@ -221,7 +221,7 @@
 		 	 * Vue normale : affichage les tabs normalement.
 		 	 */
 		 	function showScreenView() {
-		 		$('#menuTiersTabs').show();
+		 		$('#menuTiersTabs').css('display', ''); // [SIFISC-93] on n'utilise pas show() qui met le display à 'inline-block' et du coup on voit les éléments lors de l'impression
 		 		$('.tabs_previously_hidden').addClass('ui-tabs-hide');
 		 		$('.tabs_previously_hidden').removeClass('tabs_previously_hidden');
 		 		$("#tabnav-disable").show();
