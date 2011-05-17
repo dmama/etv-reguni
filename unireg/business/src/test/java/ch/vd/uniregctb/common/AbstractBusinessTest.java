@@ -162,11 +162,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		}
 	}
 
-	protected Object doInTransactionAndSession(final TransactionCallback action) throws Exception {
-		return doInTransaction(new TransactionCallback() {
-			public Object doInTransaction(final TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+	protected <T> T doInTransactionAndSession(final TransactionCallback<T> action) throws Exception {
+		return doInTransaction(new TransactionCallback<T>() {
+			public T doInTransaction(final TransactionStatus status) {
+				return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
+					public T doInHibernate(Session session) throws HibernateException, SQLException {
 						return action.doInTransaction(status);
 					}
 				});
@@ -174,11 +174,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		});
 	}
 
-	protected Object doInNewTransactionAndSession(final TransactionCallback action) throws Exception {
-		return doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(final TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+	protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) throws Exception {
+		return doInNewTransaction(new TransactionCallback<T>() {
+			public T doInTransaction(final TransactionStatus status) {
+				return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
+					public T doInHibernate(Session session) throws HibernateException, SQLException {
 						return action.doInTransaction(status);
 					}
 				});

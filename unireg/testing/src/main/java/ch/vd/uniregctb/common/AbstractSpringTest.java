@@ -35,7 +35,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AbstractSpringTest.TxCallback.TxCallbackException;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
@@ -276,14 +275,14 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		return transactionManager;
 	}
 
-	protected Object doInNewTransaction(TransactionCallback action) throws Exception {
+	protected <T> T doInNewTransaction(TransactionCallback<T> action) throws Exception {
 		return doExecuteInTransaction(Propagation.REQUIRES_NEW, action);
 	}
-	protected Object doInTransaction(TransactionCallback action) throws Exception {
+	protected <T> T doInTransaction(TransactionCallback<T> action) throws Exception {
 		return doExecuteInTransaction(Propagation.REQUIRED, action);
 	}
 
-	protected Object doExecuteInTransaction(Propagation propagation, TransactionCallback action) throws Exception {
+	protected <T> T doExecuteInTransaction(Propagation propagation, TransactionCallback<T> action) throws Exception {
 		TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setPropagationBehavior(propagation.value());
 		try {
@@ -294,21 +293,20 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		}
 	}
 
-	public abstract class TxCallback implements TransactionCallback {
+	public class TxCallbackException extends RuntimeException {
 
-		public class TxCallbackException extends RuntimeException {
+		private static final long serialVersionUID = -626013776510807208L;
 
-			private static final long serialVersionUID = -626013776510807208L;
-
-			public TxCallbackException(Exception e) {
-				super(e);
-			}
-
+		public TxCallbackException(Exception e) {
+			super(e);
 		}
+	}
 
-		public abstract Object execute(TransactionStatus status) throws Exception;
+	public abstract class TxCallback<T> implements TransactionCallback<T> {
 
-		public final Object doInTransaction(TransactionStatus status) {
+		public abstract T execute(TransactionStatus status) throws Exception;
+
+		public final T doInTransaction(TransactionStatus status) {
 			try {
 				return execute(status);
 			}

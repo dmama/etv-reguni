@@ -62,7 +62,6 @@ import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
 public class EnvoiDIsEnMasseProcessor {
@@ -408,7 +407,7 @@ public class EnvoiDIsEnMasseProcessor {
 			return false;
 		}
 
-		final List<DeclarationImpotOrdinaire> list = dcache.getDeclarationsInRange(contribuable, tache);
+		final List<DeclarationImpotOrdinaire> list = dcache.getDeclarationsInRange(contribuable, tache, false);
 		if (list.size() > 0 && !simul) {
 
 			// Il existe déjà une (ou plusieurs) déclarations
@@ -523,7 +522,7 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 
 		// calcul du nombre de déclarations déjà existantes pour l'année considérée
-		final List<DeclarationImpotOrdinaire> decls = dcache.getDeclarationsInRange(contribuable, dcache.baseRange);
+		final List<DeclarationImpotOrdinaire> decls = dcache.getDeclarationsInRange(contribuable, dcache.baseRange, true);
 		final int nbDecls = decls != null ? decls.size() : 0;
 
 		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
@@ -774,50 +773,51 @@ public class EnvoiDIsEnMasseProcessor {
 		@SuppressWarnings("unchecked")
 		protected void initMap(final List<Long> ids) {
 
+			// [SIFISC-1227] on ne peut pas exclure les DI annulées ici car le contenu de la map est utilisée
+			// pour générer le numéro de séquence de la DI
+
 			final String declQuery = // --------------------------------------------------------------------------
 			"FROM                                                                                             "
 					+ "    DeclarationImpotOrdinaire AS di                                                    "
 					+ "WHERE                                                                                  "
-					+ "    di.tiers.id in (:ids) AND                                                        "
-					+ "    di.annulationDate IS null AND                                                      "
+					+ "    di.tiers.id in (:ids) AND                                                          "
 					+ "    di.periode.id = :periodeId                                                         "
 					+ "ORDER BY                                                                               "
 					+ "    di.dateDebut ASC                                                                   ";
 
 			// On récupère toutes les DIs correspondant au critères du cache
-			final List<DeclarationImpotOrdinaire> list = (List<DeclarationImpotOrdinaire>) hibernateTemplate
-					.execute(new HibernateCallback() {
-						public Object doInHibernate(Session session) throws HibernateException {
-							FlushMode mode = session.getFlushMode();
-							try {
-								/*
-								 * On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de déclarations
-								 * déjà créées concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
-								 */
-								session.setFlushMode(FlushMode.MANUAL);
+			final List<DeclarationImpotOrdinaire> list = (List<DeclarationImpotOrdinaire>) hibernateTemplate.execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException {
+					final FlushMode mode = session.getFlushMode();
+					try {
+						/*
+						 * On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de déclarations
+						 * déjà créées concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
+						 */
+						session.setFlushMode(FlushMode.MANUAL);
 
-								// on récupère le numéro de la période
-								Query queryPeriode = session.createQuery("SELECT p.id FROM PeriodeFiscale AS p WHERE p.annee = :annee");
-								queryPeriode.setParameter("annee", baseRange.getDateDebut().year());
-								final Long periodeId = (Long) queryPeriode.uniqueResult();
+						// on récupère le numéro de la période
+						final Query queryPeriode = session.createQuery("SELECT p.id FROM PeriodeFiscale AS p WHERE p.annee = :annee");
+						queryPeriode.setParameter("annee", baseRange.getDateDebut().year());
+						final Long periodeId = (Long) queryPeriode.uniqueResult();
 
-								// on précharge en session les tiers
-								Query queryCtbs = session.createQuery("FROM Tiers AS t WHERE t.id in (:ids)");
-								queryCtbs.setParameterList("ids", ids);
-								List<?> ctbs = queryCtbs.list();
-								Assert.notEmpty(ctbs);
+						// on précharge en session les tiers
+						final Query queryCtbs = session.createQuery("FROM Tiers AS t WHERE t.id in (:ids)");
+						queryCtbs.setParameterList("ids", ids);
+						final List<?> ctbs = queryCtbs.list();
+						Assert.notEmpty(ctbs);
 
-								// et finalement on charge les déclarations
-								Query queryDecls = session.createQuery(declQuery);
-								queryDecls.setParameterList("ids", ids);
-								queryDecls.setParameter("periodeId", periodeId);
-								return queryDecls.list();
-							}
-							finally {
-								session.setFlushMode(mode);
-							}
-						}
-					});
+						// et finalement on charge les déclarations
+						final Query queryDecls = session.createQuery(declQuery);
+						queryDecls.setParameterList("ids", ids);
+						queryDecls.setParameter("periodeId", periodeId);
+						return queryDecls.list();
+					}
+					finally {
+						session.setFlushMode(mode);
+					}
+				}
+			});
 
 			// Initialisation de la map
 			for (DeclarationImpotOrdinaire di : list) {
@@ -851,13 +851,12 @@ public class EnvoiDIsEnMasseProcessor {
 		/**
 		 * Retourne les déclarations qui existent (= intersectent) dans la période spécifiée.
 		 *
-		 * @param contribuable
-		 *            le contribuable dont on recherche des déclarations
-		 * @param range
-		 *            la période de recherche des déclaration
+		 * @param contribuable le contribuable dont on recherche des déclarations
+		 * @param range la période de recherche des déclaration
+		 * @param annuleesIncluses si oui ou non les déclarations annulées doivent être renvoyées
 		 * @return une liste des déclarations trouvées
 		 */
-		public List<DeclarationImpotOrdinaire> getDeclarationsInRange(final Contribuable contribuable, final DateRange range) {
+		public List<DeclarationImpotOrdinaire> getDeclarationsInRange(final Contribuable contribuable, final DateRange range, boolean annuleesIncluses) {
 
 			if (!DateRangeHelper.within(range, baseRange)) {
 				Assert.fail("Le range [" + range.getDateDebut() + ";" + range.getDateFin() + "] n'est pas compris dans le range de base ["
@@ -869,15 +868,16 @@ public class EnvoiDIsEnMasseProcessor {
 				list = Collections.emptyList();
 			}
 
-			if (!DateRangeHelper.equals(range, baseRange)) {
-				// si le range spécifié ne corresponds pas à celui utilisé pour initialiser le cache, on retrie la liste en conséquence
-				List<DeclarationImpotOrdinaire> l = new ArrayList<DeclarationImpotOrdinaire>();
+			// si le range spécifié ne corresponds pas à celui utilisé pour initialiser le cache, on retrie la liste en conséquence
+			final boolean sameRange = DateRangeHelper.equals(range, baseRange);
+			if (list.size() > 0 && (!annuleesIncluses || !sameRange)) {
+				final List<DeclarationImpotOrdinaire> listeFiltree = new ArrayList<DeclarationImpotOrdinaire>(list.size());
 				for (DeclarationImpotOrdinaire di : list) {
-					if (DateRangeHelper.intersect(di, range)) {
-						l.add(di);
+					if ((annuleesIncluses || !di.isAnnule()) && (sameRange || DateRangeHelper.intersect(di, range))) {
+						listeFiltree.add(di);
 					}
 				}
-				list = l;
+				list = listeFiltree;
 			}
 
 			return list;

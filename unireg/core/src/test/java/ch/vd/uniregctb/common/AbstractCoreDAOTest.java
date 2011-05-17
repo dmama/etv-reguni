@@ -755,7 +755,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		d.setNumero(numero + 1);
 
 		d.setTiers(tiers);
-		d = (DeclarationImpotOrdinaire) hibernateTemplate.merge(d);
+		d = hibernateTemplate.merge(d);
 
 		tiers.addDeclaration(d);
 		return d;
