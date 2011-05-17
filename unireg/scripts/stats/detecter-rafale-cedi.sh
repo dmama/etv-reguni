@@ -50,7 +50,7 @@ MSG=$(if [ -n "$ANALYSIS" ]; then
 fi)
 
 if [ -n "$MSG" ]; then
-	if [ -z "$@" ]; then
+	if [ -z "$1" ]; then
 		echo "$MSG"
 	else
 		echo "$MSG" | mutt -s "Alerte de quittancement de DI" -- "$@"
