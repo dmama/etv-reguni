@@ -12,11 +12,13 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -43,6 +45,8 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -265,11 +269,12 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	public void testGetDeclarationsInRange() throws Exception {
 
 		class Ids {
-			Long marcId;
-			Long jeanId;
-			Long jacquesId;
-			Long pierreId;
-			Long oidCedi;
+			long marcId;
+			long jeanId;
+			long jacquesId;
+			long pierreId;
+			long alfredId;
+			long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -280,36 +285,40 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
 				ids.oidCedi = cedi.getId();
 
-				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
 				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
 				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un tiers sans déclaration
-				Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.marcId = marc.getNumero();
 
 				// Un tiers avec une déclaration sur toute l'année 2007
-				Contribuable jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final Contribuable jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.jeanId = jean.getNumero();
-				addDeclarationImpot(jean, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete);
+				addDeclarationImpot(jean, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
 				// Un tiers avec une déclaration sur une partie de l'année 2007
-				Contribuable jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final Contribuable jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.jacquesId = jacques.getNumero();
-				addDeclarationImpot(jacques, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete);
+				addDeclarationImpot(jacques, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
 				// Un tiers avec deux déclarations partielles dans l'année 2007
-				Contribuable pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final Contribuable pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.pierreId = pierre.getNumero();
-				addDeclarationImpot(pierre, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete);
-				addDeclarationImpot(pierre, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete);
+				addDeclarationImpot(pierre, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+				addDeclarationImpot(pierre, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+
+				// un tiers avec trois déclarations dont une annulée dans l'année 2007
+				final Contribuable alfred = addNonHabitant("Alfred", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				ids.alfredId = alfred.getNumero();
+				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(alfred, periode2007, date(2007, 2, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+				diAnnulee.setAnnule(true);
+				addDeclarationImpot(alfred, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+				addDeclarationImpot(alfred, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 				return null;
 			}
 		});
@@ -320,38 +329,45 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			idsList.add(ids.jeanId);
 			idsList.add(ids.jacquesId);
 			idsList.add(ids.pierreId);
+			idsList.add(ids.alfredId);
 
 			DeclarationsCache cache = processor.new DeclarationsCache(2007, idsList);
 
 			final Contribuable marc = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.marcId);
 			assertNotNull(marc);
-			assertEmpty(cache.getDeclarationsInRange(marc, new Range(date(2007, 1, 1), date(2007, 12, 31))));
+			assertEmpty(cache.getDeclarationsInRange(marc, new Range(date(2007, 1, 1), date(2007, 12, 31)), true));
 
 			final Contribuable jean = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jeanId);
 			assertNotNull(jean);
-			final List<DeclarationImpotOrdinaire> jeanDIs = cache.getDeclarationsInRange(jean, new Range(date(2007, 1, 1), date(2007, 12,
-					31)));
+			final List<DeclarationImpotOrdinaire> jeanDIs = cache.getDeclarationsInRange(jean, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
 			assertEquals(1, jeanDIs.size());
-			assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jeanDIs.get(0));
+			assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jeanDIs.get(0));
 
 			final Contribuable jacques = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jacquesId);
 			assertNotNull(jacques);
-			final List<DeclarationImpotOrdinaire> jacquesDIs = cache.getDeclarationsInRange(jacques, new Range(date(2007, 1, 1), date(2007,
-					12, 31)));
+			final List<DeclarationImpotOrdinaire> jacquesDIs = cache.getDeclarationsInRange(jacques, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
 			assertEquals(1, jacquesDIs.size());
-			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jacquesDIs.get(0));
+			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jacquesDIs.get(0));
 
 			final Contribuable pierre = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.pierreId);
 			assertNotNull(pierre);
-			final List<DeclarationImpotOrdinaire> pierreDIs = cache.getDeclarationsInRange(pierre, new Range(date(2007, 1, 1), date(2007,
-					12, 31)));
+			final List<DeclarationImpotOrdinaire> pierreDIs = cache.getDeclarationsInRange(pierre, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
 			assertEquals(2, pierreDIs.size());
-			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(0));
-			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(1));
+			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(0));
+			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(1));
+
+			final Contribuable alfred = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.alfredId);
+			assertNotNull(alfred);
+			final List<DeclarationImpotOrdinaire> alfredIdAvecAnnulees = cache.getDeclarationsInRange(alfred, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
+			assertEquals(3, alfredIdAvecAnnulees.size());
+			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(0));
+			assertDI(date(2007, 2, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(1));
+			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(2));
+
+			final List<DeclarationImpotOrdinaire> alfredIdSansAnnulees = cache.getDeclarationsInRange(alfred, new Range(date(2007, 1, 1), date(2007, 12, 31)), false);
+			assertEquals(2, alfredIdSansAnnulees.size());
+			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdSansAnnulees.get(0));
+			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdSansAnnulees.get(1));
 		}
 	}
 
@@ -1328,5 +1344,58 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				ids.oidCedi, null, decl);
+	}
+
+	@Test
+	public void testNumeroSequenceApresDiAnnulee() throws Exception {
+
+		final int annee = 2009;
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				diAnnulee.setAnnule(true);
+				assertEquals(1, (int) diAnnulee.getNumero());
+
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON,
+						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, colAdm);
+
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateTraitement = date(annee + 1, 1, 15);
+		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+			@Override
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
+				return processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, null);
+			}
+		});
+		assertNotNull(results);
+		assertEquals(1, results.nbCtbsTotal);
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+				assertNotNull(di);
+				assertFalse(di.isAnnule());
+				assertEquals(2, (int) di.getNumero());
+				return null;
+			}
+		});
 	}
 }

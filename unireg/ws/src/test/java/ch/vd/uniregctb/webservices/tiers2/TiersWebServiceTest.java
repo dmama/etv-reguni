@@ -837,4 +837,60 @@ public class TiersWebServiceTest extends WebserviceTest {
 	private Date newDate(int year, int month, int day) {
 		return new Date(year, month, day);
 	}
+
+	@Test
+	public void testQuittancementAvecPlusieursDiQuiPartagentLeMemeNumeroDeSequence() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diAnnuleeId;
+			long diNonAnnuleeId;
+			int noSequence;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				diAnnulee.setAnnule(true);
+
+				final DeclarationImpotOrdinaire diNonAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				diNonAnnulee.setNumero(diAnnulee.getNumero());
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diAnnuleeId = diAnnulee.getId();
+				ids.diNonAnnuleeId = diNonAnnulee.getId();
+				ids.noSequence = diAnnulee.getNumero();
+				return ids;
+			}
+		});
+
+		final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
+		demande.dateRetour = new Date(RegDate.get());
+		demande.key = new DeclarationImpotOrdinaireKey();
+		demande.key.ctbId = ids.ppId;
+		demande.key.numeroSequenceDI = ids.noSequence;
+		demande.key.periodeFiscale = annee;
+
+		final QuittancerDeclarations params = new QuittancerDeclarations();
+		params.login = login;
+		params.demandes = Arrays.asList(demande);
+
+		final List<ReponseQuittancementDeclaration> result = service.quittancerDeclarations(params);
+		assertNotNull(result);
+		assertEquals(1, result.size());
+
+		final ReponseQuittancementDeclaration reponse = result.get(0);
+		assertNotNull(reponse);
+		assertEquals(CodeQuittancement.OK, reponse.code);
+	}
 }
