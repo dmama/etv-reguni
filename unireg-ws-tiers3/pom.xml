@@ -16,6 +16,16 @@
 	
 	<dependencies>
 		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-common-utilities</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
 			<version>${cxf.version}</version>
@@ -68,7 +78,9 @@
 									<extraargs> 
 									    <extraarg>-p</extraarg> 
 									    <extraarg>ch.vd.uniregctb.webservices.tiers3</extraarg>
-									</extraargs> 
+										<extraarg>-xjc-Xts</extraarg>
+										<extraarg>-xjc-Xvalue-constructor</extraarg>
+									</extraargs>
 								</wsdlOption>
 							</wsdlOptions>
 						</configuration>
@@ -77,6 +89,18 @@
 						</goals>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.cxf</groupId>
+						<artifactId>cxf-xjc-ts</artifactId>
+						<version>2.2.99-fuse-SNAPSHOT</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
+						<artifactId>jaxb2-value-constructor</artifactId>
+						<version>3.0</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
