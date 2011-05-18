@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="../common.xsd" />
+	<xs:complexType name="QuittancerDeclarations">
+		<xs:sequence>
+			<xs:element name="login" type="unireg:UserLogin" />
+			<xs:element maxOccurs="unbounded" name="demandes" type="unireg:DemandeQuittancementDeclaration" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DemandeQuittancementDeclaration">
+		<xs:sequence>
+			<xs:element name="key" type="unireg:DeclarationImpotOrdinaireKey" />
+			<xs:element name="dateRetour" type="unireg:Date" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DeclarationImpotOrdinaireKey">
+		<xs:sequence>
+			<xs:element name="ctbId" type="xs:long" />
+			<xs:element name="periodeFiscale" type="xs:int" />
+			<xs:element name="numeroSequenceDI" type="xs:int" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ReponseQuittancementDeclaration">
+		<xs:sequence>
+			<xs:element name="key" type="unireg:DeclarationImpotOrdinaireKey" />
+			<xs:element name="code" type="unireg:CodeQuittancement" />
+			<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
+			<xs:element minOccurs="0" name="exceptionType" type="unireg:WebServiceExceptionType" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CodeQuittancement">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OK" />
+			<xs:enumeration value="ERREUR_CTB_INCONNU" />
+			<xs:enumeration value="ERREUR_ASSUJETTISSEMENT_CTB" />
+			<xs:enumeration value="ERREUR_CTB_DEBITEUR_INACTIF" />
+			<xs:enumeration value="ERREUR_DECLARATION_INEXISTANTE" />
+			<xs:enumeration value="ERREUR_DECLARATION_ANNULEE" />
+			<xs:enumeration value="ERREUR_DATE_RETOUR_INVALIDE" />
+			<xs:enumeration value="EXCEPTION" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType final="#all" name="ReponseQuittancementDeclarationArray">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:ReponseQuittancementDeclaration" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

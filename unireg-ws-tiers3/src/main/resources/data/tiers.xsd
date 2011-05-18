@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="../common.xsd" />
+	<xs:include schemaLocation="fors.xsd" />
+	<xs:include schemaLocation="declaration.xsd" />
+	<xs:include schemaLocation="adresse.xsd" />
+	<xs:include schemaLocation="rapport.xsd" />
+	<xs:complexType abstract="true" name="Tiers">
+		<xs:annotation>
+			<xs:documentation>Classe de base pour les tiers (un tiers est soit un débiteur, soit un contribuable normal). Les collections sont renseignées en fonction des parts demandées lors de
+				l'appel au service.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="numero" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Le numéro de tiers qui identifie de manière unique un contribuable ou un débiteur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="complementNom" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Complément du nom utilisé lors de l'adressage.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateDebutActivite" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle l'activité du tiers a débuté. Si le tiers n'a jamais été assujetti, cette date est nulle.
+						Attention ! Cette date n'est renseignée qui si la part FORS_FISCAUX est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateFinActivite" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle l'activité du tiers a pris fin. Si le tiers est toujours actif, la date n'est pas renseignée.
+						Attention ! Cette date n'est renseignée que si la part FORS_FISCAUX est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle le tiers a été annulé, ou non-renseigné si le tiers n'est pas annulé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="personneContact" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Coordonnées de la personne de contact chez le débiteur, ou null si le débiteur est associé avec une personne physique.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="numeroTelPrive" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro de téléphone privé (format tel que saisi par l'utilisateur).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="numeroTelProf" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro de téléphone professionel (format tel que saisi par l'utilisateur).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="numeroTelPortable" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro de téléphone portable (format tel que saisi par l'utilisateur).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="numeroTelecopie" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro de fax (format tel que saisi par l'utilisateur).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="adresseCourrierElectronique" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>L'adresse email du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="blocageRemboursementAutomatique" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Vrai si le remboursement automatique est bloqué sur ce tiers; faux si ce n'est pas le cas.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isDebiteurInactif" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Vrai s'il le tiers est un débiteur inactif (i107); faux pour tous les autres tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesCourrier" type="unireg:Adresse">
+				<xs:annotation>
+					<xs:documentation>rique des adresses courrier du tiers (de la plus ancienne à la plus récente).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuite" type="unireg:Adresse">
+				<xs:annotation>
+					<xs:documentation>rique des adresses de poursuite du tiers (de la plus ancienne à la plus récente).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesRepresentation" type="unireg:Adresse">
+				<xs:annotation>
+					<xs:documentation>rique des adresses de représentation du tiers (de la plus ancienne à la plus récente).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesDomicile" type="unireg:Adresse">
+				<xs:annotation>
+					<xs:documentation>rique des adresses de domicile du tiers (de la plus ancienne à la plus récente).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuiteAutreTiers" type="unireg:AdresseAutreTiers">
+				<xs:annotation>
+					<xs:documentation>rique des adresses de poursuite 'autre tiers' du tiers (de la plus ancienne à la plus récente).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="adresseEnvoi" type="unireg:AdresseEnvoi">
+				<xs:annotation>
+					<xs:documentation>Adresse courrier formattée pour l'envoi (six lignes).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="unireg:AdresseEnvoi">
+				<xs:annotation>
+					<xs:documentation>Adresse poursuite formattée pour l'envoi (six lignes).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="unireg:AdresseEnvoi">
+				<xs:annotation>
+					<xs:documentation>Adresse de représentation formattée pour l'envoi (six lignes).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="adresseDomicileFormattee" type="unireg:AdresseEnvoi">
+				<xs:annotation>
+					<xs:documentation>Adresse domicile formattée pour l'envoi (six lignes).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="unireg:AdresseEnvoiAutreTiers">
+				<xs:annotation>
+					<xs:documentation>Adresse poursuite 'autre tiers' formattée pour l'envoi (six lignes).
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="rapportsEntreTiers" type="unireg:RapportEntreTiers">
+				<xs:annotation>
+					<xs:documentation>rique des rapports entre tiers pour ce tiers (du plus ancien au plus récent).
+						Attention ! Cette collection n'est renseignée que si la part RAPPORTS_ENTRE_TIERS est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="forsFiscauxPrincipaux" type="unireg:ForFiscal">
+				<xs:annotation>
+					<xs:documentation>rique des fors fiscaux principaux existants sur le tiers (du plus ancien au plus récent).
+						Attention ! Cette collection n'est renseignée que si la part FORS_FISCAUX (ou FORS_FISCAUX_VIRTUELS) est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="autresForsFiscaux" type="unireg:ForFiscal">
+				<xs:annotation>
+					<xs:documentation>rique des autres fors fiscaux (secondaires, ...) existants sur le contribuable (du plus ancien au plus récent). Toujours vide dans le cas d'un débiteur.
+						Attention ! Cette collection n'est renseignée que si la part FORS_FISCAUX (ou FORS_FISCAUX_VIRTUELS) est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="forsGestions" type="unireg:ForGestion">
+				<xs:annotation>
+					<xs:documentation>rique des fors de gestion (du plus ancien au plus récent). Cette liste peut-être vide si le tiers n'a jamais été assujetti.
+						Attention ! Cette collection n'est renseignée que si la part FORS_FISCAUX (ou FORS_FISCAUX_VIRTUELS) est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="declarations" type="unireg:Declaration">
+				<xs:annotation>
+					<xs:documentation>rique des déclarations (DI ou LR) pour le tiers.
+						Attention ! Cette collection n'est renseignée que si la part DECLARATIONS est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="comptesBancaires" type="unireg:CompteBancaire">
+				<xs:annotation>
+					<xs:documentation>Les coordonnées financières du tiers.
+						Attention ! Cette collection n'est renseignée que si la part COMPTES_BANCAIRES est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CompteBancaire">
+		<xs:annotation>
+			<xs:documentation>Contient les coordonnées financière d'un compte auprès d'un organisme financier (CCP ou compte bancaire, suisse ou étranger).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="numeroTiersTitulaire" type="xs:long">
+				<xs:annotation>
+					<!-- TODO (msi) n'y a-t-il pas une solution plus élégante ? -->
+					<xs:documentation>Le numéro de tiers du titulaire du compte.
+						Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un tiers personne morale, ce numéro est égal au
+						numéro de la PM lorsqu'il s'agit du compte bancaire PM elle-même; et inversément, lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à celui du mandataire.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="titulaire" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le titulaire du compte.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numero" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro du compte (tel que saisi par l'utilisateur).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="format" type="unireg:FormatNumeroCompte">
+				<xs:annotation>
+					<xs:documentation>Le type du numéro (IBAN, CPP, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="clearing" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le clearing bancaire (uniquement renseigné sur les comptes bancaires suisses).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="adresseBicSwift" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro BIC SWIFT (uniquement renseigné sur les comptes bancaires étrangers).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="nomInstitution" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le nom de l'institution financière (lorsque cette information est connnue).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="FormatNumeroCompte">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SPECIFIQUE_CH">
+				<xs:annotation>
+					<xs:documentation>Le format spécifique à l'organisme financier suisse (banque ou poste). L'organisme est spécifié par le numéro de clearing.
+						Exemples :
+						- BCV: 477.512.01 Z
+						- La Poste: 10-3848-4
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IBAN">
+				<xs:annotation>
+					<xs:documentation>International Bank Account Number.
+						Exemples :
+						- Greek IBAN: GR16 0110 1050 0000 1054 7023 795
+						- British IBAN: GB35 MIDL 4025 3432 1446 70
+						- Swiss IBAN: CH51 0868 6001 2565 1500 1
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TiersInfo">
+		<xs:annotation>
+			<xs:documentation>Information disponibles sur un tiers retournées lors du recherche.
+				Les informations détaillées des tiers (fors fiscaux, adresses, ...) sont disponibles au travers des méthodes getTiers.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="numero" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Le numéro de tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="nom1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>La première ligne du nom du contribuable. Pour une personne physique, il s'agit de son prénom et de son nom. Pour un ménage, il s'agit du prénom et du nom du
+						principal (pour autant qu'il soit connu). Pour les autres types de tiers (collectivités administratives, débiteurs, entreprises, ..), il s'agit généralement de la raison
+						sociale.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="nom2" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>La seconde ligne du nom du contribuable. Pour une personne physique, ce champs n'est pas renseigné. Pour un ménage, il s'agit du prénom et du nom du
+						conjoint (pour autant qu'il soit connu). Pour les autres types de tiers (collectivités administratives, débiteurs, entreprises, ..), il s'agit généralement du complément de la
+						raison sociale ou alors, le champs n'est pas renseigné.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateNaissance" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>La date de naissance de la personne physique (au format YYYYMMDD). Ce champs n'est pas renseigné pour les autres types de tiers.
+						Attention ! Cette date peut être partielle au niveau du jour et du mois (ex: "197311" - jour de naissance inconnu, "1973" - jour et mois de naissance inconnus).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="rue" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>La rue de l'adresse courrier du tiers, ou non-renseigné si ancune adresse n'est connue.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="npa" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro postal d'achemiment (NPA) de l'adresse courrier du tiers, ou non-renseigné si ancune adresse n'est connue.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="localite" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>La localité de l'adresse courrier du tiers, ou non-renseigné si ancune adresse n'est connue.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="pays" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le pays de l'adresse courrier du tiers, ou non-renseigné si ancune adresse n'est connue.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="type" type="unireg:TypeTiers">
+				<xs:annotation>
+					<xs:documentation>Le type de tiers au sens large (débiteur, personne physique, ménage commune, ...)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="TypeTiers">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PERSONNE_PHYSIQUE" />
+			<xs:enumeration value="MENAGE_COMMUN" />
+			<xs:enumeration value="DEBITEUR" />
+			<xs:enumeration value="PERSONNE_MORALE" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

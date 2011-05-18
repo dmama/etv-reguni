@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="contribuable.xsd" />
+	<xs:complexType name="PersonnePhysique">
+		<xs:annotation>
+			<xs:documentation>Classe concrète qui contient toutes les informations d'un contribuable de type personne physique. Les collections sont renseignées en fonction des parts demandées lors de l'appel
+				au service.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:Contribuable">
+				<xs:sequence>
+					<xs:element name="nom" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Nom de famille de la personne.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="prenom" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Prénom de la personne.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateNaissance" type="unireg:Date">
+						<xs:annotation>
+							<xs:documentation>La date de naissance de la personne physique. Cette date peut être partielle, c'est-à-dire que les informations de jour et/ou de mois peuvent valoir 0.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="sexe" type="unireg:Sexe">
+						<xs:annotation>
+							<xs:documentation>Le sexe de la personne (qui peut ne pas être connu dans certains cas).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateDeces" type="unireg:Date">
+						<xs:annotation>
+							<xs:documentation>La date de décès de la personne.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="ancienNumeroAssureSocial" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>L'ancien numéro de sécurité sociale (ancien format sur 11 positions).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="nouveauNumeroAssureSocial" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Le nouveau numéro de sécurité sociale (nouveau format sur 13 positions).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateArrivee" type="unireg:Date">
+						<xs:annotation>
+							<xs:documentation>Date d'arrivée dans le canton. Nulle si cette information n'est pas connue.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="categorie" type="unireg:Categorie">
+						<xs:annotation>
+							<xs:documentation>Catégorie de personne physique.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="MenageCommun">
+		<xs:complexContent>
+			<xs:extension base="unireg:Contribuable">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="contribuablePrincipal" type="unireg:PersonnePhysique" />
+					<xs:element minOccurs="0" name="contribuableSecondaire" type="unireg:PersonnePhysique" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="Sexe">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FEMININ" />
+			<xs:enumeration value="MASCULIN" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Categorie">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SUISSE" />
+			<xs:enumeration value="FONCTIONNAIRE" />
+			<xs:enumeration value="_02_PERMIS_SEJOUR_B" />
+			<xs:enumeration value="_03_ETABLI_C" />
+			<xs:enumeration value="_04_CONJOINT_DIPLOMATE_CI" />
+			<xs:enumeration value="_05_ETRANGER_ADMIS_PROVISOIREMENT_F" />
+			<xs:enumeration value="_06_FRONTALIER_G" />
+			<xs:enumeration value="_07_PERMIS_SEJOUR_COURTE_DUREE_L" />
+			<xs:enumeration value="_08_REQUERANT_ASILE_N" />
+			<xs:enumeration value="_09_A_PROTEGER_S" />
+			<xs:enumeration value="_10_TENUE_DE_S_ANNONCER" />
+			<xs:enumeration value="_11_DIPLOMATE" />
+			<xs:enumeration value="_12_FONCTIONNAIRE_INTERNATIONAL" />
+			<xs:enumeration value="_13_NON_ATTRIBUEE" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

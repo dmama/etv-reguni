@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="../common.xsd" />
+	<xs:include schemaLocation="../data/pm.xsd" />
+	<xs:complexType name="searchEvenementsPM">
+		<xs:sequence>
+			<xs:element name="login" type="unireg:UserLogin" />
+			<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
+			<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
+			<xs:element minOccurs="0" name="dateMinimale" type="unireg:Date" />
+			<xs:element minOccurs="0" name="dateMaximale" type="unireg:Date" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType final="#all" name="evenementPMArray">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:EvenementPM" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

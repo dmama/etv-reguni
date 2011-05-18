@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="tiers.xsd" />
+	<xs:complexType abstract="true" name="Contribuable">
+		<xs:annotation>
+			<xs:documentation>Classe de base pour les contribuables. Les collections sont renseignées en fonction des parts demandées lors de l'appel au service.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:Tiers">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="situationsFamille" type="unireg:SituationFamille">
+						<xs:annotation>
+							<xs:documentation>L'historique complet des situations de famille du contribuable.
+								Attention ! Cette date n'est renseignée qui si la part SITUATIONS_FAMILLE est demandée.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="assujettissementsLIC" type="unireg:Assujettissement">
+						<xs:annotation>
+							<xs:documentation>L'historique des assujettissements LIC du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+								Attention ! Cette date n'est renseignée qui si la part ASSUJETTISSEMENTS est demandée.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="assujettissementsLIFD" type="unireg:Assujettissement">
+						<xs:annotation>
+							<xs:documentation>L'historique des assujettissements LIFD du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+								Attention ! Cette date n'est renseignée qui si la part ASSUJETTISSEMENTS est demandée.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodesImposition" type="unireg:PeriodeImposition">
+						<xs:annotation>
+							<xs:documentation>La liste des périodes d'imposition. Cette liste peut être vide si le tiers n'est pas assujetti.
+								Attention ! Cette date n'est renseignée qui si la part PERIODES_IMPOSITION est demandée.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SituationFamille">
+		<xs:annotation>
+			<xs:documentation>Contient la situation familliale d'un contribuable d'un point de vue fiscal.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateDebut" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>La date de début de la situation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateFin" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>La date de fin de la situation. Si elle est toujours active, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle la situation de famille a été annulée, ou non-renseigné si elle n'est pas annulée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="etatCivil" type="unireg:EtatCivil">
+				<xs:annotation>
+					<xs:documentation>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="nombreEnfants" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Le nombre d'enfants à charge du contribuable, ou non-renseigné si cette information n'est pas connue ou inapplicable.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="tarifApplicable" type="unireg:TarifImpotSource">
+				<xs:annotation>
+					<xs:documentation>Tarif impôt source applicable.
+						Attention ! Ce champ est renseigné uniquement dans le cas où le contribuable associé est:
+						- un ménage commun
+						- composé uniquement de sourciers
+						Il est null dans tous les autres cas.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="numeroContribuablePrincipal" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Numéro du contribuable principal d'un couple sourcier.
+						Attention ! Ce champ est renseigné uniquement dans le cas où le contribuable associé est:
+						- un ménage commun
+						- composé uniquement de sourciers
+						Il est null dans tous les autres cas.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="EtatCivil">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CELIBATAIRE" />
+			<xs:enumeration value="MARIE" />
+			<xs:enumeration value="VEUF" />
+			<xs:enumeration value="LIE_PARTENARIAT_ENREGISTRE" />
+			<xs:enumeration value="NON_MARIE" />
+			<xs:enumeration value="PARTENARIAT_DISSOUS_JUDICIAIREMENT" />
+			<xs:enumeration value="DIVORCE" />
+			<xs:enumeration value="SEPARE" />
+			<xs:enumeration value="PARTENARIAT_DISSOUS_DECES" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TarifImpotSource">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NORMAL" />
+			<xs:enumeration value="DOUBLE_GAIN" />
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

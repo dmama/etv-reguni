@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:complexType name="UserLogin">
+		<xs:annotation>
+			<xs:documentation>Les informations qui permettent de vérifier les droits d'accès aux ressources fiscales d'Unireg.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="userId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>L'identification de l'utilisateur telle que définie par IAM. Cet identifiant DOIT être celui de l'utilisateur réel (= la personne physique) loggé dans le système.
+						Pour les batchs, il faut utiliser un utilisateur technique.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="oid" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>L'id de l'office d'impôt sélectionné par l'utilisateur. Dans la majorité des cas cette information peut être déduite à partir de l'id de l'utilisateur. Cependant
+						certains utilisateurs possèdent plus d'un rattachement à un office d'impôt. Ces utilisateurs doivent sélectionner un office d'impôt bien précis au moment du login, et ce choix
+						doit être propagé à tous les systèmes.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Date">
+		<xs:annotation>
+			<xs:documentation>Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier est grégorien.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="year" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>L'année sur 4 digits (e.g. 1337, 2001, 2400, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="month" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Le mois (1..12). En cas de date partielle, la valeur peut être 0.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="day" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Le jour (1..31). En cas de date partielle, la valeur peut être 0.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="TiersPart">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ADRESSES" />
+			<xs:enumeration value="ADRESSES_ENVOI" />
+			<xs:enumeration value="FORS_FISCAUX" />
+			<xs:enumeration value="FORS_FISCAUX_VIRTUELS" />
+			<xs:enumeration value="FORS_GESTION" />
+			<xs:enumeration value="COMPOSANTS_MENAGE" />
+			<xs:enumeration value="ASSUJETTISSEMENTS" />
+			<xs:enumeration value="PERIODES_IMPOSITION" />
+			<xs:enumeration value="RAPPORTS_ENTRE_TIERS" />
+			<xs:enumeration value="SITUATIONS_FAMILLE" />
+			<xs:enumeration value="DECLARATIONS" />
+			<xs:enumeration value="COMPTES_BANCAIRES" />
+			<xs:enumeration value="SIEGES" />
+			<xs:enumeration value="FORMES_JURIDIQUES" />
+			<xs:enumeration value="CAPITAUX" />
+			<xs:enumeration value="REGIMES_FISCAUX" />
+			<xs:enumeration value="ETATS_PM" />
+			<xs:enumeration value="PERIODICITES" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WebServiceExceptionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BUSINESS" />
+			<xs:enumeration value="ACCESS_DENIED" />
+			<xs:enumeration value="TECHNICAL" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType abstract="true" name="WebServiceExceptionInfo">
+		<!-- TODO (msi) code de catégorie -->
+		<xs:sequence>
+			<xs:element name="message" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Un message succinct explicitant autant que possible la cause de l'exception.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BusinessExceptionInfo">
+		<xs:annotation>
+			<xs:documentation>Exception levée par le web-service lorsqu'une erreur métier est levée. Une erreur métier peut être le résultat de paramètres d'entrée incorrects, de données incohérentes
+				dans la base, de problèmes de connectivités avec d'autres registres, etc...
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:WebServiceExceptionInfo">
+				<xs:sequence />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AccessDeniedExceptionInfo">
+		<xs:annotation>
+			<xs:documentation>Exception levée par le web-service lorsque l'accès à une ressource n'est pas autorisé.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:WebServiceExceptionInfo">
+				<xs:sequence />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TechnicalExceptionInfo">
+		<xs:annotation>
+			<xs:documentation>Exception levée par le web-service lorsqu'une erreur interne au web-service est levée. Dans ce cas, il s'agit généralement d'un bug du web-service.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:WebServiceExceptionInfo">
+				<xs:sequence />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

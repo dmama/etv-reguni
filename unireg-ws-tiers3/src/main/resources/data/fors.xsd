@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="../common.xsd" />
+	<xs:complexType name="ForFiscal">
+		<xs:annotation>
+			<xs:documentation>Un for fiscal détermine la raison pour laquelle un contribuable est soumis à l'impôt.
+				De manière générale, un for fiscal possède une date de début et une date de fin (incluse) qui délimitent une période de validité. En dehors de cette période, le for fiscal n’est pas
+				valide. Une date de fin de validité nulle indique que le for est toujours actif, et peut être interprétée comme "la fin des temps". Une date de début de validité nulle n’est pas
+				autorisée.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateOuverture" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>La date d'ouverture du for fiscal.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateFermeture" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>La date de fermeture du for fiscal. Si le for est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle le for fiscal a été annulé, ou null s'il n'est pas annulé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="genreImpot" type="unireg:GenreImpot">
+				<xs:annotation>
+					<xs:documentation>Le genre d'impôt (dans 90% des cas égal à REVENU_FORTUNE ou DEBITEUR_PRESTATION_IMPOSABLE).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="typeAutoriteFiscale" type="unireg:TypeAutoriteFiscale">
+				<xs:annotation>
+					<xs:documentation>Cet enum permet d'interpréter le numéro OFS contenu dans noOfsAutoriteFiscale</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="noOfsAutoriteFiscale" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Numéro OFS étendu de la commune, du canton ou du pays de l'autorité fiscale du fors.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="motifRattachement" type="unireg:MotifRattachement">
+				<xs:annotation>
+					<xs:documentation>Le motif de rattachement est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="motifOuverture" type="unireg:MotifFor">
+				<xs:annotation>
+					<xs:documentation>Le motif d'ouverture est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="motifFermeture" type="unireg:MotifFor">
+				<xs:annotation>
+					<xs:documentation>Le motif de fermeture est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="modeImposition" type="unireg:ModeImposition">
+				<xs:annotation>
+					<xs:documentation>Le mode d'imposition est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE et de rattachement = {DOMICILE; DIPLOMATE}</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="virtuel" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Vrai si le for fiscal n'existe pas en tel que tel, mais est une vue construite en fonction de règles métier.
+						Exemple: les fors fiscaux principaux individuels des sourciers appartenant à des ménages-communs sont virtuels, car les fors fiscaux réels sont définis sur les contribuables
+						ménages. Voir la part TiersPart.FORS_FISCAUX_VIRTUELS.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ForGestion">
+		<xs:annotation>
+			<xs:documentation>Le for de gestion permet de retrouver l’office d’impôt compétent 'ratione loci' du contribuable. Il ne s’agit pas à proprement parler d’une notion fiscale, mais
+				uniquement d’une notion propre à l’organisation de l’ACI
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="dateDebut" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>La date de début de validité du for de gestion.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateFin" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>La date de fin de validité du for de gestion. Si le for est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="noOfsCommune" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Numéro OFS étendu de la commune vaudoise (qui permet de déduire l'office d'impôt compétent)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="GenreImpot">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="REVENU_FORTUNE" />
+			<xs:enumeration value="GAIN_IMMOBILIER" />
+			<xs:enumeration value="DROIT_MUTATION" />
+			<xs:enumeration value="PRESTATION_CAPITAL" />
+			<xs:enumeration value="SUCCESSION" />
+			<xs:enumeration value="FONCIER" />
+			<xs:enumeration value="DEBITEUR_PRESTATION_IMPOSABLE" />
+			<xs:enumeration value="DONATION" />
+			<xs:enumeration value="CHIENS" />
+			<xs:enumeration value="PATENTE_TABAC" />
+			<xs:enumeration value="BENEFICE_CAPITAL" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TypeAutoriteFiscale">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="COMMUNE_OU_FRACTION_VD" />
+			<xs:enumeration value="COMMUNE_HC" />
+			<xs:enumeration value="PAYS_HS" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MotifRattachement">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DOMICILE" />
+			<xs:enumeration value="IMMEUBLE_PRIVE" />
+			<xs:enumeration value="DIPLOMATE_SUISSE" />
+			<xs:enumeration value="ACTIVITE_INDEPENDANTE" />
+			<xs:enumeration value="SEJOUR_SAISONNIER" />
+			<xs:enumeration value="DIRIGEANT_SOCIETE" />
+			<xs:enumeration value="ACTIVITE_LUCRATIVE_CAS" />
+			<xs:enumeration value="ADMINISTRATEUR" />
+			<xs:enumeration value="CREANCIER_HYPOTHECAIRE" />
+			<xs:enumeration value="PRESTATION_PREVOYANCE" />
+			<xs:enumeration value="DIPLOMATE_ETRANGER" />
+			<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
+			<xs:enumeration value="ETABLISSEMENT_STABLE" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MotifFor">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DEMENAGEMENT_VD" />
+			<xs:enumeration value="VEUVAGE_DECES" />
+			<xs:enumeration value="MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION" />
+			<xs:enumeration value="SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT" />
+			<xs:enumeration value="PERMIS_C_SUISSE" />
+			<xs:enumeration value="MAJORITE" />
+			<xs:enumeration value="ARRIVEE_HS" />
+			<xs:enumeration value="ARRIVEE_HC" />
+			<xs:enumeration value="FUSION_COMMUNES" />
+			<xs:enumeration value="ACHAT_IMMOBILIER" />
+			<xs:enumeration value="VENTE_IMMOBILIER" />
+			<xs:enumeration value="DEBUT_EXPLOITATION" />
+			<xs:enumeration value="FIN_EXPLOITATION" />
+			<xs:enumeration value="DEPART_HS" />
+			<xs:enumeration value="DEPART_HC" />
+			<xs:enumeration value="INDETERMINE" />
+			<xs:enumeration value="SEJOUR_SAISONNIER" />
+			<xs:enumeration value="CHGT_MODE_IMPOSITION" />
+			<xs:enumeration value="ANNULATION" />
+			<xs:enumeration value="REACTIVATION" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ModeImposition">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ORDINAIRE" />
+			<xs:enumeration value="SOURCE" />
+			<xs:enumeration value="DEPENSE" />
+			<xs:enumeration value="MIXTE_137_1" />
+			<xs:enumeration value="MIXTE_137_2" />
+			<xs:enumeration value="INDIGENT" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Assujettissement">
+		<!-- TODO (msi) revoir ces définitions, elles sont trop spécifiques aux besoins de SIPF -->
+		<xs:sequence>
+			<xs:element name="dateDebut" type="unireg:Date" />
+			<xs:element name="dateFin" type="unireg:Date" />
+			<xs:element name="type" type="unireg:TypeAssujettissement" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="TypeAssujettissement">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LIMITE" />
+			<xs:enumeration value="ILLIMITE" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PeriodeImposition">
+		<xs:annotation>
+			<xs:documentation>Cette classe contient les date de début et de fin d'une période d'imposition au rôle ordinaire d'un contribuable.
+				Note: une période d'imposition est toujours incluse dans une année fiscale (du 1er janvier au 31 décembre). Elle peut être plus courte ou égale, mais pas plus grande.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateDebut" type="unireg:Date" />
+			<xs:element name="dateFin" type="unireg:Date" />
+			<xs:element minOccurs="0" name="idDI" type="xs:long" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

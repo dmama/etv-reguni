@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="../common.xsd" />
+	<xs:include schemaLocation="../data/tiers.xsd" />
+	<xs:complexType name="SearchTiers">
+		<xs:sequence>
+			<xs:element name="login" type="unireg:UserLogin" />
+			<xs:element minOccurs="0" name="numero" type="xs:string" />
+			<xs:element minOccurs="0" name="nomCourrier" type="xs:string" />
+			<xs:element minOccurs="0" name="localiteOuPays" type="xs:string" />
+			<xs:element minOccurs="0" name="dateNaissance" type="unireg:Date" />
+			<xs:element minOccurs="0" name="numeroAVS" type="xs:string" />
+			<xs:element minOccurs="0" name="noOfsFor" type="xs:int" />
+			<xs:element minOccurs="0" name="forPrincipalActif" type="xs:boolean" />
+			<xs:element minOccurs="0" name="typeRecherche" type="unireg:TypeRecherche" />
+			<xs:element minOccurs="0" name="typeTiers" type="unireg:TypeTiers" />
+			<xs:element minOccurs="0" name="categorieDebiteur" type="unireg:CategorieDebiteur" />
+			<xs:element minOccurs="0" name="tiersActif" type="xs:boolean" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="TypeRecherche">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CONTIENT" />
+			<xs:enumeration value="PHONETIQUE" />
+			<xs:enumeration value="EST_EXACTEMENT" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType final="#all" name="TiersInfoArray">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:TiersInfo" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

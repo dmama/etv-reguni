@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+	<xs:include schemaLocation="../common.xsd" />
+	<xs:complexType name="SetTiersBlocRembAuto">
+		<xs:sequence>
+			<xs:element name="login" type="unireg:UserLogin" />
+			<xs:element name="tiersNumber" type="xs:long" />
+			<xs:element name="blocage" type="xs:boolean" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
