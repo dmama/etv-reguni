@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="../common.xsd" />
+	<xs:include schemaLocation="common.xsd" />
 	<xs:include schemaLocation="../data/tiers.xsd" />
 	<xs:complexType name="GetBatchTiers">
-		<xs:sequence>
-			<xs:element name="login" type="unireg:UserLogin" />
-			<xs:element maxOccurs="unbounded" name="tiersNumbers" type="xs:long" />
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:TiersPart" />
-		</xs:sequence>
+		<xs:annotation>
+			<xs:documentation>Requête qui demande les informations de plusieurs tiers d'un seul coup.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:Request">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" name="tiersNumbers" type="xs:long" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:TiersPart" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="BatchTiers">
 		<xs:sequence>
