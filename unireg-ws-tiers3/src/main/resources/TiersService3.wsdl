@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- version 3.0-SNAPSHOT -->
-<wsdl:definitions name="TiersWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3"
+<wsdl:definitions name="TiersWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" xmlns="http://www.vd.ch/unireg/webservices/tiers3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
 		<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3"
@@ -45,117 +45,117 @@
 
 	<!-- IN/OUT Message declarations -->
 	<wsdl:message name="searchTiersRequestMessage">
-		<wsdl:part name="searchTiersRequest" element="unireg:searchTiersRequest" />
+		<wsdl:part name="searchTiersRequest" element="searchTiersRequest" />
 	</wsdl:message>
 	<wsdl:message name="searchTiersResponseMessage">
-		<wsdl:part name="searchTiersResponse" element="unireg:searchTiersResponse" />
+		<wsdl:part name="searchTiersResponse" element="searchTiersResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="searchEvenementsPMRequestMessage">
-		<wsdl:part name="searchEvenementsPMRequest" element="unireg:searchEvenementsPMRequest" />
+		<wsdl:part name="searchEvenementsPMRequest" element="searchEvenementsPMRequest" />
 	</wsdl:message>
 	<wsdl:message name="searchEvenementsPMResponseMessage">
-		<wsdl:part name="searchEvenementsPMResponse" element="unireg:searchEvenementsPMResponse" />
+		<wsdl:part name="searchEvenementsPMResponse" element="searchEvenementsPMResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="getTiersTypeRequestMessage">
-		<wsdl:part name="getTiersTypeRequest" element="unireg:getTiersTypeRequest" />
+		<wsdl:part name="getTiersTypeRequest" element="getTiersTypeRequest" />
 	</wsdl:message>
 	<wsdl:message name="getTiersTypeResponseMessage">
-		<wsdl:part name="getTiersTypeResponse" element="unireg:getTiersTypeResponse" />
+		<wsdl:part name="getTiersTypeResponse" element="getTiersTypeResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="getTiersRequestMessage">
-		<wsdl:part name="getTiersRequest" element="unireg:getTiersRequest" />
+		<wsdl:part name="getTiersRequest" element="getTiersRequest" />
 	</wsdl:message>
 	<wsdl:message name="getTiersResponseMessage">
-		<wsdl:part name="getTiersResponse" element="unireg:getTiersResponse" />
+		<wsdl:part name="getTiersResponse" element="getTiersResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="getBatchTiersRequestMessage">
-		<wsdl:part name="getBatchTiersRequest" element="unireg:getBatchTiersRequest" />
+		<wsdl:part name="getBatchTiersRequest" element="getBatchTiersRequest" />
 	</wsdl:message>
 	<wsdl:message name="getBatchTiersResponseMessage">
-		<wsdl:part name="getBatchTiersResponse" element="unireg:getBatchTiersResponse" />
+		<wsdl:part name="getBatchTiersResponse" element="getBatchTiersResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="getDebiteurInfoRequestMessage">
-		<wsdl:part name="getDebiteurInfoRequest" element="unireg:getDebiteurInfoRequest" />
+		<wsdl:part name="getDebiteurInfoRequest" element="getDebiteurInfoRequest" />
 	</wsdl:message>
 	<wsdl:message name="getDebiteurInfoResponseMessage">
-		<wsdl:part name="getDebiteurInfoResponse" element="unireg:getDebiteurInfoResponse" />
+		<wsdl:part name="getDebiteurInfoResponse" element="getDebiteurInfoResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="getListeCtbModifiesRequestMessage">
-		<wsdl:part name="getListeCtbModifiesRequest" element="unireg:getListeCtbModifiesRequest" />
+		<wsdl:part name="getListeCtbModifiesRequest" element="getListeCtbModifiesRequest" />
 	</wsdl:message>
 	<wsdl:message name="getListeCtbModifiesResponseMessage">
-		<wsdl:part name="getListeCtbModifiesResponse" element="unireg:getListeCtbModifiesResponse" />
+		<wsdl:part name="getListeCtbModifiesResponse" element="getListeCtbModifiesResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="setTiersBlocRembAutoRequestMessage">
-		<wsdl:part name="setTiersBlocRembAutoRequest" element="unireg:setTiersBlocRembAutoRequest" />
+		<wsdl:part name="setTiersBlocRembAutoRequest" element="setTiersBlocRembAutoRequest" />
 	</wsdl:message>
 	<wsdl:message name="setTiersBlocRembAutoResponseMessage">
 	</wsdl:message>
 
 	<wsdl:message name="quittancerDeclarationsRequestMessage">
-		<wsdl:part name="quittancerDeclarationsRequest" element="unireg:quittancerDeclarationsRequest" />
+		<wsdl:part name="quittancerDeclarationsRequest" element="quittancerDeclarationsRequest" />
 	</wsdl:message>
 	<wsdl:message name="quittancerDeclarationsResponseMessage">
-		<wsdl:part name="quittancerDeclarationsResponse" element="unireg:quittancerDeclarationsResponse" />
+		<wsdl:part name="quittancerDeclarationsResponse" element="quittancerDeclarationsResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="webServiceException">
-		<wsdl:part name="webServiceException" element="unireg:webServiceException" />
+		<wsdl:part name="webServiceException" element="webServiceException" />
 	</wsdl:message>
 
 	<!-- PORT declarations -->
 	<wsdl:portType name="TiersWebService">
 		<wsdl:operation name="getTiers">
-			<wsdl:input message="unireg:getTiersRequestMessage" />
-			<wsdl:output message="unireg:getTiersResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="getTiersRequestMessage" />
+			<wsdl:output message="getTiersResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getTiersType">
-			<wsdl:input message="unireg:getTiersTypeRequestMessage" />
-			<wsdl:output message="unireg:getTiersTypeResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="getTiersTypeRequestMessage" />
+			<wsdl:output message="getTiersTypeResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="searchTiers">
-			<wsdl:input message="unireg:searchTiersRequestMessage" />
-			<wsdl:output message="unireg:searchTiersResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="searchTiersRequestMessage" />
+			<wsdl:output message="searchTiersResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getListeCtbModifies">
-			<wsdl:input message="unireg:getListeCtbModifiesRequestMessage" />
-			<wsdl:output message="unireg:getListeCtbModifiesResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="getListeCtbModifiesRequestMessage" />
+			<wsdl:output message="getListeCtbModifiesResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getBatchTiers">
-			<wsdl:input message="unireg:getBatchTiersRequestMessage" />
-			<wsdl:output message="unireg:getBatchTiersResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="getBatchTiersRequestMessage" />
+			<wsdl:output message="getBatchTiersResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="searchEvenementsPM">
-			<wsdl:input message="unireg:searchEvenementsPMRequestMessage" />
-			<wsdl:output message="unireg:searchEvenementsPMResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="searchEvenementsPMRequestMessage" />
+			<wsdl:output message="searchEvenementsPMResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="setTiersBlocRembAuto">
-			<wsdl:input message="unireg:setTiersBlocRembAutoRequestMessage" />
-			<wsdl:output message="unireg:setTiersBlocRembAutoResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="setTiersBlocRembAutoRequestMessage" />
+			<wsdl:output message="setTiersBlocRembAutoResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="quittancerDeclarations">
-			<wsdl:input message="unireg:quittancerDeclarationsRequestMessage" />
-			<wsdl:output message="unireg:quittancerDeclarationsResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="quittancerDeclarationsRequestMessage" />
+			<wsdl:output message="quittancerDeclarationsResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getDebiteurInfo">
-			<wsdl:input message="unireg:getDebiteurInfoRequestMessage" />
-			<wsdl:output message="unireg:getDebiteurInfoResponseMessage" />
-			<wsdl:fault message="unireg:webServiceException" name="webServiceException" />
+			<wsdl:input message="getDebiteurInfoRequestMessage" />
+			<wsdl:output message="getDebiteurInfoResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 	</wsdl:portType>
 
