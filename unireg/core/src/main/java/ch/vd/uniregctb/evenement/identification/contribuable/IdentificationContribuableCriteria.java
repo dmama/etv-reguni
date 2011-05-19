@@ -18,6 +18,10 @@ public class IdentificationContribuableCriteria {
 
 	private Date dateMessageFin;
 
+	private Date dateTraitementDebut;
+
+	private Date dateTraitementFin;
+
 	private String etatMessage;
 
 	private String nom;
@@ -134,5 +138,21 @@ public class IdentificationContribuableCriteria {
 
 	public void setTraitementUser(String traitementUser) {
 		this.traitementUser = traitementUser;
+	}
+
+	public Date getDateTraitementDebut() {
+		return dateTraitementDebut;
+	}
+
+	public void setDateTraitementDebut(Date dateTraitementDebut) {
+		this.dateTraitementDebut = dateTraitementDebut;
+	}
+
+	public Date getDateTraitementFin() {
+		return dateTraitementFin;
+	}
+
+	public void setDateTraitementFin(Date dateTraitementFin) {
+		this.dateTraitementFin = dateTraitementFin;
 	}
 }

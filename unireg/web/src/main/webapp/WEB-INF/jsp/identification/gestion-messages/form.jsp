@@ -141,6 +141,10 @@
 								<form:options items="${etatsMessage}" />
 							</form:select>
 						</td>
+						<td width="25%">&nbsp;</td>
+						<td width="25%">&nbsp;</td>
+					</tr>
+					<tr class="<unireg:nextRowClass/>" >
 						<td width="25%">
 							<fmt:message key="label.identification.traitement.user" />&nbsp;:
 						</td>
@@ -150,7 +154,27 @@
 								<form:options items="${traitementUsers}" />
 							</form:select>
 						</td>
-					</tr>	
+						<td width="25%">&nbsp;</td>
+						<td width="25%">&nbsp;</td>
+					</tr>
+					<tr class="<unireg:nextRowClass/>" >
+						<td width="25%">
+							<fmt:message key="label.date.traitement.debut" />&nbsp;:
+						</td>
+						<td width="25%">
+							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+								<jsp:param name="path" value="dateTraitementDebut" />
+								<jsp:param name="id" value="dateTraitementDebut" />
+							</jsp:include>&nbsp;
+							<fmt:message key="label.date.traitement.fin" />&nbsp;
+							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+								<jsp:param name="path" value="dateTraitementFin" />
+								<jsp:param name="id" value="dateTraitementFin" />
+							</jsp:include>
+						</td>
+						<td width="25%">&nbsp;</td>
+						<td width="25%">&nbsp;</td>
+					</tr>
 			</c:otherwise>
 		</c:choose>
 	

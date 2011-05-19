@@ -266,6 +266,20 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			criteria.add(visaUser);
 		}
 
+		Date dateTraitementDebut = identificationContribuableCriteria.getDateTraitementDebut();
+		if (dateTraitementDebut != null) {
+			queryWhere += " and identificationContribuable.dateTraitement >= ? ";
+			// On prends la date a Zero Hour
+			criteria.add(dateTraitementDebut);
+		}
+		Date dateTraitementFin = identificationContribuableCriteria.getDateTraitementFin();
+		if (dateTraitementFin != null) {
+			queryWhere += " and identificationContribuable.dateTraitement <= ? ";
+			// On prends la date a 24 Hour
+			criteria.add(dateTraitementFin);
+		}
+
+
 		String emetteurId = identificationContribuableCriteria.getEmetteurId();
 		if ((emetteurId != null) && (!TOUS.equals(emetteurId))) {
 			queryWhere += " and identificationContribuable.demande.emetteurId = ? ";
