@@ -3,11 +3,22 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="common.xsd" />
 	<xs:complexType name="GetTiers">
+		<xs:annotation>
+			<xs:documentation>Requête qui demande tout ou partie des informations historiques d'un tiers.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="unireg:Request">
 				<xs:sequence>
-					<xs:element name="tiersNumber" type="xs:long" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:TiersPart" />
+					<xs:element name="tiersNumber" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>L'id du tiers dont on veut obtenir les informations.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:TiersPart">
+						<xs:annotation>
+							<xs:documentation>Les parties à renseigner sur le tiers retourné.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

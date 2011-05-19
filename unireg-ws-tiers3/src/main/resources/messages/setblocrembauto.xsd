@@ -3,11 +3,22 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="common.xsd" />
 	<xs:complexType name="SetTiersBlocRembAuto">
+		<xs:annotation>
+			<xs:documentation>Requête qui demande de changer le bloquage du remboursement automatique sur un tiers donné.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="unireg:Request">
 				<xs:sequence>
-					<xs:element name="tiersNumber" type="xs:long" />
-					<xs:element name="blocage" type="xs:boolean" />
+					<xs:element name="tiersNumber" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>L'id du tiers concerné par le changement.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="blocage" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>Vrai si le blocage doit être activé, ou faux s'il doit être désactivé.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

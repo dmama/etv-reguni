@@ -4,13 +4,32 @@
 	<xs:include schemaLocation="common.xsd" />
 	<xs:include schemaLocation="../data/pm.xsd" />
 	<xs:complexType name="searchEvenementsPM">
+		<xs:annotation>
+			<xs:documentation>Requête de recherche d'événements des personnes morales en fonction de divers critères.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="unireg:Request">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
-					<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
-					<xs:element minOccurs="0" name="dateMinimale" type="unireg:Date" />
-					<xs:element minOccurs="0" name="dateMaximale" type="unireg:Date" />
+					<xs:element minOccurs="0" name="tiersNumber" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Critère sur le numéro de personne morale des événements à retourner.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="codeEvenement" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Critère sur le code des événement à retourner.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateMinimale" type="unireg:Date">
+						<xs:annotation>
+							<xs:documentation>Critère sur la date minimale des événements à retourner.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateMaximale" type="unireg:Date">
+						<xs:annotation>
+							<xs:documentation>Critère sur la date maximale des événements à retourner.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

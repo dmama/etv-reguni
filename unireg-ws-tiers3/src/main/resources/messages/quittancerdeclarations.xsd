@@ -3,45 +3,129 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="common.xsd" />
 	<xs:complexType name="QuittancerDeclarations">
+		<xs:annotation>
+			<xs:documentation>Requête qui demande de quittancer une ou plusieurs déclarations.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="unireg:Request">
 				<xs:sequence>
-					<xs:element maxOccurs="unbounded" name="demandes" type="unireg:DemandeQuittancementDeclaration" />
+					<xs:element maxOccurs="unbounded" name="demandes" type="unireg:DemandeQuittancementDeclaration">
+						<xs:annotation>
+							<xs:documentation>Les demandes de quittancement à traiter.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="DemandeQuittancementDeclaration">
+		<xs:annotation>
+			<xs:documentation>Demande de quittancement (= enregistrement du retour) d'une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="key" type="unireg:DeclarationImpotOrdinaireKey" />
-			<xs:element name="dateRetour" type="unireg:Date" />
+			<xs:element name="key" type="unireg:DeclarationImpotOrdinaireKey">
+				<xs:annotation>
+					<xs:documentation>La clé qui permet d'identification la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateRetour" type="unireg:Date">
+				<xs:annotation>
+					<xs:documentation>La date de retour (= date de quittancement) de la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="DeclarationImpotOrdinaireKey">
+		<xs:annotation>
+			<xs:documentation>Contient les données qui permettent d'identifier de manière unique une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="ctbId" type="xs:long" />
-			<xs:element name="periodeFiscale" type="xs:int" />
-			<xs:element name="numeroSequenceDI" type="xs:int" />
+			<xs:element name="ctbId" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Le numéro de contribuable auquel appartient la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="periodeFiscale" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>La période fiscale complète (ex. 2010) pour laquelle la déclaration a été émise.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numeroSequenceDI" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Le numéro de séquence de la déclaration (pour le contribuable et la période fiscale considérée)..</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="ReponseQuittancementDeclaration">
+		<xs:annotation>
+			<xs:documentation>Contient les informations de réponse d'une demande de quittancement d'une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="key" type="unireg:DeclarationImpotOrdinaireKey" />
-			<xs:element name="code" type="unireg:CodeQuittancement" />
-			<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
-			<xs:element minOccurs="0" name="exceptionType" type="unireg:WebServiceExceptionType" />
+			<xs:element name="key" type="unireg:DeclarationImpotOrdinaireKey">
+				<xs:annotation>
+					<xs:documentation>La clé qui permet d'identifier la déclaration concernée</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="code" type="unireg:CodeQuittancement">
+				<xs:annotation>
+					<xs:documentation>Le code de retour du quittancement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="exceptionMessage" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le message de l'erreur ou de l'exception levée si code != OK</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="exceptionType" type="unireg:WebServiceExceptionType">
+				<xs:annotation>
+					<xs:documentation>Le type de l'erreur ou de l'exception levée si code != OK</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="CodeQuittancement">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="OK" />
-			<xs:enumeration value="ERREUR_CTB_INCONNU" />
-			<xs:enumeration value="ERREUR_ASSUJETTISSEMENT_CTB" />
-			<xs:enumeration value="ERREUR_CTB_DEBITEUR_INACTIF" />
-			<xs:enumeration value="ERREUR_DECLARATION_INEXISTANTE" />
-			<xs:enumeration value="ERREUR_DECLARATION_ANNULEE" />
-			<xs:enumeration value="ERREUR_DATE_RETOUR_INVALIDE" />
-			<xs:enumeration value="EXCEPTION" />
+			<xs:enumeration value="OK">
+				<xs:annotation>
+					<xs:documentation>La déclaration a bien été quittancée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERREUR_CTB_INCONNU">
+				<xs:annotation>
+					<xs:documentation>Le contribuable spécifié est inconnu.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERREUR_ASSUJETTISSEMENT_CTB">
+				<xs:annotation>
+					<xs:documentation>Une erreur en relation avec l'assujettissement du contribuable a été détectée (pas de for fiscal principal, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERREUR_CTB_DEBITEUR_INACTIF">
+				<xs:annotation>
+					<xs:documentation>Le contribuable est un débiteur inactif.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERREUR_DECLARATION_INEXISTANTE">
+				<xs:annotation>
+					<xs:documentation>La déclaration spécifiée n'existe pas.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERREUR_DECLARATION_ANNULEE">
+				<xs:annotation>
+					<xs:documentation>La déclaration d'impôt est annnulée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERREUR_DATE_RETOUR_INVALIDE">
+				<xs:annotation>
+					<xs:documentation>La date de retour est invalide.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXCEPTION">
+				<xs:annotation>
+					<xs:documentation>La déclaration n'a pas pu être quittancée pour une raison inconnue. Voir le message d'exception pour plus de détails.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType final="#all" name="ReponseQuittancementDeclarationArray">

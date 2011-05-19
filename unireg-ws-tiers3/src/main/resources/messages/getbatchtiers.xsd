@@ -10,8 +10,16 @@
 		<xs:complexContent>
 			<xs:extension base="unireg:Request">
 				<xs:sequence>
-					<xs:element maxOccurs="unbounded" name="tiersNumbers" type="xs:long" />
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:TiersPart" />
+					<xs:element maxOccurs="unbounded" name="tiersNumbers" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Les ids des tiers à retourner</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:TiersPart">
+						<xs:annotation>
+							<xs:documentation>Les parties à renseigner sur les tiers retournés.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -22,12 +30,37 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="BatchTiersEntry">
+		<xs:annotation>
+			<xs:documentation>Les données trouvées pour un tiers demandé à travers la méthode 'getBatchTiers'.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="number" type="xs:long" />
-			<xs:element minOccurs="0" name="tiers" type="unireg:Tiers" />
-			<xs:element minOccurs="0" name="exceptionMessage" type="xs:string" />
+			<xs:element name="number" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Le numéro de tiers demandé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="tiers" type="unireg:Tiers">
+				<xs:annotation>
+					<xs:documentation>Le tiers demandé, ou non-renseigné si le tiers n'a pas été trouvé.
+						S'il le tiers est non-renseigné, il y a deux possibilités :
+						- si 'exceptionMessage' est non-renseigné : le tiers n'existe pas.
+						- si 'exceptionMessage' est renseigné : le tiers existe mais le web-service n'a pu pas le retourner. Dans ce cas, la raison est stockée dans 'exceptionMessage'.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="exceptionMessage" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Un message explicatif si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement pas.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<!-- TODO (msi) transmettre plutôt un WebServiceExceptionInfo ? -->
-			<xs:element minOccurs="0" name="exceptionType" type="unireg:WebServiceExceptionType" />
+			<xs:element minOccurs="0" name="exceptionType" type="unireg:WebServiceExceptionType">
+				<xs:annotation>
+					<xs:documentation>Le type d'exception si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement pas.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
