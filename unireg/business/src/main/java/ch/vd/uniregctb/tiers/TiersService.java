@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -380,7 +382,7 @@ public interface TiersService {
 	 *            la date de référence, ou null pour obtenir tous les composants connus dans l'histoire du ménage.
 	 * @return un objet EnsembleTiersCouple regroupant l'ensemble des tiers individuels et tiers menage.
 	 */
-	public EnsembleTiersCouple getEnsembleTiersCouple(MenageCommun menageCommun, RegDate date);
+	public EnsembleTiersCouple getEnsembleTiersCouple(MenageCommun menageCommun, @Nullable RegDate date);
 
 	/**
 	 * Contruit l'ensemble des tiers individuels et tiers menage à partir du tiers ménage-commun.

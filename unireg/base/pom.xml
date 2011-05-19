@@ -368,6 +368,11 @@
 			<version>3.1</version>
 			<scope>runtime</scope> <!-- scope runtime : pour éviter d'avoir la classe edu.emory.mathcs.backport.java.util.Collections utilisée à la place de java.util.Collections -->
 		</dependency>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>6.0.2</version>
+		</dependency>
 		<!--  Deps de testing -->
 		<dependency>
 			<groupId>org.springframework</groupId>

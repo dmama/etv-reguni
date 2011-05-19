@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -343,7 +345,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	public static List<Assujettissement> determine(Contribuable contribuable, final DateRange range, boolean collate) throws AssujettissementException {
+	public static List<Assujettissement> determine(Contribuable contribuable, @Nullable final DateRange range, boolean collate) throws AssujettissementException {
 
 		List<Assujettissement> list = determine(contribuable);
 		if (list == null) {

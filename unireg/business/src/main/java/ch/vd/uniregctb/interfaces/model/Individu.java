@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 
 public interface Individu extends EntiteCivile {
@@ -184,5 +186,5 @@ public interface Individu extends EntiteCivile {
 	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
 	 * @return le permis actif d'un individu à une date donnée.
 	 */
-	Permis getPermisActif(RegDate date);
+	Permis getPermisActif(@Nullable RegDate date);
 }

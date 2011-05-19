@@ -3,6 +3,8 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -108,7 +110,7 @@ public interface ServiceCivilService {
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
 	 */
-	Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties);
+	Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties);
 
 	/**
 	 * Retourne l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
