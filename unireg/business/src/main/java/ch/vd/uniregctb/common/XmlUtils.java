@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -55,6 +56,13 @@ public abstract class XmlUtils {
 			return null;
 		}
 		return RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
+	}
+
+	public static Date xmlcal2date(XMLGregorianCalendar cal) {
+		if (cal == null) {
+			return null;
+		}
+		return cal.toGregorianCalendar().getTime();
 	}
 
 	public static XMLGregorianCalendar regdate2xmlcal(RegDate date) {
