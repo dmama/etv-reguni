@@ -45,8 +45,10 @@
 		<jsp:include page="../pm/fors.jsp"/>
 	</c:when>
 	<c:when test="${command.natureTiers != 'DebiteurPrestationImposable' && command.natureTiers != 'Entreprise'}">
-		<jsp:include page="for.jsp"/>	
-		<jsp:include page="situation-famille.jsp"/>	
+		<jsp:include page="for.jsp"/>
+		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+			<jsp:include page="situation-famille.jsp"/>
+		</authz:authorize>
 	</c:when>
 </c:choose>
 

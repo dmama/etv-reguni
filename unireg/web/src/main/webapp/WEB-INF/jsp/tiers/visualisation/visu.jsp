@@ -54,10 +54,12 @@
 		<!--onglets-->
 		<div id="tiersTabs">
 			<ul id="menuTiersTabs">
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_FORS">
 					<li id="fiscalTab">
 						<a href="#tabContent_fiscalTab"><fmt:message key="label.fiscal" /></a>
 					</li>
+				</authz:authorize>
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 						<li id="civilTab">
 							<a href="#tabContent_civilTab"><fmt:message key="label.civil" /></a>
@@ -108,10 +110,12 @@
 				</li>
 			</ul>
 
-			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+			<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_FORS">
 				<div id="tabContent_fiscalTab" class="situation_fiscale">
 					<jsp:include page="fiscal/fiscal.jsp"/>
 				</div>
+			</authz:authorize>
+			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 					<div id="tabContent_civilTab" class="editTiers">
 						<jsp:include page="civil/civil.jsp"/>
