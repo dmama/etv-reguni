@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="common.xsd" />
+	<xs:include schemaLocation="base.xsd" />
 	<xs:include schemaLocation="../data/tiers.xsd" />
-	<xs:complexType name="GetBatchTiers">
+	<xs:complexType name="getBatchTiersRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête qui demande les informations de plusieurs tiers d'un seul coup.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Request">
+			<xs:extension base="unireg:requestType">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" name="tiersNumbers" type="xs:long">
 						<xs:annotation>
 							<xs:documentation>Les ids des tiers à retourner</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:TiersPart">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:tiersPartType">
 						<xs:annotation>
 							<xs:documentation>Les parties à renseigner sur les tiers retournés.</xs:documentation>
 						</xs:annotation>
@@ -39,7 +39,7 @@
 					<xs:documentation>Le numéro de tiers demandé.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="tiers" type="unireg:Tiers">
+			<xs:element minOccurs="0" name="tiers" type="unireg:tiersType">
 				<xs:annotation>
 					<xs:documentation>Le tiers demandé, ou non-renseigné si le tiers n'a pas été trouvé.
 						S'il le tiers est non-renseigné, il y a deux possibilités :
@@ -55,7 +55,7 @@
 				</xs:annotation>
 			</xs:element>
 			<!-- TODO (msi) transmettre plutôt un WebServiceExceptionInfo ? -->
-			<xs:element minOccurs="0" name="exceptionType" type="unireg:WebServiceExceptionType">
+			<xs:element minOccurs="0" name="exceptionType" type="unireg:typeWebServiceExceptionType">
 				<xs:annotation>
 					<xs:documentation>Le type d'exception si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement pas.
 					</xs:documentation>

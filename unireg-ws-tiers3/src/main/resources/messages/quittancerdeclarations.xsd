@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="common.xsd" />
-	<xs:complexType name="QuittancerDeclarations">
+	<xs:include schemaLocation="base.xsd" />
+	<xs:complexType name="quittancerDeclarationsRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête qui demande de quittancer une ou plusieurs déclarations.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Request">
+			<xs:extension base="unireg:requestType">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" name="demandes" type="unireg:DemandeQuittancementDeclaration">
 						<xs:annotation>
@@ -28,7 +28,7 @@
 					<xs:documentation>La clé qui permet d'identification la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateRetour" type="unireg:Date">
+			<xs:element name="dateRetour" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de retour (= date de quittancement) de la déclaration.</xs:documentation>
 				</xs:annotation>
@@ -77,7 +77,7 @@
 					<xs:documentation>Le message de l'erreur ou de l'exception levée si code != OK</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="exceptionType" type="unireg:WebServiceExceptionType">
+			<xs:element minOccurs="0" name="exceptionType" type="unireg:typeWebServiceExceptionType">
 				<xs:annotation>
 					<xs:documentation>Le type de l'erreur ou de l'exception levée si code != OK</xs:documentation>
 				</xs:annotation>
@@ -128,7 +128,7 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType final="#all" name="ReponseQuittancementDeclarationArray">
+	<xs:complexType final="#all" name="quittancerDeclarationsResponseType">
 		<xs:sequence>
 			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:ReponseQuittancementDeclaration" />
 		</xs:sequence>

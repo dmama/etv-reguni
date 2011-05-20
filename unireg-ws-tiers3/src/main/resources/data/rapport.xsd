@@ -2,27 +2,27 @@
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="../common.xsd" />
-	<xs:complexType name="RapportEntreTiers">
+	<xs:complexType name="rapportEntreTiersType">
 		<xs:annotation>
 			<xs:documentation>Permet de caractériser un rapport (par exemple: tutelle, appartenance ménage, ...) entre deux tiers.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="type" type="unireg:TypeRapportEntreTiers">
+			<xs:element name="type" type="unireg:typeRapportEntreTiersType">
 				<xs:annotation>
 					<xs:documentation>Le type de rapport entre tiers</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateDebut" type="unireg:Date">
+			<xs:element name="dateDebut" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du rapport.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:Date">
+			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du rapport. Si le rapport est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:Date">
+			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle le rapport a été annulé, ou null s'il n'est pas annulé.</xs:documentation>
 				</xs:annotation>
@@ -42,7 +42,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="typeActivite" type="unireg:TypeActivite">
+			<xs:element minOccurs="0" name="typeActivite" type="unireg:typeActiviteType">
 				<xs:annotation>
 					<xs:documentation>Type d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>
@@ -52,7 +52,7 @@
 					<xs:documentation>Taux d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="finDernierElementImposable" type="unireg:Date">
+			<xs:element minOccurs="0" name="finDernierElementImposable" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>
@@ -64,7 +64,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="TypeRapportEntreTiers">
+	<xs:simpleType name="typeRapportEntreTiersType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="TUTELLE" />
 			<xs:enumeration value="CURATELLE" />
@@ -84,12 +84,11 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="TypeActivite">
+	<xs:simpleType name="typeActiviteType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="PRINCIPALE" />
 			<xs:enumeration value="ACCESSOIRE" />
 			<xs:enumeration value="COMPLEMENTAIRE" />
 		</xs:restriction>
 	</xs:simpleType>
-
 </xs:schema>

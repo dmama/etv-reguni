@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-ws-tiers3</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService3.wsdl ! -->
+	<version>3.0b-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService3.wsdl ! -->
 
 	<name>Unireg - WS Tiers v3</name>
 	<description>Unireg - classes Java pour le web-service Tiers v3 de Unireg</description>
@@ -78,7 +78,8 @@
 									<extraargs> 
 									    <extraarg>-p</extraarg> 
 									    <extraarg>ch.vd.uniregctb.webservices.tiers3</extraarg>
-										<extraarg>-xjc-Xts</extraarg>
+										<extraarg>-xjc-Xpretty-classname</extraarg>
+										<!-- inclus implicitement du moment que le plugin 'ts' est dans les dépendances... <extraarg>-xjc-Xts</extraarg> -->
 										<extraarg>-xjc-Xvalue-constructor</extraarg>
 									</extraargs>
 								</wsdlOption>
@@ -99,6 +100,11 @@
 						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>jaxb2-value-constructor</artifactId>
 						<version>3.0</version>
+					</dependency>
+					<dependency>
+						<groupId>ch.vd.uniregctb</groupId>
+						<artifactId>jaxb2-pretty-classname</artifactId>
+						<version>1.0.0</version>
 					</dependency>
 				</dependencies>
 			</plugin>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="common.xsd" />
+	<xs:include schemaLocation="base.xsd" />
 	<xs:include schemaLocation="../data/pm.xsd" />
-	<xs:complexType name="searchEvenementsPM">
+	<xs:complexType name="searchEvenementsPMRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête de recherche d'événements des personnes morales en fonction de divers critères.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Request">
+			<xs:extension base="unireg:requestType">
 				<xs:sequence>
 					<xs:element minOccurs="0" name="tiersNumber" type="xs:long">
 						<xs:annotation>
@@ -20,12 +20,12 @@
 							<xs:documentation>Critère sur le code des événement à retourner.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateMinimale" type="unireg:Date">
+					<xs:element minOccurs="0" name="dateMinimale" type="unireg:dateType">
 						<xs:annotation>
 							<xs:documentation>Critère sur la date minimale des événements à retourner.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateMaximale" type="unireg:Date">
+					<xs:element minOccurs="0" name="dateMaximale" type="unireg:dateType">
 						<xs:annotation>
 							<xs:documentation>Critère sur la date maximale des événements à retourner.</xs:documentation>
 						</xs:annotation>
@@ -34,9 +34,9 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType final="#all" name="evenementPMArray">
+	<xs:complexType final="#all" name="searchEvenementsPMResponseType">
 		<xs:sequence>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:EvenementPM" />
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:evenementPMType" />
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

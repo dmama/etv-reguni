@@ -2,7 +2,7 @@
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="tiers.xsd" />
-	<xs:complexType name="Debiteur">
+	<xs:complexType name="debiteurType">
 		<xs:annotation>
 			<xs:documentation>Classe concrète qui contient toutes les informations d'un débiteur de prestations imposables. Les collections sont renseignées en fonction des parts demandées lors de
 				l'appel
@@ -10,19 +10,19 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Tiers">
+			<xs:extension base="unireg:tiersType">
 				<xs:sequence>
 					<xs:element name="raisonSociale" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>La raison sociale du débiteur.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="categorie" type="unireg:CategorieDebiteur">
+					<xs:element name="categorie" type="unireg:categorieDebiteurType">
 						<xs:annotation>
 							<xs:documentation>La catégorie actuelle du débiteur.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="modeCommunication" type="unireg:ModeCommunication">
+					<xs:element name="modeCommunication" type="unireg:modeCommunicationType">
 						<xs:annotation>
 							<xs:documentation>Le mode de communication actuel du débiteur.</xs:documentation>
 						</xs:annotation>
@@ -50,7 +50,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicites" type="unireg:Periodicite">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicites" type="unireg:periodiciteType">
 						<xs:annotation>
 							<xs:documentation>L'historique des périodicités du débiteur.
 								Attention ! Cette collection n'est renseignée qui si la part PERIODICITES est demandée.
@@ -61,7 +61,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="DebiteurInfo">
+	<xs:complexType name="debiteurInfoType">
 		<xs:annotation>
 			<xs:documentation>Informations métier supplémentaires sur d'un débiteur de prestations imposables (voir cas JIRA UNIREG-2110).</xs:documentation>
 		</xs:annotation>
@@ -88,7 +88,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="CategorieDebiteur">
+	<xs:simpleType name="categorieDebiteurType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ADMINISTRATEURS" />
 			<xs:enumeration value="CONFERENCIERS_ARTISTES_SPORTIFS" />
@@ -98,16 +98,16 @@
 			<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="Periodicite">
+	<xs:complexType name="periodiciteType">
 		<xs:sequence>
-			<xs:element name="dateDebut" type="unireg:Date" />
-			<xs:element minOccurs="0" name="dateFin" type="unireg:Date" />
-			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:Date" />
-			<xs:element name="periodiciteDecompte" type="unireg:PeriodiciteDecompte" />
-			<xs:element minOccurs="0" name="periodeDecompte" type="unireg:PeriodeDecompte" />
+			<xs:element name="dateDebut" type="unireg:dateType" />
+			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType" />
+			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:dateType" />
+			<xs:element name="periodiciteDecompte" type="unireg:periodiciteDecompteType" />
+			<xs:element minOccurs="0" name="periodeDecompte" type="unireg:periodeDecompteType" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="PeriodiciteDecompte">
+	<xs:simpleType name="periodiciteDecompteType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="MENSUEL" />
 			<xs:enumeration value="ANNUEL" />
@@ -116,7 +116,7 @@
 			<xs:enumeration value="UNIQUE" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="PeriodeDecompte">
+	<xs:simpleType name="periodeDecompteType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="M01" />
 			<xs:enumeration value="M02" />
@@ -139,7 +139,7 @@
 			<xs:enumeration value="A" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="ModeCommunication">
+	<xs:simpleType name="modeCommunicationType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="SITE_WEB" />
 			<xs:enumeration value="PAPIER" />

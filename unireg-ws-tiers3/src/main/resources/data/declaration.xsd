@@ -3,24 +3,24 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="../common.xsd" />
 	<xs:include schemaLocation="debiteur.xsd" />
-	<xs:complexType name="Declaration">
+	<xs:complexType name="declarationType">
 		<xs:sequence>
 			<xs:element name="id" type="xs:long">
 				<xs:annotation>
 					<xs:documentation>L'id technique (= clé primaire)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateDebut" type="unireg:Date">
+			<xs:element name="dateDebut" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateFin" type="unireg:Date">
+			<xs:element name="dateFin" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:Date">
+			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle la déclaration a été annulée, ou
 						<b>null</b>
@@ -28,31 +28,31 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="periodeFiscale" type="unireg:PeriodeFiscale">
+			<xs:element name="periodeFiscale" type="unireg:periodeFiscaleType">
 				<xs:annotation>
 					<xs:documentation>La période fiscale à laquelle la déclaration est rattachée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" name="etats" type="unireg:EtatDeclaration">
+			<xs:element maxOccurs="unbounded" name="etats" type="unireg:etatDeclarationType">
 				<xs:annotation>
 					<xs:documentation>Les états de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="DeclarationImpotSource">
+	<xs:complexType name="declarationImpotSourceType">
 		<xs:annotation>
 			<xs:documentation>Contient les informations relative à une liste récapitulative (= LR) émise sur un débiteur.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Declaration">
+			<xs:extension base="unireg:declarationType">
 				<xs:sequence>
-					<xs:element name="periodicite" type="unireg:PeriodiciteDecompte">
+					<xs:element name="periodicite" type="unireg:periodiciteDecompteType">
 						<xs:annotation>
 							<xs:documentation>La périodicité du débiteur au moment de l'émission de la LR.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="modeCommunication" type="unireg:ModeCommunication">
+					<xs:element name="modeCommunication" type="unireg:modeCommunicationType">
 						<xs:annotation>
 							<xs:documentation>Le mode de communication du débiteur au moment de l'émission de la LR.</xs:documentation>
 						</xs:annotation>
@@ -61,19 +61,19 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="DeclarationImpotOrdinaire">
+	<xs:complexType name="declarationImpotOrdinaireType">
 		<xs:annotation>
 			<xs:documentation>Contient les informations relative à une déclaration d'impôt ordinaire (= DI) émise sur un contribuable.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Declaration">
+			<xs:extension base="unireg:declarationType">
 				<xs:sequence>
 					<xs:element name="numero" type="xs:long">
 						<xs:annotation>
 							<xs:documentation>Le numéro de séquence de la déclaration pour la période fiscale.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="typeDocument" type="unireg:TypeDocument">
+					<xs:element name="typeDocument" type="unireg:typeDocumentType">
 						<xs:annotation>
 							<xs:documentation>Le type de document.</xs:documentation>
 						</xs:annotation>
@@ -87,7 +87,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="PeriodeFiscale">
+	<xs:complexType name="periodeFiscaleType">
 		<xs:annotation>
 			<xs:documentation>Une période fiscale couvre la période du 1er janvier au 31 décembre (compris) de l'année considérée.</xs:documentation>
 		</xs:annotation>
@@ -95,24 +95,24 @@
 			<xs:element name="annee" type="xs:int" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="EtatDeclaration">
+	<xs:complexType name="etatDeclarationType">
 		<xs:annotation>
 			<xs:documentation>L'état d'une déclaration avec sa date d'obtention.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="etat" type="unireg:TypeEtatDeclaration">
+			<xs:element name="etat" type="unireg:typeEtatDeclarationType">
 				<xs:annotation>
 					<xs:documentation>L'état de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateObtention" type="unireg:Date">
+			<xs:element name="dateObtention" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Date d'obtention de l'état décrit ici (pour le cas de la sommation, ce n'est pas la date de traitement métier de la sommation qui est indiquée ici, i.e. la vraie
 						date d'obtention, mais la date indiquée sur le courrier envoyé au contribuable).
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:Date">
+			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle l'état a été annulé, ou null s'il n'est pas annulé.
 					</xs:documentation>
@@ -120,7 +120,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="TypeEtatDeclaration">
+	<xs:simpleType name="typeEtatDeclarationType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="EMISE" />
 			<xs:enumeration value="SOMMEE" />
@@ -128,7 +128,7 @@
 			<xs:enumeration value="RETOURNEE" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="TypeDocument">
+	<xs:simpleType name="typeDocumentType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="DECLARATION_IMPOT_COMPLETE" />
 			<xs:enumeration value="DECLARATION_IMPOT_VAUDTAX" />

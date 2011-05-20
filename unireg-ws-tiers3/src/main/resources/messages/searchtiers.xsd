@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="common.xsd" />
+	<xs:include schemaLocation="base.xsd" />
 	<xs:include schemaLocation="../data/tiers.xsd" />
-	<xs:complexType name="SearchTiers">
+	<xs:complexType name="searchTiersRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête de recherche de tiers en fonction de divers critères.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Request">
+			<xs:extension base="unireg:requestType">
 				<xs:sequence>
 					<xs:element minOccurs="0" name="numero" type="xs:string">
 						<xs:annotation>
@@ -27,7 +27,7 @@
 							<xs:documentation>Critère sur la localité (ou le pays pour les tiers hors-Suisse) de l'adresse courrier du tiers</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateNaissance" type="unireg:Date">
+					<xs:element minOccurs="0" name="dateNaissance" type="unireg:dateType">
 						<xs:annotation>
 							<xs:documentation>Critère de recherche sur la date de naissance du tiers. Les ménages communs composés de personnes physiques qui correspondent au critère sont aussi
 								retournés.
@@ -56,12 +56,12 @@
 							<xs:documentation>Le type de recherche sur le nomCourrier.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="typeTiers" type="unireg:TypeTiers">
+					<xs:element minOccurs="0" name="typeTiers" type="unireg:typeTiersType">
 						<xs:annotation>
 							<xs:documentation>Si renseigné, restreint la recherche sur un type de tiers.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="categorieDebiteur" type="unireg:CategorieDebiteur">
+					<xs:element minOccurs="0" name="categorieDebiteur" type="unireg:categorieDebiteurType">
 						<xs:annotation>
 							<xs:documentation>La catégorie de débiteur (uniquement valable sur les débiteurs).</xs:documentation>
 						</xs:annotation>
@@ -100,9 +100,9 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType final="#all" name="TiersInfoArray">
+	<xs:complexType final="#all" name="searchTiersResponseType">
 		<xs:sequence>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:TiersInfo" />
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="unireg:tiersInfoType" />
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

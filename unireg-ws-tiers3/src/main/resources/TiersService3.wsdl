@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0-SNAPSHOT -->
+<!-- version 3.0b-SNAPSHOT -->
 <wsdl:definitions name="TiersWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" xmlns="http://www.vd.ch/unireg/webservices/tiers3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
@@ -22,24 +22,24 @@
 			<xs:include schemaLocation="messages/quittancerdeclarations.xsd" />
 			<xs:include schemaLocation="messages/setblocrembauto.xsd" />
 			<xs:include schemaLocation="messages/getdebiteurinfo.xsd" />
-			<xs:element name="webServiceException" type="unireg:WebServiceExceptionInfo" />
-			<xs:element name="getTiersRequest" nillable="true" type="unireg:GetTiers" />
-			<xs:element name="getTiersResponse" nillable="true" type="unireg:Tiers" />
-			<xs:element name="getTiersTypeRequest" nillable="true" type="unireg:GetTiersType" />
-			<xs:element name="getTiersTypeResponse" nillable="true" type="unireg:TypeTiers" />
-			<xs:element name="searchTiersRequest" nillable="true" type="unireg:SearchTiers" />
-			<xs:element name="searchTiersResponse" nillable="true" type="unireg:TiersInfoArray" />
-			<xs:element name="getListeCtbModifiesRequest" nillable="true" type="unireg:getListeCtbModifies" />
-			<xs:element name="getListeCtbModifiesResponse" nillable="true" type="unireg:TiersIdArray" />
-			<xs:element name="getBatchTiersRequest" nillable="true" type="unireg:GetBatchTiers" />
+			<xs:element name="searchTiersRequest" nillable="true" type="unireg:searchTiersRequestType" />
+			<xs:element name="searchTiersResponse" nillable="true" type="unireg:searchTiersResponseType" />
+			<xs:element name="searchEvenementsPMRequest" nillable="true" type="unireg:searchEvenementsPMRequestType" />
+			<xs:element name="searchEvenementsPMResponse" nillable="true" type="unireg:searchEvenementsPMResponseType" />
+			<xs:element name="getTiersTypeRequest" nillable="true" type="unireg:getTiersTypeRequestType" />
+			<xs:element name="getTiersTypeResponse" nillable="true" type="unireg:typeTiersType" />
+			<xs:element name="getTiersRequest" nillable="true" type="unireg:getTiersRequestType" />
+			<xs:element name="getTiersResponse" nillable="true" type="unireg:tiersType" />
+			<xs:element name="getBatchTiersRequest" nillable="true" type="unireg:getBatchTiersRequestType" />
 			<xs:element name="getBatchTiersResponse" nillable="true" type="unireg:BatchTiers" />
-			<xs:element name="searchEvenementsPMRequest" nillable="true" type="unireg:searchEvenementsPM" />
-			<xs:element name="searchEvenementsPMResponse" nillable="true" type="unireg:evenementPMArray" />
-			<xs:element name="setTiersBlocRembAutoRequest" nillable="true" type="unireg:SetTiersBlocRembAuto" />
-			<xs:element name="quittancerDeclarationsRequest" nillable="true" type="unireg:QuittancerDeclarations" />
-			<xs:element name="quittancerDeclarationsResponse" nillable="true" type="unireg:ReponseQuittancementDeclarationArray" />
-			<xs:element name="getDebiteurInfoRequest" nillable="true" type="unireg:GetDebiteurInfo" />
-			<xs:element name="getDebiteurInfoResponse" nillable="true" type="unireg:DebiteurInfo" />
+			<xs:element name="getDebiteurInfoRequest" nillable="true" type="unireg:getDebiteurInfoRequestType" />
+			<xs:element name="getDebiteurInfoResponse" nillable="true" type="unireg:debiteurInfoType" />
+			<xs:element name="getListeCtbModifiesRequest" nillable="true" type="unireg:getListeCtbModifiesRequestType" />
+			<xs:element name="getListeCtbModifiesResponse" nillable="true" type="unireg:idListType" />
+			<xs:element name="setTiersBlocRembAutoRequest" nillable="true" type="unireg:setTiersBlocRembAutoRequestType" />
+			<xs:element name="quittancerDeclarationsRequest" nillable="true" type="unireg:quittancerDeclarationsRequestType" />
+			<xs:element name="quittancerDeclarationsResponse" nillable="true" type="unireg:quittancerDeclarationsResponseType" />
+			<xs:element name="webServiceException" type="unireg:webServiceExceptionInfoType" />
 		</xs:schema>
 	</wsdl:types>
 

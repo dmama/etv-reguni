@@ -2,7 +2,7 @@
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="../common.xsd" />
-	<xs:simpleType name="TypeAffranchissement">
+	<xs:simpleType name="typeAffranchissementType">
 		<xs:annotation>
 			<xs:documentation>Le type d'affranchissement demandé par la poste pour envoyer un courrier à une adresse.</xs:documentation>
 		</xs:annotation>
@@ -12,19 +12,19 @@
 			<xs:enumeration value="MONDE" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="Adresse">
+	<xs:complexType name="adresseType">
 		<xs:annotation>
 			<xs:documentation>Représente une adresse fiscale d'un tiers dans Unireg valide pendant une période déterminée. Généralement, un tiers possède plusieurs adresses en fonction de ses
 				changements d'adresses. C'est pourquoi, cette adresse ne contient pas les données du destinataire (= la personne) mais uniquement les données de destination (= le lieu).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element minOccurs="0" name="dateDebut" type="unireg:Date">
+			<xs:element minOccurs="0" name="dateDebut" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de l'adresse. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:Date">
+			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de l'adresse. Si l'adresse est toujours active, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
@@ -86,16 +86,16 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="AdresseAutreTiers">
+	<xs:complexType name="adresseAutreTiersType">
 		<xs:annotation>
 			<xs:documentation>Spécialisation de l'adresse fiscale pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
 				poursuites).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Adresse">
+			<xs:extension base="unireg:adresseType">
 				<xs:sequence>
-					<xs:element name="type" type="unireg:TypeAdressePoursuiteAutreTiers">
+					<xs:element name="type" type="unireg:typeAdressePoursuiteAutreTiersType">
 						<xs:annotation>
 							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
 						</xs:annotation>
@@ -104,16 +104,16 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="AdresseEnvoiAutreTiers">
+	<xs:complexType name="adresseEnvoiAutreTiersType">
 		<xs:annotation>
 			<xs:documentation>Spécialisation de l'adresse d'envoi pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
 				poursuites).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:AdresseEnvoi">
+			<xs:extension base="unireg:adresseEnvoiType">
 				<xs:sequence>
-					<xs:element name="type" type="unireg:TypeAdressePoursuiteAutreTiers">
+					<xs:element name="type" type="unireg:typeAdressePoursuiteAutreTiersType">
 						<xs:annotation>
 							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
 						</xs:annotation>
@@ -122,7 +122,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="AdresseEnvoi">
+	<xs:complexType name="adresseEnvoiType">
 		<xs:annotation>
 			<xs:documentation>Représente les 6 lignes d'adresses d'un tiers formattées selon les recommandations de la poste suisse + les informations détaillées utilisées pour la construction de ces
 				six lignes.
@@ -232,7 +232,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="typeAffranchissement" type="unireg:TypeAffranchissement">
+			<xs:element name="typeAffranchissement" type="unireg:typeAffranchissementType">
 				<xs:annotation>
 					<xs:documentation>Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
 						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
@@ -242,7 +242,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="TypeAdressePoursuiteAutreTiers">
+	<xs:simpleType name="typeAdressePoursuiteAutreTiersType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="SPECIFIQUE" />
 			<xs:enumeration value="MANDATAIRE" />

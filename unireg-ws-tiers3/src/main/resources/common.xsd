@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:complexType name="UserLogin">
+	<xs:complexType name="userLoginType">
 		<xs:annotation>
 			<xs:documentation>Les informations qui permettent de vérifier les droits d'accès aux ressources fiscales d'Unireg.</xs:documentation>
 		</xs:annotation>
@@ -23,7 +23,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="Date">
+	<xs:complexType name="dateType">
 		<xs:annotation>
 			<xs:documentation>Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier est grégorien.</xs:documentation>
 		</xs:annotation>
@@ -45,7 +45,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="TiersPart">
+	<xs:simpleType name="tiersPartType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ADRESSES" />
 			<xs:enumeration value="ADRESSES_ENVOI" />
@@ -67,14 +67,14 @@
 			<xs:enumeration value="PERIODICITES" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="WebServiceExceptionType">
+	<xs:simpleType name="typeWebServiceExceptionType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="BUSINESS" />
 			<xs:enumeration value="ACCESS_DENIED" />
 			<xs:enumeration value="TECHNICAL" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType abstract="true" name="WebServiceExceptionInfo">
+	<xs:complexType abstract="true" name="webServiceExceptionInfoType">
 		<!-- TODO (msi) code de catégorie -->
 		<xs:sequence>
 			<xs:element name="message" type="xs:string">
@@ -84,36 +84,42 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="BusinessExceptionInfo">
+	<xs:complexType name="businessExceptionInfoType">
 		<xs:annotation>
 			<xs:documentation>Exception levée par le web-service lorsqu'une erreur métier est levée. Une erreur métier peut être le résultat de paramètres d'entrée incorrects, de données incohérentes
 				dans la base, de problèmes de connectivités avec d'autres registres, etc...
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:WebServiceExceptionInfo">
+			<xs:extension base="unireg:webServiceExceptionInfoType">
 				<xs:sequence />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="AccessDeniedExceptionInfo">
+	<xs:complexType name="accessDeniedExceptionInfoType">
 		<xs:annotation>
 			<xs:documentation>Exception levée par le web-service lorsque l'accès à une ressource n'est pas autorisé.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:WebServiceExceptionInfo">
+			<xs:extension base="unireg:webServiceExceptionInfoType">
 				<xs:sequence />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="TechnicalExceptionInfo">
+	<xs:complexType name="technicalExceptionInfoType">
 		<xs:annotation>
 			<xs:documentation>Exception levée par le web-service lorsqu'une erreur interne au web-service est levée. Dans ce cas, il s'agit généralement d'un bug du web-service.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:WebServiceExceptionInfo">
+			<xs:extension base="unireg:webServiceExceptionInfoType">
 				<xs:sequence />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:simpleType name="idListType">
+		<xs:annotation>
+			<xs:documentation>Une liste d'ids d'éléments (tiers ou autres, en fonction du contexte d'utilisation).</xs:documentation>
+		</xs:annotation>
+  		<xs:list itemType="xs:long"/>
+	</xs:simpleType>
 </xs:schema>

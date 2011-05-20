@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="common.xsd" />
-	<xs:complexType name="GetDebiteurInfo">
+	<xs:include schemaLocation="base.xsd" />
+	<xs:complexType name="getDebiteurInfoRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête qui demande des informations spécifiques sur un débiteur de prestations imposables pour une période fiscale donnée.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:Request">
+			<xs:extension base="unireg:requestType">
 				<xs:sequence>
 					<xs:element name="numeroDebiteur" type="xs:long">
 						<xs:annotation>
