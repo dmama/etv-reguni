@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -48,9 +50,12 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 	 * @return une action de redirection dans les cas d'erreur / timeout, null en principe dans les cas de téléchargement
 	 * @throws IOException en cas de problème IO
 	 */
-	protected ModelAndView traiteRetourEditique(EditiqueResultat resultat, HttpServletResponse response, String filenameRadical,
-												TraitementRetourEditique onReroutageInbox, TraitementRetourEditique onTimeout,
-												TraitementRetourEditique onError) throws IOException {
+	protected ModelAndView traiteRetourEditique(@Nullable EditiqueResultat resultat,
+	                                            HttpServletResponse response,
+	                                            String filenameRadical,
+												@Nullable TraitementRetourEditique onReroutageInbox,
+												@Nullable TraitementRetourEditique onTimeout,
+												@Nullable TraitementRetourEditique onError) throws IOException {
 		if (resultat instanceof EditiqueResultatDocument) {
 			editiqueDownloadService.download((EditiqueResultatDocument) resultat, filenameRadical, response);
 		}
