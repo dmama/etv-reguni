@@ -4,11 +4,11 @@ import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
 
 public class DebiteurInfoBuilder {
 
-	public static DebiteurInfo newDebiteurInfo(GetDebiteurInfo params, List<? extends DateRange> lrEmises, List<DateRange> lrManquantes) {
+	public static DebiteurInfo newDebiteurInfo(GetDebiteurInfoRequest params, List<? extends DateRange> lrEmises, List<DateRange> lrManquantes) {
 		DebiteurInfo info = new DebiteurInfo();
 		info.setNumeroDebiteur(params.getNumeroDebiteur());
 		info.setPeriodeFiscale(params.getPeriodeFiscale());

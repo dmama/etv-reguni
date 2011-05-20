@@ -1,11 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers3.impl;
 
 import javax.annotation.Resource;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
 import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
@@ -29,26 +25,25 @@ import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
 import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.EvenementPMArray;
-import ch.vd.uniregctb.webservices.tiers3.GetBatchTiers;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifies;
-import ch.vd.uniregctb.webservices.tiers3.GetTiers;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersType;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifiesRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetTiersRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetTiersTypeRequest;
+import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsRequest;
+import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsResponse;
 import ch.vd.uniregctb.webservices.tiers3.ReponseQuittancementDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.ReponseQuittancementDeclarationArray;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPM;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiers;
-import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAuto;
+import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMRequest;
+import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMResponse;
+import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
+import ch.vd.uniregctb.webservices.tiers3.SearchTiersResponse;
+import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAutoRequest;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersIdArray;
-import ch.vd.uniregctb.webservices.tiers3.TiersInfoArray;
 import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
+import ch.vd.uniregctb.webservices.tiers3.TypeWebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.UserLogin;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceExceptionType;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les appels vers l'implémentation concrète du service.
@@ -81,10 +76,8 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		return appelsEnCours.intValue();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public TiersInfoArray searchTiers(SearchTiers params) throws WebServiceException {
+	@Override
+	public SearchTiersResponse searchTiers(SearchTiersRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -109,7 +102,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
-	public TypeTiers getTiersType(GetTiersType params) throws WebServiceException {
+	public TypeTiers getTiersType(GetTiersTypeRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -138,7 +131,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
-	public Tiers getTiers(GetTiers params) throws WebServiceException {
+	public Tiers getTiers(GetTiersRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -165,8 +158,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
-
-	public BatchTiers getBatchTiers(GetBatchTiers params) throws WebServiceException {
+	public BatchTiers getBatchTiers(GetBatchTiersRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -181,7 +173,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 
 				final Long numero = params.getTiersNumbers().iterator().next();
 				try {
-					final GetTiers p = new GetTiers();
+					final GetTiersRequest p = new GetTiersRequest();
 					p.setLogin(params.getLogin());
 					p.setTiersNumber(numero);
 					p.getParts().addAll(params.getParts());
@@ -199,13 +191,13 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 					entry.setNumber(numero);
 					entry.setExceptionMessage(e.getMessage());
 					if (e.getFaultInfo() instanceof AccessDeniedExceptionInfo) {
-						entry.setExceptionType(WebServiceExceptionType.ACCESS_DENIED);
+						entry.setExceptionType(TypeWebServiceException.ACCESS_DENIED);
 					}
 					else if (e.getFaultInfo() instanceof BusinessExceptionInfo) {
-						entry.setExceptionType(WebServiceExceptionType.BUSINESS);
+						entry.setExceptionType(TypeWebServiceException.BUSINESS);
 					}
 					else {
-						entry.setExceptionType(WebServiceExceptionType.TECHNICAL);
+						entry.setExceptionType(TypeWebServiceException.TECHNICAL);
 					}
 					batch.getEntries().add(entry);
 				}
@@ -238,7 +230,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
-	public void setTiersBlocRembAuto(SetTiersBlocRembAuto params) throws WebServiceException {
+	public void setTiersBlocRembAuto(SetTiersBlocRembAutoRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -264,7 +256,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
-	public EvenementPMArray searchEvenementsPM(SearchEvenementsPM params) throws WebServiceException {
+	public SearchEvenementsPMResponse searchEvenementsPM(SearchEvenementsPMRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -287,11 +279,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
-	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
-	@WebMethod
-	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers3")
-	public DebiteurInfo getDebiteurInfo(
-			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers3", partName = "params", name = "GetDebiteurInfo") GetDebiteurInfo params) throws
+	public DebiteurInfo getDebiteurInfo(GetDebiteurInfoRequest params) throws
 			WebServiceException {
 		final long start = System.nanoTime();
 		try {
@@ -319,7 +307,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
-	public ReponseQuittancementDeclarationArray quittancerDeclarations(QuittancerDeclarations params) throws WebServiceException {
+	public QuittancerDeclarationsResponse quittancerDeclarations(QuittancerDeclarationsRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -330,7 +318,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 						") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
 			}
 
-			final ReponseQuittancementDeclarationArray reponses = service.quittancerDeclarations(params);
+			final QuittancerDeclarationsResponse reponses = service.quittancerDeclarations(params);
 			logEmbeddedErrors(params, reponses);
 			return reponses;
 		}
@@ -350,7 +338,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	}
 
 	@Override
-	public TiersIdArray getListeCtbModifies(GetListeCtbModifies params) throws WebServiceException {
+	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -480,7 +468,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 						+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.getNumber();
 				entry.setTiers(null);
 				entry.setExceptionMessage(message);
-				entry.setExceptionType(WebServiceExceptionType.ACCESS_DENIED);
+				entry.setExceptionType(TypeWebServiceException.ACCESS_DENIED);
 			}
 		}
 	}
@@ -536,7 +524,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	 * @param params le message initial
 	 * @param batch  les données retournées
 	 */
-	private void logEmbeddedExceptions(GetBatchTiers params, BatchTiers batch) {
+	private void logEmbeddedExceptions(GetBatchTiersRequest params, BatchTiers batch) {
 
 		List<BatchTiersEntry> inError = null;
 
@@ -567,7 +555,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	 * @param params   le message de demande de quittancements
 	 * @param reponses les données retournées
 	 */
-	private void logEmbeddedErrors(QuittancerDeclarations params, ReponseQuittancementDeclarationArray reponses) {
+	private void logEmbeddedErrors(QuittancerDeclarationsRequest params, QuittancerDeclarationsResponse reponses) {
 
 		// 1. collection des cas en erreur
 		List<ReponseQuittancementDeclaration> inError = null;

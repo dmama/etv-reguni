@@ -51,28 +51,26 @@ import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers3.DemandeQuittancementDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.EvenementPMArray;
-import ch.vd.uniregctb.webservices.tiers3.GetBatchTiers;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifies;
-import ch.vd.uniregctb.webservices.tiers3.GetTiers;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersType;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifiesRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetTiersRequest;
+import ch.vd.uniregctb.webservices.tiers3.GetTiersTypeRequest;
+import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsRequest;
+import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsResponse;
 import ch.vd.uniregctb.webservices.tiers3.ReponseQuittancementDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.ReponseQuittancementDeclarationArray;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPM;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiers;
-import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAuto;
+import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMRequest;
+import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMResponse;
+import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
+import ch.vd.uniregctb.webservices.tiers3.SearchTiersResponse;
+import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAutoRequest;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersId;
-import ch.vd.uniregctb.webservices.tiers3.TiersIdArray;
 import ch.vd.uniregctb.webservices.tiers3.TiersInfo;
-import ch.vd.uniregctb.webservices.tiers3.TiersInfoArray;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
+import ch.vd.uniregctb.webservices.tiers3.TypeWebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceExceptionType;
 import ch.vd.uniregctb.webservices.tiers3.data.BatchTiersBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.DebiteurInfoBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.QuittancementBuilder;
@@ -162,7 +160,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public TiersInfoArray searchTiers(SearchTiers params) throws WebServiceException {
+	public SearchTiersResponse searchTiers(SearchTiersRequest params) throws WebServiceException {
 
 		try {
 			Set<TiersInfo> set = new HashSet<TiersInfo>();
@@ -176,7 +174,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 				}
 			}
 
-			TiersInfoArray array = new TiersInfoArray();
+			SearchTiersResponse array = new SearchTiersResponse();
 			array.getItem().addAll(set);
 			return array;
 		}
@@ -197,7 +195,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@Override
-	public Tiers getTiers(GetTiers params) throws WebServiceException {
+	public Tiers getTiers(GetTiersRequest params) throws WebServiceException {
 
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getTiersNumber());
@@ -233,7 +231,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public BatchTiers getBatchTiers(final GetBatchTiers params) throws WebServiceException {
+	public BatchTiers getBatchTiers(final GetBatchTiersRequest params) throws WebServiceException {
 		try {
 			if (params.getTiersNumbers() == null || params.getTiersNumbers().isEmpty()) {
 				return new BatchTiers();
@@ -421,7 +419,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
-	public TypeTiers getTiersType(GetTiersType params) throws WebServiceException {
+	public TypeTiers getTiersType(GetTiersTypeRequest params) throws WebServiceException {
 
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getTiersNumber());
@@ -446,7 +444,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 * {@inheritDoc}
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void setTiersBlocRembAuto(final SetTiersBlocRembAuto params) throws WebServiceException {
+	public void setTiersBlocRembAuto(final SetTiersBlocRembAutoRequest params) throws WebServiceException {
 
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getTiersNumber());
@@ -465,12 +463,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public EvenementPMArray searchEvenementsPM(SearchEvenementsPM params) throws WebServiceException {
+	public SearchEvenementsPMResponse searchEvenementsPM(SearchEvenementsPMRequest params) throws WebServiceException {
 		throw ExceptionHelper.newTechnicalException("Fonctionnalité pas encore implémentée.");
 	}
 
 	@Transactional(readOnly = true)
-	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws WebServiceException {
+	public DebiteurInfo getDebiteurInfo(GetDebiteurInfoRequest params) throws WebServiceException {
 
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getNumeroDebiteur());
@@ -500,17 +498,17 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 */
 	private static class QuittancementResults implements BatchResults<DemandeQuittancementDeclaration, QuittancementResults> {
 
-		private final ReponseQuittancementDeclarationArray reponses = new ReponseQuittancementDeclarationArray();
+		private final QuittancerDeclarationsResponse reponses = new QuittancerDeclarationsResponse();
 
 		public void addErrorException(DemandeQuittancementDeclaration element, Exception e) {
 			if (e instanceof ValidationException) {
-				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), e, WebServiceExceptionType.BUSINESS));
+				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), e, TypeWebServiceException.BUSINESS));
 			}
 			else if (e instanceof RuntimeException) {
-				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), e, WebServiceExceptionType.TECHNICAL));
+				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), e, TypeWebServiceException.TECHNICAL));
 			}
 			else {
-				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), new RuntimeException(e.getMessage(), e), WebServiceExceptionType.TECHNICAL));
+				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), new RuntimeException(e.getMessage(), e), TypeWebServiceException.TECHNICAL));
 			}
 		}
 
@@ -522,12 +520,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 			this.reponses.getItem().add(reponse);
 		}
 
-		public ReponseQuittancementDeclarationArray getReponses() {
+		public QuittancerDeclarationsResponse getReponses() {
 			return reponses;
 		}
 	}
 
-	public ReponseQuittancementDeclarationArray quittancerDeclarations(QuittancerDeclarations params) throws WebServiceException {
+	public QuittancerDeclarationsResponse quittancerDeclarations(QuittancerDeclarationsRequest params) throws WebServiceException {
 
 		try {
 			final List<DemandeQuittancementDeclaration> demandes = params.getDemandes();
@@ -560,8 +558,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public TiersIdArray getListeCtbModifies(GetListeCtbModifies params) throws WebServiceException {
-
+	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 
 		try {
 			final Date dateDebutRecherche = XmlUtils.xmlcal2date(params.getDateDebutRecherche());
@@ -569,12 +566,8 @@ public class TiersWebServiceImpl implements TiersWebService {
 			if (DateHelper.isAfter(dateDebutRecherche, dateFinRecherche)) {
 				throw ExceptionHelper.newBusinessException("La date de début de recherche " + dateDebutRecherche.toString() + " est après la date de fin " + dateFinRecherche);
 			}
-			final TiersIdArray listTiersId = new TiersIdArray();
 			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(dateDebutRecherche, dateFinRecherche);
-			for (Long numeroTiers : listCtb) {
-				listTiersId.getItem().add(new TiersId(numeroTiers));
-			}
-			return listTiersId;
+			return listCtb.toArray(new Long[listCtb.size()]);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
@@ -592,11 +585,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 		catch (ValidationException e) {
 			LOGGER.error(e, e);
-			r = QuittancementBuilder.newReponseQuittancementDeclaration(demande.getKey(), e, WebServiceExceptionType.BUSINESS);
+			r = QuittancementBuilder.newReponseQuittancementDeclaration(demande.getKey(), e, TypeWebServiceException.BUSINESS);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
-			r = QuittancementBuilder.newReponseQuittancementDeclaration(demande.getKey(), e, WebServiceExceptionType.TECHNICAL);
+			r = QuittancementBuilder.newReponseQuittancementDeclaration(demande.getKey(), e, TypeWebServiceException.TECHNICAL);
 		}
 		return r;
 	}
@@ -647,7 +640,6 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 	/**
 	 * Recherche la declaration pour une année et un numéro de déclaration dans l'année
-	 *
 	 *
 	 * @param contribuable     un contribuable
 	 * @param annee            une période fiscale complète (ex. 2010)

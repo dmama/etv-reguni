@@ -47,7 +47,7 @@ import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
 import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoiAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.Date;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiers;
+import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
 import ch.vd.uniregctb.webservices.tiers3.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
@@ -161,7 +161,7 @@ public class DataHelper {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static List<TiersCriteria> webToCore(SearchTiers criteria) {
+	public static List<TiersCriteria> webToCore(SearchTiersRequest criteria) {
 		if (criteria == null) {
 			return null;
 		}
