@@ -21,7 +21,7 @@ public interface EditiqueService {
 	 * @param typeFormat   le format souhaité
 	 * @param document     document XML à envoyer à éditique
 	 * @param archive      indicateur d'archivage
-	 * @return le document imprimé ou <b>null</b> si éditique n'a pas répondu dans les temps
+	 * @return le document imprimé ou une indication de timeout si l'éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
 	EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException;
@@ -37,7 +37,7 @@ public interface EditiqueService {
 	 * @param document document XML à envoyer à éditique
 	 * @param archive indicateur d'archivage
 	 * @param description une description textuelle de l'impression, utilisable dans la description du message qui reviendrait par l'inbox
-	 * @return le document imprimé ou <b>null</b> si éditique n'a pas répondu dans les temps
+	 * @return le document imprimé ou une indication de prise en charge par le système asynchrone si l'éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
 	EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException;
