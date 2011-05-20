@@ -8,6 +8,9 @@
 	<tiles:put name="title">
 		<fmt:message key="label.inbox.gestion" />
 	</tiles:put>
+	<tiles:put name="fichierAide">
+		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/BoiteReception_ExtractionFichier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	</tiles:put>
 	<tiles:put name="body">
 	
 		<!-- Les traitements en attente ou en cours -->
