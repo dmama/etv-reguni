@@ -125,46 +125,45 @@ public class NouveauDossierListController extends AbstractTacheController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
 		final TracePoint tp = TracingManager.begin();
 
-		final ModelAndView mav = super.onSubmit(request, response, command, errors);
-		mav.setView(new RedirectView(getSuccessView()));
+		try {
+			final ModelAndView mav = super.onSubmit(request, response, command, errors);
+			mav.setView(new RedirectView(getSuccessView()));
 
-		final NouveauDossierCriteriaView bean = (NouveauDossierCriteriaView) command;
-		final HttpSession session = request.getSession();
-		session.setAttribute(NOUVEAU_DOSSIER_CRITERIA_NAME, bean);
+			final NouveauDossierCriteriaView bean = (NouveauDossierCriteriaView) command;
+			final HttpSession session = request.getSession();
+			session.setAttribute(NOUVEAU_DOSSIER_CRITERIA_NAME, bean);
 
-		if (request.getParameter(BOUTON_IMPRIMER) != null) {
-			try {
+			if (request.getParameter(BOUTON_IMPRIMER) != null) {
+				try {
 
-				final TraitementRetourEditique erreur = new TraitementRetourEditique() {
-					@Override
-					public ModelAndView doJob(EditiqueResultat resultat) {
-						final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
-						throw new EditiqueCommunicationException(message);
-					}
-				};
+					final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+						@Override
+						public ModelAndView doJob(EditiqueResultat resultat) {
+							final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+							throw new EditiqueCommunicationException(message);
+						}
+					};
 
-				final EditiqueResultat resultat = tacheListManager.envoieImpressionLocalDossier(bean);
-				traiteRetourEditique(resultat, response, "dossier", null, erreur, erreur);
+					final EditiqueResultat resultat = tacheListManager.envoieImpressionLocalDossier(bean);
+					return traiteRetourEditique(resultat, response, "dossier", null, erreur, erreur);
+				}
+				catch (EditiqueException e) {
+					LOGGER.error(e, e);
+					// UNIREG-1218 : on affiche le message d'erreur de manière sympa
+					throw new ActionException(e.getMessage());
+				}
 			}
-			catch (EditiqueException e) {
-				LOGGER.error(e, e);
-				// UNIREG-1218 : on affiche le message d'erreur de manière sympa
-				throw new ActionException(e.getMessage());
-			}
+
+			return mav;
 		}
-
-		//session.removeAttribute(NOUVEAU_DOSSIER_CRITERIA_NAME);
-
-		TracingManager.end(tp);
-
-		TracingManager.outputMeasures(LOGGER);
-
-		return mav;
+		finally {
+			TracingManager.end(tp);
+			TracingManager.outputMeasures(LOGGER);
+		}
 	}
 
 	/**

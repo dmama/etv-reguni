@@ -17,6 +17,7 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatDocument;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
@@ -306,25 +307,37 @@ public class TacheListManagerImpl implements TacheListManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException {
+
+		final Long[] tabIdsDossiers = nouveauDossierCriteriaView.getTabIdsDossiers();
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Tab Ids dossiers:" + Arrays.toString(nouveauDossierCriteriaView.getTabIdsDossiers()));
+			LOGGER.debug("Tab Ids dossiers:" + Arrays.toString(tabIdsDossiers));
 		}
 
-		final List<Contribuable> contribuables = new ArrayList<Contribuable>();
-		if (nouveauDossierCriteriaView.getTabIdsDossiers() != null) {
-			for (int i = 0; i < nouveauDossierCriteriaView.getTabIdsDossiers().length; i++) {
-				final Tache tache = tacheDAO.get(nouveauDossierCriteriaView.getTabIdsDossiers()[i]);
-				tache.setEtat(TypeEtatTache.TRAITE);
-				contribuables.add(tache.getContribuable());
+		if (tabIdsDossiers != null && tabIdsDossiers.length > 0) {
+			final List<Contribuable> contribuables = new ArrayList<Contribuable>(tabIdsDossiers.length);
+			final List<Tache> taches = new ArrayList<Tache>(tabIdsDossiers.length);
+				for (int i = 0; i < tabIdsDossiers.length; i++) {
+					final Tache tache = tacheDAO.get(tabIdsDossiers[i]);
+					taches.add(tache);
+					contribuables.add(tache.getContribuable());
+				}
+
+			try {
+				final EditiqueResultat impression = editiqueService.imprimeNouveauxDossiers(contribuables);
+				if (impression instanceof EditiqueResultatDocument) {
+					// on peut marquer les tâches comme traitées, puisque le document est bien revenu...
+					for (Tache tache : taches) {
+						tache.setEtat(TypeEtatTache.TRAITE);
+					}
+				}
+				return impression;
+			}
+			catch (JMSException e) {
+				throw new EditiqueException(e);
 			}
 		}
 
-		try {
-			return editiqueService.imprimeNouveauxDossiers(contribuables);
-		}
-		catch (JMSException e) {
-			throw new EditiqueException(e);
-		}
+		return null;
 	}
 
 	/**
