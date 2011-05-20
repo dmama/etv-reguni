@@ -349,7 +349,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		setWantIndexation(true);
 		removeIndexData();
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jeanNomPrenom = addNonHabitant("Jean", "Dupneu", null, null);
 				final PersonnePhysique jeanNomPrenomDate = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);

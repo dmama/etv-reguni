@@ -42,7 +42,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Contribuable jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
@@ -69,7 +69,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Contribuable jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
@@ -96,7 +96,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
@@ -140,7 +140,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
@@ -222,7 +222,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
@@ -285,7 +285,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
@@ -346,7 +346,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
@@ -408,7 +408,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique anouchka = addNonHabitant("Anouchka", "Rossier", RegDate.get(1969, 10, 20), Sexe.FEMININ);

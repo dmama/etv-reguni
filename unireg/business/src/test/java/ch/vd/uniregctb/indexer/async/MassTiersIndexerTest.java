@@ -101,7 +101,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 			assertEquals(1, list.size());
 		}
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(id);
@@ -170,7 +170,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

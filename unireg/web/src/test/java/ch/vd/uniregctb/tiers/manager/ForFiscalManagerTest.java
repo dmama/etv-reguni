@@ -89,9 +89,9 @@ public class ForFiscalManagerTest extends WebTest {
 
 		truncateDatabase();
 
-		final Long numeroMenage = (Long) doInTransaction(new TxCallback() {
+		final Long numeroMenage = doInTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_AIGLE);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -150,7 +150,7 @@ public class ForFiscalManagerTest extends WebTest {
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
 
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = (MenageCommun) hibernateTemplate.get(MenageCommun.class, numeroMenage);
@@ -211,9 +211,9 @@ public class ForFiscalManagerTest extends WebTest {
 
 		truncateDatabase();
 
-		final Long numeroChristine = (Long) doInTransaction(new TxCallback() {
+		final Long numeroChristine = doInTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_AIGLE);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -273,7 +273,7 @@ public class ForFiscalManagerTest extends WebTest {
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
 
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique christine = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, numeroChristine);
@@ -302,7 +302,7 @@ public class ForFiscalManagerTest extends WebTest {
 		final RegDate dateFermeture = date(2010, 6, 30);
 
 		// mise en place fiscale
-		final ForFiscalView view = (ForFiscalView) doInNewTransactionAndSession(new TransactionCallback() {
+		final ForFiscalView view = doInNewTransactionAndSession(new TransactionCallback<ForFiscalView>() {
 			public ForFiscalView doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
@@ -320,7 +320,7 @@ public class ForFiscalManagerTest extends WebTest {
 		manager.updateFor(view);
 
 		// vérification que le for est bien fermé et que le rapport de travail aussi
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getNumeroCtb());
 				assertNotNull(dpi);
@@ -355,7 +355,7 @@ public class ForFiscalManagerTest extends WebTest {
 		final RegDate dateDepart = dateOuvertureNouveauFor.getOneDayBefore();
 
 		// mise en place fiscale
-		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
@@ -375,7 +375,7 @@ public class ForFiscalManagerTest extends WebTest {
 		manager.addFor(nveau);
 
 		// vérification que le for est bien fermé, qu'un autre est bien ouvert et que le rapport de travail n'a pas été fermé
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				assertNotNull(dpi);

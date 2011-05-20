@@ -844,7 +844,6 @@ public class ProduireRolesProcessor {
 	 * @return la liste des ID de tous les contribuables ayant au moins un for fiscal actif dans une commune vaudoise durant l'année spécifiée
 	 *         <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement).
 	 */
-	@SuppressWarnings({"unchecked"})
 	protected List<Long> getIdsOfAllContribuables(final int annee) {
 
 		final StringBuilder b = new StringBuilder();
@@ -859,9 +858,9 @@ public class ProduireRolesProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
+				return hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Long>>() {
 					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
 						final RegDate debutPeriode = RegDate.get(annee, 1, 1);
@@ -870,6 +869,7 @@ public class ProduireRolesProcessor {
 						final Query query = session.createQuery(hql);
 						query.setParameter("debutPeriode", debutPeriode.index());
 						query.setParameter("finPeriode", finPeriode.index());
+						//noinspection unchecked
 						return query.list();
 					}
 				});
@@ -881,7 +881,6 @@ public class ProduireRolesProcessor {
 	 * @return la liste des ID de tous les contribuables ayant au moins un for fiscal actif dans la commune vaudoise spécifiée durant l'année
 	 *         spécifiée <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement). Si aucune commune n'est donnée, aucun contribuable ne sera renvoyé.
 	 */
-	@SuppressWarnings({"unchecked"})
 	protected List<Long> getIdsOfAllContribuablesSurCommunes(final int annee, final Collection<Integer> noOfsCommunes) {
 
 		if (noOfsCommunes == null || noOfsCommunes.size() == 0) {
@@ -901,9 +900,9 @@ public class ProduireRolesProcessor {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
 
-			return (List<Long>) template.execute(new TransactionCallback() {
+			return template.execute(new TransactionCallback<List<Long>>() {
 				public List<Long> doInTransaction(TransactionStatus status) {
-					return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
+					return hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Long>>() {
 						public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
 							final RegDate debutPeriode = RegDate.get(annee, 1, 1);
@@ -913,6 +912,7 @@ public class ProduireRolesProcessor {
 							query.setParameter("debutPeriode", debutPeriode.index());
 							query.setParameter("finPeriode", finPeriode.index());
 							query.setParameterList("noOfsCommune", noOfsCommunes);
+							//noinspection unchecked
 							return query.list();
 						}
 					});

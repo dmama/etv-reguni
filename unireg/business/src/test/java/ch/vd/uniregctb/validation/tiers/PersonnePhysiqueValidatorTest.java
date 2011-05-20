@@ -734,7 +734,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
@@ -748,7 +748,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -777,7 +777,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
@@ -793,7 +793,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		validationInterceptor.setEnabled(false);
 		try {
-			doInNewTransactionAndSession(new TransactionCallback() {
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
@@ -832,7 +832,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
@@ -850,7 +850,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		validationInterceptor.setEnabled(false);
 		try {
-			doInNewTransactionAndSession(new TransactionCallback() {
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
@@ -892,7 +892,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
@@ -910,7 +910,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		validationInterceptor.setEnabled(false);
 		try {
-			doInNewTransactionAndSession(new TransactionCallback() {
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
 

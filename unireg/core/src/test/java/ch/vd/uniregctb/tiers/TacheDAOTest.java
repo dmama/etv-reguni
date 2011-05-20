@@ -348,7 +348,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		final Ids ids = new Ids();
 
 		// Crée un contribuable avec plusieurs tâches dans différents états
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -401,7 +401,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		});
 
 		// Etat avant changement
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -437,7 +437,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		});
 
 		// Etat après changement
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

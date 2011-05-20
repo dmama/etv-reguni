@@ -68,7 +68,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 		assertEquals(0, globalIndex.getApproxDocCount());
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -108,7 +108,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 			assertHits(10, "PRENOM:Chri*");
 		}
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 
 			public Object doInTransaction(TransactionStatus status) {
 				// Remplace une entité

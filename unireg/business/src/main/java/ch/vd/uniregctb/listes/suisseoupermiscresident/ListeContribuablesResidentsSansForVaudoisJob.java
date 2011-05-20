@@ -74,7 +74,7 @@ public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ListeContribuablesResidentsSansForVaudoisRapport rapport = (ListeContribuablesResidentsSansForVaudoisRapport) template.execute(new TransactionCallback() {
+		final ListeContribuablesResidentsSansForVaudoisRapport rapport = template.execute(new TransactionCallback<ListeContribuablesResidentsSansForVaudoisRapport>() {
 			public ListeContribuablesResidentsSansForVaudoisRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}

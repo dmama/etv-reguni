@@ -92,8 +92,8 @@ public class ListeAssujettisJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ListeAssujettisRapport rapport = (ListeAssujettisRapport) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final ListeAssujettisRapport rapport = template.execute(new TransactionCallback<ListeAssujettisRapport>() {
+			public ListeAssujettisRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});

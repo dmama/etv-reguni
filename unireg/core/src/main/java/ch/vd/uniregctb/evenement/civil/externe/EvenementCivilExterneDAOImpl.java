@@ -63,7 +63,7 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 		b.append(" and ec.etat in (:etats) ");
 		final String sql = b.toString();
 
-		return (List<EvenementCivilExterne>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilExterne>>() {
 			public List<EvenementCivilExterne> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(sql);
 				query.setParameter("date", dateEvenement.index());
@@ -98,8 +98,8 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 
 		final String query = String.format("select evenement from EvenementCivilExterne evenement where 1=1 %s%s", queryWhere, queryOrder);
 
-		return (List<EvenementCivilExterne>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilExterne>>() {
+			public List<EvenementCivilExterne> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query queryObject = session.createQuery(query);
 				final Object[] values = criteria.toArray();
@@ -221,8 +221,8 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 	@SuppressWarnings("unchecked")
 	public List<EvenementCivilExterne> getEvenementsCivilsNonTraites(final Collection<Long> nosIndividus) {
 		final String s = "SELECT e FROM EvenementCivilExterne e WHERE e.etat IN (:etats) AND (e.numeroIndividuPrincipal IN (:col) OR e.numeroIndividuConjoint IN (:col))";
-		return (List<EvenementCivilExterne>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().execute(new HibernateCallback<List<EvenementCivilExterne>>() {
+			public List<EvenementCivilExterne> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(s);
 				query.setParameterList("etats", ETATS_NON_TRAITES);
 				query.setParameterList("col", nosIndividus);
@@ -234,8 +234,8 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 	@SuppressWarnings("unchecked")
 	public List<Long> getIdsEvenementCivilsErreurIndividu(final Long numIndividu){
 		final String s ="select evt.id from EvenementCivilExterne evt where evt.etat in (:etats) and evt.numeroIndividuPrincipal = :ind order by evt.id asc";
-		return (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(s);
 				query.setParameterList("etats", ETATS_NON_TRAITES);
 				query.setParameter("ind", numIndividu);

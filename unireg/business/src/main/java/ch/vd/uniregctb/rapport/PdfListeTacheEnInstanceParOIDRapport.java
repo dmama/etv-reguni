@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.tache.ListeTachesEnIsntanceParOID;
+import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 
-	public void write(final ListeTachesEnIsntanceParOID results, final String nom, final String description, final Date dateGeneration,
+	public void write(final ListeTachesEnInstanceParOID results, final String nom, final String description, final Date dateGeneration,
 	                  OutputStream os, StatusManager status) throws Exception {
 
 		Assert.notNull(status);
@@ -71,19 +71,19 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String asCsvFile(ListeTachesEnIsntanceParOID results, String filename, StatusManager status) {
+	private String asCsvFile(ListeTachesEnInstanceParOID results, String filename, StatusManager status) {
 		String contenu = null;
-		List<ListeTachesEnIsntanceParOID.LigneTacheInstance> list = results.getLignes();
+		List<ListeTachesEnInstanceParOID.LigneTacheInstance> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {
 			StringBuilder b = new StringBuilder("Numéro de l'OID" + COMMA + "Type de tâche " + COMMA + " Nombre de tâches\n");
 
-			final GentilIterator<ListeTachesEnIsntanceParOID.LigneTacheInstance> iter = new GentilIterator<ListeTachesEnIsntanceParOID.LigneTacheInstance>(list);
+			final GentilIterator<ListeTachesEnInstanceParOID.LigneTacheInstance> iter = new GentilIterator<ListeTachesEnInstanceParOID.LigneTacheInstance>(list);
 			while (iter.hasNext()) {
 				if (iter.isAtNewPercent()) {
 					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
 				}
-				final ListeTachesEnIsntanceParOID.LigneTacheInstance ligne = iter.next();
+				final ListeTachesEnInstanceParOID.LigneTacheInstance ligne = iter.next();
 				b.append(ligne.getNumeroOID()).append(COMMA);
 				b.append(ligne.getTypeTache()).append(COMMA);
 				b.append(ligne.getNombreTache()).append(COMMA);

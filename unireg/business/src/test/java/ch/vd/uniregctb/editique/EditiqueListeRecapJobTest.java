@@ -89,7 +89,7 @@ public class EditiqueListeRecapJobTest extends JobTest {
 	 * Execution en transaction: pour permettre l'initialisation LAZY des collections
 	 */
 	private void checkLRs() throws Exception {
-		this.doInTransaction(new TransactionCallback() {
+		this.doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				checkLRsInTransaction();
 				return null;

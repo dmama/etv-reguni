@@ -41,9 +41,9 @@ public class SecurityProviderCacheTest extends SecurityTest {
 
 		// Etat inital : une personne physique et opérateur sans aucune restriction
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique marcel = addNonHabitant("Marcel", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
 				return marcel.getNumero();
 			}
@@ -54,7 +54,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 
 		// Ajout de la restriction
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marcel = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
@@ -94,7 +94,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
@@ -121,7 +121,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		// Ajout d'une autorisation en lecture de l'opérateur X sur la personne physique B => l'opérateur X doit pouvoir accéder en lecture
 		// sur le couple aussi. Aucun changement pour l'opérateur Z.
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique a = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.b);
@@ -149,7 +149,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);

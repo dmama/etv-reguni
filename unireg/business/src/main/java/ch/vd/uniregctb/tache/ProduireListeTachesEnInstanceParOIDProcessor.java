@@ -39,11 +39,11 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
 
-	public ListeTachesEnIsntanceParOID run(final RegDate dateTraitement, StatusManager s) throws Exception {
+	public ListeTachesEnInstanceParOID run(final RegDate dateTraitement, StatusManager s) throws Exception {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final ListeTachesEnIsntanceParOID rapportFinal = new ListeTachesEnIsntanceParOID(dateTraitement);
+		final ListeTachesEnInstanceParOID rapportFinal = new ListeTachesEnInstanceParOID(dateTraitement);
 
 		status.setMessage("Récupération des OID à vérifier...");
 
@@ -115,7 +115,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 
 
 
-	private void traiterTaches(List<Object[]> tachesTrouvees, ListeTachesEnIsntanceParOID rapport, RegDate dateTraitement) throws Exception {
+	private void traiterTaches(List<Object[]> tachesTrouvees, ListeTachesEnInstanceParOID rapport, RegDate dateTraitement) throws Exception {
 
 
 

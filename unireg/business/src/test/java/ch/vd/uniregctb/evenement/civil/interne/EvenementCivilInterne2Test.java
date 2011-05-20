@@ -74,7 +74,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, null, null, tiersDAO, null, null);
 		dummyEvent = new DummyEvenementCivilInterne(null, null, null, null, null, context);
 
-		doInNewTransaction(new TxCallback(){
+		doInNewTransaction(new TxCallback<Object>(){
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				return addHabitant(NUMERO_INDIVIDU);

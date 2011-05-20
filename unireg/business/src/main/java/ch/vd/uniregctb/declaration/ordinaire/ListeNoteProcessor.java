@@ -117,11 +117,12 @@ public class ListeNoteProcessor {
 	private void traiterBatch(final List<Long> batch, final int annee) throws Exception {
 
 		// On charge tous les contribuables en vrac
-		final List<Contribuable> list = (List<Contribuable>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(Contribuable.class);
+		final List<Contribuable> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
+			public List<Contribuable> doInHibernate(Session session) throws HibernateException {
+				final Criteria crit = session.createCriteria(Contribuable.class);
 				crit.add(Restrictions.in("id", batch));
 				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+				//noinspection unchecked
 				return crit.list();
 			}
 		});
@@ -210,14 +211,15 @@ public class ListeNoteProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final Map<Long, List<ForFiscalSecondaire>> mapInfo = (Map<Long, List<ForFiscalSecondaire>>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Map<Long, List<ForFiscalSecondaire>> mapInfo = template.execute(new TransactionCallback<Map<Long, List<ForFiscalSecondaire>>>() {
+			public Map<Long, List<ForFiscalSecondaire>> doInTransaction(TransactionStatus status) {
 
-				final List<Object[]> listeFors = (List<Object[]>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+				final List<Object[]> listeFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Object[]>>() {
+					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
 						queryObject.setParameter("finAnnee", finAnnee.index());
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

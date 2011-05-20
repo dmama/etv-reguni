@@ -152,7 +152,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback(){
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
@@ -168,7 +168,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereArriveeHSDepuisOuvertureForPrincipal() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
@@ -193,7 +193,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereArriveeHSDepuisOuvertureForPrincipalSourceUNIREG1888() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
@@ -215,7 +215,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereArriveeHCDepuisOuvertureForPrincipal() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
@@ -246,7 +246,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int periodeEchue = periodeCourante - 2;
 
 		// déménagement dans la période fiscale courante => pas de tâche de contrôle de dossier
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
@@ -273,7 +273,7 @@ public class TacheServiceTest extends BusinessTest {
 		verifierTacheControleDossier(criterion, 0);
 
 		// déménagement dans la période fiscale échue => il doit y avoir une tâche de contrôle de dossier
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab2 = new PersonnePhysique(true);
 				hab2.setNumero(11111112L);
@@ -305,7 +305,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
 				PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
@@ -333,9 +333,9 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereDecesDepuisOuvertureForPrincipal() throws Exception {
 
 		// Etat 2008
-		final Long idMenage = (Long) doInNewTransaction(new TxCallback() {
+		final Long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				loadDatabase(DB_UNIT_DATA_FILE);
 
 				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
@@ -346,10 +346,10 @@ public class TacheServiceTest extends BusinessTest {
 				MenageCommun menage = ensemble.getMenage();
 				assertNotNull(menage);
 
-				PeriodeFiscale pf2006 = (PeriodeFiscale) tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 6L);
-				PeriodeFiscale pf2007 = (PeriodeFiscale) tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 7L);
-				ModeleDocument modele2006 = (ModeleDocument) tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 1L);
-				ModeleDocument modele2007 = (ModeleDocument) tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 5L);
+				PeriodeFiscale pf2006 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 6L);
+				PeriodeFiscale pf2007 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 7L);
+				ModeleDocument modele2006 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 1L);
+				ModeleDocument modele2007 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 5L);
 				addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
 				addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
@@ -358,7 +358,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Evénement de décès
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
@@ -396,9 +396,9 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereTacheApresDeces() throws Exception {
 
 		// Etat 2010
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -423,7 +423,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = RegDate.get().year();
 
 		// Evénement de décès
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
@@ -483,17 +483,17 @@ public class TacheServiceTest extends BusinessTest {
 		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
 		final RegDate dateDeces = date(2008, 12, 5);
 
-		final CollectiviteAdministrative aciSuccessions = (CollectiviteAdministrative) doInNewTransaction(new TxCallback() {
+		final CollectiviteAdministrative aciSuccessions = doInNewTransaction(new TxCallback<CollectiviteAdministrative>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public CollectiviteAdministrative execute(TransactionStatus status) throws Exception {
 				return  tiersService.getOrCreateCollectiviteAdministrative(serviceInfra.getACISuccessions().getNoColAdm());
 			}
 		});
 
 		// Etat 2010
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -552,9 +552,9 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereDivorceDepuisOuvertureForPrincipal() throws Exception {
 
 		// Etat 2008
-		final Long idMenage = (Long) doInNewTransaction(new TxCallback() {
+		final Long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				loadDatabase(DB_UNIT_DATA_FILE);
 
 				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
@@ -581,7 +581,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Divorce au 10 octobre 2007
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -619,7 +619,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheDepuisOuvertureForSecondaireActivite() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero((long) 11111111);
@@ -675,8 +675,8 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheDepartHSDepuisFermetureForPrincipal() throws Exception {
 
-		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -712,7 +712,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -799,7 +799,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Raoul part fin juin 2005, mais on ne reçoit son départ qu'aujourd'hui.
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
@@ -867,8 +867,8 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheDepartHCDepuisFermetureForPrincipal() throws Exception {
 
-		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -886,7 +886,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		final Contribuable pp = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+		final Contribuable pp = hibernateTemplate.get(Contribuable.class, id);
 		assertNotNull(pp);
 
 		TacheCriteria criterion = new TacheCriteria();
@@ -921,7 +921,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Création de la situation initiale : contribuable vaudois ordinaire dans le canton depuis 2008 avec une DI pour 2008
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -941,7 +941,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Saisie d'un départ hors-canton au mileu 2008 (départ entrée tardivement, donc)
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -957,7 +957,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Vérifie qu'il y a bien une tâche d'annulation de la DI 2008 et qu'elle est bien assignée à l'OID d'Orbe
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -991,7 +991,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
@@ -1020,8 +1020,8 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testClotureDuDernierForSecondaireUNIREG1110() throws Exception {
 
-		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -1039,7 +1039,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		final Contribuable pp = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+		final Contribuable pp = hibernateTemplate.get(Contribuable.class, id);
 		assertNotNull(pp);
 
 		TacheCriteria criterion = new TacheCriteria();
@@ -1099,7 +1099,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1138,7 +1138,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1172,7 +1172,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1196,7 +1196,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1281,7 +1281,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1306,7 +1306,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1403,7 +1403,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1558,7 +1558,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1722,7 +1722,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1856,7 +1856,7 @@ public class TacheServiceTest extends BusinessTest {
 		/*
 		 * Un contribuable domicilié au Danemark et qui possède un immeuble depuis 2000 à Cossonay
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1920,7 +1920,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				serviceCivil.setUp(new MockServiceCivil() {
@@ -1963,7 +1963,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				serviceCivil.setUp(new MockServiceCivil() {
@@ -2013,7 +2013,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				serviceCivil.setUp(new MockServiceCivil() {
@@ -2071,7 +2071,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Contribuable raoul = addHabitant(100000);
@@ -2116,7 +2116,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -2186,7 +2186,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	private void ouvreForPrincipal(final ModeImposition modeImposition, final MotifFor motifOuverture, final RegDate dateOuverture) throws Exception {
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero((long) 11111111);
@@ -2469,7 +2469,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testAnnulationForSansOidGestion() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Marcelin", "Emile", date(1946, 1, 5), Sexe.MASCULIN);
 				final RegDate dateArrivee = date(2008, 4, 1);
@@ -2482,7 +2482,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification qu'il n'y a pas d'OID associé au contribuable, puis annulation du for
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(pp, null);
@@ -2498,7 +2498,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// aucune tâche générée ?
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
@@ -2524,7 +2524,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique lui = addNonHabitant("Achille", "Talon", date(1965, 12, 5), Sexe.MASCULIN);
 				lui.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
@@ -2588,7 +2588,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique lui = addNonHabitant("Achille", "Talon", date(1965, 12, 5), Sexe.MASCULIN);
 				lui.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
@@ -2673,7 +2673,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple de sourciers arrivés de hors-Suisse en 2008
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique ilya = addHabitant(915112);
 				ids.ilya = ilya.getNumero();
@@ -2697,7 +2697,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertEmpty(tacheDAO.find(ids.menage));
 
 		// Effectue un divorce
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.menage);
@@ -2744,9 +2744,9 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateOuverture = RegDate.get(2006, 7, 1);
 
 		// création des DI 2006 et 2007 avant la notification du départ en 2007
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final PeriodeFiscale pf2006 = addPeriodeFiscale(2006);
 				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
@@ -2772,7 +2772,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// départ en 2007
 		final RegDate depart = date(2007, 10, 31);
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
@@ -2783,7 +2783,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// la DI 2007 doit avoir une durée de validité réduite suite au départ
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
@@ -3267,8 +3267,8 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneePrecedente = aujourdhui.year() - 1;
 
 		// Arrivée de hors-Suisse traitée tardivement
-		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gédéon", "Glincarnés", date(1972, 1, 3), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(pp, ffp, null);
@@ -3277,7 +3277,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Il devrait maintenant y avoir une tâche d'envoi de DI
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
@@ -3295,7 +3295,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Départ de hors-Suisse traité tardivement
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
@@ -3340,7 +3340,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneePrecedente = aujourdhui.year() - 1;
 
 		// Veuvage traité tardivement
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 11, 2), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
@@ -3408,7 +3408,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 1 : contribuable hors-canton avec une activité indépendente dans le canton
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Jean-Louis", "Ruedi", date(1954, 11, 23), Sexe.MASCULIN);
@@ -3438,7 +3438,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// On vérifie qu'aucune tâche n'est générée (le contribuable est dans un état correct) :
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertEmpty(tacheDAO.find(ids.ctb));
@@ -3449,7 +3449,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 2 : annulation du for secondaire
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final ForFiscal ffs = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffs);
@@ -3460,7 +3460,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// On vérifie que le contribuable n'est plus assujetti et que des tâches d'annulation des déclarations existantes sont générées
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<Tache> taches = tacheDAO.find(ids.ctb);
@@ -3474,7 +3474,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 3 : annulation du for principal
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final ForFiscal ffp = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp);
@@ -3485,7 +3485,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// On vérifie que rien ne change au niveau des tâches
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<Tache> taches = tacheDAO.find(ids.ctb);
@@ -3499,7 +3499,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 4 : ajout d'un for principal vaudois ordinaire en remplacement du for hors-canton
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
@@ -3512,7 +3512,7 @@ public class TacheServiceTest extends BusinessTest {
 		// On vérifie que :
 		//  - les tâches d'annulation introduites à l'étape 2 sont annulées (le contribuable est de nouveau assujetti)
 		//  - le type de contribuable des déclarations pré-existantes est mis-à-jour (car les types de documents sont compatibles)
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<Tache> taches = tacheDAO.find(ids.ctb);
@@ -3555,7 +3555,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 1 : contribuable hors-canton avec une activité indépendente dans le canton
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Bashkim", "Muji", date(1983, 3, 24), Sexe.MASCULIN);
@@ -3581,7 +3581,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// On vérifie qu'aucune tâche n'est générée (le contribuable est dans un état correct) :
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertEmpty(tacheDAO.find(ids.ctb));
@@ -3592,7 +3592,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 2 : annulation du dernier for principal
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final ForFiscal ffp2 = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp2);
@@ -3603,7 +3603,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// On vérifie que le contribuable est toujours assujetti et qu'aucune nouvelle tâche n'a été créée
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertEmpty(tacheDAO.find(ids.ctb));
@@ -3614,7 +3614,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 3 : annulation du for principal
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final ForFiscal ffp1 = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp1);
@@ -3625,7 +3625,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// On vérifie que le contribuable n'est plus assujetti et que des tâches d'annulation des déclarations existantes sont générées
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<Tache> taches = tacheDAO.find(ids.ctb);
@@ -3640,7 +3640,7 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 4 : ajout d'un for principal vaudois ordinaire en remplacement des fors annulés
 		//
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
@@ -3653,7 +3653,7 @@ public class TacheServiceTest extends BusinessTest {
 		// On vérifie que :
 		//  - les tâches d'annulation introduites à l'étape 2 sont annulées (le contribuable est de nouveau assujetti)
 		//  - le type de contribuable des déclarations pré-existantes est mis-à-jour (car les types de documents sont compatibles)
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<Tache> taches = tacheDAO.find(ids.ctb);
@@ -3695,7 +3695,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final int anneeDerniere = anneeCourante - 1;
@@ -3712,7 +3712,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// test
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -3753,7 +3753,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final int anneeDerniere = anneeCourante - 1;
@@ -3780,7 +3780,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// test
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -3811,7 +3811,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(anneePrecedente, 11, 2);
 
 		// Décès
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente - 2, 6, 12), MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
@@ -3884,8 +3884,8 @@ public class TacheServiceTest extends BusinessTest {
 
 	private List<Tache> genereChangementImposition(final ModeImposition ancienMode, final ModeImposition nouveauMode) throws Exception {
 
-		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Léo", "Bidule", date(1960, 1, 1), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 				ffp.setModeImposition(ancienMode);
@@ -3946,7 +3946,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -3961,7 +3961,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification des fors et qu'aucune tâche n'a encore été générée
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -3988,7 +3988,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// départ HS dans la période courante : une tâche de contrôle de dossier et une tâche d'envoi de DI devraient être générées
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -4002,7 +4002,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification des fors et des tâches créées
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -4097,7 +4097,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -4112,7 +4112,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification des fors et qu'aucune tâche n'a encore été générée
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -4139,7 +4139,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// décès dans la période courante : une tâche de transmission de dossier et une tâche d'envoi de DI devraient être générées
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -4152,7 +4152,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification des fors et des tâches créées
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -4238,7 +4238,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
@@ -4253,7 +4253,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification qu'aucune tâche n'a encore été générée (= tout est à jour)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4268,7 +4268,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// maintenant on ré-ouvre le for (et non, il n'est pas mort !)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4287,7 +4287,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// il devrait maintenant y avoir une tâche d'annulation de DI
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4318,7 +4318,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
@@ -4330,7 +4330,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification qu'une seule tâche d'envoi de DI existe (il y a aussi une tâche de transmission de dossier, mais ce n'est pas l'objet de ce test)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4352,7 +4352,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// maintenant on ré-ouvre le for (et non, il n'est pas mort !)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4371,7 +4371,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// la tâche précédemment existante devrait avoir été annulée
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4412,7 +4412,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
@@ -4432,7 +4432,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// on vérifie que la DI est bien là quittancée, et qu'aucune tâche n'existe encore sur ce contribuable
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
@@ -4463,7 +4463,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// maintenant on va annuler le for HS (et donc ré-ouvrir le for vaudois)
 		// -> une tâche d'annulation de DI devrait être générée
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
@@ -4481,7 +4481,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification de l'existence de catte tâche d'annulation de DI
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
@@ -4534,7 +4534,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
@@ -4546,7 +4546,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification qu'une seule tâche d'envoi de DI existe (il y a aussi une tâche de transmission de dossier, mais ce n'est pas l'objet de ce test)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4576,7 +4576,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		// maintenant on change la date de fermeture du for, tout en restant dans la même période fiscale
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4594,7 +4594,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// la tâche précédemment existante devrait avoir été annulée et une nouvelle générée
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4646,7 +4646,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
@@ -4661,7 +4661,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification qu'aucune tâche n'a encore été générée (= tout est à jour)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4684,7 +4684,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		// maintenant on change la date de fermeture du for, tout en restant dans la même période fiscale
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4702,7 +4702,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// il ne devrait maintenant y avoir aucune nouvelle tâche, mais la période de la DI devrait avoir été adaptée
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4735,7 +4735,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateAchat = date(anneeCourante - 1, 5, 6);
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
@@ -4745,7 +4745,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// il doit y avoir une tâche d'émission de DI en raison de la vente du dernier immeuble et donc de la fin d'assujettissement
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4781,7 +4781,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebutActivite = date(anneeCourante - 1, 5, 6);
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockPays.RoyaumeUni);
@@ -4797,7 +4797,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// il ne devrait pas y avoir de tâche d'émission de DI malgré la fin d'activité indépendante et donc la fin d'assujettissement
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4833,7 +4833,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateAchat = date(anneeCourante - 1, 5, 6);
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
@@ -4849,7 +4849,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// il ne devrait pas y avoir de tâche d'émission de DI malgré la vente du dernier immeuble (DI remplacée par une note)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4878,7 +4878,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDebutActivite = date(anneeCourante - 1, 5, 6);
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
@@ -4894,7 +4894,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// il ne devrait pas y avoir de tâche d'émission de DI malgré la fin d'activité indépendante et donc la fin d'assujettissement
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
@@ -4919,7 +4919,7 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate aujourdhui = RegDate.get();
 		final int anneeCourante = aujourdhui.year();
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Viktor", "Krum", date(1980, 10, 25), Sexe.MASCULIN);
@@ -4935,7 +4935,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// la DI doit avoir été acceptée, non annulée et il ne doit y avoir aucune tâche d'annulation de DI en instance
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
@@ -4969,7 +4969,7 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = aujourdhui.year();
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Viktor", "Krum", date(1980, 10, 25), Sexe.MASCULIN);
@@ -5000,7 +5000,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// ensuite, on ferme le for l'année dernière, les deux DI devaient disparaître
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
@@ -5017,7 +5017,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// plus de di !
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);

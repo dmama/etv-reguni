@@ -41,7 +41,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecLrNonSommees() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -67,7 +67,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecLrSommeeMaisUneLrNonEmise() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -96,7 +96,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecLrSommeeToutesEmises() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -128,7 +128,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecLrSommeeTresRecemment() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -156,7 +156,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecLrSommeeEtDejaEchue() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -185,7 +185,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecUneLrSommeeEtUneDejaEchue() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -222,7 +222,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecUneLrRetourneeApresSommation() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -253,7 +253,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	@Test
 	public void testDebiteurAvecPlusieursLrSommees() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);

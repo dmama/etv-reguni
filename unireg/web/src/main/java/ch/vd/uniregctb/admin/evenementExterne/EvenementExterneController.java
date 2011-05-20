@@ -131,14 +131,15 @@ public class EvenementExterneController extends AbstractEnhancedSimpleFormContro
 
 		final EtatEvenementExterne etat = e;
 
-		final Collection<EvenementExterne> evenementExternes = (Collection<EvenementExterne>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				Collection<EvenementExterne> evenementExternes = null;
-				if (etat == null)
+		final Collection<EvenementExterne> evenementExternes = template.execute(new TransactionCallback<Collection<EvenementExterne>>() {
+			public Collection<EvenementExterne> doInTransaction(TransactionStatus status) {
+				final Collection<EvenementExterne> evenementExternes;
+				if (etat == null) {
 					evenementExternes = evenementExterneDAO.getEvenementExternes(false);
-				else
+				}
+				else {
 					evenementExternes = evenementExterneDAO.getEvenementExternes(false, etat);
-
+				}
 				return evenementExternes;
 			}
 		});

@@ -104,7 +104,7 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Création du message
@@ -161,7 +161,7 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 		assertNull(msg);
 	}
 
-	private class SendEventCallback implements TransactionCallback {
+	private class SendEventCallback implements TransactionCallback<Object> {
 		private final boolean simul;
 
 		public SendEventCallback(boolean simul) {

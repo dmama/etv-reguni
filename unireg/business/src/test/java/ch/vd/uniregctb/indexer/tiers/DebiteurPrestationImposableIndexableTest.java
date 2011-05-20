@@ -52,7 +52,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			Long noCtbDpi;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -136,7 +136,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			Long noCtbDpi;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -216,7 +216,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 		*/
 
 		/// On modifie l'AutreCommunaute et on cherche sur la modif => 2 hits
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final AutreCommunaute ac = (AutreCommunaute) dao.get(numeros.noCtbEnt);
@@ -249,7 +249,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 		final long idAC = 2001400L; // Bollet SA
 
 		// Création d'un contribuable et d'un débiteur lié au contribuable
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -310,9 +310,9 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	public void testIndexationDebiteurCategorieIS() throws Exception {
 
 		// Création d'un débiteur avec catégorie impôt source prestation de prévoyance
-		final Long idDpi = (Long) doInNewTransaction(new TxCallback() {
+		final Long idDpi = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 				dpi.setPersonneContact("Jean-François Burnier");

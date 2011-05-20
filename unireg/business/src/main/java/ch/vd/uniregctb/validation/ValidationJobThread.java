@@ -65,8 +65,8 @@ public class ValidationJobThread extends Thread {
 
 		// Valide les tiers dans la queue en procédant par batchs, ceci pour limiter le nombre d'objets en mémoire
 		do {
-			continueProcessing = (Boolean) template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
+			continueProcessing = template.execute(new TransactionCallback<Boolean>() {
+				public Boolean doInTransaction(TransactionStatus status) {
 					try {
 						processBatch();
 					}

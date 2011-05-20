@@ -40,10 +40,9 @@ public class CivilEditControllerTest extends WebTest {
 	@NotTransactional
 	public void testSubmitPrenomNomVides() throws Exception {
 
-		final Long id = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique nh = addNonHabitant("", "temp", date(1967, 11, 1), Sexe.FEMININ);
 				return nh.getNumero();
 			}
@@ -88,7 +87,7 @@ public class CivilEditControllerTest extends WebTest {
 	@NotTransactional
 	public void testOnSubmitWithNom() throws Exception {
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -103,7 +102,7 @@ public class CivilEditControllerTest extends WebTest {
 		final Map<?, ?> model = mav.getModel();
 		Assert.assertNotNull(model);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -119,7 +118,7 @@ public class CivilEditControllerTest extends WebTest {
 	@NotTransactional
 	public void testOnSubmitWithDateNaissancePartielle() throws Exception {
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -138,7 +137,7 @@ public class CivilEditControllerTest extends WebTest {
 		final Map<?, ?> model = mav.getModel();
 		Assert.assertNotNull(model);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -154,7 +153,7 @@ public class CivilEditControllerTest extends WebTest {
 	@NotTransactional
 	public void testOnSubmitWithWrongDateNaissance() throws Exception {
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -169,7 +168,7 @@ public class CivilEditControllerTest extends WebTest {
 		final Map<?, ?> model = mav.getModel();
 		Assert.assertNotNull(model);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -184,7 +183,7 @@ public class CivilEditControllerTest extends WebTest {
 	@NotTransactional
 	public void testOnSubmitWithDateNaissance() throws Exception {
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -200,7 +199,7 @@ public class CivilEditControllerTest extends WebTest {
 		request.setMethod("POST");
 		controller.handleRequest(request, response);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -215,14 +214,14 @@ public class CivilEditControllerTest extends WebTest {
 	@NotTransactional
 	public void testModifyNonHabitant() throws Exception {
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant(null, "Kamel", null, Sexe.MASCULIN);
 				return pp.getNumero();
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersDAO.get(ppId);
 				final PersonnePhysique nh = (PersonnePhysique)tiers;
@@ -239,7 +238,7 @@ public class CivilEditControllerTest extends WebTest {
 		request.setMethod("POST");
 		controller.handleRequest(request, response);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersDAO.get(ppId);
 				final PersonnePhysique nh = (PersonnePhysique)tiers;

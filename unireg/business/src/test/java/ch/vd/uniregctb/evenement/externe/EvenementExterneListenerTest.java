@@ -58,8 +58,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -71,7 +71,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -84,7 +84,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -121,8 +121,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -134,7 +134,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -147,7 +147,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(0, evts.size());
@@ -166,8 +166,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateQuittancement = RegDate.get();
 
 
-		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -179,7 +179,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -192,7 +192,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -225,8 +225,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -244,7 +244,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -257,7 +257,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -277,8 +277,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -292,7 +292,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -305,7 +305,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -343,8 +343,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -358,7 +358,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -371,7 +371,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -410,8 +410,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -426,7 +426,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -439,7 +439,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());

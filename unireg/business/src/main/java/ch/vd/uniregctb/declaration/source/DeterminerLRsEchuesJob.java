@@ -85,8 +85,8 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final DeterminerLRsEchuesRapport rapport = (DeterminerLRsEchuesRapport) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final DeterminerLRsEchuesRapport rapport = template.execute(new TransactionCallback<DeterminerLRsEchuesRapport>() {
+			public DeterminerLRsEchuesRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});

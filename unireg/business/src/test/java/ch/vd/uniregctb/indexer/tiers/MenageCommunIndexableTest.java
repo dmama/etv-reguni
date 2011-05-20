@@ -50,7 +50,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -112,7 +112,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -176,7 +176,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -258,7 +258,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

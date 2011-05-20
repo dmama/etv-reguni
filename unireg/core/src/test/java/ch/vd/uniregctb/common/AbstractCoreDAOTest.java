@@ -191,7 +191,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * virtual method to truncate the database
 	 */
 	protected void truncateDatabase() throws Exception {
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				deleteFromTables(getTableNames(false));
@@ -282,7 +282,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 */
 	private void loadDataSet(final File file) throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {

@@ -37,7 +37,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	}
 
 	private Long createPersonnePhysique(final TypePersonnePhysique typePP, final boolean forVaudois) throws Exception {
-		return (Long) doInNewTransaction(new TxCallback() {
+		return doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp;

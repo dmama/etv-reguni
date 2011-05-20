@@ -152,7 +152,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 		try {
 			TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.execute(new TransactionCallback() {
+			template.execute(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Récupère la période fiscale
@@ -193,9 +193,9 @@ public class DeterminationDIsAEmettreProcessor {
 		}
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-        final List<Contribuable> list = (List<Contribuable>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
-                Criteria crit = session.createCriteria(Contribuable.class);
+        final List<Contribuable> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
+            public List<Contribuable> doInHibernate(Session session) throws HibernateException {
+                final Criteria crit = session.createCriteria(Contribuable.class);
                 crit.add(Restrictions.in("numero", batch));
                 crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
                 crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -695,30 +695,30 @@ public class DeterminationDIsAEmettreProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsFors = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryIdsCtbWithFors);
+				final List<Long> idsFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryIdsCtbWithFors);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
 						queryObject.setParameter("finAnnee", finAnnee.index());
 						return queryObject.list();
 					}
 				});
 
-				final List<Long> idsTasks = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryIdsCtbWithTasks);
+				final List<Long> idsTasks = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryIdsCtbWithTasks);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
 						queryObject.setParameter("finAnnee", finAnnee.index());
 						return queryObject.list();
 					}
 				});
 
-				final List<Long> idsDIs = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
+				final List<Long> idsDIs = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
 						queryObject.setParameter("finAnnee", finAnnee.index());
 						return queryObject.list();

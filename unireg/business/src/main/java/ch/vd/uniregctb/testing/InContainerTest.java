@@ -84,7 +84,7 @@ public abstract class InContainerTest {
 		this.transactionManager = platformTransactionManager;
 	}
 
-	public Object executeInTransaction(TransactionCallback action) {
+	public <T> T executeInTransaction(TransactionCallback<T> action) {
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
         template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 		return template.execute(action);

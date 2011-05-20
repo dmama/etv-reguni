@@ -156,7 +156,6 @@ public class DeterminerLRsEchuesProcessor {
 		rapport.newDebiteurAnalyse();
 	}
 
-	@SuppressWarnings({"unchecked"})
 	/**
 	 * Renvoi une liste d'information sur les LR sommées (non-retournées) qui concernent la période fiscale donnée, et
 	 * pour lesquelle la date de sommation est "assez loin" dans le passé de la date de traitement
@@ -175,15 +174,15 @@ public class DeterminerLRsEchuesProcessor {
 		b.append(" ORDER BY LR.TIERS_ID, LR.DATE_DEBUT");
 		final String sql = b.toString();
 
-		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = (List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>) template.execute(new TransactionCallback() {
+		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = template.execute(new TransactionCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
 			public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInTransaction(TransactionStatus status) {
-				return (List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>) hibernateTemplate.execute(new HibernateCallback() {
+				return hibernateTemplate.execute(new HibernateCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
 					public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInHibernate(Session session) throws HibernateException {
 
 						final Query query = session.createSQLQuery(sql);
 						query.setParameter("pf", periodeFiscale);
 
-						final List<Object[]> rows = query.list();
+						@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
 						if (rows != null && rows.size() > 0) {
 							final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>(rows.size());
 							for (Object[] row : rows) {

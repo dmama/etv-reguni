@@ -37,7 +37,7 @@ public class Sequence {
 		final Dialect dialect = factory.getDialect();
 
 		if (sequenceName != null) {
-			return template.execute(new HibernateCallback() {
+			return template.execute(new HibernateCallback<Object>() {
 				public Object doInHibernate(Session session) throws HibernateException, SQLException {
 					String sql = dialect.getSequenceNextValString(sequenceName);
 					SQLQuery query = session.createSQLQuery(sql);
@@ -50,7 +50,7 @@ public class Sequence {
 			try {
 				final IdentifierGenerator generator = generatorClass.newInstance();
 				((Configurable)generator).configure(Hibernate.LONG, new Properties(), dialect);
-				return template.execute(new HibernateCallback() {
+				return template.execute(new HibernateCallback<Object>() {
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 						return generator.generate((SessionImplementor) session, entity);
 					}

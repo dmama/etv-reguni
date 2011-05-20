@@ -62,12 +62,12 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<PrioriteEmetteur, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<PrioriteEmetteur> listesPriorites = (List<PrioriteEmetteur>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				if(isTraite){
+		final List<PrioriteEmetteur> listesPriorites = template.execute(new TransactionCallback<List<PrioriteEmetteur>>() {
+			public List<PrioriteEmetteur> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
 					return identCtbDAO.getListePrioriteMessagesTraites();
 				}
-				else{
+				else {
 					return identCtbDAO.getListePrioriteMessagesNonTraites();
 				}
 
@@ -138,9 +138,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		template.setReadOnly(true);
 
 		final Map<Etat, String> mapEtat = new HashMap<Etat, String>();
-		final List<Etat> typesMessage = (List<Etat>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				if(isTraite){
+		final List<Etat> typesMessage = template.execute(new TransactionCallback<List<Etat>>() {
+			public List<Etat> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
 					return identCtbDAO.getListeEtatsMessagesTraites();
 				}
 				else{
@@ -168,8 +168,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		template.setReadOnly(true);
 
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final List<String> typesMessage = (List<String>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<String> typesMessage = template.execute(new TransactionCallback<List<String>>() {
+			public List<String> doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getTypesMessage();
 			}
 		});
@@ -194,12 +194,12 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		template.setReadOnly(true);
 
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final List<String> typesMessage = (List<String>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-					if(isTraite){
+		final List<String> typesMessage = template.execute(new TransactionCallback<List<String>>() {
+			public List<String> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
 					return identCtbDAO.getTypesMessageEtatsTraites();
 				}
-				else{
+				else {
 					return identCtbDAO.getTypesMessageEtatsNonTraites();
 				}
 			}
@@ -224,8 +224,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		template.setReadOnly(true);
 
 		final Map<String, String>	mapUtilisateur = new HashMap<String, String>();
-		final List<String> listVisaUser = (List<String>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<String> listVisaUser = template.execute(new TransactionCallback<List<String>>() {
+			public List<String> doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getTraitementUser();
 			}
 		});
@@ -255,8 +255,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TreeMap<String, String> allEmetteur = new TreeMap<String, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<String> emetteurs = (List<String>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<String> emetteurs = template.execute(new TransactionCallback<List<String>>() {
+			public List<String> doInTransaction(TransactionStatus status) {
 				if(isTraite){
 					return identCtbDAO.getEmetteursIdEtatsTraites();
 				}
@@ -295,15 +295,14 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Integer> periodes = (List<Integer>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				if(isTraite){
+		final List<Integer> periodes = template.execute(new TransactionCallback<List<Integer>>() {
+			public List<Integer> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
 					return identCtbDAO.getPeriodeEtatsTraites();
 				}
-				else{
+				else {
 					return identCtbDAO.getPeriodeEtatsNonTraites();
 				}
-
 			}
 		});
 
@@ -325,10 +324,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Integer> periodes = (List<Integer>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Integer> periodes = template.execute(new TransactionCallback<List<Integer>>() {
+			public List<Integer> doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getPeriodes();
-
 			}
 		});
 

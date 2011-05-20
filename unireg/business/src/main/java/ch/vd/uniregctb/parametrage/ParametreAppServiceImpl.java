@@ -43,7 +43,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.execute(new TransactionCallback() {
+			template.execute(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 					for (ParametreApp p : dao.getAll()) {
 						try {

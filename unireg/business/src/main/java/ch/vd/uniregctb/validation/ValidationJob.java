@@ -133,16 +133,15 @@ public class ValidationJob extends JobDefinition {
 		Audit.success("Le batch de validation des tiers est terminé", rapport);
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<Long> getCtbIds(final StatusManager statusManager) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return tiersDAO.getHibernateTemplate()
-						.find("select cont.numero from Contribuable as cont order by cont.numero asc");
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				//noinspection unchecked
+				return tiersDAO.getHibernateTemplate().find("select cont.numero from Contribuable as cont order by cont.numero asc");
 			}
 		});
 
@@ -207,8 +206,8 @@ public class ValidationJob extends JobDefinition {
 	private ValidationJobRapport generateRapport(final ValidationJobResults results, final StatusManager statusManager) {
 		statusManager.setMessage("Génération du rapport...");
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final ValidationJobRapport rapport = (ValidationJobRapport) t.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus s) {
+		final ValidationJobRapport rapport = t.execute(new TransactionCallback<ValidationJobRapport>() {
+			public ValidationJobRapport doInTransaction(TransactionStatus s) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});

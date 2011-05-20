@@ -106,17 +106,17 @@ public class MigrationCoquillesPM extends JobDefinition {
 		return sorted;
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private Set<Long> getTargetIds() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeFind(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 						final Query query = session.createQuery("select e.id from Entreprise as e");
+						//noinspection unchecked
 						return query.list();
 					}
 				});

@@ -254,18 +254,18 @@ public class ProduireStatsDIsProcessor {
 	 *            la période fiscale considérée
 	 * @return itérateur sur les ID des DIs
 	 */
-	@SuppressWarnings("unchecked")
 	protected List<Long> chargerIdentifiantsDeclarations(final int annee) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> i = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+				final List<Long> i = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryDIs);
 						queryObject.setParameter("annee", annee);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

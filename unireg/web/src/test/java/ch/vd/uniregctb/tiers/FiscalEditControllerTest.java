@@ -66,7 +66,7 @@ public class FiscalEditControllerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -124,7 +124,7 @@ public class FiscalEditControllerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -194,7 +194,7 @@ public class FiscalEditControllerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

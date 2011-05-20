@@ -126,7 +126,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	private void processTiers(final List<Long> ids, final StatusManager status) {
 
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus s) {
 
 				current += ids.size();
@@ -165,17 +165,17 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	 * @return un itérateur sur tous les contribuables ayant au moins un for fiscal actif dans la commune vaudoise spécifiée durant l'année
 	 *         spécifiée <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement).
 	 */
-	@SuppressWarnings("unchecked")
 	protected List<Long> getIdsAllTiers() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryAllTiers);
+				final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryAllTiers);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});
@@ -211,17 +211,17 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	 * @return un itérateur sur tous les contribuables ayant au moins un for fiscal actif dans la commune vaudoise spécifiée durant l'année
 	 *         spécifiée <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement).
 	 */
-	@SuppressWarnings("unchecked")
 	protected List<Long> getIdsTiersWithNullOID() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryTiersWithNullOID);
+				final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryTiersWithNullOID);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

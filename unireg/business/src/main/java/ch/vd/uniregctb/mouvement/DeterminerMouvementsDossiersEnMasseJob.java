@@ -86,7 +86,7 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final DeterminerMouvementsDossiersEnMasseRapport rapport = (DeterminerMouvementsDossiersEnMasseRapport) template.execute(new TransactionCallback() {
+		final DeterminerMouvementsDossiersEnMasseRapport rapport = template.execute(new TransactionCallback<DeterminerMouvementsDossiersEnMasseRapport>() {
 			public DeterminerMouvementsDossiersEnMasseRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}

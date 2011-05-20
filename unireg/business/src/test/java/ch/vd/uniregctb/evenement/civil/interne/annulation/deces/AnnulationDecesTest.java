@@ -69,7 +69,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale
-		final Long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final Long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_INDIVIDU_CELIBATAIRE);
 				addForPrincipal(pp, date(1995, 4, 19), MotifFor.ARRIVEE_HC, DATE_DECES, MotifFor.VEUVAGE_DECES, MockCommune.Fraction.LeLieu);
@@ -78,7 +78,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
@@ -99,7 +99,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// test du résultat
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
@@ -144,7 +144,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_INDIVIDU_MARIE_SEUL);
 				addForPrincipal(pp, date(1980, 3, 1), MotifFor.ARRIVEE_HC, DATE_MARIAGE.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
@@ -161,7 +161,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
@@ -248,7 +248,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(NO_INDIVIDU_MARIE);
 				final PersonnePhysique mme = addHabitant(NO_INDIVIDU_MARIE_CONJOINT);
@@ -271,7 +271,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
@@ -293,7 +293,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// test des résultats
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				/*

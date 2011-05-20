@@ -35,7 +35,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 		final String prenom1 = "Claude";
 		final String prenom2 = "Alain";
 
-		executeInTransaction(new TransactionCallback() {
+		executeInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				{
 					PersonnePhysique nh = new PersonnePhysique(false);
@@ -150,13 +150,10 @@ public class IcGlobalIndexTest extends InContainerTest {
 	 * @param tiers le tiers à sauver
 	 */
 	private Long save(final Tiers tiers) {
-		Long id = (Long)executeInTransaction(new TransactionCallback() {
-
-			public Object doInTransaction(TransactionStatus status) {
-				Long id = (Long)getTiersDAO().getHibernateTemplate().save(tiers);
-				return id;
+		Long id = executeInTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
+				return (Long) getTiersDAO().getHibernateTemplate().save(tiers);
 			}
-
 		});
 		return id;
 	}

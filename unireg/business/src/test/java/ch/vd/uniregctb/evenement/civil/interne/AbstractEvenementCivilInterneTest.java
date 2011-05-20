@@ -62,7 +62,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	}
 
 	protected void launchEvent(final EvenementCivilInterne evtCivil, final List<EvenementCivilExterneErreur> erreurs, final List<EvenementCivilExterneErreur> warnings) throws Exception {
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				evtCivil.checkCompleteness(erreurs, warnings);

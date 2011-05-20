@@ -90,8 +90,8 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final int nbTiers = (Integer)template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final int nbTiers = template.execute(new TransactionCallback<Integer>() {
+			public Integer doInTransaction(TransactionStatus status) {
 				return dao.getCount(Tiers.class);
 			}
 		});
@@ -104,7 +104,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 		final ByteArrayOutputStream content = new ByteArrayOutputStream();
 
 		// Dump la base de données
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					dbService.dumpToDbunitFile(content);

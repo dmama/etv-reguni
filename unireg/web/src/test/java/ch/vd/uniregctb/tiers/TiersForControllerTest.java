@@ -241,9 +241,9 @@ public class TiersForControllerTest  extends WebTest {
 	@Test
 	public void testAddForPrincipalSurPaysInvalide() throws Exception {
 
-		final Long id = (Long) doInNewTransactionAndSession(new TxCallback(){
+		final Long id = doInNewTransactionAndSession(new TxCallback<Long>(){
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
 				return pp.getNumero();
 			}
@@ -288,9 +288,9 @@ public class TiersForControllerTest  extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1960, 1, 1), MotifFor.ARRIVEE_HS, MockPays.RDA);
 				ids.pp = pp.getId();

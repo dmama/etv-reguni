@@ -70,7 +70,7 @@ public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 		final RegDate dateSecondaire = RegDate.get(2000, 3, 1);
 		final RegDate dateTutelle = RegDate.get(2000, 4, 1);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {

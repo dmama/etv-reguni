@@ -65,8 +65,8 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	@Test
 	public void testDetectTiersChange() throws Exception {
 
-		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				return pp.getNumero();
 			}
@@ -75,9 +75,9 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on change le nom
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
 				pp.setNom("Weiss");
 				return null;
 			}
@@ -98,7 +98,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
@@ -114,7 +114,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on effectue une modification sur la déclaration
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
 				di.setDateFin(date(2005, 6, 30));
@@ -137,7 +137,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				final ForFiscalPrincipal ff = addForPrincipal(pp, date(2002, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
@@ -150,7 +150,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on effectue une modification sur le for fiscal
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final ForFiscalPrincipal ff = (ForFiscalPrincipal) hibernateTemplate.get(ForFiscalPrincipal.class, ids.ff);
 				ff.setAnnule(true);
@@ -173,7 +173,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				final AdresseSuisse adresse = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2005, 1, 1), null, MockRue.Chamblon.RueDesUttins);
@@ -186,7 +186,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on effectue une modification sur l'adresse
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final AdresseSuisse adresse = (AdresseSuisse) hibernateTemplate.get(AdresseSuisse.class, ids.adresse);
 				adresse.setAnnule(true);
@@ -210,7 +210,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pupille = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				final PersonnePhysique tuteur = addNonHabitant("Roger", "Moore", date(1954, 3, 23), Sexe.MASCULIN);
@@ -225,7 +225,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on effectue une modification sur le rapport-entre-tiers
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tutelle tutelle = (Tutelle) hibernateTemplate.get(Tutelle.class, ids.tutelle);
 				tutelle.setDateDebut(date(2005, 7, 1));
@@ -253,7 +253,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pupille = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				final PersonnePhysique tuteur = addNonHabitant("Roger", "Moore", date(1954, 3, 23), Sexe.MASCULIN);
@@ -268,7 +268,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on effectue une modification sur le rapport-entre-tiers
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tutelle tutelle = (Tutelle) hibernateTemplate.get(Tutelle.class, ids.tutelle);
 				tutelle.setAnnule(true);
@@ -292,7 +292,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				final SituationFamille situation = addSituation(pp, date(2005, 1, 1), null, 2);
@@ -305,7 +305,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on effectue une modification sur la situation de famille
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final SituationFamille situation = (SituationFamille) hibernateTemplate.get(SituationFamille.class, ids.situation);
 				situation.setAnnule(true);
@@ -328,7 +328,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				final IdentificationPersonne ident = addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, "123456789");
@@ -341,7 +341,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on effectue une modification sur la situation de famille
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final IdentificationPersonne ident = (IdentificationPersonne) hibernateTemplate.get(IdentificationPersonne.class, ids.ident);
 				ident.setAnnule(true);
@@ -361,8 +361,8 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	@Test
 	public void testIgnoreDuplicatedChange() throws Exception {
 
-		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				return pp.getNumero();
 			}
@@ -371,9 +371,9 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		eventService.clear();
 
 		// on change le nom
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
 				pp.setNom("Blanco");
 				hibernateTemplate.flush(); // <-- déclenche l'interceptor de modification
 				pp.setNom("Weiss");

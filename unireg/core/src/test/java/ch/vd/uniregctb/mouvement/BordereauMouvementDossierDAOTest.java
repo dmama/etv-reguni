@@ -44,7 +44,7 @@ public class BordereauMouvementDossierDAOTest extends AbstractMouvementDossierDA
 	public void testBordereauxAReceptionner() throws Exception {
 
 		// création des objets en base
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {

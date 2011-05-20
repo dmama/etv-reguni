@@ -55,7 +55,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	@Test
 	public void testDiRetournee() throws Exception {
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -98,7 +98,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -138,7 +138,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -178,7 +178,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 18);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -221,7 +221,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -261,7 +261,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -302,7 +302,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -343,7 +343,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -389,7 +389,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2010, 6, 30);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -445,7 +445,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -491,7 +491,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -534,7 +534,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -587,7 +587,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final Ids ids;
 		validationInterceptor.setEnabled(false); // nécessaire pour créer le for sur un ménage commun sans appartenance ménage existante
 		try {
-			ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 				public Ids doInTransaction(TransactionStatus status) {
 
 					addCollAdm(MockCollectiviteAdministrative.CEDI);

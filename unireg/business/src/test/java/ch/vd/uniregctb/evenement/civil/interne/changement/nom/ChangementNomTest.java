@@ -75,7 +75,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE), "Le numéro du tiers est incorrect");
 
 		// le tiers ne doit pas être dirty (précondition)
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE);
@@ -89,7 +89,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		MockHistoriqueIndividu historiqueIndividu = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
 		historiqueIndividu.setNom("Dupuid");
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
@@ -122,7 +122,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// le tiers ne doit pas être dirty (postcondition)
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE);
@@ -154,7 +154,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 
 		// on est obligé de mettre-à-jour la base dans le dos d'hibernate et de le faire après avoir indexé la base (voir commentaire sur
 		// appel de loadDatabase()).
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Connection con = dataSource.getConnection();
@@ -175,7 +175,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// le tiers doit être dirty (précondition)
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE_DIRTY);
@@ -189,7 +189,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		MockHistoriqueIndividu historiqueIndividu = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
 		historiqueIndividu.setNom("Woux"); // Julie Woux
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
@@ -222,7 +222,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// le tiers ne doit plus être dirty (postcondition)
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE_DIRTY);

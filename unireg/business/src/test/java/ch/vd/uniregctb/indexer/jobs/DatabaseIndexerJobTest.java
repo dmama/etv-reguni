@@ -85,7 +85,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 	public void testReindexationJob() throws Exception {
 
 		globalTiersIndexer.setOnTheFlyIndexation(false);
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {

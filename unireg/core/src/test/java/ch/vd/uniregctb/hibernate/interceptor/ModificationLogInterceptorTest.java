@@ -41,16 +41,15 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 		String activeUser = "BlaBla";
 		AuthenticationHelper.setPrincipal(activeUser);
 
-		long id = (Long) doInNewTransaction(new TxCallback() {
+		long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = new PersonnePhysique(false);
 				nhab.setNom("Broulis");
 				nhab.setPrenom("Broulis");
 
 				nhab = (PersonnePhysique) dao.save(nhab);
-				long id = nhab.getNumero();
-				return id;
+				return nhab.getNumero();
 			}
 		});
 
@@ -72,9 +71,9 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 		final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
 		final String oldUser = "BliBli";
 
-		final long id = (Long) doInNewTransaction(new TxCallback() {
+		final long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = new PersonnePhysique(false);
 				nhab.setNom("Broulis");
 				nhab.setPrenom("Broulis");
@@ -84,15 +83,14 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 				nhab.setLogModifMillis(modifInitalDate.getTime());
 
 				nhab = (PersonnePhysique) dao.save(nhab);
-				Long id = nhab.getNumero();
-				return id;
+				return nhab.getNumero();
 			}
 		});
 
 		Date beforeTx = DateHelper.getCurrentDate();
 		Thread.sleep(100);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
@@ -132,9 +130,9 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 		final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
 		final String oldUser = "BliBli";
 
-		final long id = (Long) doInNewTransaction(new TxCallback() {
+		final long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = new PersonnePhysique(false);
 				nhab.setNom("Broulis");
 				nhab.setPrenom("Broulis");
@@ -155,15 +153,14 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 				nhab.addForFiscal(f);
 
 				nhab = (PersonnePhysique) dao.save(nhab);
-				Long id = nhab.getNumero();
-				return id;
+				return nhab.getNumero();
 			}
 		});
 
 		Date beforeTx = DateHelper.getCurrentDate();
 		Thread.sleep(100);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = (PersonnePhysique) dao.get(id);

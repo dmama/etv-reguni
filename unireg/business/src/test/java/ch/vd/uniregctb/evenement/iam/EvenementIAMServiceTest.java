@@ -33,19 +33,18 @@ public class EvenementIAMServiceTest extends BusinessTest {
 	public void testModifierInfoEmployeur() throws Exception {
 
 		// Création d'un débiteur
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				// Un tiers tout ce quil y a de plus ordinaire
 				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
-
 				return siggenAirlines.getNumero();
 			}
 		});
 
 		// Simule la réception d'un enregistrement de debiteur
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final InfoEmployeur infoEmployeur = new InfoEmployeur();
@@ -62,7 +61,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les informations du débiteur ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -73,79 +72,78 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			}
 		});
 	}
+
 	@Test
-		public void testModifierInfo2Employeur() throws Exception {
+	public void testModifierInfo2Employeur() throws Exception {
 
-			// Création d'un débiteur 1
-			final Long id1 = (Long) doInNewTransaction(new TxCallback() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+		// Création d'un débiteur 1
+		final Long id1 = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
 
-					// Un tiers tout ce quil y a de plus ordinaire
-					final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
-					siggenAirlines.setModeCommunication(ModeCommunication.SITE_WEB);
-					siggenAirlines.setLogicielId(1L);
-					return siggenAirlines.getNumero();
-				}
-			});
+				// Un tiers tout ce quil y a de plus ordinaire
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
+				siggenAirlines.setModeCommunication(ModeCommunication.SITE_WEB);
+				siggenAirlines.setLogicielId(1L);
+				return siggenAirlines.getNumero();
+			}
+		});
 
-	// Création d'un débiteur 2
-			final Long id2 = (Long) doInNewTransaction(new TxCallback() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+		// Création d'un débiteur 2
+		final Long id2 = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
 
-					// Un tiers tout ce quil y a de plus ordinaire
-					final DebiteurPrestationImposable siggenHolding = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL,date(2010,1,1));
-					 siggenHolding.setModeCommunication(ModeCommunication.PAPIER);
-					return siggenHolding.getNumero();
-				}
-			});
-
-
-			// Simule la réception d'un enregistrement de debiteur
-			doInNewTransaction(new TxCallback() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-
-					List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
-
-					final InfoEmployeur infoEmployeurAirlines = new InfoEmployeur();
-					infoEmployeurAirlines.setLogicielId(18L);
-					infoEmployeurAirlines.setNoEmployeur(id1);
-					infoEmployeurAirlines.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-					listeEmp.add(infoEmployeurAirlines);
+				// Un tiers tout ce quil y a de plus ordinaire
+				final DebiteurPrestationImposable siggenHolding = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL,date(2010,1,1));
+				 siggenHolding.setModeCommunication(ModeCommunication.PAPIER);
+				return siggenHolding.getNumero();
+			}
+		});
 
 
-					final InfoEmployeur infoEmployeurHolding = new InfoEmployeur();
-					infoEmployeurHolding.setLogicielId(12L);
-					infoEmployeurHolding.setNoEmployeur(id2);
-					infoEmployeurHolding.setModeCommunication(ModeCommunication.SITE_WEB);
-					listeEmp.add(infoEmployeurHolding);
+		// Simule la réception d'un enregistrement de debiteur
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 
-					final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
-					enregistrementEmployeur.setEmployeursAMettreAJour(listeEmp);
-					service.onEnregistrementEmployeur(enregistrementEmployeur);
-					return null;
-				}
-			});
+				List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
 
-			// Vérifie que les informations des débiteurs ont bien été mis-à-jour
-			doInNewTransaction(new TxCallback() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-
-					final DebiteurPrestationImposable siggenAirlines = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id1);
-					assertEquals(18L, siggenAirlines.getLogicielId().longValue());
-					assertEquals(ModeCommunication.ELECTRONIQUE, siggenAirlines.getModeCommunication());
-
-					final DebiteurPrestationImposable siggenHolding = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id2);
-					assertEquals(12L, siggenHolding.getLogicielId().longValue());
-					assertEquals(ModeCommunication.SITE_WEB, siggenHolding.getModeCommunication());
-
-					return null;
-				}
-			});
-		}
+				final InfoEmployeur infoEmployeurAirlines = new InfoEmployeur();
+				infoEmployeurAirlines.setLogicielId(18L);
+				infoEmployeurAirlines.setNoEmployeur(id1);
+				infoEmployeurAirlines.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+				listeEmp.add(infoEmployeurAirlines);
 
 
+				final InfoEmployeur infoEmployeurHolding = new InfoEmployeur();
+				infoEmployeurHolding.setLogicielId(12L);
+				infoEmployeurHolding.setNoEmployeur(id2);
+				infoEmployeurHolding.setModeCommunication(ModeCommunication.SITE_WEB);
+				listeEmp.add(infoEmployeurHolding);
+
+				final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
+				enregistrementEmployeur.setEmployeursAMettreAJour(listeEmp);
+				service.onEnregistrementEmployeur(enregistrementEmployeur);
+				return null;
+			}
+		});
+
+		// Vérifie que les informations des débiteurs ont bien été mis-à-jour
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final DebiteurPrestationImposable siggenAirlines = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id1);
+				assertEquals(18L, siggenAirlines.getLogicielId().longValue());
+				assertEquals(ModeCommunication.ELECTRONIQUE, siggenAirlines.getModeCommunication());
+
+				final DebiteurPrestationImposable siggenHolding = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id2);
+				assertEquals(12L, siggenHolding.getLogicielId().longValue());
+				assertEquals(ModeCommunication.SITE_WEB, siggenHolding.getModeCommunication());
+
+				return null;
+			}
+		});
+	}
 }

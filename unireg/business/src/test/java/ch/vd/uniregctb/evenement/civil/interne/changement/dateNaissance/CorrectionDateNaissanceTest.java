@@ -100,7 +100,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
@@ -162,7 +162,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		});
 
 		try {
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					// déclenchement de l'événement
@@ -220,7 +220,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		final Ids ids = new Ids();
 
 		// Crée un individu dans la base
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique jean = addHabitant(noIndJean);
@@ -231,7 +231,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		// Flag cet individu comme dirty (on doit bypasser Hibernate, autrement l'intercepteur va réindexer le tiers automatiquement et
 		// resetter le flag)
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Connection con = dataSource.getConnection();
@@ -253,7 +253,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		});
 
 		// Déclenchement de l'événement
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -302,7 +302,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		});
 
 		// Crée un individu dans la base, avec un for principal déjà ouvert à son ancienne date de majorité
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -321,7 +321,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		try {
 			// Déclenchement de l'événement
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 

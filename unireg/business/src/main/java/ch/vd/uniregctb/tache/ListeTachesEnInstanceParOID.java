@@ -5,7 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class ListeTachesEnIsntanceParOID extends TachesResults<Long, ListeTachesEnIsntanceParOID> {
+public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTachesEnInstanceParOID> {
 
 	/**
 	 * Classe pour stocker les informations d'une ligne du fichier csv resulat
@@ -89,11 +89,11 @@ public class ListeTachesEnIsntanceParOID extends TachesResults<Long, ListeTaches
 	}
 
 
-	public ListeTachesEnIsntanceParOID(RegDate dateTraitement) {
+	public ListeTachesEnInstanceParOID(RegDate dateTraitement) {
 		super(dateTraitement);
 	}
 
-	public void addAll(ListeTachesEnIsntanceParOID rapport) {
+	public void addAll(ListeTachesEnInstanceParOID rapport) {
 		tachesEnIsntancesParOID.addAll(rapport.tachesEnIsntancesParOID);
 	}
 }

@@ -99,12 +99,13 @@ public class ComparerSituationFamilleProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
-        final List<SituationFamilleMenageCommun> list = (List<SituationFamilleMenageCommun>) situationFamilleDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
-                Criteria crit = session.createCriteria(SituationFamilleMenageCommun.class);
+        final List<SituationFamilleMenageCommun> list = situationFamilleDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<SituationFamilleMenageCommun>>() {
+            public List<SituationFamilleMenageCommun> doInHibernate(Session session) throws HibernateException {
+                final Criteria crit = session.createCriteria(SituationFamilleMenageCommun.class);
                 crit.add(Restrictions.in("id", batch));
                 crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-                return crit.list();
+	            //noinspection unchecked
+	            return crit.list();
             }
         });
 
@@ -136,12 +137,13 @@ public class ComparerSituationFamilleProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsMessage = (List<Long>) situationFamilleDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryMessage);
+				final List<Long> idsMessage = situationFamilleDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryMessage);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

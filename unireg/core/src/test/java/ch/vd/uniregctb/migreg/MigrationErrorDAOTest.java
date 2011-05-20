@@ -21,7 +21,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 		dao = getBean(MigrationErrorDAO.class, "migrationErrorDAO");
 		super.onSetUp();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				{
 					MigrationError error = new MigrationError();
@@ -46,7 +46,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		saveError(id);
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				MigrationError error = dao.getErrorForContribuable(id);
 				Assert.assertEquals(new Long(id), error.getNoContribuable());
@@ -61,7 +61,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		final long id = 12345678;
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(2, dao.getAll().size());
 				Assert.assertFalse(dao.existsForContribuable(id));
@@ -71,7 +71,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		saveError(id);
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(3, dao.getAll().size());
 				Assert.assertTrue(dao.existsForContribuable(id));
@@ -86,7 +86,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		final long id = 12345678;
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(2, dao.getAll().size());
 				return null;
@@ -95,7 +95,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		saveError(id);
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(3, dao.getAll().size());
 				return null;
@@ -109,7 +109,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 		catch (Exception ignored) {
 		}
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(3, dao.getAll().size());
 				return null;
@@ -135,7 +135,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 	}
 
 	private void saveError(final long id) throws Exception {
-		doExecuteInTransaction(Propagation.REQUIRES_NEW, new TransactionCallback() {
+		doExecuteInTransaction(Propagation.REQUIRES_NEW, new TransactionCallback<Object>() {
 
 			public Object doInTransaction(TransactionStatus status) {
 

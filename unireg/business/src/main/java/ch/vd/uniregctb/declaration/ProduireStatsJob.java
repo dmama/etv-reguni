@@ -115,7 +115,7 @@ public class ProduireStatsJob extends JobDefinition {
 			// Produit le rapport dans une transaction read-write
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(false);
-			rapport = (StatistiquesDIsRapport) template.execute(new TransactionCallback() {
+			rapport = template.execute(new TransactionCallback<StatistiquesDIsRapport>() {
 				public StatistiquesDIsRapport doInTransaction(TransactionStatus status) {
 					return rapportService.generateRapport(results, statusManager);
 				}
@@ -129,7 +129,7 @@ public class ProduireStatsJob extends JobDefinition {
 			// Produit le rapport dans une transaction read-write
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(false);
-			rapport = (StatistiquesCtbsRapport) template.execute(new TransactionCallback() {
+			rapport = template.execute(new TransactionCallback<StatistiquesCtbsRapport>() {
 				public StatistiquesCtbsRapport doInTransaction(TransactionStatus status) {
 					return rapportService.generateRapport(results, statusManager);
 				}

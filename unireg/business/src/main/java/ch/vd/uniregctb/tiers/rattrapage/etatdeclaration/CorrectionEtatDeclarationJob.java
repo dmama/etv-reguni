@@ -151,8 +151,8 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 	private void traiterBatch(final List<Long> batch, CorrectionEtatDeclarationResults rapport) {
 
 		// on évite de charger les déclarations, parce que cela fait charger les tiers associées et c'est coûteux
-		final Map<Long, List<EtatDeclaration>> map = (Map<Long, List<EtatDeclaration>>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		final Map<Long, List<EtatDeclaration>> map = hibernateTemplate.execute(new HibernateCallback<Map<Long, List<EtatDeclaration>>>() {
+			public Map<Long, List<EtatDeclaration>> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery("select e.declaration.id, e from EtatDeclaration e where e.declaration.id in (:ids)");
 				query.setParameterList("ids", batch);
 				final List lines = query.list();
@@ -259,11 +259,11 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 			"    and e1.annulationDate is null " +
 			"    and e2.annulationDate is null ";
 
-	@SuppressWarnings("unchecked")
 	private List<Long> retrieveIdsDeclarations() {
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				//noinspection unchecked
 				return hibernateTemplate.find(QUERY_STRING);
 			}
 		});

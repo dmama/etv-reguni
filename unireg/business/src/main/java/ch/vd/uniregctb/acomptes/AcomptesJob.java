@@ -77,8 +77,8 @@ public class AcomptesJob  extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final AcomptesRapport rapport = (AcomptesRapport) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final AcomptesRapport rapport = template.execute(new TransactionCallback<AcomptesRapport>() {
+			public AcomptesRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});

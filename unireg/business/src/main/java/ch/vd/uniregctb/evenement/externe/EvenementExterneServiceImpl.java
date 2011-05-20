@@ -341,8 +341,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	private void migrateAllQuittancesLR() {
 
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final List<Long> ids = (List<Long>) t.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = t.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 				return evenementExterneDAO.getIdsQuittancesLRToMigrate();
 			}
 		});

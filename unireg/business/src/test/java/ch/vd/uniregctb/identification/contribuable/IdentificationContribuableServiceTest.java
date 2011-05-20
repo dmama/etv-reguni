@@ -159,9 +159,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testIdentifieUnNonHabitant() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
 				return albert.getNumero();
 			}
@@ -184,9 +184,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique albert = addHabitant(noIndividu);
 				return albert.getNumero();
 			}
@@ -297,7 +297,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -309,7 +309,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// Albert
 		{
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					CriteresAdresse adresse = new CriteresAdresse();
@@ -377,7 +377,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -410,7 +410,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -467,7 +467,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -494,7 +494,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -538,7 +538,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -566,7 +566,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -623,7 +623,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -635,7 +635,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// Albert
 		{
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					CriteresAdresse adresse = new CriteresAdresse();
@@ -704,7 +704,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -795,7 +795,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			Long anne;
 		}
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -876,7 +876,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
@@ -1016,7 +1016,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
@@ -1059,7 +1059,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Arnold", "Duchoux");
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1067,7 +1067,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Arnold Duchoux ne doit pas être trouvé
@@ -1092,9 +1092,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemandeUnContribuableTrouve() throws Exception {
 
 		// création d'un contribuable
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
 				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 				return zora.getNumero();
@@ -1106,7 +1106,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zora", "Larousse");
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1114,7 +1114,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// Zora doit avoir été trouvée, et traitée automatiquement
@@ -1147,9 +1147,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemande_SANS_MANUEL() throws Exception {
 
 		// création d'un contribuable
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
 				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 				return zora.getNumero();
@@ -1161,7 +1161,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.SANS_MANUEL);
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1169,7 +1169,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora n'est pas trouvée
@@ -1202,9 +1202,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemande_MANUEL_AVEC_ACK() throws Exception {
 
 		// création d'un contribuable
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
 				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 				return zora.getNumero();
@@ -1216,7 +1216,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1224,7 +1224,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora n'est pas trouvé
@@ -1258,9 +1258,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemande_MANUEL_SANS_ACK() throws Exception {
 
 		// création d'un contribuable
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
 				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 				return zora.getNumero();
@@ -1272,7 +1272,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.MANUEL_SANS_ACK);
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1280,7 +1280,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora n'est pas trouvé
@@ -1306,7 +1306,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemandePlusieursContribuablesTrouves() throws Exception {
 
 		// création de plusieurs contribuables
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
@@ -1321,7 +1321,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Larousse", "Larousse");
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1329,7 +1329,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// Plus de un contribuable doivent avoir été trouvés, et le message doit être passé en mode manuel
@@ -1354,7 +1354,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemandeException() throws Exception {
 
 		// création d'un contribuable
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
@@ -1372,7 +1372,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 			// création et traitement du message d'identification
 			final IdentificationContribuable message = createDemande("Zora", "Larousse");
-			doInTransaction(new TxCallback() {
+			doInTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					service.handleDemande(message);
@@ -1384,7 +1384,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			messageHandler.setThrowExceptionOnSend(false);
 		}
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora doit avoir été trouvée, mais le traitement interrompu à cause de l'exception
@@ -1425,9 +1425,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemandeAvecNumeroAVSInconnu() throws Exception {
 
 		// création d'un contribuable
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique edouard = addNonHabitant("Edouard", "Bonhote", date(1965, 11, 3), Sexe.MASCULIN);
 				addForPrincipal(edouard, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				return edouard.getNumero();
@@ -1439,7 +1439,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Edouard", "Bonhote", "7569613127861");
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1447,7 +1447,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode
@@ -1483,7 +1483,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemandeAvecNumeroAVSConnuMaisFaux() throws Exception {
 
 		// création d'un contribuable
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique edouard = addNonHabitant("Edouard", "Bonhote", date(1965, 11, 3), Sexe.MASCULIN);
@@ -1498,7 +1498,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("George", "Pompidou", "7569613127861");
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1506,7 +1506,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on doit quand même trouver le contribuable
@@ -1543,7 +1543,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// création d'un contribuable
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
@@ -1566,7 +1566,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zora", "Larousse");
-		doInTransaction(new TxCallback() {
+		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1574,7 +1574,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// Zora doit avoir été trouvée, et traitée automatiquement
@@ -1680,7 +1680,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	private void assertCountDemandes(final int count) throws Exception {
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				assertEquals(count, identCtbDAO.getCount(IdentificationContribuable.class));
 				return null;

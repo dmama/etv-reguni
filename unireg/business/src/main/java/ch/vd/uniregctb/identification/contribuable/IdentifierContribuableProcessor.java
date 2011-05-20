@@ -94,8 +94,8 @@ public class IdentifierContribuableProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-        final List<IdentificationContribuable> list = (List<IdentificationContribuable>) identCtbDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
+        final List<IdentificationContribuable> list = identCtbDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
+            public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException {
                 Criteria crit = session.createCriteria(IdentificationContribuable.class);
                 crit.add(Restrictions.in("id", batch));
                 crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -130,19 +130,20 @@ public class IdentifierContribuableProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsMessage = (List<Long>) identCtbDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryMessage);
-						List<String> etats = new ArrayList<String>();
+				final List<Long> idsMessage = identCtbDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryMessage);
+						final List<String> etats = new ArrayList<String>();
 						etats.add(IdentificationContribuable.Etat.A_EXPERTISER.name());
 						etats.add(IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU.name());
 						etats.add(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT.name());
 						etats.add(IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU.name());
 						etats.add(IdentificationContribuable.Etat.EXCEPTION.name());
 						queryObject.setParameterList("etats", etats);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

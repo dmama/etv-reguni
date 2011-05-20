@@ -59,8 +59,8 @@ public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
 		// Produit le rapport dans une transaction read-write.
 		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setReadOnly(false);
-		final RolesCommunesRapport rapport = (RolesCommunesRapport) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final RolesCommunesRapport rapport = template.execute(new TransactionCallback<RolesCommunesRapport>() {
+			public RolesCommunesRapport doInTransaction(TransactionStatus status) {
 				return getRapportService().generateRapport(results, statusManager);
 			}
 		});

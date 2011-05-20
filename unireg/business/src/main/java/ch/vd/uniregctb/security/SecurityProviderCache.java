@@ -240,8 +240,8 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 				template.setReadOnly(true);
 
 				// le tiers n'existe pas dans le cache non-préloadé -> on va chercher cette information dans la base
-				exists = (Boolean) template.execute(new TransactionCallback() {
-					public Object doInTransaction(TransactionStatus status) {
+				exists = template.execute(new TransactionCallback<Boolean>() {
+					public Boolean doInTransaction(TransactionStatus status) {
 						return tiersDAO.exists(id);
 					}
 				});
@@ -393,8 +393,8 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 			template.setReadOnly(true);
 
 			LOGGER.info("Préchargement du cache des tiers existants...");
-			final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
+			final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+				public List<Long> doInTransaction(TransactionStatus status) {
 					return tiersDAO.getAllIds();
 				}
 			});
@@ -416,8 +416,8 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		template.setReadOnly(true);
 
 		LOGGER.info("Préchargement du cache des dossiers contrôlés...");
-		final Set<Long> idsControles = (Set<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Set<Long> idsControles = template.execute(new TransactionCallback<Set<Long>>() {
+			public Set<Long> doInTransaction(TransactionStatus status) {
 				return droitAccesDAO.getContribuablesControles();
 			}
 		});

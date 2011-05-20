@@ -75,7 +75,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		doInNewTransaction(new TxCallback(){
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				reconciliation.checkCompleteness(erreurs, warnings);
@@ -130,7 +130,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		doInNewTransaction(new TxCallback(){
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				reconciliation.checkCompleteness(erreurs, warnings);
@@ -191,7 +191,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		doInNewTransaction(new TxCallback(){
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				reconciliation.checkCompleteness(erreurs, warnings);

@@ -39,7 +39,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 		validator = new DeclarationImpotEditValidator();
 		validator.setDiDAO(diDAO);
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -71,7 +71,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
@@ -126,7 +126,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
@@ -172,7 +172,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
@@ -228,7 +228,7 @@ public void testCorrectionRetourAvecDateAnterieurSommation() throws Exception {
 	}
 
 	final Ids ids = new Ids();
-	doInNewTransaction(new TxCallback() {
+	doInNewTransaction(new TxCallback<Object>() {
 		@Override
 		public Object execute(TransactionStatus status) throws Exception {
 			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);

@@ -120,7 +120,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final StatistiquesEvenementsRapport rapport = (StatistiquesEvenementsRapport) template.execute(new TransactionCallback() {
+		final StatistiquesEvenementsRapport rapport = template.execute(new TransactionCallback<StatistiquesEvenementsRapport>() {
 			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(resultatsCivils, resultatsExternes, resultatsIdentCtb, debutActivite, getStatusManager());
 			}

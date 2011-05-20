@@ -86,11 +86,12 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 	private void traiterBatch(final List<Long> batch) throws EvenementExterneException {
 		//Chargement des evenement externes		
-		final List<EvenementExterne> list = (List<EvenementExterne>) evenementExterneDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(EvenementExterne.class);
+		final List<EvenementExterne> list = evenementExterneDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementExterne>>() {
+			public List<EvenementExterne> doInHibernate(Session session) throws HibernateException {
+				final Criteria crit = session.createCriteria(EvenementExterne.class);
 				crit.add(Restrictions.in("id", batch));
 				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+				//noinspection unchecked
 				return crit.list();
 			}
 		});
@@ -109,6 +110,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 	}
 
+	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	private List<Long> recupererEvenementATraiter() {
 		final String queryMessage ="select evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat in (:etats) ORDER BY evenementExterne.id";
 
@@ -116,16 +118,17 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsEvenement = (List<Long>) evenementExterneDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+				final List<Long> idsEvenement = evenementExterneDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);
 						List<String> etats = new ArrayList<String>();
 						etats.add(EtatEvenementExterne.ERREUR.name());
 						etats.add(EtatEvenementExterne.NON_TRAITE.name());
 						queryObject.setParameterList("etats", etats);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

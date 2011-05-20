@@ -108,7 +108,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
 		serviceLogger.setLevel(Level.FATAL);
 
-		doInNewTransactionAndSession(new TxCallback(){
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -164,7 +164,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
@@ -255,7 +255,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	@Test
 	public void testDetermineDIsAEmettreHorsPeriode() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addPeriodeFiscale(2007);
@@ -292,7 +292,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -358,7 +358,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 		// Création d'un contribuable ordinaire et de sa DI
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -387,10 +387,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		// Retour de la declaration
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				final RegDate dateEvenement = RegDate.get(2007, 5, 12);
 				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
@@ -400,10 +400,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// Verification de la declaration retournee
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
@@ -413,10 +413,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// Modification de la date de retour de la declaration
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				final RegDate dateEvenement = RegDate.get(2007, 8, 8);
 				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
@@ -426,10 +426,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// On verifie que la date de retour a été modifiée
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
+				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
 				assertTrue(eric.getDeclarationsForPeriode(2006).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006).get(0);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
@@ -463,7 +463,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -586,7 +586,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Determination des DIs et création des tâches
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(10, service.determineDIsAEmettre(2007, date(2008, 1, 15), 1, null)); // toutes sauf marc, jacky et lionel
@@ -595,7 +595,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// Etat avant envoi
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable paul = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
@@ -656,7 +656,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : vaudois ordinaires DIs complètes
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(3, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, null)); // erik, olrik + ramon
@@ -664,9 +664,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-			final Contribuable olrik = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.olrikId); // ordinaire
-			final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final Contribuable olrik = hibernateTemplate.get(Contribuable.class, ids.olrikId); // ordinaire
+			final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
 
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 					eric.getDeclarationsForPeriode(2007));
@@ -679,7 +679,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : vaudois ordinaire DIs VaudTax
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, null)); // guillaume
@@ -687,7 +687,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable guillaume = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
+			final Contribuable guillaume = hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
 					guillaume.getDeclarationsForPeriode(2007));
 		}
@@ -695,7 +695,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : vaudois à la dépense
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_DEPENSE, null, null, 100, date(2008, 1, 20), false, null)); // paul
@@ -703,7 +703,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable paul = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
+			final Contribuable paul = hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE, idOidLausanne, date(2008, 3, 31),
 					paul.getDeclarationsForPeriode(2007));
 		}
@@ -711,7 +711,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors canton immeuble
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, null));   // george
@@ -719,7 +719,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable georges = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
+			final Contribuable georges = hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, idOidLausanne, date(2008, 3, 31),
 					georges.getDeclarationsForPeriode(2007));
 		}
@@ -727,7 +727,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors canton activité indépendante DIs complètes
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_ACTIND_COMPLETE, null, null, 100, date(2008, 1, 20), false, null)); // jean
@@ -735,7 +735,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable jean = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jeanId); // ordinaire
+			final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId); // ordinaire
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 					jean.getDeclarationsForPeriode(2007));
 		}
@@ -743,7 +743,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors canton activité indépendante DIs VaudTax
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_ACTIND_VAUDTAX, null, null, 100, date(2008, 1, 20), false, null)); // jacques
@@ -751,7 +751,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable jacques = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jacquesId); // ordinaire
+			final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId); // ordinaire
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
 					jacques.getDeclarationsForPeriode(2007));
 		}
@@ -759,7 +759,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors Suisse DIs complètes
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(2, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HS_COMPLETE, null, null, 100, date(2008, 1, 20), false, null)); // bruno + mitt
@@ -767,16 +767,16 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable jacky = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse
+			final Contribuable jacky = hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse
 			assertEmpty(jacky.getDeclarationsForPeriode(2007)); // hors suisse depuis toujours: ne reçoit pas de déclaration
-			final Contribuable lionel = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.lionelId); // hors suisse
+			final Contribuable lionel = hibernateTemplate.get(Contribuable.class, ids.lionelId); // hors suisse
 			assertEmpty(lionel.getDeclarationsForPeriode(2007)); // [UNIREG-1742] hors suisse avec immeuble première : déclaration optionnelle
 
-			final Contribuable bruno = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse
+			final Contribuable bruno = hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 					bruno.getDeclarationsForPeriode(2007));
 
-			final Contribuable mitt = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.mittId); // ordinaire
+			final Contribuable mitt = hibernateTemplate.get(Contribuable.class, ids.mittId); // ordinaire
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 					mitt.getDeclarationsForPeriode(2007));
 		}
@@ -784,7 +784,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors Suisse DIs vaudtax
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(0, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, null)); // personne !
@@ -795,7 +795,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : diplomates suisses
 		 */
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(0, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.DIPLOMATE_SUISSE, null, null, 100, date(2008, 1, 20), false, null)); // marc
@@ -803,24 +803,24 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 		{
-			final Contribuable marc = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
+			final Contribuable marc = hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
 			assertEmpty(marc.getDeclarationsForPeriode(2007)); // diplomate suisse: ne reçoit pas de déclaration
 		}
 
 		{
-			final Contribuable paul = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
-			final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-			final Contribuable olrik = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.olrikId); // ordinaire
-			final Contribuable guillaume = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
-			final Contribuable jean = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jeanId); // hors-canton complète
-			final Contribuable jacques = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jacquesId); // hors-canton VaudTax
-			final Contribuable mitt = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.mittId); // hors-Suisse
-			final Contribuable georges = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
-			final Contribuable jacky = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse depuis toujours
-			final Contribuable lionel = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.lionelId); // hors suisse depuis toujours
-			final Contribuable bruno = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse depuis mi-2007
-			final Contribuable marc = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
-			final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
+			final Contribuable paul = hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final Contribuable olrik = hibernateTemplate.get(Contribuable.class, ids.olrikId); // ordinaire
+			final Contribuable guillaume = hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
+			final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId); // hors-canton complète
+			final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId); // hors-canton VaudTax
+			final Contribuable mitt = hibernateTemplate.get(Contribuable.class, ids.mittId); // hors-Suisse
+			final Contribuable georges = hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
+			final Contribuable jacky = hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse depuis toujours
+			final Contribuable lionel = hibernateTemplate.get(Contribuable.class, ids.lionelId); // hors suisse depuis toujours
+			final Contribuable bruno = hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse depuis mi-2007
+			final Contribuable marc = hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
+			final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
 
 			// Les tâches doivent être traitées, maintenant
 			assertOneTache(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE,
@@ -861,7 +861,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -890,7 +890,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// limite à 1 le nombre de DI envoyée
@@ -899,11 +899,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationsForPeriode(2007));
@@ -922,7 +922,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -952,7 +952,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// envoi des di en masse en ciblant sur un numéro seulement
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, ids.ericId, ids.ericId, 100, date(2008, 1, 20), false, null));
@@ -961,11 +961,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// vérification que seul eric a une DI 2007, pas john
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 				assertFalse(eric.getDeclarationsForPeriode(2007).isEmpty());
 				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
@@ -984,7 +984,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1013,11 +1013,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 				assertEmpty(eric.getDeclarationsForPeriode(2007));
 				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
@@ -1025,7 +1025,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// Lance et interrompt l'envoi en masse après 2 (message de démarrage + message d'envoi du premier lot = de la DI d'eric)
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				InterruptingStatusManager s = new InterruptingStatusManager(2);
@@ -1035,11 +1035,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 				assertFalse(eric.getDeclarationsForPeriode(2007).isEmpty());
 				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
@@ -1059,7 +1059,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1093,18 +1093,18 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 				assertEmpty(eric.getDeclarationsForPeriode(2007));
 				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1114,11 +1114,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 				assertFalse(eric.getDeclarationsForPeriode(2007).isEmpty());
 				assertEmpty(john.getDeclarationsForPeriode(2007));
 				return null;
@@ -1140,7 +1140,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1195,7 +1195,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, RegDate.get(), false, status);
 		service.setTailleLot(100);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable jean = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jeanId);
@@ -1390,7 +1390,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
@@ -1478,7 +1478,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);

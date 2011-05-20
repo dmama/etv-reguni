@@ -97,11 +97,12 @@ public class ResolutionAdresseProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-		final List<AdresseSuisse> list = (List<AdresseSuisse>) adressetiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AdresseSuisse.class);
+		final List<AdresseSuisse> list = adressetiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<AdresseSuisse>>() {
+			public List<AdresseSuisse> doInHibernate(Session session) throws HibernateException {
+				final Criteria crit = session.createCriteria(AdresseSuisse.class);
 				crit.add(Restrictions.in("id", batch));
 				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+				//noinspection unchecked
 				return crit.list();
 			}
 		});
@@ -150,6 +151,7 @@ public class ResolutionAdresseProcessor {
 	}
 
 
+	@SuppressWarnings({"unchecked"})
 	private List<Long> recupererAdresseATraiter() {
 
 		final String queryMessage =//----------------------------------
@@ -161,13 +163,13 @@ public class ResolutionAdresseProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsAdresse = (List<Long>) adressetiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryMessage);
-						return queryObject.list();
+				final List<Long> idsAdresse = adressetiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryMessage);
+						return (List<Long>) queryObject.list();
 					}
 				});
 				Collections.sort(idsAdresse);

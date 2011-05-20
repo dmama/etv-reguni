@@ -35,7 +35,7 @@ public class BordereauMouvementDossierDAOImpl extends GenericDAOImpl<BordereauMo
 		b.append(")");
 		final String hql = b.toString();
 
-		return (List<BordereauMouvementDossier>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<BordereauMouvementDossier>>() {
 			public List<BordereauMouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(hql);
 				for (int i = 0 ; i < params.size() ; ++ i) {

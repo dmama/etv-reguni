@@ -167,8 +167,7 @@ public class AsyncTiersIndexerThread extends Thread {
 		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback() {
-			@SuppressWarnings({"unchecked"})
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				/*
 				 * On crée à la main une nouvelle session hibernate avec un intercepteur vide (HibernateFakeInterceptor). Cela permet de désactiver
@@ -193,6 +192,7 @@ public class AsyncTiersIndexerThread extends Thread {
 					else {
 						final Query query = session.createQuery("from Tiers t where t.id in (:ids)");
 						query.setParameterList("ids", batch);
+						//noinspection unchecked
 						list = query.list();
 					}
 

@@ -41,22 +41,22 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 	}
 
 	public boolean existsForContribuable(final long numeroCtb) {
-		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Criteria criteria = session.createCriteria(getPersistentClass());
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
+				final Criteria criteria = session.createCriteria(getPersistentClass());
 				criteria.setProjection(Projections.rowCount());
 				criteria.add(Restrictions.eq("noContribuable", numeroCtb));
-				Integer count = (Integer) criteria.uniqueResult();
+				final Integer count = (Integer) criteria.uniqueResult();
 				return count > 0;
 			}
 		});
 	}
 
 	public void removeForContribuable(final long numeroCtb) {
-		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				String hql = "delete from MIGREG_ERROR where NO_CONTRIBUABLE = " + numeroCtb;
-				Query query = session.createSQLQuery(hql);
+				final String hql = "delete from MIGREG_ERROR where NO_CONTRIBUABLE = " + numeroCtb;
+				final Query query = session.createSQLQuery(hql);
 				query.executeUpdate();
 				return null;
 			}
@@ -73,9 +73,9 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllNoCtbForTypeError(final TypeMigRegError type) {
-		return (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Query query = session.createQuery("select m.noContribuable from MigrationError as m where m.typeErreur = ?");
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery("select m.noContribuable from MigrationError as m where m.typeErreur = ?");
 				query.setInteger(0, type.ordinal());
 				return query.list();
 			}
@@ -84,8 +84,8 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllNoCtbForTypeErrorNeq(final TypeMigRegError type) {
-		return (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				Query query = session.createQuery("select m.noContribuable from MigrationError as m where m.typeErreur <> ?");
 				query.setInteger(0, type.ordinal());
 				return query.list();

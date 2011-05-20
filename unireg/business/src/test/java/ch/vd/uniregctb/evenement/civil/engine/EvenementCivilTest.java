@@ -107,9 +107,9 @@ public class EvenementCivilTest extends BusinessTest {
 			});
 
 			// Crée le contribuable correspondant
-			final Long jeanId = (Long) doInNewTransaction(new TxCallback() {
+			final Long jeanId = doInNewTransaction(new TxCallback<Long>() {
 				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+				public Long execute(TransactionStatus status) throws Exception {
 					PersonnePhysique jean = addHabitant(jeanNoInd);
 					addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
 					return jean.getNumero();
@@ -142,7 +142,7 @@ public class EvenementCivilTest extends BusinessTest {
 			});
 
 			// Simulation de l'arrivée de l'événement civil
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					final String body = EvenementCivilListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
@@ -152,7 +152,7 @@ public class EvenementCivilTest extends BusinessTest {
 			});
 
 			// L'événement civil doit avoir été traité
-			doInTransaction(new TransactionCallback() {
+			doInTransaction(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 
 					final List<EvenementCivilExterne> evenements = evenementCivilExterneDAO.getAll();
@@ -195,9 +195,9 @@ public class EvenementCivilTest extends BusinessTest {
 		});
 
 		// Crée le contribuable correspondant
-		final Long jeanId = (Long) doInNewTransaction(new TxCallback() {
+		final Long jeanId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique jean = addHabitant(jeanNoInd);
 				addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
 				return jean.getNumero();
@@ -205,7 +205,7 @@ public class EvenementCivilTest extends BusinessTest {
 		});
 
 		// Simulation de l'arrivée de l'événement civil
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final String body = EvenementCivilListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
@@ -223,7 +223,7 @@ public class EvenementCivilTest extends BusinessTest {
 		});
 
 		// L'événement civil doit avoir été traité
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementCivilExterne> evenements = evenementCivilExterneDAO.getAll();
 				assertNotNull(evenements);

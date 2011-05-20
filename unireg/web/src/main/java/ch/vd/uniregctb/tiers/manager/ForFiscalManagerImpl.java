@@ -476,8 +476,8 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (Component) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<Component>() {
+			public Component doInTransaction(TransactionStatus status) {
 
 				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
 				status.setRollbackOnly();
@@ -525,8 +525,8 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (Component) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<Component>() {
+			public Component doInTransaction(TransactionStatus status) {
 
 				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
 				status.setRollbackOnly();

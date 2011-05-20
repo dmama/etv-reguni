@@ -85,7 +85,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		final Ids ids = new Ids();
 
 		// mise en place ces contribuables
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique monsieur = addHabitant(noIndMonsieur);
 				tiersService.changeHabitantenNH(monsieur);
@@ -103,7 +103,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		final Lists lists = new Lists();
 
 		// mariage (devrait fonctionner même si monsieur est connu comme séparé - son divorce n'est pas encore connu du canton...)
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, 2009);
@@ -156,7 +156,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		}
 
 		final Lists lists = new Lists();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu seul = serviceCivil.getIndividu(UNI_SEUL, 2007);
@@ -238,7 +238,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		}
 
 		final Lists lists = new Lists();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu individu = serviceCivil.getIndividu(UNI_HETERO, 2007);
@@ -341,7 +341,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		}
 
 		final Lists lists = new Lists();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu individu = serviceCivil.getIndividu(UNI_HOMO, 2007);

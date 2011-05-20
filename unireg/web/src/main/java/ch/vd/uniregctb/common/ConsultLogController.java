@@ -98,8 +98,8 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final ConsultLogView consultLogView = (ConsultLogView) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final ConsultLogView consultLogView = template.execute(new TransactionCallback<ConsultLogView>() {
+			public ConsultLogView doInTransaction(TransactionStatus status) {
 				if (nature.equals(NATURE_FOR_PARAMETER_VALUE)) {
 					ForFiscal forFiscal = forFiscalDAO.get(id);
 					return fillConsultLogView(forFiscal);

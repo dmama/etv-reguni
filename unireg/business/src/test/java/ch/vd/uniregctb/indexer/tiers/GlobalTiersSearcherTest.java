@@ -550,13 +550,11 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
 		final int nbDocs = nbMaxParListe + 20;
 
-		final List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-
-				List<Long> ids = new ArrayList<Long>(2000);
-
+		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final List<Long> ids = new ArrayList<Long>(2000);
 				for (long i = 0; i < nbDocs; i++) {
-					PersonnePhysique pp = addNonHabitant("Bimbo", "Maluna", date(1970, 1, 1), Sexe.MASCULIN);
+					final PersonnePhysique pp = addNonHabitant("Bimbo", "Maluna", date(1970, 1, 1), Sexe.MASCULIN);
 					ids.add(pp.getNumero());
 				}
 				return ids;
@@ -591,8 +589,8 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
 		final int nbDocs = nbMaxParListe + 20;
 
-		final Set<Long> idsDb = (Set<Long>) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Set<Long> idsDb = doInNewTransactionAndSession(new TransactionCallback<Set<Long>>() {
+			public Set<Long> doInTransaction(TransactionStatus status) {
 				final Set<Long> ids = new HashSet<Long>();
 				for (long i = 0; i < nbDocs; i++) {
 					PersonnePhysique pp = addNonHabitant("Alfred", "Fodor", date(1970, 1, 1), Sexe.MASCULIN);
@@ -635,7 +633,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée deux ctbs, dont un est un débiteur inactif
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ramon = addNonHabitant("Ramon", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
@@ -688,8 +686,8 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testRechercheCriteresTropCommuns() throws Exception {
 
-		final List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> ids = new ArrayList<Long>(2000);
 

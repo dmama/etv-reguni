@@ -39,11 +39,10 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	 * @param criterion
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, final ParamPagination paramPagination) {
 
-		return (List<DeclarationImpotSource>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<DeclarationImpotSource>>() {
+			public List<DeclarationImpotSource> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final List<Object> parameters = new ArrayList<Object>();
 				final String query = String.format("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 %s%s", buildWhereClauseFromCriteria(
@@ -69,6 +68,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 					queryObject.setMaxResults(maxResult);
 				}
 
+				//noinspection unchecked
 				return queryObject.list();
 			}
 		});

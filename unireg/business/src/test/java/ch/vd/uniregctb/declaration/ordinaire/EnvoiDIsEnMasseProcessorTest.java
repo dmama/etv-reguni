@@ -206,7 +206,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	@Test
 	public void testInitCacheModelDocumentInexistant() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addPeriodeFiscale(2007);
@@ -233,7 +233,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -278,7 +278,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -382,7 +382,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// initialisation des contribuables, fors, tâches
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -412,7 +412,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		// traitement des tâches
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -461,7 +461,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -552,7 +552,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -590,9 +590,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
@@ -672,7 +672,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -711,9 +711,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
@@ -763,7 +763,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -793,9 +793,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
@@ -825,7 +825,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -855,9 +855,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
@@ -1087,7 +1087,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1119,9 +1119,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
@@ -1153,7 +1153,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1185,9 +1185,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, null);
 			}
 		});
@@ -1218,7 +1218,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1250,9 +1250,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, null);
 			}
 		});
@@ -1281,7 +1281,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1313,9 +1313,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});

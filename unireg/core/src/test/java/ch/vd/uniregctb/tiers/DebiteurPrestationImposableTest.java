@@ -31,7 +31,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	@Test
 	public void testAddContribuableExistingEntreprise() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Créée une Entreprise
@@ -45,7 +45,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Ajoute un DPI
@@ -86,7 +86,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	@Test
 	public void testAddContribuableNewEntreprise() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				{
@@ -130,7 +130,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	@Test
 	public void testAddContribuableNewAutreCommunaute() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				{
@@ -172,20 +172,14 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 
 	@Test
 	public void testAjoutPeriodicite() throws Exception {
-	doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				{
-
-					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-					Periodicite periodicite = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL);
-					periodicite.setDateDebut(date(2010,1,1));
-					dpi.addPeriodicite(periodicite);
-					dpi = (DebiteurPrestationImposable) dao.save(dpi);
-
-
-					
-				}
+				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+				Periodicite periodicite = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL);
+				periodicite.setDateDebut(date(2010,1,1));
+				dpi.addPeriodicite(periodicite);
+				dao.save(dpi);
 				return null;
 			}
 		});
@@ -197,7 +191,6 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			AutreCommunaute ent = null;
 			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable)l.get(0);
 			assertNotNull(dpi.getPeriodiciteAt(null));
-			
 		}
 	}
 

@@ -295,7 +295,7 @@
 		<property name="validationService" ref="validationService"/>
     </bean>
 
-    <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.ListeTachesEnIstanceParOIDJob">
+    <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.ListeTachesEnInstanceParOIDJob">
         <constructor-arg value="609"/>
         <constructor-arg value="Générer la liste des tâche en instance par OID"/>
         <property name="service" ref="tacheService"/>

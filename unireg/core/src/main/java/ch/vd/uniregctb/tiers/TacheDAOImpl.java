@@ -72,8 +72,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(final TacheCriteria criterion, final ParamPagination paramPagination) {
 
-		return (List<Tache>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tache>>() {
+			public List<Tache> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				List<Object> params = new ArrayList<Object>();
 				String query = "select tache " + buildFromWhereClause(criterion, params);
@@ -269,8 +269,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheEnInstanceOuEnCours(final long noCtb, final TypeTache type) {
 
-		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
 				// Recherche dans le cache de la session
 
@@ -303,8 +303,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheEnvoiEnInstanceOuEnCours(final long noCtb, final RegDate dateDebut, final RegDate dateFin) {
 
-		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
 				// Recherche dans le cache de la session
 				SessionImpl s = (SessionImpl) session;
@@ -337,8 +337,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 
 		// Recherche dans le cache de la session
 
-		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
 				SessionImpl s = (SessionImpl) session;
 				final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
@@ -398,7 +398,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 
 
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
-		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				final FlushMode mode = session.getFlushMode();
 				try {
@@ -444,7 +444,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		final Map<Integer, TacheStats> stats = new HashMap<Integer, TacheStats>();
 
 		// récupère les stats des tâches en instance
-		getHibernateTemplate().execute(new HibernateCallback() {
+		getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query query = session.createQuery(queryTaches);
@@ -469,7 +469,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		});
 
 		// récupère les stats des dossiers en instance
-		getHibernateTemplate().execute(new HibernateCallback() {
+		getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query query = session.createQuery(queryDossiers);

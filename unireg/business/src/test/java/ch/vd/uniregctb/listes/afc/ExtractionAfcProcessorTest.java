@@ -66,7 +66,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place fiscale
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 
 				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
@@ -165,7 +165,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place fiscale
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 
 				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
@@ -246,8 +246,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
 				return pp.getNumero();
@@ -280,8 +280,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
 				return pp.getNumero();
@@ -314,8 +314,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
 				return pp.getNumero();
@@ -349,8 +349,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
 				return pp.getNumero();
@@ -383,8 +383,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
 				ffp.setModeImposition(ModeImposition.SOURCE);
@@ -414,8 +414,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
 				ffp.setModeImposition(ModeImposition.SOURCE);
@@ -442,8 +442,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -474,8 +474,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -507,8 +507,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -539,8 +539,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -571,8 +571,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
 				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -604,8 +604,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
 				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -643,8 +643,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long mcId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long mcId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), null);
@@ -685,8 +685,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long mcId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long mcId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), null);
@@ -735,7 +735,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -807,7 +807,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -878,7 +878,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -942,7 +942,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -1004,7 +1004,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -1074,7 +1074,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -1134,8 +1134,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);
 				return pp.getNumero();
@@ -1171,8 +1171,8 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);
 				return pp.getNumero();

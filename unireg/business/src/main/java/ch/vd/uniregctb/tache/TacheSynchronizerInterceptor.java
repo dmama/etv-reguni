@@ -101,7 +101,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 
 			final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(new TransactionCallback() {
+			template.execute(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 					synchronizeTaches(set);
 					return null;
@@ -129,7 +129,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	}
 
 	private void synchronizeTaches(final HashSet<Long> ctbIds) {
-		hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				for (Long id : ctbIds) {
 					final Contribuable ctb = (Contribuable) session.get(Contribuable.class, id);

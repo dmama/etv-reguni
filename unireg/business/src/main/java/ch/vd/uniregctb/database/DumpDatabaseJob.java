@@ -65,8 +65,8 @@ public class DumpDatabaseJob extends JobDefinition {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 
-		final DatabaseDump doc = (DatabaseDump) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final DatabaseDump doc = template.execute(new TransactionCallback<DatabaseDump>() {
+			public DatabaseDump doInTransaction(TransactionStatus status) {
 				
 				final Date date = DateHelper.getCurrentDate();
 				final int count = tiersDAO.getCount(Tiers.class);

@@ -35,7 +35,6 @@ public class CorrectionFlagHabitantProcessor {
 		this.statusManager = statusManager;
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<Long> getIdsPPAvecFlagHabitantPasDroit() {
 		final String hql = "select ff.tiers.id from ForFiscalPrincipal ff"
 						 + " where ff.dateFin is null and ff.annulationDate is null"
@@ -47,9 +46,10 @@ public class CorrectionFlagHabitantProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return (List<Long>) hibernateTemplate.find(hql);
+				//noinspection unchecked
+				return hibernateTemplate.find(hql);
 			}
 		});
 	}

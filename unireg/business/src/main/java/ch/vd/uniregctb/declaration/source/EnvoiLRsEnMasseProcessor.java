@@ -159,20 +159,21 @@ public class EnvoiLRsEnMasseProcessor {
 	 *
 	 * @return itérateur sur les ids des dpi trouvés
 	 */
-	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
+	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	protected List<Long> getListDPI() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> i = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+		final List<Long> i = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final String queryDPI =
 								"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +
 										"WHERE dpi.annulationDate IS NULL AND dpi.sansListeRecapitulative = false";
 						final Query queryObject = session.createQuery(queryDPI);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

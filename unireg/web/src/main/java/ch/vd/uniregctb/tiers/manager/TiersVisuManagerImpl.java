@@ -360,17 +360,17 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			while (it.hasNext()) {
 				final List<Long> ids = it.next();
 
-				final List ancienNosAvs = (List) tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				final List<Object[]> ancienNosAvs = tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Object[]>>() {
+					public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
 						final Query query = session.createQuery(
 								"select ip.personnePhysique.id, ip.identifiant from IdentificationPersonne ip where ip.categorieIdentifiant = 'CH_AHV_AVS' and ip.personnePhysique.id in (:ids)");
 						query.setParameterList("ids", ids);
+						//noinspection unchecked
 						return query.list();
 					}
 				});
 
-				for (Object o : ancienNosAvs) {
-					final Object line[] = (Object[]) o;
+				for (Object[] line : ancienNosAvs) {
 					final Long numero = (Long) line[0];
 					final String noAVS = (String) line[1];
 

@@ -126,7 +126,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique fred = addHabitant(noIndFred);
 				final PersonnePhysique olivia = addHabitant(noIndOlivia);
@@ -145,7 +145,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		view.setNumCTB(ids.idFred);
 		view.setUsage(TypeAdresseTiers.COURRIER);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Errors errors = new BeanPropertyBindingResult(view, "view");
 				validator.validate(view, errors);
@@ -203,7 +203,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique fred = addHabitant(noIndFred);
 				final PersonnePhysique olivia = addHabitant(noIndOlivia);
@@ -222,7 +222,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		view.setNumCTB(ids.idFred);
 		view.setUsage(TypeAdresseTiers.COURRIER);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Errors errors = new BeanPropertyBindingResult(view, "view");
 				validator.validate(view, errors);

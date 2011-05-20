@@ -509,7 +509,6 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	 *            la date spécifiée
 	 * @return une liste des ids des habitants trouvés
 	 */
-	@SuppressWarnings("unchecked")
 	protected List<Long> getListHabitantsSansForPrincipal(final RegDate date) {
 
 		final RegDate datePivot = date.addYears(-FiscalDateHelper.AGE_MAJORITE);
@@ -517,13 +516,14 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryHabitantWithoutFor);
 						queryObject.setParameter("pivot", datePivot.index());
 						queryObject.setParameter("date", date.index());
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

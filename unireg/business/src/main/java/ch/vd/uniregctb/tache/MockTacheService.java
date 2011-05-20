@@ -41,7 +41,7 @@ public class MockTacheService implements TacheService {
 	public void onAnnulationContribuable(Contribuable contribuable) {
 	}
 
-	public ListeTachesEnIsntanceParOID produireListeTachesEnIstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception {
+	public ListeTachesEnInstanceParOID produireListeTachesEnInstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception {
 		return null;
 	}
 

@@ -112,9 +112,9 @@ public class CorrectionForsHCJob extends JobDefinition {
 	@SuppressWarnings("unchecked")
 	private Set<ForFiscalPrincipal> getFors(final List<Long> ids) {
 		
-		final List<ForFiscalPrincipal> list = (List<ForFiscalPrincipal>) hibernateTemplate.executeWithNativeSession(new HibernateCallback(){
+		final List<ForFiscalPrincipal> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<ForFiscalPrincipal>>(){
 
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			public List<ForFiscalPrincipal> doInHibernate(Session session) throws HibernateException, SQLException {
 				Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
 				criteria.add(Restrictions.in("id", ids));
 				criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);

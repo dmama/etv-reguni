@@ -28,14 +28,14 @@ public class JdbcTiersDaoTest extends CoreDAOTest {
 	@Test
 	public void testGet() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique tiers = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
+		final Long id = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique tiers = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
 				return tiers.getNumero();
 			}
 		});
 
-		JdbcTemplate template = new JdbcTemplate(dataSource);
+		final JdbcTemplate template = new JdbcTemplate(dataSource);
 		final PersonnePhysique tiers = (PersonnePhysique) dao.get(id, template);
 		assertNotNull(tiers);
 		assertEquals(id, tiers.getNumero());
@@ -54,7 +54,7 @@ public class JdbcTiersDaoTest extends CoreDAOTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique raoul = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
 				ids.raoul = raoul.getNumero();

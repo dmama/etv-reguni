@@ -112,9 +112,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableSansFor() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
 				return bruno.getNumero();
 			}
@@ -138,9 +138,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForsSurAutresCommunes() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -178,9 +178,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecAnciensFors() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, date(1990, 4, 22), MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
 				addForPrincipal(bruno, date(1990, 4, 23), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
@@ -226,9 +226,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForSecondaire() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Propriétaire", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Renens);
 				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -271,9 +271,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForPrincipal() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Croy);
 				return bruno.getNumero();
@@ -312,9 +312,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForsExotiques() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForAutreImpot(bruno, date(1983, 4, 6), null, MockCommune.Vaulion.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, GenreImpot.CHIENS);
@@ -324,7 +324,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				processor.setRapport(rapport);
@@ -369,9 +369,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final RegDate veilleDateFutur = dateFutur.getOneDayBefore();
 
 		// Un contribuable avec tout pleins de fors exotiques dans le futur (= cas à priori pas autorisé aujourd'hui, mais soyons prévoyant)
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, veilleDateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				addForPrincipal(bruno, dateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
@@ -383,7 +383,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				processor.setRapport(rapport);
@@ -435,9 +435,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	public void testTraiteContribuableAvecForDejaSurNouvelleCommune() throws Exception {
 
 		// Le contribuable habite déjà sur la commune résultant de la fusion
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.RomainmotierEnvy);
 				return bruno.getNumero();
@@ -469,9 +469,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteDebiteurAvecFor() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur();
 				addForDebiteur(dpi, date(1990, 5, 23), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy);
 				return dpi.getNumero();

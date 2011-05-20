@@ -115,7 +115,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
@@ -172,7 +172,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
@@ -223,7 +223,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
@@ -289,7 +289,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				/**
@@ -372,7 +372,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				/*
 				 * On vérifie que la base est toujours vide
@@ -388,7 +388,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	}
 
 	private void assertTiersCountHorsTransaction(final int count) throws Exception {
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				assertEquals(count, tiersDAO.getCount(Tiers.class));
 				return null;

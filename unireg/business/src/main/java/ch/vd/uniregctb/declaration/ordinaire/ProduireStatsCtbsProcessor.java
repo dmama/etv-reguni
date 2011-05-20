@@ -270,7 +270,6 @@ public class ProduireStatsCtbsProcessor {
 	 *            la période fiscale considérée
 	 * @return itérateur sur les ids des contribuables trouvés
 	 */
-	@SuppressWarnings("unchecked")
 	protected List<Long> chargerIdentifiantsContribuables(final int annee) {
 
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
@@ -279,13 +278,14 @@ public class ProduireStatsCtbsProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> i = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryCtbs);
+				final List<Long> i = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryCtbs);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
 						queryObject.setParameter("finAnnee", finAnnee.index());
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

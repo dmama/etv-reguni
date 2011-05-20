@@ -164,7 +164,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -323,8 +323,8 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
 				Assert.assertNull(pp.getNumeroOfsNationalite());
@@ -332,7 +332,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
@@ -356,7 +356,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
@@ -384,8 +384,8 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
 				Assert.assertNull(pp.getNumeroOfsNationalite());
@@ -393,7 +393,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007, AttributeIndividu.NATIONALITE);
@@ -417,7 +417,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);

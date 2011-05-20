@@ -126,7 +126,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.execute(new TransactionCallback() {
+			template.execute(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 					// [UNIREG-1976] on ajoute à la volée les paramètres pour les diplomates suisses
 					final List<PeriodeFiscale> periodes = dao.getAll();

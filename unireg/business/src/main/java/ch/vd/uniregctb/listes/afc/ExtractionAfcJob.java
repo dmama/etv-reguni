@@ -95,8 +95,8 @@ public class ExtractionAfcJob extends JobDefinition {
 		// on génère un rapport
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ExtractionAfcRapport rapport = (ExtractionAfcRapport) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final ExtractionAfcRapport rapport = template.execute(new TransactionCallback<ExtractionAfcRapport>() {
+			public ExtractionAfcRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});

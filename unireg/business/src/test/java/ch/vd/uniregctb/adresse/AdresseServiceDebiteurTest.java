@@ -74,9 +74,9 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		});
 
 		// Crée un habitant et un débiteur associé
-		final long noDebiteur = (Long) doInNewTransaction(new TxCallback() {
+		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
 				{
 					debiteur.setComplementNom("Ma petite entreprise");
@@ -166,9 +166,9 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	public void testAdressesDebiteurAvecAdressePoursuiteSurPersonnePhysiqueSansAdresse() throws Exception {
 
 		// Crée un non-habitant sans adresse et un débiteur associé avec adresse de poursuite
-		final long noDebiteur = (Long) doInNewTransaction(new TxCallback() {
+		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique arnold = addNonHabitant("Arnold", "Whitenegger", date(1960, 1, 1), Sexe.FEMININ);
 				final DebiteurPrestationImposable debiteur = addDebiteur("Ma petite entreprise", arnold, date(1980, 1, 1));
@@ -228,9 +228,9 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		});
 
 		// Crée un habitant et un débiteur associé
-		final long noDebiteur = (Long) doInNewTransaction(new TxCallback() {
+		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
 				debiteur.setComplementNom("Ma petite entreprise");
 				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
@@ -297,9 +297,9 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	public void testAdressesDebiteurSansContribuableAssocie() throws Exception {
 
 		// Crée un habitant et un débiteur associé
-		final long noDebiteur = (Long) doInNewTransaction(new TxCallback() {
+		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
 				debiteur.setNom1("Arnold Schwarz");
 				debiteur.setComplementNom("Ma petite entreprise");

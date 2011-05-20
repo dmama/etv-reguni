@@ -161,7 +161,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ids.paul = newCtbVaudoisOrdinaire(MockCommune.Lausanne).getNumero();
@@ -287,7 +287,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ids.benjamin = newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune.Lausanne).getNumero();
@@ -323,7 +323,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ids.genevieve = newCtbVaudoisOrdinaireAvecImmeubleDansCommune(MockCommune.Lausanne).getNumero();
@@ -355,7 +355,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	@Test
 	public void testRunCommunesCtbHorsCantonAvecPlusieursForsSecondaires() throws Exception {
 
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Contribuable ctb = getCtbHorsCantonAvecDeuxForsImmeublesOuvertsPourJIRA2777();
@@ -423,10 +423,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(1980, 3, 5);
 		final RegDate dateFin = date(2007, 9, 12);
 
-		final Long ppId = (Long) doInNewTransaction(new TxCallback() {
+		final Long ppId = doInNewTransaction(new TxCallback<Long>() {
 
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1954, 3, 15), Sexe.MASCULIN);
 
 				// sur Lausanne : domicile, activité indépendante et immeuble aux mêmes dates
@@ -482,10 +482,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate passageMixte = date(2006, 7, 1);
 		final RegDate passageRole = date(2007, 1, 1);
 
-		final long noCtb = (Long) doInNewTransaction(new TxCallback() {
+		final long noCtb = doInNewTransaction(new TxCallback<Long>() {
 
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique toto = addNonHabitant("Toto", "Tartempion", date(1950, 9, 3), Sexe.MASCULIN);
 
@@ -533,7 +533,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ids.paul = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Lausanne, MockCommune.Aubonne).getNumero();

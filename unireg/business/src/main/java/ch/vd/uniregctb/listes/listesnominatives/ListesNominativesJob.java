@@ -105,8 +105,8 @@ public class ListesNominativesJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ListesNominativesRapport rapport = (ListesNominativesRapport) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final ListesNominativesRapport rapport = template.execute(new TransactionCallback<ListesNominativesRapport>() {
+			public ListesNominativesRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});

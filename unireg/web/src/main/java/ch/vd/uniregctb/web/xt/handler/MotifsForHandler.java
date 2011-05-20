@@ -132,8 +132,8 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final TypeFor typeFor = (TypeFor) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final TypeFor typeFor = template.execute(new TransactionCallback<TypeFor>() {
+			public TypeFor doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersDAO.get(numeroCtb);
 				if (tiers == null) {
 					return null;

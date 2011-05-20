@@ -121,9 +121,9 @@ public class ListeRecapManagerTest extends WebTest {
 	//Ajout d'une première periodicite'
 		final int anneeReference = RegDate.get().year();
 		final int anneeSuivante = anneeReference +1;
-		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(anneeSuivante, 1, 1),null);
@@ -140,15 +140,15 @@ public class ListeRecapManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 1, 1);
-			RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 1, 31);
-			assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
-			assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
+				RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 1, 31);
+				assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
+				assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
 				return null;
 			}
 		});
@@ -162,10 +162,9 @@ public class ListeRecapManagerTest extends WebTest {
 	public void testLRForPeriodicites_3115() throws Exception{
 	//Ajout d'une première periodicite'
 		final int anneeReference =2009;
-		final int anneeSuivante = anneeReference +1;
-		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 9, 1), null);
 				addForDebiteur(dpi,date(anneeReference, 9, 1),null, MockCommune.Bex);
@@ -178,15 +177,15 @@ public class ListeRecapManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeReference, 7, 1);
-			RegDate dateFinPeriodeAttendue = RegDate.get(anneeReference, 9, 30);
-			assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
-			assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
+				RegDate dateFinPeriodeAttendue = RegDate.get(anneeReference, 9, 30);
+				assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
+				assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
 				return null;
 			}
 		});
@@ -200,9 +199,9 @@ public class ListeRecapManagerTest extends WebTest {
 	//Ajout d'une première periodicite'
 		final int anneeReference =2009;
 		final int anneeSuivante = 2010;
-		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 9, 1), null);
 				addForDebiteur(dpi,date(anneeReference, 1, 1),date(anneeReference, 6, 30), MockCommune.Bex);
@@ -217,10 +216,10 @@ public class ListeRecapManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 10, 1);
 				RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 12, 31);
@@ -238,9 +237,9 @@ public void testLRForPeriodicites_3120_2() throws Exception{
 //Ajout d'une première periodicite'
 	final int anneeReference =2009;
 	final int anneeSuivante = 2010;
-	final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+	final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 		@Override
-		public Object execute(TransactionStatus status) throws Exception {
+		public Long execute(TransactionStatus status) throws Exception {
 			DebiteurPrestationImposable dpi = addDebiteur();
 			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
 			addForDebiteur(dpi,date(anneeReference, 1, 1),date(anneeReference, 6, 30), MockCommune.Bex);
@@ -257,10 +256,10 @@ public void testLRForPeriodicites_3120_2() throws Exception{
 		}
 	});
 
-	doInNewTransaction(new TxCallback() {
+	doInNewTransaction(new TxCallback<Object>() {
 		@Override
 		public Object execute(TransactionStatus status) throws Exception {
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 			assertNull(lrView.getDateDebutPeriode());
 			assertNull(lrView.getDateFinPeriode());
 			return null;
@@ -277,9 +276,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 	final int anneeSuivante = 2010;
 	final int anneePostSuivante = 2011;
 
-	final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+	final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 		@Override
-		public Object execute(TransactionStatus status) throws Exception {
+		public Long execute(TransactionStatus status) throws Exception {
 			DebiteurPrestationImposable dpi = addDebiteur();
 			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
 			addForDebiteur(dpi,date(anneeReference, 1, 1),date(anneeReference, 6, 30), MockCommune.Bex);
@@ -297,10 +296,10 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 		}
 	});
 
-	doInNewTransaction(new TxCallback() {
+	doInNewTransaction(new TxCallback<Object>() {
 		@Override
 		public Object execute(TransactionStatus status) throws Exception {
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneePostSuivante, 1, 1);
 				RegDate dateFinPeriodeAttendue = RegDate.get(anneePostSuivante, 3, 31);
@@ -318,9 +317,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 	//Ajout d'une première periodicite'
 		final int anneeReference = RegDate.get().year();
 		final int anneeSuivante = anneeReference +1;
-		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M08, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
@@ -335,15 +334,15 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 1, 1);
-			RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 1, 31);
-			assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
-			assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
+				RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 1, 31);
+				assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
+				assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
 				return null;
 			}
 		});
@@ -357,9 +356,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 		final int anneeReference = RegDate.get().year();
 		final int anneeSuivante = anneeReference + 1;
 
-		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
@@ -376,10 +375,10 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 6, 1);
 				RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 6, 30);
@@ -398,9 +397,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 		final int anneeReference = RegDate.get().year();
 		final int anneePrecedente = anneeReference - 1;
 		final int anneeSuivante = anneeReference +1;
-		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
@@ -412,10 +411,10 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneePrecedente, 3, 1);
 			RegDate dateFinPeriodeAttendue = RegDate.get(anneePrecedente, 3, 31);
@@ -434,9 +433,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 		final int anneeReference = RegDate.get().year();
 		final int anneeSuivante = anneeReference + 1;
 
-		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference,3, 1),null);
@@ -453,7 +452,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
@@ -474,9 +473,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 			final int anneeReference = RegDate.get().year();
 			final int anneeSuivante = anneeReference + 1;
 
-			final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+			final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+				public Long execute(TransactionStatus status) throws Exception {
 					DebiteurPrestationImposable dpi = addDebiteur();
 
 					tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference,3, 1),null);
@@ -493,10 +492,10 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 				}
 			});
 
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
-					ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+					ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 					assertNotNull(lrView);
 					RegDate dateDebutPeriodeAttendue = RegDate.get(anneeReference, 10, 1);
 					RegDate dateFinPeriodeAttendue = RegDate.get(anneeReference, 12, 31);
@@ -514,9 +513,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 		final int anneeReference = RegDate.get().year();
 		final int anneeSuivante = anneeReference + 1;
 
-		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M07, date(anneeReference,3, 1),null);
@@ -531,10 +530,10 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 7, 1);
 				RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 7, 31);
@@ -552,9 +551,9 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 		final int anneeReference = RegDate.get().year();
 		final int anneeSuivante = anneeReference + 1;
 
-		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M07, date(anneeReference,3, 1),null);
@@ -565,10 +564,10 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(dpiId));
+				ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
 				assertNotNull(lrView);
 				RegDate dateDebutPeriodeAttendue = RegDate.get(anneeReference, 7, 1);
 				RegDate dateFinPeriodeAttendue = RegDate.get(anneeReference, 7, 31);

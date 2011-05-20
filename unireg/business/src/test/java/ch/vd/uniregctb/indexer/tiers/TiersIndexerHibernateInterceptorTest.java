@@ -103,9 +103,9 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testIndexationOnCreate() throws Exception {
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = createAndSaveNonHabitant();
 				assertNotNull(nh);
 
@@ -142,9 +142,9 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testIndexationOnUpdate() throws Exception {
 
-		final Long id = (Long)doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = createAndSaveNonHabitant();
 				return nh.getId();
 			}
@@ -160,7 +160,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			assertEquals(1, list.size());
 		}
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -227,7 +227,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			Long hid;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = createAndSaveNonHabitant(); // NH OK
@@ -284,9 +284,9 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		Logger.getLogger(AsyncTiersIndexerThread.class).setLevel(Level.TRACE);
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 1 ====");
-		final long id = (Long)doInNewTransaction(new TxCallback() {
+		final long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = createAndSaveNonHabitant();
 				assertNotNull(nh);
 				long id = nh.getNumero();
@@ -327,7 +327,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		}
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 2 ====");
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// On modifie son for
@@ -365,7 +365,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 3 ====");
 		// On ajoute un for
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = (PersonnePhysique)tiersDAO.get(id);
@@ -426,9 +426,9 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	public void testDisabledOnTheFlyIndexation() throws Exception {
 
 		// On crée un tiers
-		final long id = (Long) doInNewTransaction(new TxCallback() {
+		final long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = createAndSaveNonHabitant();
 				assertNotNull(nh);
 				return nh.getNumero();
@@ -438,7 +438,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// On doit trouver le tiers et il ne doit pas être dirty
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				TiersCriteria criteria = new TiersCriteria();
@@ -458,7 +458,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			indexer.setOnTheFlyIndexation(false);
 
 			// On change le prénom du tiers
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
@@ -498,7 +498,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		// Le tiers doit être dirty et on ne doit pas trouver dans l'indexeur
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -517,7 +517,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		setWantIndexation(true);
 		
 		// On change le prénom du tiers
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
@@ -557,7 +557,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		
 		// crée un tiers qui ne valide pas
 		try {
-			doInNewTransactionAndSession(new TxCallback() {
+			doInNewTransactionAndSession(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 

@@ -252,17 +252,16 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	private void insertAndTestNumeroTiers(final Tiers tiers, long first, long last) throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Tiers t = dao.save(tiers);
-				Long id = t.getId();
-				return id;
+			public Long execute(TransactionStatus status) throws Exception {
+				final Tiers t = dao.save(tiers);
+				return t.getId();
 			}
 		});
 
 		{
-			Tiers t = dao.get(id);
+			final Tiers t = dao.get(id);
 			assertTrue("Le numéro de Tiers (id=" + id + " tiers=" + t + ") doit être dans le range " + first + " => " + last, first <= t.getId() && t.getId() < last);
 		}
 	}
@@ -290,7 +289,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final RegDate date1 = RegDate.get(1970, 1, 23);
 		final RegDate date2 = RegDate.get(1969, 3, 1);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nonHab = (PersonnePhysique) dao.get(id);
@@ -347,7 +346,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		final long id = 12345678L;
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nonHab = new PersonnePhysique(false);
@@ -375,7 +374,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final long noIndividu = 1234567890L;
 
 		// mise en place
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addHabitant(noIndividu);
@@ -394,7 +393,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final long noIndividu = 1234567890L;
 
 		// mise en place
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -413,7 +412,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final long noIndividu = 1234567890L;
 
 		// mise en place
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -487,7 +486,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		final int NOMBRE_TIERS = 23;
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				doInsertTiers(NOMBRE_TIERS);
@@ -720,9 +719,9 @@ public class TiersDAOTest extends CoreDAOTest {
 			Long numeroMenage;
 		}
 
-		Numeros numeros = (Numeros) doInNewTransaction(new TxCallback() {
+		Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Numeros execute(TransactionStatus status) throws Exception {
 
 				Numeros numeros = new Numeros();
 
@@ -872,9 +871,9 @@ public class TiersDAOTest extends CoreDAOTest {
 		}
 
 		// Pour le rattachement
-		Tierss tierss = (Tierss) doInNewTransaction(new TxCallback() {
+		Tierss tierss = doInNewTransaction(new TxCallback<Tierss>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Tierss execute(TransactionStatus status) throws Exception {
 
 				Tierss tierss = new Tierss();
 
@@ -952,7 +951,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	public void testSituationFamille() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				HashSet<SituationFamille> sit = new HashSet<SituationFamille>();
@@ -997,7 +996,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	public void testSituationFamilleMapping() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh1 = new PersonnePhysique(false);
@@ -1136,9 +1135,9 @@ public class TiersDAOTest extends CoreDAOTest {
 			Long numeroCtb2;
 		}
 
-		Tierss tierss = (Tierss) doInNewTransaction(new TxCallback() {
+		Tierss tierss = doInNewTransaction(new TxCallback<Tierss>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Tierss execute(TransactionStatus status) throws Exception {
 
 				Tierss tierss = new Tierss();
 				{
@@ -1196,9 +1195,9 @@ public class TiersDAOTest extends CoreDAOTest {
 		final Set<Parts> parts = new HashSet<Parts>(Arrays.asList(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE));
 
 		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
-		final List<Tiers> listBatch = (List<Tiers>) doInNewTransaction(new TxCallback() {
+		final List<Tiers> listBatch = doInNewTransaction(new TxCallback<List<Tiers>>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public List<Tiers> execute(TransactionStatus status) throws Exception {
 				return dao.getBatch(ids, parts);
 			}
 		});
@@ -1257,9 +1256,9 @@ public class TiersDAOTest extends CoreDAOTest {
 		final HibernateTemplate hibernateTemplate = dao.getHibernateTemplate();
 
 		// Crée un couple normal, assujetti vaudois ordinaire
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				final RegDate dateMariage = date(1990, 1, 1);
 				final RegDate veilleMariage = dateMariage.getOneDayBefore();
@@ -1368,9 +1367,9 @@ public class TiersDAOTest extends CoreDAOTest {
 		final int size = 1200;
 
 		// crée un débiteur avec 600 sourciers
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
@@ -1420,9 +1419,9 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void testOrphaningIdentificationPersonne() throws Exception {
 
 		// Crée une personne physique avec deux identifications existantes
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique pp = new PersonnePhysique(false);
 				pp.setNom("John");
 
@@ -1449,7 +1448,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(2, dao.getCount(IdentificationPersonne.class));
 
 		// Vide la collection d'identifications sur la personne physique
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1512,7 +1511,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	@SuppressWarnings({"unchecked", "UnusedAssignment"})
 	private void loadDatabase() throws Exception {
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				PersonnePhysique pp0 = new PersonnePhysique();

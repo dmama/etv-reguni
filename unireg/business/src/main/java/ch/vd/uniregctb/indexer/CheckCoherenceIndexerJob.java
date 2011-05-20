@@ -37,7 +37,6 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
-	@SuppressWarnings({"unchecked"})
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
@@ -48,8 +47,8 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 		template.setReadOnly(true);
 
 		// Charge les ids des tiers existants dans la base de données
-		final Set<Long> existingIds = (Set<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Set<Long> existingIds = template.execute(new TransactionCallback<Set<Long>>() {
+			public Set<Long> doInTransaction(TransactionStatus status) {
 				return new HashSet<Long>(tiersDAO.getAllIds());
 			}
 		});

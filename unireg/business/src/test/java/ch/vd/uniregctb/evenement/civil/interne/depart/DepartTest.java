@@ -327,7 +327,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				setUpForFiscal(1234L, 12346791, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
@@ -376,7 +376,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de départ secondaire alors qu'aucune adresse secondaire n'est valide");
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addHabitant(NO_IND_ADRIEN);
@@ -845,7 +845,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place des fors
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, dateDepart.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
@@ -895,7 +895,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				addHabitant(noIndividu);
 				return null;
@@ -934,7 +934,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Bex);
@@ -980,7 +980,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, date(2007, 12, 31), MotifFor.DEPART_HS, MockCommune.Bex);
@@ -1036,7 +1036,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Bex);
@@ -1093,7 +1093,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp, null, date(1974, 5, 1), null);
@@ -1162,7 +1162,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = date(1981, 5, 1);
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 
@@ -1222,7 +1222,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place des fors
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
@@ -1272,7 +1272,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		// Note (msi) : je ne sais pas s'il est possible d'avoir une configuration de fors fiscaux comme celle ci-dessous. D'après le code, oui,
 		// mais d'un point de vue métier, je ne sais pas. Dans tous les cas, j'utilise cette configuration dans le seul but pour tester la règle
 		// de décalage des dates de fin d'année.
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -1319,7 +1319,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		// Note (msi) : je ne sais pas s'il est possible d'avoir une configuration de fors fiscaux comme celle ci-dessous. D'après le code, oui,
 		// mais d'un point de vue métier, je ne sais pas. Dans tous les cas, j'utilise cette configuration dans le seul but pour tester la règle
 		// de décalage des dates de fin d'année.
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -1363,7 +1363,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, MockCommune.Lausanne);

@@ -44,7 +44,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 	public void testLocking() {
 
 		// Créée un Habitant dans le base
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -58,7 +58,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 
 
 		// Teste que l'Habitant est bien dans la base
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -72,7 +72,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 
 		// On recupère l'Habitant dans la session1
 		// Puis on le modifie dans la session2
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -84,7 +84,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 			}
 		});
 
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -100,7 +100,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 		});
 
 		// Teste que l'Habitant a bien été modifié
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -114,7 +114,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 
 		// Modification après coup => Exception
 		try {
-			template.execute(new TransactionCallback() {
+			template.execute(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 					Session session = sessionFactory.getCurrentSession();
 					Query q1 = session.createQuery("from PersonnePhysique");
@@ -125,7 +125,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 					try {
 					TransactionTemplate templateNew = new TransactionTemplate(transactionManager);
 					templateNew.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-					templateNew.execute(new TransactionCallback() {
+					templateNew.execute(new TransactionCallback<Object>() {
 						public Object doInTransaction(TransactionStatus status) {
 
 							Session session = sessionFactory.getCurrentSession();
@@ -154,7 +154,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 		}
 
 		// Teste que l'Habitant a le bon numéro
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();

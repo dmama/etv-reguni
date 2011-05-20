@@ -60,7 +60,7 @@ public class DetermineDIsJobTest extends JobTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {

@@ -95,7 +95,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				return addHabitant(noIndividu).getNumero();
 			}
@@ -127,7 +127,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -162,7 +162,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -203,7 +203,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
@@ -247,7 +247,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
@@ -294,7 +294,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
@@ -347,7 +347,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividu);
 				final PersonnePhysique mme = addHabitant(noIndividuAutre);
@@ -398,7 +398,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividu);
 				final PersonnePhysique mme = addHabitant(noIndividuAutre);
@@ -452,7 +452,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividu);
 				final PersonnePhysique mme = addHabitant(noIndividuAutre);
@@ -510,7 +510,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividu);
 				final PersonnePhysique mme = addHabitant(noIndividuAutre);
@@ -566,7 +566,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividu);
 				final PersonnePhysique mme = addHabitant(noIndividuAutre);
@@ -625,7 +625,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividu);
 				final PersonnePhysique mme = addHabitant(noIndividuAutre);
@@ -679,7 +679,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				return addHabitant(noIndividu).getNumero();
 			}
@@ -715,7 +715,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -754,7 +754,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);

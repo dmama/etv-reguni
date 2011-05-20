@@ -62,7 +62,7 @@ public class TacheMapHelper extends CommonMapHelper {
 
 			final Map<Integer, String> map = new TreeMap<Integer, String>();
 
-			template.execute(new TransactionCallback() {
+			template.execute(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 					final List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();
 					for (PeriodeFiscale periode : periodes) {

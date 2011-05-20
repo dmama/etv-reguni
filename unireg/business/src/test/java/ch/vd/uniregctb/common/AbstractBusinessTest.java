@@ -149,10 +149,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		globalTiersIndexer.overwriteIndex();
 	}
 
-	protected abstract class TestHibernateCallback implements HibernateCallback {
-		public abstract Object testInHibernate(Session session) throws Exception;
+	protected abstract class TestHibernateCallback<T> implements HibernateCallback<T> {
+		public abstract T testInHibernate(Session session) throws Exception;
 
-		public final Object doInHibernate(Session session) throws HibernateException, SQLException {
+		public final T doInHibernate(Session session) throws HibernateException, SQLException {
 			try {
 				return testInHibernate(session);
 			}

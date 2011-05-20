@@ -152,7 +152,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * Ajoute les ids spécifié dans la table TIERs
 	 */
 	private void addIds(final Long... ids) throws Exception {
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				for (Long id : ids) {
 					final PersonnePhysique pp = new PersonnePhysique(false);
@@ -178,7 +178,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * Ajoute les ids spécifié dans la table MIGREG_ERROR
 	 */
 	private void addErrorIds(final Long... ids) throws Exception {
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				for (Long id : ids) {
 					MigrationError e = new MigrationError();

@@ -39,7 +39,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, diService, transactionManager);
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -76,9 +76,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	public void testTraiterDISansEtat() throws Exception {
 
 		// Crée une déclaration sans état
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -103,9 +103,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2009, 1, 1);
 
 		// Crée une déclaration à l'état émise
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -135,9 +135,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2009, 1, 1);
 
 		// Crée une déclaration à l'état émise
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -162,9 +162,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		final RegDate dateSommation = date(2008, 6, 30); // [UNIREG-1468] le délai s'applique à partir de la date de sommation
 
 		// Crée une déclaration à l'état sommé mais avec un délai non dépassé
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -192,9 +192,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		final RegDate dateSommation = date(2008, 6, 30);
 
 		// Crée une déclaration à l'état sommé et avec un délai dépassé
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -217,7 +217,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		assertNotNull(echue);
 		assertEquals(id.longValue(), echue.diId);
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 				assertNotNull(di);
@@ -233,9 +233,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2009, 1, 1);
 
 		// Crée une déclaration à l'état échue
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);

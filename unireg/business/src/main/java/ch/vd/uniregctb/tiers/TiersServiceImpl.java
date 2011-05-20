@@ -378,7 +378,7 @@ public class TiersServiceImpl implements TiersService {
 
 		// effacement des liens d'identification (qui ne concernent qu'une personne physique, pas un ménage commun)
 		// [UNIREG-2893] effacement des droits d'accès (qui ne concernent que les personnes physiques)
-		hibernateTemplate.execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				{
 					final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=?";
@@ -397,7 +397,7 @@ public class TiersServiceImpl implements TiersService {
 		});
 
 		// changement du type de tiers
-		hibernateTemplate.execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback<Object>() {
 
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
@@ -435,7 +435,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 
 			// changement du type de la situation famille en SituationFamilleMenageCommun
-			hibernateTemplate.execute(new HibernateCallback() {
+			hibernateTemplate.execute(new HibernateCallback<Object>() {
 
 				public Object doInHibernate(Session session) throws HibernateException, SQLException {
 

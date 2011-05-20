@@ -45,9 +45,9 @@ public class EvenementCediServiceTest extends BusinessTest {
 	public void testModifierInformationsPersonnelles() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				addCollAdm(ServiceInfrastructureService.noCEDI);
 
@@ -71,7 +71,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		});
 
 		// Simule la réception d'un événement de scan de DI
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final RetourDI scan = new RetourDI();
@@ -90,7 +90,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -119,9 +119,9 @@ public class EvenementCediServiceTest extends BusinessTest {
 		assertEquals("La valeur de la constante a changé, le test doit être modifié", 35, LengthConstants.TIERS_NUMTEL);
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				addCollAdm(ServiceInfrastructureService.noCEDI);
 
@@ -145,7 +145,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		});
 
 		// Simule la réception d'un événement de scan de DI
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final RetourDI scan = new RetourDI();
@@ -164,7 +164,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

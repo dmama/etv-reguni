@@ -29,7 +29,7 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	@Test
 	public void testSave() {
 
-		final Long mvtId = (Long) getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
+		final Long mvtId = getHibernateTemplate().executeWithNewSession(new HibernateCallback<Long>() {
 			public Long doInHibernate(Session session) throws HibernateException, SQLException {
 				final CollectiviteAdministrative oid = addCollectiviteAdministrative(7);
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1960, 3, 12), Sexe.FEMININ);
@@ -53,7 +53,7 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	@Test
 	public void testProtoBordereaux() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {

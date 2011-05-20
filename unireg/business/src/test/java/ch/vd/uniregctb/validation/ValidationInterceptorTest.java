@@ -47,7 +47,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	@NotTransactional
 	public void testValidationEntiteValide() throws Exception {
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
@@ -64,7 +64,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	public void testValidationEntiteInvalide() throws Exception {
 
 		try {
-			doInNewTransaction(new TransactionCallback() {
+			doInNewTransaction(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 					final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 					jean.setNom(null); // le nom est obligatoire
@@ -91,7 +91,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	@NotTransactional
 	public void testValidationSousEntiteValideEtParentValide() throws Exception {
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
@@ -114,7 +114,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 		final Long jeanId = addInvalidePP();
 
 		try {
-			doInNewTransaction(new TransactionCallback() {
+			doInNewTransaction(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
@@ -144,7 +144,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	@NotTransactional
 	public void testValidationJoinEntiteValideEtParentsValides() throws Exception {
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(1985, 2, 2), Sexe.MASCULIN);
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
@@ -171,7 +171,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 		final Long jeanId = addInvalidePP();
 
 		try {
-			doInNewTransaction(new TransactionCallback() {
+			doInNewTransaction(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
@@ -209,8 +209,8 @@ public class ValidationInterceptorTest extends BusinessTest {
 		try {
 			validationInterceptor.setEnabled(false); // on désactive temporairement l'interception pour permettre de sauver un tiers invalide
 
-			return (Long) doInNewTransaction(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
+			return doInNewTransaction(new TransactionCallback<Long>() {
+				public Long doInTransaction(TransactionStatus status) {
 					final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 					jean.setNom(null); // le nom est obligatoire
 
@@ -233,7 +233,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 
 		// On teste que si le nom est NULL, on a une erreur de validation
 		try {
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nh = new PersonnePhysique(false);

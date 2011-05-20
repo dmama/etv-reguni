@@ -160,7 +160,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 				try {

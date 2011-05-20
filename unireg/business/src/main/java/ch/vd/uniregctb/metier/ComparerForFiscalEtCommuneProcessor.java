@@ -103,9 +103,9 @@ public class ComparerForFiscalEtCommuneProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
-		final List<Contribuable> list = (List<Contribuable>) tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(Contribuable.class);
+		final List<Contribuable> list = tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
+			public List<Contribuable> doInHibernate(Session session) throws HibernateException {
+				final Criteria crit = session.createCriteria(Contribuable.class);
 				crit.add(Restrictions.in("id", batch));
 				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 				return crit.list();
@@ -151,12 +151,13 @@ public class ComparerForFiscalEtCommuneProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsMessage = (List<Long>) tiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+				final List<Long> idsMessage = tiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);
+						//noinspection unchecked
 						return queryObject.list();
 					}
 				});

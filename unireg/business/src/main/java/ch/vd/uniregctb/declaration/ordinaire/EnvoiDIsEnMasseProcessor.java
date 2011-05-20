@@ -290,16 +290,14 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @return itérateur sur les tiers
 	 */
-	@SuppressWarnings("unchecked")
 	protected Iterator<TacheEnvoiDeclarationImpot> createIteratorOnTaches(final int annee, final TypeContribuable typeContribuable,
 			final TypeDocument typeDocument, final List<Long> ids) {
 
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
-		final Iterator<TacheEnvoiDeclarationImpot> i = (Iterator<TacheEnvoiDeclarationImpot>) hibernateTemplate
-				.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+		final Iterator<TacheEnvoiDeclarationImpot> i = hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpot>>() {
+					public Iterator<TacheEnvoiDeclarationImpot> doInHibernate(Session session) throws HibernateException {
 						FlushMode mode = session.getFlushMode();
 						try {
 							/*
@@ -307,12 +305,13 @@ public class EnvoiDIsEnMasseProcessor {
 							 * modifiées concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
 							 */
 							session.setFlushMode(FlushMode.MANUAL);
-							Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
+							final Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
 							queryObject.setParameter("typeContribuable", typeContribuable.name());
 							queryObject.setParameter("typeDocument", typeDocument.name());
 							queryObject.setParameterList("ids", ids);
 							queryObject.setParameter("debutPeriode", debutAnnee.index());
 							queryObject.setParameter("finPeriode", finAnnee.index());
+							//noinspection unchecked
 							return queryObject.iterate();
 						}
 						finally {
@@ -339,10 +338,10 @@ public class EnvoiDIsEnMasseProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		
-		final List<Long> i = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+		final List<Long> i = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder builder = new StringBuilder();
 						builder.append("SELECT DISTINCT tache.contribuable.id");
@@ -786,8 +785,8 @@ public class EnvoiDIsEnMasseProcessor {
 					+ "    di.dateDebut ASC                                                                   ";
 
 			// On récupère toutes les DIs correspondant au critères du cache
-			final List<DeclarationImpotOrdinaire> list = (List<DeclarationImpotOrdinaire>) hibernateTemplate.execute(new HibernateCallback() {
-				public Object doInHibernate(Session session) throws HibernateException {
+			final List<DeclarationImpotOrdinaire> list = hibernateTemplate.execute(new HibernateCallback<List<DeclarationImpotOrdinaire>>() {
+				public List<DeclarationImpotOrdinaire> doInHibernate(Session session) throws HibernateException {
 					final FlushMode mode = session.getFlushMode();
 					try {
 						/*

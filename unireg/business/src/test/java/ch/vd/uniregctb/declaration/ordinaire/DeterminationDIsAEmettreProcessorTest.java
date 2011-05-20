@@ -81,7 +81,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
 		serviceLogger.setLevel(Level.FATAL);
 
-		doInNewTransactionAndSession(new TxCallback(){
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -1074,7 +1074,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		final RegDate dateDepart = date(2008, 5, 3);
 
-		doInNewTransaction(new TxCallback(){
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1125,7 +1125,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			}
 		});
 
-		final PeriodeFiscale periode2008 = (PeriodeFiscale) hibernateTemplate.get(PeriodeFiscale.class, ids.periodeId);
+		final PeriodeFiscale periode2008 = hibernateTemplate.get(PeriodeFiscale.class, ids.periodeId);
 		assertNotNull(periode2008);
 
 		assertTraitementContribuable(0, 0, 1, ids.arnoldId, periode2008); // une DI déjà existante (ignorée)

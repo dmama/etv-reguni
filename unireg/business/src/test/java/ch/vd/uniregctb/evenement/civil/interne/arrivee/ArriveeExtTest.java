@@ -1337,7 +1337,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -1475,7 +1475,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -1493,7 +1493,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -1622,7 +1622,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -1641,7 +1641,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -1858,7 +1858,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -1898,7 +1898,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -1978,8 +1978,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = RegDate.get(2007, 11, 19);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
 		final long numeroIndividu = 254879;
-		long numeroCTB;
-		
+
 		/*
 		 * Création des données du mock service civil
 		 */
@@ -2011,10 +2010,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 		
-		numeroCTB = ((Long) doInNewTransaction(new TxCallback() {
+		final long numeroCTB = doInNewTransaction(new TxCallback<Long>() {
 			@SuppressWarnings("deprecation")
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				/*
 				 * Création du non-habitant
 				 */
@@ -2040,11 +2039,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				return nonHabitant.getNumero();
 			}
 
-		}));
+		});
 		
 		indexer.sync();
 		
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -2177,9 +2176,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		}
 		
-		Couple coupleContribuables = (Couple) doInNewTransaction(new TxCallback() {
+		Couple coupleContribuables = doInNewTransaction(new TxCallback<Couple>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Couple execute(TransactionStatus status) throws Exception {
 				/*
 				 * Création des non-habitants
 				 */
@@ -2214,7 +2213,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 */
 		indexData();
 		
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				/*
@@ -2322,7 +2321,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
@@ -2386,7 +2385,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
@@ -2446,7 +2445,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final RegDate dateAchat = date(2009, 4, 10);
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique habitant = addNonHabitant("Mohamed", "Pouly", date(1950, 1, 1), Sexe.MASCULIN);
@@ -2562,7 +2561,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Ids ids = new Ids();
 
 		// création des fors
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -2588,7 +2587,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// retour de Julie
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -2642,7 +2641,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
@@ -2705,7 +2704,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
@@ -2763,7 +2762,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
@@ -2822,7 +2821,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
@@ -2895,7 +2894,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique roger = addNonHabitant("Roger", "Dupneu", null, Sexe.MASCULIN);
 				addForPrincipal(roger, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);

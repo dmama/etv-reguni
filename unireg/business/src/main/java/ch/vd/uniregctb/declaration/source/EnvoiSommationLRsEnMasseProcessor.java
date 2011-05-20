@@ -144,15 +144,14 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 		}
 	}
 
-	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	protected List<IdentifiantDeclaration> getListIdLRs(final RegDate dateFinPeriode, final RegDate dateLimite, final CategorieImpotSource categorie) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<IdentifiantDeclaration> ids = (List<IdentifiantDeclaration>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Object[]> aSommer = (List<Object[]>) hibernateTemplate.execute(new HibernateCallback() {
+		final List<IdentifiantDeclaration> ids = template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
+			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
+				final List<Object[]> aSommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();
@@ -178,6 +177,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 							query.setParameter("categorie", categorie.name());
 						}
 						query.setParameter("dateLimite", dateLimite.index());
+						//noinspection unchecked
 						return query.list();
 					}
 				});

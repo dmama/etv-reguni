@@ -89,8 +89,8 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 		if (ids == null || ids.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<DroitAcces> list = (List<DroitAcces>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
+		final List<DroitAcces> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<DroitAcces>>() {
+			public List<DroitAcces> doInHibernate(Session session) throws HibernateException {
 				Query query = session
 						.createQuery("from DroitAcces da where da.tiers.id in (:ids) and da.dateDebut <= :date and (da.dateFin is null or da.dateFin >= :date)");
 				query.setParameterList("ids", ids);
@@ -114,8 +114,8 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 			final String query = "select da.tiers.id from DroitAcces da where da.annulationDate is null and da.dateDebut <= :today and (da.dateFin is null or da.dateFin >= :today)";
 			final RegDate today = RegDate.get();
 
-			final List<Long> ids = (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-				public Object doInHibernate(Session session) throws HibernateException {
+			final List<Long> ids = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+				public List<Long> doInHibernate(Session session) throws HibernateException {
 					Query queryObject = session.createQuery(query);
 					queryObject.setParameter("today", today.index());
 					return queryObject.list();

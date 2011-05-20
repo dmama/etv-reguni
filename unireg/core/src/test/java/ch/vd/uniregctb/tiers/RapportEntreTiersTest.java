@@ -41,9 +41,9 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			Long mcNum;
 		}
 
-		Numeros numeros = (Numeros)doInNewTransaction(new TxCallback() {
+		Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Numeros execute(TransactionStatus status) throws Exception {
 				// CTB 1
 				PersonnePhysique ctb1 = new PersonnePhysique(true);
 				ctb1.setNumeroIndividu(12345L);
@@ -166,9 +166,9 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			Long pupilleNum;
 		}
 
-		Numeros numeros = (Numeros)doInNewTransaction(new TxCallback() {
+		Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Numeros execute(TransactionStatus status) throws Exception {
 				PersonnePhysique tuteur = new PersonnePhysique(true);
 				tuteur.setNumeroIndividu(12345L);
 
@@ -189,7 +189,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 		final Long pupilleNum = numeros.pupilleNum;
 
 		// Création d'une tutelle
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique tuteur = (PersonnePhysique) dao.get(tuteurNum);

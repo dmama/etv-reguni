@@ -344,11 +344,11 @@ public class EnvoiSommationsDIsProcessor  {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<IdentifiantDeclaration>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
 				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
-				final List<Object[]> declarationsASommer = (List<Object[]>) hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+				final List<Object[]> declarationsASommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
+					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();
 						b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinaire AS di");

@@ -92,7 +92,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback(){
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique arnold = addHabitant(noIndArnold);
@@ -107,7 +107,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		});
 
 		// Regroupement des trois personnes physiques en un ménage, avec transformation en ménage commun d'une des personnes physiques
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -173,7 +173,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback(){
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique arnold = addHabitant(noIndOleg);
@@ -189,7 +189,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		});
 
 		// Regroupement des trois personnes physiques en un ménage, avec transformation en ménage commun d'une des personnes physiques
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -214,17 +214,17 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		});
 
 		// On s'assure que le ménage commun est bien de la bonne classe et qu'il est bien composé
-		final Tiers mc = (Tiers) hibernateTemplate.get(Tiers.class, ids.menage);
+		final Tiers mc = hibernateTemplate.get(Tiers.class, ids.menage);
 		assertNotNull(mc);
 		assertEquals(MenageCommun.class, mc.getClass());
 		assertEquals(2, mc.getRapportsObjet().size()); // possède bien deux parties
 
-		final Tiers arnold = (Tiers) hibernateTemplate.get(Tiers.class, ids.arnold);
+		final Tiers arnold = hibernateTemplate.get(Tiers.class, ids.arnold);
 		assertNotNull(arnold);
 		assertEquals(PersonnePhysique.class, arnold.getClass());
 		assertEquals(1, arnold.getRapportsSujet().size()); // fait partie du ménage commun
 
-		final Tiers janine = (Tiers) hibernateTemplate.get(Tiers.class, ids.janine);
+		final Tiers janine = hibernateTemplate.get(Tiers.class, ids.janine);
 		assertNotNull(janine);
 		assertEquals(PersonnePhysique.class, janine.getClass());
 		assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
@@ -257,9 +257,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		final long operateurAvecDroitFerme = 1;
 		final long operateurAvecDroitOuvert = 2;
 
-		final Ids ids = (Ids) doInNewTransactionAndSession(new TxCallback(){
+		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>(){
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique arnold = addHabitant(noIndArnold);
 				final PersonnePhysique janine = addHabitant(noIndJanine);
 				final PersonnePhysique menage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
@@ -276,7 +276,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		});
 
 		// Regroupement des trois personnes physiques en un ménage, avec transformation en ménage commun d'une des personnes physiques
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -364,7 +364,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback(){
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique arnold = addHabitant(noIndArnold);
@@ -385,7 +385,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		// Essai de regroupement des trois personnes physiques en un ménage, avec transformation
 		// en ménage commun d'une des personnes physiques + erreur de validation sur le ménage-commun résultant
 		try {
-			doInNewTransactionAndSession(new TxCallback() {
+			doInNewTransactionAndSession(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 
@@ -419,7 +419,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		}
 
 		// On s'assure que la transaction a bien été rollée-back, c'est-à-dire que le trois tiers sont toujours des personnes physiques.
-		doInNewTransactionAndSession(new TxCallback(){
+		doInNewTransactionAndSession(new TxCallback<Object>(){
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Tiers arnold = (Tiers) hibernateTemplate.get(Tiers.class, ids.arnold);
@@ -470,7 +470,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// fiscal de départ
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique mr = addHabitant(noMr);
 				final PersonnePhysique mme = addHabitant(noMme);
@@ -483,7 +483,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		});
 
 		// re-création du couple
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

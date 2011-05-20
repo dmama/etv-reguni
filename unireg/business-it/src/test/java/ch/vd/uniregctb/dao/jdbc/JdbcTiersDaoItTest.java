@@ -165,11 +165,10 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 		}
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<Tiers> getTiersJdbc(final List<Long> ids, final Set<TiersDAO.Parts> parts) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return (List<Tiers>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<List<Tiers>>() {
+			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
 				final List<Tiers> list = new ArrayList<Tiers>(ids.size());
 				for (Long id : ids) {
@@ -183,14 +182,13 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 		});
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<Tiers> getTiersHibernate(final List<Long> ids) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return (List<Tiers>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<List<Tiers>>() {
+			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
-				return tiersDAO.getHibernateTemplate().execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				return tiersDAO.getHibernateTemplate().execute(new HibernateCallback<List<Tiers>>() {
+					public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
 						session.setFlushMode(FlushMode.MANUAL);
 						final List<Tiers> list = new ArrayList<Tiers>(ids.size());
 						for (Long id : ids) {
@@ -235,26 +233,24 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<Tiers> getTiersBatchJdbc(final List<Long> ids, final Set<TiersDAO.Parts> parts) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return (List<Tiers>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<List<Tiers>>() {
+			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
 				return jdbcTiersDao.getBatch(ids, parts);
 			}
 		});
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<Tiers> getTiersBatchHibernate(final List<Long> ids, final Set<TiersDAO.Parts> parts) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return (List<Tiers>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<List<Tiers>>() {
+			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
-				return tiersDAO.getHibernateTemplate().execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				return tiersDAO.getHibernateTemplate().execute(new HibernateCallback<List<Tiers>>() {
+					public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
 						session.setFlushMode(FlushMode.MANUAL);
 						final List<Tiers> list = tiersDAO.getBatch(ids, parts);
 						for (Tiers t : list) {

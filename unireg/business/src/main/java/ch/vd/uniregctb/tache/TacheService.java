@@ -91,7 +91,7 @@ public interface TacheService {
 	 * @return une liste de tâhes
 	 * @throws Exception si quelque chose n'a pas fonctionné
 	 */
-	ListeTachesEnIsntanceParOID produireListeTachesEnIstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception;
+	ListeTachesEnInstanceParOID produireListeTachesEnInstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception;
 
 	/**
 	 * [UNIREG-2305] Cette méthode détermine toutes les actions nécessaires pour synchroniser les déclarations d'impôt du contribuable avec ses fors fiscaux.

@@ -37,21 +37,21 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		super(AuditLine.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<AuditLine> find(final AuditLineCriteria criterion, final ParamPagination paramPagination) {
 
-		return (List<AuditLine>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<AuditLine>>() {
+			public List<AuditLine> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				String query = buildSql(criterion);
 				query = query + buildOrderClause(paramPagination);
-				Query queryObject = session.createQuery(query);
+				final Query queryObject = session.createQuery(query);
 
-				int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-				int maxResult = paramPagination.getTaillePage();
+				final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
+				final int maxResult = paramPagination.getTaillePage();
 				queryObject.setFirstResult(firstResult);
 				queryObject.setMaxResults(maxResult);
 
+				//noinspection unchecked
 				return queryObject.list();
 			}
 		});
@@ -111,8 +111,8 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 		final String query = "FROM AuditLine line WHERE line.id >= :start ORDER BY line.id DESC";
 
-		final List<AuditLine> list = (List<AuditLine>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
+		final List<AuditLine> list = getHibernateTemplate().execute(new HibernateCallback<List<AuditLine>>() {
+			public List<AuditLine> doInHibernate(Session session) throws HibernateException {
 				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("start", id);
 				queryObject.setMaxResults(count);
@@ -128,8 +128,8 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 		final String query = "FROM AuditLine line WHERE line.evenementId = :id ORDER BY line.id ASC";
 
-		final List<AuditLine> list = (List<AuditLine>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
+		final List<AuditLine> list = getHibernateTemplate().execute(new HibernateCallback<List<AuditLine>>() {
+			public List<AuditLine> doInHibernate(Session session) throws HibernateException {
 				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("id", evenementCivilId);
 				return queryObject.list();

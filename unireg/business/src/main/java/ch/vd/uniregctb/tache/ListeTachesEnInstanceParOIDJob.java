@@ -10,23 +10,19 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
 
-public class ListeTachesEnIstanceParOIDJob extends JobDefinition {
+public class ListeTachesEnInstanceParOIDJob extends JobDefinition {
 
 	private TacheService service;
 	private RapportService rapportService;
 	private PlatformTransactionManager transactionManager;
 
-	private ParametreAppService paramsApp;
-
-	public static final String NAME = "ListeTachesEnIstanceParOIDJob";
+	public static final String NAME = "ListeTachesEnInstanceParOIDJob";
 	private static final String CATEGORIE = "Stats";
 
-	public ListeTachesEnIstanceParOIDJob(int sortOrder, String description) {
+	public ListeTachesEnInstanceParOIDJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
@@ -50,21 +46,18 @@ public class ListeTachesEnIstanceParOIDJob extends JobDefinition {
 
 		// Exécution de l'envoi dans une transaction.
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final ListeTachesEnIsntanceParOID results = (ListeTachesEnIsntanceParOID) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final ListeTachesEnInstanceParOID results = template.execute(new TransactionCallback<ListeTachesEnInstanceParOID>() {
+			public ListeTachesEnInstanceParOID doInTransaction(TransactionStatus status) {
 				try {
-
-					ListeTachesEnIsntanceParOID res = service.produireListeTachesEnIstanceParOID(dateTraitement, getStatusManager());
-
-					return res;
+					return service.produireListeTachesEnInstanceParOID(dateTraitement, getStatusManager());
 				}
 				catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 			}
 		});
-		Document report = (Document)template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Document report = template.execute(new TransactionCallback<Document>() {
+			public Document doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());
 				}
@@ -75,10 +68,6 @@ public class ListeTachesEnIstanceParOIDJob extends JobDefinition {
 		});
 		setLastRunReport(report);
 		Audit.success("Liste des tâches en instance par OID générée correctement", report);
-	}
-
-	public void setParamsApp(ParametreAppService paramsApp) {
-		this.paramsApp = paramsApp;
 	}
 
 	@Override

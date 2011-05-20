@@ -104,8 +104,8 @@ public class DemandeDelaiCollectiveProcessor {
 
 	private void checkParams(final int annee) {
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final PeriodeFiscale periodeFiscale = (PeriodeFiscale) t.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final PeriodeFiscale periodeFiscale = t.execute(new TransactionCallback<PeriodeFiscale>() {
+			public PeriodeFiscale doInTransaction(TransactionStatus status) {
 				return periodeFiscaleDAO.getPeriodeFiscaleByYear(annee);
 			}
 		});

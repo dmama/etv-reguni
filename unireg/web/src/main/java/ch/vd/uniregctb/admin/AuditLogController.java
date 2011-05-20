@@ -75,7 +75,7 @@ public class AuditLogController extends AbstractSimpleFormController {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				List<AuditLine> l = auditLineDAO.find(bean.getCriteria(), pagination);
 				List<AuditView> list = coreToWeb(l);

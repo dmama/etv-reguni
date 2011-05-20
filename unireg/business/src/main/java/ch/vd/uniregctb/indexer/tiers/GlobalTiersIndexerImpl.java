@@ -245,8 +245,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (DeltaIds) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<DeltaIds>() {
+			public DeltaIds doInTransaction(TransactionStatus status) {
 				
 				final DeltaIds deltaIds;
 				switch (mode) {
@@ -359,8 +359,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final Set<Long> numerosIndividus = (Set<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Set<Long> numerosIndividus = template.execute(new TransactionCallback<Set<Long>>() {
+			public Set<Long> doInTransaction(TransactionStatus status) {
 				return tiersDAO.getNumerosIndividu(ids, true);
 			}
 		});
@@ -621,9 +621,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
         tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-        int nbTiersIndexed = (Integer) tmpl.execute(new TransactionCallback() {
+        int nbTiersIndexed = tmpl.execute(new TransactionCallback<Integer>() {
 
-            public Object doInTransaction(TransactionStatus status) {
+            public Integer doInTransaction(TransactionStatus status) {
                 // Get the sourcier from DB
                 List<Tiers> listTiers = tiersDAO.getAll();
                 if (LOGGER.isTraceEnabled()) {
@@ -668,7 +668,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     }
 
 	private void setIndexDirty(final Tiers tiers) {
-		tiersDAO.getHibernateTemplate().execute(new HibernateCallback() {
+		tiersDAO.getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = :id");
 				query.setParameter("id", tiers.getNumero());

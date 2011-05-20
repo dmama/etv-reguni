@@ -78,7 +78,7 @@ public class TiersRapportControllerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marcel = addNonHabitant("Marcel", "Ragnol", date(1932, 1, 1), Sexe.MASCULIN);
@@ -108,7 +108,7 @@ public class TiersRapportControllerTest extends WebTest {
 		}
 
 		// On simule l'édition de la date de fin du rapport
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				request.addParameter("idRapport", String.valueOf(ids.rapport));
@@ -121,7 +121,7 @@ public class TiersRapportControllerTest extends WebTest {
 		});
 
 		// On vérifie que le rapport a bien été fermé
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final RepresentationConventionnelle rapport = (RepresentationConventionnelle) hibernateTemplate.get(RepresentationConventionnelle.class, ids.rapport);

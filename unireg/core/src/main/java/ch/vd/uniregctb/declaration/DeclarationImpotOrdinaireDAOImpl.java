@@ -154,10 +154,10 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 	@SuppressWarnings("unchecked")
 	public Set<DeclarationImpotOrdinaire> getDIsForSommation(final Collection<Long> idsDI) {
 
-		final List<DeclarationImpotOrdinaire> list = (List<DeclarationImpotOrdinaire>) getHibernateTemplate().executeWithNativeSession(
-				new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Criteria crit = session.createCriteria(DeclarationImpotOrdinaire.class);
+		final List<DeclarationImpotOrdinaire> list = getHibernateTemplate().executeWithNativeSession(
+				new HibernateCallback<List<DeclarationImpotOrdinaire>>() {
+					public List<DeclarationImpotOrdinaire> doInHibernate(Session session) throws HibernateException {
+						final Criteria crit = session.createCriteria(DeclarationImpotOrdinaire.class);
 						crit.add(Restrictions.in("id", idsDI));
 						crit.setFetchMode("etats", FetchMode.JOIN);
 						crit.setFetchMode("delais", FetchMode.JOIN);

@@ -50,7 +50,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 
 		final int year = RegDate.get().year();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1967, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year - 2, 4, 12), MotifFor.ARRIVEE_HS, date(year - 1, 10, 23), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
@@ -109,7 +109,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 
 		final int year = RegDate.get().year();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1967, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year - 2, 4, 12), MotifFor.ARRIVEE_HS, date(year - 1, 10, 23), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);

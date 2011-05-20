@@ -102,7 +102,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// Un tiers avec une adresse et un fors fiscal
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -120,7 +120,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		});
 
 		// Un ménage commun avec toutes les parties renseignées
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -379,7 +379,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		assertNull(menageAvant.adresseEnvoi.ligne6);
 
 		// On modifie le prénom de madame
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

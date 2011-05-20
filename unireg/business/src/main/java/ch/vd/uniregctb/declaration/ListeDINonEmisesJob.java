@@ -72,8 +72,8 @@ public class ListeDINonEmisesJob extends JobDefinition {
 		final ListeDIsNonEmises results = service.produireListeDIsNonEmises(annee, dateTraitement, getStatusManager());
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final Document report = (Document) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Document report = template.execute(new TransactionCallback<Document>() {
+			public Document doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());
 				}

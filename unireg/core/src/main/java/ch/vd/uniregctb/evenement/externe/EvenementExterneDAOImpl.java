@@ -27,12 +27,12 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 	}
 
 	public boolean existe(final String businessId) {
-		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Criteria criteria = session.createCriteria(EvenementExterne.class);
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
+				final Criteria criteria = session.createCriteria(EvenementExterne.class);
 				criteria.setProjection(Projections.rowCount());
 				criteria.add(Restrictions.eq("businessId", businessId));
-				Integer count = (Integer) criteria.uniqueResult();
+				final Integer count = (Integer) criteria.uniqueResult();
 				return count > 0;
 			}
 		});
@@ -40,9 +40,9 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 
 	@SuppressWarnings("unchecked")
 	public Collection<EvenementExterne> getEvenementExternes(final boolean ascending, final EtatEvenementExterne... etatEvenementExternes) {
-		return (Collection<EvenementExterne>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Criteria criteria = session.createCriteria(EvenementExterne.class);
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Collection<EvenementExterne>>() {
+			public Collection<EvenementExterne> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Criteria criteria = session.createCriteria(EvenementExterne.class);
 				if (ascending) {
 					criteria.addOrder(Order.asc("dateEvenement"));
 				}
@@ -59,8 +59,8 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getIdsQuittancesLRToMigrate() {
-		return (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				Query q = session.createQuery("select q.id from QuittanceLR q where q.type is null");
 				return q.list();
 			}

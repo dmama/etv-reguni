@@ -138,7 +138,6 @@ public class EchoirDIsProcessor {
 	 * @return les ids des DIs dont l'état courant est <i>sommée</i> et qui dont le délai de retour de sommation est maintenant dépassé.
 	 * @param dateTraitement date de référence pour la détermination du dépassement du délai de retour
 	 */
-	@SuppressWarnings("unchecked")
 	private List<Long> retrieveListDIsSommeesCandidates(final RegDate dateTraitement) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -152,9 +151,9 @@ public class EchoirDIsProcessor {
 		b.append(" ORDER BY DI.TIERS_ID");
 		final String sql = b.toString();
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 
 						final Query query = session.createSQLQuery(sql);

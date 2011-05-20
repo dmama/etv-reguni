@@ -73,9 +73,9 @@ public class FusionDeCommunesJob extends JobDefinition {
 		final FusionDeCommunesResults results = metierService.fusionDeCommunes(anciensNosOfs, nouveauNoOfs, dateFusion, dateTraitement, getStatusManager());
 
 		// Exécution du rapport dans une transaction.
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		FusionDeCommunesRapport rapport = (FusionDeCommunesRapport) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		FusionDeCommunesRapport rapport = template.execute(new TransactionCallback<FusionDeCommunesRapport>() {
+			public FusionDeCommunesRapport doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());
 				}

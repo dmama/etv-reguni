@@ -156,8 +156,8 @@ public class InfoController extends ParameterizableViewController implements Aja
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (String) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<String>() {
+			public String doInTransaction(TransactionStatus status) {
 				String tiersCount;
 				try {
 					tiersCount = String.valueOf(dao.getCount(Tiers.class));

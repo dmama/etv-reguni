@@ -170,8 +170,8 @@ public class EvenementCivilListener extends EsbMessageListener implements ErrorM
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 
-		final boolean ok = (Boolean) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final boolean ok = template.execute(new TransactionCallback<Boolean>() {
+			public Boolean doInTransaction(TransactionStatus status) {
 
 				if (evenementCivilExterneDAO.exists(id)) {
 					Audit.warn(id, String.format("L'événement civil n°%d existe DEJA en DB", id));

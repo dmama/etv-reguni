@@ -65,7 +65,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 	@Test
 	public void testCreateIteratorOnIDsOfCtbs() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
-		hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
 		public Object doInHibernate(Session session) throws HibernateException {
 			final Iterator<Long> idIterator = processor.createIteratorOnIDsOfCtbs(session, 2010);
 			assertNotNull(idIterator);
@@ -113,7 +113,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique m = addNonHabitant("Jules", "César", date(1945, 3, 1), Sexe.MASCULIN);
 				final PersonnePhysique mme = addNonHabitant("Julie", "César", date(1945, 3, 1), Sexe.FEMININ);
@@ -134,7 +134,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 		});
 
 		// le contribuable ménage avait un for l'année dernière, donc il sera pris dans la requête initiale ...
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final Iterator<Long> iterator = processor.createIteratorOnIDsOfCtbs(hibernateTemplate.getSessionFactory().getCurrentSession(), anneeReference);
 				final List<Long> ctbs = new ArrayList<Long>(10);
@@ -214,7 +214,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 		final int anneeAcomptes = 2011;
 
-		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 

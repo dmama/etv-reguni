@@ -119,8 +119,8 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesFiscalesNonHabitantAvecAdressesAnnulees() throws Exception {
 
-		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique axelle = addNonHabitant("Axelle", "Herren Clot", date(1970, 1, 1), Sexe.FEMININ);
 				final AdresseSuisse adresse = addAdresseSuisse(axelle, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Geneve.AvenueGuiseppeMotta);
 				adresse.setAnnule(true); // <------ l'adresse est annulée
@@ -986,9 +986,9 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Crée l'autre habitant
 				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
 
@@ -1101,9 +1101,9 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Crée l'autre habitant
 				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
 
@@ -1807,9 +1807,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal possède une adresse fiscale surchargée
-		final long noMenageCommun = (Long) doInNewTransaction(new TxCallback() {
+		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				addAdresseSuisse(principal, TypeAdresseTiers.COURRIER, date(2008, 1, 1), null, MockRue.Renens.QuatorzeAvril);
 				final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
@@ -1849,9 +1849,9 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// Crée un ménage composé de deux non-habitants et un principal avec une adresse fiscale courrier
 
-		final long noMenageCommun = (Long) doInNewTransaction(new TxCallback() {
+		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique principal = new PersonnePhysique(false);
 				principal.setPrenom("Tommy");
 				principal.setNom("Zrwg");
@@ -1997,9 +1997,9 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long numeroContribuablePupille = (Long) doInNewTransaction(new TxCallback() {
+		final long numeroContribuablePupille = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Crée le pupille et le tuteru
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(noPupille);
@@ -2104,7 +2104,7 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Crée le pupille, le tuteur et la tutelle
@@ -2210,7 +2210,7 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Crée le ménage
@@ -2376,7 +2376,7 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Numeros numeros = new Numeros();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -2501,7 +2501,7 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Crée le ménage
@@ -2680,7 +2680,7 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Crée le ménage
@@ -2868,7 +2868,7 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Crée le ménage
@@ -3020,9 +3020,9 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long numeroContribuablePupille = (Long) doInNewTransaction(new TxCallback() {
+		final long numeroContribuablePupille = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Crée le pupille et le tuteur
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(noPupille);
@@ -3107,9 +3107,9 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long numeroContribuableTuteur = (Long) doInNewTransaction(new TxCallback() {
+		final long numeroContribuableTuteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Crée le pupille et le tuteur
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(noPupille);
@@ -3942,9 +3942,9 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testAnnulerAdresseSansAdressePrecedenteExistante() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
@@ -3981,9 +3981,9 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistante() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
@@ -4058,9 +4058,9 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistanteMaisNonAccolee() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
@@ -4128,9 +4128,9 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Données d'entrées
 				// Crée un habitant sans adresse fiscale surchargée
 				PersonnePhysique habitant = new PersonnePhysique(true);
@@ -4186,9 +4186,9 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				// Données d'entrées
 				// Crée un habitant sans adresse fiscale surchargée
 				PersonnePhysique habitant = new PersonnePhysique(true);
@@ -4268,9 +4268,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
-		final long noMenageCommun = (Long) doInNewTransaction(new TxCallback() {
+		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique principal = new PersonnePhysique(true);
 				principal.setNumeroIndividu(noIndividuPrincipal);
 				PersonnePhysique conjoint = new PersonnePhysique(true);
@@ -4345,9 +4345,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
@@ -4423,9 +4423,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
@@ -4499,9 +4499,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
@@ -4580,9 +4580,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal et un autre sur le ménage
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique representantMenage = addHabitant(noIndividuRepresentantMenage);
 				PersonnePhysique representantPrincipal = addHabitant(noIndividuRepresentantPrincipal);
@@ -4665,9 +4665,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 				PersonnePhysique tuteur = addHabitant(noIndividuTuteur);
@@ -4744,9 +4744,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
 
@@ -4823,9 +4823,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
 
@@ -4905,9 +4905,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique curateurPrincipal = addHabitant(noIndividuCurateurPrincipal);
 				PersonnePhysique curateurConjoint = addHabitant(noIndividuCurateurConjoint);
@@ -5035,9 +5035,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique curateurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 				PersonnePhysique curateurConjoint = addHabitant(noIndividuTuteurConjoint);
@@ -5163,9 +5163,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
@@ -5263,9 +5263,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
@@ -5940,7 +5940,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		validationInterceptor.setEnabled(false); // pour permettre l'ajout d'une curatelle avec date de début nulle
 		try {
-			doInNewTransactionAndSession(new TransactionCallback() {
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
 				public Object doInTransaction(TransactionStatus status) {
 					PersonnePhysique tiia = addHabitant(noIndividuTiia);
 					addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
@@ -6412,7 +6412,7 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividuM);
 				final PersonnePhysique mme = addHabitant(noIndividuMme);
@@ -6423,7 +6423,7 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// vérification du nom complet du ménage et assignation de la surcharge d'adresse
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
 				final List<String> nom = adresseService.getNomCourrier(mc, null, false);
@@ -6443,7 +6443,7 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// vérification du nom complet du ménage
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
 				final List<String> nom = adresseService.getNomCourrier(mc, null, false);
@@ -6474,7 +6474,7 @@ public class AdresseServiceTest extends BusinessTest {
 		/**
 		 * Crée deux contribuable Jean (A) et Jacques (B) et ajoute une adresse 'autre tiers' sur Jean qui pointe vers Jacques.
 		 */
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -6538,9 +6538,9 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont monsieur est sous tutelle et madame possède un représentant conventionnel, qui se séparent puis se réconcilient
-		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 				PersonnePhysique representantConjoint = addHabitant(noIndividuRepresentantConjoint);

@@ -73,7 +73,7 @@ import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
-import ch.vd.uniregctb.tache.ListeTachesEnIsntanceParOID;
+import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
@@ -272,7 +272,7 @@ public interface RapportService {
 	 *
 	 * @return le rapport
 	 */
-	ListeTachesEnIsntanceParOIDRapport generateRapport(ListeTachesEnIsntanceParOID results,StatusManager statusManager);
+	ListeTachesEnIsntanceParOIDRapport generateRapport(ListeTachesEnInstanceParOID results,StatusManager statusManager);
 
 	ExclureContribuablesEnvoiRapport generateRapport(ExclureContribuablesEnvoiResults results, StatusManager status);
 

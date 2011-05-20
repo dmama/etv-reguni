@@ -78,8 +78,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	@SuppressWarnings({"unchecked"})
 	public Map<Class, List<Tiers>> getFirstGroupedByClass(final int count) {
-		return (Map<Class, List<Tiers>>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().execute(new HibernateCallback<Map<Class, List<Tiers>>>() {
+			public Map<Class, List<Tiers>> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Map<Class, List<Tiers>> map = new HashMap<Class, List<Tiers>>();
 				for (Class clazz : TIERS_CLASSES) {
 					final Query query = session.createQuery("from Tiers t where t.class = " + clazz.getSimpleName());
@@ -138,8 +138,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     @SuppressWarnings("unchecked")
     public List<Tiers> getBatch(final Collection<Long> ids, final Set<Parts> parts) {
 
-        return (List<Tiers>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
+            public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
 
                 if (ids == null || ids.isEmpty()) {
                     return Collections.emptyList();
@@ -445,8 +445,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			throw new IllegalArgumentException("Il n'est pas possible de spécifier plus de 1'000 ids");		    
 	    }
 
-        return (Set<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
+        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
+            public Set<Long> doInHibernate(Session session) throws HibernateException {
 
 	            final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
 
@@ -469,8 +469,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     @SuppressWarnings("unchecked")
     public List<Long> getHabitantsForMajorite(RegDate dateReference) {
         // FIXME (???) la date de référence n'est pas utilisée !
-        return (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+            public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
                 Criteria criteria = session.createCriteria(PersonnePhysique.class);
                 criteria.add(Restrictions.eq("habitant", Boolean.TRUE));
                 criteria.setProjection(Projections.property("numero"));
@@ -490,8 +490,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
         final String name = this.getPersistentClass().getCanonicalName();
 
-        return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+            public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
                 // recherche dans le cache de 1er niveau dans la session si le tiers existe.
                 // Hack fix, on peut resoudre le problème en utilisant la fonction session.contains(), mais pour cela
@@ -575,7 +575,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		b.append(" ORDER BY PP.NUMERO ASC");
 		final String sql = b.toString();
 
-		final List<Long> list = (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		final List<Long> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				FlushMode flushMode = null;
@@ -657,7 +657,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		}
 
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
-		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				final FlushMode mode = session.getFlushMode();
 				try {
@@ -751,8 +751,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     @SuppressWarnings("unchecked")
     public Tiers getTiersForIndexation(final long id) {
 
-        final List<Tiers> list = (List<Tiers>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
+        final List<Tiers> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
+            public List<Tiers> doInHibernate(Session session) throws HibernateException {
                 Criteria crit = session.createCriteria(Tiers.class);
                 crit.add(Restrictions.eq("numero", id));
                 crit.setFetchMode("rapportsSujet", FetchMode.JOIN);
@@ -783,8 +783,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
     @SuppressWarnings("unchecked")
     public List<MenageCommun> getMenagesCommuns(final List<Long> ids, Set<Parts> parts) {
-        final List<Long> idsMC = (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
+        final List<Long> idsMC = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+            public List<Long> doInHibernate(Session session) throws HibernateException {
                 Query query = session.createQuery("select mc.numero from MenageCommun mc where mc.numero in (:ids)");
                 query.setParameterList("ids", ids);
                 return query.list();
@@ -801,7 +801,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	@SuppressWarnings({"unchecked"})
 	public Contribuable getContribuable(final DebiteurPrestationImposable debiteur) {
-		return (Contribuable) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Contribuable>() {
 		    public Contribuable doInHibernate(Session session) throws HibernateException {
 		        Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
 		        query.setParameter("dpiId", debiteur.getId());
@@ -819,8 +819,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getListeDebiteursSansPeriodicites() {
-		return (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query q = session.createQuery("select d.numero from DebiteurPrestationImposable d where size(d.periodicites) = 0");
 				return q.list();
 			}
@@ -904,7 +904,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
 				"ORDER BY CTB_ID                                                          ";
 
-		final List<Long> listeCtbModifies = (List<Long>) getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
+		final List<Long> listeCtbModifies = getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				final SQLQuery queryObject = session.createSQLQuery(RequeteContribuablesModifies);
 

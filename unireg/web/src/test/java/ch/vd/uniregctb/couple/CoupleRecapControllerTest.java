@@ -84,7 +84,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 
 		final Date dateMariage = DateHelper.getDate(2007, 2, 12);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Simule l'envoi de la requête au serveur
@@ -100,7 +100,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 		});
 
 		// Vérifie que le couple a été créé dans la base
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -124,7 +124,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 
 		final RegDate dateMariage = RegDate.get(2008, 3, 12);
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				request.setMethod("POST");
@@ -140,7 +140,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 
 		// On fait le test dans 2 transactions pour que les rapports soient re-chargés par Hibernate
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Vérifie que le couple est créé

@@ -572,12 +572,11 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	 * @param extractor extracteur auquel il faut demander sa liste d'éléments
 	 * @return la liste renvoyée par {@link BatchableExtractor#buildElementList()}
 	 */
-	@SuppressWarnings({"unchecked"})
 	private <E, R extends BatchResults<E, R>> List<E> getElements(final BatchableExtractor<E, R> extractor) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<E>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<E>>() {
 			@Override
 			public List<E> doInTransaction(TransactionStatus status) {
 				return extractor.buildElementList();

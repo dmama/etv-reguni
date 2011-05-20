@@ -59,8 +59,8 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
 		final int maxResult = paramPagination.getTaillePage();
 
-		return (List<RapportPrestationImposable>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<RapportPrestationImposable>>() {
+			public List<RapportPrestationImposable> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("debiteur", numeroDebiteur);

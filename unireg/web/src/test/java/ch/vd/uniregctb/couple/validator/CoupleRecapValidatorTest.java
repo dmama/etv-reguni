@@ -79,8 +79,8 @@ public class CoupleRecapValidatorTest extends WebTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				tiersService.changeHabitantenNH(pp);
 				addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
@@ -120,8 +120,8 @@ public class CoupleRecapValidatorTest extends WebTest {
 		});
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				tiersService.changeHabitantenNH(pp);
 				addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
@@ -165,7 +165,7 @@ public class CoupleRecapValidatorTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique tiers1 = addNonHabitant("Alfred", "Dutuyau", date(1977, 3, 3), Sexe.MASCULIN);
 				final PersonnePhysique tiers2 = addNonHabitant("Georgette", "Dutuyau", date(1977, 3, 3), Sexe.FEMININ);
@@ -210,7 +210,7 @@ public class CoupleRecapValidatorTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique tiers1 = addNonHabitant("Alfred", "Dutuyau", date(1977, 3, 3), Sexe.MASCULIN);
 				final PersonnePhysique tiers2 = addNonHabitant("Georgette", "Dutuyau", date(1977, 3, 3), Sexe.FEMININ);

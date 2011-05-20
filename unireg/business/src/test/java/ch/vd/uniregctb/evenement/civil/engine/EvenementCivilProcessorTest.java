@@ -100,7 +100,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -122,7 +122,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -147,7 +147,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -169,7 +169,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -196,7 +196,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// Lancement du traitement des événements
 		evenementCivilProcessor.traiteEvenementCivil(9002L, true);
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -219,7 +219,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -241,7 +241,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -262,7 +262,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		final long noInd2 = 89123L;
 		final long noInd1 = 78912L;
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique hab1 = new PersonnePhysique(true);
@@ -280,7 +280,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -344,7 +344,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -365,7 +365,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		final long noInd1 = 78912L;
 		final long noInd2 = 89123L;
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique hab = new PersonnePhysique(true);
@@ -379,7 +379,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -409,7 +409,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		traiteEvenements();
 
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				List<EvenementCivilExterne> list = evenementCivilExterneDAO.getAll();
@@ -445,7 +445,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
@@ -487,7 +487,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9000L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 24), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
 		saveEvenement(9001L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 23), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementCivilExterne> list = evenementCivilExterneDAO.getAll();
 				assertNotNull(list);
@@ -504,7 +504,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		evenementCivilProcessor.traiteEvenementCivil(9002L, true);
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementCivilExterne> list = evenementCivilExterneDAO.getAll();
 				assertNotNull(list);
@@ -533,7 +533,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, final Long indSec, final int ofs, final EtatEvenementCivil etat) throws Exception {
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				EvenementCivilExterne evt = new EvenementCivilExterne();
 				evt.setId(id);
@@ -605,7 +605,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		final long noIndividu = 34567; // Sophie Dupuis
 
 		// Crée un habitant
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique habitant = new PersonnePhysique(true);
@@ -659,7 +659,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique mme = addHabitant(noIndividuMadame);
@@ -692,7 +692,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		traiteEvenements();
 
 		// vérification
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -741,7 +741,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			}
 		});
 
-		final Long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final Long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividuMonsieur);
 				return pp.getNumero();
@@ -750,17 +750,16 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		assertNotNull(ppId);
 
 		// création et traitement d'un événement civil qui lève une exception (= suppression d'individu qui doit être traitée manuellement)
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				EvenementCivilExterne evt = new EvenementCivilExterne();
+		doInNewTransactionAndSession(new TransactionCallback<EvenementCivilExterne>() {
+			public EvenementCivilExterne doInTransaction(TransactionStatus status) {
+				final EvenementCivilExterne evt = new EvenementCivilExterne();
 				evt.setId(evtId);
 				evt.setType(TypeEvenementCivil.SUP_INDIVIDU);
 				evt.setDateEvenement(date(2011, 1, 1));
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setNumeroIndividuPrincipal(noIndividuMonsieur);
 				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
-				evt = evenementCivilExterneDAO.save(evt);
-				return evt;
+				return evenementCivilExterneDAO.save(evt);
 			}
 		});
 		traiteEvenements();
@@ -769,7 +768,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		//  - l'événement est en erreur
 		//  - que l'événement civil a été correctement associé avec son individu
 		//  - que le message d'erreur est bien renseigné
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

@@ -48,17 +48,16 @@ public class MappingThread extends Thread {
 		this.callback = callback;
 	}
 
-	@SuppressWarnings({"unchecked"})
 	@Override
 	public void run() {
 
 		TransactionTemplate template = new TransactionTemplate(context.transactionManager);
 		template.setReadOnly(true); // on ne veut pas modifier la base
 
-		template.execute(new TransactionCallback() {
+		template.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut vraiment pas modifier la base
-				return context.hibernateTemplate.execute(new HibernateCallback() {
+				return context.hibernateTemplate.execute(new HibernateCallback<Object>() {
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 						session.setFlushMode(FlushMode.MANUAL); // on ne veut vraiment pas modifier la base
 						mapTiers();

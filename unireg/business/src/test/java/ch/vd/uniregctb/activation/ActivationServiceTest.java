@@ -67,15 +67,15 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testDesactiveTiersSansForActif() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Paco", "Lephantaume", date(1978, 3, 13), Sexe.MASCULIN);
 				return pp.getNumero();
 			}
 		});
 
 		// désactivation du tiers
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersService.getTiers(ppId);
 				Assert.assertNotNull(tiers);
@@ -94,7 +94,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// test des valeurs après désactivation (= tiers complètement annulé !)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersService.getTiers(ppId);
 				Assert.assertNotNull(tiers);
@@ -110,8 +110,8 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testReactiveTiersCompletementAnnule() throws Exception {
 
 		// mise en place du tiers annulé
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Nick", "Nearly-Headless", date(1978, 3, 13), Sexe.MASCULIN);
 				pp.setAnnule(true);
 				return pp.getNumero();
@@ -119,7 +119,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// réactivation du tiers annulé
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersService.getTiers(ppId);
 				Assert.assertNotNull(tiers);
@@ -138,7 +138,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// test des valeurs après ré-activation
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersService.getTiers(ppId);
 				Assert.assertNotNull(tiers);
@@ -155,8 +155,8 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testDesactiveTiers() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Momo", "Bizuth", date(1980, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(1998, 5, 12), MotifFor.MAJORITE, date(2000, 12, 3), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
 				addForPrincipal(pp, date(2000, 12, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -173,7 +173,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateDesactivation = date(2009, 12, 31);
 
 		// désactivation
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					final Tiers tiers = tiersService.getTiers(ppId);
@@ -189,7 +189,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// tests des valeurs après désactivation
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final Tiers tiers = tiersService.getTiers(ppId);
@@ -299,7 +299,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique aRemplacer = addNonHabitant("Pénéloppe", "Solette", date(1967, 5, 2), Sexe.FEMININ);
@@ -317,7 +317,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateRemplacement = RegDate.get(2010, 1, 1);
 
 		// remplacement de l'un par l'autre
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				try {
@@ -336,7 +336,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// tests
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final Tiers tiersRemplace = tiersService.getTiers(ids.remplaceId);
@@ -364,8 +364,8 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateDesactivation = date(2009, 12, 31);
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Fée", "Nixe", date(1956, 3, 12), Sexe.FEMININ);
 				addForPrincipal(pp, date(2000, 4, 1), MotifFor.ARRIVEE_HS, dateDesactivation, MotifFor.ANNULATION, MockCommune.Bussigny);
 				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -377,7 +377,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateReactivation = dateDesactivation.getOneDayAfter().addMonths(2);
 
 		// réactivation
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					final Tiers tiers = tiersService.getTiers(ppId);
@@ -395,7 +395,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// tests
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final Tiers tiers = tiersService.getTiers(ppId);
@@ -441,7 +441,7 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testAnnulationInterditePourCauseDeDeclarationUlterieure() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
@@ -457,7 +457,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// on ne doit pas pouvoir l'annuler avant le 31.12.2008
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				try {
@@ -472,7 +472,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// mais on doit pouvoir l'annuler après le 31.12.2008 (y compris le jour même)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final RegDate dateDesactivation = date(2008, 12, 31);
@@ -498,7 +498,7 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testAnnulationAutoriseeAvecDeclarationUlterieureAnnulee() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
@@ -514,7 +514,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// on ne doit pas pouvoir l'annuler avant le 31.12.2008
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				try {
@@ -529,7 +529,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// mais on doit pouvoir l'annuler si la DI 2008 est annulée
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final List<Declaration> declarations2008 = pp.getDeclarationsForPeriode(2008);
@@ -567,7 +567,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place (on essaie avec un for encore ouvert, et un autre déjà refermé)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique achile = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
@@ -585,7 +585,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// on ne doit pouvoir annuler aucun des deux tiers avant le 31.12.2008
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique achille = (PersonnePhysique) tiersService.getTiers(ids.achille);
@@ -611,7 +611,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// mais on doit pouvoir l'annuler si le for 2009 est annulé
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// d'abord Achille
@@ -673,7 +673,7 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testAnnulationInterditePourCauseDeForOuvertAvantEtFermeApresDateAnnulation() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
@@ -682,7 +682,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// on ne doit pas pouvoir l'annuler avant le 31.12.2008
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				try {
@@ -697,7 +697,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// mais on doit pouvoir l'annuler après le 31.12.2008 (y compris le jour même)
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final RegDate dateDesactivation = date(2008, 12, 31);
@@ -724,7 +724,7 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testAnnulationAutoriseeSiForOuvertAvantDateAnnulationEtPasEncoreFerme() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -733,7 +733,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// on doit pouvoir l'annuler après le 2007.01.01
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final RegDate dateDesactivation = date(2008, 12, 31);
@@ -760,7 +760,7 @@ public class ActivationServiceTest extends BusinessTest {
 	public void testAnnulationAutoriseeSiForOuvertExactementDateAnnulationEtPasEncoreFerme() throws Exception {
 
 		// mise en place
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -769,7 +769,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// on doit pouvoir l'annuler dès le 01.01.2007
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final RegDate dateDesactivation = date(2007, 1, 1);
@@ -817,8 +817,8 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateDesactivation = date(2009, 2, 22);
 
 		// mise en place
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				addForPrincipal(pp, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(1990, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -831,7 +831,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// vérification de l'état du tiers
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				Assert.assertFalse(pp.isAnnule());
@@ -884,7 +884,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// réactivation et tests
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 
 				final RegDate dateReactivation = dateDesactivation.addMonths(6);
@@ -967,7 +967,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateDesactivation = date(2009, 10, 31);
 
 		// mise en place
-		final long dpiId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long dpiId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
@@ -983,7 +983,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// désactivation
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
@@ -993,7 +993,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// vérification de l'état des fors et des rapports de travail
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
@@ -1049,7 +1049,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateDesactivation = date(2009, 10, 31);
 
 		// mise en place
-		final long dpiId = (Long) doInNewTransactionAndSession(new TxCallback() {
+		final long dpiId = (Long) doInNewTransactionAndSession(new TxCallback<Object>() {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
@@ -1065,7 +1065,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// désactivation
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
@@ -1075,7 +1075,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// vérification de l'état des fors et des rapports de travail
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
@@ -1124,7 +1124,7 @@ public class ActivationServiceTest extends BusinessTest {
 		final RegDate dateReactivation = date(2010, 5, 1);
 
 		// réactivation du tiers
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
@@ -1134,7 +1134,7 @@ public class ActivationServiceTest extends BusinessTest {
 		});
 
 		// vérification des fors et rapports de travail après ré-activation
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);

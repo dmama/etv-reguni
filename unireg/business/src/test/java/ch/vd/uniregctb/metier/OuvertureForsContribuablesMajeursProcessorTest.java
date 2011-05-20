@@ -181,9 +181,9 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			}
 		});
 
-			final OuvertureForsResults rapport = (OuvertureForsResults) doInTransaction(new TxCallback() {
+		final OuvertureForsResults rapport = doInTransaction(new TxCallback<OuvertureForsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public OuvertureForsResults execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique h = addHabitant(noIndividu);
 				h.setOfficeImpotId(18);
 				ids.jean = h.getNumero();

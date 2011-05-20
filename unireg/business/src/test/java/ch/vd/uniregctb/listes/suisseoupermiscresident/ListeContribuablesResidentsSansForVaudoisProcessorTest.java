@@ -53,7 +53,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				return pp.getNumero();
@@ -91,7 +91,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				return pp.getNumero();
@@ -130,7 +130,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				return pp.getNumero();
@@ -168,7 +168,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				return pp.getNumero();
@@ -203,7 +203,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2010, 12, 12), MotifFor.INDETERMINE, MockCommune.Bern);
@@ -239,7 +239,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
@@ -270,7 +270,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Ronald", "Weasley", null, Sexe.MASCULIN);
 				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
@@ -305,7 +305,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Ronald", "Weasley", null, Sexe.MASCULIN);
 				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);

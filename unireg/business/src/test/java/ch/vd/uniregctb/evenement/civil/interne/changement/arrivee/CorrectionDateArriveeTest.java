@@ -75,7 +75,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMineur() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_MINEUR);
 				return pp.getNumero();
@@ -86,7 +86,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final Set<ForFiscal> ff = pp.getForsFiscaux();
@@ -102,7 +102,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMajeurSansFor() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_MAJEUR_SANS_FOR);
 				return pp.getNumero();
@@ -118,7 +118,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testHorsSuisse() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_HS);
 				addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.DEMENAGEMENT_VD, MockPays.France);
@@ -135,7 +135,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMauvaiseCommuneAnnonce() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_MAUVAISE_COMMUNE);
 				addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
@@ -152,7 +152,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMauvaisMotifOuverture() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_PAS_ARRIVEE);
 				addForPrincipal(pp, DATE_EVT.addYears(-4), MotifFor.ARRIVEE_HC, DATE_EVT.addDays(9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Cossonay);
@@ -172,7 +172,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testChangementAnnee() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_PAS_ARRIVEE);
 				addForPrincipal(pp, DATE_EVT.addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
@@ -189,7 +189,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testDejaBonneDate() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_DEJA_BONNE_DATE);
 				addForPrincipal(pp, DATE_EVT, MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
@@ -201,7 +201,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final Set<ForFiscal> ff = pp.getForsFiscaux();
@@ -217,7 +217,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testCasSimpleCelibataire() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_CELIBATAIRE);
 				addForPrincipal(pp, DATE_EVT.addDays(-10), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
@@ -229,7 +229,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final List<ForFiscal> ff = pp.getForsFiscauxSorted();
@@ -263,7 +263,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		final Ids ids = new Ids();
 
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(NO_IND_MARIE);
 				final PersonnePhysique mme = addNonHabitant("Célestine", "Dupont", date(1985, 6, 12), Sexe.FEMININ);
@@ -281,7 +281,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.menage);
 				final List<ForFiscal> ff = mc.getForsFiscauxSorted();
@@ -309,7 +309,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testModificationForPrecedent() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(NO_IND_CELIBATAIRE);
 				addForPrincipal(pp, DATE_EVT.addYears(-4), MotifFor.ARRIVEE_HC, DATE_EVT.addDays(-11), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
@@ -322,7 +322,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		assertSansErreurNiWarning(evt);
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final List<ForFiscal> ff = pp.getForsFiscauxSorted();

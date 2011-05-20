@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -224,7 +225,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	public String[] getTableNamesFromDatabase() {
 
 		Dialect dialect = Dialect.getDialect(localSessionFactoryBean.getConfiguration().getProperties());
@@ -235,16 +235,16 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final JdbcTemplate template = new JdbcTemplate(dataSource);
 			template.setIgnoreWarnings(false);
 
-			TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
-			List<ListOrderedMap> rs = (List<ListOrderedMap>) tmpl.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
+			final TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
+			final List<Map<String, Object>> rs = tmpl.execute(new TransactionCallback<List<Map<String, Object>>>() {
+				public List<Map<String, Object>> doInTransaction(TransactionStatus status) {
 					return template.queryForList(sql);
 				}
 			});
 
 			List<String> list = new ArrayList<String>();
-			for (ListOrderedMap map : rs) {
-				String name = (String) map.getValue(0);
+			for (Map<String, Object> map : rs) {
+				final String name = (String) map.values().iterator().next();
 				list.add(name);
 			}
 			return list.toArray(new String[list.size()]);

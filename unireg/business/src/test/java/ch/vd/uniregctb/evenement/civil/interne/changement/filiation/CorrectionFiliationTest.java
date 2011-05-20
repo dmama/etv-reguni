@@ -87,9 +87,9 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			});
 
 			// Crée le contribuable correspondant
-			final Long jeanId = (Long) doInNewTransaction(new TxCallback() {
+			final Long jeanId = doInNewTransaction(new TxCallback<Long>() {
 				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+				public Long execute(TransactionStatus status) throws Exception {
 					final PersonnePhysique jean = addHabitant(jeanNoInd);
 					addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
 					return jean.getNumero();

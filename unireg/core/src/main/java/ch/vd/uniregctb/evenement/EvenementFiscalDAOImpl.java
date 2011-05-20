@@ -30,9 +30,9 @@ public class EvenementFiscalDAOImpl extends GenericDAOImpl<EvenementFiscal, Long
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<EvenementFiscal> getEvenementFiscals(final Tiers tiers)  {
-		return (Collection<EvenementFiscal>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Criteria criteria = session.createCriteria(EvenementFiscal.class);
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Collection<EvenementFiscal>>() {
+			public Collection<EvenementFiscal> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Criteria criteria = session.createCriteria(EvenementFiscal.class);
 				criteria.add(Restrictions.eq("tiers", tiers));
 				return criteria.list();
 			}

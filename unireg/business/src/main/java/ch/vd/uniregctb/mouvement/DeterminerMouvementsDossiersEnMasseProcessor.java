@@ -362,18 +362,18 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		return ca;
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<Long> getListeIdsContribuablesAvecFors() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final String hql = "SELECT ctb.id FROM Contribuable ctb WHERE ctb.annulationDate IS NULL AND EXISTS (SELECT ff.id FROM ForFiscal ff WHERE ff.tiers=ctb AND ff.annulationDate IS NULL) ORDER BY ctb.id ASC";
 						final Query query = session.createQuery(hql);
+						//noinspection unchecked
 						return query.list();
 					}
 				});

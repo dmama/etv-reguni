@@ -77,7 +77,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				" WHERE MESSAGE LIKE 'Arrivée d''un message JMS ignoré (%' AND LOG_DATE > TO_DATE(:debutActivite, 'YYYYMMDD')" +
 				" GROUP BY REPLACE(SUBSTR(MESSAGE, INSTR(MESSAGE, 'code ') + 5), ')')";
 
-		return (Map<Integer, Integer>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<Integer, Integer>>() {
 			public Map<Integer, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query query = session.createSQLQuery(sql);
@@ -277,7 +277,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	@SuppressWarnings({"unchecked"})
 	private <T> List<T> executeSelect(final String sql, final SelectCallback<T> callback) {
-		return (List<T>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<T>>() {
 
 			public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
@@ -301,7 +301,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	@SuppressWarnings({"unchecked"})
 	private <T extends Enum<T>> Map<T, Integer> getNombreParModalite(final Class<T> enumClass, final String sql, final Map<String, Object> sqlParameters) {
-		return (Map<T, Integer>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<T, Integer>>() {
 			public Map<T, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
 				if (sqlParameters != null && sqlParameters.size() > 0) {

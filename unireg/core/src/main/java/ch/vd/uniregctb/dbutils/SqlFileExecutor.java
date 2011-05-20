@@ -25,7 +25,7 @@ public class SqlFileExecutor {
 
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
         tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-        tmpl.execute(new TransactionCallback() {
+        tmpl.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
 

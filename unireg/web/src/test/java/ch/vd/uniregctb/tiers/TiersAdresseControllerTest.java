@@ -226,7 +226,7 @@ public class TiersAdresseControllerTest extends WebTest {
 		final Ids ids = new Ids();
 
 		// Crée un pupille et sont tuteur, sans autre lien
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -254,7 +254,7 @@ public class TiersAdresseControllerTest extends WebTest {
 		controller.handleRequest(request, response);
 
 		// On vérifie que l'adresse autre tiers a été créée correctement en base
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.pupille);

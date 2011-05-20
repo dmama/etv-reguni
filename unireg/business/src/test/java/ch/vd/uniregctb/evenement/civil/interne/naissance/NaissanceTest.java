@@ -164,7 +164,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		final Ids ids = new Ids();
 
 		// On crée le père et la mère
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -176,7 +176,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// On envoie l'événement de naissance
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu fils = serviceCivil.getIndividu(indFils, 2010);
@@ -206,7 +206,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		// On vérifie que il y a eu :
 		// - un événement de changement de situation de famille
 		// - un événement de naissane
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();

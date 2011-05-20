@@ -59,8 +59,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// Récupère les ids des événements à traiter
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 				return evenementCivilExterneDAO.getEvenementCivilsNonTraites();
 			}
 		});
@@ -325,8 +325,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// 1 - Récupération des ids des événements civils en erreur de l'individu
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 				return evenementCivilExterneDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
 			}
 		});
@@ -362,8 +362,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 				final TransactionTemplate template = new TransactionTemplate(transactionManager);
 				template.setReadOnly(true);
-				final Long numIndividu = (Long) template.execute(new TransactionCallback() {
-					public Object doInTransaction(TransactionStatus status) {
+				final Long numIndividu = template.execute(new TransactionCallback<Long>() {
+					public Long doInTransaction(TransactionStatus status) {
 						return evenementCivilExterneDAO.get(id).getNumeroIndividuPrincipal();
 					}
 				});

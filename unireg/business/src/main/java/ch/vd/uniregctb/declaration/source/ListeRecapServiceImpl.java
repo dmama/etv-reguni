@@ -388,8 +388,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	private void createAllPeriodicites() {
 
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final List<Long> ids = (List<Long>) t.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Long> ids = t.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 				return tiersDAO.getListeDebiteursSansPeriodicites();
 			}
 		});

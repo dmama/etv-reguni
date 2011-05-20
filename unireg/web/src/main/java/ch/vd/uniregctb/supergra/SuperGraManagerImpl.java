@@ -218,10 +218,10 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 * @param action un callback permettant d'exécuter des actions à l'intérieur de la session/transaction.
 	 * @return la valeur retournée par le callback.
 	 */
-	private Object simulate(final HibernateCallback action) {
+	private <T> T simulate(final HibernateCallback<T> action) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<T>() {
+			public T doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly();
 				return hibernateTemplate.execute(action);
 			}
@@ -234,14 +234,14 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 * @param action un callback permettant d'exécuter des actions à l'intérieur de la session/transaction.
 	 * @return la valeur retournée par le callback.
 	 */
-	private Object execute(final HibernateCallback action) {
+	private <T> T execute(final HibernateCallback<T> action) {
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		AuthenticationHelper.pushPrincipal(String.format("%s-SuperGra", principal));
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			return template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
+			return template.execute(new TransactionCallback<T>() {
+				public T doInTransaction(TransactionStatus status) {
 					return hibernateTemplate.execute(action);
 				}
 			});
@@ -253,7 +253,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	public void fillView(final EntityKey key, final EntityView view, final SuperGraSession session) {
 
-		simulate(new HibernateCallback() {
+		simulate(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session s) throws HibernateException, SQLException {
 
 				// Reconstruit l'état en cours de modification des entités
@@ -395,10 +395,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		return attributeCustomBuilders.get(key);
 	}
 
-	@SuppressWarnings({"unchecked"})
 	public void fillView(final EntityKey key, final String collName, final CollectionView view, final SuperGraSession session) {
 
-		simulate(new HibernateCallback() {
+		simulate(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session s) throws HibernateException, SQLException {
 
 				// Reconstruit l'état en cours de modification des entités
@@ -587,8 +586,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	public Long nextId(final Class<? extends HibernateEntity> clazz) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return (Long) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		return template.execute(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				try {
 					final MetaEntity m = MetaEntity.determine(clazz);
 					final Sequence sequence = m.getSequence();
@@ -605,7 +604,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	}
 
 	public void commitDeltas(final List<Delta> deltas) {
-		execute(new HibernateCallback() {
+		execute(new HibernateCallback<Object>() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				// Reconstruit l'état en cours de modification des entités
 				final SuperGraContext context = new SuperGraContext(session, true, validationInterceptor);

@@ -55,9 +55,9 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 
 		final int anneeReference = 2010;
-		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				dpi.setSansListeRecapitulative(false);
 
@@ -69,11 +69,11 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 			}
 		});
 
-			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, dpiId);
-			Assert.assertNotNull(dpi);
-		final EnvoiLRsResults envoiLRsResults = (EnvoiLRsResults) doInNewTransaction(new TxCallback() {
+		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, dpiId);
+		Assert.assertNotNull(dpi);
+		final EnvoiLRsResults envoiLRsResults = doInNewTransaction(new TxCallback<EnvoiLRsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiLRsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(date(2010, 12, 31), null);
 			}
 		});
@@ -88,9 +88,9 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 
 		final int anneeReference = 2010;
-		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				dpi.setSansListeRecapitulative(false);
 
@@ -102,11 +102,11 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 			}
 		});
 
-			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, dpiId);
-			Assert.assertNotNull(dpi);
-		final EnvoiLRsResults envoiLRsResults = (EnvoiLRsResults) doInNewTransaction(new TxCallback() {
+		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, dpiId);
+		Assert.assertNotNull(dpi);
+		final EnvoiLRsResults envoiLRsResults = doInNewTransaction(new TxCallback<EnvoiLRsResults>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public EnvoiLRsResults execute(TransactionStatus status) throws Exception {
 				return processor.run(date(2010, 12, 31), null);
 			}
 		});

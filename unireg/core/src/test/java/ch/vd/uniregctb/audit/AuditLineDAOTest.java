@@ -40,7 +40,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 		Audit.info("bli");
 		resetAuthentication();
 
-		doInTransaction(new TransactionCallback() {
+		doInTransaction(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				List<AuditLine> list = auditLineDAO.findLastCountFromID(0, 2);
 				assertEquals(2, list.size());
@@ -52,7 +52,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	@Test
 	public void testLogAuditLineInNewTx() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -96,7 +96,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 
 		final int ALL_LINES = 12345; // big enough
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -148,7 +148,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 		final int ALL_IDS = 0;
 		final int ALL_LINES = 12345; // big enough
 
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 
 			public Object doInTransaction(TransactionStatus status) {
 

@@ -102,7 +102,7 @@ public class TacheServiceImpl implements TacheService {
 		this.parametres = parametres;
 	}
 
-	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
+	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	public void updateStats() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -111,8 +111,8 @@ public class TacheServiceImpl implements TacheService {
 		final long start = System.nanoTime();
 
 		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-		final Map<Integer, TacheStats> stats = (Map<Integer, TacheStats>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final Map<Integer, TacheStats> stats = template.execute(new TransactionCallback<Map<Integer, TacheStats>>() {
+			public Map<Integer, TacheStats> doInTransaction(TransactionStatus status) {
 				return tacheDAO.getTacheStats();
 			}
 		});
@@ -916,7 +916,7 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
-	public ListeTachesEnIsntanceParOID produireListeTachesEnIstanceParOID(RegDate dateTraitement,StatusManager status) throws Exception {
+	public ListeTachesEnInstanceParOID produireListeTachesEnInstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception {
 		final ProduireListeTachesEnInstanceParOIDProcessor processor = new ProduireListeTachesEnInstanceParOIDProcessor(hibernateTemplate, serviceInfra, transactionManager);
 		return processor.run(dateTraitement, status);
 	}

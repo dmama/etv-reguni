@@ -34,7 +34,7 @@ public class PeriodeFiscaleServiceSpringTest extends BusinessTest {
 	public void testGetPeriodeFiscaleByYearDoesntFlushSession() throws Exception {
 
 		// Crée la période fiscale 2008 dans sa propre transaction pour initialiser la base de données
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PeriodeFiscale periode = new PeriodeFiscale();

@@ -53,7 +53,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testOfficeImpotContribuableSansFor() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = (Long) doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -73,13 +73,13 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testOfficeImpotContribuableSansForAvecNumeroOID() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = (Long) doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
-				nh.setOfficeImpotId(new Integer(8));
+				nh.setOfficeImpotId(8);
 
 				nh = (PersonnePhysique) tiersDAO.save(nh);
 				return nh.getNumero();
@@ -95,9 +95,9 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testOfficeImpotContribuableAvecForPrincipal() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
@@ -127,9 +127,9 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testOfficeImpotContribuableAvecForPrincipalVariante() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
@@ -150,9 +150,9 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testOfficeImpotContribuableAvecForPrincipalFerme() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback() {
+		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
@@ -183,9 +183,9 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	public void testOfficeImpotContribuableAjoutForPrincipal() throws Exception {
 
 		// Crée un contribuable sans for
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
@@ -195,7 +195,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 		// L'oid doit être null
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Tiers nh = tiersDAO.get(id);
@@ -206,7 +206,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// Recharge le contribuable de la base et ajoute le for
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -229,7 +229,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 		// L'oid doit maintenant être renseigné
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Tiers nh = tiersDAO.get(id);
@@ -247,9 +247,9 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	public void testOfficeImpotContribuableAnnulationForPrincipal() throws Exception {
 
 		// Crée un contribuable né à Lausanne et ayant déménagé récemment à Orbe
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique robin = addNonHabitant("Robin", "DesBois", date(1965, 5, 23), Sexe.MASCULIN);
 				addForPrincipal(robin, date(1985,5,23), MotifFor.MAJORITE, date(2002,12,31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				addForPrincipal(robin, date(2003,1,1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
@@ -258,7 +258,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// L'oid doit être sur Orbe
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
@@ -271,7 +271,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// Annule le dernier for
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -287,7 +287,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// L'oid doit maintenant être sur Lausanne
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
@@ -312,7 +312,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée les OIDs qui vont bien
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ids.lausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
@@ -322,7 +322,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// Crée un contribuable à Lausanne avec une tâche
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -347,7 +347,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// L'oid doit être celui de Lausanne
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Tiers nh = tiersDAO.get(ids.ctb);
@@ -359,7 +359,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 
 
 		// Déménagement du contribuable à Bex
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -386,7 +386,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// L'oid doit être celui d'Aigle
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Tiers nh = tiersDAO.get(ids.ctb);
@@ -411,7 +411,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée les OIDs qui vont bien
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ids.lausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
@@ -423,7 +423,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		});
 
 		// Crée un contribuable à Lausanne avec une tâche
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -461,7 +461,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 
 
 		// Déménagement du contribuable à Bex
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -492,7 +492,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	private void assertCaTache(final Long caId, final Long tacheId) throws Exception {
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final TacheNouveauDossier tache = (TacheNouveauDossier) hibernateTemplate.get(TacheNouveauDossier.class, tacheId);

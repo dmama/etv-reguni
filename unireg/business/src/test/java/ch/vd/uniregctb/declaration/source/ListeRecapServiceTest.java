@@ -60,9 +60,9 @@ public class ListeRecapServiceTest extends BusinessTest {
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites1() throws Exception {
 
-		final long dpiId = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2008, 1, 1), date(2008, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
@@ -73,7 +73,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
@@ -91,9 +91,9 @@ public class ListeRecapServiceTest extends BusinessTest {
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites2() throws Exception {
 
-		final long dpiId2 = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId2 = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
@@ -104,7 +104,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);
@@ -122,9 +122,9 @@ public class ListeRecapServiceTest extends BusinessTest {
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites3() throws Exception {
 
-		final long dpiId3 = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId3 = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
@@ -141,7 +141,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId3);
@@ -159,9 +159,9 @@ public class ListeRecapServiceTest extends BusinessTest {
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites4() throws Exception {
 
-		final long dpiId4 = (Long) doInNewTransaction(new TxCallback() {
+		final long dpiId4 = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.T1, date(2009, 1, 1), date(2009, 12, 31));
@@ -172,7 +172,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId4);
@@ -255,8 +255,8 @@ public class ListeRecapServiceTest extends BusinessTest {
 		final RegDate dateDeuxiemeChangement = date(2010, 1, 1);
 
 		// initialisation
-		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur();
 				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
 				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateDebut, datePremierChangement.getOneDayBefore()));
@@ -268,7 +268,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 		});
 
 		// tests
-		doInNewTransactionAndSession(new TransactionCallback() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);

@@ -59,7 +59,7 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addHabitant(noTiersRepresentant, noIndRepresentant);
@@ -117,7 +117,7 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addHabitant(noTiersRepresentant, noIndRepresentant);
@@ -173,7 +173,7 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addHabitant(noTiersRepresentant, noIndRepresentant);
@@ -197,7 +197,7 @@ public class RapportEditManagerTest extends WebTest {
 	}
 
 	private void assertUneRepresentationConventionnelle(final boolean executionForcee, final long noTiersRepresente) throws Exception {
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique represente = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, noTiersRepresente);

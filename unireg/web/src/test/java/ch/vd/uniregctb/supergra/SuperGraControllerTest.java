@@ -51,7 +51,7 @@ public class SuperGraControllerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique olivier = addNonHabitant("Olivier", "RockFeller", date(1950, 1, 1), Sexe.MASCULIN);
@@ -171,7 +171,7 @@ public class SuperGraControllerTest extends WebTest {
 		}
 
 		// On s'assure que le rapport d'appartenance ménage existe bien en base de données
-		doInNewTransactionAndSession(new TxCallback() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique olivier = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.olivier);

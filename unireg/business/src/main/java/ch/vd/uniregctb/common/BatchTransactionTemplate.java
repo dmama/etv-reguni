@@ -265,7 +265,6 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 *
 	 * @return <code>true</code> si le processus s'est bien déroulé et que la transaction est committée; <code>false</code> si la transaction a été rollée-back.
 	 */
-	@SuppressWarnings({"unchecked"})
 	private ExecuteInTransactionResult executeInTransaction(final BatchCallback<E, R> action, final List<E> batch, boolean willRetry, final R rapportFinal) {
 
 		if (LOGGER.isDebugEnabled()) {
@@ -284,7 +283,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		template.setReadOnly(readonly);
 
 		try {
-			r.processNextBatch = (Boolean) template.execute(new TransactionCallback() {
+			r.processNextBatch = template.execute(new TransactionCallback<Boolean>() {
 				public Boolean doInTransaction(TransactionStatus status) {
 					action.afterTransactionStart(status);
 					return executeWithNewSession(batch, action, rapport);
@@ -298,7 +297,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 				// le batch ne va pas être rejoué -> on ajoute l'exception
 				// on re-crée une transaction ici au cas où on veut étoffer un peu le message d'erreur
 				try {
-					template.execute(new TransactionCallback() {
+					template.execute(new TransactionCallback<Object>() {
 						public Object doInTransaction(TransactionStatus status) {
 							addErrorExceptionInNewSession(rapportFinal, batch.get(0), e);
 							return null;
@@ -336,7 +335,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	}
 
 	private void addErrorExceptionInNewSession(final R rapportFinal, final E elt, final Exception e) {
-		hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
 			@SuppressWarnings({"unchecked"})
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				rapportFinal.addErrorException(elt, e);
@@ -349,7 +348,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 * Exécute un batch dans une nouvelle session
 	 */
 	private Boolean executeWithNewSession(final List<E> batch, final BatchCallback<E, R> action, final R rapport) {
-		return (Boolean) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Boolean>() {
 			public Boolean doInHibernate(Session session) {
 				return BatchTransactionTemplate.this.doInTransaction(action, batch, rapport);
 			}

@@ -121,7 +121,7 @@ public class TiersVisuManagerTest extends WebTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitantZotan=	addHabitant(185386);

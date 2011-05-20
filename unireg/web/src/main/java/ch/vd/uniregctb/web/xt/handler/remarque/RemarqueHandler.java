@@ -40,7 +40,7 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 	private TiersDAO tiersDAO;
 	private RemarqueDAO remarqueDAO;
 
-	@SuppressWarnings({"UnusedDeclaration", "unchecked"})
+	@SuppressWarnings({"UnusedDeclaration"})
 	public AjaxResponse refreshRemarques(AjaxActionEvent event) {
 
 		final Map<String, String> parameters = event.getParameters();
@@ -50,8 +50,8 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Component> components = (List<Component>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Component> components = template.execute(new TransactionCallback<List<Component>>() {
+			public List<Component> doInTransaction(TransactionStatus status) {
 
 				final List<Component> list = new ArrayList<Component>();
 
@@ -123,7 +123,7 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 		return table;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration", "unchecked"})
+	@SuppressWarnings({"UnusedDeclaration"})
 	public AjaxResponse addRemarque(AjaxActionEvent event) {
 
 		final Map<String, String> parameters = event.getParameters();
@@ -131,8 +131,8 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Component> components = (List<Component>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Component> components = template.execute(new TransactionCallback<List<Component>>() {
+			public List<Component> doInTransaction(TransactionStatus status) {
 
 				final List<Component> list = new ArrayList<Component>();
 
@@ -151,7 +151,7 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 		return response;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration", "unchecked"})
+	@SuppressWarnings({"UnusedDeclaration"})
 	public AjaxResponse saveRemarque(AjaxSubmitEvent event) {
 
 		final Map<String, String> parameters = event.getParameters();
@@ -162,8 +162,8 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Component> components = (List<Component>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		final List<Component> components = template.execute(new TransactionCallback<List<Component>>() {
+			public List<Component> doInTransaction(TransactionStatus status) {
 
 				if (StringUtils.isNotBlank(texte)) {
 					final Tiers tiers = tiersDAO.get(tiersId);

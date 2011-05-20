@@ -146,18 +146,18 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 			+ "ORDER BY "// --------------------------------------------------------------------------------------
 			+ "    sit.id";
 
-	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	protected List<Long> retrieveSituationsDoubleGain(final RegDate dateValidite) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
-						Query query = session.createQuery(QUERY_STRING);
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query query = session.createQuery(QUERY_STRING);
 						query.setParameter("date", dateValidite.index());
+						//noinspection unchecked
 						return query.list();
 					}
 				});

@@ -71,9 +71,9 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 
 		final RegDate dateTraitement = date(2007, 1, 1);
 
-		final Long id = (Long) doInNewTransaction(new TxCallback() {
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
 				final MenageCommun menage = ensemble.getMenage();
@@ -113,7 +113,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -170,7 +170,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	@Test
 	public void testRetrieveSituationsDoubleGainDiversesSituations() throws Exception {
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
@@ -213,7 +213,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -273,7 +273,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -294,7 +294,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			final RegDate dateTraitement = date(2010, 1, 1);
 			final ReinitialiserBaremeDoubleGainResults rapport = processor.run(dateTraitement, null);
 
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 
@@ -334,7 +334,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			final RegDate dateTraitement = date(2009, 1, 1);
 			final ReinitialiserBaremeDoubleGainResults rapport = processor.run(dateTraitement, null);
 
-			doInNewTransaction(new TxCallback() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 

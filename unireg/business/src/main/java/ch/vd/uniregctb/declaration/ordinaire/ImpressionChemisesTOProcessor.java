@@ -55,7 +55,6 @@ public class ImpressionChemisesTOProcessor {
 		this.infraService = infraService;
 	}
 
-	@SuppressWarnings("unchecked")
 	public ImpressionChemisesTOResults run(int nombreMax, final Integer noColOid, StatusManager status) {
 
 		// première transaction pour récupérer les identifiants des DI candidates à la chemise TO
@@ -64,9 +63,9 @@ public class ImpressionChemisesTOProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
+				return hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Long>>() {
 					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 						return getIdDesDIPourTO(session);
 					}
