@@ -1053,8 +1053,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
-	public IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status) {
+	public IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage) {
 		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this, identCtbDAO, transactionManager);
-		return processor.run(dateTraitement, nbThreads, status);
+		return processor.run(dateTraitement, nbThreads, status, idMessage);
 	}
 }

@@ -43,12 +43,13 @@ public class IdentifierContribuableProcessor {
 	}
 
 
-	public IdentifierContribuableResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s) {
+	public IdentifierContribuableResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s, Long idMessage) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final IdentifierContribuableResults rapportFinal = new IdentifierContribuableResults(dateTraitement);
 		status.setMessage("Récupération des messages de demande d'identification à traiter...");
-		final List<Long> ids = recupererMessageATraiter();
+
+		final List<Long> ids = recupererMessageATraiter(idMessage);
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, IdentifierContribuableResults>
@@ -118,8 +119,8 @@ public class IdentifierContribuableProcessor {
 	}
 
 
-	private List<Long> recupererMessageATraiter() {
-
+	private List<Long> recupererMessageATraiter(Long idMessage) {
+	   if(idMessage==0L){
 		final String queryMessage =//----------------------------------
 				"select distinct identificationContribuable.id                        " +
 						"from IdentificationContribuable identificationContribuable   " +
@@ -151,5 +152,13 @@ public class IdentifierContribuableProcessor {
 
 		});
 		return ids;
+	}
+
+	else{
+		   final List<Long> ids = new ArrayList<Long>();
+		   ids.add(idMessage);
+		   return ids;
+
+	   }
 	}
 }

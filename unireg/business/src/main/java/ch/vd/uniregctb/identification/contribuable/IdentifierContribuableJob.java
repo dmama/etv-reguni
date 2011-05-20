@@ -11,6 +11,7 @@ import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
+import ch.vd.uniregctb.scheduler.JobParamLong;
 
 public class IdentifierContribuableJob extends JobDefinition {
 
@@ -23,6 +24,8 @@ public class IdentifierContribuableJob extends JobDefinition {
 
 	public static final String NB_THREADS = "NB_THREADS";
 
+	public static final String ID_MESSAGE = "ID_MESSAGE";
+
 	public IdentifierContribuableJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
 
@@ -32,6 +35,13 @@ public class IdentifierContribuableJob extends JobDefinition {
 		param.setMandatory(true);
 		param.setType(new JobParamInteger());
 		addParameterDefinition(param, 4);
+
+		final JobParam paramIdMessage = new JobParam();
+		paramIdMessage.setDescription("Id du message a traiter");
+		paramIdMessage.setName(ID_MESSAGE);
+		paramIdMessage.setMandatory(false);
+		paramIdMessage.setType(new JobParamLong());
+		addParameterDefinition(paramIdMessage, null);
 	}
 
 	public IdentificationContribuableService getIdentificationService() {
@@ -55,10 +65,11 @@ public class IdentifierContribuableJob extends JobDefinition {
 
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final RegDate dateTraitement = getDateTraitement(params);
+		final Long idMessage = getLongValue(params,ID_MESSAGE);
 
 		// Exécution du job dans une transaction.
 		final StatusManager status = getStatusManager();
-		final IdentifierContribuableResults results = identificationService.relancerIdentificationAutomatique(dateTraitement, nbThreads, status);
+		final IdentifierContribuableResults results = identificationService.relancerIdentificationAutomatique(dateTraitement, nbThreads, status, idMessage);
 		final IdentifierContribuableRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);

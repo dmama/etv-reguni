@@ -118,11 +118,13 @@ public interface IdentificationContribuableService {
 
 	/**
 	 * Relance l'identification automatique sur les messages en etat intermediaire: A TRAITER, A EXPERTISER, SUSPENDU
+	 *
 	 * @param dateTraitement
 	 * @param nbThreads
 	 * @param status
+	 * @param idMessage
 	 * @return
 	 */
 
-	IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status);
+	IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage);
 }
