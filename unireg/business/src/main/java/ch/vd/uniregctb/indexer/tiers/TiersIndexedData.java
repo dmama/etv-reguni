@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.indexer.LuceneEngine;
 
@@ -18,6 +21,7 @@ public class TiersIndexedData implements Serializable {
 	private final String tiersType;
 	private final String numero;
 	private final String dateNaissance;
+	private final RegDate regDateNaissance;
 	private final String dateDeces;
 	private final String nom1;
 	private final String nom2;
@@ -41,6 +45,7 @@ public class TiersIndexedData implements Serializable {
 		tiersType = getDocValue(LuceneEngine.F_DOCSUBTYPE, doc);
 		numero = getDocValue(LuceneEngine.F_ENTITYID, doc);
 		dateNaissance = getDocValue(TiersIndexableData.DATE_NAISSANCE, doc);
+		regDateNaissance = indexStringToDateNaissance(dateNaissance, tiersType);
 		dateDeces = getDocValue(TiersIndexableData.DATE_DECES, doc);
 		nom1 = getDocValue(TiersIndexableData.NOM1, doc);
 		nom2 = getDocValue(TiersIndexableData.NOM2, doc);
@@ -75,6 +80,20 @@ public class TiersIndexedData implements Serializable {
 		}
 	}
 
+	private static RegDate indexStringToDateNaissance(String dateNaissance, String tiersType) {
+		if (tiersType.equals(MenageCommunIndexable.SUB_TYPE)) {
+			// [UNIREG-2633] on n'affiche pas de dates de naissance sur les ménages communs
+			return null;
+		}
+
+		try {
+			return RegDateHelper.StringFormat.INDEX.fromString(dateNaissance, true);
+		}
+		catch (ParseException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * @return le type de tiers indexé, c'est-à-dire le nom de la classe concrète en lettres minuscules (e.g. 'nonhabitant, 'debiteurprestationimposable', ...)
 	 * @see {@link HabitantIndexable#SUB_TYPE}, {@link NonHabitantIndexable#SUB_TYPE}, {@link EntrepriseIndexable#SUB_TYPE}, {@link MenageCommunIndexable#SUB_TYPE}, {@link
@@ -90,6 +109,13 @@ public class TiersIndexedData implements Serializable {
 
 	public String getDateNaissance() {
 		return dateNaissance;
+	}
+
+	/**
+	 * @return la date de naissance de la personne physique (RegDate); ou <b>null</b> pour tous les autres types de tiers.
+	 */
+	public RegDate getRegDateNaissance() {
+		return regDateNaissance;
 	}
 
 	public String getDateDeces() {

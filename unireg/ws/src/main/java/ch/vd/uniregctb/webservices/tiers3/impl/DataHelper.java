@@ -255,7 +255,7 @@ public class DataHelper {
 		i.setNpa(value.getNpa());
 		i.setLocalite(value.getLocalite());
 		i.setPays(value.getPays());
-		i.setDateNaissance(value.getDateNaissance());
+		i.setDateNaissance(DataHelper.coreToWeb(value.getRegDateNaissance()));
 		i.setType(DataHelper.getTypeTiers(value));
 		return i;
 	}

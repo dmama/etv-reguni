@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers.picker;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,7 +14,6 @@ import org.springmodules.xt.ajax.component.TableRow;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.web.xt.component.SimpleText;
 import ch.vd.uniregctb.web.xt.handler.BreakLineComponent;
@@ -67,22 +65,12 @@ public class TiersPickerResultsTable extends Table {
 	}
 
 	private String getDateNaissance(TiersIndexedData data) {
-		if (data.getTiersType().equals(MenageCommunIndexable.SUB_TYPE)) {
-			// [UNIREG-2633] on n'affiche pas de dates de naissance sur les ménages communs
+		final RegDate dateNaissance = data.getRegDateNaissance();
+		if (dateNaissance == null) {
 			return null;
 		}
-
-		try {
-			final RegDate dateNaissance = RegDateHelper.StringFormat.INDEX.fromString(data.getDateNaissance(), true);
-			if (dateNaissance == null) {
-				return null;
-			}
-			else {
-				return RegDateHelper.StringFormat.DISPLAY.toString(dateNaissance);
-			}
-		}
-		catch (ParseException e) {
-			return null;
+		else {
+			return RegDateHelper.StringFormat.DISPLAY.toString(dateNaissance);
 		}
 	}
 }
