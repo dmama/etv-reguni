@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
@@ -46,57 +48,56 @@ public class QueryConstructor {
 	public static void addTypeTiers(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
 
 		// Type de tiers
-		if (filter.getTypeTiers() != null && filter.getTypeTiers() != TypeTiers.TIERS) {
+		final Set<TypeTiers> set = filter.getTypesTiers();
+		if (set != null && !set.isEmpty()) {
+
 			BooleanQuery query = new BooleanQuery();
-			TiersCriteria.TypeTiers typeTiers = filter.getTypeTiers();
-			switch (typeTiers) {
-			case DEBITEUR_PRESTATION_IMPOSABLE:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
-				break;
-			case HABITANT:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
-				break;
-			case NON_HABITANT:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
-				break;
-			case MENAGE_COMMUN:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
-				break;
-			case ENTREPRISE:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
-				break;
-			case AUTRE_COMMUNAUTE:
-				break;
-			// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
-			// case ETABLISSEMENT:
-			// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
-			// break;
-			// case COLLECTIVITE_ADMINISTRATIVE:
-			// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
-			// break;
-			case CONTRIBUABLE:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
+			for (TypeTiers typeTiers : set) {
+				switch (typeTiers) {
+				case DEBITEUR_PRESTATION_IMPOSABLE:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
+					break;
+				case HABITANT:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					break;
+				case NON_HABITANT:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					break;
+				case MENAGE_COMMUN:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
+					break;
+				case ENTREPRISE:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
+					break;
+				case AUTRE_COMMUNAUTE:
+					break;
 				// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
+				// case ETABLISSEMENT:
 				// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+				// break;
+				// case COLLECTIVITE_ADMINISTRATIVE:
 				// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
-				break;
-			case PERSONNE_PHYSIQUE:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
-				break;
-			case NON_HABITANT_OU_MENAGE_COMMUN:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
-				break;
-			case CONTRIBUABLE_PP:
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
-				query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
-				break;
+				// break;
+				case CONTRIBUABLE:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
+					// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
+					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
+					break;
+				case PERSONNE_PHYSIQUE:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					break;
+				case CONTRIBUABLE_PP:
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
+					break;
+				}
 			}
 			fullQuery.add(query, must);
 		}

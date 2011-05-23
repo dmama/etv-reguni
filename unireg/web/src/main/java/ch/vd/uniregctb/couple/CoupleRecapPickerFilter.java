@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.couple;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -30,8 +32,11 @@ public class CoupleRecapPickerFilter implements TiersPickerFilterWithPostFilteri
 		return TiersCriteria.TypeVisualisation.COMPLETE;
 	}
 
-	public TiersCriteria.TypeTiers getTypeTiers() {
-		return TiersCriteria.TypeTiers.NON_HABITANT_OU_MENAGE_COMMUN;
+	public Set<TiersCriteria.TypeTiers> getTypesTiers() {
+		final Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
+		set.add(TiersCriteria.TypeTiers.NON_HABITANT);
+		set.add(TiersCriteria.TypeTiers.MENAGE_COMMUN);
+		return set;
 	}
 
 	public boolean isInclureI107() {

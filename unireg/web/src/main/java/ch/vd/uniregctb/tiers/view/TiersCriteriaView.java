@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -249,7 +251,11 @@ public class TiersCriteriaView {
 	}
 
 	public TiersCriteria.TypeTiers getTypeTiers() {
-		return criteria.getTypeTiers();
+		final Set<TiersCriteria.TypeTiers> set = criteria.getTypesTiers();
+		if (set == null || set.isEmpty()) {
+			return null;
+		}
+		return set.iterator().next();
 	}
 
 	public void setTypeTiers(TiersCriteria.TypeTiers typeTiers) {

@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.picker;
 
+import java.util.Set;
+
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersFilter;
 
@@ -12,7 +14,7 @@ public interface TiersPickerFilter extends TiersFilter {
 
 	TiersCriteria.TypeVisualisation getTypeVisualisation();
 
-	TiersCriteria.TypeTiers getTypeTiers();
+	Set<TiersCriteria.TypeTiers> getTypesTiers();
 
 	boolean isInclureI107();
 

@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.tiers.picker;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
@@ -13,7 +15,7 @@ public class BasicTiersPickerFilter implements TiersPickerFilter {
 
 	private final String description;
 	private TiersCriteria.TypeVisualisation typeVisualisation;
-	private TiersCriteria.TypeTiers typeTiers;
+	private Set<TiersCriteria.TypeTiers> typeTiers;
 	private boolean inclureI107;
 	private boolean inclureTiersAnnules;
 	private boolean tiersAnnulesSeulement;
@@ -26,7 +28,9 @@ public class BasicTiersPickerFilter implements TiersPickerFilter {
 		}
 		value = params.get("typeTiers");
 		if (value != null) {
-			this.typeTiers = TiersCriteria.TypeTiers.valueOf(value);
+			final TiersCriteria.TypeTiers t = TiersCriteria.TypeTiers.valueOf(value);
+			this.typeTiers = new HashSet<TiersCriteria.TypeTiers>();
+			this.typeTiers.add(t);
 		}
 		value = params.get("inclureI107");
 		if (value != null) {
@@ -96,7 +100,7 @@ public class BasicTiersPickerFilter implements TiersPickerFilter {
 		return typeVisualisation;
 	}
 
-	public TiersCriteria.TypeTiers getTypeTiers() {
+	public Set<TiersCriteria.TypeTiers> getTypesTiers() {
 		return typeTiers;
 	}
 

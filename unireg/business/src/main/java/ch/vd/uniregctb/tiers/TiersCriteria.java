@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -51,7 +53,6 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		ETABLISSEMENT,
 		COLLECTIVITE_ADMINISTRATIVE,
 		AUTRE_COMMUNAUTE,
-		NON_HABITANT_OU_MENAGE_COMMUN,
 		CONTRIBUABLE_PP;
 
 		public static TypeTiers fromCore(ch.vd.uniregctb.tiers.TypeTiers type) {
@@ -80,15 +81,16 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		LIMITEE,
 		COMPLETE
 	}
+
 	/**
 	 * Le numero de contribuable.
 	 */
 	private Long numero;
 
 	/**
-	 * Le type du tiers
+	 * Les types de tiers
 	 */
-	private TypeTiers typeTiers;
+	private Set<TypeTiers> typesTiers;
 
 	/**
 	 * Le type de recherche du nom
@@ -434,12 +436,17 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.noOfsFor = noOfsFor;
 	}
 
-	public TypeTiers getTypeTiers() {
-		return typeTiers;
+	public Set<TypeTiers> getTypesTiers() {
+		return typesTiers;
 	}
 
-	public void setTypeTiers(TypeTiers typeTiers) {
-		this.typeTiers = typeTiers;
+	public void setTypesTiers(Set<TypeTiers> typesTiers) {
+		this.typesTiers = typesTiers;
+	}
+
+	public void setTypeTiers(TypeTiers typesTiers) {
+		this.typesTiers = new HashSet<TypeTiers>();
+		this.typesTiers.add(typesTiers);
 	}
 
 	public boolean isInclureI107() {

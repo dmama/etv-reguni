@@ -189,7 +189,7 @@ public class DataHelper {
 				coreCriteria.setForPrincipalActif(criteria.isForPrincipalActif());
 			}
 			if (criteria.getTypeTiers() != null) {
-				coreCriteria.setTypeTiers(webToCore(criteria.getTypeTiers()));
+				coreCriteria.setTypesTiers(webToCore(criteria.getTypeTiers()));
 			}
 			if (criteria.getCategorieDebiteur() != null) {
 				coreCriteria.setCategorieDebiteurIs(CategorieImpotSource.valueOf(criteria.getCategorieDebiteur().name()));
@@ -227,19 +227,27 @@ public class DataHelper {
 		return list;
 	}
 
-	public static TiersCriteria.TypeTiers webToCore(TypeTiers typeTiers) {
-		switch (typeTiers) {
-		case DEBITEUR:
-			return TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE;
-		case MENAGE_COMMUN:
-			return TiersCriteria.TypeTiers.MENAGE_COMMUN;
-		case PERSONNE_MORALE:
-			return TiersCriteria.TypeTiers.ENTREPRISE;
-		case PERSONNE_PHYSIQUE:
-			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
-		default:
-			throw new IllegalArgumentException("Type de tiers inconnu = [" + typeTiers + "]");
+	public static Set<TiersCriteria.TypeTiers> webToCore(List<TypeTiers> typeTiers) {
+		Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
+		for (TypeTiers t : typeTiers) {
+			switch (t) {
+			case DEBITEUR:
+				set.add(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
+				break;
+			case MENAGE_COMMUN:
+				set.add(TiersCriteria.TypeTiers.MENAGE_COMMUN);
+				break;
+			case PERSONNE_MORALE:
+				set.add(TiersCriteria.TypeTiers.ENTREPRISE);
+				break;
+			case PERSONNE_PHYSIQUE:
+				set.add(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+				break;
+			default:
+				throw new IllegalArgumentException("Type de tiers inconnu = [" + typeTiers + "]");
+			}
 		}
+		return set;
 	}
 
 	public static TiersInfo coreToWeb(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {

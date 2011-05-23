@@ -139,7 +139,7 @@ public class TiersPickerController extends CommonSimpleFormController implements
 
 				if (filter != null) {
 					criteria.setTypeVisualisation(filter.getTypeVisualisation());
-					criteria.setTypeTiers(filter.getTypeTiers());
+					criteria.setTypesTiers(filter.getTypesTiers());
 					criteria.setInclureI107(filter.isInclureI107());
 					criteria.setInclureTiersAnnules(filter.isInclureTiersAnnules());
 					criteria.setTiersAnnulesSeulement(filter.isTiersAnnulesSeulement());
