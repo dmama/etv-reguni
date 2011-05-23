@@ -22,7 +22,6 @@ import ch.vd.uniregctb.webservices.common.LoadMonitorable;
 import ch.vd.uniregctb.webservices.tiers3.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
-import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
@@ -41,7 +40,6 @@ import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAutoRequest;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
 import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers3.TypeWebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.UserLogin;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 
@@ -189,16 +187,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 				catch (WebServiceException e) {
 					final BatchTiersEntry entry = new BatchTiersEntry();
 					entry.setNumber(numero);
-					entry.setExceptionMessage(e.getMessage());
-					if (e.getFaultInfo() instanceof AccessDeniedExceptionInfo) {
-						entry.setExceptionType(TypeWebServiceException.ACCESS_DENIED);
-					}
-					else if (e.getFaultInfo() instanceof BusinessExceptionInfo) {
-						entry.setExceptionType(TypeWebServiceException.BUSINESS);
-					}
-					else {
-						entry.setExceptionType(TypeWebServiceException.TECHNICAL);
-					}
+					entry.setExceptionInfo(e.getFaultInfo());
 					batch.getEntries().add(entry);
 				}
 			}
@@ -467,8 +456,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
 						+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.getNumber();
 				entry.setTiers(null);
-				entry.setExceptionMessage(message);
-				entry.setExceptionType(TypeWebServiceException.ACCESS_DENIED);
+				entry.setExceptionInfo(new AccessDeniedExceptionInfo(message));
 			}
 		}
 	}
@@ -529,7 +517,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		List<BatchTiersEntry> inError = null;
 
 		for (BatchTiersEntry entry : batch.getEntries()) {
-			if (entry.getExceptionMessage() != null) {
+			if (entry.getExceptionInfo() != null) {
 				if (inError == null) {
 					inError = new ArrayList<BatchTiersEntry>();
 				}
@@ -542,8 +530,8 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			message.append("Les exceptions suivantes ont été levées lors du traitement du message ").append(params).append(" : ");
 			for (BatchTiersEntry entry : inError) {
 				message.append("\n - id=").append(entry.getNumber());
-				message.append(", exception=\"").append(entry.getExceptionMessage());
-				message.append("\", type=").append(entry.getExceptionType());
+				message.append(", exception=\"").append(entry.getExceptionInfo().getMessage());
+				message.append("\", type=").append(entry.getClass().getSimpleName());
 			}
 			LOGGER.error(message.toString());
 		}

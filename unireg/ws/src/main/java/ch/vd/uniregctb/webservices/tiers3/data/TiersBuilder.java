@@ -130,7 +130,7 @@ public class TiersBuilder {
 	}
 
 	private static void fillMenageCommun(MenageCommun left, ch.vd.uniregctb.tiers.MenageCommun right, Set<TiersPart> parts, Context context) throws WebServiceException {
-		fillTiers(left, right, parts, context);
+		fillContribuable(left, right, parts, context);
 		initMenageCommunParts(left, right, parts, context);
 	}
 
@@ -184,39 +184,47 @@ public class TiersBuilder {
 			initSituationsFamille(left, right, context);
 		}
 
-		if (parts != null && parts.contains(TiersPart.ASSUJETTISSEMENTS)) {
-			initAssujettissements(left, right);
+		if (parts != null && (parts.contains(TiersPart.ASSUJETTISSEMENTS) || parts.contains(TiersPart.PERIODES_ASSUJETTISSEMENT))) {
+			initAssujettissements(left, right, parts);
 		}
 
 		if (parts != null && parts.contains(TiersPart.PERIODES_IMPOSITION)) {
-			initPeriodeImposition(left, right, context);
+			initPeriodesImposition(left, right, context);
 		}
 	}
 
-	private static void initAssujettissements(Contribuable left, ch.vd.uniregctb.tiers.Contribuable contribuable)
-			throws WebServiceException {
-
+	private static void initAssujettissements(Contribuable left, ch.vd.uniregctb.tiers.Contribuable right, Set<TiersPart> parts) throws WebServiceException {
 		/*
 		 * Note: il est nécessaire de calculer l'assujettissement sur TOUTE la période de validité du contribuable pour obtenir un résultat
 		 * correct avec le collate.
 		 */
 		final List<ch.vd.uniregctb.metier.assujettissement.Assujettissement> list;
 		try {
-			list = ch.vd.uniregctb.metier.assujettissement.Assujettissement.determine(contribuable, null, true /* collate */);
+			list = ch.vd.uniregctb.metier.assujettissement.Assujettissement.determine(right, null, true /* collate */);
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e, e);
 			throw ExceptionHelper.newBusinessException(e);
 		}
+
 		if (list != null) {
+
+			final boolean wantAssujettissements = parts.contains(TiersPart.ASSUJETTISSEMENTS);
+			final boolean wantPeriodes = parts.contains(TiersPart.PERIODES_ASSUJETTISSEMENT);
+
 			for (ch.vd.uniregctb.metier.assujettissement.Assujettissement a : list) {
-				left.getAssujettissementsLIC().add(AssujettissementBuilder.toLIC(a));
-				left.getAssujettissementsLIFD().add(AssujettissementBuilder.toLIFD(a));
+				if (wantAssujettissements) {
+					left.getAssujettissementsRole().add(AssujettissementBuilder.newAssujettissement(a));
+				}
+				if (wantPeriodes) {
+					left.getPeriodesAssujettissementLIC().add(PeriodeAssujettissementBuilder.toLIC(a));
+					left.getPeriodesAssujettissementLIFD().add(PeriodeAssujettissementBuilder.toLIFD(a));
+				}
 			}
 		}
 	}
 
-	private static void initPeriodeImposition(Contribuable left, ch.vd.uniregctb.tiers.Contribuable contribuable, Context context)
+	private static void initPeriodesImposition(Contribuable left, ch.vd.uniregctb.tiers.Contribuable contribuable, Context context)
 			throws WebServiceException {
 
 		// [UNIREG-913] On n'expose pas les périodes fiscales avant la première période définie dans les paramètres

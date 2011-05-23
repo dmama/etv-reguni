@@ -23,18 +23,15 @@ public class BatchTiersBuilder {
 		b.setNumber(numero);
 		if (value == null) {
 			b.setTiers(null);
-			b.setExceptionMessage(null);
-			b.setExceptionType(null);
+			b.setExceptionInfo(null);
 		}
 		else if (value instanceof Tiers) {
 			b.setTiers((Tiers) value);
-			b.setExceptionMessage(null);
-			b.setExceptionType(null);
+			b.setExceptionInfo(null);
 		}
 		else if (value instanceof WebServiceException) {
 			b.setTiers(null);
-			b.setExceptionMessage(((WebServiceException) value).getMessage());
-			// TODO (msi) b.setExceptionType(((WebServiceException) value).getFaultInfo().);
+			b.setExceptionInfo(((WebServiceException) value).getFaultInfo());
 		}
 		else {
 			throw new IllegalArgumentException("Type de valeur inconnu = [" + value + "]");

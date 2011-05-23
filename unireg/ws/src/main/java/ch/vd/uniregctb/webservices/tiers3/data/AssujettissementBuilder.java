@@ -1,106 +1,141 @@
 package ch.vd.uniregctb.webservices.tiers3.data;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import java.util.HashMap;
+import java.util.Map;
+
 import ch.vd.uniregctb.webservices.tiers3.Assujettissement;
-import ch.vd.uniregctb.webservices.tiers3.TypeAssujettissement;
+import ch.vd.uniregctb.webservices.tiers3.DiplomateSuisse;
+import ch.vd.uniregctb.webservices.tiers3.HorsCanton;
+import ch.vd.uniregctb.webservices.tiers3.HorsSuisse;
+import ch.vd.uniregctb.webservices.tiers3.Indigent;
+import ch.vd.uniregctb.webservices.tiers3.Sourcier;
+import ch.vd.uniregctb.webservices.tiers3.SourcierMixte;
+import ch.vd.uniregctb.webservices.tiers3.SourcierPur;
+import ch.vd.uniregctb.webservices.tiers3.VaudoisDepense;
+import ch.vd.uniregctb.webservices.tiers3.VaudoisOrdinaire;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
+import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 
-public class AssujettissementBuilder {
-	public static Assujettissement newAssujettissement(ch.vd.uniregctb.metier.assujettissement.Assujettissement assujettissement, TypeAssujettissement type) {
-		final Assujettissement a = new Assujettissement();
-		a.setDateDebut(DataHelper.coreToWeb(assujettissement.getDateDebut()));
-		a.setDateFin(DataHelper.coreToWeb(assujettissement.getDateFin()));
-		a.setType(type);
-		return a;
+public abstract class AssujettissementBuilder {
+
+	public static Assujettissement newAssujettissement(ch.vd.uniregctb.metier.assujettissement.Assujettissement assujettissement) {
+		return builders.get(assujettissement.getClass()).instanciate(assujettissement);
 	}
 
-	public static Assujettissement toLIC(ch.vd.uniregctb.metier.assujettissement.Assujettissement a) {
-
-		final Assujettissement result;
-
-		if (a instanceof ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse) {
-			result = null;
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.HorsCanton) {
-			result = newAssujettissement(a, TypeAssujettissement.LIMITE);
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.HorsSuisse) {
-			result = newAssujettissement(a, TypeAssujettissement.LIMITE);
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierMixte) {
-			ch.vd.uniregctb.metier.assujettissement.SourcierMixte mixte = (ch.vd.uniregctb.metier.assujettissement.SourcierMixte) a;
-			if (mixte.getTypeAutoriteFiscale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				result = newAssujettissement(a, TypeAssujettissement.ILLIMITE);
-			}
-			else {
-				result = newAssujettissement(a, TypeAssujettissement.LIMITE);
-			}
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierPur) {
-			// un sourcier pure n'est pas assujetti au rôle ordinaire.
-			result = null;
-		}
-		else {
-			Assert.isTrue(a instanceof ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire
-					|| a instanceof ch.vd.uniregctb.metier.assujettissement.VaudoisDepense
-					|| a instanceof ch.vd.uniregctb.metier.assujettissement.Indigent);
-			result = newAssujettissement(a, TypeAssujettissement.ILLIMITE);
-		}
-
-		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
-		if (result != null && result.getDateFin() != null) {
-			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = DataHelper.webToCore(result.getDateFin());
-			if (dateFin.isAfter(aujourdhui)) {
-				result.setDateFin(null);
-			}
-		}
-
-		return result;
+	private interface Builders {
+		Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right);
 	}
 
-	public static Assujettissement toLIFD(ch.vd.uniregctb.metier.assujettissement.Assujettissement a) {
-		final Assujettissement result;
+	private static Map<Class, Builders> builders = new HashMap<Class, Builders>();
 
-		if (a instanceof ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse) {
-			result = newAssujettissement(a, TypeAssujettissement.ILLIMITE);
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.HorsCanton) {
-			result = null; // il sera assujetti de manière illimité dans son canton de résidence
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.HorsSuisse) {
-			result = newAssujettissement(a, TypeAssujettissement.LIMITE);
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierMixte) {
-			ch.vd.uniregctb.metier.assujettissement.SourcierMixte mixte = (ch.vd.uniregctb.metier.assujettissement.SourcierMixte) a;
-			if (mixte.getTypeAutoriteFiscale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				result = newAssujettissement(a, TypeAssujettissement.ILLIMITE);
+	static {
+		builders.put(ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newDiplomateSuisse((ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse) right);
 			}
-			else {
-				result = newAssujettissement(a, TypeAssujettissement.LIMITE);
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.HorsCanton.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newHorsCanton((ch.vd.uniregctb.metier.assujettissement.HorsCanton) right);
 			}
-		}
-		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierPur) {
-			// un sourcier pure n'est pas assujetti au rôle ordinaire.
-			result = null;
-		}
-		else {
-			Assert.isTrue(a instanceof ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire
-					|| a instanceof ch.vd.uniregctb.metier.assujettissement.VaudoisDepense
-					|| a instanceof ch.vd.uniregctb.metier.assujettissement.Indigent);
-			result = newAssujettissement(a, TypeAssujettissement.ILLIMITE);
-		}
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.HorsSuisse.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newHorsSuisse((ch.vd.uniregctb.metier.assujettissement.HorsSuisse) right);
+			}
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.Indigent.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newIndigent((ch.vd.uniregctb.metier.assujettissement.Indigent) right);
+			}
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixte.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newSourcierMixte((ch.vd.uniregctb.metier.assujettissement.SourcierMixte) right);
+			}
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierPur.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newSourcierPur((ch.vd.uniregctb.metier.assujettissement.SourcierPur) right);
+			}
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.VaudoisDepense.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newVaudoisDepense((ch.vd.uniregctb.metier.assujettissement.VaudoisDepense) right);
+			}
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire.class, new Builders() {
+			@Override
+			public Assujettissement instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newVaudoisOrdinaire((ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire) right);
+			}
+		});
+	}
 
-		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
-		if (result != null && result.getDateFin() != null) {
-			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = DataHelper.webToCore(result.getDateFin());
-			if (dateFin.isAfter(aujourdhui)) {
-				result.setDateFin(null);
-			}
-		}
+	private static DiplomateSuisse newDiplomateSuisse(ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse right) {
+		DiplomateSuisse left = new DiplomateSuisse();
+		fillAssujettissement(left, right);
+		return left;
+	}
 
-		return result;
+	private static HorsCanton newHorsCanton(ch.vd.uniregctb.metier.assujettissement.HorsCanton right) {
+		HorsCanton left = new HorsCanton();
+		fillAssujettissement(left, right);
+		return left;
+	}
+
+	private static HorsSuisse newHorsSuisse(ch.vd.uniregctb.metier.assujettissement.HorsSuisse right) {
+		HorsSuisse left = new HorsSuisse();
+		fillAssujettissement(left, right);
+		return left;
+	}
+
+	private static Indigent newIndigent(ch.vd.uniregctb.metier.assujettissement.Indigent right) {
+		Indigent left = new Indigent();
+		fillAssujettissement(left, right);
+		return left;
+	}
+
+	private static SourcierMixte newSourcierMixte(ch.vd.uniregctb.metier.assujettissement.SourcierMixte right) {
+		SourcierMixte left = new SourcierMixte();
+		fillSourcier(left, right);
+		return left;
+	}
+
+	private static SourcierPur newSourcierPur(ch.vd.uniregctb.metier.assujettissement.SourcierPur right) {
+		SourcierPur left = new SourcierPur();
+		fillSourcier(left, right);
+		return left;
+	}
+
+	private static VaudoisDepense newVaudoisDepense(ch.vd.uniregctb.metier.assujettissement.VaudoisDepense right) {
+		VaudoisDepense left = new VaudoisDepense();
+		fillAssujettissement(left, right);
+		return left;
+	}
+
+	private static VaudoisOrdinaire newVaudoisOrdinaire(ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire right) {
+		VaudoisOrdinaire left = new VaudoisOrdinaire();
+		fillAssujettissement(left, right);
+		return left;
+	}
+
+	private static void fillSourcier(Sourcier left, ch.vd.uniregctb.metier.assujettissement.Sourcier right) {
+		fillAssujettissement(left, right);
+		left.setTypeAutoriteFiscale(EnumHelper.coreToWeb(right.getTypeAutoriteFiscale()));
+	}
+
+	private static void fillAssujettissement(Assujettissement left, ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+		left.setDateDebut(DataHelper.coreToWeb(right.getDateDebut()));
+		left.setDateFin(DataHelper.coreToWeb(right.getDateFin()));
+		left.setMotifDebut(EnumHelper.coreToWeb(right.getMotifFractDebut()));
+		left.setMotifFin(EnumHelper.coreToWeb(right.getMotifFractFin()));
 	}
 }
