@@ -63,8 +63,6 @@ public class TiersBuilder {
 	private static void fillTiersBase(Tiers left, ch.vd.uniregctb.tiers.Tiers tiers) {
 		left.setNumero(tiers.getNumero());
 		left.setComplementNom(tiers.getComplementNom());
-		left.setDateDebutActivite(DataHelper.coreToWeb(tiers.getDateDebutActivite()));
-		left.setDateFinActivite(DataHelper.coreToWeb(tiers.getDateFinActivite()));
 		left.setDateAnnulation(DataHelper.coreToWeb(tiers.getAnnulationDate()));
 		left.setPersonneContact(tiers.getPersonneContact());
 		left.setNumeroTelPrive(tiers.getNumeroTelephonePrive());
@@ -336,6 +334,11 @@ public class TiersBuilder {
 	}
 
 	private static void initForsFiscaux(Tiers tiers, ch.vd.uniregctb.tiers.Tiers right, final Set<TiersPart> parts, Context context) {
+
+		// le calcul de ces dates nécessite d'accéder aux fors fiscaux, initialisé ici pour des raisons de performances.
+		tiers.setDateDebutActivite(DataHelper.coreToWeb(right.getDateDebutActivite()));
+		tiers.setDateFinActivite(DataHelper.coreToWeb(right.getDateFinActivite()));
+
 		for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : right.getForsFiscauxSorted()) {
 			if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal
 					|| forFiscal instanceof ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable) {
