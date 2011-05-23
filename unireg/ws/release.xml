@@ -25,6 +25,11 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
+			<directory>config/integration-po</directory>
+			<outputDirectory>config/integration-po</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
 			<directory>config/validation</directory>
 			<outputDirectory>config/validation</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
@@ -36,6 +41,13 @@
 				<include>unireg-log4j.xml</include>
 			</includes>
 			<outputDirectory>config/integration</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+			</includes>
+			<outputDirectory>config/integration-po</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
