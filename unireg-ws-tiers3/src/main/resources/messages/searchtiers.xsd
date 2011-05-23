@@ -56,9 +56,11 @@
 							<xs:documentation>Le type de recherche sur le nomCourrier.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="typeTiers" type="unireg:typeTiersType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="typeTiers" type="unireg:typeTiersType">
 						<xs:annotation>
-							<xs:documentation>Si renseigné, restreint la recherche sur un type de tiers.</xs:documentation>
+							<xs:documentation>Si renseigné, restreint la recherche sur un type de tiers. Si plusieurs types sont spécifiés, l'union des résultats des recherches type par type est
+								retourné (SIFISC-112).
+							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element minOccurs="0" name="categorieDebiteur" type="unireg:categorieDebiteurType">
