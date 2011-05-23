@@ -18,6 +18,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
@@ -51,8 +52,8 @@ public class AnnulationCoupleListController extends AbstractTiersListController 
 		if ((bean == null) ||
 				((action != null) && action.equals(EFFACER_PARAMETER_VALUE))) {
 			bean = new TiersCriteriaView();
-			bean.setTypeRechercheDuNom(TiersCriteriaView.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiers(TiersCriteriaView.TypeTiers.MENAGE_COMMUN);
+			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+			bean.setTypeTiers(TiersCriteria.TypeTiers.MENAGE_COMMUN);
 		}
 		return bean;
 	}

@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.rt;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,7 +20,6 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class SourcierListController  extends  AbstractTiersListController implements MessageSourceAware {

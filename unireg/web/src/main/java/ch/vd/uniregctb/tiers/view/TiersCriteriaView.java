@@ -1,81 +1,34 @@
 package ch.vd.uniregctb.tiers.view;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeImposition;
 
 /**
  * Critères de recherche pour les tiers.
  */
-public class TiersCriteriaView extends TiersCriteria {
+public class TiersCriteriaView {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 6704538187645788412L;
-
-	/**
-	 * URL TAO
-	 */
+	// Valeurs utilisées en sortie seulement
 	private String urlTaoPP;
-
-	/**
-	 * URL TAO
-	 */
 	private String urlTaoBA;
-
-	/**
-	 * URL SIPF
-	 */
 	private String urlSipf;
-
-	/**
-	 * URL TAO
-	 */
 	private String urlCat;
-
-	/**
-	 * URL SIPF
-	 */
 	private String urlRegView;
-
-	/**
-	 * Numero sourcier
-	 */
 	private Long numeroSourcier;
-
-	/**
-	 * Numero debiteur
-	 */
 	private Long numeroDebiteur;
-
-	/**
-	 * Numero non habitant
-	 */
 	private Long numeroNonHabitant;
-
-	/**
-	 * Numero habitant
-	 */
-	private Long numeroHabitant;
-
-	/**
-	 * Numero premiere personne
-	 */
 	private Long numeroPremierePersonne;
-
-	/**
-	 * Numero seconde personne
-	 */
-	private Long numeroSecondePersonne;
-
 	private String forAll;
-
 	private String modeImpositionAsString;
+
+	// Les critères utilisés pour la recherche
+	private String numeroFormatte;
+	private final TiersCriteria criteria = new TiersCriteria();
 
 	public String getForAll() {
 		return forAll;
@@ -86,26 +39,6 @@ public class TiersCriteriaView extends TiersCriteria {
 	}
 
 	/**
-	 * @return true si aucun paramétre de recherche n'est renseigné. false autrement.
-	 */
-	@Override
-	public boolean isEmpty() {
-		return super.isEmpty()
-				&& (getNumeroFormatte() == null || "".equals(getNumeroFormatte()));
-	}
-
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
-
-
-	private String numeroFormatte;
-
-	/**
 	 * @return the numero formatte
 	 */
 	public String getNumeroFormatte() {
@@ -113,10 +46,8 @@ public class TiersCriteriaView extends TiersCriteria {
 	}
 
 	public void setNumeroFormatte(String numeroFormatte) {
-
 		if (StringUtils.isNotEmpty(numeroFormatte)) {
 			try {
-				Long.parseLong(FormatNumeroHelper.removeSpaceAndDash(numeroFormatte));
 				setNumero(Long.valueOf((FormatNumeroHelper.removeSpaceAndDash(numeroFormatte))));
 			} catch(NumberFormatException nfe) {
 				//Ne rien faire
@@ -191,28 +122,12 @@ public class TiersCriteriaView extends TiersCriteria {
 		this.numeroNonHabitant = numeroNonHabitant;
 	}
 
-	public Long getNumeroHabitant() {
-		return numeroHabitant;
-	}
-
-	public void setNumeroHabitant(Long numeroHabitant) {
-		this.numeroHabitant = numeroHabitant;
-	}
-
 	public Long getNumeroPremierePersonne() {
 		return numeroPremierePersonne;
 	}
 
 	public void setNumeroPremierePersonne(Long numeroPremierePersonne) {
 		this.numeroPremierePersonne = numeroPremierePersonne;
-	}
-
-	public Long getNumeroSecondePersonne() {
-		return numeroSecondePersonne;
-	}
-
-	public void setNumeroSecondePersonne(Long numeroSecondePersonne) {
-		this.numeroSecondePersonne = numeroSecondePersonne;
 	}
 
 	public String getModeImpositionAsString() {
@@ -229,4 +144,187 @@ public class TiersCriteriaView extends TiersCriteria {
 		this.modeImpositionAsString = modeImpositionAsString;
 	}
 
+	public Long getNumero() {
+		return criteria.getNumero();
+	}
+
+	public void setNumero(Long numero) {
+		criteria.setNumero(numero);
+	}
+
+	public TiersCriteria.TypeRecherche getTypeRechercheDuNom() {
+		return criteria.getTypeRechercheDuNom();
+	}
+
+	public void setTypeRechercheDuNom(TiersCriteria.TypeRecherche typeRechercheDuNom) {
+		criteria.setTypeRechercheDuNom(typeRechercheDuNom);
+	}
+
+	public String getNomRaison() {
+		return criteria.getNomRaison();
+	}
+
+	public void setNomRaison(String nomCourrier) {
+		criteria.setNomRaison(nomCourrier);
+	}
+
+	public String getNatureJuridique() {
+		return criteria.getNatureJuridique();
+	}
+
+	public void setNatureJuridique(String natureJuridique) {
+		criteria.setNatureJuridique(natureJuridique);
+	}
+
+	public RegDate getDateNaissance() {
+		return criteria.getDateNaissance();
+	}
+
+	public void setDateNaissance(RegDate dateNaissance) {
+		criteria.setDateNaissance(dateNaissance);
+	}
+
+	public String getNumeroAVS() {
+		return criteria.getNumeroAVS();
+	}
+
+	public void setNumeroAVS(String numeroAVS) {
+		criteria.setNumeroAVS(numeroAVS);
+	}
+
+	public String getNumeroEtranger() {
+		return criteria.getNumeroEtranger();
+	}
+
+	public void setNumeroEtranger(String numeroEtranger) {
+		criteria.setNumeroEtranger(numeroEtranger);
+	}
+
+	public String getFormeJuridique() {
+		return criteria.getFormeJuridique();
+	}
+
+	public void setFormeJuridique(String formeJuridique) {
+		criteria.setFormeJuridique(formeJuridique);
+	}
+
+	public String getLocaliteOuPays() {
+		return criteria.getLocaliteOuPays();
+	}
+
+	public void setLocaliteOuPays(String localiteOuPays) {
+		criteria.setLocaliteOuPays(localiteOuPays);
+	}
+
+	public boolean isForPrincipalActif() {
+		return criteria.isForPrincipalActif();
+	}
+
+	public void setForPrincipalActif(boolean forPrincipalActif) {
+		criteria.setForPrincipalActif(forPrincipalActif);
+	}
+
+	public TiersCriteria.TypeRechercheLocalitePays getTypeRechercheDuPaysLocalite() {
+		return criteria.getTypeRechercheDuPaysLocalite();
+	}
+
+	public void setTypeRechercheDuPaysLocalite(TiersCriteria.TypeRechercheLocalitePays typeRechercheDuPaysLocalite) {
+		criteria.setTypeRechercheDuPaysLocalite(typeRechercheDuPaysLocalite);
+	}
+
+	public TiersCriteria.TypeVisualisation getTypeVisualisation() {
+		return criteria.getTypeVisualisation();
+	}
+
+	public void setTypeVisualisation(TiersCriteria.TypeVisualisation typeVisualisation) {
+		criteria.setTypeVisualisation(typeVisualisation);
+	}
+
+	public String getNoOfsFor() {
+		return criteria.getNoOfsFor();
+	}
+
+	public void setNoOfsFor(String noOfsFor) {
+		criteria.setNoOfsFor(noOfsFor);
+	}
+
+	public TiersCriteria.TypeTiers getTypeTiers() {
+		return criteria.getTypeTiers();
+	}
+
+	public void setTypeTiers(TiersCriteria.TypeTiers typeTiers) {
+		criteria.setTypeTiers(typeTiers);
+	}
+
+	public boolean isInclureI107() {
+		return criteria.isInclureI107();
+	}
+
+	public void setInclureI107(boolean inclureI107) {
+		criteria.setInclureI107(inclureI107);
+	}
+
+	public boolean isInclureTiersAnnules() {
+		return criteria.isInclureTiersAnnules();
+	}
+
+	public void setInclureTiersAnnules(boolean inclureTiersAnnules) {
+		criteria.setInclureTiersAnnules(inclureTiersAnnules);
+	}
+
+	public boolean isTiersAnnulesSeulement() {
+		return criteria.isTiersAnnulesSeulement();
+	}
+
+	public void setTiersAnnulesSeulement(boolean tiersAnnulesSeulement) {
+		criteria.setTiersAnnulesSeulement(tiersAnnulesSeulement);
+	}
+
+	public String getNpa() {
+		return criteria.getNpa();
+	}
+
+	public void setNpa(String npa) {
+		criteria.setNpa(npa);
+	}
+
+	public ModeImposition getModeImposition() {
+		return criteria.getModeImposition();
+	}
+
+	public void setModeImposition(ModeImposition modeImposition) {
+		criteria.setModeImposition(modeImposition);
+	}
+
+	public String getNoSymic() {
+		return criteria.getNoSymic();
+	}
+
+	public void setNoSymic(String noSymic) {
+		criteria.setNoSymic(noSymic);
+	}
+
+	public CategorieImpotSource getCategorieDebiteurIs() {
+		return criteria.getCategorieDebiteurIs();
+	}
+
+	public void setCategorieDebiteurIs(CategorieImpotSource categorieDebiteurIs) {
+		criteria.setCategorieDebiteurIs(categorieDebiteurIs);
+	}
+
+	public Boolean isTiersActif() {
+		return criteria.isTiersActif();
+	}
+
+	public void setTiersActif(Boolean tiersActif) {
+		criteria.setTiersActif(tiersActif);
+	}
+
+	public boolean isEmpty() {
+		return criteria.isEmpty() && StringUtils.isBlank(this.numeroFormatte);
+	}
+
+	public TiersCriteria asCore() {
+		return criteria;
+	}
 }

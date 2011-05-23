@@ -9,8 +9,8 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -69,7 +69,7 @@ public class CoupleListManagerImpl extends TiersManager implements CoupleListMan
 	public CoupleListView get() {
 		CoupleListView coupleListView = new CoupleListView();
 		coupleListView.setAllowed(true);
-		coupleListView.setTypeRechercheDuNom(CoupleListView.TypeRecherche.EST_EXACTEMENT);
+		coupleListView.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 		coupleListView.setPage(PREMIERE_PAGE);
 		//gestion des droits
 		setDroit(coupleListView);
@@ -90,13 +90,13 @@ public class CoupleListManagerImpl extends TiersManager implements CoupleListMan
 			droitNHab = true;
 		}
 		if (droitHab && droitNHab) {
-			coupleListView.setTypeTiers(TiersCriteriaView.TypeTiers.PERSONNE_PHYSIQUE);
+			coupleListView.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		}
 		else if (droitHab) {
-			coupleListView.setTypeTiers(TiersCriteriaView.TypeTiers.HABITANT);
+			coupleListView.setTypeTiers(TiersCriteria.TypeTiers.HABITANT);
 		}
 		else if (droitNHab) {
-			coupleListView.setTypeTiers(TiersCriteriaView.TypeTiers.NON_HABITANT);
+			coupleListView.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
 		}
 		else {//pas les droits
 			coupleListView.setAllowed(false);

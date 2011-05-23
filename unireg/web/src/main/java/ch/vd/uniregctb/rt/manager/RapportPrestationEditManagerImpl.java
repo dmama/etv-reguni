@@ -23,6 +23,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeActivite;
@@ -193,8 +194,8 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		DebiteurListView bean = new DebiteurListView();
 		TiersGeneralView sourcierView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		bean.setSourcier(sourcierView);
-		bean.setTypeRechercheDuNom(DebiteurListView.TypeRecherche.EST_EXACTEMENT);
-		bean.setTypeTiers(DebiteurListView.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
+		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+		bean.setTypeTiers(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
 		bean.setNumeroSourcier(numeroSrc);
 		return bean;
 	}
@@ -211,8 +212,8 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		SourcierListView bean = new SourcierListView();
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		bean.setDebiteur(dpiView);
-		bean.setTypeRechercheDuNom(SourcierListView.TypeRecherche.EST_EXACTEMENT);
-		bean.setTypeTiers(SourcierListView.TypeTiers.PERSONNE_PHYSIQUE);
+		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+		bean.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		bean.setNumeroDebiteur(numeroDpi);
 		return bean;
 	}

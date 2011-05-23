@@ -23,6 +23,7 @@ import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableSer
 import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.webservice.acicom.AciComClientException;
@@ -76,7 +77,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	public IdentificationMessagesEditView getView(Long id) throws Exception {
 		IdentificationMessagesEditView identificationMessagesEditView = new IdentificationMessagesEditView();
 		identificationMessagesEditView.setTypeTiers(TypeTiers.PERSONNE_PHYSIQUE);
-		identificationMessagesEditView.setTypeRechercheDuNom(IdentificationMessagesEditView.TypeRecherche.EST_EXACTEMENT);
+		identificationMessagesEditView.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 		identificationMessagesEditView.setDemandeIdentificationView(getDemandeIdentificationView (id));
 		IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
 

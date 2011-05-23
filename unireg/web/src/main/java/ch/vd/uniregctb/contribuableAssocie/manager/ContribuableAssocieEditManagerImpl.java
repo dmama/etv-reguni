@@ -7,9 +7,9 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieEditView;
 import ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieListView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.rt.view.SourcierListView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -62,8 +62,8 @@ public class ContribuableAssocieEditManagerImpl extends TiersManager  implements
 		ContribuableAssocieListView bean = new ContribuableAssocieListView();
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		bean.setDebiteur(dpiView);
-		bean.setTypeRechercheDuNom(SourcierListView.TypeRecherche.EST_EXACTEMENT);
-		bean.setTypeTiers(SourcierListView.TypeTiers.CONTRIBUABLE);
+		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+		bean.setTypeTiers(TiersCriteria.TypeTiers.CONTRIBUABLE);
 		bean.setNumeroDebiteur(numeroDpi);
 		return bean;
 	}

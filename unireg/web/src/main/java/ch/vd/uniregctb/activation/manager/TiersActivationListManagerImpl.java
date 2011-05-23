@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.activation.manager;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import ch.vd.uniregctb.activation.TiersActivationListController;
 import ch.vd.uniregctb.activation.view.TiersActivationListView;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 
 public class TiersActivationListManagerImpl implements TiersActivationListManager{
 
@@ -16,7 +15,7 @@ public class TiersActivationListManagerImpl implements TiersActivationListManage
 	public TiersActivationListView get(String activation) {
 		TiersActivationListView bean;
 		bean = new TiersActivationListView();
-		bean.setTypeRechercheDuNom(TiersActivationListView.TypeRecherche.EST_EXACTEMENT);
+		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 		if (TiersActivationListController.ACTIVATION_ANNULATION_VALUE.equals(activation)) {
 			bean.setInclureTiersAnnules(false);
 			bean.setTiersAnnulesSeulement(false);
@@ -25,7 +24,7 @@ public class TiersActivationListManagerImpl implements TiersActivationListManage
 			bean.setInclureTiersAnnules(true);
 			bean.setTiersAnnulesSeulement(true);
 		}
-		bean.setTypeTiers(TiersActivationListView.TypeTiers.TIERS);
+		bean.setTypeTiers(TiersCriteria.TypeTiers.TIERS);
 		return bean;
 	}
 

@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.fusion;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -12,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
 public class NonHabitantListController  extends  AbstractTiersListController {
@@ -35,8 +35,8 @@ public class NonHabitantListController  extends  AbstractTiersListController {
 		if(	(bean == null) ||
 			((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
 			bean = (TiersCriteriaView) super.formBackingObject(request);
-			bean.setTypeRechercheDuNom(TiersCriteriaView.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiers(TiersCriteriaView.TypeTiers.NON_HABITANT);
+			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+			bean.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
 		}
 
 		return bean;

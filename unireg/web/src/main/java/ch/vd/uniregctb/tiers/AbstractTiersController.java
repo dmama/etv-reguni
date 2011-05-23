@@ -290,7 +290,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 
 	protected List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean) {
 
-		final List<TiersIndexedData> results = service.search(bean);
+		final List<TiersIndexedData> results = service.search(bean.asCore());
 		Assert.notNull(results);
 
 		final List<TiersIndexedDataView> list = new ArrayList<TiersIndexedDataView>(results.size());

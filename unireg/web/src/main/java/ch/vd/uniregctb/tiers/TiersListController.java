@@ -79,14 +79,14 @@ public class TiersListController extends AbstractTiersListController {
 			bean = (TiersCriteriaView) session.getAttribute(TIERS_CRITERIA_NAME);
 		 	if (bean == null) {
 				bean = (TiersCriteriaView) super.formBackingObject(request);
-				bean.setTypeRechercheDuNom(TiersCriteriaView.TypeRecherche.EST_EXACTEMENT);
+				bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 
 				//gestion des droits
 				if(!SecurityProvider.isGranted(Role.VISU_ALL)){
 					if(!SecurityProvider.isGranted(Role.VISU_LIMITE)){
 						throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 					}
-					bean.setTypeVisualisation(TiersCriteriaView.TypeVisualisation.LIMITEE);
+					bean.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.trace("utilisateur avec visualisation limitée");
 					}

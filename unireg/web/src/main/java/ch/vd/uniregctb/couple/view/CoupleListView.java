@@ -62,7 +62,6 @@ public class CoupleListView extends TiersCriteriaView {
 
 	@Override
 	public boolean isEmpty() {
-		return !conjointInconnu 
-				&& super.isEmpty();
+		return !conjointInconnu && super.isEmpty();
 	}
 }

@@ -19,6 +19,7 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
@@ -50,8 +51,8 @@ public class DossierListController  extends AbstractTiersListController {
 		if(	(bean == null) ||
 				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
 			bean = new TiersCriteriaView();
-			bean.setTypeRechercheDuNom(TiersCriteriaView.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiers(TiersCriteriaView.TypeTiers.PERSONNE_PHYSIQUE);
+			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+			bean.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 	 	}
 		return bean;
 	}

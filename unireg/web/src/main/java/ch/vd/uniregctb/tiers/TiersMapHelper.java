@@ -18,7 +18,6 @@ import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -121,9 +120,9 @@ public class TiersMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<TiersCriteriaView.TypeRecherche, String> getMapTypeRechercheNom() {
+	public Map<TiersCriteria.TypeRecherche, String> getMapTypeRechercheNom() {
 		if (mapTypeRechercheNom == null) {
-			mapTypeRechercheNom = initMapEnum(ApplicationConfig.masterKeyTypeRechercheNom, TiersCriteriaView.TypeRecherche.class);
+			mapTypeRechercheNom = initMapEnum(ApplicationConfig.masterKeyTypeRechercheNom, TiersCriteria.TypeRecherche.class);
 		}
 		return mapTypeRechercheNom;
 	}
@@ -133,10 +132,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<TiersCriteriaView.TypeRechercheLocalitePays, String> getMapTypeRechercheLocalitePays() {
+	public Map<TiersCriteria.TypeRechercheLocalitePays, String> getMapTypeRechercheLocalitePays() {
 		if (mapTypeRechercheLocalitePays == null) {
 			mapTypeRechercheLocalitePays = initMapEnum(ApplicationConfig.masterKeyTypeRechercheLocalitePays,
-					TiersCriteriaView.TypeRechercheLocalitePays.class);
+					TiersCriteria.TypeRechercheLocalitePays.class);
 		}
 		return mapTypeRechercheLocalitePays;
 	}
@@ -146,10 +145,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<TiersCriteriaView.TypeRechercheForFiscal, String> getMapTypeRechercheForFiscal() {
+	public Map<TiersCriteria.TypeRechercheForFiscal, String> getMapTypeRechercheForFiscal() {
 		if (mapTypeRechercheForFiscal == null) {
 			mapTypeRechercheForFiscal = initMapEnum(ApplicationConfig.masterKeyTypeRechercheForFiscal,
-					TiersCriteriaView.TypeRechercheForFiscal.class);
+					TiersCriteria.TypeRechercheForFiscal.class);
 		}
 		return mapTypeRechercheForFiscal;
 	}

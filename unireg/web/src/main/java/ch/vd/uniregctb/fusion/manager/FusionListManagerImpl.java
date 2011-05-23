@@ -10,8 +10,8 @@ import ch.vd.uniregctb.fusion.view.FusionListView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -77,8 +77,8 @@ public class FusionListManagerImpl implements FusionListManager, MessageSourceAw
  		TiersGeneralView nonHabView = tiersGeneralManager.getPersonnePhysique(nonHab, true);
 		fusionListView.setNonHabitant(nonHabView);
 		fusionListView.setNumeroNonHabitant(numeroNonHab);
-		fusionListView.setTypeRechercheDuNom(FusionListView.TypeRecherche.EST_EXACTEMENT);
-		fusionListView.setTypeTiers(TiersCriteriaView.TypeTiers.HABITANT);
+		fusionListView.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+		fusionListView.setTypeTiers(TiersCriteria.TypeTiers.HABITANT);
 		return fusionListView;
 	}
 

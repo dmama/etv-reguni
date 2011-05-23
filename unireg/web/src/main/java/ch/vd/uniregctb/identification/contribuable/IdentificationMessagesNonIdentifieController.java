@@ -14,7 +14,7 @@ import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEd
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 
 public class IdentificationMessagesNonIdentifieController extends AbstractIdentificationController {
 
@@ -59,7 +59,7 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 					if (!SecurityProvider.isGranted(Role.VISU_LIMITE)) {
 						throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 					}
-					bean.setTypeVisualisation(TiersCriteriaView.TypeVisualisation.LIMITEE);
+					bean.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.trace("utilisateur avec visualisation limitée");
 					}
