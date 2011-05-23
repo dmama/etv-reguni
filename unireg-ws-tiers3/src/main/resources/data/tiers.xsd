@@ -208,7 +208,6 @@
 		<xs:sequence>
 			<xs:element name="numeroTiersTitulaire" type="xs:long">
 				<xs:annotation>
-					<!-- TODO (msi) n'y a-t-il pas une solution plus élégante ? -->
 					<xs:documentation>Le numéro de tiers du titulaire du compte.
 						Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un tiers personne morale, ce numéro est égal au
 						numéro de la PM lorsqu'il s'agit du compte bancaire PM elle-même; et inversément, lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à celui du mandataire.

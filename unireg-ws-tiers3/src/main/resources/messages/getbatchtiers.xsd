@@ -43,21 +43,14 @@
 				<xs:annotation>
 					<xs:documentation>Le tiers demandé, ou non-renseigné si le tiers n'a pas été trouvé.
 						S'il le tiers est non-renseigné, il y a deux possibilités :
-						- si 'exceptionMessage' est non-renseigné : le tiers n'existe pas.
-						- si 'exceptionMessage' est renseigné : le tiers existe mais le web-service n'a pu pas le retourner. Dans ce cas, la raison est stockée dans 'exceptionMessage'.
+						- si 'exceptionInfo' est non-renseigné : le tiers n'existe pas.
+						- si 'exceptionInfo' est renseigné : le tiers existe mais le web-service n'a pu pas le retourner. Dans ce cas, la raison est stockée dans 'exceptionInfo'.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="exceptionMessage" type="xs:string">
+			<xs:element minOccurs="0" name="exceptionInfo" type="unireg:webServiceExceptionInfoType">
 				<xs:annotation>
-					<xs:documentation>Un message explicatif si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement pas.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<!-- TODO (msi) transmettre plutôt un WebServiceExceptionInfo ? -->
-			<xs:element minOccurs="0" name="exceptionType" type="unireg:typeWebServiceExceptionType">
-				<xs:annotation>
-					<xs:documentation>Le type d'exception si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement pas.
+					<xs:documentation>La raison de l'exception si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement pas.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>

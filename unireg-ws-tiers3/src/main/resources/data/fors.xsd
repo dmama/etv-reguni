@@ -168,18 +168,32 @@
 			<xs:enumeration value="INDIGENT" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="assujettissementType">
-		<!-- TODO (msi) revoir ces définitions, elles sont trop spécifiques aux besoins de SIPF -->
+	<xs:complexType name="periodeAssujettissementType">
+		<xs:annotation>
+			<xs:documentation>Cette classe contient les date de début et de fin d'une période d'assujettissement d'un contribuable pour un niveau institutionnel donné (cantonal ou fédéral).
+			</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="dateDebut" type="unireg:dateType" />
 			<xs:element name="dateFin" type="unireg:dateType" />
-			<xs:element name="type" type="unireg:typeAssujettissementType" />
+			<xs:element name="type" type="unireg:typePeriodeAssujettissementType" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="typeAssujettissementType">
+	<xs:simpleType name="typePeriodeAssujettissementType">
+		<xs:annotation>
+			<xs:documentation>Défini le type d'assujettissement d'une période d'assujettissement.</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="LIMITE" />
-			<xs:enumeration value="ILLIMITE" />
+			<xs:enumeration value="LIMITE">
+				<xs:annotation>
+					<xs:documentation>Type d'assujettissement pour raisons économiques uniquement (activité indépendante, immeuble, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ILLIMITE">
+				<xs:annotation>
+					<xs:documentation>Type d'assujettissement à raison de domicile/siège (plus éventuellement pour des raisons économiques).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="periodeImpositionType">
@@ -193,5 +207,130 @@
 			<xs:element name="dateFin" type="unireg:dateType" />
 			<xs:element minOccurs="0" name="idDI" type="xs:long" />
 		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType abstract="true" name="assujettissementType">
+		<xs:annotation>
+			<xs:documentation>Classe de base des différents types d'assujettissement théoriques d'un contribuable.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateDebut" type="unireg:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de début de l'assujettissement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFin" type="unireg:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de fin de l'assujettissement. Si l'assujettissement est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="motifDebut" type="unireg:motifForType">
+				<xs:annotation>
+					<xs:documentation>Le motif de début d'assujettissement. Non-renseigné si le motif est inconnu (pour une raison ou une autre).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="motifFin" type="unireg:motifForType">
+				<xs:annotation>
+					<xs:documentation>Le motif de fin d'assujettissement. Si l'assujettissement est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="diplomateSuisseType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type diplomate Suisse; c'est-à-dire pour un diplomate de nationalité Suisse, basé à l'étranger mais rattaché à une commune vaudoise (pour imposition à
+				l'IFD).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:assujettissementType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="horsCantonType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type hors Canton; c'est-à-dire pour un contribuable domicilié dans un canton autre que le canton de vaud, et possédant un ou plusieurs fors
+				secondaires actifs dans une commune vaudoise.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:assujettissementType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="horsSuisseType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type hors Suisse; c'est-à-dire pour un contribuable domicilié dans un pays étranger, et possédant un ou plusieurs fors secondaires actifs dans une
+				commune vaudoise.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:assujettissementType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="indigentType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type indigent; c'est-à-dire pour un contribuable domicilié dans une commune vaudoise, mais n'ayant pas de revenu ni fortune personnelle et au bénéfice
+				d'une décision de l'ACI l'exemptant de déclaration d'impôt.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:assujettissementType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType abstract="true" name="sourcierType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier; c'est-à-dire pour un contribuable (non-Suisse et sans permis C) dont l'impôt est directement ponctionné sur son salaire (imposition à
+				la source).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:assujettissementType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="typeAutoriteFiscale" type="unireg:typeAutoriteFiscaleType">
+						<xs:annotation>
+							<xs:documentation>Le type qui permet de distinguer un sourcier vaudois, d'un hors-canton ou hors-Suisse.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="sourcierPurType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier; c'est-à-dire pour un contribuable (non-Suisse et sans permis C) dont l'impôt est directement ponctionné sur son salaire (imposition à
+				la source).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:sourcierType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="sourcierMixteType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier mixte; c'est-à-dire pour un contribuable imposé à la source mais qui remplit une déclaration d'impôt car il possède un revenu
+				suffisamment élevé, ou il est en ménage avec un contribuable qui possède un permis C.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:sourcierType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="vaudoisDepenseType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement à la dépense; c'est-à-dire pour un contribuable étranger, domicilé dans le canton de Vaud mais sans activité lucrative sur territoire Suisse, et qui a
+				négocié un forfait d'imposition avec l'ACI.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:assujettissementType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="vaudoisOrdinaireType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type vaudois ordinaire; c'est-à-dire pour un contribuable Suisse ou permis C, domicilié dans le canton de Vaud et exerçant une activité lucrative
+				(dans le canton ou ailleurs). Ce cas représente la majorité des contribuables.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="unireg:assujettissementType" />
+		</xs:complexContent>
 	</xs:complexType>
 </xs:schema>

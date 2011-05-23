@@ -13,6 +13,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="adresseType">
+		<!-- TODO (msi) utiliser une adresse eCH -->
 		<xs:annotation>
 			<xs:documentation>Représente une adresse fiscale d'un tiers dans Unireg valide pendant une période déterminée. Généralement, un tiers possède plusieurs adresses en fonction de ses
 				changements d'adresses. C'est pourquoi, cette adresse ne contient pas les données du destinataire (= la personne) mais uniquement les données de destination (= le lieu).

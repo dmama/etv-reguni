@@ -54,6 +54,7 @@
 			<xs:enumeration value="FORS_GESTION" />
 			<xs:enumeration value="COMPOSANTS_MENAGE" />
 			<xs:enumeration value="ASSUJETTISSEMENTS" />
+			<xs:enumeration value="PERIODES_ASSUJETTISSEMENT" />
 			<xs:enumeration value="PERIODES_IMPOSITION" />
 			<xs:enumeration value="RAPPORTS_ENTRE_TIERS" />
 			<xs:enumeration value="SITUATIONS_FAMILLE" />

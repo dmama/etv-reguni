@@ -13,28 +13,36 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="situationsFamille" type="unireg:situationFamilleType">
 						<xs:annotation>
 							<xs:documentation>L'historique complet des situations de famille du contribuable.
-								Attention ! Cette date n'est renseignée qui si la part SITUATIONS_FAMILLE est demandée.
+								Attention ! Cette collection n'est renseignée qui si la part SITUATIONS_FAMILLE est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="assujettissementsLIC" type="unireg:assujettissementType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="assujettissementsRole" type="unireg:assujettissementType">
 						<xs:annotation>
-							<xs:documentation>L'historique des assujettissements LIC du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
-								Attention ! Cette date n'est renseignée qui si la part ASSUJETTISSEMENTS est demandée.
+							<xs:documentation>L'historique complet des assujettissements du contribuable du point de vue du rôle ordinaire (en cas de conflit entre l'assujettissement source et
+								ordinaire, l'assujettissement ordinaire est privilégié).
+								Attention ! Cette collection n'est renseignée qui si la part ASSUJETTISSEMENTS est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="assujettissementsLIFD" type="unireg:assujettissementType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodesAssujettissementLIC" type="unireg:periodeAssujettissementType">
 						<xs:annotation>
-							<xs:documentation>L'historique des assujettissements LIFD du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
-								Attention ! Cette date n'est renseignée qui si la part ASSUJETTISSEMENTS est demandée.
+							<xs:documentation>La liste des périodes d'assujettissement au niveau cantonal (LIC) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+								Attention ! Cette collection n'est renseignée qui si la part PERIODES_ASSUJETTISSEMENT est demandée.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodesAssujettissementLIFD" type="unireg:periodeAssujettissementType">
+						<xs:annotation>
+							<xs:documentation>La liste des périodes d'assujettissement au niveau fédéral (LIFD) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+								Attention ! Cette collection n'est renseignée qui si la part PERIODES_ASSUJETTISSEMENT est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodesImposition" type="unireg:periodeImpositionType">
 						<xs:annotation>
 							<xs:documentation>La liste des périodes d'imposition. Cette liste peut être vide si le tiers n'est pas assujetti.
-								Attention ! Cette date n'est renseignée qui si la part PERIODES_IMPOSITION est demandée.
+								Attention ! Cette collection n'est renseignée qui si la part PERIODES_IMPOSITION est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
