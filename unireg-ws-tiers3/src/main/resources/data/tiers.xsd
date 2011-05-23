@@ -297,10 +297,10 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateNaissance" type="xs:string">
+			<xs:element minOccurs="0" name="dateNaissance" type="unireg:dateType">
 				<xs:annotation>
-					<xs:documentation>La date de naissance de la personne physique (au format YYYYMMDD). Ce champs n'est pas renseigné pour les autres types de tiers.
-						Attention ! Cette date peut être partielle au niveau du jour et du mois (ex: "197311" - jour de naissance inconnu, "1973" - jour et mois de naissance inconnus).
+					<xs:documentation>La date de naissance de la personne physique. Ce champs n'est pas renseigné pour les autres types de tiers.
+						Attention ! Cette date peut être partielle au niveau du jour et du mois (ex: "1973.11" - jour de naissance inconnu, "1973" - jour et mois de naissance inconnus).
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
