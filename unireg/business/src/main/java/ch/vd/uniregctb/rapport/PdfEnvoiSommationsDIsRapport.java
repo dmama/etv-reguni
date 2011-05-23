@@ -31,7 +31,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         addEnteteUnireg();
 
         // Titre
-        addTitrePrincipal("Sommation des DIs au " + results.getDateTraitement());
+        addTitrePrincipal("Sommation des déclarations d'impôt");
 
         // Paramètres
         addEntete1("Paramètres");
