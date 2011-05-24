@@ -16,16 +16,16 @@ public class UniregCustomWsPlugin extends Plugin {
 
 	private static final Logger LOGGER = Logger.getLogger(UniregCustomWsPlugin.class.getName());
 
-	private static final String EQUALS_DATE = "\n@Override\n" +
-			"public boolean equals(Object obj) {\n" +
-			"\tif (this == obj)\n" +
-			"\t\treturn true;\n" +
-			"\tif (obj == null)\n" +
-			"\t\treturn false;\n" +
-			"\tif (getClass() != obj.getClass())\n" +
-			"\t\treturn false;\n" +
-			"\tDate other = (Date) obj;\n" +
-			"\treturn day == other.day && month == other.month && year == other.year;\n" +
+	private static final String EQUALS_DATE = "\n    @Override\n" +
+			"    public boolean equals(Object obj) {\n" +
+			"        if (this == obj)\n" +
+			"            return true;\n" +
+			"        if (obj == null)\n" +
+			"        return false;\n" +
+			"    if (getClass() != obj.getClass())\n" +
+			"        return false;\n" +
+			"    Date other = (Date) obj;\n" +
+			"    return day == other.day && month == other.month && year == other.year;\n" +
 			"}";
 
 	@Override
