@@ -262,7 +262,7 @@ public class ProduireRolesProcessor {
 
 		if (ppByNoIndividu.size() > 0) {
 			// remplit le cache des individus...
-			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, AttributeIndividu.ADRESSES);
+			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), 2400, AttributeIndividu.ADRESSES);
 
 			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès et au sexe)
 			for (Individu individu : individus) {
