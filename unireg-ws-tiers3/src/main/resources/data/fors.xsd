@@ -156,6 +156,8 @@
 			<xs:enumeration value="CHGT_MODE_IMPOSITION" />
 			<xs:enumeration value="ANNULATION" />
 			<xs:enumeration value="REACTIVATION" />
+			<xs:enumeration value="DEBUT_ACTIVITE_DIPLOMATIQUE" />
+			<xs:enumeration value="FIN_ACTIVITE_DIPLOMATIQUE" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="modeImpositionType">

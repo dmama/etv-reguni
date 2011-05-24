@@ -117,6 +117,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<!-- TODO (msi) renommer en adresseCourrierFormattee -->
 			<xs:element minOccurs="0" name="adresseEnvoi" type="unireg:adresseEnvoiType">
 				<xs:annotation>
 					<xs:documentation>Adresse courrier formattée pour l'envoi (six lignes).

@@ -48,6 +48,7 @@
 	<xs:simpleType name="tiersPartType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ADRESSES" />
+			<!-- TODO (msi) renommer en ADRESSES_FORMATTEES-->
 			<xs:enumeration value="ADRESSES_ENVOI" />
 			<xs:enumeration value="FORS_FISCAUX" />
 			<xs:enumeration value="FORS_FISCAUX_VIRTUELS" />
