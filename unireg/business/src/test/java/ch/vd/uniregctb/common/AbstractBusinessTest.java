@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.test.context.ContextConfiguration;
@@ -308,7 +309,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return rpi;
 	}
 
-	protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, RegDate fin, MockRue rue) {
+	protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, MockRue rue) {
 		AdresseSuisse adresse = new AdresseSuisse();
 		adresse.setDateDebut(debut);
 		adresse.setDateFin(fin);

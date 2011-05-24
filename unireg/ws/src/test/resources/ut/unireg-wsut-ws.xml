@@ -43,4 +43,26 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
+	<!-- Beans du web-service Tiers v3 mais sans le end-point jaxws -->
+
+	<bean id="tiersService3EndPoint" class="ch.vd.uniregctb.webservices.tiers3.impl.TiersWebServiceEndPoint">
+		<property name="service" ref="tiersService3Impl" />
+	</bean>
+
+	<bean id="tiersService3Impl" class="ch.vd.uniregctb.webservices.tiers3.impl.TiersWebServiceImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+	</bean>
+
 </beans>

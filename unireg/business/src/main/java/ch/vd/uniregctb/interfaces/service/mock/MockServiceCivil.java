@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -236,7 +237,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une rue).
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, String casePostale, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, @Nullable String casePostale, @Nullable RegDate debutValidite, @Nullable RegDate finValidite) {
 
 		final Adresse adresse = newAdresse(type, rue, casePostale, debutValidite, finValidite);
 		add(individu, adresse);

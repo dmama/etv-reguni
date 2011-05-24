@@ -643,8 +643,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 */
 	private static DeclarationImpotOrdinaire findDeclaration(final ch.vd.uniregctb.tiers.Contribuable contribuable, final int annee, int numeroSequenceDI) {
 
-		DeclarationImpotOrdinaire declaration = null;
+		// [SIFISC-1227] Nous avons des cas où le numéro de séquence a été ré-utilisé après annulation d'une DI précédente
+		// -> on essaie toujours de renvoyer la déclaration non-annulée qui correspond et, s'il n'y en a pas, de renvoyer
+		// la dernière déclaration annulée trouvée
 
+		DeclarationImpotOrdinaire declaration = null;
+		DeclarationImpotOrdinaire declarationAnnuleeTrouvee = null;
 		final List<Declaration> declarations = contribuable.getDeclarationsSorted();
 		if (declarations != null && !declarations.isEmpty()) {
 			for (Declaration d : declarations) {
@@ -653,20 +657,22 @@ public class TiersWebServiceImpl implements TiersWebService {
 				}
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 				if (numeroSequenceDI == 0) {
-					// Dans le cas ou le numero dans l'année n'est pas spécifié on prend la dernière DI trouvée sur la période
+					// Dans le cas où le numero dans l'année n'est pas spécifié on prend la dernière DI trouvée sur la période
 					declaration = di;
 				}
-				else {
-					if (di.getNumero() == numeroSequenceDI) {
+				else if (di.getNumero() == numeroSequenceDI) {
+					if (di.isAnnule()) {
+						declarationAnnuleeTrouvee = di;
+					}
+					else {
 						declaration = di;
 						break;
 					}
 				}
-
 			}
 		}
 
-		return declaration;
+		return declaration != null ? declaration : declarationAnnuleeTrouvee;
 	}
 
 }

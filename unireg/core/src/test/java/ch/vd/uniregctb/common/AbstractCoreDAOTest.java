@@ -39,6 +39,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -825,7 +826,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Crée et ajoute dans la base de données un non-habitant minimal.
 	 */
-	protected PersonnePhysique addNonHabitant(String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+	protected PersonnePhysique addNonHabitant(@Nullable String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 		return addNonHabitant(null, prenom, nom, dateNaissance, sexe);
 	}
 
@@ -860,7 +861,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
-	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage, RegDate dateFin) {
+	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
 		return addEnsembleTiersCouple(null, principal, conjoint, dateMariage, dateFin);
 	}
 
@@ -890,7 +891,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return ensemble;
 	}
 
-	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, RegDate dateFin) {
+	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, @Nullable CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, @Nullable RegDate dateFin) {
 		Tutelle rapport = new Tutelle(dateDebut, dateFin, pupille, tuteur, autoriteTutelaire);
 		rapport = (Tutelle) hibernateTemplate.merge(rapport);
 		tuteur.addRapportObjet(rapport);
@@ -898,7 +899,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, RegDate dateDebut, RegDate dateFin) {
+	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 		Curatelle rapport = new Curatelle(dateDebut, dateFin, pupille, curateur, null);
 		rapport = (Curatelle) hibernateTemplate.merge(rapport);
 		curateur.addRapportObjet(rapport);
@@ -918,7 +919,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected ConseilLegal addConseilLegal(PersonnePhysique pupille, Tiers conseiller, RegDate dateDebut, RegDate dateFin) {
+	protected ConseilLegal addConseilLegal(PersonnePhysique pupille, Tiers conseiller, RegDate dateDebut, @Nullable RegDate dateFin) {
 		ConseilLegal rapport = new ConseilLegal(dateDebut, dateFin, pupille, conseiller, null);
 		rapport = (ConseilLegal) hibernateTemplate.merge(rapport);
 		conseiller.addRapportObjet(rapport);

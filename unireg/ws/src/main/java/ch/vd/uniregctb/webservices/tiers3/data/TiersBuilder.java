@@ -15,6 +15,8 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.webservices.tiers3.Adresse;
+import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.CategoriePersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers3.Contribuable;
 import ch.vd.uniregctb.webservices.tiers3.Debiteur;
@@ -389,11 +391,30 @@ public class TiersBuilder {
 		}
 
 		if (adresses != null) {
-			tiers.getAdressesCourrier().addAll(DataHelper.coreToWeb(adresses.courrier, null, context.infraService));
-			tiers.getAdressesRepresentation().addAll(DataHelper.coreToWeb(adresses.representation, null, context.infraService));
-			tiers.getAdressesDomicile().addAll(DataHelper.coreToWeb(adresses.domicile, null, context.infraService));
-			tiers.getAdressesPoursuite().addAll(DataHelper.coreToWeb(adresses.poursuite, null, context.infraService));
-			tiers.getAdressesPoursuiteAutreTiers().addAll(DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null, context.infraService));
+			final List<Adresse> adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null, context.infraService);
+			if (adressesCourrier != null) {
+				tiers.getAdressesCourrier().addAll(adressesCourrier);
+			}
+
+			final List<Adresse> adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null, context.infraService);
+			if (adressesRepresentation != null) {
+				tiers.getAdressesRepresentation().addAll(adressesRepresentation);
+			}
+
+			final List<Adresse> adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null, context.infraService);
+			if (adressesDomicile != null) {
+				tiers.getAdressesDomicile().addAll(adressesDomicile);
+			}
+
+			final List<Adresse> adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null, context.infraService);
+			if (adressesPoursuite != null) {
+				tiers.getAdressesPoursuite().addAll(adressesPoursuite);
+			}
+
+			final List<AdresseAutreTiers> adresseAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null, context.infraService);
+			if (adresseAutreTiers != null) {
+				tiers.getAdressesPoursuiteAutreTiers().addAll(adresseAutreTiers);
+			}
 		}
 	}
 
