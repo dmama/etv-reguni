@@ -283,7 +283,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		// système de recherche ajax de l'OID
 		b.append("<script>\n");
 		b.append("    $(function() {\n");
-		b.append("        autocomplete_infra('communeVD', '#").append(idInputNomCommune).append("', function(item) {\n");
+		b.append("        autocomplete_infra('communeVD', '#").append(idInputNomCommune).append("', true, function(item) {\n");
 		b.append("            if (item) {\n");
 		b.append("                $('#").append(idInputNoOfs).append("').val(item.id1);\n");
 		b.append("                $('#").append(idInputNomCommune).append("').removeClass('error');\n");
@@ -322,7 +322,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		// système de recherche ajax de l'OID
 		b.append("<script>\n");
 		b.append("    $(function() {\n");
-		b.append("        autocomplete_infra('officeImpot', '#").append(idInputNomOID).append("', function(item) {\n");
+		b.append("        autocomplete_infra('officeImpot', '#").append(idInputNomOID).append("', true, function(item) {\n");
 		b.append("            if (item) {\n");
 		b.append("                $('#").append(idInputNoColAdm).append("').val(item.id1);\n");
 		b.append("                $('#").append(idInputNomOID).append("').removeClass('error');\n");
