@@ -14,7 +14,6 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
@@ -62,7 +61,7 @@ import ch.vd.uniregctb.webservices.tiers3.data.AdresseBuilder;
  */
 public class DataHelper {
 
-	private static final Logger LOGGER = Logger.getLogger(DataHelper.class);
+	//private static final Logger LOGGER = Logger.getLogger(DataHelper.class);
 
 	public static boolean coreToWeb(Boolean value) {
 		return value != null && value;
@@ -404,6 +403,7 @@ public class DataHelper {
 			case FORS_FISCAUX_VIRTUELS:
 			case FORS_GESTION:
 			case ASSUJETTISSEMENTS:
+			case PERIODES_ASSUJETTISSEMENT:
 			case PERIODES_IMPOSITION:
 				results.add(Parts.FORS_FISCAUX);
 				break;
