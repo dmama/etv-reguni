@@ -46,7 +46,6 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
-import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
@@ -134,11 +133,6 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setNoOfsTranslator(NoOfsTranslator translator) {
-		context.noOfsTranslator = translator;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate template) {
 		context.hibernateTemplate = template;
 	}
@@ -159,7 +153,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public SearchTiersResponse searchTiers(SearchTiersRequest params) throws WebServiceException {
 
 		try {
@@ -195,6 +189,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@Override
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public Tiers getTiers(GetTiersRequest params) throws WebServiceException {
 
 		try {
@@ -418,7 +413,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public TypeTiers getTiersType(GetTiersTypeRequest params) throws WebServiceException {
 
 		try {
@@ -467,7 +462,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		throw ExceptionHelper.newTechnicalException("Fonctionnalité pas encore implémentée.");
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfoRequest params) throws WebServiceException {
 
 		try {
@@ -557,7 +552,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 
 		try {
