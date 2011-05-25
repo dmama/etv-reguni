@@ -579,46 +579,14 @@ public class TacheServiceImpl implements TacheService {
 		//
 
 		for (TacheEnvoiDeclarationImpot envoi : tachesEnvoi) {
-			final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
-			if (periode == null) {
-				// pas de période correspondante -> la tâche n'est plus valable
+			if (!isTacheEnvoiValide(envoi, periodes, declarations, updateActions)) {
 				annuleActions.add(new AnnuleTache(envoi));
-			}
-			else {
-				if (envoi.getTypeContribuable() != periode.getTypeContribuable()) {
-					// il y a une période correspondante, mais le type ne correspond pas -> la tâche n'est plus valable
-					annuleActions.add(new AnnuleTache(envoi));
-				}
-				else {
-					// la tâche est valide
-				}
 			}
 		}
 
 		for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
-			final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
-			if (declaration.isAnnule()) {
-				// la déclaration est déjà annulée
+			if (!isTacheAnnulationValide(annulation, periodes, updateActions, anneeCourante)) {
 				annuleActions.add(new AnnuleTache(annulation));
-			}
-			else if (isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
-				// la tâche est invalide
-				annuleActions.add(new AnnuleTache(annulation));
-			}
-			else {
-				final PeriodeImposition periode = getMatchingRangeAt(periodes, declaration);
-				if (periode == null) {
-					// il n'y a pas de période d'imposition correspondante, la tâche d'annulation est donc valide
-				}
-				else {
-					if (periode.getTypeContribuable() != declaration.getTypeContribuable() && !peutMettreAJourDeclarationExistante(declaration, periode, anneeCourante)) { // [UNIREG-3028]
-						// la période et le type de contribuable ne correspondantes pas, la tâche d'annulation est donc valide
-					}
-					else {
-						// la tâche est invalide
-						annuleActions.add(new AnnuleTache(annulation));
-					}
-				}
 			}
 		}
 
@@ -637,11 +605,91 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
+	 * Détermine si la tâche d'envoi d'une déclaration d'impôt est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
+	 *
+	 * @param envoi         une tâche d'envoi
+	 * @param periodes      les périodes d'imposition théorique du contribuable
+	 * @param declarations  les déclarations existantes
+	 * @param updateActions les actions prévues de mise-à-jour des déclarations
+	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
+	 */
+	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
+
+		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
+		if (periode == null) {
+			// pas de période correspondante -> la tâche n'est plus valable
+			return false;
+		}
+
+		if (envoi.getTypeContribuable() != periode.getTypeContribuable()) {
+			// il y a une période correspondante, mais le type ne correspond pas -> la tâche n'est plus valable
+			return false;
+		}
+
+
+		final DeclarationImpotOrdinaire declaration = getMatchingRangeAt(declarations, periode);
+		if (declaration == null) {
+			// il n'y a pas de déclaration, la tâche est donc valide
+			return true;
+		}
+
+		if (isDeclarationToBeUpdated(updateActions, declaration)) { // [SIFISC-1288]
+			// la déclaration existante va être mise-à-jour, la tâche est donc invalide
+			return false;
+		}
+
+		if (envoi.getTypeContribuable() == declaration.getTypeContribuable()) {
+			// le type de contribuable de la tâche d'envoi et de la déclaration correspondent, la tâche d'envoi est donc invalide
+			return false;
+		}
+
+		// la tâche est valide
+		return true;
+	}
+
+	/**
+	 * Détermine si la tâche d'annulation d'une déclaration d'impôt est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
+	 *
+	 * @param annulation    une tâche d'annulation
+	 * @param periodes      les périodes d'imposition théorique du contribuable
+	 * @param updateActions les actions prévues de mise-à-jour des déclarations
+	 * @param anneeCourante l'année courante
+	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
+	 */
+	private static boolean isTacheAnnulationValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, int anneeCourante) {
+
+		final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
+		if (declaration.isAnnule()) {
+			// la déclaration est déjà annulée
+			return false;
+		}
+
+		if (isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
+			// la déclaration va être mise-à-jour, la tâche d'annulation est donc invalide
+			return false;
+		}
+
+		final PeriodeImposition periode = getMatchingRangeAt(periodes, declaration);
+		if (periode == null) {
+			// il n'y a pas de période d'imposition correspondante, la tâche d'annulation est donc valide
+			return true;
+		}
+
+		//noinspection RedundantIfStatement
+		if (periode.getTypeContribuable() == declaration.getTypeContribuable() || peutMettreAJourDeclarationExistante(declaration, periode, anneeCourante)) { // [UNIREG-3028]
+			// le type de contribuable de la période et de la déclaration correspondent, la tâche d'annulation est donc invalide.
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * @param updateActions la liste des actions de mise-à-jour
 	 * @param declaration   une déclaration d'impôt
 	 * @return <b>vrai</b> si la déclaration spécifiée est référencée dans la liste d'actions de mise-à-jour; <b>faux</b> si ce n'est pas le cas.
 	 */
-	private boolean isDeclarationToBeUpdated(List<UpdateDI> updateActions, DeclarationImpotOrdinaire declaration) {
+	private static boolean isDeclarationToBeUpdated(List<UpdateDI> updateActions, DeclarationImpotOrdinaire declaration) {
 		boolean declarationUpdated = false;
 		if (!updateActions.isEmpty()) {
 			for (UpdateDI updateAction : updateActions) {
@@ -822,7 +870,7 @@ public class TacheServiceImpl implements TacheService {
 		return tachesEnvoi;
 	}
 
-	private <T extends DateRange> T getMatchingRangeAt(List<T> dis, DateRange range) {
+	private static <T extends DateRange> T getMatchingRangeAt(List<T> dis, DateRange range) {
 		if (dis == null) {
 			return null;
 		}

@@ -13,7 +13,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -1219,7 +1218,7 @@ public class TacheServiceTest extends BusinessTest {
 		// fin d'activité indépendante ctb HS -> émission de la tâche d'émission de DI du 1er janvier à la date de fermeture + une tâche de contrôle de dossier
 
 		final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.raoulId);
-		Assert.notNull(pp);
+		assertNotNull(pp);
 
 		final TacheCriteria criterion = new TacheCriteria();
 		criterion.setContribuable(pp);
@@ -2285,7 +2284,7 @@ public class TacheServiceTest extends BusinessTest {
 			taches = tacheDAO.find(criterion);
 			assertNotNull(taches);
 			assertEquals(1, taches.size());
-			Assert.isTrue(taches.get(0) instanceof TacheEnvoiDeclarationImpot);
+			assertTrue(taches.get(0) instanceof TacheEnvoiDeclarationImpot);
 			TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) taches.get(0);
 			assertNotNull(tacheEnvoi);
 			if (debutAnnee) {
@@ -2302,7 +2301,7 @@ public class TacheServiceTest extends BusinessTest {
 			final List<Tache> taches = tacheDAO.find(criterion);
 			assertNotNull(taches);
 			assertEquals(1, taches.size());
-			Assert.isTrue(taches.get(0) instanceof TacheEnvoiDeclarationImpot);
+			assertTrue(taches.get(0) instanceof TacheEnvoiDeclarationImpot);
 			final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) taches.get(0);
 			assertNotNull(tacheEnvoi);
 			assertEquals(RegDate.get(2007, 1, 1), tacheEnvoi.getDateDebut());
@@ -2340,7 +2339,7 @@ public class TacheServiceTest extends BusinessTest {
 		int size = taches.size();
 		assertEquals(nombreResultats, size);
 		for (int i = 0; i < size; ++i) {
-			Assert.isTrue(taches.get(i) instanceof TacheAnnulationDeclarationImpot);
+			assertTrue(taches.get(i) instanceof TacheAnnulationDeclarationImpot);
 			tacheAnnulation = (TacheAnnulationDeclarationImpot) taches.get(i);
 			assertNotNull(tacheAnnulation);
 		}
@@ -2355,7 +2354,7 @@ public class TacheServiceTest extends BusinessTest {
 		criterion.setContribuable(noContribuable);
 		declarations = diDAO.find(criterion);
 		for (DeclarationImpotOrdinaire declarationImpotOrdinaire : declarations) {
-			Assert.isNull(declarationImpotOrdinaire.getAnnulationDate());
+			assertNull(declarationImpotOrdinaire.getAnnulationDate());
 		}
 
 
@@ -3730,6 +3729,109 @@ public class TacheServiceTest extends BusinessTest {
 				final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
 				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
+				return null;
+			}
+		});
+	}
+
+	// [SIFISC-1288]
+	@Test
+	@NotTransactional
+	public void testRecalculTachesAvecDiSansTypeContribuableEtDeuxTachesAnnulationEtEnvoi() throws Exception {
+
+		final long noInd = 333908L;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Corbaz", "Magali", false);
+				addAdresse(ind, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null, 1);
+			}
+		});
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// Crée un contribuable assujettissement sur l'année 2008 comme hors-canton immeuble, avec une déclaration à laquelle il manque le type de contribuable et
+		// avec deux tâches : une d'annulation de la DI et une autre d'émission d'une DI de remplacement.
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 1), MotifFor.DEPART_HC, MockCommune.Orbe);
+				addForPrincipal(pp, date(2008, 5, 2), MotifFor.DEPART_HC, date(2009, 2, 28), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+				addForPrincipal(pp, date(2009, 3, 1), MotifFor.ARRIVEE_HC, MockCommune.Orbe);
+				addForSecondaire(pp, date(2008, 5, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Orbe.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				// déclaration 2005-2007 (rien de spécial)
+				for (int annee = 2005; annee < 2008; annee++) {
+					final PeriodeFiscale pf = addPeriodeFiscale(annee);
+					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+					addDeclarationImpot(pp, pf, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				}
+
+				// déclaration 2008 (manque le type de contribuable)
+				final PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
+				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
+				final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, pf2008, RegDate.get(2008, 1, 1), RegDate.get(2008, 12, 31), null, modele2008);
+
+
+				// déclaration 2009-année courante (rien de spécial)
+				for (int annee = 2009; annee < anneeCourante; annee++) {
+					final PeriodeFiscale pf = addPeriodeFiscale(annee);
+					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+					addDeclarationImpot(pp, pf, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				}
+
+				// les deux tâches
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.ACI.getNoColAdm());
+				assertNotNull(aci);
+				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), declaration2008, pp, aci);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp,
+						Qualification.MANUEL, aci);
+
+				return pp.getId();
+			}
+		});
+
+		// après le recalcul des tâches, la déclaration devrait avoir sont type de contribuable renseigné et les deux tâches préexistantes devraient avoir été annulées
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final List<Declaration> declarations = pp.getDeclarationsForPeriode(2008);
+				assertNotNull(declarations);
+				assertEquals(1, declarations.size());
+
+				// le type de contribuable doit être maintenant renseigné
+				final DeclarationImpotOrdinaire di =(DeclarationImpotOrdinaire) declarations.get(0);
+				assertEquals(TypeContribuable.HORS_CANTON, di.getTypeContribuable());
+
+				// la tâche d'annulation doit être annulée
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+					criterion.setInclureTachesAnnulees(true);
+
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+					assertTrue(taches.get(0).isAnnule());
+				}
+
+				// la tâche d'envoi doit être annulée
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setInclureTachesAnnulees(true);
+
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+					assertTrue(taches.get(0).isAnnule());
+				}
 				return null;
 			}
 		});
