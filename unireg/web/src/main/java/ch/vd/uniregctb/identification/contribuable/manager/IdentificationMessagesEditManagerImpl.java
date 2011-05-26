@@ -99,9 +99,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 			identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS11()));	
 		}
 
-		if (identificationContribuable.getDemande().getPersonne().getDateNaissance() != null) {
-			identificationMessagesEditView.setDateNaissance(getDateNaissanceFromDemande(identificationContribuable));
-		}
+
 		return identificationMessagesEditView;
 	}
 
