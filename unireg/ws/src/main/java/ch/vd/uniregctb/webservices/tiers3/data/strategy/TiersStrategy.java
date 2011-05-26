@@ -154,7 +154,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 			 * du mode de copie, il est donc nécessaire de compléter ou de filtrer les fors fiscaux.
 			 */
 			if (mode == CopyMode.ADDITIF) {
-				if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS) || to.getForsFiscauxPrincipaux() == null) {
+				if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS) || to.getForsFiscauxPrincipaux() == null || to.getForsFiscauxPrincipaux().isEmpty()) {
 					copyColl(to.getForsFiscauxPrincipaux(), from.getForsFiscauxPrincipaux());
 				}
 			}
@@ -165,7 +165,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 				}
 				else {
 					// supprime les éventuels fors virtuels s'ils ne sont pas demandés
-					if (from.getForsFiscauxPrincipaux() != null) {
+					if (from.getForsFiscauxPrincipaux() != null && !from.getForsFiscauxPrincipaux().isEmpty()) {
 						to.getForsFiscauxPrincipaux().clear();
 						for (ForFiscal f : from.getForsFiscauxPrincipaux()) {
 							if (!f.isVirtuel()) {

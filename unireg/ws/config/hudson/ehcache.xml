@@ -83,4 +83,12 @@
         overflowToDisk="false"
         />
         
+    <cache name="webServiceTiers3"
+        maxElementsInMemory="1000"
+        eternal="false"
+        timeToIdleSeconds="300"
+        timeToLiveSeconds="300"
+        overflowToDisk="false"
+        />
+
 </ehcache>

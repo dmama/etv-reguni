@@ -12,13 +12,16 @@ public class BatchTiersBuilder {
 		final BatchTiers b = new BatchTiers();
 		if (map != null) {
 			for (Map.Entry<Long, Object> e : map.entrySet()) {
-				b.getEntries().add(newBatchTiersEntry(e.getKey(), e.getValue()));
+				final Long id = e.getKey();
+				if (id != null) {
+					b.getEntries().add(newBatchTiersEntry(id, e.getValue()));
+				}
 			}
 		}
 		return b;
 	}
 
-	public static BatchTiersEntry newBatchTiersEntry(Long numero, Object value) {
+	public static BatchTiersEntry newBatchTiersEntry(long numero, Object value) {
 		final BatchTiersEntry b = new BatchTiersEntry();
 		b.setNumber(numero);
 		if (value == null) {

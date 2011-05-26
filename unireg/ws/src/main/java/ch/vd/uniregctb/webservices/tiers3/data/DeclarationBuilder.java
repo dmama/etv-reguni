@@ -9,12 +9,23 @@ import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 
 public class DeclarationBuilder {
+
 	public static DeclarationImpotOrdinaire newDeclarationImpotOrdinaire(ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire declaration) {
+
 		final DeclarationImpotOrdinaire d = new DeclarationImpotOrdinaire();
 		fillDeclarationBase(d, declaration);
+
 		d.setNumero(Long.valueOf(declaration.getNumero()));
 		d.setTypeDocument(EnumHelper.coreToWeb(declaration.getTypeDeclaration()));
-		d.setNumeroOfsForGestion(declaration.getNumeroOfsForGestion());
+
+		final Integer numeroOfsForGestion = declaration.getNumeroOfsForGestion();
+		if (numeroOfsForGestion == null) {
+			d.setNumeroOfsForGestion(0L);
+		}
+		else {
+			d.setNumeroOfsForGestion(numeroOfsForGestion);
+		}
+
 		return d;
 	}
 

@@ -68,7 +68,7 @@
 	<jaxws:endpoint implementor="#tiersService3EndPoint" address="/tiers3" wsdlLocation="TiersService3.wsdl" />
 
 	<bean id="tiersService3EndPoint" class="ch.vd.uniregctb.webservices.tiers3.impl.TiersWebServiceEndPoint">
-		<property name="service" ref="tiersService3Impl" />
+		<property name="service" ref="tiersService3Cache" />
 	</bean>
 
 	<bean id="tiersService3Impl" class="ch.vd.uniregctb.webservices.tiers3.impl.TiersWebServiceImpl">
@@ -85,6 +85,20 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="lrService" ref="lrService" />
 		<property name="diService" ref="diService" />
+	</bean>
+
+	<bean id="tiersService3Cache" class="ch.vd.uniregctb.webservices.tiers3.cache.TiersWebServiceCache">
+		<property name="target" ref="tiersService3Impl" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers3" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="tiersService3CacheManager" class="ch.vd.uniregctb.webservices.tiers3.cache.TiersWebServiceCacheManager">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="cache" ref="tiersService3Cache" />
+		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 	<bean id="tiersService3Tracing" class="ch.vd.uniregctb.webservices.tiers3.impl.TiersWebServiceTracing">
