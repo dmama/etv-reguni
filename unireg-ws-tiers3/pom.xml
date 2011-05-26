@@ -80,7 +80,8 @@
 									    <extraarg>ch.vd.uniregctb.webservices.tiers3</extraarg>
 										<extraarg>-xjc-Xpretty-classname</extraarg>
 										<extraarg>-xjc-Xunireg-ws</extraarg>
-										<!-- inclus implicitement du moment que le plugin 'ts' est dans les dépendances... <extraarg>-xjc-Xts</extraarg> -->
+										<extraarg>-xjc-Xts</extraarg>
+										<extraarg>-xjc-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</extraarg>
 										<extraarg>-xjc-Xvalue-constructor</extraarg>
 									</extraargs>
 								</wsdlOption>
@@ -93,9 +94,9 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<groupId>org.apache.cxf</groupId>
+						<groupId>org.apache.cxf.xjcplugins</groupId>
 						<artifactId>cxf-xjc-ts</artifactId>
-						<version>2.2.99-fuse-SNAPSHOT</version>
+						<version>2.3.2</version>
 					</dependency>
 					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
@@ -110,7 +111,7 @@
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>jaxb2-unireg-ws-plugin</artifactId>
-						<version>1.0.0</version>
+						<version>1.0.1</version>
 					</dependency>
 				</dependencies>
 			</plugin>
