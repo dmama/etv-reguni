@@ -17,17 +17,9 @@
 		</layout>
 	</appender>
 
-	<appender name="WS_ACCESS_2" class="org.apache.log4j.DailyRollingFileAppender">
+	<appender name="WS_ACCESS" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="Threshold" value="DEBUG" />
 		<param name="File" value="ws-access.log" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%c] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
-		</layout>
-	</appender>
-
-	<appender name="WS_ACCESS_3" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="Threshold" value="DEBUG" />
-		<param name="File" value="ws-access3.log" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%c] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
 		</layout>
@@ -79,22 +71,22 @@
 
 	<category name="tiers2.read" additivity="false">
 	  <priority value="INFO"/>
-	  <appender-ref ref="WS_ACCESS_2"/>
+	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
 	<category name="tiers2.write" additivity="false">
 	  <priority value="INFO"/>
-	  <appender-ref ref="WS_ACCESS_2"/>
+	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
 	<category name="tiers3.read" additivity="false">
 	  <priority value="INFO"/>
-	  <appender-ref ref="WS_ACCESS_3"/>
+	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
 	<category name="tiers3.write" additivity="false">
 	  <priority value="INFO"/>
-	  <appender-ref ref="WS_ACCESS_3"/>
+	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
 	<category name="ServiceTracing" additivity="false">
