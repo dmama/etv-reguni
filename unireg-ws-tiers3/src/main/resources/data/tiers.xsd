@@ -77,6 +77,7 @@
 					<xs:documentation>Vrai si le remboursement automatique est bloqué sur ce tiers; faux si ce n'est pas le cas.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<!-- TODO (msi) enlever le préfixe 'is' -->
 			<xs:element name="isDebiteurInactif" type="xs:boolean">
 				<xs:annotation>
 					<xs:documentation>Vrai s'il le tiers est un débiteur inactif (i107); faux pour tous les autres tiers.</xs:documentation>
