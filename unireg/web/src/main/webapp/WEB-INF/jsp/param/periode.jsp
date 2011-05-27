@@ -202,50 +202,52 @@
 				</tr>
 			</c:forEach>
 		</table>
-		<fieldset style="margin: 10px" class="information">
-		<legend><fmt:message key="title.param.modele.feuille"/></legend>
-		<table border="0">
-			<tr>
-				<td>
-				<fmt:message key="option.type.document.${modeleSelectionne.typeDocument}" var="libTypeDocument"/>
-				<fmt:message key="label.param.periode.et.modele" var="periodeEtModele">
-						<fmt:param value="${periodeSelectionnee.annee}" />
-						<fmt:param value="${libTypeDocument}" />
-				</fmt:message>
-				<a href="feuille-add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}" class="add" title="${periodeEtModele}">&nbsp;<fmt:message key="label.param.add"/></a>
-				</td>
-				<td width="25%">&nbsp;</td>
-				<td width="25%">&nbsp;</td>
-				<td width="25%">&nbsp;</td>
-				<td width="25%">&nbsp;</td>
-			</tr>
-		</table>
-		<table>
-			<tr>
-				<th class="colonneFeuille"><fmt:message key="title.param.periode" /></th>
-				<th class="colonneFeuille"><fmt:message key="title.param.num.form"/></th>
-				<th class="colonneFeuille"><fmt:message key="title.param.int.feuille"/></th>
-				<th class="colonneFeuille">&nbsp;</th>
-				<th class="colonneFeuilleAction" ><fmt:message key="title.param.action"/></th>
-			</tr>
-			<c:forEach var="feuille" items="${feuilles}">
-				<tr class="odd">	
-					<td class="colonneFeuille">${periodeSelectionnee.annee}</td>
-					<td class="colonneFeuille">${feuille.numeroFormulaire}</td>
-					<td class="colonneFeuille">${feuille.intituleFeuille}</td>
-					<td class="colonneFeuille">
-						<c:if test="${not empty error_feuille[feuille.id]}">
-							<span class="error">${error_feuille[feuille.id]}</span>
-						</c:if>&nbsp; 
-					</td>
-					<td class="colonneFeuilleAction" class="colonneAction">
-						<unireg:raccourciModifier link="feuille-edit.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}" tooltip="${periodeEtModele}"/>
-						<unireg:raccourciAnnuler link="feuille-suppr.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}"/>
-					</td>
-				</tr>
-			</c:forEach>
-		</table>
-		</fieldset>
+		<c:if test="${not empty modeles}">
+			<fieldset style="margin: 10px" class="information">
+				<legend><fmt:message key="title.param.modele.feuille"/></legend>
+				<table border="0">
+					<tr>
+						<td>
+						<fmt:message key="option.type.document.${modeleSelectionne.typeDocument}" var="libTypeDocument"/>
+						<fmt:message key="label.param.periode.et.modele" var="periodeEtModele">
+								<fmt:param value="${periodeSelectionnee.annee}" />
+								<fmt:param value="${libTypeDocument}" />
+						</fmt:message>
+						<a href="feuille-add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}" class="add" title="${periodeEtModele}">&nbsp;<fmt:message key="label.param.add"/></a>
+						</td>
+						<td width="25%">&nbsp;</td>
+						<td width="25%">&nbsp;</td>
+						<td width="25%">&nbsp;</td>
+						<td width="25%">&nbsp;</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<th class="colonneFeuille"><fmt:message key="title.param.periode" /></th>
+						<th class="colonneFeuille"><fmt:message key="title.param.num.form"/></th>
+						<th class="colonneFeuille"><fmt:message key="title.param.int.feuille"/></th>
+						<th class="colonneFeuille">&nbsp;</th>
+						<th class="colonneFeuilleAction" ><fmt:message key="title.param.action"/></th>
+					</tr>
+					<c:forEach var="feuille" items="${feuilles}">
+						<tr class="odd">
+							<td class="colonneFeuille">${periodeSelectionnee.annee}</td>
+							<td class="colonneFeuille">${feuille.numeroFormulaire}</td>
+							<td class="colonneFeuille">${feuille.intituleFeuille}</td>
+							<td class="colonneFeuille">
+								<c:if test="${not empty error_feuille[feuille.id]}">
+									<span class="error">${error_feuille[feuille.id]}</span>
+								</c:if>&nbsp;
+							</td>
+							<td class="colonneFeuilleAction" class="colonneAction">
+								<unireg:raccourciModifier link="feuille-edit.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}" tooltip="${periodeEtModele}"/>
+								<unireg:raccourciAnnuler link="feuille-suppr.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}"/>
+							</td>
+						</tr>
+					</c:forEach>
+			</table>
+			</fieldset>
+		</c:if>
 		</fieldset>
 		</fieldset>
 		</form>
