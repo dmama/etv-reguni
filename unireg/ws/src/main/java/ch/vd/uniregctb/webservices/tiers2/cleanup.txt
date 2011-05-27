@@ -10,7 +10,7 @@
 [x] supprimer les délais sur les déclarations
 [ ] fusionner les adresses et les adresses d'envoi (UNIREG-2546) + ne plus exposer l'historique mais seulement les valeurs courantes
 [x] fusionner les structure Tiers et TiersHisto pour ne plus garder que TiersHisto.
-[ ] rendre possible l'appel de searchTiers avec plusieurs types de contribuables (le besoin exprimé pour le moment est "PP+MC") (SIFISC-112)
+[x] rendre possible l'appel de searchTiers avec plusieurs types de contribuables (le besoin exprimé pour le moment est "PP+MC") (SIFISC-112)
 [ ] étudier la possibilité de réutiliser les schémas eCH (eCH-0010:addressInformationType) : http://www.ech.ch/vechweb/page?p=categoryList&site=/Standards/A%20bis%20Z
 [ ] exposer le code ISO 2 caractères des pays dans les adresses (demande TAO) (à voir selon standard eCH, en fait).
 [x] exposer l'assujettissement complet (tous les types et les modes d'imposition) (demande TAO-IS) (SIFISC-774)

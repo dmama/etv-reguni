@@ -46,6 +46,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-ws-tiers3</artifactId>
+			<version>3.0g-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-batch</artifactId>
 			<version>1.2.1</version>
 		</dependency>

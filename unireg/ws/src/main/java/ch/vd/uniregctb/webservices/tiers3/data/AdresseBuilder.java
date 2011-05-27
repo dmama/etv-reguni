@@ -49,7 +49,7 @@ public class AdresseBuilder {
 		}
 
 		a.setNoOrdrePostal(adresse.getNumeroOrdrePostal());
-		a.setNoRue(adresse.getNumeroRue());
+		a.setNoRue(adresse.getNumeroRue()); // TODO (msi) retourner null si le numéro est égal à 0
 		a.setNoPays(noOfsPays);
 	}
 

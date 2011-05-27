@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 public abstract class WebitTest extends WithoutSpringTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
+	private static final Pattern valiPattern = Pattern.compile("( *---.{4}-)");
 
 	protected String baseUrl;
 	protected String baseWsUrl;
@@ -32,8 +34,24 @@ public abstract class WebitTest extends WithoutSpringTest {
 	protected String securiteUrl;
 	protected String tiers1Url;
 	protected String tiers2Url;
+	protected String tiers3Url;
 
 	protected WebClient webClient;
+
+	/**
+	 * Supprime l'éventuel pattern "---VALI-" ou "---TEST-" ajouté aux DB de validation/test.
+	 *
+	 * @param string une chaine de caractères.
+	 * @return la chaîne de caractères sans le pattern de validation
+	 */
+	public static String trimValiPattern(String string) {
+		if (string == null) {
+			return null;
+		}
+		else {
+			return valiPattern.matcher(string).replaceAll("").trim();
+		}
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -71,6 +89,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 		securiteUrl = baseWsUrl + propsWebIT.getProperty("webservice.securite.serverurl");
 		tiers1Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers.serverurl");
 		tiers2Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers2.serverurl");
+		tiers3Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers3.serverurl");
 
 		LOGGER.debug("baseUrl: " + baseUrl);
 		LOGGER.debug("baseWsUrl: " + baseWsUrl);

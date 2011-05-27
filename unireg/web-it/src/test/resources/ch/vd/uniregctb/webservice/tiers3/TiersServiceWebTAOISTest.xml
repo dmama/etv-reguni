@@ -9,9 +9,6 @@
     <column>CATEGORIE_IMPOT_SOURCE</column>
     <column>PERIODICITE_DECOMPTE</column>
     <column>MODE_COM</column>
-    <column>PERIODE_DECOMPTE</column>
-    <column>SANS_RAPPEL</column>
-    <column>SANS_LISTE_RECAP</column>
     <column>NH_NOM</column>
     <column>NH_PRENOM</column>
     <column>NH_NUMERO_ASSURE_SOCIAL</column>
@@ -31,33 +28,54 @@
     <column>TITULAIRE_COMPTE_BANCAIRE</column>
     <column>NUMERO_TEL_PORTABLE</column>
     <column>COMPLEMENT_NOM</column>
-    <column>ANNULATION_DATE</column>
     <column>DATE_DECES</column>
     <column>PP_HABITANT</column>
     <row>
       <value>2008-01-01</value>
-      <value>87654321</value>
+      <value>12600004</value>
+      <value>MenageCommun</value>
+      <value>0</value>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>12600003</value>
       <value>PersonnePhysique</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
+      <value>Gomez</value>
+      <value>Mario</value>
       <null/>
-      <null/>
-      <null/>
-      <value>Dupneu</value>
-      <value>Alfred</value>
-      <null/>
-      <value>19650923</value>
+      <value>19531218</value>
       <value>MASCULIN</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>8231</value>
       <null/>
       <null/>
       <null/>
@@ -68,45 +86,139 @@
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
+      <none/>
+      <null/>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>77714803</value>
+      <value>12600001</value>
       <value>PersonnePhysique</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Annule</value>
-      <value>Jean</value>
-      <null/>
-      <value>19700123</value>
+      <value>Pirez</value>
+      <value>Isidor</value>
+      <value>7565789312435</value>
+      <value>19710123</value>
       <value>MASCULIN</value>
+      <value>8212</value>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2009-03-04</value>
+      <value><![CDATA[MAURICE DUPONT]]></value>
+      <value>0219663623</value>
+      <value>0219663625</value>
+      <value>0219663629</value>
+      <value>dupont@etat-vaud.ch</value>
+      <value>CH9308440717427290198</value>
+      <value>CCBPFRPPBDX</value>
+      <value>0</value>
+      <value><![CDATA[ERIC MONTAGNY]]></value>
+      <value>0219663999</value>
+      <value>Chopard</value>
       <null/>
       <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>12100003</value>
+      <value>43308102</value>
+      <value>PersonnePhysique</value>
+      <value>0</value>
+      <value>320073</value>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <none/>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>1678432</value>
+      <value>DebiteurPrestationImposable</value>
+      <value>0</value>
+      <null/>
+      <value>REGULIERS</value>
+      <value>TRIMESTRIEL</value>
+      <value>PAPIER</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0213332212</value>
+      <value>0213332211</value>
+      <value>0213332213</value>
+      <value>sabri@cafeducommerce.ch</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0790001234</value>
+      <value><![CDATA[Café du Commerce]]></value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>12900001</value>
+      <value>PersonnePhysique</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>Lederet</value>
+      <value>Michel</value>
+      <value>7565789312435</value>
+      <value>19520123</value>
+      <value>MASCULIN</value>
+      <value>8100</value>
+      <null/>
+      <null/>
+      <value/>
+      <value>032&apos;897&apos;45&apos;32</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>CH9308440717427290198</value>
+      <null/>
+      <value>0</value>
+      <value><![CDATA[Lederet Michel]]></value>
+      <value>0764537812</value>
+      <none/>
+      <null/>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>12300003</value>
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>327706</value>
@@ -129,19 +241,15 @@
       <null/>
       <null/>
       <null/>
-      <value>CH1900767000U01234567</value>
       <null/>
       <null/>
-      <value><![CDATA[Emery Lyah]]></value>
-      <null/>
-      <null/>
-      <null/>
+      <none/>
       <null/>
       <value>1</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>34777810</value>
+      <value>34807810</value>
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>674417</value>
@@ -157,26 +265,22 @@
       <null/>
       <null/>
       <null/>
+      <value>0213135489</value>
       <null/>
       <null/>
+      <value>pascaline@descloux.ch</value>
+      <value>CH9308440717427290198</value>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>0</value>
+      <value><![CDATA[Pascaline Descloux]]></value>
+      <value>0792348732</value>
+      <none/>
       <null/>
       <value>1</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>12100001</value>
+      <value>12300001</value>
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>333905</value>
@@ -201,17 +305,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <none/>
       <null/>
       <value>1</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>12100002</value>
+      <value>12300002</value>
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>333908</value>
@@ -236,17 +336,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <none/>
       <null/>
       <value>1</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>86116202</value>
+      <value>86006202</value>
       <value>MenageCommun</value>
       <value>0</value>
       <null/>
@@ -261,62 +357,23 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>12500001</value>
-      <value>DebiteurPrestationImposable</value>
+      <value><![CDATA[MAURICE DUPONT]]></value>
+      <value>0219663623</value>
+      <value>0219663625</value>
+      <value>0219663629</value>
+      <value>dupont@etat-vaud.ch</value>
+      <value>CH9308440717427290198</value>
+      <value>CCBPFRPPBDX</value>
       <value>0</value>
-      <null/>
-      <value>ADMINISTRATEURS</value>
-      <value>MENSUEL</value>
-      <value>PAPIER</value>
-      <value>M09</value>
-      <value>1</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>CH1900767000U01234567</value>
-      <null/>
-      <null/>
-      <value><![CDATA[PME Duchemolle]]></value>
-      <null/>
-      <value><![CDATA[Employeur personnel menage]]></value>
-      <null/>
+      <value><![CDATA[ERIC MONTAGNY]]></value>
+      <value>0219663999</value>
+      <none/>
       <null/>
       <null/>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>12700101</value>
+      <value>12700001</value>
       <value>Entreprise</value>
       <value>0</value>
       <null/>
@@ -341,31 +398,24 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <none/>
       <null/>
       <null/>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>12600101</value>
+      <value>12600002</value>
       <value>PersonnePhysique</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>Martinez</value>
       <value>Conchita</value>
-      <value>Andrea</value>
-      <value>1245789312435</value>
+      <value>7565789312435</value>
       <value>19700123</value>
-      <value>MASCULIN</value>
+      <value>FEMININ</value>
       <value>8212</value>
       <null/>
       <null/>
@@ -374,24 +424,20 @@
       <value>0219663625</value>
       <value>0219663629</value>
       <value>dupont@etat-vaud.ch</value>
-      <value>N1141414CH</value>
+      <value>CH9308440717427290198</value>
       <value>CCBPFRPPBDX</value>
       <value>0</value>
       <value><![CDATA[ERIC MONTAGNY]]></value>
       <value>0219663999</value>
       <value>Chopard</value>
       <null/>
-      <null/>
       <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>12800101</value>
+      <value>12800001</value>
       <value>AutreCommunaute</value>
       <value>0</value>
-      <null/>
-      <null/>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -414,52 +460,16 @@
       <null/>
       <null/>
       <value>Chopard</value>
-      <null/>
       <none/>
       <null/>
       <null/>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>10035633</value>
+      <value>10184458</value>
       <value>PersonnePhysique</value>
       <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[Tummers-De Wit Wouter]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[De Wit Tummers Elisabeth]]></value>
-      <null/>
-      <null/>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>10174192</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <value>212620</value>
+      <value>230843</value>
       <null/>
       <null/>
       <null/>
@@ -481,11 +491,7 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <none/>
       <null/>
       <value>1</value>
     </row>
@@ -499,16 +505,16 @@
     <row>
       <value>2008-01-01</value>
       <value>1</value>
-      <value>12600101</value>
+      <value>12600001</value>
       <value>CH_AHV_AVS</value>
       <value>15489652357</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
-      <value>12600101</value>
+      <value>12600001</value>
       <value>CH_ZAR_RCE</value>
-      <value>99999999</value>
+      <value>0784.7621/5</value>
     </row>
   </table>
   <table name="RAPPORT_ENTRE_TIERS">
@@ -519,14 +525,16 @@
     <column>TIERS_OBJET_ID</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
-    <column>ANNULATION_DATE</column>
+    <column>TYPE_ACTIVITE</column>
+    <column>TAUX_ACTIVITE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>AppartenanceMenage</value>
-      <value>12100001</value>
-      <value>86116202</value>
-      <value>19851112</value>
+      <value>12300001</value>
+      <value>86006202</value>
+      <value>19850215</value>
+      <null/>
       <null/>
       <null/>
     </row>
@@ -534,9 +542,10 @@
       <value>2008-01-01</value>
       <value>2</value>
       <value>AppartenanceMenage</value>
-      <value>12100002</value>
-      <value>86116202</value>
-      <value>19851112</value>
+      <value>12300002</value>
+      <value>86006202</value>
+      <value>19850215</value>
+      <null/>
       <null/>
       <null/>
     </row>
@@ -544,29 +553,54 @@
       <value>2008-01-01</value>
       <value>3</value>
       <value>RapportPrestationImposable</value>
-      <value>12600101</value>
-      <value>12500001</value>
-      <value>20060223</value>
+      <value>12600001</value>
+      <value>1678432</value>
+      <value>20080129</value>
+      <value>20080625</value>
+      <value>PRINCIPALE</value>
+      <value>100</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>4</value>
+      <value>RapportPrestationImposable</value>
+      <value>12600003</value>
+      <value>1678432</value>
+      <value>20080129</value>
       <null/>
-      <null/>
+      <value>PRINCIPALE</value>
+      <value>100</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>5</value>
-      <value>Tutelle</value>
-      <value>77714803</value>
-      <value>12100003</value>
-      <value>20050301</value>
+      <value>AppartenanceMenage</value>
+      <value>12600003</value>
+      <value>12600004</value>
+      <value>19900703</value>
       <null/>
-      <value>2009-03-04</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>6</value>
+      <value>Tutelle</value>
+      <value>34807810</value>
+      <value>12300002</value>
+      <value>20060223</value>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7</value>
       <value>ContactImpotSource</value>
-      <value>12100002</value>
-      <value>12500001</value>
+      <value>43308102</value>
+      <value>1678432</value>
       <value>20000101</value>
+      <null/>
       <null/>
       <null/>
     </row>
@@ -591,148 +625,36 @@
     <column>NUMERO_OFS_PAYS</column>
     <column>AUTRE_TIERS_ID</column>
     <column>PERMANENTE</column>
-    <column>COMPLEMENT</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
-      <value>AdresseEtrangere</value>
-      <value>34777810</value>
-      <value>COURRIER</value>
-      <value>20060212</value>
-      <value>20061130</value>
-      <null/>
-      <value>13</value>
-      <value><![CDATA[avenue des Ternes ]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[75012 PARIS]]></value>
-      <value>8212</value>
-      <null/>
-      <value>0</value>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2</value>
       <value>AdresseSuisse</value>
-      <value>34777810</value>
-      <value>REPRESENTATION</value>
-      <value>20040223</value>
-      <null/>
-      <null/>
-      <value>12</value>
-      <value><![CDATA[rue recordon]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <value>1269</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>3</value>
-      <value>AdresseAutreTiers</value>
-      <value>34777810</value>
+      <value>12900001</value>
       <value>COURRIER</value>
-      <value>20061201</value>
+      <value>20020212</value>
       <null/>
+      <value>43119</value>
+      <value>19</value>
       <null/>
+      <value>CASE_POSTALE</value>
+      <value>23</value>
       <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>REPRESENTATION</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>12100001</value>
-      <value>0</value>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>4</value>
-      <value>AdresseSuisse</value>
-      <value>12100003</value>
-      <value>POURSUITE</value>
-      <value>20040129</value>
-      <null/>
-      <value>141554</value>
-      <value>12</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>104</value>
       <null/>
       <null/>
       <null/>
       <null/>
       <value>0</value>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>5</value>
-      <value>AdresseSuisse</value>
-      <value>12500001</value>
-      <value>COURRIER</value>
-      <value>20040129</value>
-      <null/>
-      <value>141554</value>
-      <value>12</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>6</value>
       <value>AdresseSuisse</value>
-      <value>12500001</value>
-      <value>REPRESENTATION</value>
-      <value>20040129</value>
+      <value>12600001</value>
+      <value>COURRIER</value>
+      <value>20080129</value>
       <null/>
       <value>32296</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>7</value>
-      <value>AdresseSuisse</value>
-      <value>12600101</value>
-      <value>COURRIER</value>
-      <value>20040129</value>
-      <null/>
-      <value>141554</value>
       <value>12</value>
       <null/>
       <null/>
@@ -744,29 +666,90 @@
       <null/>
       <null/>
       <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7</value>
+      <value>AdresseSuisse</value>
+      <value>12600002</value>
+      <value>COURRIER</value>
+      <value>20080415</value>
       <null/>
+      <value>35365</value>
+      <value>12</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>104</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>8</value>
-      <value>AdresseEtrangere</value>
-      <value>10035633</value>
+      <value>AdresseSuisse</value>
+      <value>12600003</value>
       <value>COURRIER</value>
-      <value>20090625</value>
+      <value>20080129</value>
+      <null/>
+      <null/>
+      <value>12</value>
+      <value><![CDATA[Rue des terreaux]]></value>
       <null/>
       <null/>
       <null/>
-      <value><![CDATA[Olympialaan 17]]></value>
+      <value>571</value>
       <null/>
       <null/>
       <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[4624 Aa Bergem Op Zoom]]></value>
-      <value>8227</value>
       <null/>
       <value>0</value>
-      <value><![CDATA[De Wit Tummers Elisabeth]]></value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>9</value>
+      <value>AdresseSuisse</value>
+      <value>12600004</value>
+      <value>COURRIER</value>
+      <value>20080129</value>
+      <null/>
+      <null/>
+      <value>12</value>
+      <value><![CDATA[Rue des terreaux]]></value>
+      <null/>
+      <null/>
+      <null/>
+      <value>571</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>10</value>
+      <value>AdresseSuisse</value>
+      <value>1678432</value>
+      <value>COURRIER</value>
+      <value>20020701</value>
+      <null/>
+      <value>30387</value>
+      <value>12</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>151</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
     </row>
   </table>
   <table name="FOR_FISCAL">
@@ -781,195 +764,223 @@
     <column>DATE_FERMETURE</column>
     <column>TYPE_AUT_FISC</column>
     <column>NUMERO_OFS</column>
-    <column>ANNULATION_DATE</column>
     <column>MOTIF_OUVERTURE</column>
     <column>MOTIF_FERMETURE</column>
     <row>
       <value>2008-01-01</value>
-      <value>1</value>
+      <value>7</value>
       <value>ForFiscalPrincipal</value>
-      <value>12600101</value>
+      <value>12900001</value>
       <value>REVENU_FORTUNE</value>
       <value>DOMICILE</value>
-      <value>SOURCE</value>
-      <value>20060901</value>
+      <value>ORDINAIRE</value>
+      <value>20020212</value>
+      <null/>
+      <value>COMMUNE_HC</value>
+      <value>6412</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>8</value>
+      <value>ForFiscalSecondaire</value>
+      <value>12900001</value>
+      <value>REVENU_FORTUNE</value>
+      <value>IMMEUBLE_PRIVE</value>
+      <null/>
+      <value>20020212</value>
       <null/>
       <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5586</value>
+      <value>5407</value>
       <null/>
-      <none/>
-      <none/>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>1</value>
+      <value>ForFiscalPrincipal</value>
+      <value>12600001</value>
+      <value>REVENU_FORTUNE</value>
+      <value>DOMICILE</value>
+      <value>MIXTE_137_1</value>
+      <value>20080129</value>
+      <null/>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>5477</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
-      <value>ForFiscalSecondaire</value>
-      <value>86116202</value>
-      <value>REVENU_FORTUNE</value>
-      <value>IMMEUBLE_PRIVE</value>
-      <null/>
-      <value>20060301</value>
-      <null/>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5586</value>
-      <null/>
-      <none/>
-      <none/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>4</value>
       <value>ForFiscalPrincipal</value>
-      <value>34777810</value>
+      <value>12300001</value>
       <value>REVENU_FORTUNE</value>
       <value>DOMICILE</value>
       <value>ORDINAIRE</value>
-      <value>20020901</value>
-      <null/>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5586</value>
-      <null/>
-      <none/>
-      <none/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>5</value>
-      <value>ForFiscalPrincipal</value>
-      <value>86116202</value>
-      <value>REVENU_FORTUNE</value>
-      <value>DOMICILE</value>
-      <value>ORDINAIRE</value>
-      <value>19870201</value>
-      <null/>
+      <value>19790209</value>
+      <value>19850214</value>
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5652</value>
       <null/>
-      <none/>
-      <none/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>6</value>
       <value>ForFiscalPrincipal</value>
-      <value>12100002</value>
+      <value>12300002</value>
       <value>REVENU_FORTUNE</value>
       <value>DOMICILE</value>
       <value>ORDINAIRE</value>
-      <value>19800101</value>
-      <value>19870131</value>
+      <value>19781020</value>
+      <value>19850214</value>
       <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5652</value>
+      <value>5402</value>
       <null/>
-      <none/>
-      <none/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>7</value>
+      <value>5</value>
       <value>ForFiscalPrincipal</value>
-      <value>77714803</value>
+      <value>86006202</value>
       <value>REVENU_FORTUNE</value>
       <value>DOMICILE</value>
       <value>ORDINAIRE</value>
-      <value>19800101</value>
+      <value>19850215</value>
       <null/>
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5652</value>
-      <value>2009-03-04</value>
-      <none/>
-      <none/>
+      <null/>
+      <null/>
     </row>
     <row>
-      <value>2005-01-01</value>
-      <value>8</value>
+      <value>2008-01-01</value>
+      <value>4</value>
       <value>ForFiscalPrincipal</value>
-      <value>10035633</value>
+      <value>34807810</value>
       <value>REVENU_FORTUNE</value>
       <value>DOMICILE</value>
       <value>ORDINAIRE</value>
-      <value>20050616</value>
-      <null/>
-      <value>PAYS_HS</value>
-      <value>8227</value>
-      <null/>
-      <none/>
-      <none/>
-    </row>
-    <row>
-      <value>2005-01-01</value>
-      <value>9</value>
-      <value>ForFiscalSecondaire</value>
-      <value>10035633</value>
-      <value>REVENU_FORTUNE</value>
-      <value>IMMEUBLE_PRIVE</value>
-      <null/>
-      <value>20050616</value>
+      <value>19970624</value>
       <null/>
       <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5405</value>
+      <value>5586</value>
       <null/>
-      <none/>
-      <none/>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>9</value>
+      <value>ForFiscalPrincipal</value>
+      <value>12600004</value>
+      <value>REVENU_FORTUNE</value>
+      <value>DOMICILE</value>
+      <value>SOURCE</value>
+      <value>20080129</value>
+      <null/>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>5757</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>10</value>
       <value>ForFiscalPrincipal</value>
-      <value>87654321</value>
+      <value>12600002</value>
       <value>REVENU_FORTUNE</value>
       <value>DOMICILE</value>
-      <value>ORDINAIRE</value>
-      <value>19850901</value>
+      <value>SOURCE</value>
+      <value>20080415</value>
       <null/>
-      <value>PAYS_HS</value>
-      <value>8212</value>
-      <null/>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>5402</value>
       <null/>
       <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>11</value>
-      <value>ForFiscalSecondaire</value>
-      <value>87654321</value>
-      <value>REVENU_FORTUNE</value>
-      <value>IMMEUBLE_PRIVE</value>
+      <value>ForDebiteurPrestationImposable</value>
+      <value>1678432</value>
+      <value>DEBITEUR_PRESTATION_IMPOSABLE</value>
       <null/>
-      <value>19850901</value>
-      <value>19900215</value>
+      <null/>
+      <value>20020701</value>
+      <value>20021231</value>
       <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5586</value>
+      <value>5591</value>
       <null/>
-      <value>ACHAT_IMMOBILIER</value>
-      <value>VENTE_IMMOBILIER</value>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>12</value>
+      <value>ForDebiteurPrestationImposable</value>
+      <value>1678432</value>
+      <value>DEBITEUR_PRESTATION_IMPOSABLE</value>
+      <null/>
+      <null/>
+      <value>20030301</value>
+      <null/>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>5586</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>13</value>
+      <value>ForFiscalPrincipal</value>
+      <value>10184458</value>
+      <value>REVENU_FORTUNE</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>20060401</value>
+      <value>20080520</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>5402</value>
+      <value>ARRIVEE_HC</value>
+      <value>DEPART_HS</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>14</value>
+      <value>ForFiscalPrincipal</value>
+      <value>10184458</value>
+      <value>REVENU_FORTUNE</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>20080521</value>
+      <null/>
+      <value>PAYS_HS</value>
+      <value>8212</value>
+      <value>DEPART_HS</value>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>15</value>
       <value>ForFiscalSecondaire</value>
-      <value>87654321</value>
+      <value>10184458</value>
       <value>REVENU_FORTUNE</value>
       <value>IMMEUBLE_PRIVE</value>
       <null/>
-      <value>20030712</value>
-      <null/>
+      <value>20070131</value>
+      <value>20081231</value>
       <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5761</value>
-      <null/>
-      <value>ACHAT_IMMOBILIER</value>
-      <null/>
+      <value>5402</value>
+      <value>DEBUT_EXPLOITATION</value>
+      <value>FIN_EXPLOITATION</value>
     </row>
   </table>
   <table name="PERIODE_FISCALE">
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>ANNEE</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>2008</value>
-    </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
@@ -999,6 +1010,11 @@
       <value>2008-01-01</value>
       <value>7</value>
       <value>2007</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>8</value>
+      <value>2008</value>
     </row>
   </table>
   <table name="PARAMETRE_PERIODE_FISCALE">
@@ -1232,7 +1248,7 @@
       <value>20080331</value>
       <value>20080430</value>
       <value>VAUDOIS_ORDINAIRE</value>
-      <value>1</value>
+      <value>8</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1241,7 +1257,7 @@
       <value>20080331</value>
       <value>20080430</value>
       <value>VAUDOIS_DEPENSE</value>
-      <value>1</value>
+      <value>8</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1250,7 +1266,7 @@
       <value>20080331</value>
       <value>20080430</value>
       <value>HORS_CANTON</value>
-      <value>1</value>
+      <value>8</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1259,7 +1275,7 @@
       <value>20080331</value>
       <value>20080430</value>
       <value>HORS_SUISSE</value>
-      <value>1</value>
+      <value>8</value>
     </row>
   </table>
   <table name="MODELE_DOCUMENT">
@@ -1268,28 +1284,100 @@
     <column>TYPE_DOCUMENT</column>
     <column>PERIODE_ID</column>
     <row>
-      <value>2008-01-01</value>
-      <value>1</value>
+      <value>2005-01-01</value>
+      <value>51</value>
       <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
-      <value>1</value>
+      <value>5</value>
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>2</value>
+      <value>2005-01-01</value>
+      <value>52</value>
       <value>DECLARATION_IMPOT_VAUDTAX</value>
-      <value>1</value>
+      <value>5</value>
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>3</value>
+      <value>2005-01-01</value>
+      <value>53</value>
       <value>DECLARATION_IMPOT_DEPENSE</value>
-      <value>1</value>
+      <value>5</value>
+    </row>
+    <row>
+      <value>2005-01-01</value>
+      <value>54</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>5</value>
+    </row>
+    <row>
+      <value>2006-01-01</value>
+      <value>61</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>6</value>
+    </row>
+    <row>
+      <value>2006-01-01</value>
+      <value>62</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>6</value>
+    </row>
+    <row>
+      <value>2006-01-01</value>
+      <value>63</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>6</value>
+    </row>
+    <row>
+      <value>2006-01-01</value>
+      <value>64</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>6</value>
+    </row>
+    <row>
+      <value>2007-01-01</value>
+      <value>71</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>7</value>
+    </row>
+    <row>
+      <value>2007-01-01</value>
+      <value>72</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>7</value>
+    </row>
+    <row>
+      <value>2007-01-01</value>
+      <value>73</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>7</value>
+    </row>
+    <row>
+      <value>2007-01-01</value>
+      <value>74</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>7</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>4</value>
+      <value>81</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>82</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>83</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>84</value>
       <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
-      <value>1</value>
+      <value>8</value>
     </row>
   </table>
   <table name="DECLARATION">
@@ -1302,24 +1390,31 @@
     <column>PERIODICITE</column>
     <column>MODE_COM</column>
     <column>PERIODE_ID</column>
-    <column>NUMERO</column>
     <column>MODELE_DOC_ID</column>
-    <column>NO_OFS_FOR_GESTION</column>
-    <column>ANNULATION_DATE</column>
     <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>LR</value>
-      <value>12500001</value>
+      <value>1678432</value>
       <value>20080101</value>
-      <value>20080131</value>
-      <value>MENSUEL</value>
+      <value>20080331</value>
+      <value>TRIMESTRIEL</value>
       <value>PAPIER</value>
-      <value>1</value>
+      <value>8</value>
       <null/>
-      <value>1</value>
       <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>5</value>
+      <value>LR</value>
+      <value>1678432</value>
+      <value>20080401</value>
+      <value>20080630</value>
+      <value>TRIMESTRIEL</value>
+      <value>PAPIER</value>
+      <value>8</value>
       <null/>
       <null/>
     </row>
@@ -1327,32 +1422,52 @@
       <value>2008-01-01</value>
       <value>2</value>
       <value>DI</value>
-      <value>12100003</value>
-      <value>20080101</value>
-      <value>20080331</value>
+      <value>86006202</value>
+      <value>20050101</value>
+      <value>20051231</value>
       <null/>
       <null/>
-      <value>1</value>
-      <value>6789</value>
-      <value>2</value>
-      <value>5646</value>
-      <null/>
+      <value>5</value>
+      <value>51</value>
       <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>3</value>
       <value>DI</value>
-      <value>77714803</value>
+      <value>86006202</value>
+      <value>20060101</value>
+      <value>20061231</value>
+      <null/>
+      <null/>
+      <value>6</value>
+      <value>61</value>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>4</value>
+      <value>DI</value>
+      <value>86006202</value>
+      <value>20070101</value>
+      <value>20071231</value>
+      <null/>
+      <null/>
+      <value>7</value>
+      <value>72</value>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>6</value>
+      <value>DI</value>
+      <value>10184458</value>
       <value>20080101</value>
-      <value>20080331</value>
+      <value>20081231</value>
       <null/>
       <null/>
-      <value>1</value>
-      <value>6789</value>
-      <value>2</value>
-      <value>5646</value>
-      <value>2009-03-04</value>
+      <value>8</value>
+      <value>81</value>
       <value>0</value>
     </row>
   </table>
@@ -1364,108 +1479,300 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>CONFIRMATION_ECRITE</column>
-    <column>ANNULATION_DATE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>1</value>
-      <value>20080215</value>
-      <value>20080215</value>
-      <value>20080228</value>
-      <value>0</value>
       <null/>
+      <null/>
+      <value>20080430</value>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7</value>
+      <value>5</value>
+      <null/>
+      <null/>
+      <value>20080731</value>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>8</value>
+      <value>5</value>
+      <value>20080625</value>
+      <value>20080625</value>
+      <value>20080930</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
-      <value>1</value>
-      <value>20080228</value>
-      <value>20080228</value>
-      <value>20070331</value>
-      <value>0</value>
+      <value>2</value>
       <null/>
+      <null/>
+      <value>20060315</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>3</value>
-      <value>3</value>
-      <value>20080228</value>
-      <value>20080228</value>
-      <value>20070331</value>
+      <value>2</value>
+      <value>20060220</value>
+      <value>20060220</value>
+      <value>20060731</value>
       <value>0</value>
-      <value>2009-03-04</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>4</value>
+      <value>3</value>
+      <null/>
+      <null/>
+      <value>20070315</value>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>5</value>
+      <value>4</value>
+      <null/>
+      <null/>
+      <value>20080315</value>
+      <value>0</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>6</value>
+      <value>4</value>
+      <value>20080412</value>
+      <value>20080412</value>
+      <value>20080915</value>
+      <value>0</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">
     <column>LOG_MDATE</column>
     <column>ID</column>
+    <column>DECLARATION_ID</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
-    <column>DECLARATION_ID</column>
-    <column>ANNULATION_DATE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
-      <value>EMISE</value>
-      <value>20071220</value>
       <value>1</value>
-      <null/>
+      <value>EMISE</value>
+      <value>20080320</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>8</value>
+      <value>1</value>
+      <value>SOMMEE</value>
+      <value>20080515</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>10</value>
+      <value>1</value>
+      <value>RETOURNEE</value>
+      <value>20080525</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>9</value>
+      <value>5</value>
+      <value>EMISE</value>
+      <value>20080620</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
+      <value>2</value>
       <value>EMISE</value>
-      <value>20071220</value>
+      <value>20060115</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
       <value>3</value>
-      <value>2009-03-04</value>
+      <value>2</value>
+      <value>RETOURNEE</value>
+      <value>20060413</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>4</value>
+      <value>3</value>
+      <value>EMISE</value>
+      <value>20070116</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>5</value>
+      <value>3</value>
+      <value>SOMMEE</value>
+      <value>20070915</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>6</value>
+      <value>3</value>
+      <value>ECHUE</value>
+      <value>20071101</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7</value>
+      <value>4</value>
+      <value>EMISE</value>
+      <value>20070115</value>
     </row>
   </table>
   <table name="SITUATION_FAMILLE">
     <column>LOG_MDATE</column>
     <column>ID</column>
+    <column>SITUATION_FAMILLE_TYPE</column>
     <column>CTB_ID</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>NOMBRE_ENFANTS</column>
     <column>TARIF_APPLICABLE</column>
+    <column>ETAT_CIVIL</column>
     <column>TIERS_PRINCIPAL_ID</column>
-    <column>SITUATION_FAMILLE_TYPE</column>
-    <column>ANNULATION_DATE</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>10</value>
+      <value>SituationFamilleMenageCommun</value>
+      <value>12600004</value>
+      <value>19900703</value>
+      <null/>
+      <value>2</value>
+      <value>NORMAL</value>
+      <value>MARIE</value>
+      <value>12600003</value>
+    </row>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
-      <value>12100003</value>
-      <value>19900212</value>
-      <null/>
+      <value>SituationFamille</value>
+      <value>12300001</value>
+      <value>19601020</value>
+      <value>19850214</value>
       <value>0</value>
       <null/>
-      <null/>
-      <value>SituationFamille</value>
+      <value>CELIBATAIRE</value>
       <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
-      <value>86116202</value>
-      <value>19900212</value>
-      <null/>
+      <value>SituationFamille</value>
+      <value>12300002</value>
+      <value>19610209</value>
+      <value>19850214</value>
       <value>0</value>
-      <value>NORMAL</value>
-      <value>12100002</value>
-      <value>SituationFamilleMenageCommun</value>
+      <null/>
+      <value>CELIBATAIRE</value>
       <null/>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>3</value>
-      <value>77714803</value>
-      <value>19900212</value>
+      <value>SituationFamille</value>
+      <value>12300003</value>
+      <value>20050829</value>
+      <null/>
+      <value>1</value>
+      <null/>
+      <value>CELIBATAIRE</value>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>4</value>
+      <value>SituationFamille</value>
+      <value>34807810</value>
+      <value>19790624</value>
       <null/>
       <value>0</value>
       <null/>
+      <value>CELIBATAIRE</value>
       <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>5</value>
+      <value>SituationFamilleMenageCommun</value>
+      <value>86006202</value>
+      <value>19850215</value>
+      <value>19920123</value>
+      <value>0</value>
+      <null/>
+      <value>MARIE</value>
+      <value>12300002</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>6</value>
+      <value>SituationFamilleMenageCommun</value>
+      <value>86006202</value>
+      <value>19920124</value>
+      <null/>
+      <value>1</value>
+      <null/>
+      <value>MARIE</value>
+      <value>12300002</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>9</value>
       <value>SituationFamille</value>
-      <value>2009-03-04</value>
+      <value>12600001</value>
+      <value>20080129</value>
+      <null/>
+      <value>0</value>
+      <null/>
+      <value>CELIBATAIRE</value>
+      <null/>
+    </row>
+  </table>
+  <table name="EVENEMENT_CIVIL">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>TYPE</column>
+    <column>ETAT</column>
+    <column>DATE_EVENEMENT</column>
+    <column>HAB_PRINCIPAL</column>
+    <column>NO_INDIVIDU_PRINCIPAL</column>
+    <column>NUMERO_OFS_ANNONCE</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>9876</value>
+      <value>NAISSANCE</value>
+      <value>A_TRAITER</value>
+      <value>20071025</value>
+      <null/>
+      <value>333527</value>
+      <value>1010</value>
+    </row>
+  </table>
+  <table name="PERIODICITE">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>DEBITEUR_ID</column>
+    <column>PERIODE_DECOMPTE</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>PERIODICITE_TYPE</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>1</value>
+      <value>1678432</value>
+      <null/>
+      <value>20020701</value>
+      <null/>
+      <value>TRIMESTRIEL</value>
     </row>
   </table>
 </dataset>

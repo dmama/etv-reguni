@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.tiers2;
+package ch.vd.uniregctb.webservice.tiers3;
 
 import javax.xml.ws.BindingProvider;
 import java.net.URL;
@@ -7,14 +7,15 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.uniregctb.common.WebitTest;
-import ch.vd.uniregctb.webservices.tiers2.CompteBancaire;
-import ch.vd.uniregctb.webservices.tiers2.Date;
-import ch.vd.uniregctb.webservices.tiers2.FormatNumeroCompte;
-import ch.vd.uniregctb.webservices.tiers2.TiersPort;
-import ch.vd.uniregctb.webservices.tiers2.TiersService;
+import ch.vd.uniregctb.webservices.tiers3.CompteBancaire;
+import ch.vd.uniregctb.webservices.tiers3.Date;
+import ch.vd.uniregctb.webservices.tiers3.FormatNumeroCompte;
+import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
+import ch.vd.uniregctb.webservices.tiers3.TiersWebServiceFactory;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -24,25 +25,25 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 
 	private static final Logger LOGGER = Logger.getLogger(AbstractTiersServiceWebTest.class);
 
-	protected static TiersPort service;
+	protected static TiersWebService service;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
 		if (service == null) {
-			LOGGER.info("Connecting to: " + tiers2Url + " with user = " + username);
+			LOGGER.info("Connecting to: " + tiers3Url + " with user = " + username);
 
-			URL wsdlUrl = ResourceUtils.getURL("classpath:TiersService2.wsdl");
-			TiersService s = new TiersService(wsdlUrl);
-			service = s.getTiersPortPort();
+			URL wsdlUrl = ResourceUtils.getURL("classpath:TiersService3.wsdl");
+			TiersWebServiceFactory s = new TiersWebServiceFactory(wsdlUrl);
+			service = s.getService();
 
 			Map<String, Object> context = ((BindingProvider) service).getRequestContext();
 			if (StringUtils.isNotBlank(username)) {
 				context.put(BindingProvider.USERNAME_PROPERTY, username);
 				context.put(BindingProvider.PASSWORD_PROPERTY, password);
 			}
-			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, tiers2Url);
+			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, tiers3Url);
 
 			// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
 			context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
@@ -72,7 +73,7 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 		}
 	}
 
-	private static String format(String message, Date expected, Date actual) {
+	private static String format(@Nullable String message, Date expected, Date actual) {
 		String formatted = "";
 		if (message != null) {
 			formatted = message + " ";
