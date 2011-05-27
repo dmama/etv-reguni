@@ -110,6 +110,7 @@
 													NPA : <b><c:out value="${range.numeroPostal}"/></b><br/>
 													Localité : <b><c:out value="${range.localiteComplete}"/></b><br/>
 													NPA Cpl. : <b><c:out value="${range.numeroPostalComplementaire}"/></b><br/>
+													No Rue : <b><c:out value="${range.numeroRue}"/></b><br/>
 													No Ordre Poste : <b><c:out value="${range.numeroOrdrePostal}"/></b><br/>
 													No Ofs Pays : <b><c:out value="${range.noOfsPays}"/></b><br/>
 													Source : <b><c:out value="${range.source.type}"/></b><br/>
