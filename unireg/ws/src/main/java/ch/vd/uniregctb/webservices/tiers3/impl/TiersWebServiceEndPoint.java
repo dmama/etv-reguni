@@ -22,6 +22,7 @@ import ch.vd.uniregctb.webservices.common.LoadMonitorable;
 import ch.vd.uniregctb.webservices.tiers3.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
@@ -363,7 +364,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		appelsEnCours.incrementAndGet();
 
 		if (login == null || login.getUserId() == null || login.getOid() == 0 || login.getUserId().trim().equals("")) {
-			throw ExceptionHelper.newBusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
+			throw ExceptionHelper.newBusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.", BusinessExceptionCode.REQUETE_INCORRECTE);
 		}
 
 		AuthenticationHelper.setPrincipal(login.getUserId());

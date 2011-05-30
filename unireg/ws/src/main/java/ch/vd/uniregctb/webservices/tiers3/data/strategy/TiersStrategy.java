@@ -12,6 +12,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
 import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
@@ -205,7 +206,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 		}
 		catch (ch.vd.uniregctb.adresse.AdresseException e) {
 			LOGGER.error(e, e);
-			throw ExceptionHelper.newBusinessException(e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADRESSES);
 		}
 
 		if (adresses != null) {
@@ -246,7 +247,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 		}
 		catch (AdresseException e) {
 			LOGGER.error(e, e);
-			throw ExceptionHelper.newBusinessException(e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADRESSES);
 		}
 	}
 

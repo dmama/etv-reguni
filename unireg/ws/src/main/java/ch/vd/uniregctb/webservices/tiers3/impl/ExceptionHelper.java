@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers3.impl;
 
 import ch.vd.uniregctb.webservices.tiers3.AccessDeniedExceptionInfo;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.TechnicalExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
@@ -20,16 +21,18 @@ public class ExceptionHelper {
 		return new WebServiceException(message, info);
 	}
 
-	public static WebServiceException newBusinessException(String message) {
+	public static WebServiceException newBusinessException(String message, BusinessExceptionCode code) {
 		final BusinessExceptionInfo info = new BusinessExceptionInfo();
 		info.setMessage(message);
+		info.setCode(code.value());
 		return new WebServiceException(message, info);
 	}
 
-	public static WebServiceException newBusinessException(Exception exception) {
+	public static WebServiceException newBusinessException(Exception exception, BusinessExceptionCode code) {
 		final BusinessExceptionInfo info = new BusinessExceptionInfo();
 		final String message = exception.getMessage();
 		info.setMessage(message);
+		info.setCode(code.value());
 		return new WebServiceException(message, info);
 	}
 

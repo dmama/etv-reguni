@@ -47,6 +47,8 @@ import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers3.DemandeQuittancementDeclaration;
@@ -63,12 +65,12 @@ import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMResponse;
 import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
 import ch.vd.uniregctb.webservices.tiers3.SearchTiersResponse;
 import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAutoRequest;
+import ch.vd.uniregctb.webservices.tiers3.TechnicalExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
 import ch.vd.uniregctb.webservices.tiers3.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers3.TypeWebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.data.BatchTiersBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.DebiteurInfoBuilder;
@@ -173,14 +175,14 @@ public class TiersWebServiceImpl implements TiersWebService {
 			return array;
 		}
 		catch (TooManyResultsIndexerException e) {
-			throw ExceptionHelper.newBusinessException(e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER_TROP_DE_RESULTATS);
 		}
 		catch (EmptySearchCriteriaException e) {
-			throw ExceptionHelper.newBusinessException(e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER_CRITERE_VIDE);
 		}
 		catch (IndexerException e) {
 			LOGGER.error(e, e);
-			throw ExceptionHelper.newBusinessException(e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
@@ -235,7 +237,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			if (params.getTiersNumbers().size() > MAX_BATCH_SIZE) {
 				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
 				LOGGER.error(message);
-				throw ExceptionHelper.newBusinessException(message);
+				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.REQUETE_INCORRECTE);
 			}
 
 			final Map<Long, Object> results = mapTiers(new HashSet<Long>(params.getTiersNumbers()), null, DataHelper.toSet(params.getParts()), new MapCallback() {
@@ -444,7 +446,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getTiersNumber());
 			if (tiers == null) {
-				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getTiersNumber() + " n'existe pas.");
+				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getTiersNumber() + " n'existe pas.", BusinessExceptionCode.TIERS_INCONNU);
 			}
 
 			tiers.setBlocageRemboursementAutomatique(params.isBlocage());
@@ -468,10 +470,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getNumeroDebiteur());
 			if (tiers == null) {
-				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getNumeroDebiteur() + " n'existe pas.");
+				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getNumeroDebiteur() + " n'existe pas.", BusinessExceptionCode.TIERS_INCONNU);
 			}
 			if (!(tiers instanceof DebiteurPrestationImposable)) {
-				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getNumeroDebiteur() + " n'est pas un débiteur.");
+				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getNumeroDebiteur() + " n'est pas un débiteur.", BusinessExceptionCode.TYPE_TIERS_INCORRECT);
 			}
 
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
@@ -497,13 +499,14 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		public void addErrorException(DemandeQuittancementDeclaration element, Exception e) {
 			if (e instanceof ValidationException) {
-				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), e, TypeWebServiceException.BUSINESS));
+				reponses.getItem()
+						.add(new ReponseQuittancementDeclaration(element.getKey(), CodeQuittancement.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name())));
 			}
 			else if (e instanceof RuntimeException) {
-				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), e, TypeWebServiceException.TECHNICAL));
+				reponses.getItem().add(new ReponseQuittancementDeclaration(element.getKey(), CodeQuittancement.EXCEPTION, new TechnicalExceptionInfo(e.getMessage())));
 			}
 			else {
-				reponses.getItem().add(QuittancementBuilder.newReponseQuittancementDeclaration(element.getKey(), new RuntimeException(e.getMessage(), e), TypeWebServiceException.TECHNICAL));
+				reponses.getItem().add(new ReponseQuittancementDeclaration(element.getKey(), CodeQuittancement.EXCEPTION, new TechnicalExceptionInfo(e.getMessage())));
 			}
 		}
 
@@ -559,7 +562,8 @@ public class TiersWebServiceImpl implements TiersWebService {
 			final Date dateDebutRecherche = XmlUtils.xmlcal2date(params.getDateDebutRecherche());
 			final Date dateFinRecherche = XmlUtils.xmlcal2date(params.getDateFinRecherche());
 			if (DateHelper.isAfter(dateDebutRecherche, dateFinRecherche)) {
-				throw ExceptionHelper.newBusinessException("La date de début de recherche " + dateDebutRecherche.toString() + " est après la date de fin " + dateFinRecherche);
+				throw ExceptionHelper.newBusinessException("La date de début de recherche " + dateDebutRecherche.toString() + " est après la date de fin " + dateFinRecherche,
+						BusinessExceptionCode.REQUETE_INCORRECTE);
 			}
 			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(dateDebutRecherche, dateFinRecherche);
 			return listCtb.toArray(new Long[listCtb.size()]);
@@ -580,11 +584,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 		catch (ValidationException e) {
 			LOGGER.error(e, e);
-			r = QuittancementBuilder.newReponseQuittancementDeclaration(demande.getKey(), e, TypeWebServiceException.BUSINESS);
+			r = new ReponseQuittancementDeclaration(demande.getKey(), CodeQuittancement.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), "VALIDATION"));
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
-			r = QuittancementBuilder.newReponseQuittancementDeclaration(demande.getKey(), e, TypeWebServiceException.TECHNICAL);
+			r = new ReponseQuittancementDeclaration(demande.getKey(), CodeQuittancement.EXCEPTION, new TechnicalExceptionInfo(e.getMessage()));
 		}
 		return r;
 	}

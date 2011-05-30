@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.Contribuable;
 import ch.vd.uniregctb.webservices.tiers3.PeriodeImposition;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
@@ -87,7 +88,7 @@ public abstract class ContribuableStrategy<T extends Contribuable> extends Tiers
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e, e);
-			throw ExceptionHelper.newBusinessException(e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ASSUJETTISSEMENT);
 		}
 
 		if (list != null) {
@@ -120,7 +121,7 @@ public abstract class ContribuableStrategy<T extends Contribuable> extends Tiers
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e, e);
-			throw ExceptionHelper.newBusinessException(e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ASSUJETTISSEMENT);
 		}
 		if (list != null) {
 			PeriodeImposition derniere = null;

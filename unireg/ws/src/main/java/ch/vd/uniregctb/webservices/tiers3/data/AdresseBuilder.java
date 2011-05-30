@@ -10,6 +10,7 @@ import ch.vd.uniregctb.webservices.tiers3.Adresse;
 import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
 import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoiAutreTiers;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.TypeAdressePoursuiteAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
@@ -45,7 +46,7 @@ public class AdresseBuilder {
 			}
 			catch (ServiceInfrastructureException e) {
 				LOGGER.error(e, e);
-				throw ExceptionHelper.newBusinessException(e.getMessage());
+				throw ExceptionHelper.newBusinessException(e.getMessage(), BusinessExceptionCode.INFRASTRUCTURE);
 			}
 			if (p != null && !p.isSuisse()) {
 				a.setPays(p.getNomMinuscule());

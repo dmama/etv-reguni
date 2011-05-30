@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.CategoriePersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers3.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers3.Sexe;
@@ -63,7 +64,7 @@ public class PersonnePhysiqueStrategy extends ContribuableStrategy<PersonnePhysi
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne
 						.getNumeroIndividu(), personne.getNumero());
 				LOGGER.error(message);
-				throw ExceptionHelper.newBusinessException(message);
+				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.INDIVIDU_INCONNU);
 			}
 
 			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getDernierHistoriqueIndividu();
