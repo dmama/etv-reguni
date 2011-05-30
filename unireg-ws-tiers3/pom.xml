@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-ws-tiers3</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0h-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService3.wsdl ! -->
+	<version>3.0i-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService3.wsdl ! -->
 
 	<name>Unireg - WS Tiers v3</name>
 	<description>Unireg - classes Java pour le web-service Tiers v3 de Unireg</description>

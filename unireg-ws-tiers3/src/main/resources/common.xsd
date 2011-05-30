@@ -77,7 +77,6 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType abstract="true" name="webServiceExceptionInfoType">
-		<!-- TODO (msi) code de catégorie -->
 		<xs:sequence>
 			<xs:element name="message" type="xs:string">
 				<xs:annotation>
@@ -86,6 +85,79 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:simpleType name="businessExceptionCodeType">
+		<xs:annotation>
+			<xs:documentation>Les différents codes permettant de catégoriser les exceptions métier. Il s'agit de la liste connue au moment de la publication du fichier. Pour permettre en compatibilité
+				ascendante, ces codes sont transmis sous forme de strings. Les applications clientes doivent donc s'attendre à recevoir de nouveaux codes qui ne seront pas dans le liste ci-dessous !
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="INFRASTRUCTURE">
+				<xs:annotation>
+					<xs:documentation>Le service infrastructure est inatteignable, ou a levé une exception sur un appel, a retourné null sur un élément qui ne devrait pas l'être ou tout autre
+						situation similaire. Cette erreur peut être transiante ou non.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDIVIDU_INCONNU">
+				<xs:annotation>
+					<xs:documentation>L'individu associé à un contribuable personne physique n'existe pas dans le registre civil. Cette erreur est fatale et ne devrait JAMAIS survenir en production.
+						Dans les autres environnements, elle est possible lorsque les recopies de production ne sont pas effectuées à la même date.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REQUETE_INCORRECTE">
+				<xs:annotation>
+					<xs:documentation>La requête reçue par le web-service est incorrecte (valeur obligatoire manquante, ...) et n'a pas pu être processées.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TIERS_INCONNU">
+				<xs:annotation>
+					<xs:documentation>Le tiers spécifié est inconnu.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TYPE_TIERS_INCORRECT">
+				<xs:annotation>
+					<xs:documentation>Le type de tiers spécifié est incorrect.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ASSUJETTISSEMENT">
+				<xs:annotation>
+					<xs:documentation>L'algorithme de calcul de l'assujettissement a rencontré une situation incohérente et a levé une exception.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ADRESSES">
+				<xs:annotation>
+					<xs:documentation>L'algorithme de calcul des adresses a rencontré une situation incohérente et a levé une exception.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDEXER_TROP_DE_RESULTATS">
+				<xs:annotation>
+					<xs:documentation>Une recherche a retourné trop de résultats.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDEXER_CRITERE_VIDE">
+				<xs:annotation>
+					<xs:documentation>La recherche demandée ne spécifie aucun critère.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDEXER">
+				<xs:annotation>
+					<xs:documentation>L'indexeur a levé une exception générique.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VALIDATION">
+				<xs:annotation>
+					<xs:documentation>Le tiers modifié est (ou est devenu) invalide.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="QUITTANCEMENT">
+				<xs:annotation>
+					<xs:documentation>L'opération de quittancement a provoqué une erreur (explicitée dans la réponse de quittancement elle-même).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="businessExceptionInfoType">
 		<xs:annotation>
 			<xs:documentation>Exception levée par le web-service lorsqu'une erreur métier est levée. Une erreur métier peut être le résultat de paramètres d'entrée incorrects, de données incohérentes
@@ -94,7 +166,15 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="unireg:webServiceExceptionInfoType">
-				<xs:sequence />
+				<xs:sequence>
+					<xs:element name="code" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>La cause de l'exception business sous forme d'un code facilement identifiable (voir SIFISC-152). Les codes connus sont définis dans le type
+								'businessExceptionCodeType' (le type String est malgré tout utilisé pour permettre d'ajouter de nouveaux codes tout en gardant la compatibilité ascendante).
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -122,6 +202,6 @@
 		<xs:annotation>
 			<xs:documentation>Une liste d'ids d'éléments (tiers ou autres, en fonction du contexte d'utilisation).</xs:documentation>
 		</xs:annotation>
-  		<xs:list itemType="xs:long"/>
+		<xs:list itemType="xs:long" />
 	</xs:simpleType>
 </xs:schema>
