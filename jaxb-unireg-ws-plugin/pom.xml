@@ -3,7 +3,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>jaxb2-unireg-ws-plugin</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 
 	<name>JAXB2 Plugin - Unireg Web-service</name>
 	<description>Ce plugin ajoute certaines méthodes à certaines classes en fonction des besoins spécifiques des web-services d'Unireg.</description>
