@@ -42,6 +42,7 @@ import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
 import ch.vd.uniregctb.webservices.tiers3.UserLogin;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
+import ch.vd.uniregctb.webservices.tiers3.WebServiceExceptionInfo;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les appels vers l'implémentation concrète du service.
@@ -530,8 +531,9 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			message.append("Les exceptions suivantes ont été levées lors du traitement du message ").append(params).append(" : ");
 			for (BatchTiersEntry entry : inError) {
 				message.append("\n - id=").append(entry.getNumber());
-				message.append(", exception=\"").append(entry.getExceptionInfo().getMessage());
-				message.append("\", type=").append(entry.getClass().getSimpleName());
+				final WebServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
+				message.append(", exception=\"").append(exceptionInfo.getMessage());
+				message.append("\", type=").append(exceptionInfo.getClass().getSimpleName());
 			}
 			LOGGER.error(message.toString());
 		}
@@ -564,7 +566,8 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 				b.append("\n - key=").append(reponse.getKey());
 				b.append(", code=").append(reponse.getCode());
 				if (reponse.getCode() == CodeQuittancement.EXCEPTION) {
-					b.append(", exception=\"").append(reponse.getExceptionMessage()).append("\", type=").append(reponse.getExceptionType());
+					final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+					b.append(", exception=\"").append(exceptionInfo.getMessage()).append("\", type=").append(exceptionInfo.getClass().getSimpleName());
 				}
 			}
 			LOGGER.error(b.toString());

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers3.Date;
 import ch.vd.uniregctb.webservices.tiers3.Declaration;
@@ -18,12 +19,13 @@ import ch.vd.uniregctb.webservices.tiers3.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.webservices.tiers3.TypeEtatDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.TypeWebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.UserLogin;
+import ch.vd.uniregctb.webservices.tiers3.WebServiceExceptionInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test d'intégration des fonctions du web-service Tiers v2 utilisées par le CEDI.
@@ -77,8 +79,11 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.ERREUR_CTB_INCONNU, reponse.getCode());
-		assertEquals(TypeWebServiceException.BUSINESS, reponse.getExceptionType());
-		assertEquals("Le contribuable est inconnu.", reponse.getExceptionMessage());
+
+		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
+		assertEquals("Le contribuable est inconnu.", exceptionInfo.getMessage());
 	}
 
 	@Test
@@ -101,8 +106,11 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.ERREUR_ASSUJETTISSEMENT_CTB, reponse.getCode());
-		assertEquals(TypeWebServiceException.BUSINESS, reponse.getExceptionType());
-		assertEquals("Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.", reponse.getExceptionMessage());
+
+		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
+		assertEquals("Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.", exceptionInfo.getMessage());
 	}
 
 	@Test
@@ -125,8 +133,11 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.ERREUR_CTB_DEBITEUR_INACTIF, reponse.getCode());
-		assertEquals(TypeWebServiceException.BUSINESS, reponse.getExceptionType());
-		assertEquals("Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.", reponse.getExceptionMessage());
+
+		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
+		assertEquals("Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.", exceptionInfo.getMessage());
 	}
 
 	@Test
@@ -149,8 +160,11 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.ERREUR_DECLARATION_INEXISTANTE, reponse.getCode());
-		assertEquals(TypeWebServiceException.BUSINESS, reponse.getExceptionType());
-		assertEquals("La déclaration n'existe pas.", reponse.getExceptionMessage());
+
+		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
+		assertEquals("La déclaration n'existe pas.", exceptionInfo.getMessage());
 	}
 
 
@@ -174,8 +188,11 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.ERREUR_DATE_RETOUR_INVALIDE, reponse.getCode());
-		assertEquals(TypeWebServiceException.BUSINESS, reponse.getExceptionType());
-		assertEquals("La date de retour spécifiée (2009.01.01) est avant la date d'envoi de la déclaration (2009.01.28).", reponse.getExceptionMessage());
+
+		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
+		assertEquals("La date de retour spécifiée (2009.01.01) est avant la date d'envoi de la déclaration (2009.01.28).", exceptionInfo.getMessage());
 	}
 
 	@Test
@@ -198,8 +215,11 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.ERREUR_DECLARATION_ANNULEE, reponse.getCode());
-		assertEquals(TypeWebServiceException.BUSINESS, reponse.getExceptionType());
-		assertEquals("La déclaration a été annulée entre-temps.", reponse.getExceptionMessage());
+
+		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
+		assertEquals("La déclaration a été annulée entre-temps.", exceptionInfo.getMessage());
 	}
 
 	@Test
@@ -222,8 +242,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.OK, reponse.getCode());
-		assertNull(reponse.getExceptionType());
-		assertNull(reponse.getExceptionMessage());
+		assertNull(reponse.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 28014710L, 2008, 1);
 	}
 
@@ -247,8 +266,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse = reponses.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.OK, reponse.getCode());
-		assertNull(reponse.getExceptionType());
-		assertNull(reponse.getExceptionMessage());
+		assertNull(reponse.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 38005401, 2008, 1);
 	}
 
@@ -283,21 +301,22 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		final ReponseQuittancementDeclaration reponse0 = reponses.get(0);
 		assertNotNull(reponse0);
 		assertEquals(CodeQuittancement.ERREUR_DECLARATION_ANNULEE, reponse0.getCode());
-		assertEquals(TypeWebServiceException.BUSINESS, reponse0.getExceptionType());
-		assertEquals("La déclaration a été annulée entre-temps.", reponse0.getExceptionMessage());
+
+		final WebServiceExceptionInfo exceptionInfo0 = reponse0.getExceptionInfo();
+		assertNotNull(exceptionInfo0);
+		assertTrue(exceptionInfo0 instanceof BusinessExceptionInfo);
+		assertEquals("La déclaration a été annulée entre-temps.", exceptionInfo0.getMessage());
 
 		final ReponseQuittancementDeclaration reponse1 = reponses.get(1);
 		assertNotNull(reponse1);
 		assertEquals(CodeQuittancement.OK, reponse1.getCode());
-		assertNull(reponse1.getExceptionType());
-		assertNull(reponse1.getExceptionMessage());
+		assertNull(reponse1.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 28014710L, 2008, 1);
 
 		final ReponseQuittancementDeclaration reponse2 = reponses.get(2);
 		assertNotNull(reponse2);
 		assertEquals(CodeQuittancement.OK, reponse2.getCode());
-		assertNull(reponse2.getExceptionType());
-		assertNull(reponse2.getExceptionMessage());
+		assertNull(reponse2.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 38005401, 2008, 1);
 	}
 

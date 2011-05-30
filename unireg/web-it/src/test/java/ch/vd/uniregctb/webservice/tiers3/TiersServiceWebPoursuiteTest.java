@@ -63,7 +63,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 		assertAdresseEnvoi(domicile, "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
 		assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-		assertAdresseEquals(domicile, tiers.getAdresseEnvoi());
+		assertAdresseEquals(domicile, tiers.getAdresseCourrierFormattee());
 		assertAdresseEquals(domicile, tiers.getAdressePoursuiteFormattee());
 		assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
 	}
@@ -106,7 +106,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 			final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 			assertAdresseEnvoi(domicile, "Monsieur", "Thierry Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
 			assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-			assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Thierry Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
+			assertAdresseEnvoi(tiers.getAdresseCourrierFormattee(), "Monsieur", "Thierry Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
 			assertAdresseEquals(domicile, tiers.getAdressePoursuiteFormattee());
 			assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
 		}
@@ -127,7 +127,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 			final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 			assertAdresseEnvoi(domicile, "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
 			assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-			final AdresseEnvoi courrier = tiers.getAdresseEnvoi();
+			final AdresseEnvoi courrier = tiers.getAdresseCourrierFormattee();
 			assertAdresseEnvoi(courrier, "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
 			assertAdresseEquals(domicile, tiers.getAdressePoursuiteFormattee());
 			assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
@@ -154,7 +154,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 		assertAdresseEnvoi(domicile, "Monsieur", "Marc Stäheli", "Chemin des Peupliers 1", "1008 Prilly");
 		assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Marc Stäheli", "p.a. Alain Bally", "Place Saint-François", "1003 Lausanne");
+		assertAdresseEnvoi(tiers.getAdresseCourrierFormattee(), "Monsieur", "Marc Stäheli", "p.a. Alain Bally", "Place Saint-François", "1003 Lausanne");
 		assertAdresseEquals(domicile, tiers.getAdressePoursuiteFormattee());
 		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.CURATELLE, "Monsieur", "Alain Bally", "Place Saint-François", "1003 Lausanne");
 	}
@@ -178,7 +178,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 		assertAdresseEnvoi(domicile, "Madame", "Anabela Lopes", "Avenue Kiener 69", "1400 Yverdon-les-Bains");
 		assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Madame", "Anabela Lopes", "p.a. TUTEUR GENERAL VD", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
+		assertAdresseEnvoi(tiers.getAdresseCourrierFormattee(), "Madame", "Anabela Lopes", "p.a. TUTEUR GENERAL VD", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
 
 		// devrait être ci-après mais l'info n'est pas à jour dans le host : assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Justice de Paix des districts du Jura-Nord vaudois et du Gros-de-Vaud", "Case Postale 693", "Rue du Pré 2", "1400 Yverdon-les-Bains");
 		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Monsieur le Juge de Paix de Belmont/Conc", "ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac", "1400 Yverdon-les-Bains");
@@ -204,7 +204,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		// Teste les adresses formattées
 		assertAdresseEnvoi(tiers.getAdresseDomicileFormattee(), "Monsieur", "Claude-Alain Proz", "Izmir", "Turquie");
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
+		assertAdresseEnvoi(tiers.getAdresseCourrierFormattee(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
 		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
 		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.MANDATAIRE, "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach",
 				"8026 Zürich");
@@ -229,7 +229,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 		assertAdresseEnvoi(domicile, "Monsieur", "Marcello Pesci", "Ch. de Réchoz 17", "1027 Lonay");
 		assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Marcello Pesci", "p.a. Curia Treuhand AG", "Postfach 132", "7000 Chur");
+		assertAdresseEnvoi(tiers.getAdresseCourrierFormattee(), "Monsieur", "Marcello Pesci", "p.a. Curia Treuhand AG", "Postfach 132", "7000 Chur");
 		assertAdresseEquals(domicile, tiers.getAdressePoursuiteFormattee());
 		assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
 	}
@@ -253,7 +253,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 		assertAdresseEnvoi(domicile, "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
 		assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-		assertAdresseEquals(domicile, tiers.getAdresseEnvoi());
+		assertAdresseEquals(domicile, tiers.getAdresseCourrierFormattee());
 
 		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");
 		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.SPECIFIQUE, "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud",

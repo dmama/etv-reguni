@@ -283,12 +283,12 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		assertNotNull(menageAvant);
 
 		// On vérifie l'adresse d'envoi
-		assertEquals("Monsieur et Madame", menageAvant.getAdresseEnvoi().getLigne1());
-		assertEquals("Eric Bolomey", menageAvant.getAdresseEnvoi().getLigne2());
-		assertEquals("Monique Bolomey", menageAvant.getAdresseEnvoi().getLigne3());
-		assertEquals("Av de Beaulieu", menageAvant.getAdresseEnvoi().getLigne4());
-		assertEquals("1000 Lausanne", menageAvant.getAdresseEnvoi().getLigne5());
-		assertNull(menageAvant.getAdresseEnvoi().getLigne6());
+		assertEquals("Monsieur et Madame", menageAvant.getAdresseCourrierFormattee().getLigne1());
+		assertEquals("Eric Bolomey", menageAvant.getAdresseCourrierFormattee().getLigne2());
+		assertEquals("Monique Bolomey", menageAvant.getAdresseCourrierFormattee().getLigne3());
+		assertEquals("Av de Beaulieu", menageAvant.getAdresseCourrierFormattee().getLigne4());
+		assertEquals("1000 Lausanne", menageAvant.getAdresseCourrierFormattee().getLigne5());
+		assertNull(menageAvant.getAdresseCourrierFormattee().getLigne6());
 
 		// On modifie le prénom de madame
 		doInNewTransaction(new TxCallback<Object>() {
@@ -324,12 +324,12 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		assertNotNull(menageApres);
 
 		// On vérifie l'adresse d'envoi
-		assertEquals("Monsieur et Madame", menageApres.getAdresseEnvoi().getLigne1());
-		assertEquals("Eric Bolomey", menageApres.getAdresseEnvoi().getLigne2());
-		assertEquals("Gudrun Bolomey", menageApres.getAdresseEnvoi().getLigne3());
-		assertEquals("Av de Beaulieu", menageApres.getAdresseEnvoi().getLigne4());
-		assertEquals("1000 Lausanne", menageApres.getAdresseEnvoi().getLigne5());
-		assertNull(menageApres.getAdresseEnvoi().getLigne6());
+		assertEquals("Monsieur et Madame", menageApres.getAdresseCourrierFormattee().getLigne1());
+		assertEquals("Eric Bolomey", menageApres.getAdresseCourrierFormattee().getLigne2());
+		assertEquals("Gudrun Bolomey", menageApres.getAdresseCourrierFormattee().getLigne3());
+		assertEquals("Av de Beaulieu", menageApres.getAdresseCourrierFormattee().getLigne4());
+		assertEquals("1000 Lausanne", menageApres.getAdresseCourrierFormattee().getLigne5());
+		assertNull(menageApres.getAdresseCourrierFormattee().getLigne6());
 	}
 
 	@Test
@@ -619,7 +619,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		assertNullOrNotNull(checkAdresses, tiers.getAdressesDomicile(), "adressesDomicile");
 		assertNullOrNotNull(checkAdresses, tiers.getAdressesPoursuite(), "adressesPoursuite");
 		assertNullOrNotNull(checkAdresses, tiers.getAdressesRepresentation(), "adressesRepresentation");
-		assertNullOrNotNull(checkAdressesEnvoi, tiers.getAdresseEnvoi(), "getAdresseEnvoi()");
+		assertNullOrNotNull(checkAdressesEnvoi, tiers.getAdresseCourrierFormattee(), "getAdresseCourrierFormattee()");
 		assertNullOrNotNull(checkAdressesEnvoi, tiers.getAdresseDomicileFormattee(), "adresseDomicileFormattee");
 		assertNullOrNotNull(checkAdressesEnvoi, tiers.getAdresseRepresentationFormattee(), "adresseRepresentationFormattee");
 		assertNullOrNotNull(checkAdressesEnvoi, tiers.getAdressePoursuiteFormattee(), "adressePoursuiteFormattee");

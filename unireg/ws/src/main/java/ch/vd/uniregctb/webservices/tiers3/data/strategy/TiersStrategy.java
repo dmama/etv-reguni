@@ -72,7 +72,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 		to.setNumeroTelecopie(from.getNumeroTelecopie());
 		to.setAdresseCourrierElectronique(from.getAdresseCourrierElectronique());
 		to.setBlocageRemboursementAutomatique(DataHelper.coreToWeb(from.getBlocageRemboursementAutomatique()));
-		to.setIsDebiteurInactif(from.isDebiteurInactif());
+		to.setDebiteurInactif(from.isDebiteurInactif());
 	}
 
 	protected void copyBase(T to, T from) {
@@ -86,7 +86,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 		to.setNumeroTelecopie(from.getNumeroTelecopie());
 		to.setAdresseCourrierElectronique(from.getAdresseCourrierElectronique());
 		to.setBlocageRemboursementAutomatique(from.isBlocageRemboursementAutomatique());
-		to.setIsDebiteurInactif(from.isIsDebiteurInactif());
+		to.setDebiteurInactif(from.isDebiteurInactif());
 	}
 
 
@@ -136,7 +136,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 		}
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			to.setAdresseEnvoi(from.getAdresseEnvoi());
+			to.setAdresseCourrierFormattee(from.getAdresseCourrierFormattee());
 			to.setAdresseRepresentationFormattee(from.getAdresseRepresentationFormattee());
 			to.setAdresseDomicileFormattee(from.getAdresseDomicileFormattee());
 			to.setAdressePoursuiteFormattee(from.getAdressePoursuiteFormattee());
@@ -238,7 +238,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 
 	private static void initAdressesEnvoi(Tiers left, ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws WebServiceException {
 		try {
-			left.setAdresseEnvoi(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.COURRIER));
+			left.setAdresseCourrierFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.COURRIER));
 			left.setAdresseRepresentationFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.REPRESENTATION));
 			left.setAdresseDomicileFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.DOMICILE));
 			left.setAdressePoursuiteFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.POURSUITE));

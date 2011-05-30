@@ -314,7 +314,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 
 		if (parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			pm.setAdresseEnvoi(calculateAdresseEnvoi(pm, pm.getAdressesCourrier()));
+			pm.setAdresseCourrierFormattee(calculateAdresseEnvoi(pm, pm.getAdressesCourrier()));
 			pm.setAdresseDomicileFormattee(calculateAdresseEnvoi(pm, pm.getAdressesDomicile()));
 			pm.setAdresseRepresentationFormattee(calculateAdresseEnvoi(pm, pm.getAdressesRepresentation()));
 			pm.setAdressePoursuiteFormattee(calculateAdresseEnvoi(pm, pm.getAdressesPoursuite()));

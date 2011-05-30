@@ -513,7 +513,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
+		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
@@ -567,7 +567,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
+		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
@@ -595,7 +595,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
+		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLigne2()));
@@ -897,7 +897,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(pm);
 		assertEquals(1314L, pm.getNumero());
 
-		final AdresseEnvoi adresseCourrier = pm.getAdresseEnvoi();
+		final AdresseEnvoi adresseCourrier = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseCourrier);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseCourrier.getLigne1())); // <-- raison sociale ligne 1
 		assertEquals("", trimValiPattern(adresseCourrier.getLigne2())); // <-- raison sociale ligne 2

@@ -44,7 +44,7 @@ public class DebiteurStrategy extends TiersStrategy<Debiteur> {
 		to.setModeCommunication(EnumHelper.coreToWeb(debiteur.getModeCommunication()));
 		to.setSansRappel(DataHelper.coreToWeb(debiteur.getSansRappel()));
 		to.setSansListeRecapitulative(DataHelper.coreToWeb(debiteur.getSansListeRecapitulative()));
-		to.setContribuableAssocie(debiteur.getContribuableId());
+		to.setContribuableAssocieId(debiteur.getContribuableId());
 		if (to.getModeCommunication() == ModeCommunication.ELECTRONIQUE) {
 			to.setLogicielId(debiteur.getLogicielId());
 		}
@@ -58,7 +58,7 @@ public class DebiteurStrategy extends TiersStrategy<Debiteur> {
 		to.setModeCommunication(from.getModeCommunication());
 		to.setSansRappel(from.isSansRappel());
 		to.setSansListeRecapitulative(from.isSansListeRecapitulative());
-		to.setContribuableAssocie(from.getContribuableAssocie());
+		to.setContribuableAssocieId(from.getContribuableAssocieId());
 		to.setLogicielId(from.getLogicielId());
 	}
 

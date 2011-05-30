@@ -518,10 +518,12 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(1, retour.key.numeroSequenceDI);
 		assertEquals(annee, retour.key.periodeFiscale);
 		assertEquals(CodeQuittancement.EXCEPTION, retour.code);
-		assertEquals(TypeWebServiceException.BUSINESS, retour.exceptionType);
 
+		final WebServiceExceptionInfo exceptionInfo = retour.exceptionInfo;
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
-		assertEquals(expectedMessage, retour.exceptionMessage);
+		assertEquals(expectedMessage, exceptionInfo.getMessage());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
@@ -635,10 +637,12 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(1, retourInvalide.key.numeroSequenceDI);
 		assertEquals(annee, retourInvalide.key.periodeFiscale);
 		assertEquals(CodeQuittancement.EXCEPTION, retourInvalide.code);
-		assertEquals(TypeWebServiceException.BUSINESS, retourInvalide.exceptionType);
 
+		final WebServiceExceptionInfo exceptionInfo = retourInvalide.exceptionInfo;
+		assertNotNull(exceptionInfo);
+		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
-		assertEquals(expectedMessage, retourInvalide.exceptionMessage);
+		assertEquals(expectedMessage, exceptionInfo.getMessage());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {

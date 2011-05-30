@@ -481,7 +481,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertNotNull(debiteur);
 
 		// Recherche du contribuable associé
-		final long contribuableId = debiteur.getContribuableAssocie();
+		final long contribuableId = debiteur.getContribuableAssocieId();
 		assertEquals(43308102L, contribuableId);
 
 		params.setTiersNumber(contribuableId);
@@ -597,7 +597,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		 * 1004 Lausanne Secteur de dist.
 		 * </pre>
 		 */
-		final AdresseEnvoi adresseEnvoi = debiteur.getAdresseEnvoi();
+		final AdresseEnvoi adresseEnvoi = debiteur.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Sabri Inanç Ertem", adresseEnvoi.getLigne1());
 		assertEquals("Café du Commerce", adresseEnvoi.getLigne2());
@@ -929,7 +929,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
+		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 
 		// l'adresse d'envoi n'a pas de salutations

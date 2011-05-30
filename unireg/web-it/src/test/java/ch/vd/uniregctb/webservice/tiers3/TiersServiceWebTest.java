@@ -127,7 +127,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final Debiteur debiteur = (Debiteur) service.getTiers(params);
 		assertNotNull(debiteur);
-		assertEquals(Long.valueOf(12100002L), debiteur.getContribuableAssocie());
+		assertEquals(Long.valueOf(12100002L), debiteur.getContribuableAssocieId());
 		assertEquals("Employeur personnel menage", debiteur.getComplementNom());
 		assertEquals(CategorieDebiteur.ADMINISTRATEURS, debiteur.getCategorie());
 		assertEquals(ModeCommunication.PAPIER, debiteur.getModeCommunication());
@@ -314,7 +314,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEmpty(personne.getAdressesRepresentation());
 		assertEmpty(personne.getAdressesPoursuite());
 
-		final AdresseEnvoi adresse = personne.getAdresseEnvoi();
+		final AdresseEnvoi adresse = personne.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Madame", adresse.getLigne1());
@@ -354,7 +354,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEmpty(personne.getAdressesRepresentation());
 		assertEmpty(personne.getAdressesPoursuite());
 
-		final AdresseEnvoi adresse = personne.getAdresseEnvoi();
+		final AdresseEnvoi adresse = personne.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Aux héritiers de", adresse.getLigne1());
@@ -912,7 +912,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final Contribuable ctb = (Contribuable) service.getTiers(params);
 		assertNotNull(ctb);
 
-		final AdresseEnvoi adresseEnvoi = ctb.getAdresseEnvoi();
+		final AdresseEnvoi adresseEnvoi = ctb.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Madame, Monsieur", adresseEnvoi.getLigne1());
 		assertEquals("Tummers-De Wit Wouter", adresseEnvoi.getLigne2());
@@ -1241,7 +1241,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseEnvoi adresse = pm.getAdresseEnvoi();
+		final AdresseEnvoi adresse = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Société immobilière de", trimValiPattern(adresse.getLigne1()));
@@ -1267,7 +1267,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseEnvoi adresse = pm.getAdresseEnvoi();
+		final AdresseEnvoi adresse = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLigne1()));
