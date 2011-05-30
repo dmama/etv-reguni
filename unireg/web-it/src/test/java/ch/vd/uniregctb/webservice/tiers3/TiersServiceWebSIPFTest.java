@@ -71,7 +71,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		login.setOid(22);
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirForsPM() throws Exception {
 
@@ -99,15 +98,26 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final ForFiscal ffp0 = forPrincipaux.get(0);
 		assertNotNull(ffp0);
 		// Note : les communes hors-canton et les pays hors-Suisse sont aussi retourné. C'est à l'appelant de faire le tri si nécessaire.
-		assertSameDay(newDate(1979, 8, 7), ffp0.getDateOuverture());
-		assertNull(ffp0.getDateFermeture());
+		assertSameDay(newDate(1979, 8, 7), ffp0.getDateDebut());
+		assertNull(ffp0.getDateFin());
 		assertEquals(5413, ffp0.getNoOfsAutoriteFiscale());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp0.getTypeAutoriteFiscale());
 		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp0.getGenreImpot());
 		assertEquals(MotifRattachement.DOMICILE, ffp0.getMotifRattachement());
 
 		final List<ForFiscal> forSecondaires = pm.getAutresForsFiscaux();
-		assertEmpty(forSecondaires);
+		assertNotNull(forSecondaires);
+		assertEquals(1, forSecondaires.size());
+
+		final ForFiscal ffs0 = forSecondaires.get(0);
+		assertNotNull(ffs0);
+		assertSameDay(newDate(1988, 7, 22), ffs0.getDateDebut());
+		assertSameDay(newDate(2001, 9, 6), ffs0.getDateFin());
+		assertEquals(5413, ffs0.getNoOfsAutoriteFiscale());
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs0.getTypeAutoriteFiscale());
+		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs0.getGenreImpot());
+		assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs0.getMotifRattachement());
+
 		// etc...
 
 		// Récupération des informations des régimes fiscaux
@@ -134,7 +144,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNull(ifd0.getDateFin());
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirCapital() throws Exception {
 
@@ -168,7 +177,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		// Cette catégorie est elle-même déduite du code du régime fiscal.
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirEvenementsPMParNumero() throws Exception {
 
@@ -280,7 +288,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("002", ev15.getCodeEvenement());
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirEvenementsPMParCode() throws Exception {
 
@@ -312,7 +319,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-2039] vérifie que les paramètres date mini et date maxi fonctionnent correctement.
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirEvenementsPMDateMiniMaxi() throws Exception {
 
@@ -366,7 +372,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(Long.valueOf(222), ev5.getTiersNumber());
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirCoordonneesFinancieres() throws Exception {
 
@@ -441,7 +446,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-2106] teste que les coordonnées fiscales d'un mandataire de type 'T' sont bien exposées
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirCoordonneesFinancieresAvecMandatairePM() throws Exception {
 
@@ -469,7 +473,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("UBS AG", trimValiPattern(compteMandataire.getNomInstitution()));
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirAdresseCourrier() throws Exception {
 
@@ -524,7 +527,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-1974]
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirAdresseCourrierLocaliteAbregee() throws Exception {
 
@@ -579,7 +581,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-1973] la personne de contact de la PM ne doit pas apparaître dans l'adresse d'envoi.
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirAdresseEnvoi() throws Exception {
 
@@ -605,7 +606,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirAdresseContentieuxPM() throws Exception {
 
@@ -691,7 +691,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		// Unireg n'est pas en mesure de retourner le nom et de prénom de l'administrateur, cette information n'est pas disponible.
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirInformationDeConsultation() throws Exception {
 
@@ -720,7 +719,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(sieges);
 		assertEquals(1, sieges.size());
 
-		final Siege siege = (Siege) sieges;
+		final Siege siege = sieges.get(0);
 		assertNotNull(siege);
 		assertSameDay(newDate(1979, 8, 7), siege.getDateDebut());
 		assertNull(siege.getDateFin());
@@ -733,7 +732,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(1, forsFiscauxPrincipaux.size());
 
 		final ForFiscal ffp = forsFiscauxPrincipaux.get(0);
-		assertNull(ffp.getDateFermeture());
+		assertNull(ffp.getDateFin());
 		assertEquals(5413, ffp.getNoOfsAutoriteFiscale());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
@@ -741,8 +740,18 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		// note : le nom de la commune/pays doit être demandé au service infrastructure
 
 		// Fors secondaires actifs
-		final List<ForFiscal> forsSecondaires = pm.getAutresForsFiscaux();
-		assertEmpty(forsSecondaires);
+		final List<ForFiscal> forSecondaires = pm.getAutresForsFiscaux();
+		assertNotNull(forSecondaires);
+		assertEquals(1, forSecondaires.size());
+
+		final ForFiscal ffs0 = forSecondaires.get(0);
+		assertNotNull(ffs0);
+		assertSameDay(newDate(1988, 7, 22), ffs0.getDateDebut());
+		assertSameDay(newDate(2001, 9, 6), ffs0.getDateFin());
+		assertEquals(5413, ffs0.getNoOfsAutoriteFiscale());
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs0.getTypeAutoriteFiscale());
+		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs0.getGenreImpot());
+		assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs0.getMotifRattachement());
 		// note : le nom de la commune doit être demandé au service infrastructure
 
 		// Forme juridique
@@ -761,7 +770,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(regimesFiscauxICC);
 		assertEquals(1, regimesFiscauxICC.size());
 
-		final RegimeFiscal regimeICC = (RegimeFiscal) regimesFiscauxICC;
+		final RegimeFiscal regimeICC = regimesFiscauxICC.get(0);
 		assertNotNull(regimeICC);
 		assertSameDay(newDate(1993, 1, 1), regimeICC.getDateDebut());
 		assertNull(regimeICC.getDateFin());
@@ -779,7 +788,10 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(1, periodesAssujettissementLIC.size());
 
 		final PeriodeAssujettissement assujettissementLIC = periodesAssujettissementLIC.get(0);
-		assertNull(assujettissementLIC);
+		assertNotNull(assujettissementLIC);
+		assertEquals(newDate(1992, 12, 31), assujettissementLIC.getDateDebut());
+		assertEquals(newDate(2003, 12, 31), assujettissementLIC.getDateFin());
+		assertEquals(TypePeriodeAssujettissement.ILLIMITE, assujettissementLIC.getType());
 
 		// Dates de début et de fin de l'assujettissement LIFD
 		final List<PeriodeAssujettissement> periodesAssujettissementLIFD = pm.getPeriodesAssujettissementLIFD();
@@ -787,7 +799,10 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(1, periodesAssujettissementLIFD.size());
 
 		final PeriodeAssujettissement assujettissementLIFD = periodesAssujettissementLIFD.get(0);
-		assertNull(assujettissementLIFD);
+		assertNotNull(assujettissementLIFD);
+		assertEquals(newDate(1992, 12, 31), assujettissementLIFD.getDateDebut());
+		assertEquals(newDate(2003, 12, 31), assujettissementLIFD.getDateFin());
+		assertEquals(TypePeriodeAssujettissement.ILLIMITE, assujettissementLIFD.getType());
 
 		// Numéro IPMRO
 		assertEquals("01880", pm.getNumeroIPMRO());
@@ -798,14 +813,26 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		// Date de validite et code de l'état de la PM
 		final List<EtatPM> etats = pm.getEtats();
 		assertNotNull(etats);
-		assertEquals(1, etats.size());
+		assertEquals(3, etats.size());
 
-		final EtatPM etat = etats.get(0);
-		assertNotNull(etat);
-		assertSameDay(newDate(2003, 11, 6), etat.getDateDebut());
-		assertNull(etat.getDateFin());
-		assertEquals("06", etat.getCode()); // selon table ETAT du host
-		// note : le libellé du dernier état doit être demandé au service infrastructure
+		final EtatPM etat0 = etats.get(0);
+		assertNotNull(etat0);
+		assertSameDay(newDate(1979, 8, 7), etat0.getDateDebut());
+		assertSameDay(newDate(2003, 4, 2), etat0.getDateFin());
+		assertEquals("01", etat0.getCode()); // selon table ETAT du host
+
+		final EtatPM etat1 = etats.get(1);
+		assertNotNull(etat1);
+		assertSameDay(newDate(2003, 4, 3), etat1.getDateDebut());
+		assertSameDay(newDate(2003, 11, 5), etat1.getDateFin());
+		assertEquals("04", etat1.getCode()); // selon table ETAT du host
+
+		final EtatPM etat2 = etats.get(2);
+		assertNotNull(etat2);
+		assertSameDay(newDate(2003, 11, 6), etat2.getDateDebut());
+		assertNull(etat2.getDateFin());
+		assertEquals("06", etat2.getCode()); // selon table ETAT du host
+		// note : le libellé des états doit être demandé au service infrastructure
 
 		// Capital libéré + absence normale ou non
 		final List<Capital> capitaux = pm.getCapitaux();
@@ -819,7 +846,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertFalse(capital.isAbsenceCapitalLibereNormale());
 	}
 
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testFournirAssujettissements() throws Exception {
 
@@ -859,7 +885,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testGetAdresseEnvoiPM() throws Exception {
 

@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -400,8 +399,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals(GenreImpot.REVENU_FORTUNE, forPrincipal.getGenreImpot());
 		assertEquals(MotifRattachement.DOMICILE, forPrincipal.getMotifRattachement());
 		assertEquals(ModeImposition.SOURCE, forPrincipal.getModeImposition());
-		assertSameDay(newDate(2006, 9, 1), forPrincipal.getDateOuverture());
-		assertNull(forPrincipal.getDateFermeture());
+		assertSameDay(newDate(2006, 9, 1), forPrincipal.getDateDebut());
+		assertNull(forPrincipal.getDateFin());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forPrincipal.getTypeAutoriteFiscale());
 		assertEquals(5586L, forPrincipal.getNoOfsAutoriteFiscale());
 
@@ -1119,8 +1118,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 			assertEquals(1, fors.size());
 
 			final ForFiscal fp = fors.get(0);
-			assertSameDay(newDate(1980, 1, 1), fp.getDateOuverture());
-			assertSameDay(newDate(1987, 1, 31), fp.getDateFermeture());
+			assertSameDay(newDate(1980, 1, 1), fp.getDateDebut());
+			assertSameDay(newDate(1987, 1, 31), fp.getDateFin());
 			assertFalse(fp.isVirtuel());
 		}
 
@@ -1139,13 +1138,13 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 			assertEquals(2, fors.size());
 
 			final ForFiscal fp0 = fors.get(0);
-			assertSameDay(newDate(1980, 1, 1), fp0.getDateOuverture());
-			assertSameDay(newDate(1987, 1, 31), fp0.getDateFermeture());
+			assertSameDay(newDate(1980, 1, 1), fp0.getDateDebut());
+			assertSameDay(newDate(1987, 1, 31), fp0.getDateFin());
 			assertFalse(fp0.isVirtuel());
 
 			final ForFiscal fp1 = fors.get(1);
-			assertSameDay(newDate(1987, 2, 1), fp1.getDateOuverture());
-			assertNull(fp1.getDateFermeture());
+			assertSameDay(newDate(1987, 2, 1), fp1.getDateDebut());
+			assertNull(fp1.getDateFin());
 			assertTrue(fp1.isVirtuel());
 		}
 
@@ -1165,8 +1164,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 			assertEquals(1, fors.size());
 
 			final ForFiscal fp = fors.get(0);
-			assertSameDay(newDate(1980, 1, 1), fp.getDateOuverture());
-			assertSameDay(newDate(1987, 1, 31), fp.getDateFermeture());
+			assertSameDay(newDate(1980, 1, 1), fp.getDateDebut());
+			assertSameDay(newDate(1987, 1, 31), fp.getDateFin());
 			assertFalse(fp.isVirtuel());
 		}
 	}
@@ -1231,7 +1230,6 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-1969] Vérification que le champ "chez" apparaît bien dans l'adresse d'envoi
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void getTiersPMAdresseEnvoi() throws Exception {
 
@@ -1258,7 +1256,6 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-1974] Vérification du libellé de la rue dans l'adresse d'envoi
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void getTiersPMAdresseEnvoiNomRue() throws Exception {
 

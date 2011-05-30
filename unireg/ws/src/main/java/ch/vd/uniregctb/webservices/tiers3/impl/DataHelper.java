@@ -15,7 +15,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -31,8 +30,6 @@ import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -103,21 +100,6 @@ public class DataHelper {
 		else {
 			return RegDate.get(date.getYear(), date.getMonth(), date.getDay());
 		}
-	}
-
-	public static Adresse coreToWeb(AdresseGenerique adresse,
-	                                ServiceInfrastructureService serviceInfra) throws WebServiceException {
-		if (adresse == null) {
-			return null;
-		}
-		return AdresseBuilder.newAdresse(adresse, serviceInfra);
-	}
-
-	public static AdresseAutreTiers coreToWebAT(AdresseGenerique adresse, ServiceInfrastructureService serviceInfra) throws WebServiceException {
-		if (adresse == null) {
-			return null;
-		}
-		return AdresseBuilder.newAdresseAutreTiers(adresse, serviceInfra);
 	}
 
 	public static List<Adresse> coreToWeb(List<AdresseGenerique> adresses,
@@ -265,29 +247,6 @@ public class DataHelper {
 		i.setDateNaissance(DataHelper.coreToWeb(value.getRegDateNaissance()));
 		i.setType(DataHelper.getTypeTiers(value));
 		return i;
-	}
-
-	/**
-	 * @param numeroOfsCommune le numéro Ofs de la commune
-	 * @param date             la date de validité
-	 * @param serviceInfra     le service d'infrastructure
-	 * @return le nom minuscule de la commune; ou <b>null</b> si la commune n'existe pas ou en cas d'erreur d'accès à l'infrastructure.
-	 */
-	public static String getNomCommune(int numeroOfsCommune, RegDate date, ServiceInfrastructureService serviceInfra) {
-
-		String nomCommune = null;
-
-		try {
-			Assert.notNull(serviceInfra);
-			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsCommune, date);
-			if (commune != null) {
-				nomCommune = commune.getNomMinuscule();
-			}
-		}
-		catch (ServiceInfrastructureException ignored) {
-		}
-
-		return nomCommune;
 	}
 
 	/**
@@ -487,7 +446,7 @@ public class DataHelper {
 		if (adressePoursuite == null) {
 			return null;
 		}
-		return newAdresseEnvoi(adressePoursuite);
+		return AdresseBuilder.newAdresseEnvoi(adressePoursuite);
 	}
 
 	public static AdresseEnvoiAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
@@ -495,39 +454,7 @@ public class DataHelper {
 		if (adressePoursuite == null) {
 			return null;
 		}
-		return newAdresseEnvoiAutreTiers(adressePoursuite);
-	}
-
-	private static AdresseEnvoi newAdresseEnvoi(AdresseEnvoiDetaillee adresse) {
-		final AdresseEnvoi a = new AdresseEnvoi();
-		fillAdresseEnvoi(adresse, a);
-		return a;
-	}
-
-	private static AdresseEnvoiAutreTiers newAdresseEnvoiAutreTiers(AdresseEnvoiDetaillee adresse) {
-		final AdresseEnvoiAutreTiers a = new AdresseEnvoiAutreTiers();
-		fillAdresseEnvoi(adresse, a);
-		a.setType(AdresseBuilder.source2type(adresse.getSource()));
-		return a;
-	}
-
-	private static void fillAdresseEnvoi(AdresseEnvoiDetaillee adresse, AdresseEnvoi a) {
-		a.setLigne1(adresse.getLigne1());
-		a.setLigne2(adresse.getLigne2());
-		a.setLigne3(adresse.getLigne3());
-		a.setLigne4(adresse.getLigne4());
-		a.setLigne5(adresse.getLigne5());
-		a.setLigne6(adresse.getLigne6());
-		a.setSalutations(adresse.getSalutations());
-		a.setFormuleAppel(adresse.getFormuleAppel());
-		a.getNomsPrenoms().addAll(adresse.getNomPrenom());
-		a.setComplement(adresse.getComplement());
-		a.setPourAdresse(adresse.getPourAdresse());
-		a.setRueNumero(adresse.getRueEtNumero());
-		a.setCasePostale(adresse.getCasePostale());
-		a.setNpaLocalite(adresse.getNpaEtLocalite());
-		a.setPays(adresse.getPays());
-		a.setTypeAffranchissement(EnumHelper.coreToWeb(adresse.getTypeAffranchissement()));
+		return AdresseBuilder.newAdresseEnvoiAutreTiers(adressePoursuite);
 	}
 
 	public static Set<TiersPart> toSet(List<TiersPart> parts) {

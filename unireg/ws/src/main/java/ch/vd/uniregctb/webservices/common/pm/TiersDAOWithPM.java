@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.tiers2.impl.pm;
+package ch.vd.uniregctb.webservices.common.pm;
 
 import java.util.Collection;
 import java.util.Date;

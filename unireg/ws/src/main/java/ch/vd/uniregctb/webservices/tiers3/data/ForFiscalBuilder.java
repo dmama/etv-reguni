@@ -12,8 +12,8 @@ public class ForFiscalBuilder {
 			final ch.vd.uniregctb.tiers.ForFiscalRevenuFortune forRevenu = (ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) forFiscal;
 
 			f.setMotifRattachement(EnumHelper.coreToWeb(forRevenu.getMotifRattachement()));
-			f.setMotifOuverture(EnumHelper.coreToWeb(forRevenu.getMotifOuverture()));
-			f.setMotifFermeture(EnumHelper.coreToWeb(forRevenu.getMotifFermeture()));
+			f.setMotifDebut(EnumHelper.coreToWeb(forRevenu.getMotifOuverture()));
+			f.setMotifFin(EnumHelper.coreToWeb(forRevenu.getMotifFermeture()));
 
 			if (forRevenu instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal) {
 				final ch.vd.uniregctb.tiers.ForFiscalPrincipal forPrincipal = (ch.vd.uniregctb.tiers.ForFiscalPrincipal) forRevenu;
@@ -25,8 +25,8 @@ public class ForFiscalBuilder {
 
 	public static ForFiscal newForFiscal(ch.vd.uniregctb.tiers.ForFiscal forFiscal, boolean virtuel) {
 		final ForFiscal f = new ForFiscal();
-		f.setDateOuverture(DataHelper.coreToWeb(forFiscal.getDateDebut()));
-		f.setDateFermeture(DataHelper.coreToWeb(forFiscal.getDateFin()));
+		f.setDateDebut(DataHelper.coreToWeb(forFiscal.getDateDebut()));
+		f.setDateFin(DataHelper.coreToWeb(forFiscal.getDateFin()));
 		f.setDateAnnulation(DataHelper.coreToWeb(forFiscal.getAnnulationDate()));
 		f.setGenreImpot(EnumHelper.coreToWeb(forFiscal.getGenreImpot()));
 		f.setTypeAutoriteFiscale(EnumHelper.coreToWeb(forFiscal.getTypeAutoriteFiscale()));

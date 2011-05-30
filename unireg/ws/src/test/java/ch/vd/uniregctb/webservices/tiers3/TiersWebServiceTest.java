@@ -124,14 +124,14 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final ForFiscal for0 = paulHisto.forsFiscauxPrincipaux.get(0);
 		assertNotNull(for0);
-		assertEquals(newDate(1974, 3, 31), for0.dateOuverture);
-		assertEquals(newDate(1989, 12, 31), for0.dateFermeture);
+		assertEquals(newDate(1974, 3, 31), for0.getDateDebut());
+		assertEquals(newDate(1989, 12, 31), for0.getDateFin());
 		assertFalse(for0.virtuel);
 
 		final ForFiscal for1 = paulHisto.forsFiscauxPrincipaux.get(1);
 		assertNotNull(for1);
-		assertEquals(newDate(1990, 1, 1), for1.dateOuverture);
-		assertNull(for1.dateFermeture);
+		assertEquals(newDate(1990, 1, 1), for1.getDateDebut());
+		assertNull(for1.getDateFin());
 		assertTrue(for1.virtuel); // il s'agit donc du for du ménage reporté sur la personne physique
 	}
 
@@ -725,10 +725,10 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 	private static void assertForPrincipal(RegDate debut, MotifFor motifDebut, @Nullable RegDate fin, @Nullable MotifFor motifFin, MockCommune commune, boolean virtuel, ForFiscal forFiscal) {
 		assertNotNull(forFiscal);
-		assertEquals(DataHelper.coreToWeb(debut), forFiscal.getDateOuverture());
-		assertEquals(motifDebut, forFiscal.getMotifOuverture());
-		assertEquals(DataHelper.coreToWeb(fin), forFiscal.getDateFermeture());
-		assertEquals(motifFin, forFiscal.getMotifFermeture());
+		assertEquals(DataHelper.coreToWeb(debut), forFiscal.getDateDebut());
+		assertEquals(motifDebut, forFiscal.getMotifDebut());
+		assertEquals(DataHelper.coreToWeb(fin), forFiscal.getDateFin());
+		assertEquals(motifFin, forFiscal.getMotifFin());
 		assertEquals(GenreImpot.REVENU_FORTUNE, forFiscal.getGenreImpot());
 		assertEquals(ModeImposition.ORDINAIRE, forFiscal.getModeImposition());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscal.getTypeAutoriteFiscale());

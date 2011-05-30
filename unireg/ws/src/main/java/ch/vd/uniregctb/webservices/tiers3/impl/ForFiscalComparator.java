@@ -24,8 +24,8 @@ public final class ForFiscalComparator implements Comparator<ForFiscal> {
 		private final RegDate dateFin;
 
 		public ForFiscalWrapper(ForFiscal f) {
-			this.dateDebut = DataHelper.webToCore(f.getDateOuverture());
-			this.dateFin = DataHelper.webToCore(f.getDateFermeture());
+			this.dateDebut = DataHelper.webToCore(f.getDateDebut());
+			this.dateFin = DataHelper.webToCore(f.getDateFin());
 		}
 
 		public RegDate getDateDebut() {

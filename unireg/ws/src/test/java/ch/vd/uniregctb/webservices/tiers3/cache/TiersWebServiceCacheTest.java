@@ -392,8 +392,8 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			assertEquals(1, tiers.getForsFiscauxPrincipaux().size());
 
 			final ForFiscal ffp = tiers.getForsFiscauxPrincipaux().get(0);
-			assertEquals(new Date(1989, 5, 1), ffp.getDateOuverture());
-			assertNull(ffp.getDateFermeture());
+			assertEquals(new Date(1989, 5, 1), ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
 		}
 
 		// 2. on demande le tiers *sans* les fors fiscaux virtuels
@@ -417,8 +417,8 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			assertEquals(1, tiers.getForsFiscauxPrincipaux().size());
 
 			final ForFiscal ffp = tiers.getForsFiscauxPrincipaux().get(0);
-			assertEquals(new Date(1989, 5, 1), ffp.getDateOuverture());
-			assertNull(ffp.getDateFermeture());
+			assertEquals(new Date(1989, 5, 1), ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
 		}
 	}
 

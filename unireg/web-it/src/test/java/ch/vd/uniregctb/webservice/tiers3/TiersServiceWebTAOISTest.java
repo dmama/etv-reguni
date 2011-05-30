@@ -7,7 +7,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -322,15 +321,15 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final ForFiscal for0 = fors.get(0);
 		assertNotNull(for0);
 		assertEquals(5591, for0.getNoOfsAutoriteFiscale()); // Renens
-		assertSameDay(newDate(2002, 7, 1), for0.getDateOuverture()); // = date début d'activité
-		assertSameDay(newDate(2002, 12, 31), for0.getDateFermeture()); // = date fin d'activité
+		assertSameDay(newDate(2002, 7, 1), for0.getDateDebut()); // = date début d'activité
+		assertSameDay(newDate(2002, 12, 31), for0.getDateFin()); // = date fin d'activité
 
 		// Nouvelle activité sur Lausanne
 		final ForFiscal for1 = fors.get(1);
 		assertNotNull(for1);
 		assertEquals(5586, for1.getNoOfsAutoriteFiscale()); // Lausanne
-		assertSameDay(newDate(2003, 3, 1), for1.getDateOuverture());
-		assertNull(for1.getDateFermeture());
+		assertSameDay(newDate(2003, 3, 1), for1.getDateDebut());
+		assertNull(for1.getDateFin());
 	}
 
 	@Test
@@ -363,8 +362,8 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		boolean estActif = false;
 		for (ForFiscal f : tiers.getForsFiscauxPrincipaux()) {
-			if (isBeforeOrEquals(f.getDateOuverture(), date)
-					&& (f.getDateFermeture() == null || isBeforeOrEquals(date, f.getDateFermeture()))) {
+			if (isBeforeOrEquals(f.getDateDebut(), date)
+					&& (f.getDateFin() == null || isBeforeOrEquals(date, f.getDateFin()))) {
 				estActif = true;
 				break;
 			}
@@ -703,15 +702,15 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final ForFiscal for0 = fors.get(0);
 		assertNotNull(for0);
-		assertSameDay(newDate(2002, 7, 1), for0.getDateOuverture());
-		assertSameDay(newDate(2002, 12, 31), for0.getDateFermeture());
+		assertSameDay(newDate(2002, 7, 1), for0.getDateDebut());
+		assertSameDay(newDate(2002, 12, 31), for0.getDateFin());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, for0.getTypeAutoriteFiscale());
 		assertEquals(5591, for0.getNoOfsAutoriteFiscale()); // Renens VD
 
 		final ForFiscal for1 = fors.get(1);
 		assertNotNull(for1);
-		assertSameDay(newDate(2003, 3, 1), for1.getDateOuverture());
-		assertNull(for1.getDateFermeture());
+		assertSameDay(newDate(2003, 3, 1), for1.getDateDebut());
+		assertNull(for1.getDateFin());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, for1.getTypeAutoriteFiscale());
 		assertEquals(5586, for1.getNoOfsAutoriteFiscale()); // Lausanne
 	}
@@ -919,7 +918,6 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 	/**
 	 * [UNIREG-2302]
 	 */
-	@Ignore // TODO (msi) implémenter les PMs dans le web-service Tiers v3.
 	@Test
 	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
 

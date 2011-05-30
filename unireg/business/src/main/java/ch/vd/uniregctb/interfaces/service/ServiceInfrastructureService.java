@@ -3,6 +3,8 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -164,7 +166,7 @@ public interface ServiceInfrastructureService extends ServiceInfrastructureRaw {
 	 * @return Commune
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException;
+	Commune getCommuneByNumeroOfsEtendu(int noCommune, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * Résoud la commune d'une adresse civile (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)

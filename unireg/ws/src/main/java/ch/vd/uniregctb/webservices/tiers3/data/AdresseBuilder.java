@@ -2,14 +2,18 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
 import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
+import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoiAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.TypeAdressePoursuiteAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
+import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.ExceptionHelper;
 
 public class AdresseBuilder {
@@ -81,5 +85,37 @@ public class AdresseBuilder {
 			throw new IllegalArgumentException("Le type de source = [" + source + "] n'est pas représentable comme type d'adresse autre tiers");
 		}
 
+	}
+
+	public static AdresseEnvoi newAdresseEnvoi(AdresseEnvoiDetaillee adresse) {
+		final AdresseEnvoi a = new AdresseEnvoi();
+		fillAdresseEnvoi(adresse, a);
+		return a;
+	}
+
+	public static void fillAdresseEnvoi(AdresseEnvoiDetaillee adresse, AdresseEnvoi a) {
+		a.setLigne1(adresse.getLigne1());
+		a.setLigne2(adresse.getLigne2());
+		a.setLigne3(adresse.getLigne3());
+		a.setLigne4(adresse.getLigne4());
+		a.setLigne5(adresse.getLigne5());
+		a.setLigne6(adresse.getLigne6());
+		a.setSalutations(adresse.getSalutations());
+		a.setFormuleAppel(adresse.getFormuleAppel());
+		a.getNomsPrenoms().addAll(adresse.getNomPrenom());
+		a.setComplement(adresse.getComplement());
+		a.setPourAdresse(adresse.getPourAdresse());
+		a.setRueNumero(adresse.getRueEtNumero());
+		a.setCasePostale(adresse.getCasePostale());
+		a.setNpaLocalite(adresse.getNpaEtLocalite());
+		a.setPays(adresse.getPays());
+		a.setTypeAffranchissement(EnumHelper.coreToWeb(adresse.getTypeAffranchissement()));
+	}
+
+	public static AdresseEnvoiAutreTiers newAdresseEnvoiAutreTiers(AdresseEnvoiDetaillee adresse) {
+		final AdresseEnvoiAutreTiers a = new AdresseEnvoiAutreTiers();
+		fillAdresseEnvoi(adresse, a);
+		a.setType(source2type(adresse.getSource()));
+		return a;
 	}
 }
