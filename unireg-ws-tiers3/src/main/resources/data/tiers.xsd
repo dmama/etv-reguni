@@ -77,8 +77,7 @@
 					<xs:documentation>Vrai si le remboursement automatique est bloqué sur ce tiers; faux si ce n'est pas le cas.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<!-- TODO (msi) enlever le préfixe 'is' -->
-			<xs:element name="isDebiteurInactif" type="xs:boolean">
+			<xs:element name="debiteurInactif" type="xs:boolean">
 				<xs:annotation>
 					<xs:documentation>Vrai s'il le tiers est un débiteur inactif (i107); faux pour tous les autres tiers.</xs:documentation>
 				</xs:annotation>
@@ -118,8 +117,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<!-- TODO (msi) renommer en adresseCourrierFormattee -->
-			<xs:element minOccurs="0" name="adresseEnvoi" type="unireg:adresseEnvoiType">
+			<xs:element minOccurs="0" name="adresseCourrierFormattee" type="unireg:adresseEnvoiType">
 				<xs:annotation>
 					<xs:documentation>Adresse courrier formattée pour l'envoi (six lignes).
 						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.

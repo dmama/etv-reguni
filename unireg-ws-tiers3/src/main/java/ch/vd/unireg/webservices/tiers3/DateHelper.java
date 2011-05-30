@@ -18,20 +18,7 @@ public abstract class DateHelper {
 	 * @return <b>vrai</b> si la date de gauche est strictement plus petite (= plus proche de l'aube des temps) que la date de droite; <b>faux</b> dans tous les autres cas.
 	 */
 	public static boolean isBefore(Date left, Date right) {
-		if (left.getYear() < right.getYear()) {
-			return true;
-		}
-		if (left.getYear() > right.getYear()) {
-			return false;
-		}
-		if (left.getMonth() < right.getMonth()) {
-			return true;
-		}
-		//noinspection SimplifiableIfStatement
-		if (left.getMonth() > right.getMonth()) {
-			return false;
-		}
-		return left.getDay() < right.getDay();
+		return left.compareTo(right) < 0;
 	}
 
 	/**
@@ -40,20 +27,7 @@ public abstract class DateHelper {
 	 * @return <b>vrai</b> si la date de gauche est égale ou plus petite (= plus proche de l'aube des temps) que la date de droite; <b>faux</b> dans tous les autres cas.
 	 */
 	public static boolean isBeforeOrEqual(Date left, Date right) {
-		if (left.getYear() < right.getYear()) {
-			return true;
-		}
-		if (left.getYear() > right.getYear()) {
-			return false;
-		}
-		if (left.getMonth() < right.getMonth()) {
-			return true;
-		}
-		//noinspection SimplifiableIfStatement
-		if (left.getMonth() > right.getMonth()) {
-			return false;
-		}
-		return left.getDay() <= right.getDay();
+		return left.compareTo(right) <= 0;
 	}
 
 	/**
@@ -62,20 +36,7 @@ public abstract class DateHelper {
 	 * @return <b>vrai</b> si la date de gauche est égale ou plus grande (= plus proche de la fin des temps) que la date de droite; <b>faux</b> dans tous les autres cas.
 	 */
 	public static boolean isAfterOrEqual(Date left, Date right) {
-		if (left.getYear() > right.getYear()) {
-			return true;
-		}
-		if (left.getYear() < right.getYear()) {
-			return false;
-		}
-		if (left.getMonth() > right.getMonth()) {
-			return true;
-		}
-		//noinspection SimplifiableIfStatement
-		if (left.getMonth() < right.getMonth()) {
-			return false;
-		}
-		return left.getDay() >= right.getDay();
+		return left.compareTo(right) >= 0;
 	}
 
 	/**
@@ -84,20 +45,7 @@ public abstract class DateHelper {
 	 * @return <b>vrai</b> si la date de gauche est strictement plus grande (= plus proche de la fin des temps) que la date de droite; <b>faux</b> dans tous les autres cas.
 	 */
 	public static boolean isAfter(Date left, Date right) {
-		if (left.getYear() > right.getYear()) {
-			return true;
-		}
-		if (left.getYear() < right.getYear()) {
-			return false;
-		}
-		if (left.getMonth() > right.getMonth()) {
-			return true;
-		}
-		//noinspection SimplifiableIfStatement
-		if (left.getMonth() < right.getMonth()) {
-			return false;
-		}
-		return left.getDay() > right.getDay();
+		return left.compareTo(right) > 0;
 	}
 
 	/**

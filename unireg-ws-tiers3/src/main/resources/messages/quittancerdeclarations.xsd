@@ -72,15 +72,9 @@
 					<xs:documentation>Le code de retour du quittancement.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<!-- TODO (msi) remplacer par un exceptionInfo -->
-			<xs:element minOccurs="0" name="exceptionMessage" type="xs:string">
+			<xs:element minOccurs="0" name="exceptionInfo" type="unireg:webServiceExceptionInfoType">
 				<xs:annotation>
-					<xs:documentation>Le message de l'erreur ou de l'exception levée si code != OK</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="exceptionType" type="unireg:typeWebServiceExceptionType">
-				<xs:annotation>
-					<xs:documentation>Le type de l'erreur ou de l'exception levée si code != OK</xs:documentation>
+					<xs:documentation>Le type et le message de l'erreur ou de l'exception levée si code != OK</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>

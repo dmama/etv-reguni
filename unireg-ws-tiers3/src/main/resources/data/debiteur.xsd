@@ -42,13 +42,9 @@
 							<xs:documentation>L'id du logiciel utilisé par le débiteur pour remplir et retourner ses LRs.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<!-- TODO (msi) ajouter le suffixe 'id' -->
-					<xs:element minOccurs="0" name="contribuableAssocie" type="xs:long">
+					<xs:element minOccurs="0" name="contribuableAssocieId" type="xs:long">
 						<xs:annotation>
-							<xs:documentation>Le numéro du contribuable associé à ce débiteur; ou
-								<b>null</b>
-								si le débiteur n'est pas lié à un contribuable.
-							</xs:documentation>
+							<xs:documentation>Le numéro du contribuable associé à ce débiteur; ou non-renseigné si le débiteur n'est pas lié à un contribuable.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicites" type="unireg:periodiciteType">
