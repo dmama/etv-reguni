@@ -11,12 +11,12 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateOuverture" type="unireg:dateType">
+			<xs:element name="dateDebut" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date d'ouverture du for fiscal.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFermeture" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fermeture du for fiscal. Si le for est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
@@ -46,12 +46,12 @@
 					<xs:documentation>Le motif de rattachement est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="motifOuverture" type="unireg:motifForType">
+			<xs:element minOccurs="0" name="motifDebut" type="unireg:motifForType">
 				<xs:annotation>
 					<xs:documentation>Le motif d'ouverture est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="motifFermeture" type="unireg:motifForType">
+			<xs:element minOccurs="0" name="motifFin" type="unireg:motifForType">
 				<xs:annotation>
 					<xs:documentation>Le motif de fermeture est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
 				</xs:annotation>

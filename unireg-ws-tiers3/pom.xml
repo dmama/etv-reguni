@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-ws-tiers3</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0f-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService3.wsdl ! -->
+	<version>3.0g-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService3.wsdl ! -->
 
 	<name>Unireg - WS Tiers v3</name>
 	<description>Unireg - classes Java pour le web-service Tiers v3 de Unireg</description>
@@ -78,11 +78,16 @@
 									<extraargs> 
 									    <extraarg>-p</extraarg> 
 									    <extraarg>ch.vd.uniregctb.webservices.tiers3</extraarg>
+										<extraarg>-b</extraarg>
+										<extraarg>
+											${basedir}/src/main/resources/bindings.xml
+										</extraarg>
 										<extraarg>-xjc-Xpretty-classname</extraarg>
 										<extraarg>-xjc-Xunireg-ws</extraarg>
 										<extraarg>-xjc-Xts</extraarg>
 										<extraarg>-xjc-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</extraarg>
 										<extraarg>-xjc-Xvalue-constructor</extraarg>
+										<extraarg>-xjc-Xinheritance</extraarg>
 									</extraargs>
 								</wsdlOption>
 							</wsdlOptions>
@@ -112,6 +117,11 @@
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>jaxb2-unireg-ws-plugin</artifactId>
 						<version>1.0.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
+					   <artifactId>jaxb2-basics</artifactId>
+					   <version>0.5.3</version>
 					</dependency>
 				</dependencies>
 			</plugin>
