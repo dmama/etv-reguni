@@ -35,7 +35,8 @@
 			</xs:element>
 			<xs:element maxOccurs="unbounded" name="etats" type="unireg:etatDeclarationType">
 				<xs:annotation>
-					<xs:documentation>Les états de la déclaration.</xs:documentation>
+					<xs:documentation>Les états de la déclaration.
+					Attention ! Cette collection n'est renseignée que si la part ETATS_DECLARATIONS est demandée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>

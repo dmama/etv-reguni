@@ -117,42 +117,42 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adresseCourrierFormattee" type="unireg:adresseEnvoiType">
+			<xs:element minOccurs="0" name="adresseCourrierFormattee" type="unireg:adresseFormatteeType">
 				<xs:annotation>
 					<xs:documentation>Adresse courrier formattée pour l'envoi (six lignes).
-						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
 						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="unireg:adresseEnvoiType">
+			<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="unireg:adresseFormatteeType">
 				<xs:annotation>
 					<xs:documentation>Adresse poursuite formattée pour l'envoi (six lignes).
-						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
 						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="unireg:adresseEnvoiType">
+			<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="unireg:adresseFormatteeType">
 				<xs:annotation>
 					<xs:documentation>Adresse de représentation formattée pour l'envoi (six lignes).
-						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
 						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adresseDomicileFormattee" type="unireg:adresseEnvoiType">
+			<xs:element minOccurs="0" name="adresseDomicileFormattee" type="unireg:adresseFormatteeType">
 				<xs:annotation>
 					<xs:documentation>Adresse domicile formattée pour l'envoi (six lignes).
-						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
 						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="unireg:adresseEnvoiAutreTiersType">
+			<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="unireg:adresseFormatteeAutreTiersType">
 				<xs:annotation>
 					<xs:documentation>Adresse poursuite 'autre tiers' formattée pour l'envoi (six lignes).
-						Attention ! Cette collection n'est renseignée que si la part ADRESSES_ENVOI est demandée.
+						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
 						Attention ! Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période demandée.
 					</xs:documentation>
 				</xs:annotation>

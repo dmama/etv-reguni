@@ -21,7 +21,7 @@
 						<xs:annotation>
 							<xs:documentation>L'historique complet des assujettissements du contribuable du point de vue du rôle ordinaire (en cas de conflit entre l'assujettissement source et
 								ordinaire, l'assujettissement ordinaire est privilégié).
-								Attention ! Cette collection n'est renseignée qui si la part ASSUJETTISSEMENTS est demandée.
+								Attention ! Cette collection n'est renseignée qui si la part ASSUJETTISSEMENTS_ROLE est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>

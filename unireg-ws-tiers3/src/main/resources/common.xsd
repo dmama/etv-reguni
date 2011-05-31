@@ -48,18 +48,24 @@
 	<xs:simpleType name="tiersPartType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ADRESSES" />
-			<!-- TODO (msi) renommer en ADRESSES_FORMATTEES-->
-			<xs:enumeration value="ADRESSES_ENVOI" />
+			<xs:enumeration value="ADRESSES_FORMATTEES" />
 			<xs:enumeration value="FORS_FISCAUX" />
 			<xs:enumeration value="FORS_FISCAUX_VIRTUELS" />
 			<xs:enumeration value="FORS_GESTION" />
 			<xs:enumeration value="COMPOSANTS_MENAGE" />
-			<xs:enumeration value="ASSUJETTISSEMENTS" />
+			<xs:enumeration value="ASSUJETTISSEMENTS_ROLE" />
 			<xs:enumeration value="PERIODES_ASSUJETTISSEMENT" />
 			<xs:enumeration value="PERIODES_IMPOSITION" />
 			<xs:enumeration value="RAPPORTS_ENTRE_TIERS" />
 			<xs:enumeration value="SITUATIONS_FAMILLE" />
 			<xs:enumeration value="DECLARATIONS" />
+			<xs:enumeration value="ETATS_DECLARATIONS">
+				<xs:annotation>
+					<xs:documentation>Renseigne les états des déclarations. Attention ! L'utilisation de cette part est fortement déconseillée car elle dégrade très fortement les performances (=
+						implique une requête supplémentaire dans la base de données pour chaque déclaration de chaque tiers).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="COMPTES_BANCAIRES" />
 			<xs:enumeration value="SIEGES" />
 			<xs:enumeration value="FORMES_JURIDIQUES" />

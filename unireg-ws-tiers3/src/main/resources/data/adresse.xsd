@@ -105,14 +105,14 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="adresseEnvoiAutreTiersType">
+	<xs:complexType name="adresseFormatteeAutreTiersType">
 		<xs:annotation>
 			<xs:documentation>Spécialisation de l'adresse d'envoi pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
 				poursuites).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:adresseEnvoiType">
+			<xs:extension base="unireg:adresseFormatteeType">
 				<xs:sequence>
 					<xs:element name="type" type="unireg:typeAdressePoursuiteAutreTiersType">
 						<xs:annotation>
@@ -123,7 +123,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="adresseEnvoiType">
+	<xs:complexType name="adresseFormatteeType">
 		<xs:annotation>
 			<xs:documentation>Représente les 6 lignes d'adresses d'un tiers formattées selon les recommandations de la poste suisse + les informations détaillées utilisées pour la construction de ces
 				six lignes.
