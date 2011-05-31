@@ -13,6 +13,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
 import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
+import ch.vd.uniregctb.webservices.tiers3.Declaration;
 import ch.vd.uniregctb.webservices.tiers3.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
@@ -101,8 +102,8 @@ public abstract class TiersStrategy<T extends Tiers> {
 			initAdresses(left, tiers, context);
 		}
 
-		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			initAdressesEnvoi(left, tiers, context);
+		if (parts != null && parts.contains(TiersPart.ADRESSES_FORMATTEES)) {
+			initAdressesFormattees(left, tiers, context);
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {
@@ -117,8 +118,8 @@ public abstract class TiersStrategy<T extends Tiers> {
 			initForsGestion(left, tiers, context);
 		}
 
-		if (parts != null && parts.contains(TiersPart.DECLARATIONS)) {
-			initDeclarations(left, tiers);
+		if (parts != null && (parts.contains(TiersPart.DECLARATIONS) || parts.contains(TiersPart.ETATS_DECLARATIONS))) {
+			initDeclarations(left, tiers, parts);
 		}
 	}
 
@@ -136,7 +137,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 			copyColl(to.getAdressesPoursuiteAutreTiers(), from.getAdressesPoursuiteAutreTiers());
 		}
 
-		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
+		if (parts != null && parts.contains(TiersPart.ADRESSES_FORMATTEES)) {
 			to.setAdresseCourrierFormattee(from.getAdresseCourrierFormattee());
 			to.setAdresseRepresentationFormattee(from.getAdresseRepresentationFormattee());
 			to.setAdresseDomicileFormattee(from.getAdresseDomicileFormattee());
@@ -187,8 +188,46 @@ public abstract class TiersStrategy<T extends Tiers> {
 			copyColl(to.getForsGestions(), from.getForsGestions());
 		}
 
-		if (parts != null && parts.contains(TiersPart.DECLARATIONS)) {
-			copyColl(to.getDeclarations(), from.getDeclarations());
+		if (parts != null && (parts.contains(TiersPart.DECLARATIONS) || parts.contains(TiersPart.ETATS_DECLARATIONS))) {
+			if (mode == CopyMode.ADDITIF) {
+				// en mode additif, on complète les déclarations si le 'from' contains les états des déclarations (et implicitement les déclarations
+				// elles-mêmes), ou si le 'to' ne contient aucune déclaration. Dans tous les autres, cas, on ne fait rien car on n'ajouterait rien si on le faisait.
+				if (parts.contains(TiersPart.ETATS_DECLARATIONS) || to.getDeclarations() == null || to.getDeclarations().isEmpty()) {
+					copyColl(to.getDeclarations(), from.getDeclarations());
+				}
+			}
+			else {
+				Assert.isEqual(CopyMode.EXCLUSIF, mode);
+
+				if (parts.contains(TiersPart.ETATS_DECLARATIONS)) {
+					// on veut les déclarations et leurs états => on copie tout
+					copyColl(to.getDeclarations(), from.getDeclarations());
+				}
+				else {
+					// supprime les éventuels états s'ils ne sont pas demandés
+					if (from.getDeclarations() != null && !from.getDeclarations().isEmpty()) {
+						deepCopyColl(to.getDeclarations(), from.getDeclarations());
+						for (Declaration d : to.getDeclarations()) {
+							if (d.getEtats() != null) {
+								d.getEtats().clear();
+							}
+						}
+					}
+					else {
+						to.getDeclarations().clear();
+					}
+				}
+			}
+		}
+	}
+
+	private static void deepCopyColl(List<Declaration> to, List<Declaration> from) {
+		if (to == from) {
+			throw new IllegalArgumentException("La même collection a été spécifiée comme entrée et sortie !");
+		}
+		to.clear();
+		for (Declaration d : from) {
+			to.add(DeclarationBuilder.clone(d));
 		}
 	}
 
@@ -237,7 +276,7 @@ public abstract class TiersStrategy<T extends Tiers> {
 		}
 	}
 
-	private static void initAdressesEnvoi(Tiers left, ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws WebServiceException {
+	private static void initAdressesFormattees(Tiers left, ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws WebServiceException {
 		try {
 			left.setAdresseCourrierFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.COURRIER));
 			left.setAdresseRepresentationFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.REPRESENTATION));
@@ -302,13 +341,13 @@ public abstract class TiersStrategy<T extends Tiers> {
 		}
 	}
 
-	private static void initDeclarations(Tiers tiers, final ch.vd.uniregctb.tiers.Tiers right) {
+	private static void initDeclarations(Tiers tiers, final ch.vd.uniregctb.tiers.Tiers right, Set<TiersPart> parts) {
 		for (ch.vd.uniregctb.declaration.Declaration declaration : right.getDeclarationsSorted()) {
 			if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotSource) {
-				tiers.getDeclarations().add(DeclarationBuilder.newDeclarationImpotSource((ch.vd.uniregctb.declaration.DeclarationImpotSource) declaration));
+				tiers.getDeclarations().add(DeclarationBuilder.newDeclarationImpotSource((ch.vd.uniregctb.declaration.DeclarationImpotSource) declaration, parts));
 			}
 			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) {
-				tiers.getDeclarations().add(DeclarationBuilder.newDeclarationImpotOrdinaire((ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) declaration));
+				tiers.getDeclarations().add(DeclarationBuilder.newDeclarationImpotOrdinaire((ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) declaration, parts));
 			}
 		}
 	}

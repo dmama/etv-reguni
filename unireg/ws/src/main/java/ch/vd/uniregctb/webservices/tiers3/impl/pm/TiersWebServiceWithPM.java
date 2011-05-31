@@ -30,7 +30,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
-import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
 import ch.vd.uniregctb.webservices.tiers3.Capital;
@@ -290,7 +290,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			pm.setBlocageRemboursementAutomatique(true); // [UNIREG-1266] Blocage des remboursements automatiques sur tous les nouveaux tiers
 		}
 
-		if (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI)) {
+		if (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_FORMATTEES)) {
 			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = pmHost.getAdresses();
 			if (adresses != null) {
 				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
@@ -313,7 +313,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			pm.getAdressesPoursuite().addAll(pm.getAdressesDomicile());
 		}
 
-		if (parts.contains(TiersPart.ADRESSES_ENVOI)) {
+		if (parts.contains(TiersPart.ADRESSES_FORMATTEES)) {
 			pm.setAdresseCourrierFormattee(calculateAdresseEnvoi(pm, pm.getAdressesCourrier()));
 			pm.setAdresseDomicileFormattee(calculateAdresseEnvoi(pm, pm.getAdressesDomicile()));
 			pm.setAdresseRepresentationFormattee(calculateAdresseEnvoi(pm, pm.getAdressesRepresentation()));
@@ -768,7 +768,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 
 		final Set<PartPM> set = new HashSet<PartPM>();
-		if (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI)) {
+		if (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_FORMATTEES)) {
 			set.add(PartPM.ADRESSES);
 		}
 		if (parts.contains(TiersPart.PERIODES_ASSUJETTISSEMENT)) {
@@ -799,7 +799,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return set.toArray(new PartPM[set.size()]);
 	}
 
-	private AdresseEnvoi calculateAdresseEnvoi(PersonneMorale pm, List<Adresse> adresses) {
+	private AdresseFormattee calculateAdresseEnvoi(PersonneMorale pm, List<Adresse> adresses) {
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.PM);
 
 		// [UNIREG-2302]
@@ -857,6 +857,6 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			}
 		}
 
-		return AdresseBuilder.newAdresseEnvoi(adresse);
+		return AdresseBuilder.newAdresseFormattee(adresse);
 	}
 }

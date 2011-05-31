@@ -37,7 +37,7 @@ public abstract class ContribuableStrategy<T extends Contribuable> extends Tiers
 			initSituationsFamille(to, ctb, context);
 		}
 
-		if (parts != null && (parts.contains(TiersPart.ASSUJETTISSEMENTS) || parts.contains(TiersPart.PERIODES_ASSUJETTISSEMENT))) {
+		if (parts != null && (parts.contains(TiersPart.ASSUJETTISSEMENTS_ROLE) || parts.contains(TiersPart.PERIODES_ASSUJETTISSEMENT))) {
 			initAssujettissements(to, ctb, parts);
 		}
 
@@ -54,7 +54,7 @@ public abstract class ContribuableStrategy<T extends Contribuable> extends Tiers
 			copyColl(to.getSituationsFamille(), from.getSituationsFamille());
 		}
 
-		if (parts != null && parts.contains(TiersPart.ASSUJETTISSEMENTS)) {
+		if (parts != null && parts.contains(TiersPart.ASSUJETTISSEMENTS_ROLE)) {
 			copyColl(to.getAssujettissementsRole(), from.getAssujettissementsRole());
 		}
 
@@ -93,7 +93,7 @@ public abstract class ContribuableStrategy<T extends Contribuable> extends Tiers
 
 		if (list != null) {
 
-			final boolean wantAssujettissements = parts.contains(TiersPart.ASSUJETTISSEMENTS);
+			final boolean wantAssujettissements = parts.contains(TiersPart.ASSUJETTISSEMENTS_ROLE);
 			final boolean wantPeriodes = parts.contains(TiersPart.PERIODES_ASSUJETTISSEMENT);
 
 			for (ch.vd.uniregctb.metier.assujettissement.Assujettissement a : list) {

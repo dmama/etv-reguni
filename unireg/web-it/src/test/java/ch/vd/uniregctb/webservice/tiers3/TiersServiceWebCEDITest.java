@@ -335,6 +335,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setTiersNumber(ctbID);
 		params.getParts().add(TiersPart.DECLARATIONS);
+		params.getParts().add(TiersPart.ETATS_DECLARATIONS);
 
 		final Tiers tiers = service.getTiers(params);
 		assertNotNull(tiers);

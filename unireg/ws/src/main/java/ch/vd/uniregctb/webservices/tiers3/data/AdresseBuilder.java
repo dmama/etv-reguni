@@ -8,8 +8,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
 import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
-import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
-import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoiAutreTiers;
+import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
+import ch.vd.uniregctb.webservices.tiers3.AdresseFormatteeAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.TypeAdressePoursuiteAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
@@ -88,13 +88,13 @@ public class AdresseBuilder {
 
 	}
 
-	public static AdresseEnvoi newAdresseEnvoi(AdresseEnvoiDetaillee adresse) {
-		final AdresseEnvoi a = new AdresseEnvoi();
+	public static AdresseFormattee newAdresseFormattee(AdresseEnvoiDetaillee adresse) {
+		final AdresseFormattee a = new AdresseFormattee();
 		fillAdresseEnvoi(adresse, a);
 		return a;
 	}
 
-	public static void fillAdresseEnvoi(AdresseEnvoiDetaillee adresse, AdresseEnvoi a) {
+	public static void fillAdresseEnvoi(AdresseEnvoiDetaillee adresse, AdresseFormattee a) {
 		a.setLigne1(adresse.getLigne1());
 		a.setLigne2(adresse.getLigne2());
 		a.setLigne3(adresse.getLigne3());
@@ -113,8 +113,8 @@ public class AdresseBuilder {
 		a.setTypeAffranchissement(EnumHelper.coreToWeb(adresse.getTypeAffranchissement()));
 	}
 
-	public static AdresseEnvoiAutreTiers newAdresseEnvoiAutreTiers(AdresseEnvoiDetaillee adresse) {
-		final AdresseEnvoiAutreTiers a = new AdresseEnvoiAutreTiers();
+	public static AdresseFormatteeAutreTiers newAdresseFormatteeAutreTiers(AdresseEnvoiDetaillee adresse) {
+		final AdresseFormatteeAutreTiers a = new AdresseFormatteeAutreTiers();
 		fillAdresseEnvoi(adresse, a);
 		a.setType(source2type(adresse.getSource()));
 		return a;

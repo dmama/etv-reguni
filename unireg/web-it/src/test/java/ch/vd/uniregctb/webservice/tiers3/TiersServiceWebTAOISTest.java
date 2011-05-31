@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
-import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
 import ch.vd.uniregctb.webservices.tiers3.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers3.Date;
 import ch.vd.uniregctb.webservices.tiers3.Debiteur;
@@ -583,7 +583,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(1678432); // Café du Commerce
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final Debiteur debiteur = (Debiteur) service.getTiers(params);
 		assertNotNull(debiteur);
@@ -597,7 +597,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		 * 1004 Lausanne Secteur de dist.
 		 * </pre>
 		 */
-		final AdresseEnvoi adresseEnvoi = debiteur.getAdresseCourrierFormattee();
+		final AdresseFormattee adresseEnvoi = debiteur.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Sabri Inanç Ertem", adresseEnvoi.getLigne1());
 		assertEquals("Café du Commerce", adresseEnvoi.getLigne2());
@@ -924,12 +924,12 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(20222); // la BCV
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
+		final AdresseFormattee adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 
 		// l'adresse d'envoi n'a pas de salutations

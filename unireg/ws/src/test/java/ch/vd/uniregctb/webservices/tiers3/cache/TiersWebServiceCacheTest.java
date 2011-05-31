@@ -3,6 +3,7 @@ package ch.vd.uniregctb.webservices.tiers3.cache;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
@@ -39,6 +40,8 @@ import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
 import ch.vd.uniregctb.webservices.tiers3.Contribuable;
 import ch.vd.uniregctb.webservices.tiers3.Date;
 import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers3.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.webservices.tiers3.EtatDeclaration;
 import ch.vd.uniregctb.webservices.tiers3.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
 import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
@@ -48,6 +51,7 @@ import ch.vd.uniregctb.webservices.tiers3.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers3.Tiers;
 import ch.vd.uniregctb.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
+import ch.vd.uniregctb.webservices.tiers3.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.tiers3.UserLogin;
 
 import static org.junit.Assert.assertEquals;
@@ -131,7 +135,8 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 				PeriodeFiscale periode = addPeriodeFiscale(2003);
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				addDeclarationImpot(mc, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(mc, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(di, date(2003, 1, 10));
 
 				addAdresseSuisse(mc, TypeAdresseTiers.COURRIER, date(1989, 5, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
@@ -277,7 +282,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(new UserLogin("[TiersWebServiceCacheTest]", 21));
 		params.setTiersNumber(ids.menage);
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final MenageCommun menageAvant = (MenageCommun) cache.getTiers(params);
 		assertNotNull(menageAvant);
@@ -419,6 +424,83 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			final ForFiscal ffp = tiers.getForsFiscauxPrincipaux().get(0);
 			assertEquals(new Date(1989, 5, 1), ffp.getDateDebut());
 			assertNull(ffp.getDateFin());
+		}
+	}
+
+	/**
+	 * Vérifie que le cache fonctionne correctement lorsqu'un tiers est demandé successivement <ol> <li>avec ses déclarations et leurs états, puis</li> <li>juste avec ses déclarations, et</li>
+	 * <li>finalement de nouveau avec ses déclarations et leurs états.</li> </ol>
+	 */
+	@Test
+	public void testGetTiersCasSpecialDeclarationsEtEtats() throws Exception {
+
+		final GetTiersRequest params = new GetTiersRequest();
+		params.setLogin(new UserLogin("[TiersWebServiceCacheTest]", 21));
+		params.setTiersNumber(ids.menage);
+
+		// 1. on demande le tiers avec les déclarations et leurs états
+		{
+			params.getParts().add(TiersPart.DECLARATIONS);
+			params.getParts().add(TiersPart.ETATS_DECLARATIONS);
+
+			final Tiers tiers = cache.getTiers(params);
+			assertNotNull(tiers);
+			assertNotNull(tiers.getDeclarations());
+			assertEquals(1, tiers.getDeclarations().size());
+
+			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) tiers.getDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateDebut());
+			assertEquals(new Date(2003, 12, 31), di.getDateFin());
+
+			final List<EtatDeclaration> etats = di.getEtats();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final EtatDeclaration etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateObtention());
+			assertEquals(TypeEtatDeclaration.EMISE, etat0.getEtat());
+		}
+
+		// 2. on demande les déclarations *sans* les états
+		{
+			params.getParts().clear();
+			params.getParts().add(TiersPart.DECLARATIONS);
+
+			final Tiers tiers = cache.getTiers(params);
+			assertNotNull(tiers);
+			assertNotNull(tiers.getDeclarations());
+			assertEquals(1, tiers.getDeclarations().size());
+
+			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) tiers.getDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateDebut());
+			assertEquals(new Date(2003, 12, 31), di.getDateFin());
+			assertEmpty(di.getEtats());
+		}
+
+		// 3. on demande de nouveau les déclarations avec leurs états => le résultat doit être identique à la demande du point 1.
+		{
+			params.getParts().clear();
+			params.getParts().add(TiersPart.DECLARATIONS);
+			params.getParts().add(TiersPart.ETATS_DECLARATIONS);
+
+			final Tiers tiers = cache.getTiers(params);
+			assertNotNull(tiers);
+			assertNotNull(tiers.getDeclarations());
+			assertEquals(1, tiers.getDeclarations().size());
+
+			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) tiers.getDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateDebut());
+			assertEquals(new Date(2003, 12, 31), di.getDateFin());
+
+			final List<EtatDeclaration> etats = di.getEtats();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final EtatDeclaration etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateObtention());
+			assertEquals(TypeEtatDeclaration.EMISE, etat0.getEtat());
 		}
 	}
 
@@ -592,12 +674,13 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	private static void assertOnlyPart(TiersPart p, Tiers tiers) {
 
 		boolean checkAdresses = TiersPart.ADRESSES == p;
-		boolean checkAdressesEnvoi = TiersPart.ADRESSES_ENVOI == p;
-		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS == p;
+		boolean checkAdressesEnvoi = TiersPart.ADRESSES_FORMATTEES == p;
+		boolean checkAssujettissement = TiersPart.ASSUJETTISSEMENTS_ROLE == p;
 		boolean checkPeriodesAssujettissement = TiersPart.PERIODES_ASSUJETTISSEMENT == p;
 		boolean checkComposantsMenage = TiersPart.COMPOSANTS_MENAGE == p;
 		boolean checkComptesBancaires = TiersPart.COMPTES_BANCAIRES == p;
 		boolean checkDeclarations = TiersPart.DECLARATIONS == p;
+		boolean checkEtatsDeclarations = TiersPart.ETATS_DECLARATIONS == p;
 		boolean checkForsFiscaux = TiersPart.FORS_FISCAUX == p;
 		boolean checkForsFiscauxVirtuels = TiersPart.FORS_FISCAUX_VIRTUELS == p;
 		boolean checkForsGestion = TiersPart.FORS_GESTION == p;
@@ -610,10 +693,9 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		boolean checkRegimesFiscaux = TiersPart.REGIMES_FISCAUX == p;
 		boolean checkSieges = TiersPart.SIEGES == p;
 		boolean checkPeriodicite = TiersPart.PERIODICITES == p;
-		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkComptesBancaires
-				|| checkDeclarations || checkForsFiscaux || checkForsFiscauxVirtuels || checkForsGestion || checkPeriodeImposition
-				|| checkRapportEntreTiers || checkSituationFamille || checkCapitaux || checkEtatsPM || checkFormesJuridiques
-				|| checkRegimesFiscaux || checkSieges || checkPeriodicite || checkPeriodesAssujettissement, "La partie [" + p + "] est inconnue");
+		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkComptesBancaires || checkDeclarations || checkEtatsDeclarations ||
+				checkForsFiscaux || checkForsFiscauxVirtuels || checkForsGestion || checkPeriodeImposition || checkRapportEntreTiers || checkSituationFamille || checkCapitaux || checkEtatsPM ||
+				checkFormesJuridiques || checkRegimesFiscaux || checkSieges || checkPeriodicite || checkPeriodesAssujettissement, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAdresses, tiers.getAdressesCourrier(), "adressesCourrier");
 		assertNullOrNotNull(checkAdresses, tiers.getAdressesDomicile(), "adressesDomicile");
@@ -634,7 +716,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkAssujettissement, ctb.getAssujettissementsRole(), "assujettissementsRole");
 			assertNullOrNotNull(checkPeriodesAssujettissement, ctb.getPeriodesAssujettissementLIC(), "periodesAssujettissementLIC");
 			assertNullOrNotNull(checkPeriodesAssujettissement, ctb.getPeriodesAssujettissementLIFD(), "periodesAssujettissementLIFD");
-			assertNullOrNotNull(checkDeclarations, ctb.getDeclarations(), "declarations");
+			assertNullOrNotNull(checkDeclarations || checkEtatsDeclarations, ctb.getDeclarations(), "declarations");
 			assertNullOrNotNull(checkPeriodeImposition, ctb.getPeriodesImposition(), "periodesImposition");
 			assertNullOrNotNull(checkSituationFamille, ctb.getSituationsFamille(), "situationsFamille");
 		}

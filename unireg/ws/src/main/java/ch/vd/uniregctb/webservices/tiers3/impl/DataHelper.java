@@ -40,8 +40,8 @@ import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
 import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
-import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
-import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoiAutreTiers;
+import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
+import ch.vd.uniregctb.webservices.tiers3.AdresseFormatteeAutreTiers;
 import ch.vd.uniregctb.webservices.tiers3.Date;
 import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
 import ch.vd.uniregctb.webservices.tiers3.TiersInfo;
@@ -351,17 +351,18 @@ public class DataHelper {
 		for (TiersPart p : parts) {
 			switch (p) {
 			case ADRESSES:
-			case ADRESSES_ENVOI:
+			case ADRESSES_FORMATTEES:
 				results.add(Parts.ADRESSES);
 				results.add(Parts.RAPPORTS_ENTRE_TIERS);
 				break;
 			case DECLARATIONS:
+			case ETATS_DECLARATIONS:
 				results.add(Parts.DECLARATIONS);
 				break;
 			case FORS_FISCAUX:
 			case FORS_FISCAUX_VIRTUELS:
 			case FORS_GESTION:
-			case ASSUJETTISSEMENTS:
+			case ASSUJETTISSEMENTS_ROLE:
 			case PERIODES_ASSUJETTISSEMENT:
 			case PERIODES_IMPOSITION:
 				results.add(Parts.FORS_FISCAUX);
@@ -441,20 +442,20 @@ public class DataHelper {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+	public static AdresseFormattee createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
 		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;
 		}
-		return AdresseBuilder.newAdresseEnvoi(adressePoursuite);
+		return AdresseBuilder.newAdresseFormattee(adressePoursuite);
 	}
 
-	public static AdresseEnvoiAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+	public static AdresseFormatteeAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
 		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;
 		}
-		return AdresseBuilder.newAdresseEnvoiAutreTiers(adressePoursuite);
+		return AdresseBuilder.newAdresseFormatteeAutreTiers(adressePoursuite);
 	}
 
 	public static Set<TiersPart> toSet(List<TiersPart> parts) {

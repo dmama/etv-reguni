@@ -93,7 +93,7 @@ public class MappingThread extends Thread {
 			if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 				try {
 					final AttributeIndividu[] attributs;
-					if (parts != null && (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI))) {
+					if (parts != null && (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_FORMATTEES))) {
 						attributs = new AttributeIndividu[]{AttributeIndividu.ADRESSES, AttributeIndividu.PERMIS};
 					}
 					else {

@@ -6,7 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.uniregctb.webservices.tiers3.Adresse;
-import ch.vd.uniregctb.webservices.tiers3.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
 import ch.vd.uniregctb.webservices.tiers3.Capital;
 import ch.vd.uniregctb.webservices.tiers3.CompteBancaire;
 import ch.vd.uniregctb.webservices.tiers3.EtatPM;
@@ -480,7 +480,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setTiersNumber(222);
 		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
@@ -513,7 +513,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
+		final AdresseFormattee adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
@@ -534,7 +534,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setTiersNumber(1314);
 		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
@@ -567,7 +567,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
+		final AdresseFormattee adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
@@ -587,7 +587,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(25000);
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
@@ -595,7 +595,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final AdresseEnvoi adresseEnvoi = pm.getAdresseCourrierFormattee();
+		final AdresseFormattee adresseEnvoi = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLigne2()));
@@ -613,7 +613,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setTiersNumber(37); // passé de la PM 222 à la PM 37 parce quelqu'un s'est amusé à entrer des valeurs bidon en développement...
 		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
@@ -645,7 +645,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(367, adresseDomicile.getNoOrdrePostal());
 		assertEquals(Integer.valueOf(46421), adresseDomicile.getNoRue());
 
-		final AdresseEnvoi adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
+		final AdresseFormattee adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicileFormattee);
 		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adresseDomicileFormattee.getLigne1()));
 		assertEquals("", trimValiPattern(adresseDomicileFormattee.getLigne2()));
@@ -676,7 +676,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(367, adressePoursuite.getNoOrdrePostal());
 		assertEquals(Integer.valueOf(46421), adressePoursuite.getNoRue());
 
-		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
+		final AdresseFormattee adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
 		assertNotNull(adressePoursuiteFormattee);
 		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
 		assertEquals("", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
@@ -891,13 +891,13 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(1314); // Jal Holding
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 		assertEquals(1314L, pm.getNumero());
 
-		final AdresseEnvoi adresseCourrier = pm.getAdresseCourrierFormattee();
+		final AdresseFormattee adresseCourrier = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresseCourrier);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseCourrier.getLigne1())); // <-- raison sociale ligne 1
 		assertEquals("", trimValiPattern(adresseCourrier.getLigne2())); // <-- raison sociale ligne 2
@@ -922,7 +922,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("1003 Lausanne", adresseCourrier.getNpaLocalite());
 		assertNull(adresseCourrier.getPays());
 
-		final AdresseEnvoi adresseDomicile = pm.getAdresseDomicileFormattee();
+		final AdresseFormattee adresseDomicile = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicile);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseDomicile.getLigne1())); // <-- raison sociale ligne 1
 		assertEquals("", trimValiPattern(adresseDomicile.getLigne2())); // <-- raison sociale ligne 2

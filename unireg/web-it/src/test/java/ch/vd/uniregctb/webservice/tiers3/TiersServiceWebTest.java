@@ -305,7 +305,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(12100003);
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(personne);
@@ -314,7 +314,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEmpty(personne.getAdressesRepresentation());
 		assertEmpty(personne.getAdressesPoursuite());
 
-		final AdresseEnvoi adresse = personne.getAdresseCourrierFormattee();
+		final AdresseFormattee adresse = personne.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Madame", adresse.getLigne1());
@@ -345,7 +345,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(20602603); // Delano Boschung
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(personne);
@@ -354,7 +354,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEmpty(personne.getAdressesRepresentation());
 		assertEmpty(personne.getAdressesPoursuite());
 
-		final AdresseEnvoi adresse = personne.getAdresseCourrierFormattee();
+		final AdresseFormattee adresse = personne.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Aux héritiers de", adresse.getLigne1());
@@ -770,6 +770,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		params.setTiersNumber(77714803); // RAMONI Jean
 		params.getParts().add(TiersPart.RAPPORTS_ENTRE_TIERS);
 		params.getParts().add(TiersPart.DECLARATIONS);
+		params.getParts().add(TiersPart.ETATS_DECLARATIONS);
 		params.getParts().add(TiersPart.SITUATIONS_FAMILLE);
 		params.getParts().add(TiersPart.FORS_FISCAUX);
 
@@ -907,12 +908,12 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setTiersNumber(10035633); // Tummers-De Wit Wouter
 		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final Contribuable ctb = (Contribuable) service.getTiers(params);
 		assertNotNull(ctb);
 
-		final AdresseEnvoi adresseEnvoi = ctb.getAdresseCourrierFormattee();
+		final AdresseFormattee adresseEnvoi = ctb.getAdresseCourrierFormattee();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Madame, Monsieur", adresseEnvoi.getLigne1());
 		assertEquals("Tummers-De Wit Wouter", adresseEnvoi.getLigne2());
@@ -1236,12 +1237,12 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(312); // PLACE CENTRALE, La Sarraz
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseEnvoi adresse = pm.getAdresseCourrierFormattee();
+		final AdresseFormattee adresse = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Société immobilière de", trimValiPattern(adresse.getLigne1()));
@@ -1262,12 +1263,12 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetTiersRequest params = new GetTiersRequest();
 		params.setLogin(login);
 		params.setTiersNumber(1314); // JAL HOLDING
-		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseEnvoi adresse = pm.getAdresseCourrierFormattee();
+		final AdresseFormattee adresse = pm.getAdresseCourrierFormattee();
 		assertNotNull(adresse);
 
 		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLigne1()));

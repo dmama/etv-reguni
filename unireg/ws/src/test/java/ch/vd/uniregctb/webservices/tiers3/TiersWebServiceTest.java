@@ -102,7 +102,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final GetBatchTiersRequest params = new GetBatchTiersRequest();
 		params.setLogin(login);
 		params.getTiersNumbers().addAll(Arrays.asList(ids.paul, ids.janine));
-		params.getParts().addAll(Arrays.asList(TiersPart.FORS_FISCAUX, TiersPart.FORS_FISCAUX_VIRTUELS, TiersPart.ADRESSES_ENVOI));
+		params.getParts().addAll(Arrays.asList(TiersPart.FORS_FISCAUX, TiersPart.FORS_FISCAUX_VIRTUELS, TiersPart.ADRESSES_FORMATTEES));
 
 		final BatchTiers batch = service.getBatchTiers(params);
 		assertNotNull(batch);
@@ -182,7 +182,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiersRequest params = new GetTiersRequest();
 			params.setLogin(login);
 			params.tiersNumber = ids.menage;
-			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_FORMATTEES));
 
 			final MenageCommun menage = (MenageCommun) service.getTiers(params);
 			assertNotNull(menage);
@@ -248,7 +248,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiersRequest params = new GetTiersRequest();
 			params.setLogin(login);
 			params.tiersNumber = ids.menage;
-			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_FORMATTEES));
 
 			final MenageCommun menage = (MenageCommun) service.getTiers(params);
 			assertNotNull(menage);
@@ -325,7 +325,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiersRequest params = new GetTiersRequest();
 			params.setLogin(login);
 			params.tiersNumber = ids.tiia;
-			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_FORMATTEES));
 
 			final PersonnePhysique tiia = (PersonnePhysique) service.getTiers(params);
 			assertNotNull(tiia);
