@@ -24,7 +24,7 @@ public class TiersActivationListManagerImpl implements TiersActivationListManage
 			bean.setInclureTiersAnnules(true);
 			bean.setTiersAnnulesSeulement(true);
 		}
-		bean.setTypeTiers(TiersCriteria.TypeTiers.TIERS);
+		bean.setTypeTiers(null);
 		return bean;
 	}
 

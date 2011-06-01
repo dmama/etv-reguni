@@ -86,7 +86,7 @@
 			<td width="25%"><fmt:message key="label.type.tiers" />&nbsp;:</td>
 			<td width="25%">
 				<form:select id="selectTypeTiers" path="typeTiers" onchange="typeTiers_onChange(this);">
-					<form:option value="TIERS" ><fmt:message key="option.TOUS" /></form:option>
+					<form:option value=""><fmt:message key="option.TOUS" /></form:option>
 					<form:option value="DEBITEUR_PRESTATION_IMPOSABLE" ><fmt:message key="option.type.tiers.DEBITEUR_PRESTATION_IMPOSABLE" /></form:option>
 					<form:option value="CONTRIBUABLE_PP" ><fmt:message key="option.type.tiers.CONTRIBUABLE_PP" /></form:option>
 					<form:option value="ENTREPRISE" ><fmt:message key="option.type.tiers.ENTREPRISE" /></form:option>

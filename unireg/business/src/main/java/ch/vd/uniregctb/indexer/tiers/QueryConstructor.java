@@ -71,13 +71,13 @@ public class QueryConstructor {
 					break;
 				case AUTRE_COMMUNAUTE:
 					break;
-				// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
-				// case ETABLISSEMENT:
-				// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
-				// break;
-				// case COLLECTIVITE_ADMINISTRATIVE:
-				// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
-				// break;
+				case ETABLISSEMENT:
+					// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
+					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					break;
+				case COLLECTIVITE_ADMINISTRATIVE:
+					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
+					break;
 				case CONTRIBUABLE:
 					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
@@ -97,9 +97,13 @@ public class QueryConstructor {
 					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
 					break;
+				default:
+					throw new IndexerException("Type de tiers inconnu = [" + typeTiers + "]");
 				}
 			}
-			fullQuery.add(query, must);
+			if (query.getClauses().length > 0) {
+				fullQuery.add(query, must);
+			}
 		}
 	}
 

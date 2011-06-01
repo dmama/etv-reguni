@@ -42,7 +42,6 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	public enum TypeTiers {
-		TIERS,
 		CONTRIBUABLE,
 		DEBITEUR_PRESTATION_IMPOSABLE,
 		PERSONNE_PHYSIQUE,
@@ -444,9 +443,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.typesTiers = typesTiers;
 	}
 
-	public void setTypeTiers(TypeTiers typesTiers) {
-		this.typesTiers = new HashSet<TypeTiers>();
-		this.typesTiers.add(typesTiers);
+	public void setTypeTiers(TypeTiers type) {
+		if (type == null) {
+			this.typesTiers = null;
+		}
+		else {
+			this.typesTiers = new HashSet<TypeTiers>();
+			this.typesTiers.add(type);
+		}
 	}
 
 	public boolean isInclureI107() {
