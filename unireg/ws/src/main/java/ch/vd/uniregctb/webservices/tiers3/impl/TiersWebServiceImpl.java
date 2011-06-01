@@ -555,6 +555,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 	}
 
+	@Override
+	public void ping() {
+		// rien à faire
+	}
+
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 

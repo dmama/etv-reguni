@@ -359,6 +359,11 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	}
 
 	@Override
+	public void ping() {
+		// rien à faire
+	}
+
+	@Override
 	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 		//données mouvantes inutile de cacher
 		return target.getListeCtbModifies(params);

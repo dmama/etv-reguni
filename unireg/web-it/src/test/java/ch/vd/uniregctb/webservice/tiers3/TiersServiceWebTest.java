@@ -60,6 +60,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	}
 
 	@Test
+	public void testPing() {
+		service.ping();
+	}
+
+	@Test
 	public void testGetType() throws Exception {
 
 		final GetTiersTypeRequest params = new GetTiersTypeRequest();

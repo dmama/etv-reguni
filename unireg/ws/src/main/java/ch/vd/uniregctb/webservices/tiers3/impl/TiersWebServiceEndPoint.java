@@ -329,6 +329,11 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	}
 
 	@Override
+	public void ping() {
+		// rien à faire
+	}
+
+	@Override
 	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {

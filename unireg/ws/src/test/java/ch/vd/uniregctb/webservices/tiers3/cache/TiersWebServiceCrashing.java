@@ -42,6 +42,11 @@ public class TiersWebServiceCrashing implements TiersWebService {
 	}
 
 	@Override
+	public void ping() {
+		// rien à faire
+	}
+
+	@Override
 	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 		return target.getListeCtbModifies(params);
 	}
