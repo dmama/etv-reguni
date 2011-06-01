@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0j-SNAPSHOT -->
+<!-- version 3.0k-SNAPSHOT -->
 <wsdl:definitions name="TiersWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" xmlns="http://www.vd.ch/unireg/webservices/tiers3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
@@ -106,6 +106,9 @@
 		<wsdl:part name="quittancerDeclarationsResponse" element="quittancerDeclarationsResponse" />
 	</wsdl:message>
 
+	<wsdl:message name="pingRequestMessage" />
+	<wsdl:message name="pingResponseMessage" />
+
 	<wsdl:message name="webServiceException">
 		<wsdl:part name="webServiceException" element="webServiceException" />
 	</wsdl:message>
@@ -156,6 +159,11 @@
 			<wsdl:input message="getDebiteurInfoRequestMessage" />
 			<wsdl:output message="getDebiteurInfoResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="ping">
+			<wsdl:documentation>Cette méthode permet à un client de s'assurer que la connexion avec le service est bien établie et que celui-ci répond bien.</wsdl:documentation>
+			<wsdl:input message="pingRequestMessage" />
+			<wsdl:output message="pingResponseMessage" />
 		</wsdl:operation>
 	</wsdl:portType>
 
@@ -260,6 +268,14 @@
 			<wsdl:fault name="webServiceException">
 				<soap:fault name="webServiceException" use="literal" />
 			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ping">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
 
