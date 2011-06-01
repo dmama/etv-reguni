@@ -490,7 +490,12 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 				assertEquals(dateDebutMoisProchain, pp.getReindexOn()); // [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire
-				assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				if (dateObtentionPermis.day() == 1) {
+					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				}
+				else {
+					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				}
 				return null;
 			}
 		});
@@ -562,7 +567,12 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				// [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire (le calcul de l'assujettissement détermine
 				// que le contribuable était sourcier à cause du mode d'ouverture 'obtention de permis C', même s'il n'y a pas de for principal source explicite)
 				assertEquals(dateDebutMoisProchain, pp.getReindexOn());
-				assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				if (dateObtentionPermis.day() == 1) {
+					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				}
+				else {
+					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				}
 				return null;
 			}
 		});
