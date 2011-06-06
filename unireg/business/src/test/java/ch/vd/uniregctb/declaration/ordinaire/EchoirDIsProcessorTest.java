@@ -8,14 +8,18 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.Echue;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.Erreur;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.ErreurType;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.parametrage.DelaisService;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -28,6 +32,8 @@ import static org.junit.Assert.fail;
 public class EchoirDIsProcessorTest extends BusinessTest {
 
 	private EchoirDIsProcessor processor;
+
+	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/echoirDiTiersInvalide.xml";
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -63,7 +69,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiterDIInexistante() {
 		try {
-			processor.traiterDI(12345L, new EchoirDIsResults(date(2000, 1, 1)));
+			processor.traiterDI(new IdentifiantDeclaration(12345L,12L,0), new EchoirDIsResults(date(2000, 1, 1)));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -88,7 +94,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		});
 
 		try {
-			processor.traiterDI(id, new EchoirDIsResults(date(2000, 1, 1)));
+			DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+			IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
+			processor.traiterDI(ident, new EchoirDIsResults(date(2000, 1, 1)));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -116,7 +124,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		});
 
 		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement);
-		processor.traiterDI(id, rapport);
+		DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+		IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
+		processor.traiterDI(ident, rapport);
 
 		assertEquals(1, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
@@ -228,6 +238,30 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@NotTransactional
+	public void testDITiersInvalide() throws Exception {
+
+		final RegDate dateTraitement = date(2008, 9, 1);
+		final RegDate dateSommation = date(2008, 6, 30);
+		 final long numeroMenageCommun = 12600004L;
+		loadDatabase(DB_UNIT_DATA_FILE);
+
+		// la date de traitement (1er septembre 2008) est après le délai (dateSommation + 30 jours + 15 jours = 15 août 2008)
+		final EchoirDIsResults rapport = processor.run(dateTraitement, null);
+
+		assertEquals(1, rapport.nbDIsTotal);
+		assertEmpty(rapport.disEchues);
+		assertEquals(1, rapport.disEnErrors.size());
+
+		final Erreur erreur = rapport.disEnErrors.get(0);
+		assertNotNull(erreur);
+		assertEquals(ErreurType.EXCEPTION, erreur.raison);
+
+
+
+	}
+
+	@Test
 	public void testTraiterDIDejaEchue() throws Exception {
 
 		final RegDate dateTraitement = date(2009, 1, 1);
@@ -248,7 +282,9 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		});
 
 		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement);
-		processor.traiterDI(id, rapport);
+		DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+		IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
+		processor.traiterDI(ident, rapport);
 
 		assertEquals(1, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);

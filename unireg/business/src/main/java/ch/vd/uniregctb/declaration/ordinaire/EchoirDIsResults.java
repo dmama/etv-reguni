@@ -6,9 +6,10 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.tiers.Tiers;
 
-public class EchoirDIsResults extends JobResults<Long, EchoirDIsResults> {
+public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirDIsResults> {
 
 	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION), ETAT_DECLARATION_INCOHERENT("L'état de la déclaration est incohérent");
@@ -82,9 +83,9 @@ public class EchoirDIsResults extends JobResults<Long, EchoirDIsResults> {
 		disEnErrors.add(new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), ErreurType.ETAT_DECLARATION_INCOHERENT, message));
 	}
 
-	public void addErrorException(Long idDI, Exception e) {
+	public void addErrorException(IdentifiantDeclaration ident, Exception e) {
 		++nbDIsTotal;
-		disEnErrors.add(new Erreur(0, null, idDI, ErreurType.EXCEPTION, e.getMessage()));
+		disEnErrors.add(new Erreur(ident.getNumeroTiers(),ident.getNumeroOID(), ident.getIdDeclaration(), ErreurType.EXCEPTION, e.getMessage()));
 	}
 
 	public void addAll(EchoirDIsResults rapport) {

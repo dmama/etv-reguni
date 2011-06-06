@@ -8,7 +8,6 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
@@ -69,48 +68,48 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(6, allIds.size());
 		Collections.sort(allIds, IdentifiantDeclaration.COMPARATOR_BY_DECL_ID);
 
-		assertEquals((long) admin.getId(), allIds.get(0).getNumeroDeclaration());
-		assertEquals((long) cas.getId(), allIds.get(1).getNumeroDeclaration());
-		assertEquals((long) hypo.getId(), allIds.get(2).getNumeroDeclaration());
-		assertEquals((long) ltn.getId(), allIds.get(3).getNumeroDeclaration());
-		assertEquals((long) lpp.getId(), allIds.get(4).getNumeroDeclaration());
-		assertEquals((long) reg.getId(), allIds.get(5).getNumeroDeclaration());
+		assertEquals((long) admin.getId(), allIds.get(0).getIdDeclaration());
+		assertEquals((long) cas.getId(), allIds.get(1).getIdDeclaration());
+		assertEquals((long) hypo.getId(), allIds.get(2).getIdDeclaration());
+		assertEquals((long) ltn.getId(), allIds.get(3).getIdDeclaration());
+		assertEquals((long) lpp.getId(), allIds.get(4).getIdDeclaration());
+		assertEquals((long) reg.getId(), allIds.get(5).getIdDeclaration());
 
 		// Catégorie = administrateurs
 		final List<IdentifiantDeclaration> idsAdmin = processor.getListIdLRs(null, date(2010, 1, 1), CategorieImpotSource.ADMINISTRATEURS);
 		assertNotNull(idsAdmin);
 		assertEquals(1, idsAdmin.size());
-		assertEquals((long) admin.getId(), idsAdmin.get(0).getNumeroDeclaration());
+		assertEquals((long) admin.getId(), idsAdmin.get(0).getIdDeclaration());
 
 		// Catégorie = conférenciers artistes sportifs
 		final List<IdentifiantDeclaration> idsCas = processor.getListIdLRs(null, date(2010, 1, 1), CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS);
 		assertNotNull(idsCas);
 		assertEquals(1, idsCas.size());
-		assertEquals((long) cas.getId(), idsCas.get(0).getNumeroDeclaration());
+		assertEquals((long) cas.getId(), idsCas.get(0).getIdDeclaration());
 
 		// Catégorie = créanciers hypothécaires
 		final List<IdentifiantDeclaration> idsHypo = processor.getListIdLRs(null, date(2010, 1, 1), CategorieImpotSource.CREANCIERS_HYPOTHECAIRES);
 		assertNotNull(idsHypo);
 		assertEquals(1, idsHypo.size());
-		assertEquals((long) hypo.getId(), idsHypo.get(0).getNumeroDeclaration());
+		assertEquals((long) hypo.getId(), idsHypo.get(0).getIdDeclaration());
 
 		// Catégorie = loi travail au noir
 		final List<IdentifiantDeclaration> idsLtn = processor.getListIdLRs(null, date(2010, 1, 1), CategorieImpotSource.LOI_TRAVAIL_AU_NOIR);
 		assertNotNull(idsLtn);
 		assertEquals(1, idsLtn.size());
-		assertEquals((long) ltn.getId(), idsLtn.get(0).getNumeroDeclaration());
+		assertEquals((long) ltn.getId(), idsLtn.get(0).getIdDeclaration());
 
 		// Catégorie = prestations prévoyance
 		final List<IdentifiantDeclaration> idsLpp = processor.getListIdLRs(null, date(2010, 1, 1), CategorieImpotSource.PRESTATIONS_PREVOYANCE);
 		assertNotNull(idsLpp);
 		assertEquals(1, idsLpp.size());
-		assertEquals((long) lpp.getId(), idsLpp.get(0).getNumeroDeclaration());
+		assertEquals((long) lpp.getId(), idsLpp.get(0).getIdDeclaration());
 
 		// Catégorie = réguliers
 		final List<IdentifiantDeclaration> idsReg = processor.getListIdLRs(null, date(2010, 1, 1), CategorieImpotSource.REGULIERS);
 		assertNotNull(idsReg);
 		assertEquals(1, idsReg.size());
-		assertEquals((long) reg.getId(), idsReg.get(0).getNumeroDeclaration());
+		assertEquals((long) reg.getId(), idsReg.get(0).getIdDeclaration());
 	}
 
 	/**
@@ -136,59 +135,59 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(allIds);
 		assertEquals(9, allIds.size());
 		Collections.sort(allIds, IdentifiantDeclaration.COMPARATOR_BY_DECL_ID);
-		assertEquals((long) janvierMensuelle.getId(), allIds.get(0).getNumeroDeclaration());
-		assertEquals((long) janvierTrimestrielle.getId(), allIds.get(1).getNumeroDeclaration());
-		assertEquals((long) janvierSemestrielle.getId(), allIds.get(2).getNumeroDeclaration());
-		assertEquals((long) janvierAnnuelle.getId(), allIds.get(3).getNumeroDeclaration());
-		assertEquals((long) janvierUnique.getId(), allIds.get(4).getNumeroDeclaration());
-		assertEquals((long) decembreMensuelle.getId(), allIds.get(5).getNumeroDeclaration());
-		assertEquals((long) decembreTrimestrielle.getId(), allIds.get(6).getNumeroDeclaration());
-		assertEquals((long) decembreSemestrielle.getId(), allIds.get(7).getNumeroDeclaration());
-		assertEquals((long) decembreUniques.getId(), allIds.get(8).getNumeroDeclaration());
+		assertEquals((long) janvierMensuelle.getId(), allIds.get(0).getIdDeclaration());
+		assertEquals((long) janvierTrimestrielle.getId(), allIds.get(1).getIdDeclaration());
+		assertEquals((long) janvierSemestrielle.getId(), allIds.get(2).getIdDeclaration());
+		assertEquals((long) janvierAnnuelle.getId(), allIds.get(3).getIdDeclaration());
+		assertEquals((long) janvierUnique.getId(), allIds.get(4).getIdDeclaration());
+		assertEquals((long) decembreMensuelle.getId(), allIds.get(5).getIdDeclaration());
+		assertEquals((long) decembreTrimestrielle.getId(), allIds.get(6).getIdDeclaration());
+		assertEquals((long) decembreSemestrielle.getId(), allIds.get(7).getIdDeclaration());
+		assertEquals((long) decembreUniques.getId(), allIds.get(8).getIdDeclaration());
 
 		// 1er trimestre
 		final List<IdentifiantDeclaration> premierTrimestre = processor.getListIdLRs(date(2007, 3, 31), date(2008, 3, 1), null);
 		assertNotNull(premierTrimestre);
 		assertEquals(3, premierTrimestre.size());
 		Collections.sort(premierTrimestre, IdentifiantDeclaration.COMPARATOR_BY_DECL_ID);
-		assertEquals((long) janvierMensuelle.getId(), premierTrimestre.get(0).getNumeroDeclaration());
-		assertEquals((long) janvierTrimestrielle.getId(), premierTrimestre.get(1).getNumeroDeclaration());
-		assertEquals((long) janvierUnique.getId(), premierTrimestre.get(2).getNumeroDeclaration());
+		assertEquals((long) janvierMensuelle.getId(), premierTrimestre.get(0).getIdDeclaration());
+		assertEquals((long) janvierTrimestrielle.getId(), premierTrimestre.get(1).getIdDeclaration());
+		assertEquals((long) janvierUnique.getId(), premierTrimestre.get(2).getIdDeclaration());
 
 		// 2ème trimestre
 		final List<IdentifiantDeclaration> deuxiemeTrimestre = processor.getListIdLRs(date(2007, 6, 30), date(2008, 3, 1), null);
 		assertNotNull(deuxiemeTrimestre);
 		assertEquals(4, deuxiemeTrimestre.size());
 		Collections.sort(deuxiemeTrimestre, IdentifiantDeclaration.COMPARATOR_BY_DECL_ID);
-		assertEquals((long) janvierMensuelle.getId(), deuxiemeTrimestre.get(0).getNumeroDeclaration());
-		assertEquals((long) janvierTrimestrielle.getId(), deuxiemeTrimestre.get(1).getNumeroDeclaration());
-		assertEquals((long) janvierSemestrielle.getId(), deuxiemeTrimestre.get(2).getNumeroDeclaration());
-		assertEquals((long) janvierUnique.getId(), deuxiemeTrimestre.get(3).getNumeroDeclaration());
+		assertEquals((long) janvierMensuelle.getId(), deuxiemeTrimestre.get(0).getIdDeclaration());
+		assertEquals((long) janvierTrimestrielle.getId(), deuxiemeTrimestre.get(1).getIdDeclaration());
+		assertEquals((long) janvierSemestrielle.getId(), deuxiemeTrimestre.get(2).getIdDeclaration());
+		assertEquals((long) janvierUnique.getId(), deuxiemeTrimestre.get(3).getIdDeclaration());
 
 		// 3ème trimestre
 		final List<IdentifiantDeclaration> troisiemeTrimestre = processor.getListIdLRs(date(2007, 9, 30), date(2008, 3, 1), null);
 		assertNotNull(troisiemeTrimestre);
 		assertEquals(4, troisiemeTrimestre.size());
 		Collections.sort(troisiemeTrimestre, IdentifiantDeclaration.COMPARATOR_BY_DECL_ID);
-		assertEquals((long) janvierMensuelle.getId(), troisiemeTrimestre.get(0).getNumeroDeclaration());
-		assertEquals((long) janvierTrimestrielle.getId(), troisiemeTrimestre.get(1).getNumeroDeclaration());
-		assertEquals((long) janvierSemestrielle.getId(), troisiemeTrimestre.get(2).getNumeroDeclaration());
-		assertEquals((long) janvierUnique.getId(), troisiemeTrimestre.get(3).getNumeroDeclaration());
+		assertEquals((long) janvierMensuelle.getId(), troisiemeTrimestre.get(0).getIdDeclaration());
+		assertEquals((long) janvierTrimestrielle.getId(), troisiemeTrimestre.get(1).getIdDeclaration());
+		assertEquals((long) janvierSemestrielle.getId(), troisiemeTrimestre.get(2).getIdDeclaration());
+		assertEquals((long) janvierUnique.getId(), troisiemeTrimestre.get(3).getIdDeclaration());
 
 		// 4ème trimestre
 		final List<IdentifiantDeclaration> quatriemeTrimestre = processor.getListIdLRs(date(2007, 12, 31), date(2008, 3, 1), null);
 		assertNotNull(quatriemeTrimestre);
 		assertEquals(9, quatriemeTrimestre.size());
 		Collections.sort(quatriemeTrimestre, IdentifiantDeclaration.COMPARATOR_BY_DECL_ID);
-		assertEquals((long) janvierMensuelle.getId(), quatriemeTrimestre.get(0).getNumeroDeclaration());
-		assertEquals((long) janvierTrimestrielle.getId(), quatriemeTrimestre.get(1).getNumeroDeclaration());
-		assertEquals((long) janvierSemestrielle.getId(), quatriemeTrimestre.get(2).getNumeroDeclaration());
-		assertEquals((long) janvierAnnuelle.getId(), quatriemeTrimestre.get(3).getNumeroDeclaration());
-		assertEquals((long) janvierUnique.getId(), quatriemeTrimestre.get(4).getNumeroDeclaration());
-		assertEquals((long) decembreMensuelle.getId(), quatriemeTrimestre.get(5).getNumeroDeclaration());
-		assertEquals((long) decembreTrimestrielle.getId(), quatriemeTrimestre.get(6).getNumeroDeclaration());
-		assertEquals((long) decembreSemestrielle.getId(), quatriemeTrimestre.get(7).getNumeroDeclaration());
-		assertEquals((long) decembreUniques.getId(), quatriemeTrimestre.get(8).getNumeroDeclaration());
+		assertEquals((long) janvierMensuelle.getId(), quatriemeTrimestre.get(0).getIdDeclaration());
+		assertEquals((long) janvierTrimestrielle.getId(), quatriemeTrimestre.get(1).getIdDeclaration());
+		assertEquals((long) janvierSemestrielle.getId(), quatriemeTrimestre.get(2).getIdDeclaration());
+		assertEquals((long) janvierAnnuelle.getId(), quatriemeTrimestre.get(3).getIdDeclaration());
+		assertEquals((long) janvierUnique.getId(), quatriemeTrimestre.get(4).getIdDeclaration());
+		assertEquals((long) decembreMensuelle.getId(), quatriemeTrimestre.get(5).getIdDeclaration());
+		assertEquals((long) decembreTrimestrielle.getId(), quatriemeTrimestre.get(6).getIdDeclaration());
+		assertEquals((long) decembreSemestrielle.getId(), quatriemeTrimestre.get(7).getIdDeclaration());
+		assertEquals((long) decembreUniques.getId(), quatriemeTrimestre.get(8).getIdDeclaration());
 	}
 
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(CategorieImpotSource categorie, PeriodeFiscale periode) {

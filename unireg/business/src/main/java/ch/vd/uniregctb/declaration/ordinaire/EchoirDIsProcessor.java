@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -60,12 +62,12 @@ public class EchoirDIsProcessor {
 		status.setMessage("Récupération des déclarations d'impôt...");
 
 		final EchoirDIsResults rapportFinal = new EchoirDIsResults(dateTraitement);
-		final List<Long> dis = retrieveListDIsSommeesCandidates(dateTraitement);
+		final List<IdentifiantDeclaration> dis = retrieveListDIsSommeesCandidates(dateTraitement);
 
 		status.setMessage("Analyse des déclarations d'impôt...");
 
-		final BatchTransactionTemplate<Long, EchoirDIsResults> template = new BatchTransactionTemplate<Long, EchoirDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, EchoirDIsResults>() {
+		final BatchTransactionTemplate<IdentifiantDeclaration, EchoirDIsResults> template = new BatchTransactionTemplate<IdentifiantDeclaration, EchoirDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		template.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EchoirDIsResults>() {
 
 			@Override
 			public EchoirDIsResults createSubRapport() {
@@ -73,7 +75,7 @@ public class EchoirDIsProcessor {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, EchoirDIsResults r) throws Exception {
+			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EchoirDIsResults r) throws Exception {
 
 				status.setMessage(String.format("Déclarations d'impôt analysées : %d/%d", rapportFinal.nbDIsTotal, dis.size()), percent);
 
@@ -94,8 +96,8 @@ public class EchoirDIsProcessor {
 	 * @param rapport le rapport à remplir, voir {@link EchoirDIsProcessor#traiterDI(Long, EchoirDIsResults)}.
 	 * @param statusManager utilisé pour tester l'interruption
 	 */
-	private void traiterBatch(List<Long> batch, EchoirDIsResults rapport, StatusManager statusManager) {
-		for (Long id : batch) {
+	private void traiterBatch(List<IdentifiantDeclaration> batch, EchoirDIsResults rapport, StatusManager statusManager) {
+		for (IdentifiantDeclaration id : batch) {
 			traiterDI(id, rapport);
 			if (statusManager.interrupted()) {
 				break;
@@ -110,11 +112,11 @@ public class EchoirDIsProcessor {
 	 * @param id l'id de la déclaration à traiter
 	 * @param rapport rapport à remplir
 	 */
-	protected void traiterDI(Long id, EchoirDIsResults rapport) {
+	protected void traiterDI(IdentifiantDeclaration ident, EchoirDIsResults rapport) {
 
-		Assert.notNull(id, "L'id doit être spécifié.");
+		Assert.notNull(ident, "L'id doit être spécifié.");
 
-		final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+		final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ident.getIdDeclaration());
 		Assert.notNull(di, "La déclaration n'existe pas.");
 
 		final EtatDeclaration etat = di.getDernierEtat();
@@ -138,23 +140,25 @@ public class EchoirDIsProcessor {
 	 * @return les ids des DIs dont l'état courant est <i>sommée</i> et qui dont le délai de retour de sommation est maintenant dépassé.
 	 * @param dateTraitement date de référence pour la détermination du dépassement du délai de retour
 	 */
-	private List<Long> retrieveListDIsSommeesCandidates(final RegDate dateTraitement) {
+	private List<IdentifiantDeclaration> retrieveListDIsSommeesCandidates(final RegDate dateTraitement) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DI.ID, ES.DATE_OBTENTION FROM DECLARATION DI");
+		b.append("SELECT DI.ID, ES.DATE_OBTENTION, DI.TIERS_ID, T.OID FROM DECLARATION DI");
 		b.append(" JOIN ETAT_DECLARATION ES ON ES.DECLARATION_ID = DI.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMMEE'");
+		b.append(" JOIN TIERS T ON T.NUMERO = DI.TIERS_ID ");
 		b.append(" WHERE DI.DOCUMENT_TYPE='DI' AND DI.ANNULATION_DATE IS NULL");
 		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = DI.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE'))");
 		b.append(" ORDER BY DI.TIERS_ID");
 		final String sql = b.toString();
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					public List<Long> doInHibernate(Session session) throws HibernateException {
+		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
+			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
+				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
+				return hibernateTemplate.execute(new HibernateCallback<List<IdentifiantDeclaration>>() {
+					public List<IdentifiantDeclaration> doInHibernate(Session session) throws HibernateException {
 
 						final Query query = session.createSQLQuery(sql);
 						final List<Object[]> rows = query.list();
@@ -167,9 +171,14 @@ public class EchoirDIsProcessor {
 								if (dateTraitement.isAfter(echeanceReelle)) {
 									final long diId = ((Number) row[0]).longValue();
 									idDis.add(diId);
+									final Number numeroDi = ((Number) row[0]).longValue();
+									final Number numeroTiers = ((Number) row[2]).longValue();
+									final Number numeroOID = (row[3]==null?  0 :((Number) row[3]).intValue());
+									final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(numeroDi.longValue(), numeroTiers.longValue(),numeroOID.intValue());
+									identifiantDi.add(identifiantDeclaration);
 								}
 							}
-							return idDis;
+							return identifiantDi;
 						}
 						else {
 							return Collections.emptyList();

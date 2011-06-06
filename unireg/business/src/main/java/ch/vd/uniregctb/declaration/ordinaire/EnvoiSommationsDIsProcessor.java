@@ -163,7 +163,7 @@ public class EnvoiSommationsDIsProcessor  {
 		List<Long> ids = new ArrayList<Long>();
 
 		for (IdentifiantDeclaration identifiantDeclaration : batch) {
-			ids.add(identifiantDeclaration.getNumeroDeclaration());
+			ids.add(identifiantDeclaration.getIdDeclaration());
 		}
 		return ids;
 	}

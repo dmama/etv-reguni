@@ -10,7 +10,7 @@ public final class IdentifiantDeclaration {
 
 	public static final Comparator<IdentifiantDeclaration> COMPARATOR_BY_DECL_ID = new Comparator<IdentifiantDeclaration>() {
 		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
-			return o1.numeroDeclaration < o2.numeroDeclaration ? -1 : (o1.numeroDeclaration > o2.numeroDeclaration ? 1 : 0);
+			return o1.idDeclaration < o2.idDeclaration ? -1 : (o1.idDeclaration > o2.idDeclaration ? 1 : 0);
 		}
 	};
 
@@ -20,19 +20,38 @@ public final class IdentifiantDeclaration {
 		}
 	};
 
-	private final long numeroDeclaration;
-	private final long numeroTiers;
+	public static final Comparator<IdentifiantDeclaration> COMPARATOR_BY_OID_ID = new Comparator<IdentifiantDeclaration>() {
+		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
+			return o1.numeroOID < o2.numeroOID ? -1 : (o1.numeroOID > o2.numeroOID ? 1 : 0);
+		}
+	};
 
-	public IdentifiantDeclaration(long numeroDeclaration, long numeroTiers) {
+	private final long idDeclaration;
+	private final long numeroTiers;
+	private final int numeroOID;
+
+	public IdentifiantDeclaration(long idDeclaration, long numeroTiers) {
 		this.numeroTiers = numeroTiers;
-		this.numeroDeclaration = numeroDeclaration;
+		this.idDeclaration = idDeclaration;
+		this.numeroOID=0;
 	}
 
-	public long getNumeroDeclaration() {
-		return numeroDeclaration;
+	public IdentifiantDeclaration(long idDeclaration, long numeroTiers,int numeroOID) {
+		this.numeroTiers = numeroTiers;
+		this.idDeclaration = idDeclaration;
+		this.numeroOID = numeroOID;
+	}
+
+
+	public long getIdDeclaration() {
+		return idDeclaration;
 	}
 
 	public long getNumeroTiers() {
 		return numeroTiers;
+	}
+
+	public int getNumeroOID() {
+		return numeroOID;
 	}
 }
