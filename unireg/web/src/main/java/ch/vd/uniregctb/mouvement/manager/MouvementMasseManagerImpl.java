@@ -359,7 +359,6 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 		@Override
 		public boolean doBatchExtraction(List<Long> batch, MouvementDossierExtractionResult rapport) throws Exception {
-			 AuthenticationHelper.resetAuthentication();
 			// extraction des ID de la liste vers un tableau
 			final long[] ids = new long[batch.size()];
 			int index = 0;
