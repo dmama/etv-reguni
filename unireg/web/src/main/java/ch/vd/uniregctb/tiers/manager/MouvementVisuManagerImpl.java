@@ -25,7 +25,7 @@ public class MouvementVisuManagerImpl extends AbstractMouvementManagerImpl imple
 	@Transactional(readOnly = true)
 	public MouvementDetailView get(Long id) throws ServiceInfrastructureException {
 		final MouvementDossier mvt = getMouvementDossierDAO().get(id);
-		return getView(mvt);
+		return getView(mvt, false);
 	}
 
 }

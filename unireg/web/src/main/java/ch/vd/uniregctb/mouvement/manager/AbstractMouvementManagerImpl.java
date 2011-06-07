@@ -137,13 +137,15 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	/**
 	 * Point d'entrée principal pour bâtir la view détaillée pour un mouvement de dossier donné
+	 *
 	 * @param mvt le mouvement depuis lequel bâtir la vue
+	 * @param isExtraction
 	 * @return la vue
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public MouvementDetailView getView(MouvementDossier mvt) throws ServiceInfrastructureException {
-		final MouvementDetailView view = buildAndFillCommonElements(mvt);
+	public MouvementDetailView getView(MouvementDossier mvt, boolean isExtraction) throws ServiceInfrastructureException {
+		final MouvementDetailView view = buildAndFillCommonElements(mvt, isExtraction);
 		if (mvt instanceof ReceptionDossier) {
 			fillReceptionDossier((ReceptionDossier) mvt, view);
 		}
@@ -153,12 +155,12 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		return view;
 	}
 
-	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier) throws ServiceInfrastructureException {
+	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier, boolean isExtraction) throws ServiceInfrastructureException {
 		if (mvts != null && mvts.size() > 0) {
 			prefetchIndividus(mvts);
 			final List<MouvementDetailView> liste = new ArrayList<MouvementDetailView>(mvts.size());
 			for (MouvementDossier mvt : mvts) {
-				liste.add(getView(mvt));
+				liste.add(getView(mvt, isExtraction));
 			}
 			if (sortByNoDossier && liste.size() > 1) {
 				Collections.sort(liste, new Comparator<MouvementDetailView>() {
@@ -209,7 +211,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		}
 	}
 
-	private MouvementDetailView buildAndFillCommonElements(MouvementDossier mvt) {
+	private MouvementDetailView buildAndFillCommonElements(MouvementDossier mvt, boolean isExtraction) {
 		final MouvementDetailView view = new MouvementDetailView();
 		view.setId(mvt.getId());
 		view.setDateMouvement(mvt.getDateMouvement() != null ? mvt.getDateMouvement().asJavaDate() : null);
@@ -218,7 +220,9 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setExecutant(mvt.getLogModifUser());
 		view.setContribuable(creerCtbView(mvt.getContribuable()));
 		view.setAnnule(mvt.isAnnule());
-		view.setAnnulable(isAnnulable(mvt));
+		if (!isExtraction){
+			view.setAnnulable(isAnnulable(mvt));
+		}
 		return view;
 	}
 

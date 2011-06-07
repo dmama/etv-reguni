@@ -47,7 +47,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		final List<MouvementDetailView> mvtsView = new ArrayList<MouvementDetailView>();
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().findByNumeroDossier(numero, seulementTraites, true);
 		for (MouvementDossier mvt : mvts) {
-			final MouvementDetailView mvtView = getView(mvt);
+			final MouvementDetailView mvtView = getView(mvt, false);
 			mvtsView.add(mvtView);
 		}
 		Collections.sort(mvtsView);

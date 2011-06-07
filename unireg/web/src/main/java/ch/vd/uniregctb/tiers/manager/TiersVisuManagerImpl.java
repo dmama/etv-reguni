@@ -269,7 +269,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		final Set<MouvementDossier> mvts = contribuable.getMouvementsDossier();
 		for (MouvementDossier mvt : mvts) {
 			if (mvt.getEtat().isTraite()) {
-				final MouvementDetailView mvtView = mouvementVisuManager.getView(mvt);
+				final MouvementDetailView mvtView = mouvementVisuManager.getView(mvt, false);
 				mvtsView.add(mvtView);
 			}
 		}

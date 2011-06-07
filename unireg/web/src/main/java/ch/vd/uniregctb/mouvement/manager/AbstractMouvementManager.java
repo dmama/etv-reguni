@@ -10,11 +10,13 @@ public interface AbstractMouvementManager {
 
 	/**
 	 * Point d'entrée principal pour bâtir la view détaillée pour un mouvement de dossier donné
+	 *
 	 * @param mvt le mouvement depuis lequel bâtir la vue
+	 * @param isExtraction
 	 * @return la vue
 	 * @throws ch.vd.infrastructure.service.ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	MouvementDetailView getView(MouvementDossier mvt) throws ServiceInfrastructureException;
+	MouvementDetailView getView(MouvementDossier mvt, boolean isExtraction) throws ServiceInfrastructureException;
 
 }

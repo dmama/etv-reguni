@@ -99,7 +99,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 		if (count > 0) {
 			final List<MouvementDossier> liste = getMouvementDossierDAO().find(criteria, paramPagination);
-			return getViews(liste, false);
+			return getViews(liste, false, false);
 		}
 		else {
 			return Collections.emptyList();
@@ -146,7 +146,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	@Transactional(readOnly = true)
 	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws ServiceInfrastructureException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().find(criteria, null);
-		return getViews(mvts, false);
+		return getViews(mvts, false, false);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -209,7 +209,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		final BordereauEnvoiReceptionView view = new BordereauEnvoiReceptionView();
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(idBordereau);
 		fillView(bordereau, view);
-		view.setMvts(getViews(bordereau.getContenu(), true));
+		view.setMvts(getViews(bordereau.getContenu(), true, false));
 		return view;
 	}
 
@@ -237,7 +237,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	public void refreshView(BordereauEnvoiReceptionView view) throws ServiceInfrastructureException {
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(view.getId());
 		fillView(bordereau, view);
-		view.setMvts(getViews(bordereau.getContenu(), true));
+		view.setMvts(getViews(bordereau.getContenu(), true, false));
 	}
 
 	private ReceptionDossierClassementGeneral creerMouvementReceptionClassement(EnvoiDossierVersCollectiviteAdministrative envoi) {
@@ -359,7 +359,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 		@Override
 		public boolean doBatchExtraction(List<Long> batch, MouvementDossierExtractionResult rapport) throws Exception {
-
+			 AuthenticationHelper.resetAuthentication();
 			// extraction des ID de la liste vers un tableau
 			final long[] ids = new long[batch.size()];
 			int index = 0;
@@ -392,7 +392,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 				}
 
 				if (mvtsTries.size() > 0) {
-					final List<MouvementDetailView> infos = getViews(mvtsTries, false);
+					final List<MouvementDetailView> infos = getViews(mvtsTries, false, true);
 					rapport.addMouvements(infos);
 				}
 			}
