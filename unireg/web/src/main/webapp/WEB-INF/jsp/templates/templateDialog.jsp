@@ -17,6 +17,7 @@
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.cookie.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/dialog.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/autocomplete.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jtip.js"/>"></script>
 
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>
