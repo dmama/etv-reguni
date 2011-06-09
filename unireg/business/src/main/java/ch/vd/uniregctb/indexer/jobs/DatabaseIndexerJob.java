@@ -56,7 +56,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
 		final boolean prefetch = getBooleanValue(params, PREFETCH);
 
-		globalTiersIndexer.indexAllDatabaseAsync(getStatusManager(), nbThreads, mode, prefetch);
+		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, prefetch);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

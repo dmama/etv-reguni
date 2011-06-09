@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.common;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.zip.ZipInputStream;
-
-import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -230,6 +229,6 @@ public abstract class BusinessItTestApplication {
 	}
 
 	protected void reindexDatabase() {
-		indexer.indexAllDatabaseAsync(null, 4, Mode.INCREMENTAL, false);
+		indexer.indexAllDatabase(null, 4, Mode.INCREMENTAL, false);
 	}
 }

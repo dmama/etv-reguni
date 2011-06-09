@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,14 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -106,17 +102,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     public void overwriteIndex() {
 	    onTheFlyTiersIndexer.reset();
         globalIndex.overwriteIndex();
-    }
-
-    public int indexAllDatabase() throws IndexerException {
-        return indexAllDatabase(true, null);
-    }
-
-    private void setMessage(StatusManager statusManager, String msg) {
-
-        if (statusManager != null) {
-            statusManager.setMessage(msg);
-        }
     }
 
     private class TimeLog {
@@ -208,10 +193,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus)
+	public int indexAllDatabase() throws IndexerException {
+		return indexAllDatabase(null, 1, Mode.FULL, true);
+	}
+
+    public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus)
             throws IndexerException {
 
         if (statusManager == null) {
@@ -417,43 +403,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		return ids;
 	}
 
-	public int indexAllDatabase(boolean assertSameNumber, StatusManager statusManager) throws IndexerException {
-
-        overwriteIndex();
-        Assert.isTrue(globalIndex.getApproxDocCount() == 0);
-
-        int nbIndexed = indexAllGetAll(assertSameNumber, statusManager);
-
-        setMessage(statusManager, "Optimization de la base d'indexation...");
-        globalIndex.optimize();
-
-        LOGGER.info("Il y a " + globalIndex.getApproxDocCount() + " entities dans l'index.");
-        setMessage(statusManager, "Indexation terminée. Il y a " + globalIndex.getApproxDocCount() + " documents dans la base d'indexation");
-
-        return nbIndexed;
-    }
-
-    public void indexTiers(Tiers tiers, boolean removeBefore, boolean followDependents) throws IndexerException {
-        Assert.notNull(tiers, "Le Tiers passé pour l'indexation est null...");
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Reindexation du Tiers " + tiers.getNumero() + " (remove=" + removeBefore + " couple=" + followDependents + ")");
-        }
-
-        final List<TiersIndexable> indexables = buildIndexables(tiers, followDependents);
-	    final List<IndexableData> data = new ArrayList<IndexableData>(indexables.size());
-	    for (TiersIndexable i : indexables) {
-	        data.add(i.getIndexableData());
-	    }
-
-        indexBatch(data, removeBefore);
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Indexation du Tiers #" + tiers.getNumero() + " successful. " + globalIndex.getApproxDocCount()
-                    + " entities dans l'index");
-        }
-    }
-
 	/**
 	 * Index les tiers spécifié.
 	 *
@@ -616,68 +565,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         return indexable;
     }
 
-	// TODO (msi) supprimer cette méthode complétement dépassée
-    private int indexAllGetAll(boolean assertSameNumber, final StatusManager statusManager) {
-
-        TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
-        tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-        int nbTiersIndexed = tmpl.execute(new TransactionCallback<Integer>() {
-
-            public Integer doInTransaction(TransactionStatus status) {
-                // Get the sourcier from DB
-                List<Tiers> listTiers = tiersDAO.getAll();
-                if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace("Indexation de " + listTiers.size() + " tiers");
-                }
-                int nbTiersIndexed = 0;
-                for (Tiers tiers : listTiers) {
-
-                    if (statusManager != null && statusManager.interrupted()) {
-                        break;
-                    }
-
-                    setMessage(statusManager, "Indexation du tiers " + nbTiersIndexed + " sur " + listTiers.size() + " : "
-                            + formatPercent(nbTiersIndexed, listTiers.size()) + " (id=" + tiers.getNumero() + ")");
-
-                    try {
-                        indexTiers(tiers, false, false);
-                        nbTiersIndexed++;
-                        if (LOGGER.isTraceEnabled()) {
-                            LOGGER.trace("Indexation du contribuable " + tiers.getNumero() + " terminée");
-                        }
-                    }
-                    catch (Exception e) {
-	                    setIndexDirty(tiers);
-                        LOGGER.error(e, e);
-                    }
-
-                    tiersDAO.evict(tiers);
-                }
-                return nbTiersIndexed;
-            }
-
-        });
-
-        globalIndex.flush();
-
-        int c = globalIndex.getExactDocCount();
-        Assert.isTrue(!assertSameNumber || nbTiersIndexed == c, "Le nombre d'entités dans la base de données (" + nbTiersIndexed
-                + ") n'est pas le même que dans l'indexer (" + c + ")");
-
-        return nbTiersIndexed;
-    }
-
-	private void setIndexDirty(final Tiers tiers) {
-		tiersDAO.getHibernateTemplate().execute(new HibernateCallback<Object>() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = :id");
-				query.setParameter("id", tiers.getNumero());
-				query.executeUpdate();
-				return null;
-			}
-		});
-	}
-
     private void indexBatch(List<IndexableData> data, boolean removeBefore) throws IndexerBatchException {
 
 	    // Note : en cas d'exception, on continue le processing, on stocke les exceptions et on les lèves d'un seul coup à la fin
@@ -735,10 +622,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	public void destroy() throws Exception {
 		onTheFlyTiersIndexer.destroy();
 	}
-
-	private String formatPercent(int num, int denom) {
-        return String.format("%d%%", (int) (num / 1.0f / denom * 100));
-    }
 
     private Behavior getByThreadBehavior() {
         Behavior behavior = this.byThreadBehavior.get();

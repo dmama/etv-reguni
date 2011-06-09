@@ -12,7 +12,6 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamLong;
-import ch.vd.uniregctb.scheduler.JobParamString;
 
 /**
  * Job qui charge la contenu de la base de données à partir d'un fichier sur le disque du serveur.
@@ -81,7 +80,7 @@ public class LoadDatabaseJob extends JobDefinition {
 		});
 
 		status.setMessage("Reindexation de la base en cours...");
-		globalIndexer.indexAllDatabase(false, status);
+		globalIndexer.indexAllDatabase(status, 2, GlobalTiersIndexer.Mode.FULL, true);
 
 		Audit.success("La base de données a été rechargée et indexée à partir du fichier " + doc.getNom() + " (document #" + doc.getId()
 				+ ").");

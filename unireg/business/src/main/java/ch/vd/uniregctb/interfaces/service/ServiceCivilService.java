@@ -159,7 +159,7 @@ public interface ServiceCivilService {
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties);
+	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties);
 
 	/**
 	 * Retourne la liste des nationalités, valides <b>jusqu'à</b> l'année en paramètre, de l'individu identifié par le numéro en paramètre.

@@ -1,14 +1,9 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.Collection;
-import java.util.List;
-
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.tiers.Tiers;
 
 /**
  * Service spécialisé pour la mise-à-jour de l'indexe Lucene par rapport aux Tiers.
@@ -45,15 +40,20 @@ public interface GlobalTiersIndexer {
 	 */
 	void sync();
 
-	public int indexAllDatabase() throws IndexerException;
-
-	public int indexAllDatabase(boolean assertSameNumber, StatusManager statusManager) throws IndexerException;
-
 	public enum Mode {
 		FULL,
 		INCREMENTAL,
 		DIRTY_ONLY
 	}
+
+	/**
+	 * Réindexe toute la base de données (1 thread, mode FULL avec préfetch des individus).
+	 *
+	 * @throws ch.vd.uniregctb.indexer.IndexerException
+	 *          si l'indexation n'a pas pu être faite.
+	 * @return le nombre de tiers indexés
+	 */
+	public int indexAllDatabase() throws IndexerException;
 
 	/**
 	 * Indexe ou réindexe tout ou partie de la base de données.
@@ -66,7 +66,7 @@ public interface GlobalTiersIndexer {
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus) throws IndexerException;
+	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus) throws IndexerException;
 
 	/**
 	 * Flag qui indique si l'indexation doit se faire a la volée ou si elle sera faite a posteriori.

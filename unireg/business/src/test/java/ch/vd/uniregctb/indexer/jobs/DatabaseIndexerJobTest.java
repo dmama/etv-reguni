@@ -120,10 +120,10 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		}
 
 		// On index dabord avec 1 Thread pour mettre LOG_MDATE et INDEX_DIRTY comme il faut
-		globalTiersIndexer.indexAllDatabaseAsync(null, 1, Mode.FULL, false);
+		globalTiersIndexer.indexAllDatabase(null, 1, Mode.FULL, false);
 
 		// Puis avec 4 pour vérifier que le multi-threading marche bien
-		globalTiersIndexer.indexAllDatabaseAsync(null, 4, Mode.FULL, false);
+		globalTiersIndexer.indexAllDatabase(null, 4, Mode.FULL, false);
 
 		// De nouveau trouvé
 		{

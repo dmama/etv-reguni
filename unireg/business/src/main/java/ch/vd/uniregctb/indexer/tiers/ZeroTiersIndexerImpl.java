@@ -11,11 +11,7 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 		return 0;
 	}
 
-	public int indexAllDatabase(boolean assertSameNumber, StatusManager statusManager) throws IndexerException {
-		return 0;
-	}
-
-	public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus)
+	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus)
 			throws IndexerException {
 		return 0;
 	}

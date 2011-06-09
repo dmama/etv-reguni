@@ -31,11 +31,7 @@ public class MockTiersIndexer implements GlobalTiersIndexer {
 		throw new NotImplementedException();
 	}
 
-	public int indexAllDatabase(boolean assertSameNumber, StatusManager statusManager) throws IndexerException {
-		throw new NotImplementedException();
-	}
-
-	public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus) throws IndexerException {
+	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus) throws IndexerException {
 		throw new NotImplementedException();
 	}
 

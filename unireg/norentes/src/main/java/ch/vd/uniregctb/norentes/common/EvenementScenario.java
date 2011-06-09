@@ -22,10 +22,7 @@ import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -58,7 +55,6 @@ import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public abstract class EvenementScenario extends NorentesScenario {
 
@@ -113,7 +109,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 	 */
 	protected void indexData() throws Exception {
 		LOGGER.debug("Indexation de la base de données...");
-		globalIndexer.indexAllDatabaseAsync(null, 1, Mode.FULL, false);
+		globalIndexer.indexAllDatabase(null, 1, Mode.FULL, false);
 		LOGGER.debug("Indexation de la base de données terminée. Nombre de docs: "+globalSearcher.getApproxDocCount());
 	}
 

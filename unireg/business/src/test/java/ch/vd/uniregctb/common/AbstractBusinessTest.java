@@ -140,10 +140,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected void indexData() throws Exception {
-		// globalTiersIndexer.indexAllDatabase();
-		// Si on Index en ASYNC (on créée des Threads) tout va bien
-		// Sinon, avec indexAllDb(), il y a des problemes de OptimisticLock...
-		globalTiersIndexer.indexAllDatabaseAsync(null, 1, GlobalTiersIndexer.Mode.FULL, false);
+		globalTiersIndexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.FULL, false);
 	}
 
 	protected void removeIndexData() throws Exception {
