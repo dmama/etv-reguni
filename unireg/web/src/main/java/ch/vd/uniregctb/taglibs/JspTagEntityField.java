@@ -48,6 +48,7 @@ public class JspTagEntityField extends BodyTagSupport {
 		this.path = path;
 	}
 
+	@Override
 	public void setId(String id) {
 		this.id = id;
 	}

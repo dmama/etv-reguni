@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.audit;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +11,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 @ContextConfiguration(locations = {
 		"classpath:ut/AuditLineDAOTest-spring.xml"
@@ -41,6 +41,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 		resetAuthentication();
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				List<AuditLine> list = auditLineDAO.findLastCountFromID(0, 2);
 				assertEquals(2, list.size());
@@ -98,6 +99,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				setAuthentication("UnitTest");
@@ -150,6 +152,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				setAuthentication("UnitTest");

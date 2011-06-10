@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -29,10 +28,8 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-
 import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
@@ -118,6 +115,7 @@ public class ListeNoteProcessor {
 
 		// On charge tous les contribuables en vrac
 		final List<Contribuable> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
+			@Override
 			public List<Contribuable> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(Contribuable.class);
 				crit.add(Restrictions.in("id", batch));
@@ -212,9 +210,11 @@ public class ListeNoteProcessor {
 		template.setReadOnly(true);
 
 		final Map<Long, List<ForFiscalSecondaire>> mapInfo = template.execute(new TransactionCallback<Map<Long, List<ForFiscalSecondaire>>>() {
+			@Override
 			public Map<Long, List<ForFiscalSecondaire>> doInTransaction(TransactionStatus status) {
 
 				final List<Object[]> listeFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Object[]>>() {
+					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
@@ -272,14 +272,17 @@ public class ListeNoteProcessor {
 		}
 
 
+		@Override
 		public boolean isValidAt(RegDate regDate) {
 			return false;
 		}
 
+		@Override
 		public RegDate getDateDebut() {
 			return null;
 		}
 
+		@Override
 		public RegDate getDateFin() {
 			return null;
 		}

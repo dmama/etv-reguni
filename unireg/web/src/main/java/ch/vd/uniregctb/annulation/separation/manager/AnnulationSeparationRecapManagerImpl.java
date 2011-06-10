@@ -60,6 +60,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public AnnulationSeparationRecapView get(Long numero) {
 		AnnulationSeparationRecapView annulationSeparationRecapView =  new AnnulationSeparationRecapView();
@@ -97,6 +98,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 	 *
 	 * @param annulationSeparationRecapView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public MenageCommun save(AnnulationSeparationRecapView annulationSeparationRecapView) throws MetierServiceException {
 		PersonnePhysique premierPP = (PersonnePhysique) tiersService.getTiers(annulationSeparationRecapView.getPremierePersonne().getNumero());
@@ -106,6 +108,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 		return ensembleTiersCouple.getMenage();
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isDernierForFiscalPrincipalFermePourSeparation(long noCtb) {
 		final Tiers tiers = tiersService.getTiers(noCtb);
@@ -120,6 +123,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 	}
 
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

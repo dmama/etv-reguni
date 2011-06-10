@@ -128,6 +128,7 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	 * @return the dateDebut
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_vf0EAPY0Edyw0I40oDFBsg?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -154,6 +155,7 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	 * @return the dateFin
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_vf0EAvY0Edyw0I40oDFBsg?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -212,10 +214,12 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return contribuable == null ? null : Arrays.asList(contribuable);

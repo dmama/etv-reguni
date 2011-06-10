@@ -45,6 +45,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		document.addEntete1("Paramètres");
 		{
 			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 					table.addLigne("Date de fusion:", RegDateHelper.dateToDisplayString(results.dateFusion));
@@ -63,6 +64,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			}
 
 			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de tiers:", String.valueOf(results.nbTiersTotal));
 					table.addLigne("Nombre de tiers traités:", String.valueOf(results.tiersTraites.size()));

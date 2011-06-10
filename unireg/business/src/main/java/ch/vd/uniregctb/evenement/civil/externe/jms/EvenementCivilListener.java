@@ -73,14 +73,17 @@ public class EvenementCivilListener extends EsbMessageListener implements ErrorM
 		}
 	}
 
+	@Override
 	public int getNombreMessagesRecus() {
 		return nombreMessagesRecus.intValue();
 	}
 
+	@Override
 	public int getNombreMessagesRenvoyesEnErreur() {
 		return nombreMessagesRenvoyesEnErreur.intValue();
 	}
 
+	@Override
 	public int getNombreMessagesRenvoyesEnException() {
 		return nombreMessagesRenvoyesEnException.intValue();
 	}
@@ -171,6 +174,7 @@ public class EvenementCivilListener extends EsbMessageListener implements ErrorM
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 
 		final boolean ok = template.execute(new TransactionCallback<Boolean>() {
+			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
 
 				if (evenementCivilExterneDAO.exists(id)) {

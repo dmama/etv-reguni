@@ -24,6 +24,7 @@ public class ForFiscalAutreImpot extends ForFiscal {
 		super(ffai);
 	}
 
+	@Override
 	public ForFiscal duplicate() {
 		return new ForFiscalAutreImpot(this);
 	}

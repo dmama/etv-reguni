@@ -58,6 +58,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setDemandeHandler(DemandeHandler handler) {
 		this.demandeHandler = handler;
 	}
@@ -128,6 +129,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 	/**
 	 * @see ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler#sendReponse(ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable)
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void sendReponse(IdentificationContribuable message) throws Exception {
 
@@ -156,6 +158,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		getEsbTemplate().send(m);
 	}
 
+	@Override
 	public int getNombreMessagesRecus() {
 		return nbMessagesRecus.intValue();
 	}

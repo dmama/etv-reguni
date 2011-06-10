@@ -79,6 +79,7 @@ public class BaseComparator<T> implements Comparator<T> {
      * @param object2 second parameter
      * @return the value
      */
+    @Override
     public final int compare(T object1, T object2) {
         int returnValue = 0;
 

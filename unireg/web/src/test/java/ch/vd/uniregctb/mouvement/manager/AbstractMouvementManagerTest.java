@@ -45,6 +45,7 @@ public class AbstractMouvementManagerTest extends BusinessTest {
 			// première étape, on rajoute un mouvement de dossier, et on limite au nombre max
 			final int index = i;
 			hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+				@Override
 				public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 					final CollectiviteAdministrative caArrivee = tiersService.getOrCreateCollectiviteAdministrative(index + 1);
@@ -65,6 +66,7 @@ public class AbstractMouvementManagerTest extends BusinessTest {
 
 			// deuxième étape, on vérifie que cette limitation n'est pas abusive, mais qu'elle est bien respectée
 			hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+				@Override
 				public Object doInHibernate(Session session) throws HibernateException, SQLException {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noAchille);
 

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -70,6 +69,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updatePMSequence, boolean updateDPISequence) {
 
 		if (updateHibernateSequence) {
@@ -197,6 +197,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void truncateDatabase() throws Exception {
 		LOGGER.debug("Truncating database");
 		try {
@@ -225,6 +226,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String[] getTableNamesFromDatabase() {
 
 		Dialect dialect = Dialect.getDialect(localSessionFactoryBean.getConfiguration().getProperties());
@@ -237,6 +239,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 			final TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
 			final List<Map<String, Object>> rs = tmpl.execute(new TransactionCallback<List<Map<String, Object>>>() {
+				@Override
 				public List<Map<String, Object>> doInTransaction(TransactionStatus status) {
 					return template.queryForList(sql);
 				}
@@ -256,6 +259,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public String[] getTableNamesFromHibernate(boolean reverse) {
 		ArrayList<String> t = new ArrayList<String>();
@@ -304,6 +308,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void dumpToDbunitFile(OutputStream outputStream) throws Exception {
 
 		Connection con = DataSourceUtils.getConnection(dataSource);
@@ -348,6 +353,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int dumpTiersListToDbunitFile(List<Long> tiersIds, final DumpParts parts, OutputStream outputStream, StatusManager status) throws Exception {
 
 		status.setMessage("Analyse des données...");
@@ -386,6 +392,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 			// Les données des tiers et autres données appartenant aux tiers
 			final List<ITable> tiersTables = queryDataSet(allTiersIds, connection, "Récupération des tiers", status, new QueryDataSetCallback() {
+				@Override
 				public QueryDataSet execute(Collection<Long> ids, DatabaseConnection connection) throws SQLException {
 					return queryTiersData(ids, parts, connection);
 				}
@@ -399,6 +406,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			if (parts.rapportsEntreTiers && !allRETIds.isEmpty()) {
 				// Les rapports-entre-tiers
 				retTables = queryDataSet(allRETIds, connection, "Récupération des rapports-entre-tiers", status, new QueryDataSetCallback() {
+					@Override
 					public QueryDataSet execute(Collection<Long> ids, DatabaseConnection connection) throws SQLException {
 						return queryRapportEntreTiersData(ids, connection);
 					}
@@ -504,6 +512,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 					final List<Long> foundIds = new ArrayList<Long>();
 					template.query(sql, Collections.singletonMap("ids", newIds), new RowCallbackHandler() {
+						@Override
 						public void processRow(ResultSet rs) throws SQLException {
 							relatedRETIds.add(rs.getLong(1)); // ID
 							foundIds.add(rs.getLong(2)); // TIERS_OBJET_ID
@@ -552,6 +561,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 			@SuppressWarnings({"unchecked"})
 			List<Long> ids = template.query(sql, new HashMap(), new RowMapper() {
+				@Override
 				public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 					return rs.getLong(1);
 				}
@@ -640,6 +650,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void loadFromDbunitFile(InputStream inputStream, StatusManager status) throws Exception {
 
 		Connection con = DataSourceUtils.getConnection(dataSource);

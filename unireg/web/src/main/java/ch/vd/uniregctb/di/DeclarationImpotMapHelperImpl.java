@@ -19,10 +19,12 @@ public class DeclarationImpotMapHelperImpl implements DeclarationImpotMapHelper 
 
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 
+	@Override
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Map<String, String> initMapPeriodeFiscale() {
 		Map<String, String> mapPeriodeFiscale = new TreeMap<String, String>();

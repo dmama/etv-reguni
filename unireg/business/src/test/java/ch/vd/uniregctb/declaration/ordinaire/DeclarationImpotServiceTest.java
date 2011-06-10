@@ -142,14 +142,17 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			this.count = count;
 		}
 
+		@Override
 		public boolean interrupted() {
 			return count <= 0;
 		}
 
+		@Override
 		public void setMessage(String msg) {
 			count--;
 		}
 
+		@Override
 		public void setMessage(String msg, int percentProgression) {
 			count--;
 		}
@@ -327,13 +330,16 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 			// Détermine les DIs à émettre : le status manager va lancer une exception sur le traitement de John.
 			StatusManager status = new StatusManager() {
+				@Override
 				public boolean interrupted() {
 					return false;
 				}
 
+				@Override
 				public void setMessage(String msg) {
 				}
 
+				@Override
 				public void setMessage(String msg, int percentProgression) {
 					if (msg.contains(john.getNumero().toString())) { // saute lorsque l'id de john est traité
 						throw new IllegalArgumentException("exception de test");
@@ -1176,13 +1182,16 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		final StatusManager status = new StatusManager() {
+			@Override
 			public boolean interrupted() {
 				return false;
 			}
 
+			@Override
 			public void setMessage(String msg) {
 			}
 
+			@Override
 			public void setMessage(String msg, int percentProgression) {
 				if (msg.contains(ids.jacquesId.toString())) { // crash au traitement de l'id de Jacques
 					throw new IllegalArgumentException("exception de test");

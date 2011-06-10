@@ -31,22 +31,27 @@ public class PermisImpl implements Permis, Serializable {
 		this.typePermis = TypePermis.get(target.getTypePermis());
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFin;
 	}
 
+	@Override
 	public RegDate getDateAnnulation() {
 		return dateAnnulation;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
 
+	@Override
 	public TypePermis getTypePermis() {
 		return typePermis;
 	}

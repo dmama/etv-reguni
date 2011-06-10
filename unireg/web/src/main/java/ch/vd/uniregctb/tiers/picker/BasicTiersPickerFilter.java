@@ -92,30 +92,37 @@ public class BasicTiersPickerFilter implements TiersPickerFilter {
 		return s.toString();
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public TiersCriteria.TypeVisualisation getTypeVisualisation() {
 		return typeVisualisation;
 	}
 
+	@Override
 	public Set<TiersCriteria.TypeTiers> getTypesTiers() {
 		return typeTiers;
 	}
 
+	@Override
 	public boolean isInclureI107() {
 		return inclureI107;
 	}
 
+	@Override
 	public boolean isInclureTiersAnnules() {
 		return inclureTiersAnnules;
 	}
 
+	@Override
 	public boolean isTiersAnnulesSeulement() {
 		return tiersAnnulesSeulement;
 	}
 
+	@Override
 	public Boolean isTiersActif() {
 		return tiersActif;
 	}

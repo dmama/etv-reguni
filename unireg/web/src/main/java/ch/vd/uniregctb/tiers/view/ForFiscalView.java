@@ -405,6 +405,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(ForFiscalView forFiscalView) {
 		Date dateDebut = getDateOuverture();
 		if (dateDebut == null) {
@@ -486,14 +487,17 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 		return dateFermetureEditable;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateOuverture, dateFermeture, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateOuverture;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFermeture;
 	}

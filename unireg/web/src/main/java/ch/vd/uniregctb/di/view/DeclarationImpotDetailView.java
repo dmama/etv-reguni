@@ -6,9 +6,9 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.delai.DelaiDeclarationView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -290,6 +290,7 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 		this.officeImpot = officeImpot;
 	}
 
+	@Override
 	public TiersGeneralView getContribuable() {
 		return contribuable;
 	}
@@ -314,6 +315,7 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 		}
 	}
 
+	@Override
 	public int compareTo(DeclarationImpotDetailView o) {
 		return -1 * (periodeFiscale - o.periodeFiscale);
 	}

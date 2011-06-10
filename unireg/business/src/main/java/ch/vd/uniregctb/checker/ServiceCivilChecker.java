@@ -10,6 +10,7 @@ public class ServiceCivilChecker implements ServiceChecker {
 	private ServiceCivilService serviceCivilRaw;
 	private String details;
 
+	@Override
 	public Status getStatus() {
 		try {
 			Individu individu = serviceCivilRaw.getIndividu(611836, 2400); // Francis Perroset
@@ -23,6 +24,7 @@ public class ServiceCivilChecker implements ServiceChecker {
 		}
 	}
 
+	@Override
 	public String getStatusDetails() {
 		return details;
 	}

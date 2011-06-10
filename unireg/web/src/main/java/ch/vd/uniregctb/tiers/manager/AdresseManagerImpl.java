@@ -62,6 +62,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public AdresseView getAdresseView(Long id) {
 		AdresseView adresseView = new AdresseView();
@@ -81,6 +82,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		return adresseView;
 	}
 
+	@Override
 	public AdresseView getAdresseView(TiersEditView tiers, Long numero) {
 		List<AdresseView> adresses = tiers.getHistoriqueAdresses();
 		for (AdresseView adresseView : adresses) {
@@ -97,6 +99,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @param id
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public AdresseView create(Long numeroCtb) {
 		AdresseView adresseView = new AdresseView();
@@ -113,6 +116,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 *
 	 * @param adresseView la vue web de l'adresse à sauver
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(AdresseView adresseView) {
 		if (adresseView.getId() == null) {
@@ -150,6 +154,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 *
 	 * @param adresseView la vue web de l'adresse à sauver
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveReprise(AdresseView adresseView) {
 
@@ -384,6 +389,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @param idAdresse
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerAdresse(Long idAdresse) {
 		AdresseTiers adresseTiers = getAdresseTiersDAO().get(idAdresse);
@@ -392,6 +398,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		}
 	}
 
+	@Override
 	public void fermerAdresse(AdresseView bean){
 		AdresseTiers adresseTiers = getAdresseTiersDAO().get(bean.getId());
 		if (adresseTiers != null) {
@@ -613,6 +620,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @throws AdresseException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException{
 

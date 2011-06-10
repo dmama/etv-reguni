@@ -180,14 +180,17 @@ public class MockRue implements Rue {
 		DefaultMockServiceInfrastructureService.addRue(this);
 	}
 
+	@Override
 	public String getDesignationCourrier() {
 		return designationCourrier;
 	}
 
+	@Override
 	public Integer getNoLocalite() {
 		return localite.getNoOrdre();
 	}
 
+	@Override
 	public Integer getNoRue() {
 		return noRue;
 	}

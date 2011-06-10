@@ -9,6 +9,7 @@ import ch.vd.uniregctb.validation.EntityValidatorImpl;
 public abstract class EtatDeclarationValidator<T extends EtatDeclaration> extends EntityValidatorImpl<T> {
 
 
+	@Override
 	public ValidationResults validate(T ed) {
 
 		final ValidationResults results = new ValidationResults();

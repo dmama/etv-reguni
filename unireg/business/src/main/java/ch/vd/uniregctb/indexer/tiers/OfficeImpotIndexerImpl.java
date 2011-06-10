@@ -14,7 +14,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
@@ -53,6 +52,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void indexTiersAvecOfficeImpotInconnu(final StatusManager status) {
 		final List<Long> ids = getIdsTiersWithNullOID();
 		processAllTiers(ids, status);
@@ -61,6 +61,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void indexTousLesTiers(final StatusManager status) {
 		final List<Long> ids = getIdsAllTiers();
 		processAllTiers(ids, status);
@@ -127,6 +128,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus s) {
 
 				current += ids.size();
@@ -171,8 +173,10 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryAllTiers);
 						//noinspection unchecked
@@ -217,8 +221,10 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryTiersWithNullOID);
 						//noinspection unchecked

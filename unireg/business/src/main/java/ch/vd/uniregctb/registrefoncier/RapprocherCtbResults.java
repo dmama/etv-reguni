@@ -64,6 +64,7 @@ public class RapprocherCtbResults extends JobResults<Long, RapprocherCtbResults>
 		this.dateTraitement = dateTraitement;
 	}
 
+	@Override
 	public void addErrorException(Long idCtb, Exception e) {
 		++nbCtbsTotal;
 		ctbsEnErrors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
@@ -71,6 +72,7 @@ public class RapprocherCtbResults extends JobResults<Long, RapprocherCtbResults>
 	}
 
 
+	@Override
 	public void addAll(RapprocherCtbResults rapport) {
 
 		nbCtbsTotal += rapport.nbCtbsTotal;

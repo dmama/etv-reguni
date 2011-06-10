@@ -8,7 +8,6 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
@@ -59,6 +58,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
@@ -72,6 +72,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -85,6 +86,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -122,6 +124,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
@@ -135,6 +138,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -148,6 +152,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(0, evts.size());
@@ -167,6 +172,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
@@ -180,6 +186,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -193,6 +200,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -226,6 +234,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
@@ -245,6 +254,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -258,6 +268,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -278,6 +289,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
@@ -293,6 +305,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -306,6 +319,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -344,6 +358,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
@@ -359,6 +374,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -372,6 +388,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
@@ -411,6 +428,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
@@ -427,6 +445,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
@@ -440,6 +459,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());

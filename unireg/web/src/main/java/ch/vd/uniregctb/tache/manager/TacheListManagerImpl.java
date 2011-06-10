@@ -104,6 +104,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException {
 		final List<TacheListView> tachesView = new ArrayList<TacheListView>();
@@ -225,6 +226,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws ServiceInfrastructureException, AdresseException {
 
@@ -265,6 +267,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException {
 
@@ -305,6 +308,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException {
 
@@ -347,6 +351,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public int count(TacheCriteriaView tacheCriteriaView) throws ServiceInfrastructureException {
 		TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteriaView);
@@ -361,6 +366,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws ServiceInfrastructureException {
 		TacheCriteria coreCriteria = buildCoreCriteria(nouveauDossierCriteriaView);
@@ -373,6 +379,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	 *
 	 * @param id
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void traiteTache(Long id) {
 		Tache tache = tacheDAO.get(id);

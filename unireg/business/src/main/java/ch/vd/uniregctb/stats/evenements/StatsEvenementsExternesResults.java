@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.stats.evenements;
 
-import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
-
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
 
 public class StatsEvenementsExternesResults {
 
@@ -21,10 +20,12 @@ public class StatsEvenementsExternesResults {
 			this.message = message;
 		}
 
+		@Override
 		public String[] getNomsColonnes() {
 			return COLONNES;
 		}
 
+		@Override
 		public String[] getValeursColonnes() {
 			return new String[] { Long.toString(id), message };
 		}

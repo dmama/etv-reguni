@@ -56,6 +56,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		this.dialect = dialect;
 	}
 
+	@Override
 	public Tiers get(long id, boolean doNotAutoFlush) {
 
         Object[] criteria = {
@@ -76,9 +77,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			Arrays.asList(PersonnePhysique.class, MenageCommun.class, Entreprise.class, Etablissement.class, AutreCommunaute.class, CollectiviteAdministrative.class,
 					DebiteurPrestationImposable.class);
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Class, List<Tiers>> getFirstGroupedByClass(final int count) {
 		return getHibernateTemplate().execute(new HibernateCallback<Map<Class, List<Tiers>>>() {
+			@Override
 			public Map<Class, List<Tiers>> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Map<Class, List<Tiers>> map = new HashMap<Class, List<Tiers>>();
 				for (Class clazz : TIERS_CLASSES) {
@@ -135,10 +138,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         associateSetsWith(m, tiers, setter);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<Tiers> getBatch(final Collection<Long> ids, final Set<Parts> parts) {
 
         return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
+            @Override
             public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
 
                 if (ids == null || ids.isEmpty()) {
@@ -203,10 +208,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les identifications de personnes avec les tiers à la main
 			associate(session, identifications, tiers, new TiersIdGetter<IdentificationPersonne>() {
+				@Override
 				public Long getTiersId(IdentificationPersonne entity) {
 					return entity.getPersonnePhysique().getId();
 				}
 			}, new EntitySetSetter<IdentificationPersonne>() {
+				@Override
 				public void setEntitySet(Tiers tiers, Set<IdentificationPersonne> set) {
 					if (tiers instanceof PersonnePhysique) {
 						((PersonnePhysique) tiers).setIdentificationsPersonnes(set);
@@ -222,10 +229,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les adresses avec les tiers à la main
 			associate(session, adresses, full, new TiersIdGetter<AdresseTiers>() {
+				@Override
 				public Long getTiersId(AdresseTiers entity) {
 					return entity.getTiers().getId();
 				}
 			}, new EntitySetSetter<AdresseTiers>() {
+				@Override
 				public void setEntitySet(Tiers tiers, Set<AdresseTiers> set) {
 					tiers.setAdressesTiers(set);
 				}
@@ -245,10 +254,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les déclarations avec les tiers à la main
 			associate(session, declarations, tiers, new TiersIdGetter<Declaration>() {
+				@Override
 				public Long getTiersId(Declaration entity) {
 					return entity.getTiers().getId();
 				}
 			}, new EntitySetSetter<Declaration>() {
+				@Override
 				public void setEntitySet(Tiers tiers, Set<Declaration> set) {
 					tiers.setDeclarations(set);
 				}
@@ -263,10 +274,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les fors fiscaux avec les tiers à la main
 			associate(session, fors, tiers, new TiersIdGetter<ForFiscal>() {
+				@Override
 				public Long getTiersId(ForFiscal entity) {
 					return entity.getTiers().getId();
 				}
 			}, new EntitySetSetter<ForFiscal>() {
+				@Override
 				public void setEntitySet(Tiers tiers, Set<ForFiscal> set) {
 					tiers.setForsFiscaux(set);
 				}
@@ -282,10 +295,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
+					@Override
 					public Long getTiersId(RapportEntreTiers entity) {
 						return entity.getSujetId();
 					}
 				}, new EntitySetSetter<RapportEntreTiers>() {
+					@Override
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
 						tiers.setRapportsSujet(set);
 					}
@@ -299,10 +314,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
+					@Override
 					public Long getTiersId(RapportEntreTiers entity) {
 						return entity.getObjetId();
 					}
 				}, new EntitySetSetter<RapportEntreTiers>() {
+					@Override
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
 						tiers.setRapportsObjet(set);
 					}
@@ -318,10 +335,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les situations de famille avec les tiers à la main
 			associate(session, situations, tiers, new TiersIdGetter<SituationFamille>() {
+				@Override
 				public Long getTiersId(SituationFamille entity) {
 					return entity.getContribuable().getId();
 				}
 			}, new EntitySetSetter<SituationFamille>() {
+				@Override
 				public void setEntitySet(Tiers tiers, Set<SituationFamille> set) {
 					if (tiers instanceof Contribuable) {
 						((Contribuable) tiers).setSituationsFamille(set);
@@ -338,10 +357,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les périodicités avec les tiers à la main
 			associate(session, periodicites, tiers, new TiersIdGetter<Periodicite>() {
+				@Override
 				public Long getTiersId(Periodicite entity) {
 					return entity.getDebiteur().getId();
 				}
 			}, new EntitySetSetter<Periodicite>() {
+				@Override
 				public void setEntitySet(Tiers tiers, Set<Periodicite> set) {
 					if (tiers instanceof DebiteurPrestationImposable) {
 						((DebiteurPrestationImposable) tiers).setPeriodicites(set);
@@ -386,6 +407,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return list;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
 
@@ -403,11 +425,13 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return list;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<Long> getAllIds() {
         return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers");
     }
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getDirtyIds() {
 		// [UNIREG-1979] ajouté les tiers devant être réindexés dans le futur (note : on les réindexe systématiquement parce que :
@@ -420,6 +444,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	/**
      * ne retourne que le numero des PP de type habitant
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<Long> getAllNumeroIndividu() {
         return (List<Long>) getHibernateTemplate().find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true");
@@ -438,6 +463,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 					"and h.numeroIndividu is not null " +
 					"and am.objetId in (:ids)";
 
+    @Override
     @SuppressWarnings("unchecked")
     public Set<Long> getNumerosIndividu(final Collection<Long> tiersIds, final boolean includesComposantsMenage) {
 
@@ -446,6 +472,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	    }
 
         return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
+            @Override
             public Set<Long> doInHibernate(Session session) throws HibernateException {
 
 	            final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
@@ -466,10 +493,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         });
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<Long> getHabitantsForMajorite(RegDate dateReference) {
         // FIXME (???) la date de référence n'est pas utilisée !
         return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+            @Override
             public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
                 Criteria criteria = session.createCriteria(PersonnePhysique.class);
                 criteria.add(Restrictions.eq("habitant", Boolean.TRUE));
@@ -491,6 +520,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         final String name = this.getPersistentClass().getCanonicalName();
 
         return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+            @Override
             public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
                 // recherche dans le cache de 1er niveau dans la session si le tiers existe.
@@ -514,6 +544,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     }
 
 
+    @Override
     public RapportEntreTiers save(RapportEntreTiers object) {
         TracePoint tp = TracingManager.begin();
         Object obj = super.getHibernateTemplate().merge(object);
@@ -524,10 +555,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     /**
      * {@inheritDoc}
      */
+    @Override
     public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
         return getHabitantByNumeroIndividu(numeroIndividu, false);
     }
 
+    @Override
     public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 	    return getPPByNumeroIndividu(numeroIndividu, true, doNotAutoFlush);
     }
@@ -535,10 +568,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     /**
      * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long, boolean)
      */
+    @Override
     public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 	    return getPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
     }
 
+	@Override
 	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 		return getNumeroPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
 	}
@@ -576,6 +611,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		final String sql = b.toString();
 
 		final List<Long> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+			@Override
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				FlushMode flushMode = null;
@@ -650,6 +686,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return pp;
 	}
 
+	@Override
 	public void updateOids(final Map<Long, Integer> tiersOidsMapping) {
 
 		if (tiersOidsMapping == null || tiersOidsMapping.isEmpty()) {
@@ -658,6 +695,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
 		getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Object>() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				final FlushMode mode = session.getFlushMode();
 				try {
@@ -691,10 +729,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	/**
      * {@inheritDoc}
      */
+    @Override
     public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
         return getCollectiviteAdministrativesByNumeroTechnique(numeroTechnique, false);
     }
 
+    @Override
     @SuppressWarnings({"UnnecessaryBoxing"})
     public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
 
@@ -713,6 +753,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return (CollectiviteAdministrative) list.get(0);
     }
 
+    @Override
     public Contribuable getContribuableByNumero(Long numeroContribuable) {
         LOGGER.debug("Recherche du contribuable dont le numéro est:" + numeroContribuable);
         return getHibernateTemplate().get(Contribuable.class, numeroContribuable);
@@ -721,6 +762,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     /**
      * @see ch.vd.uniregctb.tiers.TiersDAO#getDebiteurPrestationImposableByNumero(java.lang.Long)
      */
+    @Override
     public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
         LOGGER.debug("Recherche du Debiteur Prestation Imposable dont le numéro est:" + numeroDPI);
         return getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
@@ -729,10 +771,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     /**
      * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long)
      */
+    @Override
     public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
         return getPPByNumeroIndividu(numeroIndividu, false);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<PersonnePhysique> getSourciers(int noSourcier) {
         LOGGER.debug("Recherche d'un sourcier dont le numéro est:" + noSourcier);
@@ -741,6 +785,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return (List<PersonnePhysique>) getHibernateTemplate().find(query, criteria);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<PersonnePhysique> getAllMigratedSourciers() {
         LOGGER.debug("Recherche de tous les sourciers migrés");
@@ -748,10 +793,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return (List<PersonnePhysique>) getHibernateTemplate().find(query);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Tiers getTiersForIndexation(final long id) {
 
         final List<Tiers> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
+            @Override
             public List<Tiers> doInHibernate(Session session) throws HibernateException {
                 Criteria crit = session.createCriteria(Tiers.class);
                 crit.add(Restrictions.eq("numero", id));
@@ -781,9 +828,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<MenageCommun> getMenagesCommuns(final List<Long> ids, Set<Parts> parts) {
         final List<Long> idsMC = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+            @Override
             public List<Long> doInHibernate(Session session) throws HibernateException {
                 Query query = session.createQuery("select mc.numero from MenageCommun mc where mc.numero in (:ids)");
                 query.setParameterList("ids", ids);
@@ -799,9 +848,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return menages;
     }
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Contribuable getContribuable(final DebiteurPrestationImposable debiteur) {
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Contribuable>() {
+		    @Override
 		    public Contribuable doInHibernate(Session session) throws HibernateException {
 		        Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
 		        query.setParameter("dpiId", debiteur.getId());
@@ -817,9 +868,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		});
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getListeDebiteursSansPeriodicites() {
 		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
+			@Override
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query q = session.createQuery("select d.numero from DebiteurPrestationImposable d where size(d.periodicites) = 0");
 				return q.list();
@@ -830,6 +883,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 
 		if (forFiscal.getId() == null) { // le for n'a jamais été persisté
@@ -874,6 +928,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return forFiscal;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getListeCtbModifies(final Date dateDebutRech, final Date dateFinRech) {
 		final String RequeteContribuablesModifies = //----------------------------------------------------
@@ -905,6 +960,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				"ORDER BY CTB_ID                                                          ";
 
 		final List<Long> listeCtbModifies = getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+			@Override
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				final SQLQuery queryObject = session.createSQLQuery(RequeteContribuablesModifies);
 

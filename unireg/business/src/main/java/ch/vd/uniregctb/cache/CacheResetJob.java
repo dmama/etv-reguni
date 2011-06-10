@@ -47,6 +47,7 @@ public class CacheResetJob extends JobDefinition {
 
 		final List<UniregCacheInterface> caches = new ArrayList<UniregCacheInterface>(manager.getCaches());
 		Collections.sort(caches, new Comparator<UniregCacheInterface>() {
+			@Override
 			public int compare(UniregCacheInterface o1, UniregCacheInterface o2) {
 				return o1.getName().compareTo(o2.getName());
 			}

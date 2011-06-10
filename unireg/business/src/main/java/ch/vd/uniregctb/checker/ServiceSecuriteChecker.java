@@ -10,6 +10,7 @@ public class ServiceSecuriteChecker implements ServiceChecker {
 	private ServiceSecuriteService serviceSecuriteRaw;
 	private String details;
 
+	@Override
 	public Status getStatus() {
 		try {
 			Operateur op = serviceSecuriteRaw.getOperateur("zaiptf");
@@ -23,6 +24,7 @@ public class ServiceSecuriteChecker implements ServiceChecker {
 		}
 	}
 
+	@Override
 	public String getStatusDetails() {
 		return details;
 	}

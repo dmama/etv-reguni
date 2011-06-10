@@ -83,6 +83,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		return mouvementDossierDAO;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
@@ -143,6 +144,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	 * @return la vue
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public MouvementDetailView getView(MouvementDossier mvt, boolean isExtraction) throws ServiceInfrastructureException {
 		final MouvementDetailView view = buildAndFillCommonElements(mvt, isExtraction);
@@ -164,6 +166,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			}
 			if (sortByNoDossier && liste.size() > 1) {
 				Collections.sort(liste, new Comparator<MouvementDetailView>() {
+					@Override
 					public int compare(MouvementDetailView o1, MouvementDetailView o2) {
 						final long no1 = o1.getContribuable().getNumero();
 						final long no2 = o2.getContribuable().getNumero();

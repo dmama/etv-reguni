@@ -324,6 +324,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
@@ -357,6 +358,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		});
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
@@ -385,6 +387,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
@@ -418,6 +421,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		});
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);

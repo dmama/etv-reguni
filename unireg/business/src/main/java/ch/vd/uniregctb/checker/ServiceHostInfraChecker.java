@@ -11,6 +11,7 @@ public class ServiceHostInfraChecker implements ServiceChecker {
 	private ServiceInfrastructureRaw serviceInfraRaw;
 	private String details;
 
+	@Override
 	public Status getStatus() {
 		try {
 			CollectiviteAdministrative aci = serviceInfraRaw.getCollectivite(ServiceInfrastructureService.noACI);
@@ -24,6 +25,7 @@ public class ServiceHostInfraChecker implements ServiceChecker {
 		}
 	}
 
+	@Override
 	public String getStatusDetails() {
 		return details;
 	}

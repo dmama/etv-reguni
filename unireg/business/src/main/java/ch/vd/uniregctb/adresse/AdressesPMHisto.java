@@ -54,6 +54,7 @@ public class AdressesPMHisto {
 	 */
 	public void sort() {
 		Comparator<AdresseEntreprise> comparator = new Comparator<AdresseEntreprise>() {
+			@Override
 			public int compare(AdresseEntreprise left, AdresseEntreprise right) {
 				return left.getDateDebutValidite().compareTo(right.getDateDebutValidite());
 			}

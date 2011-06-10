@@ -25,12 +25,14 @@ public class JdbcParametrePeriodeFiscaleDaoImpl implements JdbcParametrePeriodeF
 
 	private static final ParametrePeriodeFiscaleMapper ROW_MAPPER = new ParametrePeriodeFiscaleMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public ParametrePeriodeFiscale get(long forId, JdbcTemplate template) {
 		final Pair<Long, ParametrePeriodeFiscale> pair = (Pair<Long, ParametrePeriodeFiscale>) DataAccessUtils.uniqueResult(template.query(ParametrePeriodeFiscaleMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<ParametrePeriodeFiscale> getForPeriode(long periodeId, JdbcTemplate template) {
 		final List<Pair<Long, ParametrePeriodeFiscale>> list = template.query(ParametrePeriodeFiscaleMapper.selectByTiersId(), new Object[]{periodeId}, ROW_MAPPER);
@@ -41,11 +43,13 @@ public class JdbcParametrePeriodeFiscaleDaoImpl implements JdbcParametrePeriodeF
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<ParametrePeriodeFiscale>> getForPeriode(Collection<Long> periodeIds, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, ParametrePeriodeFiscale>> list = CollectionsUtils.splitAndProcess(periodeIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, ParametrePeriodeFiscale>>() {
+			@Override
 			public List<Pair<Long, ParametrePeriodeFiscale>> process(List<Long> ids) {
 				return template.query(ParametrePeriodeFiscaleMapper.selectByTiersIds(ids), ROW_MAPPER);
 			}
@@ -91,6 +95,7 @@ public class JdbcParametrePeriodeFiscaleDaoImpl implements JdbcParametrePeriodeF
 			return BASE_SELECT + " where PERIODE_ID in " + JdbcDaoUtils.buildInClause(periodeIds);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final long temp9 = rs.getLong(9);

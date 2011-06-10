@@ -260,6 +260,7 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 		this.imprimable = imprimable;
 	}
 
+	@Override
 	public int compareTo(ListeRecapDetailView o) {
 		int value = -  getDateDebutPeriode().compareTo(o.getDateDebutPeriode());
 		return value;

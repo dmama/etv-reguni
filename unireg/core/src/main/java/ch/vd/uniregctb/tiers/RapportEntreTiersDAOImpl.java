@@ -19,10 +19,12 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		super(RapportEntreTiers.class);
 	}
 
+	@Override
 	public List<RapportEntreTiers> getRepresentationLegaleAvecTuteurEtPupille(Long noTiersTuteur, Long noTiersPupille) {
 		return getRepresentationLegaleAvecTuteurEtPupille(noTiersTuteur, noTiersPupille, false);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<RapportEntreTiers> getRepresentationLegaleAvecTuteurEtPupille(Long noTiersTuteur, Long noTiersPupille, boolean doNotAutoFlush) {
 
@@ -37,6 +39,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly) {
 
@@ -60,6 +63,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		final int maxResult = paramPagination.getTaillePage();
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<RapportPrestationImposable>>() {
+			@Override
 			public List<RapportPrestationImposable> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query queryObject = session.createQuery(query);
@@ -76,6 +80,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly){
 
 		String query = "select count(*) from RapportPrestationImposable rapport where rapport.objetId = " + numeroDebiteur ;

@@ -52,10 +52,12 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		setContext(null);
 	}
 
+	@Override
 	public boolean isActif() {
 		return this.metadata.size() > 0;
 	}
 
+	@Override
 	public void register(NorentesScenario scenario) {
 		Assert.notNull(scenario);
 		Assert.notNull(scenario.geTypeEvenementCivil());
@@ -78,16 +80,19 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		LOGGER.info("Registering scenario: " + scenario.getName() + " (Scenarios: " + scenariosBeanNames.size() + ")");
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		metadata.clear();
 		evenementCivils.clear();
 		evenementCivilArray = null;
 	}
 
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
+	@Override
 	public NorentesScenario getCurrentScenario() {
 		NorentesContext norentesContext = getContext();
 		if (norentesContext != null) {
@@ -112,6 +117,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 			setContext(new NorentesContext(currentScenario));
 	}
 
+	@Override
 	public NorentesScenario getScenario(String name) {
 		for (String  s : this.scenariosBeanNames) {
 			NorentesScenario scenario = (NorentesScenario) this.applicationContext.getBean(s);
@@ -122,6 +128,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		return null;
 	}
 
+	@Override
 	public void closeCurrentScenario() throws Exception {
 		if (getContext() != null) {
 			getContext().onFinalize();
@@ -129,6 +136,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		reset();
 	}
 
+	@Override
 	public void runToStep(NorentesScenario scenario, int step)  {
 		setCurrentScenario(scenario);
 		NorentesContext norentesContext = getContext();
@@ -150,11 +158,13 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		}
 	}
 
+	@Override
 	public void runFirst(NorentesScenario scenario) {
 		Assert.isTrue(scenario.getEtapeAttributes().size() > 0);
 		runToStep(scenario, scenario.getEtapeAttributes().iterator().next().getIndex());
 	}
 
+	@Override
 	public void runToLast(NorentesScenario scenario) {
 		runToStep(scenario, getCountEtape());
 	}
@@ -197,6 +207,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 	}
 
 
+	@Override
 	public Collection<NorentesScenario> getScenaries(TypeEvenementCivil evenementCivil) {
 		ArrayList<NorentesScenario> list = new ArrayList<NorentesScenario>();
 		if (evenementCivil != null) {
@@ -210,6 +221,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		return list;
 	}
 
+	@Override
 	public Collection<EtapeAttribute> getEtapeAttributes(NorentesScenario scenario) {
 		if ( scenario == null) {
 			return null;
@@ -220,6 +232,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 	/**
 	 * @return the currentStep
 	 */
+	@Override
 	public int getCurrentEtape() {
 		NorentesContext norentesContext = getContext();
 		if (norentesContext != null)
@@ -227,6 +240,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		return 0;
 	}
 
+	@Override
 	public int getCountEtape() {
 		NorentesContext norentesContext = getContext();
 		if (norentesContext != null)
@@ -234,10 +248,12 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		return 0;
 	}
 
+	@Override
 	public EtapeContext getCurrentEtapeContext() {
 			return getEtapeContext(getCurrentScenario(), getCurrentEtape());
 	}
 
+	@Override
 	public EtapeContext getEtapeContext(NorentesScenario scenario, int index) {
 		if ( scenario == null || scenario != getCurrentScenario()) {
 			return null;
@@ -258,9 +274,11 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 	/**
 	 * @return the evenementCivilArray
 	 */
+	@Override
 	public TypeEvenementCivil[] getEvenementCivilsUsedForTest() {
 		if (evenementCivilArray == null) {
 			Collections.sort(evenementCivils, new Comparator<TypeEvenementCivil>() {
+				@Override
 				public int compare(TypeEvenementCivil o1, TypeEvenementCivil o2) {
 					return CompareToBuilder.reflectionCompare(o1, o2);
 				}

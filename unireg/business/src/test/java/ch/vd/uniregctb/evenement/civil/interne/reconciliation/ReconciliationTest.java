@@ -104,6 +104,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		assertNull("Le for principal du ménage est fermmé", ffp.getDateFin());
 		RapportEntreTiers[] rapports = habitantReconcilie.getRapportsSujet().toArray(new RapportEntreTiers[0]);
 		Arrays.sort(rapports, new Comparator<RapportEntreTiers>() {
+			@Override
 			public int compare(RapportEntreTiers r1, RapportEntreTiers r2) {
 				return r1.getDateDebut().compareTo(r2.getDateDebut());
 			}
@@ -163,6 +164,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		assertNull("Le for principal du ménage est fermmé", ffp.getDateFin());
 		RapportEntreTiers[] rapports = habitantReconcilie.getRapportsSujet().toArray(new RapportEntreTiers[0]);
 		Arrays.sort(rapports, new Comparator<RapportEntreTiers>() {
+			@Override
 			public int compare(RapportEntreTiers r1, RapportEntreTiers r2) {
 				return r1.getDateDebut().compareTo(r2.getDateDebut());
 			}
@@ -212,6 +214,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		 * Simulation de séparation
 		 */
 		doModificationIndividu(noIndividu, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				individu.getEtatsCivils().add(createEtatCivilSeparation(individu, noIndividuConjoint, DATE_SEPARATION));
 				individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, noIndividuConjoint, DATE_RECONCILIATION));
@@ -219,6 +222,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		});
 		if (noIndividuConjoint != null) {
 			doModificationIndividu(noIndividuConjoint, new IndividuModification() {
+				@Override
 				public void modifyIndividu(MockIndividu individu) {
 					individu.getEtatsCivils().add(createEtatCivilSeparation(individu, noIndividu, DATE_SEPARATION));
 					individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, noIndividu, DATE_RECONCILIATION));

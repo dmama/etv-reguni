@@ -111,6 +111,7 @@ public class DroitAccesView implements Serializable, Annulable {
 		this.type = type;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

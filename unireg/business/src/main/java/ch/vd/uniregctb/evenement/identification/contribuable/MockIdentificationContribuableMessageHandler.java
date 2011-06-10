@@ -7,9 +7,11 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
  */
 public class MockIdentificationContribuableMessageHandler implements IdentificationContribuableMessageHandler {
 
+	@Override
 	public void sendReponse(IdentificationContribuable message) throws Exception {
 	}
 
+	@Override
 	public void setDemandeHandler(DemandeHandler handler) {
 	}
 }

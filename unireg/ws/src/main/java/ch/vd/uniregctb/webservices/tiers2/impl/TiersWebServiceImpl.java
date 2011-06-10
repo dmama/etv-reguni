@@ -170,6 +170,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -206,6 +207,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -245,6 +247,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -282,6 +285,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -319,6 +323,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public BatchTiers getBatchTiers(final GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
 			if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
@@ -335,6 +340,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			final ch.vd.registre.base.date.RegDate date = ch.vd.registre.base.date.RegDate.get(Date.asJavaDate(params.date));
 
 			final Map<Long, Object> results = mapTiers(params.tiersNumbers, date, params.parts, new MapCallback() {
+				@Override
 				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, RegDate date, Context context) {
 					try {
 						final Tiers t;
@@ -377,6 +383,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public BatchTiersHisto getBatchTiersHisto(final GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
 			if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
@@ -390,6 +397,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 
 			final Map<Long, Object> results = mapTiers(params.tiersNumbers, null, params.parts, new MapCallback() {
+				@Override
 				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, RegDate date, Context context) {
 					try {
 						final TiersHisto t;
@@ -565,6 +573,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Tiers.Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -590,6 +599,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void setTiersBlocRembAuto(final SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -610,10 +620,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<EvenementPM> searchEvenementsPM(SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 		throw new TechnicalException("Fonctionnalité pas encore implémentée.");
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -653,6 +665,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		private final List<ReponseQuittancementDeclaration> reponses = new ArrayList<ReponseQuittancementDeclaration>();
 
+		@Override
 		public void addErrorException(DemandeQuittancementDeclaration element, Exception e) {
 			if (e instanceof ValidationException) {
 				reponses.add(new ReponseQuittancementDeclaration(element.key, (ValidationException) e, WebServiceExceptionType.BUSINESS));
@@ -665,6 +678,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 		}
 
+		@Override
 		public void addAll(QuittancementResults right) {
 			this.reponses.addAll(right.getReponses());
 		}
@@ -678,6 +692,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 	}
 
+	@Override
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws TechnicalException {
 
 		try {
@@ -710,6 +725,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<TiersId> getListeCtbModifies(GetListeCtbModifies params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -859,6 +875,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void doNothing(AllConcreteTiersClasses dummy) {
 	}
 }

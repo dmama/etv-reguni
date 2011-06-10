@@ -128,6 +128,7 @@ public abstract class DecompositionFors implements DateRange {
 	/**
 	 * @return la date de début de la période considérée
 	 */
+	@Override
 	public RegDate getDateDebut() {
 		return debut;
 	}
@@ -135,6 +136,7 @@ public abstract class DecompositionFors implements DateRange {
 	/**
 	 * @return la date de fin de la période considérée
 	 */
+	@Override
 	public RegDate getDateFin() {
 		return fin;
 	}
@@ -153,6 +155,7 @@ public abstract class DecompositionFors implements DateRange {
 		return principauxDansLaPeriode.isEmpty() && secondairesDansLaPeriode.isEmpty();
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}

@@ -34,6 +34,7 @@ public class CloseAdresseValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(Class)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return Tiers.class.equals(clazz) || DebiteurPrestationImposable.class.equals(clazz) || TiersEditView.class.equals(clazz)
@@ -43,6 +44,7 @@ public class CloseAdresseValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(Object, org.springframework.validation.Errors)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 

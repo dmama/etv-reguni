@@ -23,10 +23,12 @@ final class MockAdresseGeneric implements AdresseGenerique {
 		this.source = source;
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}
 
+	@Override
 	public boolean isDefault() {
 		return false;
 	}
@@ -34,18 +36,22 @@ final class MockAdresseGeneric implements AdresseGenerique {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public String getCasePostale() {
 		return null;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return debut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return fin;
 	}
@@ -54,10 +60,12 @@ final class MockAdresseGeneric implements AdresseGenerique {
 		return null;
 	}
 
+	@Override
 	public String getLocalite() {
 		return null;
 	}
 
+	@Override
 	public String getLocaliteComplete() {
 		return null;
 	}
@@ -66,38 +74,47 @@ final class MockAdresseGeneric implements AdresseGenerique {
 		return null;
 	}
 
+	@Override
 	public String getNumero() {
 		return null;
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return null;
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return null;
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return 0;
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return null;
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return null;
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		return null;
 	}
 
+	@Override
 	public String getRue() {
 		return null;
 	}
 
+	@Override
 	public String getComplement() {
 		return null;
 	}
@@ -142,30 +159,37 @@ final class MockAdresseGeneric implements AdresseGenerique {
 		return true;
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return null;
 	}
 
+	@Override
 	public String getAnnulationUser() {
 		return null;
 	}
 
+	@Override
 	public Date getLogCreationDate() {
 		return null;
 	}
 
+	@Override
 	public String getLogCreationUser() {
 		return null;
 	}
 
+	@Override
 	public Timestamp getLogModifDate() {
 		return null;
 	}
 
+	@Override
 	public String getLogModifUser() {
 		return null;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return false;
 	}
@@ -175,14 +199,17 @@ final class MockAdresseGeneric implements AdresseGenerique {
 		return DateRangeHelper.toString(this);
 	}
 
+	@Override
 	public Long getId() {
 		return null;
 	}
 
+	@Override
 	public boolean isPermanente() {
 		return false;
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		return null;
 	}

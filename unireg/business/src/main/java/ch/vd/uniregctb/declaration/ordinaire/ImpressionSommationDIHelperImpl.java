@@ -79,10 +79,12 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		this.editiqueHelper = editiqueHelper;
 	}
 
+	@Override
 	public String calculPrefixe() {
 		return "RGPS0801";
 	}
 
+	@Override
 	public FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
@@ -219,6 +221,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		return infoDocument;
 	}
 
+	@Override
 	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
 		return String.format(
 				"%s %s %s %s",
@@ -279,6 +282,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		return infoArchivage;
 	}
 
+	@Override
 	public String construitIdArchivageDocument(DeclarationImpotOrdinaire declaration) {
 		return String.format(
 				"%s%s %s %s",
@@ -291,6 +295,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		);
 	}
 
+	@Override
 	public String construitAncienIdArchivageDocument(DeclarationImpotOrdinaire declaration) {
 		return String.format(
 				"%s%s %s %s",
@@ -303,6 +308,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		);
 	}
 
+	@Override
 	public String construitAncienIdArchivageDocumentPourOnLine(DeclarationImpotOrdinaire declaration) {
 		return String.format(
 				"%s%s %s %s",

@@ -59,66 +59,82 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.valide = target.isValide();
 	}
 
+	@Override
 	public Adresse getAdresse() {
 		return adresse;
 	}
 
+	@Override
 	public String getAdresseEmail() {
 		return adresseEmail;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFin;
 	}
 
+	@Override
 	public String getNoCCP() {
 		return noCCP;
 	}
 
+	@Override
 	public int getNoColAdm() {
 		return noColAdm;
 	}
 
+	@Override
 	public String getNoFax() {
 		return noFax;
 	}
 
+	@Override
 	public String getNoTelephone() {
 		return noTelephone;
 	}
 
+	@Override
 	public String getNomComplet1() {
 		return nomComplet1;
 	}
 
+	@Override
 	public String getNomComplet2() {
 		return nomComplet2;
 	}
 
+	@Override
 	public String getNomComplet3() {
 		return nomComplet3;
 	}
 
+	@Override
 	public String getNomCourt() {
 		return nomCourt;
 	}
 
+	@Override
 	public String getSigle() {
 		return sigle;
 	}
 
+	@Override
 	public String getSigleCanton() {
 		return sigleCanton;
 	}
 
+	@Override
 	public boolean isACI() {
 		return aci;
 	}
 
+	@Override
 	public boolean isOID() {
 		return oid;
 	}
 
+	@Override
 	public boolean isValide() {
 		return valide;
 	}

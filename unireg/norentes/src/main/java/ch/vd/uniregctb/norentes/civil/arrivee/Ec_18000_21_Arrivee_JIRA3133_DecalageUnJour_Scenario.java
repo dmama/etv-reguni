@@ -97,6 +97,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 	public void etape2() throws Exception {
 
 		doModificationIndividu(numeroIndividu, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				final MockAdresse adresse = new MockAdresse("Rue du Lac", "76", "1003", "Lausanne");
 				adresse.setDateDebutValidite(dateArrivee);

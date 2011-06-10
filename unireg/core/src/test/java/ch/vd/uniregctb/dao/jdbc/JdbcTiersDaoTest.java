@@ -29,6 +29,7 @@ public class JdbcTiersDaoTest extends CoreDAOTest {
 	public void testGet() throws Exception {
 
 		final Long id = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique tiers = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
 				return tiers.getNumero();
@@ -55,6 +56,7 @@ public class JdbcTiersDaoTest extends CoreDAOTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique raoul = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
 				ids.raoul = raoul.getNumero();

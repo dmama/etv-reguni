@@ -188,6 +188,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// recherche des données (OK)
 		globalIndex.search(new TermQuery(new Term(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_HC.name())), 100, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				assertEquals(1, hits.totalHits);
 				final Document doc = docGetter.get(hits.scoreDocs[0].doc);
@@ -197,6 +198,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// recherche des données (KO)
 		globalIndex.search(new TermQuery(new Term(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name())), 100, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				assertEquals(0, hits.totalHits);
 			}

@@ -1,11 +1,7 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 
@@ -24,6 +20,7 @@ public class DecesModeImpositionResolver extends TiersModeImpositionResolver {
 		resolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 	}
 
+	@Override
 	public Imposition resolve(Contribuable survivant, RegDate date, ModeImposition impositionCouple) throws ModeImpositionResolverException {
 		// la spec dit "comme séparation/divorce"
 		return resolver.resolve(survivant, date, impositionCouple);

@@ -212,6 +212,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 	 */
 	private Individu annuleMariage(long noIndividu) {
 		doModificationIndividu(noIndividu, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil = individu.getEtatCivilCourant();
 				individu.getEtatsCivils().remove(etatCivil);

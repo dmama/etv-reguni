@@ -70,6 +70,7 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 		return response;
 	}
 
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.messageSourceAccessor = new MessageSourceAccessor(applicationContext);
 	}
@@ -133,6 +134,7 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			this.dossiersEnInstanceCount = dossiersEnInstanceCount;
 		}
 
+		@Override
 		public String render() {
 
 			StringBuilder b = new StringBuilder();

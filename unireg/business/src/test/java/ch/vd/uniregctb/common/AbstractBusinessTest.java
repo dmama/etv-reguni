@@ -150,6 +150,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected abstract class TestHibernateCallback<T> implements HibernateCallback<T> {
 		public abstract T testInHibernate(Session session) throws Exception;
 
+		@Override
 		public final T doInHibernate(Session session) throws HibernateException, SQLException {
 			try {
 				return testInHibernate(session);
@@ -162,8 +163,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	protected <T> T doInTransactionAndSession(final TransactionCallback<T> action) throws Exception {
 		return doInTransaction(new TransactionCallback<T>() {
+			@Override
 			public T doInTransaction(final TransactionStatus status) {
 				return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
+					@Override
 					public T doInHibernate(Session session) throws HibernateException, SQLException {
 						return action.doInTransaction(status);
 					}
@@ -174,8 +177,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) throws Exception {
 		return doInNewTransaction(new TransactionCallback<T>() {
+			@Override
 			public T doInTransaction(final TransactionStatus status) {
 				return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
+					@Override
 					public T doInHibernate(Session session) throws HibernateException, SQLException {
 						return action.doInTransaction(status);
 					}

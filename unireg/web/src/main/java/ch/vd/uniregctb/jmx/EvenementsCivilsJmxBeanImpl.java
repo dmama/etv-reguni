@@ -17,46 +17,55 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, Ini
 
 	private ErrorMonitorableMessageListener listener;
 
+	@Override
 	@ManagedAttribute
 	public int getNbEventsReceived() {
 		return listener.getNombreMessagesRecus();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getNbEventsRejectedToErrorQueue() {
 		return listener.getNombreMessagesRenvoyesEnErreur();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getNbEventsRejectedException() {
 		return listener.getNombreMessagesRenvoyesEnException();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getNbMeaningfullEventsReceived() {
 		return evenementCivilAsyncProcessor.getNombreEvenementsRecus();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getNbEventsTreated() {
 		return evenementCivilAsyncProcessor.getNombreEvenementsTraites();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getTreatmentQueueSize() {
 		return evenementCivilAsyncProcessor.getQueueSize();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getNbConsumers() {
 		return evtCivilListenerContainer.getConcurrentConsumers();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getAcknowledgementDelay() {
 		return evenementCivilAsyncProcessor.getDelaiPriseEnCompte();
 	}
 
+	@Override
 	@ManagedAttribute
 	public void setAcknowledgementDelay(int delay) {
 		evenementCivilAsyncProcessor.setDelaiPriseEnCompte(delay);
@@ -72,6 +81,7 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, Ini
 		this.evtCivilListenerContainer = evtCivilListenerContainer;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (evtCivilListenerContainer == null) {
 			throw new IllegalArgumentException("La propriété evtCivilListenerContainer est nulle");

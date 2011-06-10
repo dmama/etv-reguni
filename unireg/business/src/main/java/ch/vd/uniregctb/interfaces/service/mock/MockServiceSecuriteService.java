@@ -27,26 +27,32 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 
 	protected abstract void init();
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		return null;
 	}
 
+	@Override
 	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite) {
 		return null;
 	}
 
+	@Override
 	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		return profilesOperatorByIndividu.get(visaOperateur);
 	}
 
+	@Override
 	public List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) {
 		return null;
 	}
 
+	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
 		return operatorsByIndividu.get(individuNoTechnique);
 	}
 
+	@Override
 	public Operateur getOperateur(String visa) {
 		return operatorsByVisa.get(visa);
 	}

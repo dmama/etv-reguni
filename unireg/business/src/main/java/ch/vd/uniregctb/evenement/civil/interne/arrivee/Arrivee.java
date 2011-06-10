@@ -146,6 +146,7 @@ public class Arrivee extends Mouvement {
 		return ancienneCommuneSecondaire;
 	}
 
+	@Override
 	public final Adresse getNouvelleAdressePrincipale() {
 		return getAdressePrincipale(); // par définition
 	}

@@ -91,6 +91,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		return cache;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new EhCacheStats(cache);
 	}
@@ -102,6 +103,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
@@ -109,6 +111,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		uniregCacheManager.register(this);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
@@ -119,6 +122,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final Tiers tiers;
@@ -159,6 +163,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final TiersHisto tiers;
@@ -199,6 +204,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		try {
@@ -337,6 +343,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public BatchTiersHisto getBatchTiersHisto(GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		try {
@@ -475,6 +482,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final TiersHisto tiers;
@@ -515,6 +523,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final Type resultat;
@@ -540,6 +549,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -566,6 +576,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setTiersBlocRembAuto(SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		// pas de valeur retournée -> rien à cacher
 		target.setTiersBlocRembAuto(params);
@@ -574,11 +585,13 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<EvenementPM> searchEvenementsPM(SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 		// on ne cache pas les événements PM car on ne sait pas quand ils changent
 		return target.searchEvenementsPM(params);
 	}
 
+	@Override
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final DebiteurInfo resultat;
@@ -606,6 +619,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
 		// méthode de modification -> rien à cacher
 		return target.quittancerDeclarations(params);
@@ -620,6 +634,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void doNothing(AllConcreteTiersClasses dummy) {
 	}
 
@@ -666,6 +681,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getDescription() {
 		return "web-service tiers v2";
 	}
@@ -673,6 +689,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return "WS-TIERS-2";
 	}
@@ -680,6 +697,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void reset() {
 		cache.removeAll();
 	}

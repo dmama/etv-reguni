@@ -88,14 +88,17 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 		return adresse;
 	}
 
+	@Override
 	public List<Long> getAllIds() {
 		return new ArrayList<Long>(map.keySet());
 	}
 
+	@Override
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		return map.get(id);
 	}
 
+	@Override
 	public List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts) {
 		List<PersonneMorale> list = new ArrayList<PersonneMorale>();
 		for (Long id : ids) {
@@ -105,14 +108,17 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 		return list;
 	}
 
+	@Override
 	public Etablissement getEtablissement(long id) {
 		return null;
 	}
 
+	@Override
 	public List<Etablissement> getEtablissements(List<Long> ids) {
 		return Collections.emptyList();
 	}
 
+	@Override
 	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		return Collections.emptyList();
 	}

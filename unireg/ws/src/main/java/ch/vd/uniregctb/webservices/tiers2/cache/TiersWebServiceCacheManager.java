@@ -36,6 +36,7 @@ public class TiersWebServiceCacheManager implements DataEventListener, Initializ
 		this.tiersDAO = tiersDAO;
 	}
 
+	@Override
 	public void onTiersChange(long id) {
 
 		// on récupère tous les ids des tiers impactés par le changement sur le tiers passé en paramètre
@@ -83,18 +84,22 @@ public class TiersWebServiceCacheManager implements DataEventListener, Initializ
 		}
 	}
 
+	@Override
 	public void onDroitAccessChange(long tiersId) {
 		// rien à faire
 	}
 
+	@Override
 	public void onTruncateDatabase() {
 		cache.clearAll();
 	}
 
+	@Override
 	public void onLoadDatabase() {
 		// rien à faire
 	}
 
+	@Override
 	public void onIndividuChange(long numero) {
 		final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numero, true);
 		if (pp != null) {
@@ -102,6 +107,7 @@ public class TiersWebServiceCacheManager implements DataEventListener, Initializ
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataEventService.register(this);
 	}

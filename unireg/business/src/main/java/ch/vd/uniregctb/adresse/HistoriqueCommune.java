@@ -23,18 +23,22 @@ public class HistoriqueCommune implements CollatableDateRange {
 		this.commune = commune;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public boolean isCollatable(DateRange next) {
 		return DateRangeHelper.isCollatable(this, next) && next instanceof HistoriqueCommune && sameCommune(commune, ((HistoriqueCommune) next).commune);
 	}
@@ -52,6 +56,7 @@ public class HistoriqueCommune implements CollatableDateRange {
 		}
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new HistoriqueCommune(dateDebut, next.getDateFin(), commune);
 	}

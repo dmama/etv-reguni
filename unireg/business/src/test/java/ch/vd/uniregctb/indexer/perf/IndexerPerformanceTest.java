@@ -37,6 +37,7 @@ public class IndexerPerformanceTest extends BusinessTest {
 			this.date = date;
 		}
 
+		@Override
 		public String getSubType() {
 			return subType;
 		}
@@ -137,6 +138,7 @@ public class IndexerPerformanceTest extends BusinessTest {
 
 	private void assertHits(final int count, String query) {
 		globalIndex.search(query, maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 //				try {
 //					for (DocHit hit : hits) {

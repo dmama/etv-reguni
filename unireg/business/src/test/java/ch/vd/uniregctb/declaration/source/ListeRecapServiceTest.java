@@ -256,6 +256,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 		// initialisation
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur();
 				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
@@ -269,6 +270,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 		// tests
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 
 public abstract class ServicePersonneMoraleBase implements ServicePersonneMoraleService {
 
+	@Override
 	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
 
 		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
@@ -34,6 +35,7 @@ public abstract class ServicePersonneMoraleBase implements ServicePersonneMorale
 		return adresses;
 	}
 
+	@Override
 	public AdressesPMHisto getAdressesHisto(long noEntreprise) {
 
 		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);

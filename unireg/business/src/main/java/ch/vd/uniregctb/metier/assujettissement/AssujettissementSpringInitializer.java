@@ -14,10 +14,12 @@ public class AssujettissementSpringInitializer implements InitializingBean, Disp
 
 	private ValidationService validationService;
 
+	@Override
 	public void destroy() throws Exception {
 		Assujettissement.setValidationService(null);
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assujettissement.setValidationService(validationService);
 	}

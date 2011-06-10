@@ -40,6 +40,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 * @return une vue MouvementListView
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws ServiceInfrastructureException {
 		final MouvementListView mvtListView = new MouvementListView();
@@ -62,6 +63,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvt(Long numero) {
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
@@ -88,6 +90,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws ServiceInfrastructureException {
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
@@ -108,6 +111,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 * @param mvtDetailView
 	 * @throws Exception
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(MouvementDetailView mvtDetailView) throws Exception {
 		final Contribuable ctb = (Contribuable) getTiersService().getTiers(mvtDetailView.getContribuable().getNumero());
@@ -196,6 +200,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 *
 	 * @param idMvt
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerMvt(long idMvt) {
 		final MouvementDossier mvt = getMouvementDossierDAO().get(idMvt);

@@ -28,6 +28,7 @@ public class ClearingDaoProperties implements ClearingDao, InitializingBean {
 	/**
 	 * Initialise la liste des numéros connus en lisant le fichier properties.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		InputStream clearingNumbersFile = ClearingDaoProperties.class.getClassLoader().getResourceAsStream(CLEARING_NUMBERS_FILE);
@@ -38,6 +39,7 @@ public class ClearingDaoProperties implements ClearingDao, InitializingBean {
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.common.iban.ClearingDao#isNumeroClearingValid(java.lang.String)
 	 */
+	@Override
 	public boolean isNumeroClearingValid(String numeroClearing) {
 		if (numeroClearing == null) {
 			return false;

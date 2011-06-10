@@ -81,6 +81,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	 */
 	private static final class VueSituationFamilleAdapterCallback implements AdapterCallback<VueSituationFamille> {
 
+		@Override
 		public VueSituationFamille adapt(VueSituationFamille range, RegDate debut, RegDate fin) {
 
 			if (range instanceof VueSituationFamillePersonnePhysique) {
@@ -96,6 +97,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public VueSituationFamille getVue(Contribuable contribuable, RegDate date, boolean yComprisCivil) {
 
 		/*
@@ -114,6 +116,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<VueSituationFamille> getVueHisto(Contribuable contribuable) {
 		return getVueHisto(contribuable, true);
 	}
@@ -420,6 +423,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * @return l'état civil du point de vue fiscal d'une personne physique.
 	 */
+	@Override
 	public ch.vd.uniregctb.type.EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date, boolean takeCivilAsDefault) {
 		Assert.notNull(pp, "la personne physique doit être renseignée");
 
@@ -445,6 +449,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		return null;
 	}
 
+	@Override
 	public SituationFamille addSituationFamille(SituationFamille situationFamille, Contribuable contribuable) {
 		final RegDate dateDebut = situationFamille.getDateDebut();
 		contribuable.closeSituationFamilleActive(dateDebut.getOneDayBefore());
@@ -497,6 +502,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * Annule une situation de famille en réouvrant la précédente si elle existe
 	 */
+	@Override
 	public void annulerSituationFamille(long idSituationFamille) {
 
 		// Situation de famille ayant comme source Unireg
@@ -510,6 +516,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	 * @param idSituationFamille
 	 */
 
+	@Override
 	public void annulerSituationFamilleSansRouvrirPrecedente(long idSituationFamille) {
 
 		// Situation de famille ayant comme source Unireg
@@ -517,6 +524,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), situationFamille.getId());
 	}
 
+	@Override
 	public void closeSituationFamille(Contribuable contribuable, RegDate date) {
 		Assert.notNull(contribuable);
 		// Situation de famille ayant comme source Unireg
@@ -534,12 +542,14 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReinitialiserBaremeDoubleGainResults reinitialiserBaremeDoubleGain(RegDate dateTraitement, StatusManager statusManager) {
 		ReinitialiserBaremeDoubleGainProcessor processor = new ReinitialiserBaremeDoubleGainProcessor(this, hibernateTemplate,
 				transactionManager);
 		return processor.run(dateTraitement, statusManager);
 	}
 
+	@Override
 	public ComparerSituationFamilleResults comparerSituationFamille(RegDate dateTraitement, int nbThreads, StatusManager status) {
 		ComparerSituationFamilleProcessor processor = new ComparerSituationFamilleProcessor(serviceCivil,situationFamilleDAO,tiersService,transactionManager);
 		return processor.run(dateTraitement,nbThreads,status);

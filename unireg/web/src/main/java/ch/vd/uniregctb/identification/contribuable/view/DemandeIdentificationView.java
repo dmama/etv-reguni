@@ -142,6 +142,7 @@ public class DemandeIdentificationView implements Annulable {
 		this.businessId = businessId;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

@@ -21,6 +21,7 @@ public class FormeJuridiqueView implements DateRange {
 		this.code = forme.getCode();
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -29,6 +30,7 @@ public class FormeJuridiqueView implements DateRange {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -45,6 +47,7 @@ public class FormeJuridiqueView implements DateRange {
 		this.code = code;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

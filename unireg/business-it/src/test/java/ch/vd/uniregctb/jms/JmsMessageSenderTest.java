@@ -68,6 +68,7 @@ public class JmsMessageSenderTest {
 		JmsTemplate jmsTemplate = new JmsTemplate(jmsConnectionFactory.getConnectionFactory());
 
 		jmsTemplate.send("ch.vd.registre.evtCivil", new MessageCreator() {
+			@Override
 			public Message createMessage(Session session) throws JMSException {
 				TextMessage tm = session.createTextMessage();
 				tm.setText(sb.toString());

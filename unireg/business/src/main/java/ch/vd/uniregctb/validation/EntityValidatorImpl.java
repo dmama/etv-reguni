@@ -21,10 +21,12 @@ public abstract class EntityValidatorImpl<T> implements EntityValidator<T>, Init
 
 	protected abstract Class<T> getValidatedClass();
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		validationService.registerValidator(getValidatedClass(), this);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		validationService.unregisterValidator(getValidatedClass(), this);
 	}

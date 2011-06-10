@@ -62,6 +62,7 @@ public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setReadOnly(false);
 		final RolesOIDsRapport rapport = template.execute(new TransactionCallback<RolesOIDsRapport>() {
+			@Override
 			public RolesOIDsRapport doInTransaction(TransactionStatus status) {
 				return getRapportService().generateRapport(results, dateTraitement, statusManager);
 			}

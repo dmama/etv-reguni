@@ -56,6 +56,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DossierEditRestrictionView get(Long numeroPP) throws ServiceInfrastructureException {
 
@@ -115,6 +116,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	 * Persiste un droit d'acces
 	 * @param droitAccesView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(DroitAccesView droitAccesView) throws DroitAccesException {
 		final long operateurId = droitAccesView.getNumeroUtilisateur();
@@ -131,6 +133,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	 * @param dossierEditRestrictionView
 	 * @param idRestriction
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerRestriction(Long idRestriction) throws DroitAccesException {
 		droitAccesService.annuleDroitAcces(idRestriction);

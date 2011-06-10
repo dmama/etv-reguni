@@ -40,6 +40,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 	private void assertHits(final int count, Query baseQuery) {
 		globalIndex.search(baseQuery, maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				assertEquals(count, hits.totalHits);
 			}

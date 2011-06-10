@@ -56,6 +56,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	public void testDiRetournee() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -99,6 +100,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -139,6 +141,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -179,6 +182,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 18);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -222,6 +226,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -262,6 +267,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -303,6 +309,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -344,6 +351,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -390,6 +398,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2010, 6, 30);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -446,6 +455,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -492,6 +502,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -535,6 +546,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -588,6 +600,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		validationInterceptor.setEnabled(false); // nécessaire pour créer le for sur un ménage commun sans appartenance ménage existante
 		try {
 			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
 				public Ids doInTransaction(TransactionStatus status) {
 
 					addCollAdm(MockCollectiviteAdministrative.CEDI);

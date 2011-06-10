@@ -25,14 +25,17 @@ public class EvenementPMImpl implements EvenementPM {
 		this.code = target.getCodeEvenement();
 	}
 
+	@Override
 	public RegDate getDate() {
 		return date;
 	}
 
+	@Override
 	public Long getNumeroPM() {
 		return numeroPM;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}

@@ -86,14 +86,17 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return date == null ? null : RegDate.get(date.getYear(), date.getMonth(), date.getDay());
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFin;
 	}
 
+	@Override
 	public int getNoOFSEtendu() {
 		return noOFSEtendu;
 	}
@@ -103,22 +106,27 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return getNoOFSEtendu();
 	}
 
+	@Override
 	public int getNumTechMere() {
 		return numTechMere;
 	}
 
+	@Override
 	public String getSigleCanton() {
 		return sigleCanton;
 	}
 
+	@Override
 	public boolean isVaudoise() {
 		return vaudoise;
 	}
 
+	@Override
 	public boolean isFraction() {
 		return fraction;
 	}
 
+	@Override
 	public boolean isPrincipale() {
 		return principale;
 	}

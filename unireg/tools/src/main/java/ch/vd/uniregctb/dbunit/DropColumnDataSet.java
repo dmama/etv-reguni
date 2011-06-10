@@ -28,6 +28,7 @@ class DropColumnDataSet implements IDataSet {
 		this.tables = null;
 	}
 
+	@Override
 	public ITable getTable(String tableName) throws DataSetException {
 		if (tablesByName == null) {
 			initTables();
@@ -50,14 +51,17 @@ class DropColumnDataSet implements IDataSet {
 		}
 	}
 
+	@Override
 	public ITableMetaData getTableMetaData(String tableName) throws DataSetException {
 		return getTable(tableName).getTableMetaData();
 	}
 
+	@Override
 	public String[] getTableNames() throws DataSetException {
 		return dataSet.getTableNames();
 	}
 
+	@Override
 	public ITable[] getTables() throws DataSetException {
 		if (tables == null) {
 			initTables();
@@ -65,6 +69,7 @@ class DropColumnDataSet implements IDataSet {
 		return tables;
 	}
 
+	@Override
 	public ITableIterator iterator() throws DataSetException {
 		if (tables == null) {
 			initTables();
@@ -72,6 +77,7 @@ class DropColumnDataSet implements IDataSet {
 		return new DefaultTableIterator(tables);
 	}
 
+	@Override
 	public ITableIterator reverseIterator() throws DataSetException {
 		if (tables == null) {
 			initTables();

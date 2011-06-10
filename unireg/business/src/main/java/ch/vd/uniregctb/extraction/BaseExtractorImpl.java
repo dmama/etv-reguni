@@ -22,10 +22,12 @@ public abstract class BaseExtractorImpl implements Extractor {
 		return interrupted;
 	}
 
+	@Override
 	public String getRunningMessage() {
 		return runningMessage;
 	}
 
+	@Override
 	public Integer getPercentProgression() {
 		return percentProgression;
 	}
@@ -61,6 +63,7 @@ public abstract class BaseExtractorImpl implements Extractor {
 		this.percentProgression = percentProgression;
 	}
 
+	@Override
 	public final synchronized StatusManager getStatusManager() {
 		if (this.statusManager == null) {
 			this.statusManager = new ExtractorStatusManager();

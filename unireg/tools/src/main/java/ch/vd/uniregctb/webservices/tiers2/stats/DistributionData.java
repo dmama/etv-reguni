@@ -34,6 +34,7 @@ class DistributionData implements Comparable<DistributionData> {
 		return range.isInRange(milliseconds);
 	}
 
+	@Override
 	public int compareTo(DistributionData o) {
 		return this.range.compareTo(o.range);
 	}

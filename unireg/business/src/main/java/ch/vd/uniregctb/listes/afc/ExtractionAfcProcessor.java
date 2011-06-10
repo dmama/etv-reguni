@@ -50,14 +50,17 @@ public class ExtractionAfcProcessor extends ListesProcessor<ExtractionAfcResults
 
 		return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ExtractionAfcResults, ExtractionAfcThread>() {
 
+			@Override
 			public Iterator<Long> getIdIterator(Session session) {
 				return getIdsTiersCandidatsPourExtraction(session, pf);
 			}
 
+			@Override
 			public ExtractionAfcResults createResults(RegDate dateTraitement) {
 				return new ExtractionAfcResults(dateTraitement, pf, mode, nbThreads, tiersService, infraService);
 			}
 
+			@Override
 			public ExtractionAfcThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 				return new ExtractionAfcThread(queue, status, compteur, serviceCivilCacheWarmer, tiersService, infraService, transactionManager, tiersDAO, hibernateTemplate, dateTraitement, pf, mode, nbThreads);
 			}

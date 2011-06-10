@@ -265,11 +265,13 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 		listeContribuableAvecNote.add(cont);
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		erreurs.add(new Erreur(element, e.getMessage()));
 
 	}
 
+	@Override
 	public void addAll(ListeNoteResults right) {
 		this.nbContribuable += right.nbContribuable;
 		listeContribuableAvecNote.addAll(right.listeContribuableAvecNote);

@@ -17,6 +17,7 @@ public class ValidationServiceTest extends WithoutSpringTest {
 	}
 
 	private static final EntityValidator<Parent> PARENT_VALIDATOR = new EntityValidator<Parent>() {
+		@Override
 		public ValidationResults validate(Parent entity) {
 			final ValidationResults vr = new ValidationResults();
 			vr.addError("Boom!");
@@ -26,6 +27,7 @@ public class ValidationServiceTest extends WithoutSpringTest {
 
 	private static final EntityValidator<Long> LONG_VALIDATOR = new EntityValidator<Long>() {
 
+		@Override
 		public ValidationResults validate(Long entity) {
 			final ValidationResults vr = new ValidationResults();
 			if (entity != 42L) {
@@ -36,6 +38,7 @@ public class ValidationServiceTest extends WithoutSpringTest {
 	};
 
 	private static final EntityValidator<Long> LONG_VALIDATOR_SMALER_100 = new EntityValidator<Long>() {
+		@Override
 		public ValidationResults validate(Long entity) {
 			final ValidationResults vr = new ValidationResults();
 			if (entity >= 100L) {
@@ -46,6 +49,7 @@ public class ValidationServiceTest extends WithoutSpringTest {
 	};
 
 	private static final EntityValidator<Boolean> BOOLEAN_VALIDATOR = new EntityValidator<Boolean>() {
+		@Override
 		public ValidationResults validate(Boolean entity) {
 			final ValidationResults vr = new ValidationResults();
 			if (!entity) {

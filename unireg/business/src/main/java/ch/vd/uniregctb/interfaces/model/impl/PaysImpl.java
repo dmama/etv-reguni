@@ -38,14 +38,17 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		this.etatSouverain = target.isEtat() != null && target.isEtat();
 	}
 
+	@Override
 	public boolean isSuisse() {
 		return getNoOFS() == ServiceInfrastructureService.noOfsSuisse;
 	}
 
+	@Override
 	public boolean isValide() {
 		return valide;
 	}
 
+	@Override
 	public boolean isEtatSouverain() {
 		return etatSouverain;
 	}

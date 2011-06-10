@@ -368,8 +368,10 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final String hql = "SELECT ctb.id FROM Contribuable ctb WHERE ctb.annulationDate IS NULL AND EXISTS (SELECT ff.id FROM ForFiscal ff WHERE ff.tiers=ctb AND ff.annulationDate IS NULL) ORDER BY ctb.id ASC";
 						final Query query = session.createQuery(hql);

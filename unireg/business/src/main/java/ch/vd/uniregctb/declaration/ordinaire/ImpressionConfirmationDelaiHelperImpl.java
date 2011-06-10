@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.ConfirmationDelaiDocument;
 import noNamespace.ConfirmationDelaiDocument.ConfirmationDelai;
 import noNamespace.FichierImpressionDocument;
@@ -36,10 +35,12 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 	private EditiqueHelper editiqueHelper;
 	private AdresseService adresseService;
 
+	@Override
 	public String calculPrefixe() {
 		return "RGPC0801";
 	}
 
+	@Override
 	public FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
 		try {
 			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
@@ -128,6 +129,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 			return infoDocument;
 	}
 
+	@Override
 	public String construitIdDocument(DelaiDeclaration delai) {
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) delai.getDeclaration();
 		final String principal = AuthenticationHelper.getCurrentPrincipal();

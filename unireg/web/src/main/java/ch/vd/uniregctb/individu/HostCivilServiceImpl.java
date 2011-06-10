@@ -58,6 +58,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 *
 	 * @return un objet IndividuView
 	 */
+	@Override
 	public IndividuView getIndividu(Long numeroIndividu) {
 		IndividuView indCible = null;
 
@@ -209,6 +210,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 * @param numeroIndividu
 	 * @return
 	 */
+	@Override
 	public String getNomUtilisateur(Long numeroIndividu) {
 
 		final String nomUtilisateur;
@@ -247,6 +249,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 

@@ -25,14 +25,17 @@ public class RueImpl implements Rue, Serializable {
 		this.noRue = target.getNoRue();
 	}
 
+	@Override
 	public String getDesignationCourrier() {
 		return designationCourrier;
 	}
 
+	@Override
 	public Integer getNoLocalite() {
 		return noLocalite;
 	}
 
+	@Override
 	public Integer getNoRue() {
 		return noRue;
 	}

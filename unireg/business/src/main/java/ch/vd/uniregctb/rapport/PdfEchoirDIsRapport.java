@@ -36,6 +36,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 				}
@@ -51,6 +52,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de déclarations inspectées:", String.valueOf(results.nbDIsTotal));
 					table.addLigne("Nombre de déclarations passées dans l'état échu:", String.valueOf(results.disEchues.size()));

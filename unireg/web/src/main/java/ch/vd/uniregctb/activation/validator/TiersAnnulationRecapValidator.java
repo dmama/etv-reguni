@@ -18,11 +18,13 @@ public class TiersAnnulationRecapValidator implements Validator {
 		this.tiersService = tiersService;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return TiersAnnulationRecapView.class.equals(clazz);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 		Assert.isTrue(obj instanceof TiersAnnulationRecapView);

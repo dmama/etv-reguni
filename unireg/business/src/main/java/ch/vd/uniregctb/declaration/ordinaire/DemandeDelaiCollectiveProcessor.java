@@ -12,11 +12,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -105,6 +105,7 @@ public class DemandeDelaiCollectiveProcessor {
 	private void checkParams(final int annee) {
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
 		final PeriodeFiscale periodeFiscale = t.execute(new TransactionCallback<PeriodeFiscale>() {
+			@Override
 			public PeriodeFiscale doInTransaction(TransactionStatus status) {
 				return periodeFiscaleDAO.getPeriodeFiscaleByYear(annee);
 			}

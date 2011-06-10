@@ -20,6 +20,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 		super(DroitAcces.class);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public DroitAcces getDroitAcces(long operateurId, long tiersId, RegDate date) {
 		Object[] criteria = {
@@ -40,6 +41,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	 * @param noIndividuOperateur
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAcces(long noIndividuOperateur) {
 		Object[] criteria = {noIndividuOperateur};
@@ -59,6 +61,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAccessTiers(long tiersId) {
 		Object[] criteria = {tiersId};
@@ -73,6 +76,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	 *            date de validité des droits d'accès. Cette date est obligatoire.
 	 * @return la liste de tous les droits d'accès définis sur le tiers spécifié.
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAccessTiers(long tiersId, RegDate date) {
 		Object[] criteria = {tiersId, date.index(), date.index()};
@@ -84,12 +88,14 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAccessTiers(final List<Long> ids, final RegDate date) {
 		if (ids == null || ids.isEmpty()) {
 			return Collections.emptyList();
 		}
 		final List<DroitAcces> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<DroitAcces>>() {
+			@Override
 			public List<DroitAcces> doInHibernate(Session session) throws HibernateException {
 				Query query = session
 						.createQuery("from DroitAcces da where da.tiers.id in (:ids) and da.dateDebut <= :date and (da.dateFin is null or da.dateFin >= :date)");
@@ -104,6 +110,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Set<Long> getContribuablesControles() {
 
@@ -115,6 +122,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 			final RegDate today = RegDate.get();
 
 			final List<Long> ids = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+				@Override
 				public List<Long> doInHibernate(Session session) throws HibernateException {
 					Query queryObject = session.createQuery(query);
 					queryObject.setParameter("today", today.index());
@@ -130,6 +138,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 			final RegDate today = RegDate.get();
 
 			final List<Long> ids = (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					Query queryObject = session.createQuery(query);
 					queryObject.setParameter("today", today.index());

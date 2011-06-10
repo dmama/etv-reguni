@@ -36,6 +36,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 		final String prenom2 = "Alain";
 
 		executeInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				{
 					PersonnePhysique nh = new PersonnePhysique(false);
@@ -141,6 +142,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 		this.globalTiersSearcher = globalTiersSearcher;
 	}
 
+	@Override
 	public void setGlobalTiersIndexer(GlobalTiersIndexer globalTiersIndexer) {
 		this.globalTiersIndexer = globalTiersIndexer;
 	}
@@ -151,6 +153,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 	 */
 	private Long save(final Tiers tiers) {
 		Long id = executeInTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				return (Long) getTiersDAO().getHibernateTemplate().save(tiers);
 			}

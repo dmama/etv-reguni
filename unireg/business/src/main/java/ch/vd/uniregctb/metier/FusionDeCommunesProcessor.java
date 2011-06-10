@@ -332,8 +332,10 @@ public class FusionDeCommunesProcessor {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				final List<Long> list = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryTiers);
 						queryObject.setParameter("dateFusion", dateFusion.index());

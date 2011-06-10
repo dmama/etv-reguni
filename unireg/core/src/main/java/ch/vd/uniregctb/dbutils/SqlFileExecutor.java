@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.dbutils;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +26,7 @@ public class SqlFileExecutor {
         tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
         tmpl.execute(new TransactionCallback<Object>() {
 
+            @Override
             public Object doInTransaction(TransactionStatus status) {
 
                 try {

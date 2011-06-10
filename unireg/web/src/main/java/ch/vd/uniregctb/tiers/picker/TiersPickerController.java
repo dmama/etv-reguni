@@ -38,6 +38,7 @@ public class TiersPickerController extends CommonSimpleFormController implements
 		this.manager = manager;
 	}
 
+	@Override
 	public AjaxResponse handle(AjaxEvent event) {
 
 		final TiersPickerFilter filter = extractFilter(event);
@@ -201,6 +202,7 @@ public class TiersPickerController extends CommonSimpleFormController implements
 		return summary;
 	}
 
+	@Override
 	public boolean supports(AjaxEvent event) {
 		if (!(event instanceof AjaxActionEvent)) {
 			return false;

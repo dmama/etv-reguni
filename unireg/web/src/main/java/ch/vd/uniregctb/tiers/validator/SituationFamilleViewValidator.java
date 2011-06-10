@@ -19,11 +19,13 @@ public class SituationFamilleViewValidator implements Validator {
 		this.tiersDAO = tiersDAO;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return SituationFamilleView.class.equals(clazz) ;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 		SituationFamilleView situationFamilleView = (SituationFamilleView) obj;

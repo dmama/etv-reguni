@@ -20,10 +20,12 @@ public class SousPeriode implements DateRange {
 		this.motifFractFin = motifFractFin;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -36,6 +38,7 @@ public class SousPeriode implements DateRange {
 		return motifFractFin;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateFin, date, NullDateBehavior.LATEST);
 	}

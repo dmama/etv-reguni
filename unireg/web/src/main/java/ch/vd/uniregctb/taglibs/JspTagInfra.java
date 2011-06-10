@@ -42,6 +42,7 @@ public class JspTagInfra extends BodyTagSupport {
 		public MethodInvocator(Method method) {
 			this.method = method;
 		}
+		@Override
 		public Object invoke(ServiceInfrastructureService service, int id) throws Exception {
 			return method.invoke(service, id);
 		}

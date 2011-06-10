@@ -55,6 +55,7 @@ class TimelineData implements Comparable<TimelineData> {
 		return periode.isInPeriode(timestamp);
 	}
 
+	@Override
 	public int compareTo(TimelineData o) {
 		return this.periode.compareTo(o.periode);
 	}

@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -33,6 +34,7 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Catégorie de débiteurs:", (results.categorie == null ? "-" : results.categorie.name()));
 					if (results.dateFinPeriode != null) {
@@ -52,6 +54,7 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de listes récapitulatives:", String.valueOf(results.nbLRsTotal));
 					table.addLigne("Nombre de listes récapitulatives sommées:", String.valueOf(results.lrSommees.size()));

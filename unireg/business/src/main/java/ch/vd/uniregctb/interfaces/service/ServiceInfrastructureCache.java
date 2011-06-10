@@ -68,6 +68,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		this.statsService = statsService;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new EhCacheStats(cache);
 	}
@@ -79,6 +80,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerCache(ServiceInfrastructureService.SERVICE_NAME, this);
@@ -86,6 +88,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		uniregCacheManager.register(this);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterCache(ServiceInfrastructureService.SERVICE_NAME);
@@ -110,6 +113,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		final List<Canton> resultat;
@@ -156,6 +160,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	}
 
+	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		final CollectiviteAdministrative resultat;
 
@@ -189,6 +194,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		final List<CollectiviteAdministrative> resultat;
@@ -242,6 +248,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		final List<CollectiviteAdministrative> resultat;
@@ -293,6 +300,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	}
 
+	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		final Commune resultat;
 
@@ -411,6 +419,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		final List<Commune> resultat;
@@ -457,6 +466,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		final List<Commune> resultat;
@@ -492,6 +502,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		final List<Commune> resultat;
@@ -539,6 +550,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	}
 
+	@Override
 	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
 		final Localite resultat;
 
@@ -572,6 +584,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		final List<Localite> resultat;
@@ -617,6 +630,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		final OfficeImpot resultat;
 
@@ -661,6 +675,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		final OfficeImpot resultat;
 
@@ -694,6 +709,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		final List<OfficeImpot> resultat;
@@ -728,6 +744,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		final List<Pays> resultat;
@@ -813,6 +830,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		final Rue resultat;
 
@@ -857,6 +875,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		final List<Rue> resultat;
@@ -902,6 +921,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		final List<Rue> resultat;
@@ -948,6 +968,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 
 		final InstitutionFinanciere resultat;
@@ -1000,6 +1021,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 
@@ -1032,6 +1054,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 
@@ -1074,6 +1097,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 
 		final TypeRegimeFiscal resultat;
@@ -1105,6 +1129,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 
@@ -1147,6 +1172,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 
 		final TypeEtatPM resultat;
@@ -1167,6 +1193,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getDescription() {
 		return "service infrastructure";
 	}
@@ -1174,6 +1201,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return "INFRA";
 	}
@@ -1181,16 +1209,19 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void reset() {
 		cache.removeAll();
 	}
 	/**
 	 *  {@inheritDoc}
 	 */
+	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return target.getLocaliteByNPA(npa);
 	}
 
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
 		// on ne cache pas cette information parce que l'url est composée d'une partie statique auquelle est appondue le numéro d'id, et que le service concret fait ça de manière très efficace.
 		return target.getUrlVers(application, tiersId);
@@ -1219,6 +1250,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		final Logiciel resultat;
 
@@ -1248,6 +1280,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		final List<Logiciel> resultat;

@@ -14,6 +14,7 @@ final class NullAction implements AjaxAction {
 
 	private static final long serialVersionUID = 6948565481274427280L;
 
+	@Override
 	public String render() {
 		return "";
 	}

@@ -152,6 +152,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 * @return the dateOuverture
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8x1x9Edygsbnw9h5bVw?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_OUVERTURE", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -180,6 +181,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 * @return the dateFermeture
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8yVx9Edygsbnw9h5bVw?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_FERMETURE")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -277,6 +279,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(ForFiscal o) {
 		int value = getDateDebut().compareTo(o.getDateDebut());
 		return value;
@@ -315,6 +318,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
@@ -369,6 +373,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 		return isAnnule() == other.isAnnule();
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return tiers == null ? null : Arrays.asList(tiers);

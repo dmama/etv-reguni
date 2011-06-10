@@ -78,12 +78,14 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 		this.dateTraitement = dateTrait;
 	}
 	
+	@Override
 	public void addAll(EnvoiSommationLRsResults right) {
 		this.nbLRsTotal += right.nbLRsTotal;
 		this.lrSommees.addAll(right.lrSommees);
 		this.sommationLREnErreurs.addAll(right.sommationLREnErreurs);
 	}
 
+	@Override
 	public void addErrorException(IdentifiantDeclaration element, Exception e) {
 		sommationLREnErreurs.add(new Erreur(element.getNumeroTiers(), null, ErreurType.ROLLBACK, e.getMessage()));
 	}

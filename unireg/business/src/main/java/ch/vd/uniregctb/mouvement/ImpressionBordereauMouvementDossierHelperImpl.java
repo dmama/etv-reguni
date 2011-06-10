@@ -64,10 +64,12 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		this.infraService = infraService;
 	}
 
+	@Override
 	public String calculePrefixe() {
 		return PREFIXE;
 	}
 
+	@Override
 	public FichierImpressionDocument remplitBordereau(ImpressionBordereauMouvementDossierHelperParams params) throws EditiqueException {
 
 		try {
@@ -175,6 +177,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		return bordereauEnvoi;
 	}
 
+	@Override
 	public String construitIdDocument(BordereauMouvementDossier bordereau) {
 		return String.format("%s %s", bordereau.getId(), new SimpleDateFormat("yyyyMMddHHmmssSSS").format(bordereau.getLogCreationDate()));
 	}

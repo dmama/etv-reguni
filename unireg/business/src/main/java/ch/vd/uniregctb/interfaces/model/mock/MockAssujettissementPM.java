@@ -15,10 +15,12 @@ public class MockAssujettissementPM implements AssujettissementPM {
 	private int noSequence;
 	private Type type;
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
@@ -27,6 +29,7 @@ public class MockAssujettissementPM implements AssujettissementPM {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -35,6 +38,7 @@ public class MockAssujettissementPM implements AssujettissementPM {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
@@ -43,6 +47,7 @@ public class MockAssujettissementPM implements AssujettissementPM {
 		this.noSequence = noSequence;
 	}
 
+	@Override
 	public Type getType() {
 		return type;
 	}

@@ -13,6 +13,7 @@ public class LoadAveragerTest extends WithoutSpringTest {
 
 		// ne sert pas pendant ce test
 		final LoadMonitorable dummy = new LoadMonitorable() {
+			@Override
 			public int getLoad() {
 				throw new NotImplementedException();
 			}

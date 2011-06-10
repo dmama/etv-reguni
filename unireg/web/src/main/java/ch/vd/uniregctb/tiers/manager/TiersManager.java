@@ -1787,10 +1787,12 @@ public class TiersManager implements MessageSourceAware {
 	protected void setAdressesActives(final TiersEditView tiersEditView, final Tiers tiers) throws ServiceInfrastructureException {
 
 		resolveAdressesHisto(new AdressesResolverCallback() {
+			@Override
 			public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
 				return service.getAdressesFiscalHisto(tiers, false);
 			}
 
+			@Override
 			public void setAdressesView(List<AdresseView> adresses) {
 				adresses = removeAdresseFromCivil(adresses);
 				//[UNIREG2717] les adresses fiscales retournées doivent aussi contenir les adresses fermées afin que celles ci puissent être annulées
@@ -1798,6 +1800,7 @@ public class TiersManager implements MessageSourceAware {
 				tiersEditView.setAdressesActives(adresses);
 			}
 
+			@Override
 			public void onException(String message, List<AdresseView> adressesEnErreur) {
 				tiersEditView.setAdressesEnErreurMessage(message);
 				tiersEditView.setAdressesEnErreur(adressesEnErreur);
@@ -1811,15 +1814,18 @@ public class TiersManager implements MessageSourceAware {
 	protected void setAdressesFiscalesModifiables(final TiersEditView tiersEditView, final Tiers tiers) throws ServiceInfrastructureException {
 
 		resolveAdressesHisto(new AdressesResolverCallback() {
+			@Override
 			public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
 				return service.getAdressesTiers(tiers);
 			}
 
+			@Override
 			public void setAdressesView(List<AdresseView> adresses) {
 				adresses = removeAdresseAnnulee(adresses);
 				tiersEditView.setAdressesFiscalesModifiables(adresses);
 			}
 
+			@Override
 			public void onException(String message, List<AdresseView> adressesEnErreur) {
 				tiersEditView.setAdressesEnErreurMessage(message);
 				tiersEditView.setAdressesEnErreur(adressesEnErreur);
@@ -2088,6 +2094,7 @@ public class TiersManager implements MessageSourceAware {
 		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

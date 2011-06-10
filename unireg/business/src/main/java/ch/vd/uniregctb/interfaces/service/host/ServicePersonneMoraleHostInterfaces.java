@@ -31,6 +31,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 		this.servicePersonneMorale = servicePersonneMorale;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getAllIds() {
 		try {
@@ -41,6 +42,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 		}
 	}
 
+	@Override
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		try {
 			return PersonneMoraleImpl.get(servicePersonneMorale.getPersonneMorale(id, part2attribute(parts)));
@@ -50,6 +52,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 		}
 	}
 
+	@Override
 	public List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts) {
 		try {
 			final List list = servicePersonneMorale.getPersonnesMorales(ids, part2attribute(parts));
@@ -69,6 +72,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 		}
 	}
 
+	@Override
 	public Etablissement getEtablissement(long id) {
 		try {
 			return EtablissementImpl.get(servicePersonneMorale.getEtablissement(id));
@@ -78,6 +82,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 		}
 	}
 
+	@Override
 	public List<Etablissement> getEtablissements(List<Long> ids) {
 		try {
 			final List list = servicePersonneMorale.getEtablissement(ids);
@@ -97,6 +102,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 		}
 	}
 
+	@Override
 	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		try {
 			List list = servicePersonneMorale.findEvenements(numeroEntreprise, code, RegDate.asJavaDate(minDate), RegDate.asJavaDate(maxDate));

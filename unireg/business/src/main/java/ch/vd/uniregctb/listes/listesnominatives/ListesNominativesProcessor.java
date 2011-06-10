@@ -1,5 +1,17 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
@@ -8,17 +20,6 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Processor pour la génération des listes nominatives
@@ -63,10 +64,12 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
         // lance le vrai boulot !
         return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ListesNominativesResults, ListesNominativesThread>() {
 
+            @Override
             public ListesNominativesResults createResults(RegDate dateTraitement) {
                 return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService);
             }
 
+            @Override
             public ListesNominativesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
                                                        AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
                 return new ListesNominativesThread(queue,
@@ -85,6 +88,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
                         hibernateTemplate);
             }
 
+            @Override
             public Iterator<Long> getIdIterator(Session session) {
                 return createIteratorOnIDsOfTiers(session, avecContribuables, avecDebiteurs);
             }

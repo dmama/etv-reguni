@@ -100,6 +100,7 @@ public class ComparerSituationFamilleProcessor {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
         final List<SituationFamilleMenageCommun> list = situationFamilleDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<SituationFamilleMenageCommun>>() {
+            @Override
             public List<SituationFamilleMenageCommun> doInHibernate(Session session) throws HibernateException {
                 final Criteria crit = session.createCriteria(SituationFamilleMenageCommun.class);
                 crit.add(Restrictions.in("id", batch));
@@ -138,9 +139,11 @@ public class ComparerSituationFamilleProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> idsMessage = situationFamilleDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryMessage);
 						//noinspection unchecked

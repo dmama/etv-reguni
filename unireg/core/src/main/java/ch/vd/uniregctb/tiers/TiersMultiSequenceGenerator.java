@@ -48,6 +48,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * @see org.hibernate.id.SequenceHiLoGenerator#configure(org.hibernate.type.Type,
 	 *      java.util.Properties, org.hibernate.dialect.Dialect)
 	 */
+	@Override
 	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
 
 		dpiGenerator = createSequence(type, params, dialect, DebiteurPrestationImposable.FIRST_ID, DPI_SEQ_NAME);
@@ -76,6 +77,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * @see org.hibernate.id.SequenceHiLoGenerator#generate(org.hibernate.engine.SessionImplementor,
 	 *      java.lang.Object)
 	 */
+	@Override
 	public synchronized Serializable generate(SessionImplementor session, Object object) throws HibernateException {
 
 		Tiers tiers = (Tiers) object;
@@ -150,6 +152,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * @return String
 	 * @throws HibernateException
 	 */
+	@Override
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
 
 		List<String> sqlDropStrings = new ArrayList<String>();
@@ -167,6 +170,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * @return String[]
 	 * @throws HibernateException
 	 */
+	@Override
 	public String[] sqlCreateStrings(Dialect dialect) throws HibernateException {
 
 		List<String> sqlCreateStrings = new ArrayList<String>();
@@ -177,6 +181,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 		return sqlCreateStrings.toArray(new String[sqlCreateStrings.size()]);
 	}
 
+	@Override
 	public Object generatorKey() {
 		return CTB_SEQ_NAME;
 	}

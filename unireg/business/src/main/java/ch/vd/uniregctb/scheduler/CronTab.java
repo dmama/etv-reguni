@@ -60,6 +60,7 @@ public class CronTab implements InitializingBean {
 		this.scheduler = scheduler;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		
 		if (definitions == null || definitions.isEmpty()) {

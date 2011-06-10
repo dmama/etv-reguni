@@ -25,6 +25,7 @@ public class NoOfsTranslatorImpl implements NoOfsTranslator, InitializingBean {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int translateCommune(int noOfs) {
 		if (exposeNosTechniques) {
 			final Integer noTechnique = communes.get(noOfs);
@@ -42,6 +43,7 @@ public class NoOfsTranslatorImpl implements NoOfsTranslator, InitializingBean {
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		if (exposeNosTechniques) {

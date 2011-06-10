@@ -66,6 +66,7 @@ public class FusionListManagerImpl implements FusionListManager, MessageSourceAw
 	 * @param numeroNonHab
 	 * @return une vue FusionListView
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public FusionListView get(Long numeroNonHab) {
 		PersonnePhysique nonHab = (PersonnePhysique) tiersDAO.get(numeroNonHab);
@@ -89,6 +90,7 @@ public class FusionListManagerImpl implements FusionListManager, MessageSourceAw
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

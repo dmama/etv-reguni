@@ -134,6 +134,7 @@ public class TiersEditManagerTest extends WebTest {
 	public void testChangeModeCommunicationDebiteur() throws Exception {
 
 		final long dpiId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
 				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
@@ -168,6 +169,7 @@ public class TiersEditManagerTest extends WebTest {
 	public void testChangeCategorieImpotSource() throws Exception {
 
 		final long dpiId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
 				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));

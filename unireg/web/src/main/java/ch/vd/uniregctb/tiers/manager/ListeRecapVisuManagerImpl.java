@@ -52,6 +52,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 	 * @return un objet ListeRecapitulativeView
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ListeRecapDetailView get(Long numero) {
 		ListeRecapDetailView lrView = new ListeRecapDetailView();
@@ -120,6 +121,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 

@@ -29,23 +29,28 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 
 	private final Map<String, UniregCacheInterface> map = new HashMap<String, UniregCacheInterface>();
 
+	@Override
 	public UniregCacheInterface getCache(String name) {
 		return map.get(name);
 	}
 
+	@Override
 	public Collection<UniregCacheInterface> getCaches() {
 		return map.values();
 	}
 
+	@Override
 	public void register(UniregCacheInterface cache) {
 		Assert.isFalse(map.containsKey(cache.getName()));
 		map.put(cache.getName(), cache);
 	}
 
+	@Override
 	public void unregister(UniregCacheInterface cache) {
 		map.remove(cache.getName());
 	}
 
+	@Override
 	public Object getAttribute(String attribute) throws AttributeNotFoundException, MBeanException, ReflectionException {
 		final UniregCacheInterface cache = map.get(attribute);
 		if (cache == null) {
@@ -55,10 +60,12 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		return cache.buildStats().toString();
 	}
 
+	@Override
 	public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public AttributeList getAttributes(String[] attributes) {
 		AttributeList list = new AttributeList(attributes.length);
 		for (String a : attributes) {
@@ -68,10 +75,12 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		return list;
 	}
 
+	@Override
 	public AttributeList setAttributes(AttributeList attributes) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public Object invoke(String actionName, Object[] params, String[] signature) throws MBeanException, ReflectionException {
 		try {
 			if (actionName.startsWith("reset")) {
@@ -101,11 +110,13 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		}
 	}
 
+	@Override
 	public MBeanInfo getMBeanInfo() {
 
 		// Récupère la liste des caches, et on la trie pour éviter que l'ordre change entre deux appels
 		final List<UniregCacheInterface> caches = new ArrayList<UniregCacheInterface>(map.values());
 		Collections.sort(caches, new Comparator<UniregCacheInterface>() {
+			@Override
 			public int compare(UniregCacheInterface o1, UniregCacheInterface o2) {
 				return o1.getName().compareTo(o2.getName());
 			}

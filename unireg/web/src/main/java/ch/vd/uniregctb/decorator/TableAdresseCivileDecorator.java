@@ -6,6 +6,7 @@ import ch.vd.uniregctb.tiers.view.AdresseView;
 
 public class TableAdresseCivileDecorator extends TableEntityDecorator {
 
+	@Override
 	public String addRowClass() {
 
 		final String superClassAddRowClass = super.addRowClass();

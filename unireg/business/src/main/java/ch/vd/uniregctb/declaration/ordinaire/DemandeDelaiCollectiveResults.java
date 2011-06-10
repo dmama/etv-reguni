@@ -111,6 +111,7 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 		traites.add(new Traite(ctb.getNumero(), di.getId()));
 	}
 
+	@Override
 	public void addErrorException(Long idCtb, Exception e) {
 		errors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
 	}
@@ -152,6 +153,7 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 		errors.add(new Erreur(id, null, ErreurType.CTB_INCONNU, null));
 	}
 
+	@Override
 	public void addAll(DemandeDelaiCollectiveResults right) {
 		this.nbCtbsTotal += right.nbCtbsTotal;
 		this.traites.addAll(right.traites);

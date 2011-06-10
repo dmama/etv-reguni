@@ -139,6 +139,7 @@ public class ValidationJob extends JobDefinition {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
 				return tiersDAO.getHibernateTemplate().find("select cont.numero from Contribuable as cont order by cont.numero asc");
@@ -207,6 +208,7 @@ public class ValidationJob extends JobDefinition {
 		statusManager.setMessage("Génération du rapport...");
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
 		final ValidationJobRapport rapport = t.execute(new TransactionCallback<ValidationJobRapport>() {
+			@Override
 			public ValidationJobRapport doInTransaction(TransactionStatus s) {
 				return rapportService.generateRapport(results, statusManager);
 			}

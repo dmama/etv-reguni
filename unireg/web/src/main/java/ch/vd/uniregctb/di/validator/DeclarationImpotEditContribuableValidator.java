@@ -11,11 +11,13 @@ public class DeclarationImpotEditContribuableValidator implements Validator {
 
 	private DeclarationImpotEditManager diEditManager;
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return DeclarationImpotListView.class.equals(clazz);
 	}
 
+	@Override
 	public void validate(Object target, Errors errors) {
 		DeclarationImpotListView diView = (DeclarationImpotListView) target;
 

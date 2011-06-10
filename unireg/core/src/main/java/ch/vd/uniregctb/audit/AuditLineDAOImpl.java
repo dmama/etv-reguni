@@ -37,9 +37,11 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		super(AuditLine.class);
 	}
 
+	@Override
 	public List<AuditLine> find(final AuditLineCriteria criterion, final ParamPagination paramPagination) {
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<AuditLine>>() {
+			@Override
 			public List<AuditLine> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				String query = buildSql(criterion);
@@ -101,17 +103,20 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		return clauseOrder;
 	}
 
+	@Override
 	public int count(AuditLineCriteria criteria) {
 		final String query = "select count(*) " + buildSql(criteria);
 		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<AuditLine> findLastCountFromID(final long id, final int count) {
 
 		final String query = "FROM AuditLine line WHERE line.id >= :start ORDER BY line.id DESC";
 
 		final List<AuditLine> list = getHibernateTemplate().execute(new HibernateCallback<List<AuditLine>>() {
+			@Override
 			public List<AuditLine> doInHibernate(Session session) throws HibernateException {
 				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("start", id);
@@ -123,12 +128,14 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		return list;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	public List<AuditLine> find(final long evenementCivilId) {
 
 		final String query = "FROM AuditLine line WHERE line.evenementId = :id ORDER BY line.id ASC";
 
 		final List<AuditLine> list = getHibernateTemplate().execute(new HibernateCallback<List<AuditLine>>() {
+			@Override
 			public List<AuditLine> doInHibernate(Session session) throws HibernateException {
 				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("id", evenementCivilId);
@@ -143,6 +150,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	 *
 	 * @see ch.vd.uniregctb.audit.AuditLineDAO#insertLineInNewTx(ch.vd.uniregctb.audit.AuditLine)
 	 */
+	@Override
 	public void insertLineInNewTx(final AuditLine line) {
 
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
@@ -200,6 +208,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		nextValSql = dialect.getSequenceNextValString("hibernate_sequence");
 	}
 
+	@Override
 	public int purge(final RegDate seuilPurge) {
 		Assert.notNull(seuilPurge);
 

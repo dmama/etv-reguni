@@ -165,6 +165,7 @@ public class RapportPrestationImposable extends RapportEntreTiers {
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.tiers.RapportEntreTiers#duplicate()
 	 */
+	@Override
 	public RapportEntreTiers duplicate() {
 		return new RapportPrestationImposable(this);
 	}

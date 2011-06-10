@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.utils;
 
-import java.util.Date;
-
 import javax.servlet.jsp.PageContext;
+import java.util.Date;
 
 import org.displaytag.decorator.DisplaytagColumnDecorator;
 import org.displaytag.exception.DecoratorException;
@@ -13,6 +12,7 @@ import ch.vd.registre.base.date.DateHelper;
 public class LongDateWrapper implements DisplaytagColumnDecorator {
 
 	
+	@Override
 	public Object decorate(Object columnValue, PageContext pageContext, MediaTypeEnum media) throws DecoratorException
 
 	{

@@ -23,6 +23,7 @@ public class ReceptionDossierArchives extends ReceptionDossier implements Elemen
 		return Localisation.ARCHIVES;
 	}
 
+	@Override
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "BORDEREAU_ID", insertable = false, updatable = false, nullable = true)
 	@Index(name = "IDX_MVT_DOSSIER_BORD_ID", columnNames = "BORDEREAU_ID")
@@ -30,6 +31,7 @@ public class ReceptionDossierArchives extends ReceptionDossier implements Elemen
 		return bordereau;
 	}
 
+	@Override
 	public void setBordereau(BordereauMouvementDossier bordereau) {
 		this.bordereau = bordereau;
 	}

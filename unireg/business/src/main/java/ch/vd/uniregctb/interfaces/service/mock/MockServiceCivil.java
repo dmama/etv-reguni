@@ -574,6 +574,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return adressesActives;
 	}
 
+	@Override
 	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 		final MockIndividu individu = getIndividu(noIndividu);
 		if (individu != null) {
@@ -592,6 +593,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		}
 	}
 
+	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
 		for (Long noIndividu : nosIndividus) {
@@ -603,6 +605,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return individus;
 	}
 
+	@Override
 	public boolean isWarmable() {
 		return false;
 	}

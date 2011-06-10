@@ -53,10 +53,12 @@ public class ResolutionAdresseResults extends JobResults<Long, ResolutionAdresse
 		this.dateTraitement = dateTraitement;
 	}
 
+	@Override
 	public void addErrorException(Long adresseId, Exception e) {
 		erreurs.add(new Erreur(adresseId, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(ResolutionAdresseResults right) {
 		this.nbAdresseTotal += right.nbAdresseTotal;
 		this.listeAdresseResolues.addAll(right.listeAdresseResolues);

@@ -25,6 +25,7 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 				throw new NotImplementedException();
 			}
 
+			@Override
 			public RapportEntreTiers duplicate() {
 				throw new NotImplementedException();
 			}

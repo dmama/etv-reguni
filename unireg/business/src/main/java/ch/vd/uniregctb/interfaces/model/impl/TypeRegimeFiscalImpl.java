@@ -24,6 +24,7 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal {
 		return new TypeRegimeFiscalImpl(type.getCode(), type.getLibelle(), type.getLibelleAbrege());
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}
@@ -32,6 +33,7 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal {
 		this.code = code;
 	}
 
+	@Override
 	public String getLibelle() {
 		return libelle;
 	}
@@ -40,6 +42,7 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal {
 		this.libelle = libelle;
 	}
 
+	@Override
 	public String getLibelleAbrege() {
 		return libelleAbrege;
 	}

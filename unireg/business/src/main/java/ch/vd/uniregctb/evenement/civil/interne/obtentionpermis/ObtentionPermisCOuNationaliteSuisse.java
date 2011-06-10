@@ -116,6 +116,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 * Traite l'événement passé en paramètre.
 	 *
 	 */
+	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = getIndividu();

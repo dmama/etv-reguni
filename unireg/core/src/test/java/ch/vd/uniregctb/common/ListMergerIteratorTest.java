@@ -14,6 +14,7 @@ public class ListMergerIteratorTest extends WithoutSpringTest {
 	 * Comparateur naturel des entiers
 	 */
 	private static final Comparator<Integer> COMPARATOR = new Comparator<Integer>() {
+		@Override
 		public int compare(Integer o1, Integer o2) {
 			return o1 - o2;
 		}
@@ -119,6 +120,7 @@ public class ListMergerIteratorTest extends WithoutSpringTest {
 	 * Comparateur sur les objets Data qui ne considère que l'ordre naturel de leur valeur
 	 */
 	private static final Comparator<Data> DATA_COMPARATOR = new Comparator<Data>() {
+		@Override
 		public int compare(Data o1, Data o2) {
 			return o1.valeur - o2.valeur;
 		}

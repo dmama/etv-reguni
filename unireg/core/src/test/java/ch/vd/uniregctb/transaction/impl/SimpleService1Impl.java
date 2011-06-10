@@ -11,6 +11,7 @@ public class SimpleService1Impl extends SimpleServiceImpl implements SimpleServi
 
 	private static Logger LOGGER = Logger.getLogger(SimpleService1Impl.class);
 
+	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
 	public void insertLineRequiresNew(int id, String msg) {
 
@@ -19,6 +20,7 @@ public class SimpleService1Impl extends SimpleServiceImpl implements SimpleServi
 		//readLine(id);
 	}
 
+	@Override
 	public void updateLineException(int id, String msg) {
 		LOGGER.info("updateLineException("+id+", "+msg+")");
 		dao.updateData(id, msg);

@@ -8,10 +8,8 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -41,6 +39,7 @@ public class PdfListeNoteRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 					table.addLigne("Période fiscale :", String.valueOf(results.getPeriode()));
@@ -57,6 +56,7 @@ public class PdfListeNoteRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de contribuables analysés :", String.valueOf(results.nbContribuable));
 					table.addLigne("Nombre de fors succeptibles de déclencher une note  :", String.valueOf(results.listeContribuableAvecNote.size()));

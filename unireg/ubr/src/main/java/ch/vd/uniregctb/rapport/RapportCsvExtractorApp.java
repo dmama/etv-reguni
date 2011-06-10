@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import com.lowagie.text.pdf.PRStream;
+import com.lowagie.text.pdf.PdfDictionary;
+import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfObject;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfString;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -20,13 +26,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.log4j.PropertyConfigurator;
-
-import com.lowagie.text.pdf.PRStream;
-import com.lowagie.text.pdf.PdfDictionary;
-import com.lowagie.text.pdf.PdfName;
-import com.lowagie.text.pdf.PdfObject;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfString;
 
 /**
  * Petit utilitaire qui extrait les fichiers csv inclus dans un rapport PDF généré par UNIREG
@@ -81,6 +80,7 @@ public class RapportCsvExtractorApp {
 		try {
 			final PdfReader reader = ouvrirFichierPdf(pdffile);
 			boucleSurFichiers(PdfDictionary.class, reader, new Traitement<PdfDictionary>() {
+				@Override
 				public void traite(PdfDictionary element) {
 					if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
 						System.out.println(element.getAsString(PdfName.F));
@@ -102,6 +102,7 @@ public class RapportCsvExtractorApp {
 			// on remplit d'abord la liste des noms
 			final List<PdfString> noms = new ArrayList<PdfString>();
 			boucleSurFichiers(PdfDictionary.class, reader, new Traitement<PdfDictionary>() {
+				@Override
 				public void traite(PdfDictionary element) {
 					if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
 						noms.add(element.getAsString(PdfName.F));
@@ -121,6 +122,7 @@ public class RapportCsvExtractorApp {
 			final Set<String> cvsAExtraire = new HashSet<String>(Arrays.asList(cvsfiles));
 			final MutableInt index = new MutableInt(0);
 			boucleSurFichiers(PRStream.class, reader, new Traitement<PRStream>() {
+				@Override
 				public void traite(PRStream element) {
 					if (PdfName.EMBEDDEDFILE.equals(element.get(PdfName.TYPE))) {
 						final String nomFichierExtrait = noms.get(index.intValue()).toString();

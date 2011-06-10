@@ -11,6 +11,7 @@ public class MockCompteBancaire implements CompteBancaire {
 	private Format format;
 	private String nomInstitution;
 
+	@Override
 	public String getNumero() {
 		return numero;
 	}
@@ -19,6 +20,7 @@ public class MockCompteBancaire implements CompteBancaire {
 		this.numero = numero;
 	}
 
+	@Override
 	public Format getFormat() {
 		return format;
 	}
@@ -27,6 +29,7 @@ public class MockCompteBancaire implements CompteBancaire {
 		this.format = format;
 	}
 
+	@Override
 	public String getNomInstitution() {
 		return nomInstitution;
 	}

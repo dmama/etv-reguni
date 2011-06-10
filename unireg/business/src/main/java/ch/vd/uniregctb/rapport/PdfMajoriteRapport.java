@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution d'un job d'ouverture des fors des habitants majeurs
@@ -37,6 +38,7 @@ public class PdfMajoriteRapport extends PdfRapport {
         document.addEntete1("Paramètres");
         {
             document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+                @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
                 }
@@ -52,6 +54,7 @@ public class PdfMajoriteRapport extends PdfRapport {
             }
 
             document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+                @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Nombre total d'habitants:", String.valueOf(results.nbHabitantsTotal));
                     table.addLigne("Nombre d'habitants traités:", String.valueOf(results.habitantTraites.size()));

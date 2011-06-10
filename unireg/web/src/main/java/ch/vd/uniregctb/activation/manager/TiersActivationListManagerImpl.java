@@ -12,6 +12,7 @@ public class TiersActivationListManagerImpl implements TiersActivationListManage
 	 * @param activation
 	 * @return
 	 */
+	@Override
 	public TiersActivationListView get(String activation) {
 		TiersActivationListView bean;
 		bean = new TiersActivationListView();

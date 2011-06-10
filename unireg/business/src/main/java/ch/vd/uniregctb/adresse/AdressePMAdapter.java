@@ -41,10 +41,12 @@ public class AdressePMAdapter implements AdresseGenerique {
 		DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
 	}
 
+	@Override
 	public String getCasePostale() {
 		return null;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		if (debutValiditeSurcharge == null) {
 			return adresse.getDateDebutValidite();
@@ -54,6 +56,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 		}
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		if (finValiditeSurcharge == null) {
 			return adresse.getDateFinValidite();
@@ -63,58 +66,72 @@ public class AdressePMAdapter implements AdresseGenerique {
 		}
 	}
 
+	@Override
 	public String getLocalite() {
 		return adresse.getLocaliteAbregeMinuscule();
 	}
 
+	@Override
 	public String getLocaliteComplete() {
 		return adresse.getLocaliteAbregeMinuscule();
 	}
 
+	@Override
 	public String getNumero() {
 		return adresse.getNumeroMaison();
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return null;
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return null;
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return 0;
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return adresse.getNumeroPostal();
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return null;
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		return adresse.getPays() == null ? ServiceInfrastructureService.noOfsSuisse : adresse.getPays().getNoOFS();
 	}
 
+	@Override
 	public String getRue() {
 		return adresse.getRue();
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}
 
+	@Override
 	public String getComplement() {
 		return adresse.getComplement();
 	}
 
+	@Override
 	public boolean isDefault() {
 		return isDefault;
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		// devra changer si un jour les adresses d'entreprises pointent
 		// directement vers une commune...
@@ -126,34 +143,42 @@ public class AdressePMAdapter implements AdresseGenerique {
 		return null;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return null;
 	}
 
+	@Override
 	public String getAnnulationUser() {
 		return null;
 	}
 
+	@Override
 	public Date getLogCreationDate() {
 		return null;
 	}
 
+	@Override
 	public String getLogCreationUser() {
 		return null;
 	}
 
+	@Override
 	public Timestamp getLogModifDate() {
 		return null;
 	}
 
+	@Override
 	public String getLogModifUser() {
 		return null;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return false;
 	}
@@ -163,10 +188,12 @@ public class AdressePMAdapter implements AdresseGenerique {
 		return DateRangeHelper.toString(this);
 	}
 
+	@Override
 	public Long getId() {
 		return null;
 	}
 
+	@Override
 	public boolean isPermanente() {
 		return false;
 	}

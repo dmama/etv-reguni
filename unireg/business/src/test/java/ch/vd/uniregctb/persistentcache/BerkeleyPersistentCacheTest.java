@@ -128,6 +128,7 @@ public class BerkeleyPersistentCacheTest extends WithoutSpringTest {
 			this.complement = complement;
 		}
 
+		@Override
 		public long getId() {
 			return id;
 		}
@@ -136,6 +137,7 @@ public class BerkeleyPersistentCacheTest extends WithoutSpringTest {
 			this.id = id;
 		}
 
+		@Override
 		public String getComplement() {
 			return complement;
 		}

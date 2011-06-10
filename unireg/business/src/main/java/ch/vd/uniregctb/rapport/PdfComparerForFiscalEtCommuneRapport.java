@@ -12,7 +12,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
-import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 
 /**
  * Rapport PDF d'exécution du batch de comparaison du dernier for fiscal et de la commune de résidence
@@ -36,6 +35,7 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 				}
@@ -51,6 +51,7 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de contribuables analysés :", String.valueOf(results.nbCtbTotal));
 					table.addLigne("Nombre de communes différentes  :", String.valueOf(results.listeCommunesDifferentes.size()));

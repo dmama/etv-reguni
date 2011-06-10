@@ -25,6 +25,7 @@ public abstract class MockEntityOFS implements EntiteOFS {
 		this.nomMinuscule = nomMinuscule;
 	}
 
+	@Override
 	public int getNoOFS() {
 		return noOFS;
 	}
@@ -33,6 +34,7 @@ public abstract class MockEntityOFS implements EntiteOFS {
 		this.noOFS = noOFS;
 	}
 
+	@Override
 	public String getNomMajuscule() {
 		return nomMajuscule;
 	}
@@ -41,6 +43,7 @@ public abstract class MockEntityOFS implements EntiteOFS {
 		this.nomMajuscule = nomMajuscule;
 	}
 
+	@Override
 	public String getNomMinuscule() {
 		return nomMinuscule;
 	}
@@ -49,6 +52,7 @@ public abstract class MockEntityOFS implements EntiteOFS {
 		this.nomMinuscule = nomMinuscule;
 	}
 
+	@Override
 	public String getSigleOFS() {
 		return sigleOFS;
 	}

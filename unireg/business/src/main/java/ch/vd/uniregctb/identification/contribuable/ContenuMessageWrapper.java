@@ -14,6 +14,7 @@ public class ContenuMessageWrapper implements FichierOrigine{
      *     possible object is
      *     byte[]
      */
+    @Override
     public byte[] getContent() {
         return content;
     }
@@ -37,6 +38,7 @@ public class ContenuMessageWrapper implements FichierOrigine{
      *     {@link String }
      *
      */
+    @Override
     public String getExtension() {
         return extension;
     }
@@ -61,6 +63,7 @@ public class ContenuMessageWrapper implements FichierOrigine{
      *     {@link String }
      *
      */
+    @Override
     public String getMimeType() {
         return mimeType;
     }

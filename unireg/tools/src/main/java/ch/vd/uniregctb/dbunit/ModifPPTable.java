@@ -31,14 +31,17 @@ public class ModifPPTable implements ITable {
 		this.addColumnMetaData = new AddColumnTableMetaData(table.getTableMetaData(), addColumnName, addColumnType, oldColumnName, newColumnName);
 	}
 	
+	@Override
 	public int getRowCount() {
 		return table.getRowCount();
 	}
 
+	@Override
 	public ITableMetaData getTableMetaData() {
 		return addColumnMetaData;
 	}
 
+	@Override
 	public Object getValue(int row, String column) throws DataSetException {
 		if (addColumnName.equals(column)) {
 			if (table.getValue(row, modifColumnName).equals("Habitant")) {
@@ -81,6 +84,7 @@ public class ModifPPTable implements ITable {
 			this.columns = null;
 		}
 		
+		@Override
 		public Column[] getColumns() throws DataSetException {
 			if (columns == null) {
 				columns = addColumns(metaData, addColumnName, addColumnType);
@@ -103,10 +107,12 @@ public class ModifPPTable implements ITable {
 			return l.toArray(new Column[] {});
 		}
 
+		@Override
 		public Column[] getPrimaryKeys() throws DataSetException {
 			return metaData.getPrimaryKeys();
 		}
 
+		@Override
 		public String getTableName() {
 			return metaData.getTableName();
 		}

@@ -269,6 +269,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		 * Comparateur par date d'ouverture croissante, puis principal/non-principal, puis motif de rattachement
 		 */
 		private static final Comparator<InfoFor> COMPARATOR_OUVERTURE = new Comparator<InfoFor>() {
+			@Override
 			public int compare(InfoFor o1, InfoFor o2) {
 				int compare = NullDateBehavior.EARLIEST.compare(o1.dateOuverture, o2.dateOuverture);
 				if (compare == 0) {
@@ -285,6 +286,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		 * Comparateur par date de fermeture décroissante, puis principal/non-principal puis motif de rattachement
 		 */
 		private static final Comparator<InfoFor> COMPARATOR_FERMETURE = new Comparator<InfoFor>() {
+			@Override
 			public int compare(InfoFor o1, InfoFor o2) {
 				int compare = - NullDateBehavior.LATEST.compare(o1.dateFermeture, o2.dateFermeture);
 				if (compare == 0) {
@@ -298,6 +300,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		};
 
 		private static final Comparator<InfoFor> COMPARATOR_GESTION = new Comparator<InfoFor>() {
+			@Override
 			public int compare(InfoFor o1, InfoFor o2) {
 				int compare = - NullDateBehavior.LATEST.compare(o1.dateFermeture, o2.dateFermeture);
 				if (compare == 0) {
@@ -476,14 +479,17 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 			this.ofsCommune = ofsCommune;
 		}
 
+		@Override
 		public RegDate getDateDebut() {
 			return dateOuverture;
 		}
 
+		@Override
 		public RegDate getDateFin() {
 			return dateFermeture;
 		}
 
+		@Override
 		public boolean isValidAt(RegDate date) {
 			return RegDateHelper.isBetween(date, dateOuverture, dateFermeture, NullDateBehavior.LATEST);
 		}
@@ -538,6 +544,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		}
 	}
 
+	@Override
 	public void addErrorException(Long id, Exception e) {
 		ctbsEnErrors.add(new Erreur(id, null, ErreurType.EXCEPTION, buildErrorMessage(e)));
 	}
@@ -558,6 +565,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.SOURCIER_GRIS, null));
 	}
 
+	@Override
 	public void addAll(ProduireRolesResults rapport) {
 		if (rapport != null) {
 			this.ctbsTraites += rapport.ctbsTraites;

@@ -1,21 +1,25 @@
 package ch.vd.uniregctb.indexer.jdbc;
 
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
-import ch.vd.uniregctb.indexer.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.TopDocs;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import java.util.ArrayList;
-import java.util.List;
+import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
+import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.indexer.IndexableData;
+import ch.vd.uniregctb.indexer.SearchCallback;
+
+import static junit.framework.Assert.assertEquals;
 
 
 public class IndexerTransactionalTest extends BusinessTest {
@@ -40,6 +44,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 			this.date = date;
 		}
 
+		@Override
 		public String getSubType() {
 			return subType;
 		}
@@ -70,6 +75,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Ajout des entités
@@ -110,6 +116,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				// Remplace une entité
 				{
@@ -181,6 +188,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 	private void assertHits(final int count, String query) {
 		globalIndex.search(query, maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				assertEquals(count, hits.totalHits);
 			}

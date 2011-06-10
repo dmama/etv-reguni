@@ -209,34 +209,42 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		this.nomMinusculeOFS = nomMinusculeOFS;
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
 	}
 
+	@Override
 	public int getNoOFSEtendu() {
 		return getNoOFS();
 	}
 
+	@Override
 	public int getNumTechMere() {
 		throw new RuntimeException("Not implemented!");
 	}
 
+	@Override
 	public String getSigleCanton() {
 		return sigleCanton;
 	}
 
+	@Override
 	public boolean isVaudoise() {
 		return VAUD.equals(sigleCanton);
 	}
 
+	@Override
 	public boolean isFraction() {
 		return false;
 	}
 
+	@Override
 	public boolean isPrincipale() {
 		return false;
 	}

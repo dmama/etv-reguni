@@ -11,6 +11,7 @@ public class RegDatePropertyType extends UserTypePropertyType {
 		this.regDateUserType = regDateUserType;
 	}
 
+	@Override
 	public String getConvertMethod(String value) {
 		return "RegDate.fromIndex(" + value + ", " + (regDateUserType.isAllowPartial() ? "true" : "false") + ")";
 	}

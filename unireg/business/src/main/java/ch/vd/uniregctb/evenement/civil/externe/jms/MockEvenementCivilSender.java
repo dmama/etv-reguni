@@ -7,6 +7,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
  */
 public class MockEvenementCivilSender implements EvenementCivilSender {
 	
+	@Override
 	public void sendEvent(EvenementCivilExterne evenement, String businessUser) throws Exception {
 		// nothing
 	}

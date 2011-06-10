@@ -41,6 +41,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		File dir = new File(storeDir);
 		if (!dir.exists() && !dir.mkdirs()) {
@@ -48,6 +49,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		}
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public T get(ObjectKey key) {
 
@@ -135,6 +137,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		return dir.toString();
 	}
 
+	@Override
 	public void put(ObjectKey key, T object) {
 
 		// on crée le répertoire où sera stocké le fichier
@@ -174,6 +177,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		moveFileTo(tempfile, filename);
 	}
 
+	@Override
 	public void putAll(Map<? extends ObjectKey, T> objectKeyTMap) {
 		for (Map.Entry<? extends ObjectKey, T> entry : objectKeyTMap.entrySet()) {
 			put(entry.getKey(), entry.getValue());
@@ -224,6 +228,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		}
 	}
 
+	@Override
 	public void removeAll(final long id) {
 
 		final String directory = calculateDir(id);
@@ -233,6 +238,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		}
 
 		final File[] files = dir.listFiles(new FilenameFilter() {
+			@Override
 			public boolean accept(File dir, String name) {
 				return name.startsWith(String.valueOf(id) + '_');
 			}
@@ -246,6 +252,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		}
 	}
 
+	@Override
 	public void clear() {
 		final File dir = new File(storeDir);
 		try {
@@ -256,6 +263,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		}
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new SimpleCacheStats(stats);
 	}

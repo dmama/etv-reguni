@@ -156,6 +156,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		this.urlRetour = urlRetour;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		JspTagBandeauTiers.messageSource = messageSource;
 	}
@@ -198,6 +199,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(new TransactionCallback<String>() {
+			@Override
 			public String doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly();
 

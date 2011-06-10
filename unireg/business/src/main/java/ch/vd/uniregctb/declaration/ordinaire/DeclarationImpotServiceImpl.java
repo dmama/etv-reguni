@@ -185,6 +185,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status)
 			throws DeclarationException {
 
@@ -196,6 +197,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, StatusManager status)
 			throws DeclarationException {
 
@@ -207,6 +209,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public StatistiquesDIs produireStatsDIs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 
 		final ProduireStatsDIsProcessor processor = new ProduireStatsDIsProcessor(hibernateTemplate, infraService, transactionManager, diDAO);
@@ -216,6 +219,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 
 		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager);
@@ -225,6 +229,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status)
 			throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
@@ -236,6 +241,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EchoirDIsResults echoirDIsHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final EchoirDIsProcessor processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, this, transactionManager);
 		return processor.run(dateTraitement, status);
@@ -244,6 +250,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 		EditiqueResultat resultat;
 		try {
@@ -270,6 +277,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
 		final EditiqueResultat resultat;
 		try {
@@ -288,6 +296,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	public void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 		try {
 			editiqueCompositionService.imprimeDIForBatch(declaration, dateEvenement);
@@ -301,6 +310,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void envoiSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
 		try {
 			editiqueCompositionService.imprimeSommationDIForBatch(declaration,miseSousPliImpossible, dateEvenement);
@@ -314,6 +324,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement) {
 		EtatDeclaration etat = new EtatDeclarationEchue();
 		etat.setDateObtention(dateTraitement);
@@ -329,6 +340,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @param dateEvenement
 	 * @return
 	 */
+	@Override
 	public DeclarationImpotOrdinaire retourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement) {
 		if (!dateEvenement.equals(di.getDateRetour())) {
 			if (di.getDateRetour() != null) {
@@ -351,6 +363,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @param dateEvenement
 	 * @return
 	 */
+	@Override
 	public DeclarationImpotOrdinaire sommationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
 		DeclarationImpotOrdinaire diRtr = null;
 		// TODO (fnr) Factorisation de la sommation d'une DI
@@ -366,6 +379,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @param dateEvenement
 	 * @return
 	 */
+	@Override
 	public DeclarationImpotOrdinaire taxationOffice(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
 		DeclarationImpotOrdinaire diRtr = null;
 		// TODO (fde) Factorisation de la taxation d'office
@@ -381,6 +395,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @param dateEvenement
 	 * @return
 	 */
+	@Override
 	public DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
 		di.setAnnule(true);
 		evenementFiscalService.publierEvenementFiscalAnnulationDI(contribuable, di, dateEvenement);
@@ -390,6 +405,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EnvoiSommationsDIsResults envoyerSommations(final RegDate dateTraitement, final boolean miseSousPliImpossible, final Integer nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
 		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager);
@@ -398,6 +414,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	}
 
+	@Override
 	public InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
 		String nomDocument = construitIdArchivageSommationDI(di);
 		InputStream pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
@@ -416,6 +433,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises
 	 * n'ont pas encore été imprimées
 	 */
+	@Override
 	public ImpressionChemisesTOResults envoiChemisesTaxationOffice(int nombreMax, Integer noColOid, StatusManager status) {
 		final ImpressionChemisesTOProcessor processor = new ImpressionChemisesTOProcessor(hibernateTemplate, diDAO, transactionManager, editiqueCompositionService, infraService);
 		return processor.run(nombreMax, noColOid, status);
@@ -459,6 +477,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(List<Long> ids, int annee, RegDate dateDelai,
 		RegDate dateTraitement, StatusManager s) {
 		DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager);
@@ -468,6 +487,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
 		ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager, tiersService, adresseService, infraService);
 		return processor.run(dateTraitement, annee, nbThreads, statusManager);

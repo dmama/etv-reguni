@@ -1,5 +1,13 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -8,8 +16,6 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-
-import java.util.*;
 
 /**
  * Itérateur qui détermine et retourne tous les événements existants sur des fors fiscaux pour une période données. Un événement correspondant à une ouverture ou une fermeture de for fiscal.
@@ -91,6 +97,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 			}
 		}
 		Collections.sort(fors, new Comparator<ForFiscal>() {
+			@Override
 			public int compare(ForFiscal o1, ForFiscal o2) {
 				if (o1.getDateFin() == null && o2.getDateFin() == null) {
 					return 0;
@@ -125,6 +132,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 			}
 		}
 		Collections.sort(fors, new Comparator<ForFiscal>() {
+			@Override
 			public int compare(ForFiscal o1, ForFiscal o2) {
 				return o1.getDateDebut().compareTo(o2.getDateDebut());
 			}
@@ -270,16 +278,19 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 		return new ForsAt(principal, secondaires);
 	}
 
+	@Override
 	public boolean hasNext() {
 		return next != null;
 	}
 
+	@Override
 	public EvenementFors next() {
 		EvenementFors n = next;
 		fetchNext();
 		return n;
 	}
 
+	@Override
 	public void remove() {
 		throw new NotImplementedException();
 	}

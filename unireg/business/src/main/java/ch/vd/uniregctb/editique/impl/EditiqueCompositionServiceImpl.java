@@ -118,10 +118,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return annexes;
 	}
 
+	@Override
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
 		return imprimeDIOnline(declaration, dateEvenement, null, buildDefaultAnnexes(declaration), false, true);
 	}
 
+	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
 		return imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true, false);
 	}
@@ -152,6 +154,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 	}
 
+	@Override
 	public void imprimeDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
@@ -173,6 +176,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
 	}
 
+	@Override
 	public void imprimeLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
 		final FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, null);
 		final String typeDocument = impressionLRHelper.calculPrefixe();
@@ -180,6 +184,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
 	}
 
+	@Override
 	public EditiqueResultat imprimeNouveauxDossiers(List<Contribuable> contribuables) throws EditiqueException, JMSException {
 		final String prefixe = impressionNouveauxDossiersHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionNouveauxDossiersHelper.remplitNouveauDossier(contribuables);
@@ -187,6 +192,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PDF, document, false);
 	}
 
+	@Override
 	public void imprimeSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException {
 		final String typeDocument = impressionSommationDIHelper.calculPrefixe();
 		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(declaration, miseSousPliImpossible, dateEvenement);
@@ -195,6 +201,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
 	}
 
+	@Override
 	public void imprimeSommationLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
 		final String typeDocument = impressionSommationLRHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
@@ -202,6 +209,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
 	}
 
+	@Override
 	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
 		final String typeDocument = impressionSommationDIHelper.calculPrefixe();
 		final String[] infoOperateur = getInfoOperateur();
@@ -247,6 +255,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return tel;
 	}
 
+	@Override
 	public EditiqueResultat imprimeSommationLROnline(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException, JMSException {
 		final String typeDocument = impressionSommationLRHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
@@ -254,6 +263,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PCL, document, true);
 	}
 
+	@Override
 	public EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinaire di, DelaiDeclaration delai) throws EditiqueException, JMSException {
 		final String typeDocument = impressionConfirmationDelaiHelper.calculPrefixe();
 		final String[] infoOperateur = getInfoOperateur();
@@ -263,6 +273,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PDF, document, false);
 	}
 
+	@Override
 	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException {
 		String[] traitePar = getInfoOperateur();
 		FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
@@ -271,6 +282,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, TypeFormat.PCL, document, false);
 	}
 
+	@Override
 	public EditiqueResultat imprimeTaxationOfficeOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException {
 		final String prefixe = impressionTaxationOfficeHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionTaxationOfficeHelper.remplitTaxationOffice(declaration);
@@ -278,6 +290,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PCL, document, false);
 	}
 
+	@Override
 	public void imprimeTaxationOfficeBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 		final String typeDocument = impressionTaxationOfficeHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionTaxationOfficeHelper.remplitTaxationOffice(declaration);
@@ -285,6 +298,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
 	}
 
+	@Override
 	public EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereau) throws EditiqueException, JMSException {
 		final String prefixe = impressionBordereauMouvementDossierHelper.calculePrefixe();
 		final String[] infoOperateur = getInfoOperateur();

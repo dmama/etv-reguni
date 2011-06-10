@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
 
 /**
  * Rapport PDF contenant les résultats de la génération des listes nominatives.
@@ -33,6 +34,7 @@ public class PdfEnvoiLRsRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 					table.addLigne("Date de fin de période:", results.getMoisFinPeriode());
@@ -49,6 +51,7 @@ public class PdfEnvoiLRsRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de débiteurs :", String.valueOf(results.nbDPIsTotal));
 					table.addLigne("Nombre LR générées :", String.valueOf(results.LRTraitees.size()));

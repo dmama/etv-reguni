@@ -119,6 +119,7 @@ public class JoursFeriesProviderImpl implements JoursFeriesProvider {
 
 
 
+	@Override
 	public List<RegDate> getDatesJoursFeries(int annee) {
 		ArrayList<RegDate> joursFeries = new ArrayList<RegDate>(9);
 		joursFeries.add(getNouvelAn(annee));

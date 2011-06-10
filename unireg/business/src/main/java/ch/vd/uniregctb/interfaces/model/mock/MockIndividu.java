@@ -62,6 +62,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		limitPartsToBeforeYear(annee, parts);
 	}
 
+	@Override
 	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
 		return adoptionsReconnaissances;
 	}
@@ -78,6 +79,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.conjoint = conjoint;
 	}
 
+	@Override
 	public RegDate getDateDeces() {
 		return dateDeces;
 	}
@@ -86,6 +88,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.dateDeces = dateDeces;
 	}
 
+	@Override
 	public RegDate getDateNaissance() {
 		return dateNaissance;
 	}
@@ -94,10 +97,12 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.dateNaissance = dateNaissance;
 	}
 
+	@Override
 	public boolean isMineur(RegDate date) {
 		return dateNaissance != null && dateNaissance.addYears(18).compareTo(date) > 0;
 	}
 
+	@Override
 	public HistoriqueIndividu getDernierHistoriqueIndividu() {
 		return dernierHistoriqueIndividu;
 	}
@@ -106,6 +111,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.dernierHistoriqueIndividu = dernierHistoriqueIndividu;
 	}
 
+	@Override
 	public Collection<Individu> getEnfants() {
 		return enfants;
 	}
@@ -114,10 +120,12 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.enfants = enfants;
 	}
 
+	@Override
 	public EtatCivilList getEtatsCivils() {
 		return etatsCivils;
 	}
 
+	@Override
 	public EtatCivil getEtatCivilCourant() {
 
 		EtatCivil etatCivilCourant = null;
@@ -133,6 +141,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return etatCivilCourant;
 	}
 
+	@Override
 	public EtatCivil getEtatCivil(RegDate date) {
 		if (etatsCivils == null) {
 			return null;
@@ -149,10 +158,12 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 	}
 
+	@Override
 	public Collection<HistoriqueIndividu> getHistoriqueIndividu() {
 		return historiqueIndividu;
 	}
 
+	@Override
 	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
 		if (historiqueIndividu == null || historiqueIndividu.isEmpty()) {
 			return null;
@@ -182,6 +193,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		dernierHistoriqueIndividu = h;
 	}
 
+	@Override
 	public Individu getMere() {
 		return mere;
 	}
@@ -190,6 +202,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.mere = mere;
 	}
 
+	@Override
 	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
@@ -198,6 +211,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nationalites = nationalites;
 	}
 
+	@Override
 	public long getNoTechnique() {
 		return noTechnique;
 	}
@@ -206,6 +220,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.noTechnique = noTechnique;
 	}
 
+	@Override
 	public String getNouveauNoAVS() {
 		return nouveauNoAVS;
 	}
@@ -214,6 +229,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nouveauNoAVS = nouveauNoAVS;
 	}
 
+	@Override
 	public String getNumeroRCE() {
 		return numeroRCE;
 	}
@@ -222,6 +238,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.numeroRCE = numeroRCE;
 	}
 
+	@Override
 	public Origine getOrigine() {
 		return origine;
 	}
@@ -230,6 +247,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.origine = origine;
 	}
 
+	@Override
 	public Individu getPere() {
 		return pere;
 	}
@@ -238,6 +256,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.pere = pere;
 	}
 
+	@Override
 	public Collection<Permis> getPermis() {
 		return permis;
 	}
@@ -246,6 +265,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.permis = permis;
 	}
 
+	@Override
 	public Tutelle getTutelle() {
 		return tutelle;
 	}
@@ -254,6 +274,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.tutelle = tutelle;
 	}
 
+	@Override
 	public boolean isSexeMasculin() {
 		return sexeMasculin;
 	}
@@ -262,6 +283,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.sexeMasculin = sexeMasculin;
 	}
 
+	@Override
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
 		super.copyPartsFrom(individu, parts);
 
@@ -292,6 +314,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 	}
 
+	@Override
 	public MockIndividu clone(Set<AttributeIndividu> parts) {
 		return cloneUntil(parts, RegDate.getLateDate().year());
 	}
@@ -300,6 +323,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return new MockIndividu(this, parts, annee);
 	}
 
+	@Override
 	public Permis getPermisActif(RegDate date) {
 		return IndividuHelper.getPermisActif(this, date);
 	}
@@ -309,32 +333,38 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	private static final Limitator<AdoptionReconnaissance> ADOPTION_LIMITATOR = new Limitator<AdoptionReconnaissance>() {
+		@Override
 		public boolean keep(AdoptionReconnaissance element, int annee) {
 			return (element.getDateAdoption() != null && element.getDateAdoption().year() <= annee)
 					|| (element.getDateReconnaissance() != null && element.getDateReconnaissance().year() <= annee);
 		}
 	};
 	private static final Limitator<Individu> ENFANT_LIMITATOR = new Limitator<Individu>() {
+		@Override
 		public boolean keep(Individu element, int annee) {
 			return element.getDateNaissance() == null || element.getDateNaissance().year() <= annee;
 		}
 	};
 	private static final Limitator<HistoriqueIndividu> HISTORIQUE_LIMITATOR = new Limitator<HistoriqueIndividu>() {
+		@Override
 		public boolean keep(HistoriqueIndividu element, int annee) {
 			return element.getDateDebutValidite() == null || element.getDateDebutValidite().year() <= annee;
 		}
 	};
 	private static final Limitator<Nationalite> NATIONALITE_LIMITATOR = new Limitator<Nationalite>() {
+		@Override
 		public boolean keep(Nationalite element, int annee) {
 			return element.getDateDebutValidite() == null || element.getDateDebutValidite().year() <= annee;
 		}
 	};
 	private static final Limitator<Permis> PERMIS_LIMITATOR = new Limitator<Permis>() {
+		@Override
 		public boolean keep(Permis element, int annee) {
 			return element.getDateDebutValidite() == null || element.getDateDebutValidite().year() <= annee;
 		}
 	};
 	private static final Limitator<Adresse> ADRESSE_LIMITATOR = new Limitator<Adresse>() {
+		@Override
 		public boolean keep(Adresse element, int annee) {
 			return element.getDateDebut() == null || element.getDateDebut().year() <= annee;
 		}
@@ -372,14 +402,17 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 				this.iterator = iterator;
 			}
 
+			@Override
 			public boolean hasNext() {
 				return iterator.hasNext();
 			}
 
+			@Override
 			public EtatCivil next() {
 				return iterator.next();
 			}
 
+			@Override
 			public void remove() {
 				checkNotFrozen();
 				iterator.remove();
@@ -392,27 +425,33 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 				super(iterator);
 			}
 
+			@Override
 			public boolean hasPrevious() {
 				return iterator.hasPrevious();
 			}
 
+			@Override
 			public EtatCivil previous() {
 				return iterator.previous();
 			}
 
+			@Override
 			public int nextIndex() {
 				return iterator.nextIndex();
 			}
 
+			@Override
 			public int previousIndex() {
 				return iterator.previousIndex();
 			}
 
+			@Override
 			public void set(EtatCivil o) {
 				checkNotFrozen();
 				iterator.set(o);
 			}
 
+			@Override
 			public void add(EtatCivil o) {
 				checkNotFrozen();
 				iterator.add(o);

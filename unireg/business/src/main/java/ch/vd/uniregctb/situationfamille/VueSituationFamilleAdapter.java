@@ -26,6 +26,7 @@ public abstract class VueSituationFamilleAdapter<T extends VueSituationFamille> 
 		return target;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		if (dateDebut == null) {
 			return target.getDateDebut();
@@ -35,6 +36,7 @@ public abstract class VueSituationFamilleAdapter<T extends VueSituationFamille> 
 		}
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		if (dateFin == null) {
 			return target.getDateFin();
@@ -44,30 +46,37 @@ public abstract class VueSituationFamilleAdapter<T extends VueSituationFamille> 
 		}
 	}
 
+	@Override
 	public Long getId() {
 		return target.getId();
 	}
 
+	@Override
 	public Integer getNombreEnfants() {
 		return target.getNombreEnfants();
 	}
 
+	@Override
 	public Source getSource() {
 		return target.getSource();
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return target.isAnnule();
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return target.getAnnulationDate();
 	}
 
+	@Override
 	public EtatCivil getEtatCivil() {
 		return target.getEtatCivil();
 	}

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.situationfamille;
 
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.type.TarifImpotSource;
 
@@ -17,10 +16,12 @@ public class VueSituationFamilleMenageCommunFiscalAdapter extends VueSituationFa
 		this.situation = situation;
 	}
 
+	@Override
 	public Long getNumeroContribuablePrincipal() {
 		return situation.getContribuablePrincipalId();
 	}
 
+	@Override
 	public TarifImpotSource getTarifApplicable() {
 		return situation.getTarifApplicable();
 	}

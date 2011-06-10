@@ -126,6 +126,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	 *
 	 * @see AjaxHandler#handle(AjaxEvent )
 	 */
+	@Override
 	public AjaxResponse handle(AjaxEvent event) {
 		if (event == null || event.getEventId() == null) {
 			logger.error("Event and event id cannot be null.");
@@ -167,6 +168,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	 *
 	 * @see AjaxHandler#supports(AjaxEvent )
 	 */
+	@Override
 	public boolean supports(AjaxEvent event) {
 		String id = event.getEventId();
 

@@ -129,6 +129,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uEJMMJNYEdygKK6Oe0tVlw?GETTER"
 	 * TODO (GDY) ajouter nullable = false
 	 */
+	@Override
 	@Column(name = "DATE_DEBUT")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -153,6 +154,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 * @return the dateFin
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xEySsJNYEdygKK6Oe0tVlw?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -237,6 +239,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 
@@ -262,6 +265,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

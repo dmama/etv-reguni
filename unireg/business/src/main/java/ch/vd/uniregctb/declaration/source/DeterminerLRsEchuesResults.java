@@ -60,6 +60,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 			this.nomDebiteur = nomDebiteur;
 		}
 
+		@Override
 		public int compareTo(T o) {
 			return (idDebiteur == o.idDebiteur ? 0 : Long.signum(idDebiteur - o.idDebiteur));
 		}
@@ -174,6 +175,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 			this.finPeriode = finPeriode;
 		}
 
+		@Override
 		public int compareTo(ResultLrEchue o) {
 			int compare = super.compareTo(o);
 			if (compare == 0) {
@@ -220,10 +222,12 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		this.tiersService = tiersService;
 	}
 
+	@Override
 	public void addErrorException(InfoDebiteurAvecLrEchue element, Exception e) {
 		erreurs.add(new ResultErreurDebiteur(element.idDebiteur, "", e));
 	}
 
+	@Override
 	public void addAll(DeterminerLRsEchuesResults right) {
 		lrEchues.addAll(right.lrEchues);
 		ignores.addAll(right.ignores);

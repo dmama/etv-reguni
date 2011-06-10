@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -76,6 +75,7 @@ public class AuditLogController extends AbstractSimpleFormController {
 		template.setReadOnly(true);
 
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				List<AuditLine> l = auditLineDAO.find(bean.getCriteria(), pagination);
 				List<AuditView> list = coreToWeb(l);

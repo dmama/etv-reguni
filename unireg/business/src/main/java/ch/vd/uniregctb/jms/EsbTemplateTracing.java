@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.jms;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.DisposableBean;
+
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
-import org.springframework.beans.factory.DisposableBean;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Version spécialisée du template Esb qui relève les temps d'exécution des méthodes publiques.
@@ -49,6 +50,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		for (String s : map.keySet()) {
 			statsService.unregisterService(s);

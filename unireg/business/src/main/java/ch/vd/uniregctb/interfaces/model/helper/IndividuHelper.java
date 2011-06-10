@@ -24,6 +24,7 @@ public abstract class IndividuHelper {
 			// tri des permis par leur date de début et numéro de séquence (utile si les dates de début sont nulles)
 			final List<Permis> liste = new ArrayList<Permis>(coll);
 			Collections.sort(liste, new Comparator<Permis>() {
+				@Override
 				public int compare(Permis o1, Permis o2) {
 					if (RegDateHelper.equals(o1.getDateDebutValidite(), o2.getDateDebutValidite())) {
 						return o1.getNoSequence() - o2.getNoSequence();

@@ -16,6 +16,7 @@ public class SituationFamillePersonnePhysique extends SituationFamille {
 		super(situationFamille);
 	}
 
+	@Override
 	public SituationFamille duplicate() {
 		return new SituationFamillePersonnePhysique(this);
 	}

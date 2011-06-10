@@ -46,6 +46,7 @@ public class Curatelle extends RepresentationLegale {
 		super(dateDebut, dateFin, pupille, curateur, autoriteTutelaire);
 	}
 
+	@Override
 	public RapportEntreTiers duplicate() {
 		return new Curatelle(this);
 	}

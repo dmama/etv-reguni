@@ -93,6 +93,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 		/**
 		 * Ordre de tri naturel: oid, typeCtb et etat.
 		 */
+		@Override
 		public int compareTo(Key o) {
 
 			if (oid != o.oid) {
@@ -150,10 +151,12 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 		disEnErrors.add(new Erreur(numero != null ? numero : -1, oid, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
+	@Override
 	public void addErrorException(Long numero, Exception e) {
 		disEnErrors.add(new Erreur(numero, null, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(StatistiquesDIs rapport) {
 		this.nbDIsTotal += rapport.nbDIsTotal;
 		this.disEnErrors.addAll(rapport.disEnErrors);

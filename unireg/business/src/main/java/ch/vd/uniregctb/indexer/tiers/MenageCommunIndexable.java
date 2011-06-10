@@ -83,6 +83,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 				final List<Map.Entry<PersonnePhysique, RapportEntreTiers>> aPrendre = new ArrayList<Map.Entry<PersonnePhysique, RapportEntreTiers>>(personnes.entrySet());
 				if (aPrendre.size() > 1) {
 					Collections.sort(aPrendre, new Comparator<Map.Entry<PersonnePhysique, RapportEntreTiers>>() {
+						@Override
 						public int compare(Map.Entry<PersonnePhysique, RapportEntreTiers> o1, Map.Entry<PersonnePhysique, RapportEntreTiers> o2) {
 							final RapportEntreTiers rapport1 = o1.getValue();
 							final RapportEntreTiers rapport2 = o2.getValue();
@@ -159,6 +160,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		return ppIndexable;
 	}
 
+	@Override
 	public String getSubType() {
 		return SUB_TYPE;
 	}

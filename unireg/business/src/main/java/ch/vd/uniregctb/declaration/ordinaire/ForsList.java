@@ -91,6 +91,7 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		}
 	}
 
+	@Override
 	public boolean add(T o) {
 		if (o != null) {
 			rattachements.add(o.getMotifRattachement());
@@ -101,6 +102,7 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		return list.add(o);
 	}
 
+	@Override
 	public void add(int index, T element) {
 		if (element != null) {
 			rattachements.add(element.getMotifRattachement());
@@ -111,18 +113,21 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		list.add(index, element);
 	}
 
+	@Override
 	public boolean addAll(Collection<? extends T> c) {
 		boolean r = list.addAll(c);
 		initSets();
 		return r;
 	}
 
+	@Override
 	public boolean addAll(int index, Collection<? extends T> c) {
 		boolean r = list.addAll(index, c);
 		initSets();
 		return r;
 	}
 
+	@Override
 	public void clear() {
 		rattachements.clear();
 		typesAutoritesFiscales.clear();
@@ -131,74 +136,92 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		maxDateFin = RegDate.getEarlyDate();
 	}
 
+	@Override
 	public boolean contains(Object o) {
 		return list.contains(o);
 	}
 
+	@Override
 	public boolean containsAll(Collection<?> c) {
 		return list.containsAll(c);
 	}
 
+	@Override
 	public T get(int index) {
 		return list.get(index);
 	}
 
+	@Override
 	public int indexOf(Object o) {
 		return list.indexOf(o);
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return list.isEmpty();
 	}
 
+	@Override
 	public Iterator<T> iterator() {
 		return list.iterator();
 	}
 
+	@Override
 	public int lastIndexOf(Object o) {
 		return list.lastIndexOf(o);
 	}
 
+	@Override
 	public ListIterator<T> listIterator() {
 		return list.listIterator();
 	}
 
+	@Override
 	public ListIterator<T> listIterator(int index) {
 		return list.listIterator(index);
 	}
 
+	@Override
 	public boolean remove(Object o) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public T remove(int index) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public boolean removeAll(Collection<?> c) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public boolean retainAll(Collection<?> c) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public T set(int index, T element) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public int size() {
 		return list.size();
 	}
 
+	@Override
 	public List<T> subList(int fromIndex, int toIndex) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public Object[] toArray() {
 		return list.toArray();
 	}
 
+	@Override
 	@SuppressWarnings("hiding")
 	public <T> T[] toArray(T[] a) {
 		return list.toArray(a);

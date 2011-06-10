@@ -43,6 +43,7 @@ class DropColumnTable implements ITable {
 			return l.toArray(new Column[] {});
 		}
 
+		@Override
 		public Column[] getColumns() throws DataSetException {
 			if (columns == null) {
 				columns = filterColumns(metaData, dropColumnName);
@@ -50,10 +51,12 @@ class DropColumnTable implements ITable {
 			return columns;
 		}
 
+		@Override
 		public Column[] getPrimaryKeys() throws DataSetException {
 			return metaData.getPrimaryKeys();
 		}
 
+		@Override
 		public String getTableName() {
 			return metaData.getTableName();
 		}
@@ -66,14 +69,17 @@ class DropColumnTable implements ITable {
 		this.dropColumnMetaData = new DropColumnTableMetaData(table.getTableMetaData(), dropColumnName);
 	}
 
+	@Override
 	public int getRowCount() {
 		return table.getRowCount();
 	}
 
+	@Override
 	public ITableMetaData getTableMetaData() {
 		return dropColumnMetaData;
 	}
 
+	@Override
 	public Object getValue(int row, String column) throws DataSetException {
 		if (dropColumnName.equals(column)) {
 			throw new NoSuchColumnException(dropColumnMetaData.getTableName() + "." + column);

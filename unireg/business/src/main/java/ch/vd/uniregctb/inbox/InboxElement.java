@@ -73,6 +73,7 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 		return incomingDate;
 	}
 
+	@Override
 	public boolean isExpired() {
 		final Long tte = getTimeToExpiration();
 		return tte != null && tte == 0L;

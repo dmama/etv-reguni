@@ -27,6 +27,7 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 		this.completeOnly = completeOnly;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
 	}
@@ -45,6 +46,7 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 		return result;
 	}
 
+	@Override
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
 	                        Type[] types, boolean isAnnulation) throws CallbackException {
 
@@ -61,18 +63,22 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 		return modified;
 	}
 
+	@Override
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
 	}
 
+	@Override
 	public void preTransactionCommit() {
 		// rien à faire ici
 	}
 
+	@Override
 	public void postTransactionCommit() {
 		// rien à faire ici
 	}
 
+	@Override
 	public void postTransactionRollback() {
 		// rien à faire ici
 	}

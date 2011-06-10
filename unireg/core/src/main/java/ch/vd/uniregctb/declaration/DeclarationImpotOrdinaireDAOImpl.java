@@ -38,10 +38,12 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 	 * @param criterion
 	 * @return
 	 */
+	@Override
 	public List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion) {
 		return find(criterion, false);
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion, boolean doNotAutoFlush) {
 
@@ -104,6 +106,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<DeclarationImpotOrdinaire> findByNumero(Long numero) {
 		if (LOGGER.isTraceEnabled()) {
@@ -123,6 +126,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 	 * @param numeroCtb
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public EtatDeclaration findDerniereDiEnvoyee(Long numeroCtb) {
 		if (LOGGER.isTraceEnabled()) {
@@ -151,11 +155,13 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 		return etat;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Set<DeclarationImpotOrdinaire> getDIsForSommation(final Collection<Long> idsDI) {
 
 		final List<DeclarationImpotOrdinaire> list = getHibernateTemplate().executeWithNativeSession(
 				new HibernateCallback<List<DeclarationImpotOrdinaire>>() {
+					@Override
 					public List<DeclarationImpotOrdinaire> doInHibernate(Session session) throws HibernateException {
 						final Criteria crit = session.createCriteria(DeclarationImpotOrdinaire.class);
 						crit.add(Restrictions.in("id", idsDI));

@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.indexer.concurrent;
 
+import org.apache.log4j.Logger;
+import org.apache.lucene.search.TopDocs;
+
 import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.SearchCallback;
-import org.apache.log4j.Logger;
-import org.apache.lucene.search.TopDocs;
 
 public class ConcurrentAccessSearcherThread extends AbstractConcurrentAccessThread {
 
@@ -24,6 +25,7 @@ public class ConcurrentAccessSearcherThread extends AbstractConcurrentAccessThre
 
 		while (!isStopPlease()) {
 			globalIndex.search("Prenom:good", maxHits, new SearchCallback() {
+				@Override
 				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 					int count = hits.totalHits;
 					// [UNIREG-2287] Désactivé l'appel ci-dessus à cause bug de réentrance (deadlock) sur l'implémentation 'fair' en java 1.5 :

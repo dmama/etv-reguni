@@ -74,6 +74,7 @@ public class AdressesCivilesHisto {
 	 */
 	private void sort() {
 		Comparator<Adresse> comparator = new Comparator<Adresse>() {
+			@Override
 			public int compare(Adresse left, Adresse right) {
 				final RegDate dateRight = right.getDateDebut();
 				final RegDate dateLeft = left.getDateDebut();

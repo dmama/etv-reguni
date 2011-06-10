@@ -96,6 +96,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 			this.timestamp = timestamp;
 		}
 
+		@Override
 		public int compareTo(EvtData o) {
 			// l'ordre naturel correspond à l'ordre des identifiants d'événement
 			final long diff = evtId - o.evtId;
@@ -205,6 +206,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		}
 	}
 
+	@Override
 	public void setDelaiPriseEnCompte(int delaiPriseEnCompte) {
 		if (delaiPriseEnCompte <= 0) {
 			throw new IllegalArgumentException("Le délai doit être strictement positif");
@@ -237,6 +239,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		this.fetchAwaitingEventsOnStart = fetchAwaitingEventsOnStart;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		// vérification de la plage de valeurs autorisées
@@ -252,8 +255,10 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 			transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			transactionTemplate.setReadOnly(true);
 			transactionTemplate.execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+						@Override
 						public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 							LOGGER.info("Recherche des événements civils dans l'état 'A_TRAITER'");
@@ -305,6 +310,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		}
 	}
 
+	@Override
 	public void postEvenementCivil(long evtId) {
 		if (!dying) {
 
@@ -318,18 +324,22 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		}
 	}
 
+	@Override
 	public int getQueueSize() {
 		return queue.size();
 	}
 
+	@Override
 	public int getDelaiPriseEnCompte() {
 		return delaiPriseEnCompte;
 	}
 
+	@Override
 	public int getNombreEvenementsRecus() {
 		return nombreEvenementsPostes.intValue();
 	}
 
+	@Override
 	public int getNombreEvenementsTraites() {
 		return nombreEvenementsTraites.intValue();
 	}
@@ -340,6 +350,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 	 * A priori utilisée dans un contexte de tests pour synchroniser le traitement.
 	 * @throws InterruptedException si l'attente a été interrompue par un autre thread
 	 */
+	@Override
 	public void sync() throws InterruptedException {
 
 		if (LOGGER.isTraceEnabled()) {

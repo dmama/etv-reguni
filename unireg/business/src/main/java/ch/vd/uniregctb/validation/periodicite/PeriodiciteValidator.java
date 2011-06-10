@@ -13,6 +13,7 @@ public class PeriodiciteValidator extends EntityValidatorImpl<Periodicite> {
 		return Periodicite.class;
 	}
 
+	@Override
 	public ValidationResults validate(Periodicite periodicite) {
 		final ValidationResults results = new ValidationResults();
 

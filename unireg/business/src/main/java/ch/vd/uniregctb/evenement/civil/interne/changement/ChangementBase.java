@@ -38,6 +38,7 @@ public abstract class ChangementBase extends EvenementCivilInterne {
 		super(individu, principalPPId, conjoint, conjointPPId, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
+	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		// si on n'a pas de contribuable correspondant à l'événement, on ne pourra pas l'indexer, mais c'est tout, ce n'est

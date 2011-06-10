@@ -9,7 +9,6 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
@@ -36,6 +35,7 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 				}
@@ -51,6 +51,7 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de situations analysées :", String.valueOf(results.nbSituationTotal));
 					table.addLigne("Nombre de situations différentes  :", String.valueOf(results.listeSituationsDifferentes.size()));

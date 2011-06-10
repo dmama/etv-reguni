@@ -16,11 +16,13 @@ public class ModeleDocumentValidator implements Validator{
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return clazz.isAssignableFrom(ModeleDocumentView.class);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object target, Errors errors) {
 		ModeleDocumentView view = (ModeleDocumentView) target;

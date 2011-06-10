@@ -85,10 +85,12 @@ public class TraiterEvenementExterneResult  extends JobResults<Long, TraiterEven
 		this.dateTraitement = dateTraitement;
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 			erreurs.add(new Erreur( element, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(TraiterEvenementExterneResult right) {
 	this.nbEvenementTotal += right.nbEvenementTotal;
 		this.traites.addAll(right.traites);

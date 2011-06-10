@@ -26,10 +26,12 @@ public final class ListMergerIterator<T> implements Iterator<T> {
 		this.iterator2 = liste2.iterator();
 	}
 
+	@Override
 	public boolean hasNext() {
 		return iterator1.hasNext() || iterator2.hasNext() || element1Extrait || element2Extrait;
 	}
 
+	@Override
 	public T next() {
 		if (!iterator1.hasNext() && !element1Extrait) {
 			// cas facile où la liste1 est déja complètement passée
@@ -71,6 +73,7 @@ public final class ListMergerIterator<T> implements Iterator<T> {
 		}
 	}
 
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}

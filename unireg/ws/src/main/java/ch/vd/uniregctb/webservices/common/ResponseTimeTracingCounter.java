@@ -102,30 +102,37 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 		this.counter = counter;
 	}
 
+	@Override
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		return null;
 	}
 
+	@Override
 	public long getLastCallTime() {
 		return data.getLastCallTime();
 	}
 
+	@Override
 	public long getRecentPing() {
 		return data.getRecentPing();
 	}
 
+	@Override
 	public long getRecentTime() {
 		return data.getRecentTime();
 	}
 
+	@Override
 	public long getRecentCount() {
 		return data.getRecentCount();
 	}
 
+	@Override
 	public void onTick() {
 		data.onTick();
 	}
 
+	@Override
 	public long getTotalPing() {
 		final long value = getTotalPingMicroseconds();
 		return value / 1000L;
@@ -138,6 +145,7 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 		return counter.getAvgResponseTime().longValue();
 	}
 
+	@Override
 	public long getTotalTime() {
 		if (counter == null) {
 			return 0;
@@ -148,6 +156,7 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 		return numInvocations * totalPingMicroseconds / 1000L;
 	}
 
+	@Override
 	public long getTotalCount() {
 		if (counter == null) {
 			return 0;

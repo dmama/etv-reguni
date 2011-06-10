@@ -152,6 +152,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 
 		// on évite de charger les déclarations, parce que cela fait charger les tiers associées et c'est coûteux
 		final Map<Long, List<EtatDeclaration>> map = hibernateTemplate.execute(new HibernateCallback<Map<Long, List<EtatDeclaration>>>() {
+			@Override
 			public Map<Long, List<EtatDeclaration>> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery("select e.declaration.id, e from EtatDeclaration e where e.declaration.id in (:ids)");
 				query.setParameterList("ids", batch);
@@ -262,6 +263,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 	private List<Long> retrieveIdsDeclarations() {
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
 				return hibernateTemplate.find(QUERY_STRING);

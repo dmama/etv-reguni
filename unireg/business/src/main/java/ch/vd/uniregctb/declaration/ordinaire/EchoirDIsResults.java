@@ -83,11 +83,13 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 		disEnErrors.add(new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), ErreurType.ETAT_DECLARATION_INCOHERENT, message));
 	}
 
+	@Override
 	public void addErrorException(IdentifiantDeclaration ident, Exception e) {
 		++nbDIsTotal;
 		disEnErrors.add(new Erreur(ident.getNumeroTiers(),ident.getNumeroOID(), ident.getIdDeclaration(), ErreurType.EXCEPTION, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(EchoirDIsResults rapport) {
 		nbDIsTotal += rapport.nbDIsTotal;
 		disEchues.addAll(rapport.disEchues);

@@ -200,6 +200,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 		return results;
 	}
 
+	@Override
 	public Class<PersonnePhysique> getValidatedClass() {
 		return PersonnePhysique.class;
 	}

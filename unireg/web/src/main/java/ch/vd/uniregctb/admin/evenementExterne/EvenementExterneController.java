@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.admin.evenementExterne;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -132,6 +131,7 @@ public class EvenementExterneController extends AbstractEnhancedSimpleFormContro
 		final EtatEvenementExterne etat = e;
 
 		final Collection<EvenementExterne> evenementExternes = template.execute(new TransactionCallback<Collection<EvenementExterne>>() {
+			@Override
 			public Collection<EvenementExterne> doInTransaction(TransactionStatus status) {
 				final Collection<EvenementExterne> evenementExternes;
 				if (etat == null) {
@@ -148,6 +148,7 @@ public class EvenementExterneController extends AbstractEnhancedSimpleFormContro
 		TextRenderingCallback renderingCallback = new TextRenderingCallback() {
 			private static final long serialVersionUID = 281028973463503864L;
 
+			@Override
 			public Component getRenderingComponent(String text) {
 				return new ch.vd.uniregctb.web.xt.component.SimpleText(text);
 			}

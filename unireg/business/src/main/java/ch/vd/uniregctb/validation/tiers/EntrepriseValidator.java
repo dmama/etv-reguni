@@ -30,6 +30,7 @@ public class EntrepriseValidator extends ContribuableValidator<Entreprise> {
 		return results;
 	}
 
+	@Override
 	public Class<Entreprise> getValidatedClass() {
 		return Entreprise.class;
 	}

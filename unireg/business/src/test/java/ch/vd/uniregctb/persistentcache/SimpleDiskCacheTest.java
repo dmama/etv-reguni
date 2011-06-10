@@ -133,6 +133,7 @@ public class SimpleDiskCacheTest extends WithoutSpringTest {
 			this.complement = complement;
 		}
 
+		@Override
 		public long getId() {
 			return id;
 		}
@@ -141,6 +142,7 @@ public class SimpleDiskCacheTest extends WithoutSpringTest {
 			this.id = id;
 		}
 
+		@Override
 		public String getComplement() {
 			return complement;
 		}

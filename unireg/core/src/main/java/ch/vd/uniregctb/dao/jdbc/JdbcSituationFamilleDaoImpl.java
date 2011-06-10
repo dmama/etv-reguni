@@ -28,12 +28,14 @@ public class JdbcSituationFamilleDaoImpl implements JdbcSituationFamilleDao {
 
 	private static final SituationFamilleMapper ROW_MAPPER = new SituationFamilleMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public SituationFamille get(long forId, JdbcTemplate template) {
 		final Pair<Long, SituationFamille> pair = (Pair<Long, SituationFamille>) DataAccessUtils.uniqueResult(template.query(SituationFamilleMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<SituationFamille> getForTiers(long tiersId, JdbcTemplate template) {
 		final List<Pair<Long, SituationFamille>> list = template.query(SituationFamilleMapper.selectByTiersId(), new Object[]{tiersId}, ROW_MAPPER);
@@ -44,11 +46,13 @@ public class JdbcSituationFamilleDaoImpl implements JdbcSituationFamilleDao {
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<SituationFamille>> getForTiers(Collection<Long> tiersId, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, SituationFamille>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, SituationFamille>>() {
+			@Override
 			public List<Pair<Long, SituationFamille>> process(List<Long> ids) {
 				return template.query(SituationFamilleMapper.selectByTiersIds(ids), ROW_MAPPER);
 			}
@@ -97,6 +101,7 @@ public class JdbcSituationFamilleDaoImpl implements JdbcSituationFamilleDao {
 			return BASE_SELECT + " where CTB_ID in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final String situationFamilleType = rs.getString(1);

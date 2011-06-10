@@ -153,6 +153,7 @@ public class EvenementCivilTest extends BusinessTest {
 
 			// L'événement civil doit avoir été traité
 			doInTransaction(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					final List<EvenementCivilExterne> evenements = evenementCivilExterneDAO.getAll();
@@ -224,6 +225,7 @@ public class EvenementCivilTest extends BusinessTest {
 
 		// L'événement civil doit avoir été traité
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementCivilExterne> evenements = evenementCivilExterneDAO.getAll();
 				assertNotNull(evenements);

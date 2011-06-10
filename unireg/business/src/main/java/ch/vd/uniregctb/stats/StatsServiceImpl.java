@@ -62,36 +62,42 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		}
 	}
 
+	@Override
 	public void registerService(String serviceName, ServiceTracingInterface tracing) {
 		synchronized (rawServices) {
 			rawServices.put(serviceName, tracing);
 		}
 	}
 
+	@Override
 	public void registerCache(String serviceName, UniregCacheInterface cache) {
 		synchronized (cachedServices) {
 			cachedServices.put(serviceName, cache);
 		}
 	}
 
+	@Override
 	public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
 		synchronized (loadMonitors) {
 			loadMonitors.put(serviceName, monitor);
 		}
 	}
 
+	@Override
 	public void unregisterService(String serviceName) {
 		synchronized (rawServices) {
 			rawServices.remove(serviceName);
 		}
 	}
 
+	@Override
 	public void unregisterCache(String serviceName) {
 		synchronized (cachedServices) {
 			cachedServices.remove(serviceName);
 		}
 	}
 
+	@Override
 	public void unregisterLoadMonitor(String serviceName) {
 		synchronized (loadMonitors) {
 			loadMonitors.remove(serviceName);
@@ -112,6 +118,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		return cache.buildStats();
 	}
 
+	@Override
 	public ServiceStats getServiceStats(String serviceName) {
 
 		final ServiceTracingInterface rawService;
@@ -188,6 +195,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		return lastCallTime;
 	}
 
+	@Override
 	public String buildStats() {
 
 		final StringBuilder b = new StringBuilder("Statistiques des caches et services:\n\n");
@@ -416,10 +424,12 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		return s + StringUtils.repeat(" ", len - l);
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		timer.schedule(new TickingTask(), UNE_MINUTE, UNE_MINUTE);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		timer.cancel();
 	}

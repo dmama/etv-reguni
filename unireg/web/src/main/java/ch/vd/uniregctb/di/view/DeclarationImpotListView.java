@@ -26,6 +26,7 @@ public class DeclarationImpotListView implements DeclarationImpotView {
 		this.isAllowedEmission = isAllowedEmission;
 	}
 
+	@Override
 	public TiersGeneralView getContribuable() {
 		return contribuable;
 	}

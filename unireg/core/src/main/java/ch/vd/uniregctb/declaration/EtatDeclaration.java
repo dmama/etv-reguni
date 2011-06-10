@@ -52,6 +52,7 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 	 */
 	public static class Comparator implements java.util.Comparator<EtatDeclaration> {
 
+		@Override
 		public int compare(EtatDeclaration o1, EtatDeclaration o2) {
 
 			final RegDate dateObtention1 = o1.getDateObtention();
@@ -204,6 +205,7 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(EtatDeclaration other) {
 		// Descending =>   * -1
 		int value = (-1) * DateRangeComparator.compareRanges(this, other);
@@ -213,6 +215,7 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 	/**
 	 * return date obtention
 	 */
+	@Override
 	@Transient
 	public RegDate getDateDebut() {
 		return dateObtention;
@@ -221,17 +224,20 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 	/**
 	 * return null
 	 */
+	@Override
 	@Transient
 	public RegDate getDateFin() {
 		// On n'a pas de date de fin, on renvoie null
 		return null;
 	}
 
+	@Override
 	@Transient
 	public boolean isValidAt(RegDate date) {
 		return true;
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return declaration == null ? null : Arrays.asList(declaration);

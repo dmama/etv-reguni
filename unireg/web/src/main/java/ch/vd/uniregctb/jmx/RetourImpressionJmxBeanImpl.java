@@ -30,16 +30,19 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 		this.callerTimeout = callerTimeout;
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getReceivedAndNotDispatched() {
 		return storageService.getDocumentsEnAttenteDeDispatch();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getTimeToLiveOnceReceived() {
 		return storageService.getCleanupPeriod();
 	}
 
+	@Override
 	@ManagedAttribute
 	public void setTimeToLiveOnceReceived(int ttl) {
 		if (ttl < callerTimeout) {
@@ -48,11 +51,13 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 		storageService.setCleanupPeriod(ttl);
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getLocalPrintTimeout() {
 		return callerTimeout;
 	}
 
+	@Override
 	@ManagedAttribute
 	public String getLastDocumentPurgeDate() {
 		final String str;
@@ -66,11 +71,13 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 		return str;
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getPurged() {
 		return storageService.getDocumentsPurges();
 	}
 
+	@Override
 	@ManagedAttribute
 	public int getReceived() {
 		return storageService.getDocumentsRecus();

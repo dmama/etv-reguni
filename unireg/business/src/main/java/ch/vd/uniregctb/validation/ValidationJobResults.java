@@ -160,10 +160,12 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		}
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void addAll(ValidationJobResults rapport) {
 		throw new NotImplementedException();
 	}

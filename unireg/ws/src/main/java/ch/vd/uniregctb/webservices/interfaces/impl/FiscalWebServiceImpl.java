@@ -36,6 +36,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 	private TiersService tiersService;
 	private GlobalTiersSearcher tiersSearcher;
 
+	@Override
 	@Transactional(readOnly = true)
 	public RechercherNoContribuableResponse rechercherNoContribuable(RechercherNoContribuable parameters) {
 

@@ -197,6 +197,7 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 		this.numeroAVS = numeroAVS;
 	}
 
+	@Override
 	public int compareTo(RapportPrestationView o) {
 		return comparator.compare(this, o);
 	}

@@ -10,6 +10,7 @@ public class ServiceFidorChecker implements ServiceChecker {
 	private ServiceInfrastructureRaw serviceFidorRaw;
 	private String details;
 
+	@Override
 	public Status getStatus() {
 		try {
 			final Logiciel logiciel = serviceFidorRaw.getLogiciel(1L);
@@ -23,6 +24,7 @@ public class ServiceFidorChecker implements ServiceChecker {
 		}
 	}
 
+	@Override
 	public String getStatusDetails() {
 		return details;
 	}

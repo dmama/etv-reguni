@@ -38,6 +38,7 @@ public class ValidatorHelperImpl implements ValidatorHelper, MessageSourceAware 
 	 * @param pp la personne physique à tester
 	 * @param vr le container de l'éventuelle erreur générée
 	 */
+	@Override
 	public void validateSexeConnu(PersonnePhysique pp, ValidationResults vr) {
 		final Sexe sexe = tiersService.getSexe(pp);
 		if (pp != null && sexe == null) {
@@ -56,6 +57,7 @@ public class ValidatorHelperImpl implements ValidatorHelper, MessageSourceAware 
 	 * @param dateMariagePrevu date prévue pour le mariage
 	 * @param vr le container de l'éventuelle erreur générée
 	 */
+	@Override
 	public void validatePretPourMariage(PersonnePhysique pp, RegDate dateMariagePrevu, ValidationResults vr) {
 		if (pp != null) {
 			final EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, dateMariagePrevu, false);

@@ -1,12 +1,18 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
-import org.apache.commons.lang.mutable.MutableBoolean;
 
 /**
  * Resolver du mode d'imposition pour le cas mariage.
@@ -33,6 +39,7 @@ public class MariageModeImpositionResolver extends TiersModeImpositionResolver {
 	 * 
 	 * @see ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver#resolve(ch.vd.uniregctb.tiers.Contribuable, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.ModeImposition)
 	 */
+	@Override
 	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition imposition) throws ModeImpositionResolverException {
 		if (!(contribuable instanceof MenageCommun)) {
 			throw new ModeImpositionResolverException("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()) + " n'est pas un ménage commun");

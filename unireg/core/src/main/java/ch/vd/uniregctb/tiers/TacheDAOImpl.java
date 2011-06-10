@@ -34,6 +34,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Tache> find(TacheCriteria criterion) {
 		return find(criterion, false);
 	}
@@ -41,6 +42,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(TacheCriteria criterion, boolean doNotAutoFlush) {
 
@@ -55,6 +57,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(long noContribuable) {
 		final String query = "select t from Tache t where t.contribuable.id=" + noContribuable + " order by t.id asc";
@@ -69,10 +72,12 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	 * @param pageSize
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(final TacheCriteria criterion, final ParamPagination paramPagination) {
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tache>>() {
+			@Override
 			public List<Tache> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				List<Object> params = new ArrayList<Object>();
@@ -130,6 +135,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int count(TacheCriteria criterion) {
 		return count(criterion, false);
 	}
@@ -137,6 +143,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int count(long noContribuable) {
 		final String query = "select count(*) from Tache t where t.contribuable.id=" + noContribuable;
 		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
@@ -145,6 +152,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int count(TacheCriteria criterion, boolean doNotAutoFlush) {
 		List<Object> params = new ArrayList<Object>();
 		final String query = "select count(*) " + buildFromWhereClause(criterion, params);
@@ -266,10 +274,12 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		return clause;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheEnInstanceOuEnCours(final long noCtb, final TypeTache type) {
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			@Override
 			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
 				// Recherche dans le cache de la session
@@ -300,10 +310,12 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	}
 
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheEnvoiEnInstanceOuEnCours(final long noCtb, final RegDate dateDebut, final RegDate dateFin) {
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			@Override
 			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
 				// Recherche dans le cache de la session
@@ -332,12 +344,14 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		});
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheAnnulationEnInstanceOuEnCours(final long noCtb, final long noDi) {
 
 		// Recherche dans le cache de la session
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			@Override
 			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
 				SessionImpl s = (SessionImpl) session;
@@ -372,6 +386,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		return TypeEtatTache.EN_INSTANCE == t.getEtat() || TypeEtatTache.EN_COURS == t.getEtat();
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Tache> List<T> listTaches(long noCtb, TypeTache type) {
 		Object[] params = {
@@ -390,6 +405,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 					"CTB_ID = :ctbId and " +
 					"ANNULATION_DATE is null"; // inutiles de modifier les tâches annulées pour rien
 
+	@Override
 	public void updateCollAdmAssignee(final Map<Long, Integer> tiersOidsMapping) {
 
 		if (tiersOidsMapping == null || tiersOidsMapping.isEmpty()) {
@@ -399,6 +415,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
 		getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Object>() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				final FlushMode mode = session.getFlushMode();
 				try {
@@ -439,12 +456,14 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 					"where tache.etat = 'EN_INSTANCE' and tache.dateEcheance <= :dateEcheance and tache.annulationDate is null " +
 					"group by tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative";
 	
+	@Override
 	public Map<Integer, TacheStats> getTacheStats() {
 		
 		final Map<Integer, TacheStats> stats = new HashMap<Integer, TacheStats>();
 
 		// récupère les stats des tâches en instance
 		getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query query = session.createQuery(queryTaches);
@@ -470,6 +489,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 
 		// récupère les stats des dossiers en instance
 		getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query query = session.createQuery(queryDossiers);

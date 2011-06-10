@@ -69,6 +69,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		}
 	}
 
+	@Override
 	public String getSubType() {
 		return SUB_TYPE;
 	}

@@ -26,6 +26,7 @@ public class HorsCanton extends Assujettissement {
 		return "Imposition ordinaire HC";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new HorsCanton(this, (HorsCanton) next);
 	}

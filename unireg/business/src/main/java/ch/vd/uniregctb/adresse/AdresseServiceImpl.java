@@ -125,6 +125,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
 		Assert.notNull(tiers);
 
@@ -222,10 +223,12 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public AdresseEnvoiDetaillee getAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException {
 		return createAdresseEnvoi(individu, null, strict);
 	}
 
+	@Override
 	public AdresseCourrierPourRF getAdressePourRF(Contribuable ctb, RegDate date) throws AdresseException {
 
 		String nomPrenom1 = null;
@@ -389,6 +392,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public FormulePolitesse getFormulePolitesse(Tiers tiers) {
 
 		final FormulePolitesse salutations;
@@ -992,6 +996,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public AdresseGenerique getAdresseRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date, boolean strict)
 			throws AdresseException {
 		return getAdresseRepresentant(tiers, date, type, 0, strict);
@@ -1260,6 +1265,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public AdressesFiscales getAdressesFiscales(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
 		if (tiers == null) {
@@ -1273,6 +1279,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseFiscale type, RegDate date, boolean strict) throws AdresseException {
 
 		if (tiers == null) {
@@ -1340,6 +1347,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 		final AdressesCiviles adressesCiviles;
 		if (tiers instanceof PersonnePhysique) {
@@ -1405,6 +1413,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return l'historique des adresses civiles du tiers spécifié.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
+	@Override
 	public AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException {
 
 		final AdressesCivilesHisto adressesCiviles;
@@ -1709,6 +1718,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Tiers addAdresse(Tiers tiers, AdresseTiers adresse) {
 
 		final TypeAdresseTiers usage = adresse.getUsage();
@@ -1733,6 +1743,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void annulerAdresse(AdresseTiers adresse) {
 
 		final TypeAdresseTiers usage = adresse.getUsage();
@@ -1757,6 +1768,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param adresse l'adresse à fermer
 	 * @param dateFin date de fermeture de l'adresse.
 	 */
+	@Override
 	public void fermerAdresse(AdresseTiers adresse, RegDate dateFin) {
 		adresse.setDateFin(dateFin);
 	}
@@ -1768,6 +1780,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
 		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null);
@@ -1792,6 +1805,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param numeroIndividu le numéro de l'individu dont on veut connaître le nom de courrier
 	 * @return le nom courrier de l'individu spécifié
 	 */
+	@Override
 	public String getNomCourrier(long numeroIndividu) {
 		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, null);
 		if (individu == null) {
@@ -1800,6 +1814,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return tiersService.getNomPrenom(individu);
 	}
 
+	@Override
 	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseFiscale type) throws AdresseException {
 		final AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers, false);
 		final List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
@@ -1829,6 +1844,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public AdressesFiscalesHisto getAdressesTiers(Tiers tiers) throws AdresseException {
 
 		final AdressesFiscalesHisto adressesFiscalesHisto = new AdressesFiscalesHisto();
@@ -1873,6 +1889,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public TypeAffranchissement getTypeAffranchissement(AdresseGenerique adresse) {
 		Assert.notNull(adresse);
 
@@ -1885,6 +1902,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return serviceInfra.getTypeAffranchissement(noPays);
 	}
 
+	@Override
 	public ResolutionAdresseResults resoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status) {
 		ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this, adresseTiersDAO, serviceInfra, transactionManager);
 		return processor.run(dateTraitement, nbThreads, status);

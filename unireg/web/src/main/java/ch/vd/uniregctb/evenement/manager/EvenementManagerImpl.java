@@ -98,6 +98,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public EvenementView get(Long id) throws AdresseException, ServiceInfrastructureException {
 
@@ -242,6 +243,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 *
 	 * @param id
 	 */
+	@Override
 	public void traiteEvenementCivil(Long id) {
 		evenementCivilProcessor.recycleEvenementCivil(id);
 	}
@@ -252,6 +254,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 *
 	 * @param id
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
 		EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(id);
@@ -265,6 +268,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination)
 			throws AdresseException {
@@ -313,6 +317,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @param criterion
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public int count(EvenementCivilExterneCriteria criterion) {
 		return evenementService.count(criterion);
@@ -350,6 +355,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

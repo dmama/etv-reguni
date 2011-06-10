@@ -21,6 +21,7 @@ public class MockNationalite implements Nationalite {
 		this.pays = pays;
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
@@ -29,6 +30,7 @@ public class MockNationalite implements Nationalite {
 		this.dateDebutValidite = dateDebutValidite;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
 	}
@@ -37,6 +39,7 @@ public class MockNationalite implements Nationalite {
 		this.dateFinValidite = dateFinValidite;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
@@ -45,6 +48,7 @@ public class MockNationalite implements Nationalite {
 		this.noSequence = noSequence;
 	}
 
+	@Override
 	public Pays getPays() {
 		return pays;
 	}

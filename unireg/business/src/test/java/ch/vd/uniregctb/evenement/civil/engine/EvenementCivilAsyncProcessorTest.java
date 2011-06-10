@@ -31,15 +31,18 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		 */
 		private final List<Long> evenementsRecus = Collections.synchronizedList(new ArrayList<Long>());
 
+		@Override
 		public void traiteEvenementsCivils(StatusManager status) {
 			throw new NotImplementedException("Méthode non implémentée, normalement inutile pour le test!");
 		}
 
+		@Override
 		public Long traiteEvenementCivil(Long id, boolean refreshCache) {
 			evenementsRecus.add(id);
 			return id;
 		}
 
+		@Override
 		public Long recycleEvenementCivil(Long id) {
 			throw new NotImplementedException("Méthode non implémentée, normalement inutile pour le test!");
 		}
@@ -92,6 +95,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		for (int i = 0 ; i < THREADS; ++ i) {
 			final int threadIndex = i;
 			final Thread thread = new Thread(new Runnable() {
+				@Override
 				public void run() {
 					for (int j = EVTS_PAR_THREAD - 1 ; j >= 0 ; -- j) {
 						final long id = threadIndex * EVTS_PAR_THREAD + j;

@@ -128,6 +128,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 
 		if (triAlphabetique) {
 			Collections.sort(listCommunes, new Comparator<Commune>() {
+				@Override
 				public int compare(Commune o1, Commune o2) {
 					return o1.getNomMinuscule().compareTo(o2.getNomMinuscule());
 				}
@@ -151,6 +152,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		final List<ProduireRolesResults.InfoContribuable> triee = new ArrayList<ProduireRolesResults.InfoContribuable>(col);
 
 		Collections.sort(triee, new Comparator<ProduireRolesResults.InfoContribuable>() {
+		    @Override
 		    public int compare(ProduireRolesResults.InfoContribuable o1, ProduireRolesResults.InfoContribuable o2) {
 		        return (int) (o1.noCtb - o2.noCtb);
 		    }

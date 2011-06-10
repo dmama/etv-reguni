@@ -395,6 +395,7 @@ public class DataHelper {
 		// Récupère les appartenances ménages du tiers
 		final Set<ch.vd.uniregctb.tiers.RapportEntreTiers> rapports = tiers.getRapportsSujet();
 		final Collection<ch.vd.uniregctb.tiers.AppartenanceMenage> rapportsMenage = CollectionUtils.select(rapports, new Predicate() {
+			@Override
 			public boolean evaluate(Object object) {
 				final ch.vd.uniregctb.tiers.RapportEntreTiers rapport = (ch.vd.uniregctb.tiers.RapportEntreTiers) object;
 				return !rapport.isAnnule() && rapport instanceof ch.vd.uniregctb.tiers.AppartenanceMenage;
@@ -415,6 +416,7 @@ public class DataHelper {
 
 			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
 					new DateRangeHelper.AdapterCallback<ch.vd.uniregctb.tiers.ForFiscalPrincipal>() {
+						@Override
 						public ch.vd.uniregctb.tiers.ForFiscalPrincipal adapt(ch.vd.uniregctb.tiers.ForFiscalPrincipal f, RegDate debut, RegDate fin) {
 							if (debut == null && fin == null) {
 								return f;

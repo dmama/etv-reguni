@@ -21,6 +21,7 @@ public class MockFormeJuridique implements FormeJuridique {
 		this.code = code;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -29,6 +30,7 @@ public class MockFormeJuridique implements FormeJuridique {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -37,6 +39,7 @@ public class MockFormeJuridique implements FormeJuridique {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}

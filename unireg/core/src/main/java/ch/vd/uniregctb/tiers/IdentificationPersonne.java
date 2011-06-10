@@ -137,6 +137,7 @@ public class IdentificationPersonne extends HibernateEntity implements LinkedEnt
 		// end-user-code
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return personnePhysique == null ? null : Arrays.asList(personnePhysique);

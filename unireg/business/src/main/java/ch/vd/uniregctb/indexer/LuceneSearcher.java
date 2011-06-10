@@ -32,6 +32,7 @@ public class LuceneSearcher extends LuceneEngine {
 	private IndexSearcher is;
 
 	public final DocGetter docGetter = new DocGetter() {
+		@Override
 		public Document get(int i) throws IOException {
 			return is.doc(i);
 		}

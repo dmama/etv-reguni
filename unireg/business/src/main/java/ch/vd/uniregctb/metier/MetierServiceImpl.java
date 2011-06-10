@@ -175,6 +175,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ValidationResults validateMariage(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint) {
 
 		ValidationResults results = new ValidationResults();
@@ -690,6 +691,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
+	@Override
 	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag,
 	                          Long numeroEvenement) throws MetierServiceException {
 		/*
@@ -769,6 +771,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
+	@Override
 	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille,
 	                                    boolean changeHabitantFlag, Long numeroEvenement) throws MetierServiceException {
 		/*
@@ -805,6 +808,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ValidationResults validateReconstitution(MenageCommun menage, PersonnePhysique pp, RegDate date) {
 		ValidationResults results = new ValidationResults();
 
@@ -846,6 +850,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public MenageCommun reconstitueMenage(MenageCommun menage, PersonnePhysique pp, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
 
 		/*
@@ -905,6 +910,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ValidationResults validateFusion(MenageCommun menagePrincipal, MenageCommun menageConjoint) {
 		ValidationResults results = new ValidationResults();
 
@@ -924,6 +930,7 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
+	@Override
 	public MenageCommun getMenageForFusion(MenageCommun menage1, MenageCommun menage2) {
 		final ForFiscalPrincipal premierForPrincipal = menage1.getPremierForFiscalPrincipal();
 		final ForFiscalPrincipal premierForConjoint = menage2.getPremierForFiscalPrincipal();
@@ -960,6 +967,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public MenageCommun fusionneMenages(MenageCommun menagePrincipal, MenageCommun menageConjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) throws MetierServiceException {
 
 		final MenageCommun menageChoisi = getMenageForFusion(menagePrincipal, menageConjoint);
@@ -1086,6 +1094,7 @@ public class MetierServiceImpl implements MetierService {
 
 	}
 
+	@Override
 	public void annuleMariage(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) throws MetierServiceException {
 		annuleCouple(principal, conjoint, date, numeroEvenement, false);
 	}
@@ -1239,6 +1248,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
+	@Override
 	public ValidationResults validateReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date) {
 
 		ValidationResults results = new ValidationResults();
@@ -1270,6 +1280,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, Long numeroEvenement) throws
 			MetierServiceException {
 
@@ -1315,6 +1326,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 
+	@Override
 	public void annuleReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) throws MetierServiceException {
 		annuleCouple(principal, conjoint, date, numeroEvenement, false);
 	}
@@ -1322,6 +1334,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isMajeurAt(PersonnePhysique pp, RegDate dateReference) {
 		Assert.notNull(dateReference);
 
@@ -1346,6 +1359,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public OuvertureForsResults ouvertureForsContribuablesMajeurs(RegDate dateReference, StatusManager status) {
 		final OuvertureForsContribuablesMajeursProcessor processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager,
 				hibernateTemplate, tiersDAO, tiersService, adresseService, serviceInfra, serviceCivilService, validationService);
@@ -1355,6 +1369,7 @@ public class MetierServiceImpl implements MetierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public FusionDeCommunesResults fusionDeCommunes(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, StatusManager status) {
 		final FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService);
 		return processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, status);
@@ -1365,6 +1380,7 @@ public class MetierServiceImpl implements MetierService {
 	 *
 	 * @see ch.vd.uniregctb.metier.MetierService#validateSeparation(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.tiers.PersonnePhysique, ch.vd.uniregctb.tiers.PersonnePhysique)
 	 */
+	@Override
 	public ValidationResults validateSeparation(MenageCommun menage, RegDate date) {
 
 		ValidationResults results = new ValidationResults();
@@ -1399,6 +1415,7 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
+	@Override
 	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
 			MetierServiceException {
 		if (menage == null) {
@@ -1499,6 +1516,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
+	@Override
 	public void annuleSeparation(MenageCommun menage, RegDate date, Long numeroEvenement) throws MetierServiceException {
 		if (menage == null) {
 			throw new MetierServiceException("Le ménage est null");
@@ -1771,6 +1789,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
+	@Override
 	public ValidationResults validateDeces(PersonnePhysique defunt, RegDate date) {
 
 		ValidationResults results = new ValidationResults();
@@ -1818,6 +1837,7 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
+	@Override
 	public void deces(PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) throws MetierServiceException {
 		veuvageDeces(null, defunt, date, remarque, numeroEvenement);
 	}
@@ -1884,6 +1904,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
+	@Override
 	public void annuleDeces(PersonnePhysique tiers, RegDate date) throws MetierServiceException {
 
 		/*
@@ -2062,6 +2083,7 @@ public class MetierServiceImpl implements MetierService {
 		reopenRapportsAt(tiers.getRapportsSujet(), date);
 	}
 
+	@Override
 	public ValidationResults validateVeuvage(PersonnePhysique veuf, RegDate date) {
 		final ValidationResults results = new ValidationResults();
 		/*
@@ -2280,6 +2302,7 @@ public class MetierServiceImpl implements MetierService {
 		doUpdateSituationFamilleDeces(defunt, veuf, menageComplet != null ? menageComplet.getMenage() : null, date);
 	}
 
+	@Override
 	public void veuvage(PersonnePhysique veuf, RegDate date, String remarque, Long numeroEvenement) throws MetierServiceException {
 		veuvageDeces(veuf, null, date, remarque, numeroEvenement);
 	}
@@ -2300,6 +2323,7 @@ public class MetierServiceImpl implements MetierService {
 		return false;
 	}
 
+	@Override
 	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement) throws MetierServiceException {
 
 		/*
@@ -2359,6 +2383,7 @@ public class MetierServiceImpl implements MetierService {
 		reopenSituationFamille(date, menageCommun);
 	}
 
+	@Override
 	public ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status) {
 		ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, serviceInfra);
 		return processor.run(dateTraitement, nbThreads, status);

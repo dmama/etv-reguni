@@ -1,13 +1,5 @@
 package ch.vd.uniregctb.rapport;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
-import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,6 +10,15 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Date;
 import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
+import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -42,6 +43,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    addEntete1("Paramètre");
 	    {
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+	            @Override
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Type d'adresses :", String.valueOf(results.getTypeAdressesIncluses().getDescription()));
 			        table.addLigne("Inclure les personnes physiques / ménages :", String.valueOf(results.isAvecContribuables()));
@@ -60,6 +62,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	        }
 
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+	            @Override
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
 	                table.addLigne("Nombre total de tiers listés :", String.valueOf(results.getNombreTiersTraites()));
 	                table.addLigne("Dont tiers en erreur :", String.valueOf(results.getListeErreurs().size()));

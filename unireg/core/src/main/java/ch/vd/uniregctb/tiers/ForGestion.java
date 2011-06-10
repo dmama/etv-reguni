@@ -69,10 +69,12 @@ public class ForGestion implements DateRange {
 		this.sousjacent = autre.sousjacent;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -101,6 +103,7 @@ public class ForGestion implements DateRange {
 		return sousjacent;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

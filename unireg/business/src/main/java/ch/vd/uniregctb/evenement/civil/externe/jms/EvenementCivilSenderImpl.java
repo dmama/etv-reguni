@@ -46,6 +46,7 @@ public class EvenementCivilSenderImpl implements EvenementCivilSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void sendEvent(EvenementCivilExterne evenement, String businessUser) throws Exception {
 		Assert.notNull(evenement);
 		final EvtRegCivilDocument document = createDocument(evenement);

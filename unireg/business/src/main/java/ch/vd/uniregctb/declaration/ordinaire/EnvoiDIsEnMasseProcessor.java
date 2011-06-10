@@ -297,6 +297,7 @@ public class EnvoiDIsEnMasseProcessor {
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
 		final Iterator<TacheEnvoiDeclarationImpot> i = hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpot>>() {
+					@Override
 					public Iterator<TacheEnvoiDeclarationImpot> doInHibernate(Session session) throws HibernateException {
 						FlushMode mode = session.getFlushMode();
 						try {
@@ -339,8 +340,10 @@ public class EnvoiDIsEnMasseProcessor {
 		template.setReadOnly(true);
 		
 		final List<Long> i = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder builder = new StringBuilder();
@@ -786,6 +789,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 			// On récupère toutes les DIs correspondant au critères du cache
 			final List<DeclarationImpotOrdinaire> list = hibernateTemplate.execute(new HibernateCallback<List<DeclarationImpotOrdinaire>>() {
+				@Override
 				public List<DeclarationImpotOrdinaire> doInHibernate(Session session) throws HibernateException {
 					final FlushMode mode = session.getFlushMode();
 					try {
@@ -908,6 +912,7 @@ public class EnvoiDIsEnMasseProcessor {
 			this.next = null;
 		}
 
+		@Override
 		public boolean hasNext() {
 			calcNext();
 			return next != null;
@@ -934,10 +939,12 @@ public class EnvoiDIsEnMasseProcessor {
 			}
 		}
 
+		@Override
 		public LotContribuables next() {
 			return next;
 		}
 
+		@Override
 		public void remove() {
 			throw new NotImplementedException();
 		}

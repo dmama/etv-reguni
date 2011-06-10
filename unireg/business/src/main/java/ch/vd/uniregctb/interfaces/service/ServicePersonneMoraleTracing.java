@@ -33,12 +33,14 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		this.statsService = statsService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);
@@ -49,6 +51,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return null;
 	}
 
+	@Override
 	public List<Long> getAllIds() {
 		List<Long> result;
 		long time = tracing.start();
@@ -61,6 +64,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
+	@Override
 	public PersonneMorale getPersonneMorale(final Long id, final PartPM... parts) {
 		PersonneMorale result;
 		long time = tracing.start();
@@ -78,6 +82,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
+	@Override
 	public List<PersonneMorale> getPersonnesMorales(final List<Long> ids, final PartPM... parts) {
 		List<PersonneMorale> result;
 		long time = tracing.start();
@@ -95,6 +100,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
+	@Override
 	public Etablissement getEtablissement(final long id) {
 		Etablissement result;
 		long time = tracing.start();
@@ -112,6 +118,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
+	@Override
 	public List<Etablissement> getEtablissements(final List<Long> ids) {
 		List<Etablissement> result;
 		long time = tracing.start();
@@ -129,6 +136,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
+	@Override
 	public AdressesPM getAdresses(final long noEntreprise, final RegDate date) {
 		AdressesPM result;
 		long time = tracing.start();
@@ -146,6 +154,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
+	@Override
 	public AdressesPMHisto getAdressesHisto(final long noEntreprise) {
 		AdressesPMHisto result;
 		long time = tracing.start();
@@ -163,6 +172,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
+	@Override
 	public List<EvenementPM> findEvenements(final long numeroEntreprise, final String code, final RegDate minDate, final RegDate maxDate) {
 		List<EvenementPM> result;
 		long time = tracing.start();

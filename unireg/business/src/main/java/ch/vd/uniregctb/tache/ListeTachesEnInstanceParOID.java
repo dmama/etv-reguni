@@ -77,6 +77,7 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 	}
 
 
+	@Override
 	public void addErrorException(Long numeroOID, Exception e) {
 		tachesEnIsntancesParOID.add(
 				new LigneTacheInstance(numeroOID, "ErreurType.EXCEPTION.description()", 0)
@@ -93,6 +94,7 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 		super(dateTraitement);
 	}
 
+	@Override
 	public void addAll(ListeTachesEnInstanceParOID rapport) {
 		tachesEnIsntancesParOID.addAll(rapport.tachesEnIsntancesParOID);
 	}

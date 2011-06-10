@@ -19,7 +19,6 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
@@ -82,6 +81,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 *
 	 * @param idRestriction
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerRestriction(Long idRestriction) throws DroitAccesException {
 		droitAccesService.annuleDroitAcces(idRestriction);
@@ -92,6 +92,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws ServiceInfrastructureException, AdresseException {
 
@@ -118,6 +119,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 * @throws ServiceInfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException {
 		RecapPersonneUtilisateurView recapPersonneUtilisateurView = new RecapPersonneUtilisateurView();
@@ -138,6 +140,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 * Persiste le DroitAcces
 	 * @param recapPersonneUtilisateurView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(RecapPersonneUtilisateurView recapPersonneUtilisateurView) throws DroitAccesException {
 
@@ -149,6 +152,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		droitAccesService.ajouteDroitAcces(operateurId, tiersId, type, niveau);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ExtractionJob exportListeDroitsAcces(Long operateurId) {
 		final UtilisateurView utilisateurView = utilisateurManager.get(operateurId);

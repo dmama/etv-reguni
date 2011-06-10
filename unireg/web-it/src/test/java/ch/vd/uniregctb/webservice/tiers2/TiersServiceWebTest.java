@@ -478,6 +478,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		/* Trie la collection de rapports appartenance ménage par ordre croissant de numéro de l'autre tiers */
 		Collections.sort(rapportsMenage, new Comparator<RapportEntreTiers>() {
+			@Override
 			public int compare(RapportEntreTiers r1, RapportEntreTiers r2) {
 				return (int) (r1.getAutreTiersNumero() - r2.getAutreTiersNumero());
 			}

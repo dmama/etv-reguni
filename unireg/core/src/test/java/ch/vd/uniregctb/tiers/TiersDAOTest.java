@@ -1214,6 +1214,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(ids.size(), listNormal.size());
 
 		Comparator<Tiers> c = new Comparator<Tiers>() {
+			@Override
 			public int compare(Tiers o1, Tiers o2) {
 				return o1.getId().compareTo(o2.getId());
 			}
@@ -1512,6 +1513,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	private void loadDatabase() throws Exception {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				PersonnePhysique pp0 = new PersonnePhysique();

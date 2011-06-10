@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 public class CorrectionFlagHabitantSurMenagesResults extends CorrectionFlagHabitantAbstractResults<CorrectionFlagHabitantSurMenagesResults> {
 
@@ -30,11 +30,13 @@ public class CorrectionFlagHabitantSurMenagesResults extends CorrectionFlagHabit
 		this.erreurs.add(new ContribuableErreur(mcNo, Message.MC_FOR_HC_HS_AVEC_HABITANT));
 	}
 
+	@Override
 	public void addErrorException(Long noCtb, Exception e) {
 		final String messageException = StringUtils.isEmpty(e.getMessage()) ? e.getClass().getName() : e.getMessage();
 		this.erreurs.add(new ContribuableException(noCtb, messageException));
 	}
 
+	@Override
 	public void addAll(CorrectionFlagHabitantSurMenagesResults correctionFlagHabitantSurMenagesResults) {
 		this.erreurs.addAll(correctionFlagHabitantSurMenagesResults.erreurs);
 	}

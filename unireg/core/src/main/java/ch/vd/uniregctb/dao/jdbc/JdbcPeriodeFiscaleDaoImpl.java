@@ -24,6 +24,7 @@ public class JdbcPeriodeFiscaleDaoImpl implements JdbcPeriodeFiscaleDao {
 
 	private final JdbcParametrePeriodeFiscaleDao ppfDao = new JdbcParametrePeriodeFiscaleDaoImpl();
 
+	@Override
 	public PeriodeFiscale get(long periodeId, JdbcTemplate template) {
 
 		final PeriodeFiscale periode = (PeriodeFiscale) DataAccessUtils.uniqueResult(template.query(PeriodeFiscaleMapper.selectById(), new Object[]{periodeId}, ROW_MAPPER));
@@ -40,11 +41,13 @@ public class JdbcPeriodeFiscaleDaoImpl implements JdbcPeriodeFiscaleDao {
 		return periode;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<PeriodeFiscale> getList(final Collection<Long> periodesId, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<PeriodeFiscale> list = CollectionsUtils.splitAndProcess(periodesId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, PeriodeFiscale>() {
+			@Override
 			public List<PeriodeFiscale> process(List<Long> ids) {
 				return template.query(PeriodeFiscaleMapper.selectByIds(ids), ROW_MAPPER);
 			}
@@ -87,6 +90,7 @@ public class JdbcPeriodeFiscaleDaoImpl implements JdbcPeriodeFiscaleDao {
 			return BASE_SELECT + " where NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final PeriodeFiscale res;

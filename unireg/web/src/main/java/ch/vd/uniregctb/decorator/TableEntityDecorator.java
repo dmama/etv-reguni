@@ -7,6 +7,7 @@ import ch.vd.uniregctb.common.Annulable;
 
 public class TableEntityDecorator extends TableDecorator {
 
+	@Override
 	public String addRowClass() {
 
 		final String superClassAddRowClass = super.addRowClass();

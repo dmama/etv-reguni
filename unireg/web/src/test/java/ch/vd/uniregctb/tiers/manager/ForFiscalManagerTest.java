@@ -303,6 +303,7 @@ public class ForFiscalManagerTest extends WebTest {
 
 		// mise en place fiscale
 		final ForFiscalView view = doInNewTransactionAndSession(new TransactionCallback<ForFiscalView>() {
+			@Override
 			public ForFiscalView doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
@@ -321,6 +322,7 @@ public class ForFiscalManagerTest extends WebTest {
 
 		// vérification que le for est bien fermé et que le rapport de travail aussi
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getNumeroCtb());
 				assertNotNull(dpi);
@@ -356,6 +358,7 @@ public class ForFiscalManagerTest extends WebTest {
 
 		// mise en place fiscale
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
@@ -376,6 +379,7 @@ public class ForFiscalManagerTest extends WebTest {
 
 		// vérification que le for est bien fermé, qu'un autre est bien ouvert et que le rapport de travail n'a pas été fermé
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				assertNotNull(dpi);

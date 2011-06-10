@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.DIBase;
@@ -41,7 +39,6 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -106,6 +103,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Calcul le prefixe
 	 */
+	@Override
 	public String calculPrefixe(Declaration declaration) {
 		String prefixe = RG + P + NO_PROJET;
 		TypeDocument typeDoc = declaration.getModeleDocument().getTypeDocument();
@@ -262,6 +260,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Alimente un objet Document pour l'impression des DI
 	 */
+	@Override
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
 	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		InfoDocument infoDocument = remplitInfoDocument(declaration);
@@ -756,6 +755,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Construit le champ idDocument
 	 */
+	@Override
 	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
 		return String.format(
 				"%s %s %s %s",

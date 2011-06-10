@@ -43,6 +43,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	/**
 	 * Cette méthode est appelé lorsque une entité hibernate est modifié/sauvé.
 	 */
+	@Override
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
 	                        Type[] types, boolean isAnnulation) throws CallbackException {
 
@@ -71,14 +72,17 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		return false; // aucun tiers n'a été immédiatement modifié
 	}
 
+	@Override
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
 	}
 
+	@Override
 	public void preTransactionCommit() {
 		// rien à faire ici
 	}
 
+	@Override
 	public void postTransactionCommit() {
 		if (indexer.isOnTheFlyIndexation()) {
 			indexModifiedTiers();
@@ -88,6 +92,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 	}
 
+	@Override
 	public void postTransactionRollback() {
 		getModifiedTiersIds().clear();
 	}
@@ -161,6 +166,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 				try {
@@ -207,6 +213,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		this.dialect = dialect;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
 	}

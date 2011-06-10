@@ -57,6 +57,7 @@ public class InfoIFOSecController {
 	@SuppressWarnings({"unchecked"})
 	private List<Procedure> getProceduresUnireg(ProfilOperateur profile) {
 		return (List<Procedure>) CollectionUtils.select((List<Procedure>) profile.getProcedures(), new Predicate() {
+			@Override
 			public boolean evaluate(Object object) {
 				Procedure p = (Procedure) object;
 				return p.getCode().startsWith("UR");
@@ -73,6 +74,7 @@ public class InfoIFOSecController {
 	@SuppressWarnings({"unchecked"})
 	private List<Procedure> getProceduresAutres(ProfilOperateur profile) {
 		return (List<Procedure>) CollectionUtils.select((List<Procedure>) profile.getProcedures(), new Predicate() {
+			@Override
 			public boolean evaluate(Object object) {
 				Procedure p = (Procedure) object;
 				return !p.getCode().startsWith("UR");

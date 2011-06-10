@@ -3,13 +3,13 @@ package ch.vd.uniregctb.rapport;
 import java.io.OutputStream;
 import java.util.Date;
 
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
-
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs.
@@ -37,6 +37,7 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	    addEntete1("Paramètres");
 	    {
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+	            @Override
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
 	                table.addLigne("Date de limite d'exclusion:", RegDateHelper.dateToDisplayString(results.dateLimiteExclusion));
 	                table.addLigne("Contribuables à exclure:", "(voir le fichier contribuables_a_exclure.csv)");
@@ -57,6 +58,7 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	        }
 
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+	            @Override
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
 	                table.addLigne("Nombre total de contribuables traités:", String.valueOf(results.nbCtbsTotal));
 	                table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));

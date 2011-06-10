@@ -52,6 +52,7 @@ public class MouvementServiceImpl implements MouvementService {
 	/**
 	 * Détermine les mouvements de dossiers pour une année
 	 */
+	@Override
 	public DeterminerMouvementsDossiersEnMasseResults traiteDeterminationMouvements(RegDate dateTraitement, boolean archivesSeulement, StatusManager statusManager)  {
 		final DeterminerMouvementsDossiersEnMasseProcessor processor = new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager);
 		return processor.run(dateTraitement, archivesSeulement, statusManager);
@@ -67,6 +68,7 @@ public class MouvementServiceImpl implements MouvementService {
 	 * @param mvts les mouvements constituant le bordereau
 	 * @return le document imprimé
 	 */
+	@Override
 	public EditiqueResultat envoyerImpressionBordereau(List<MouvementDossier> mvts) throws EditiqueException {
 
 		// 1. création d'un objet bordereau

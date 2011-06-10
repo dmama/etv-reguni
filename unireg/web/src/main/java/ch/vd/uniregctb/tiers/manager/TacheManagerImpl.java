@@ -25,6 +25,7 @@ public class TacheManagerImpl implements TacheManager {
 		this.validationService = validationService;
 	}
 
+	@Override
 	public SynchronizeActionsTable buildSynchronizeActionsTable(Contribuable ctb, String titre, String titreErreurValidation) {
 
 		final SynchronizeActionsTable table;

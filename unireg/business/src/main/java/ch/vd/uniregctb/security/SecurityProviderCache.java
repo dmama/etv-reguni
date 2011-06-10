@@ -103,6 +103,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		this.transactionManager = transactionManager;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new EhCacheStats(cache);
 	}
@@ -149,6 +150,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException {
 
 		if (!estControle(tiersId)) {
@@ -173,6 +175,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Niveau> getDroitAcces(String visa, List<Long> ids) {
 
 		final List<Niveau> resultat;
@@ -241,6 +244,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 
 				// le tiers n'existe pas dans le cache non-préloadé -> on va chercher cette information dans la base
 				exists = template.execute(new TransactionCallback<Boolean>() {
+					@Override
 					public Boolean doInTransaction(TransactionStatus status) {
 						return tiersDAO.exists(id);
 					}
@@ -304,6 +308,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite) {
 		final Boolean resultat;
 
@@ -320,6 +325,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		return resultat;
 	}
 
+	@Override
 	public void onTiersChange(long id) {
 		if (!tiersExistenceCache.contains(id)) {
 			synchronized (tiersExistenceDeltaCache) {
@@ -329,10 +335,12 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		}
 	}
 
+	@Override
 	public void onIndividuChange(long id) {
 		// rien à faire ici
 	}
 
+	@Override
 	public void onDroitAccessChange(long tiersId) {
 		// Supprime tous les éléments cachés sur le tiers spécifié.
 		final List<?> keys = cache.getKeys();
@@ -357,14 +365,17 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		}
 	}
 
+	@Override
 	public void onTruncateDatabase() {
 		clearCaches();
 	}
 
+	@Override
 	public void onLoadDatabase() {
 		initCaches();
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		cache = cacheManager.getCache(cacheName);
 		Assert.notNull(cache);
@@ -394,6 +405,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 
 			LOGGER.info("Préchargement du cache des tiers existants...");
 			final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+				@Override
 				public List<Long> doInTransaction(TransactionStatus status) {
 					return tiersDAO.getAllIds();
 				}
@@ -417,6 +429,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 
 		LOGGER.info("Préchargement du cache des dossiers contrôlés...");
 		final Set<Long> idsControles = template.execute(new TransactionCallback<Set<Long>>() {
+			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
 				return droitAccesDAO.getContribuablesControles();
 			}
@@ -461,6 +474,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getDescription() {
 		return "security provider";
 	}
@@ -468,6 +482,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return "SECURITY-PROVIDER";
 	}
@@ -475,6 +490,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void reset() {
 		resetCaches();
 	}

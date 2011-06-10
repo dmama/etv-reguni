@@ -86,6 +86,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
 		// mise en place ces contribuables
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique monsieur = addHabitant(noIndMonsieur);
 				tiersService.changeHabitantenNH(monsieur);

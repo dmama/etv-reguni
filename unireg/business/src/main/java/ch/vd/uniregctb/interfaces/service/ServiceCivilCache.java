@@ -71,6 +71,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		this.dataEventService = dataEventService;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new EhCacheStats(cache);
 	}
@@ -82,6 +83,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
@@ -90,6 +92,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		dataEventService.register(this);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
@@ -100,6 +103,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getDescription() {
 		return "service civil";
 	}
@@ -107,6 +111,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return "CIVIL";
 	}
@@ -114,6 +119,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void reset() {
 		cache.removeAll();
 	}
@@ -151,6 +157,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 
 		final Individu individu;
@@ -182,6 +189,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
@@ -239,6 +247,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isWarmable() {
 		return true;
 	}
@@ -246,6 +255,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void onIndividuChange(long numero) {
 
 		if (LOGGER.isDebugEnabled()) {
@@ -264,18 +274,22 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		}
 	}
 
+	@Override
 	public void onTiersChange(long id) {
 		// rien à faire
 	}
 
+	@Override
 	public void onDroitAccessChange(long tiersId) {
 		// rien à faire
 	}
 
+	@Override
 	public void onTruncateDatabase() {
 		// rien à faire
 	}
 
+	@Override
 	public void onLoadDatabase() {
 		// rien à faire
 	}

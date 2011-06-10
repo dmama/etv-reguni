@@ -179,6 +179,7 @@ public class IAMAuthenticationProcessingFilter extends UsernamePasswordAuthentic
      *
      * @see ch.vd.ati.security.IAMUtil#createsRoles
      */
+    @Override
     protected void setDetails(HttpServletRequest request,
         UsernamePasswordAuthenticationToken authRequest)
     {
@@ -201,6 +202,7 @@ public class IAMAuthenticationProcessingFilter extends UsernamePasswordAuthentic
      * @see org.acegisecurity.ui.AbstractProcessingFilter#requiresAuthentication(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
+    @Override
     protected boolean requiresAuthentication(final HttpServletRequest request, final HttpServletResponse response)
     {
         boolean bAuthenticated = false;
@@ -249,6 +251,7 @@ public class IAMAuthenticationProcessingFilter extends UsernamePasswordAuthentic
      * Redefined. No 'response.sendRedirect()' is performed.
      * @see org.acegisecurity.ui.AbstractProcessingFilter#successfulAuthentication()
      */
+    @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException, ServletException
     {
         SecurityContextHolder.getContext().setAuthentication(authResult);
@@ -281,6 +284,7 @@ public class IAMAuthenticationProcessingFilter extends UsernamePasswordAuthentic
      * which implies no 'response.sendRedirect()' is performed.
      * @see org.acegisecurity.ui.AbstractProcessingFilter#doFilter()
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
     {
         if (!(request instanceof HttpServletRequest))
@@ -335,6 +339,7 @@ public class IAMAuthenticationProcessingFilter extends UsernamePasswordAuthentic
 	 * Sets the strategy used to handle a successful authentication.
 	 * By default a {@link SavedRequestAwareAuthenticationSuccessHandler} is used.
 	 */
+	@Override
 	public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
 		super.setAuthenticationSuccessHandler(successHandler);
 	    this.successHandler = successHandler;

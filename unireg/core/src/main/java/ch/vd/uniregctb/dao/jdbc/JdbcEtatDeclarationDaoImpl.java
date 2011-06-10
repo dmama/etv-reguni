@@ -28,12 +28,14 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 
 	private static final EtatDeclarationMapper ROW_MAPPER = new EtatDeclarationMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public EtatDeclaration get(long id, JdbcTemplate template) {
 		final Pair<Long, EtatDeclaration> pair = (Pair<Long, EtatDeclaration>) DataAccessUtils.uniqueResult(template.query(EtatDeclarationMapper.selectById(), new Object[]{id}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<EtatDeclaration> getForDeclaration(long diId, JdbcTemplate template) {
 		final List<Pair<Long, EtatDeclaration>> list = template.query(EtatDeclarationMapper.selectByDeclarationId(), new Object[]{diId}, ROW_MAPPER);
@@ -44,11 +46,13 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<EtatDeclaration>> getForDeclarations(Collection<Long> disIds, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, EtatDeclaration>> list = CollectionsUtils.splitAndProcess(disIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, EtatDeclaration>>() {
+			@Override
 			public List<Pair<Long, EtatDeclaration>> process(List<Long> ids) {
 				return template.query(EtatDeclarationMapper.selectByDeclarationsIds(ids), ROW_MAPPER);
 			}
@@ -93,6 +97,7 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 			return BASE_SELECT + " where DECLARATION_ID in " + JdbcDaoUtils.buildInClause(disIds);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final String type = rs.getString(1);

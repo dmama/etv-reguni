@@ -1,15 +1,20 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Map;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.*;
 
 /**
  * Rapport PDF contenant les statistiques des déclarations d'impôt ordinaires
@@ -34,6 +39,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Année fiscale:", String.valueOf(results.annee));
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
@@ -50,6 +56,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de déclarations:", String.valueOf(results.nbDIsTotal));
 					table.addLigne("Nombre de déclarations en erreur:", String.valueOf(results.disEnErrors.size()));
@@ -91,6 +98,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 		ArrayList<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>> list = new ArrayList<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>>(
 				results.stats.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>>() {
+			@Override
 			public int compare(Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value> o1, Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value> o2) {
 				return o1.getKey().compareTo(o2.getKey());
 			}

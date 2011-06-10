@@ -34,6 +34,7 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
+	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		Individu individu = getIndividu();

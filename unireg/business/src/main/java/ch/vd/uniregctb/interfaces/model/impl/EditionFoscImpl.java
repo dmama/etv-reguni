@@ -22,10 +22,12 @@ public class EditionFoscImpl implements EditionFosc {
 		this.numero = target.getNumero();
 	}
 
+	@Override
 	public int getAnnee() {
 		return annee;
 	}
 
+	@Override
 	public int getNumero() {
 		return numero;
 	}

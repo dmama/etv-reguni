@@ -42,46 +42,57 @@ public class HistoriqueIndividuImpl implements HistoriqueIndividu, Serializable 
 		this.profession = target.getProfession();
 	}
 
+	@Override
 	public String getAutresPrenoms() {
 		return autresPrenoms;
 	}
 
+	@Override
 	public String getComplementIdentification() {
 		return complementIdentification;
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebut;
 	}
 
+	@Override
 	public String getNoAVS() {
 		return noAVS;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
 
+	@Override
 	public String getNomCourrier1() {
 		return nomCourrier1;
 	}
 
+	@Override
 	public String getNomCourrier2() {
 		return nomCourrier2;
 	}
 
+	@Override
 	public String getNomNaissance() {
 		return nomNaissance;
 	}
 
+	@Override
 	public String getPrenom() {
 		return prenom;
 	}
 
+	@Override
 	public String getProfession() {
 		return profession;
 	}

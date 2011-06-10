@@ -77,6 +77,7 @@ public class StringComparatorTest extends WithoutSpringTest {
 
 		// décoder qui fait passer en minuscules
 		final StringComparator.Decoder lowerCaseDecoder = new StringComparator.Decoder() {
+			@Override
 			public String decode(String source) {
 				return StringUtils.lowerCase(source);
 			}
@@ -96,6 +97,7 @@ public class StringComparatorTest extends WithoutSpringTest {
 		// c'est le cas qui nous intéresse réellement, en fait
 
 		final StringComparator.Decoder decoder = new StringComparator.Decoder() {
+			@Override
 			public String decode(String source) {
 				return StringEscapeUtils.unescapeXml(source);
 			}

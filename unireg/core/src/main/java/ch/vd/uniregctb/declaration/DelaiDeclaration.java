@@ -206,6 +206,7 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(DelaiDeclaration delaiDeclaration) {
 		RegDate autreDelaiAccordeAu = delaiDeclaration.getDelaiAccordeAu();
 		int value = (-1) * delaiAccordeAu.compareTo(autreDelaiAccordeAu);
@@ -247,6 +248,7 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 		// end-user-code
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return declaration == null ? null : Arrays.asList(declaration);

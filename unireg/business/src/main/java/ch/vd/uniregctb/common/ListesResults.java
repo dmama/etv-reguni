@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.common;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-
-import java.util.*;
 
 public abstract class ListesResults<T extends ListesResults<T>> extends JobResults<Long, T> {
 
@@ -85,6 +89,7 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
         addTiersEnErreur(tiers);
     }
 
+	@Override
 	public void addErrorException(Long id, Exception e) {
 		final String message = buildErrorMessage(e);
 		this.tiersErreur.add(new Erreur(id, ErreurType.EXCEPTION, message));
@@ -108,6 +113,7 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
     public void sort() {
 
         Collections.sort(this.tiersErreur, new Comparator<Erreur>() {
+            @Override
             public int compare(Erreur o1, Erreur o2) {
                 final long numero1 = o1.noCtb;
                 final long numero2 = o2.noCtb;
@@ -120,6 +126,7 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
 		return nombreThreads;
 	}
 
+	@Override
 	public void addAll(T sources) {
 		this.tiersErreur.addAll(sources.tiersErreur);
 	}

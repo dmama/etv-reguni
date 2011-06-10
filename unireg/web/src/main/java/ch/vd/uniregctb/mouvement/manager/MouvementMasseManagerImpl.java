@@ -85,6 +85,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		return ca.getNumero();
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws ServiceInfrastructureException {
 
@@ -143,18 +144,21 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		return criteria;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws ServiceInfrastructureException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().find(criteria, null);
 		return getViews(mvts, false, false);
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void changeEtat(EtatMouvementDossier nouvelEtat, long mvtId) {
 		final MouvementDossier mvt = getMouvementDossierDAO().get(mvtId);
 		changeEtat(nouvelEtat, mvt);
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void changeEtat(EtatMouvementDossier nouvelEtat, long[] ids) {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(ids);
@@ -163,6 +167,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<BordereauListElementView> getProtoBordereaux(Integer noCollAdmInitiatrice) {
 		final List<ProtoBordereauMouvementDossier> protos = getMouvementDossierDAO().getAllProtoBordereaux(noCollAdmInitiatrice);
@@ -178,6 +183,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat imprimerBordereau(long[] idsMouvement) throws EditiqueException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvement);
@@ -189,6 +195,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		return resultat;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<BordereauEnvoiView> findBordereauxAReceptionner(Integer noCollAdmReceptrice) {
 		final List<BordereauMouvementDossier> bordereaux = bordereauDAO.getBordereauxAReceptionner(noCollAdmReceptrice);
@@ -204,6 +211,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau) throws ServiceInfrastructureException {
 		final BordereauEnvoiReceptionView view = new BordereauEnvoiReceptionView();
@@ -213,6 +221,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		return view;
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void receptionnerMouvementsEnvoi(long[] idsMouvements) {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvements);
@@ -233,6 +242,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void refreshView(BordereauEnvoiReceptionView view) throws ServiceInfrastructureException {
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(view.getId());

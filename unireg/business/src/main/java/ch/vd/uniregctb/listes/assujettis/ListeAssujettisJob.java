@@ -93,6 +93,7 @@ public class ListeAssujettisJob extends JobDefinition {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final ListeAssujettisRapport rapport = template.execute(new TransactionCallback<ListeAssujettisRapport>() {
+			@Override
 			public ListeAssujettisRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}

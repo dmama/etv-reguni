@@ -27,10 +27,12 @@ public class MockLienCommuneBatiment implements DateRange {
 		return batiment;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}

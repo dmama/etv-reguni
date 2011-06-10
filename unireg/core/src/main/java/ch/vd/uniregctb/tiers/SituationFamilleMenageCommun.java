@@ -6,8 +6,6 @@ package ch.vd.uniregctb.tiers;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
@@ -110,6 +108,7 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 		// end-user-code
 	}
 
+	@Override
 	public SituationFamille duplicate() {
 		return new SituationFamilleMenageCommun(this);
 	}

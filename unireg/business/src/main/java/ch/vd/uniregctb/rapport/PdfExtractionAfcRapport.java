@@ -39,6 +39,7 @@ public class PdfExtractionAfcRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+			    @Override
 			    public void fillTable(PdfTableSimple table) throws DocumentException {
 			        table.addLigne("Période fiscale :", String.valueOf(results.periodeFiscale));
 			        table.addLigne("Mode d'extraction :", results.mode.getDescription());
@@ -57,6 +58,7 @@ public class PdfExtractionAfcRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNombreCtbAnalyses()));
 					table.addLigne("Contribuables ignorés :", String.valueOf(results.getListeCtbsIgnores().size()));

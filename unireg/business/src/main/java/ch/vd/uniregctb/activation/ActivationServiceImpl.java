@@ -49,6 +49,7 @@ public class ActivationServiceImpl implements ActivationService {
 	 * @param tiers le tiers à désactiver
 	 * @param dateAnnulation dernier jour d'activité souhaitée pour le tiers
 	 */
+	@Override
 	public void desactiveTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 
 		// [UNIREG-2340] On ne doit pas pouvoir désactiver un tiers s'il possède des déclarations non-annulées qui couvrent des périodes postérieures à la désactivation
@@ -149,6 +150,7 @@ public class ActivationServiceImpl implements ActivationService {
 	 * @param tiersRemplacant
 	 * @param dateRemplacement
 	 */
+	@Override
 	public void remplaceTiers(Tiers tiersRemplace, Tiers tiersRemplacant, RegDate dateRemplacement) throws ActivationServiceException {
 		desactiveTiers(tiersRemplace, dateRemplacement);
 
@@ -162,6 +164,7 @@ public class ActivationServiceImpl implements ActivationService {
 	 * @param tiers
 	 * @param dateReactivation
 	 */
+	@Override
 	public void reactiveTiers(Tiers tiers, RegDate dateReactivation) throws ActivationServiceException {
 		Assert.notNull(dateReactivation);
 

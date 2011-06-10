@@ -27,6 +27,7 @@ public class CivilEditValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return Tiers.class.equals(clazz) || DebiteurPrestationImposable.class.equals(clazz) || TiersEditView.class.equals(clazz);
@@ -35,6 +36,7 @@ public class CivilEditValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		TiersEditView tiersView = (TiersEditView) obj;
 		if (tiersView != null) {

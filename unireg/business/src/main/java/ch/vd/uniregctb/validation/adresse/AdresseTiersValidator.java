@@ -8,6 +8,7 @@ import ch.vd.uniregctb.validation.EntityValidatorImpl;
 
 public abstract class AdresseTiersValidator<T extends AdresseTiers> extends EntityValidatorImpl<T> {
 
+	@Override
 	public ValidationResults validate(T adr) {
 		final ValidationResults vr = new ValidationResults();
 		if (!adr.isAnnule()) {

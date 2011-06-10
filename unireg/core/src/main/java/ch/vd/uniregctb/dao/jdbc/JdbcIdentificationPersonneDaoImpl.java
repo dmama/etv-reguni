@@ -24,12 +24,14 @@ public class JdbcIdentificationPersonneDaoImpl implements JdbcIdentificationPers
 
 	private static final IdentificationPersonneMapper ROW_MAPPER = new IdentificationPersonneMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public IdentificationPersonne get(long forId, JdbcTemplate template) {
 		final Pair<Long, IdentificationPersonne> pair = (Pair<Long, IdentificationPersonne>) DataAccessUtils.uniqueResult(template.query(IdentificationPersonneMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<IdentificationPersonne> getForTiers(long tiersId, JdbcTemplate template) {
 		final List<Pair<Long, IdentificationPersonne>> list = template.query(IdentificationPersonneMapper.selectByTiersId(), new Object[]{tiersId}, ROW_MAPPER);
@@ -40,11 +42,13 @@ public class JdbcIdentificationPersonneDaoImpl implements JdbcIdentificationPers
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<IdentificationPersonne>> getForTiers(Collection<Long> tiersId, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, IdentificationPersonne>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, IdentificationPersonne>>() {
+			@Override
 			public List<Pair<Long, IdentificationPersonne>> process(List<Long> ids) {
 				return template.query(IdentificationPersonneMapper.selectByTiersIds(ids), ROW_MAPPER);
 			}
@@ -88,6 +92,7 @@ public class JdbcIdentificationPersonneDaoImpl implements JdbcIdentificationPers
 			return BASE_SELECT + " where NON_HABITANT_ID in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final long temp10 = rs.getLong(10);

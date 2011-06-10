@@ -111,10 +111,12 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		this.adresseService = adresseService;
 	}
 
+	@Override
 	public String calculPrefixe() {
 		return PREFIXE_SOMMATION_LR;
 	}
 
+	@Override
 	public String construitIdArchivageDocument(DeclarationImpotSource lr) {
 		return String.format(
 				"%s%s %s %s",
@@ -127,6 +129,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		);
 	}
 
+	@Override
 	public String construitIdDocument(DeclarationImpotSource lr) {
 		return String.format(
 				"%s %s %s %s",
@@ -146,6 +149,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 * @return
 	 * @throws EditiqueException
 	 */
+	@Override
 	public FichierImpressionDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		TypFichierImpression impressionIS = mainDocument.addNewFichierImpression();

@@ -49,6 +49,7 @@ public class MockAdresse implements Adresse {
 		this.localite = localite;
 	}
 
+	@Override
 	public String getCasePostale() {
 		return casePostale;
 	}
@@ -57,6 +58,7 @@ public class MockAdresse implements Adresse {
 		this.casePostale = casePostale;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebutValidite;
 	}
@@ -65,6 +67,7 @@ public class MockAdresse implements Adresse {
 		this.dateDebutValidite = dateDebutValidite;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFinValidite;
 	}
@@ -81,6 +84,7 @@ public class MockAdresse implements Adresse {
 		this.lieu = lieu;
 	}
 
+	@Override
 	public String getLocalite() {
 		return localite;
 	}
@@ -97,6 +101,7 @@ public class MockAdresse implements Adresse {
 		this.npa = npa;
 	}
 
+	@Override
 	public String getNumero() {
 		return numero;
 	}
@@ -105,6 +110,7 @@ public class MockAdresse implements Adresse {
 		this.numero = numero;
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return numeroAppartement;
 	}
@@ -113,6 +119,7 @@ public class MockAdresse implements Adresse {
 		this.numeroAppartement = numeroAppartement;
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return numeroRue;
 	}
@@ -121,6 +128,7 @@ public class MockAdresse implements Adresse {
 		this.numeroRue = numeroRue;
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
@@ -129,6 +137,7 @@ public class MockAdresse implements Adresse {
 		this.numeroOrdrePostal = numeroOrdrePostal;
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return numeroPostal;
 	}
@@ -137,6 +146,7 @@ public class MockAdresse implements Adresse {
 		this.numeroPostal = numeroPostal;
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return numeroPostalComplementaire;
 	}
@@ -145,6 +155,7 @@ public class MockAdresse implements Adresse {
 		this.numeroPostalComplementaire = numeroPostalComplementaire;
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		if (noOfsPays == null) {
 			return ServiceInfrastructureService.noOfsSuisse;
@@ -162,6 +173,7 @@ public class MockAdresse implements Adresse {
 		this.noOfsPays = pays.getNoOFS();
 	}
 
+	@Override
 	public String getRue() {
 		return rue;
 	}
@@ -170,6 +182,7 @@ public class MockAdresse implements Adresse {
 		this.rue = rue;
 	}
 
+	@Override
 	public String getTitre() {
 		return titre;
 	}
@@ -178,6 +191,7 @@ public class MockAdresse implements Adresse {
 		this.titre = titre;
 	}
 
+	@Override
 	public TypeAdresseCivil getTypeAdresse() {
 		return typeAdresse;
 	}
@@ -186,6 +200,7 @@ public class MockAdresse implements Adresse {
 		this.typeAdresse = typeAdresse;
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		return communeAdresse;
 	}
@@ -194,6 +209,7 @@ public class MockAdresse implements Adresse {
 		communeAdresse = c;
 	}
 
+	@Override
 	public Integer getEgid() {
 		return egid;
 	}
@@ -210,6 +226,7 @@ public class MockAdresse implements Adresse {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
 	}

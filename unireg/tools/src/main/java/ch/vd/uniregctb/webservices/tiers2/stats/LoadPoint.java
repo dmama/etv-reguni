@@ -43,6 +43,7 @@ class LoadPoint implements Comparable<LoadPoint> {
 		return periode.isInPeriode(timestamp);
 	}
 
+	@Override
 	public int compareTo(LoadPoint o) {
 		return this.periode.compareTo(o.periode);
 	}

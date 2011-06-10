@@ -29,6 +29,7 @@ public class EmailNotificationService implements NotificationService {
 		this.templateMessage = templateMessage;
 	}
 
+	@Override
 	public void sendNotification(Exception exception, Date date, String applicationName, String url, String user, int occurenceCount) {
 
 		SimpleMailMessage mail = new SimpleMailMessage(this.templateMessage);

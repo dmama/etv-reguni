@@ -31,6 +31,7 @@ public class ModeleFeuilleDocumentEditique implements Comparable<ModeleFeuilleDo
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(ModeleFeuilleDocumentEditique modeleFeuilleDocumentView) {
 		String numeroFormulaire = getNumeroFormulaire();
 		String autreNumeroFormulaire = modeleFeuilleDocumentView.getNumeroFormulaire();

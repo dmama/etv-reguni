@@ -38,6 +38,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 
 	protected final Logger LOGGER = Logger.getLogger(BatchWebServiceImpl.class);
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
@@ -121,6 +122,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 		return value;
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
@@ -137,6 +139,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 		return listeJobDefinition;
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
@@ -157,6 +160,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
@@ -174,6 +178,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 		return def;
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
@@ -195,6 +200,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 		final Report report = new Report(document);
 		try {
 			documentService.readDoc(document, new ReadDocCallback<Document>() {
+				@Override
 				public void readDoc(Document doc, InputStream is) throws Exception {
 
 					byte[] data = new byte[(int) doc.getFileSize()];

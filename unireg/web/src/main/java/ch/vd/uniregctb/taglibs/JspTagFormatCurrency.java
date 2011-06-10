@@ -14,6 +14,7 @@ public class JspTagFormatCurrency extends BodyTagSupport {
 	
 	private Object value;
 
+	@Override
 	public int doStartTag() throws JspTagException {
 		try {
 			JspWriter out = pageContext.getOut();

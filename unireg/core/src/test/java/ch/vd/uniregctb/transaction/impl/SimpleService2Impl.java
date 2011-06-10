@@ -17,6 +17,7 @@ public class SimpleService2Impl extends SimpleServiceImpl implements SimpleServi
 		this.service1 = service;
 	}
 
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public void insert2LinesException(int id1, String msg1, int id2, String msg2) {
 
@@ -25,6 +26,7 @@ public class SimpleService2Impl extends SimpleServiceImpl implements SimpleServi
 		insertLineException(id2, msg2);
 	}
 
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public void insertLineThatException(int id1, String msg1, int id2, String msg2) {
 		LOGGER.info("insertLineThatException("+id1+", "+msg1+", "+id2+", "+msg2+")");
@@ -33,6 +35,7 @@ public class SimpleService2Impl extends SimpleServiceImpl implements SimpleServi
 		service1.insertLineException(id2, msg2);
 	}
 
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public String readLineThatInsert(int id, String msg) {
 
@@ -41,6 +44,7 @@ public class SimpleService2Impl extends SimpleServiceImpl implements SimpleServi
 		return str;
 	}
 
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public void insertLineCallMandatory(int id, String msg) {
 

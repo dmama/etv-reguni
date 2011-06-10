@@ -30,6 +30,7 @@ public class CoupleListManagerImpl extends TiersManager implements CoupleListMan
 	 * @param numeroPP
 	 * @return une vue CoupleListView
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public CoupleListView get(Long numeroPP) {
 		Tiers tiers = tiersService.getTiers(numeroPP) ;
@@ -66,6 +67,7 @@ public class CoupleListManagerImpl extends TiersManager implements CoupleListMan
 	 *
 	 * @return une vue CoupleListView
 	 */
+	@Override
 	public CoupleListView get() {
 		CoupleListView coupleListView = new CoupleListView();
 		coupleListView.setAllowed(true);

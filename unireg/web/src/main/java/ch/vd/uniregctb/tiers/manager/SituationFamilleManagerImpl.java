@@ -43,6 +43,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 *
 	 * @param idSituationFamille
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerSituationFamille(Long idSituationFamille) {
 		situationFamilleService.annulerSituationFamille(idSituationFamille);
@@ -55,6 +56,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public SituationFamilleView create(Long numeroCtb) throws AdresseException {
 		final Contribuable contribuable = (Contribuable) tiersService.getTiers(numeroCtb);
@@ -106,6 +108,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 *
 	 * @param situationFamilleView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(SituationFamilleView situationFamilleView) {
 

@@ -98,6 +98,7 @@ public class ResolutionAdresseProcessor {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
 		final List<AdresseSuisse> list = adressetiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<AdresseSuisse>>() {
+			@Override
 			public List<AdresseSuisse> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(AdresseSuisse.class);
 				crit.add(Restrictions.in("id", batch));
@@ -164,9 +165,11 @@ public class ResolutionAdresseProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> idsAdresse = adressetiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryMessage);
 						return (List<Long>) queryObject.list();

@@ -33,6 +33,7 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 				}
@@ -48,6 +49,7 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[]{50f, 30f}, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de PMs à migrer :", String.valueOf(results.total));
 					table.addLigne("Nombre de PMs migrées :", String.valueOf(results.traitees.size()));

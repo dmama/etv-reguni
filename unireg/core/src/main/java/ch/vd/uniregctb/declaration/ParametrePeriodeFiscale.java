@@ -200,6 +200,7 @@ public class ParametrePeriodeFiscale extends HibernateEntity implements Duplicab
 		// end-user-code
 	}
 
+	@Override
 	public ParametrePeriodeFiscale duplicate() {
 		return new ParametrePeriodeFiscale(this);
 	}

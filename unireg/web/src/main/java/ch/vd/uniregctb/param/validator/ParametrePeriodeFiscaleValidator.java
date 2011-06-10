@@ -15,11 +15,13 @@ public class ParametrePeriodeFiscaleValidator implements Validator{
 	 */
 	private static final Logger LOGGER = Logger.getLogger(ParametrePeriodeFiscaleValidator.class);
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return clazz.isAssignableFrom(ParametrePeriodeFiscaleView.class);
 	}
 
+	@Override
 	public void validate(Object target, Errors errors) {
 		final ParametrePeriodeFiscaleView view = (ParametrePeriodeFiscaleView)target;
 		final Integer requestedYear = view.getAnneePeriodeFiscale() + 1;

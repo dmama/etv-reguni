@@ -67,6 +67,7 @@ public class PeriodiciteView implements Comparable<PeriodiciteView>, Annulable {
 		this.debiteurId = debiteurId;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}
@@ -83,6 +84,7 @@ public class PeriodiciteView implements Comparable<PeriodiciteView>, Annulable {
 		this.periodeDecompte = periodeDecompte;
 	}
 
+	@Override
 	public int compareTo(PeriodiciteView periodiciteView) {
 		int value = - dateDebut.asJavaDate().compareTo(periodiciteView.getDateDebut());
 		return value;

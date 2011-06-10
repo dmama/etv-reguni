@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -10,9 +13,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
+import ch.vd.registre.base.dao.GenericDAOImpl;
 
 /**
  * DAO des événements externes.
@@ -26,8 +27,10 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 		super(EvenementExterne.class);
 	}
 
+	@Override
 	public boolean existe(final String businessId) {
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			@Override
 			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 				final Criteria criteria = session.createCriteria(EvenementExterne.class);
 				criteria.setProjection(Projections.rowCount());
@@ -38,9 +41,11 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 		});
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<EvenementExterne> getEvenementExternes(final boolean ascending, final EtatEvenementExterne... etatEvenementExternes) {
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Collection<EvenementExterne>>() {
+			@Override
 			public Collection<EvenementExterne> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Criteria criteria = session.createCriteria(EvenementExterne.class);
 				if (ascending) {
@@ -57,9 +62,11 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 		});
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getIdsQuittancesLRToMigrate() {
 		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
+			@Override
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				Query q = session.createQuery("select q.id from QuittanceLR q where q.type is null");
 				return q.list();

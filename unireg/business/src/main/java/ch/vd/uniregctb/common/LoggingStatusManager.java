@@ -22,14 +22,17 @@ public class LoggingStatusManager implements StatusManager {
 		this.level = level;
 	}
 
+	@Override
 	public boolean interrupted() {
 		return false;
 	}
 
+	@Override
 	public void setMessage(String msg) {
 		this.logger.log(level, msg);
 	}
 
+	@Override
 	public void setMessage(String msg, int percentProgression) {
 		this.logger.log(level, msg + " (" + percentProgression + "%)");
 	}

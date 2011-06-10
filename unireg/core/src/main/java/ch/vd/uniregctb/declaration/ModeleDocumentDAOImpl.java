@@ -16,10 +16,12 @@ public class ModeleDocumentDAOImpl extends GenericDAOImpl<ModeleDocument, Long> 
 		super(ModeleDocument.class);
 	}
 
+	@Override
 	public ModeleDocument getModelePourDeclarationImpotOrdinaire(PeriodeFiscale periode, TypeDocument type) {
 		return getModelePourDeclarationImpotOrdinaire(periode, type, false);
 	}
 
+	@Override
 	public ModeleDocument getModelePourDeclarationImpotOrdinaire(PeriodeFiscale periode, TypeDocument type, boolean doNotAutoFlush) {
 
 		Assert.notNull(periode, "La période fiscale ne doit pas être nulle.");
@@ -42,10 +44,12 @@ public class ModeleDocumentDAOImpl extends GenericDAOImpl<ModeleDocument, Long> 
 		return null;
 	}
 	
+	@Override
 	public ModeleDocument getModelePourDeclarationImpotSource(PeriodeFiscale periode) {
 		return getModelePourDeclarationImpotSource(periode, false);
 	}
 
+	@Override
 	public ModeleDocument getModelePourDeclarationImpotSource(PeriodeFiscale periode, boolean doNotAutoFlush) {
 
 		Assert.notNull(periode, "La période fiscale ne doit pas être nulle.");
@@ -67,6 +71,7 @@ public class ModeleDocumentDAOImpl extends GenericDAOImpl<ModeleDocument, Long> 
 		return null;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<ModeleDocument> getByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		List list = find(
@@ -76,6 +81,7 @@ public class ModeleDocumentDAOImpl extends GenericDAOImpl<ModeleDocument, Long> 
 			Collections.sort(
 					list,
 					new Comparator<ModeleDocument>() {
+						@Override
 						public int compare(ModeleDocument o1, ModeleDocument o2) {
 							return o1.getTypeDocument().compareTo(o2.getTypeDocument());
 						}}

@@ -28,6 +28,7 @@ public class ExtractionAfcResults extends ListesResults<ExtractionAfcResults> {
 	private final ServiceInfrastructureService infraService;
 
 	public static final class InfoComparator<T extends InfoCtbBase> implements Comparator<T> {
+		@Override
 		public int compare(T o1, T o2) {
 			return (int) (o1.noCtb - o2.noCtb);
 		}

@@ -20,6 +20,7 @@ public class BordereauMouvementDossierDAOImpl extends GenericDAOImpl<BordereauMo
 		super(BordereauMouvementDossier.class);
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<BordereauMouvementDossier> getBordereauxAReceptionner(Integer noCollAdmReceptrice) {
 
@@ -36,6 +37,7 @@ public class BordereauMouvementDossierDAOImpl extends GenericDAOImpl<BordereauMo
 		final String hql = b.toString();
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<BordereauMouvementDossier>>() {
+			@Override
 			public List<BordereauMouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(hql);
 				for (int i = 0 ; i < params.size() ; ++ i) {

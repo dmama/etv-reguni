@@ -123,6 +123,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 		return results;
 	}
 
+	@Override
 	public Class<DebiteurPrestationImposable> getValidatedClass() {
 		return DebiteurPrestationImposable.class;
 	}

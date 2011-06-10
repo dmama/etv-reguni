@@ -103,6 +103,7 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange {
 	 * @return the dateDebut
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0UCO0G7DEd2HlNPAVeri9w?GETTER"
 	 */
+	@Override
 	@Column(name = "DECL_DATE_DEBUT")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -129,6 +130,7 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange {
 	 * @return the dateFin
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0UL_0G7DEd2HlNPAVeri9w?GETTER"
 	 */
+	@Override
 	@Column(name = "DECL_DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -238,6 +240,7 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

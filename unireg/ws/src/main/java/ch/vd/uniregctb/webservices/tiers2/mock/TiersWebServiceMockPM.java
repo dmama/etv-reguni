@@ -161,10 +161,12 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		this.evenementsPMCsvFile = evenementsPMCsvFile;
 	}
 
+	@Override
 	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		return target.searchTiers(params);
 	}
 
+	@Override
 	public Tiers.Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
@@ -175,6 +177,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
+	@Override
 	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
@@ -191,6 +194,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
+	@Override
 	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
@@ -202,6 +206,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
+	@Override
 	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
@@ -213,6 +218,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
+	@Override
 	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		// sépare les ids PP des ids PM
@@ -279,6 +285,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return batch;
 	}
 
+	@Override
 	public BatchTiersHisto getBatchTiersHisto(GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		// sépare les ids PP des ids PM
@@ -344,10 +351,12 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return batch;
 	}
 
+	@Override
 	public void setTiersBlocRembAuto(SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		target.setTiersBlocRembAuto(params);
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<EvenementPM> searchEvenementsPM(final SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -387,11 +396,13 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return events;
 	}
 
+	@Override
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws
 			BusinessException, AccessDeniedException, TechnicalException {
 		return target.getDebiteurInfo(params);
 	}
 
+	@Override
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
 		return target.quittancerDeclarations(params);
 	}
@@ -403,6 +414,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 
 	private void sortEvents(List<EvenementPM> events) {
 		Collections.sort(events, new Comparator<EvenementPM>() {
+			@Override
 			public int compare(EvenementPM o1, EvenementPM o2) {
 				int c = o1.tiersNumber.compareTo(o2.tiersNumber);
 				if (c != 0) {
@@ -434,6 +446,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return new ArrayList<Long>(pmsHisto.keySet());
 	}
 
+	@Override
 	public void doNothing(AllConcreteTiersClasses dummy) {
 	}
 
@@ -445,6 +458,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return (Entreprise.FIRST_ID <= tiersNumber && tiersNumber <= Entreprise.LAST_ID);
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		LOGGER.info("Initialisation du mock...");
@@ -1084,6 +1098,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	 */
 	private void sortEvenements(List<EvenementPM> list) {
 		Collections.sort(list, new Comparator<EvenementPM>() {
+			@Override
 			public int compare(EvenementPM o1, EvenementPM o2) {
 				return Date.asRegDate(o1.dateEvenement).compareTo(Date.asRegDate(o2.dateEvenement));
 			}
@@ -1098,6 +1113,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	private void sortRanges(List<? extends Range> l) {
 
 		Collections.sort(l, new Comparator<Range>() {
+			@Override
 			public int compare(Range o1, Range o2) {
 
 				// Copied-pasted form DateRangeComparator<T>.compareRanges

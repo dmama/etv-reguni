@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
-import ch.vd.uniregctb.common.JobResults;
-
 import java.util.Comparator;
+
+import ch.vd.uniregctb.common.JobResults;
 
 public abstract class CorrectionFlagHabitantAbstractResults<T extends CorrectionFlagHabitantAbstractResults> extends JobResults<Long, T> {
 
@@ -28,6 +28,7 @@ public abstract class CorrectionFlagHabitantAbstractResults<T extends Correction
 	}
 
 	public static final Comparator<ContribuableInfo> COMPARATOR = new Comparator<ContribuableInfo>() {
+		@Override
 		public int compare(ContribuableInfo o1, ContribuableInfo o2) {
 			return o1.noCtb < o2.noCtb ? -1 : (o1.noCtb > o2.noCtb ? 1 : 0);
 		}
@@ -74,6 +75,7 @@ public abstract class CorrectionFlagHabitantAbstractResults<T extends Correction
 			this.messageException = messageException;
 		}
 
+		@Override
 		public String getComplementInfo() {
 			return messageException;
 		}

@@ -146,6 +146,7 @@ public class MouvementDetailView implements Comparable<MouvementDetailView> {
 	// Méthodes
 	//
 
+	@Override
 	public int compareTo(MouvementDetailView o) {
 		return comparator.compare(this, o);
 	}

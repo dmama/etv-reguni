@@ -1,16 +1,22 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.*;
 
 /**
  * Rapport PDF contenant les statistiques des contribuables assujettis.
@@ -35,6 +41,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Année fiscale:", String.valueOf(results.annee));
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
@@ -51,6 +58,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
 					table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
@@ -92,6 +100,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		ArrayList<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> list = new ArrayList<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>(
 				entrySet);
 		Collections.sort(list, new Comparator<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>() {
+			@Override
 			public int compare(Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> o1,
 			                   Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> o2) {
 				return o1.getKey().compareTo(o2.getKey());

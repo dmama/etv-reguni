@@ -20,6 +20,7 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
+	@Override
 	public UtilisateurView get(long noIndividuOperateur) {
 
 		Operateur operateur = serviceSecuriteService.getOperateur(noIndividuOperateur);

@@ -8,6 +8,7 @@ import ch.vd.uniregctb.validation.EntityValidatorImpl;
 
 public abstract class RapportEntreTiersValidator<T extends RapportEntreTiers> extends EntityValidatorImpl<T> {
 
+	@Override
 	public ValidationResults validate(T ret) {
 		final ValidationResults vr = new ValidationResults();
 

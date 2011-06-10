@@ -115,6 +115,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		this.rapportPrestationEditManager = rapportPrestationEditManager;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

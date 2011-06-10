@@ -70,10 +70,12 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 		doublons.add(new Doublon(etat));
 	}
 
+	@Override
 	public void addErrorException(Long idCtb, Exception e) {
 		erreurs.add(new Erreur(idCtb, null, e));
 	}
 
+	@Override
 	public void addAll(CorrectionEtatDeclarationResults right) {
 		this.nbDeclarationsTotal += right.nbDeclarationsTotal;
 		this.nbEtatsTotal += right.nbEtatsTotal;
@@ -92,6 +94,7 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 	@Override
 	public void end() {
 		Collections.sort(doublons, new Comparator<Doublon>() {
+			@Override
 			public int compare(Doublon o1, Doublon o2) {
 				if (o1.ctbId.equals(o2.ctbId)) {
 					if (o1.diId.equals(o2.diId)) {

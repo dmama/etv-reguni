@@ -313,6 +313,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		// on trie la liste par numéro de tiers : Arnold a été créé d'abord, il a donc un numéro de tiers plus petit
 		final List<DroitAcces> droits = new ArrayList<DroitAcces>(droitsPourOperateurOuvert);
 		Collections.sort(droits, new Comparator<DroitAcces>() {
+			@Override
 			public int compare(DroitAcces o1, DroitAcces o2) {
 				final long n1 = o1.getTiers().getNumero();
 				final long n2 = o2.getTiers().getNumero();
@@ -471,6 +472,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 		// fiscal de départ
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique mr = addHabitant(noMr);
 				final PersonnePhysique mme = addHabitant(noMme);

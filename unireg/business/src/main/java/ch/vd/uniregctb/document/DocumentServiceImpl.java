@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,7 +20,9 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 /**
@@ -67,6 +67,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 		this.repository = dir;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		migrateOldFiles();
 	}
@@ -85,6 +86,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 		// Récupère la liste des fichiers de dump
 		final String regex = "dbdump_.*\\.zip";
 		FilenameFilter filter = new FilenameFilter() {
+			@Override
 			public boolean accept(File dir, String name) {
 				return name.matches(regex);
 			}
@@ -110,6 +112,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 				LOGGER.debug("Récupération du fichier de dump legacy " + filename);
 
 				newDoc(DatabaseDump.class, nom, description, extension, new DocumentService.WriteDocCallback<DatabaseDump>() {
+					@Override
 					public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
 						FileInputStream is = new FileInputStream(file);
 						try {
@@ -133,6 +136,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Collection<Document> ramasseDocs() {
 		List<Document> docs = new ArrayList<Document>();
 		ramasseDir(repository, "", docs);
@@ -202,6 +206,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Document get(Long id) throws Exception {
 		return hibernateTemplate.get(Document.class, id);
 	}
@@ -209,6 +214,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void delete(Document doc) throws Exception {
 		Assert.notNull(doc);
 
@@ -228,11 +234,13 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Document> getDocuments() throws Exception {
 		return hibernateTemplate.find("FROM Document AS doc WHERE doc.annulationDate IS null");
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Document> Collection<T> getDocuments(Class<T> clazz) throws Exception {
 		return hibernateTemplate.find("FROM " + clazz.getSimpleName() + " AS doc WHERE doc.annulationDate IS null");
@@ -272,6 +280,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Document> T newDoc(Class<T> clazz, String nom, String description, String fileExtension, WriteDocCallback<T> callback)
 			throws Exception {
@@ -313,6 +322,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public <T extends Document> void readDoc(T doc, ReadDocCallback<T> callback) throws Exception {
 
 		// Ouverture en lecture du document

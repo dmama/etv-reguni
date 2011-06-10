@@ -97,10 +97,12 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	 * @return le document pdf
 	 * @throws EditiqueException
 	 */
+	@Override
 	public InputStream getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException {
 		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TYPE_DOCUMENT_LR, lr.getId().toString(), CONTEXTE_COPIE_CONFORME_LR);
 	}
 
+	@Override
 	public InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
 		final String nomDocument = helperSommationLR.construitIdArchivageDocument(lr);
 		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), ImpressionSommationLRHelperImpl.TYPE_DOCUMENT_SOMMATION_LR, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
@@ -112,6 +114,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	 * @param dateFinPeriode
 	 * @throws Exception
 	 */
+	@Override
 	public EnvoiLRsResults imprimerAllLR(RegDate dateFinPeriode, StatusManager status) throws Exception {
 		final EnvoiLRsEnMasseProcessor processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, this);
 		return processor.run(dateFinPeriode, status);
@@ -120,6 +123,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTraitement, StatusManager status) {
 		final EnvoiSommationLRsEnMasseProcessor processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, delaisService);
 		return processor.run(categorie, dateFinPeriode, dateTraitement, status);
@@ -134,6 +138,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	 * @param dateFinPeriode
 	 * @throws Exception
 	 */
+	@Override
 	public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
 		final DeclarationImpotSource lrSaved = saveLR(dpi, dateDebutPeriode,dateFinPeriode);
 		/*
@@ -199,6 +204,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	 * @param dpi
 	 * @throws Exception
 	 */
+	@Override
 	public void imprimerSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws Exception {
 
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
@@ -212,6 +218,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<DateRange> findLRsManquantes(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, List<DateRange> lrTrouveesOut) {
 		// l'algo est le suivant :
 		// 1. détermination des périodes d'activité globales du débiteur
@@ -323,6 +330,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	 * @param periodeFiscale période fiscale sur laquelle les LR sont inspectées
 	 * @param dateTraitement date déterminante pour savoir si un délai a été dépassé
 	 */
+	@Override
 	public DeterminerLRsEchuesResults determineLRsEchues(int periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception {
 		final DeterminerLRsEchuesProcessor processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersDAO, listeRecapDAO, evenementFiscalService, tiersService);
 		return processor.run(periodeFiscale, dateTraitement, status);
@@ -370,6 +378,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	/**
 	 * Permet de reconstruire l'historique des periodicités a partir des LR de chaque debiteurs.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		// on désactive la validation des tiers pendant le calcul des périodicités des débiteurs qui n'ont
@@ -389,6 +398,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
 		final List<Long> ids = t.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return tiersDAO.getListeDebiteursSansPeriodicites();
 			}
@@ -483,10 +493,12 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 
 		public final Map<Long, String> erreurs = new HashMap<Long, String>();
 
+		@Override
 		public void addErrorException(Long element, Exception e) {
 			erreurs.put(element, e.getMessage());
 		}
 
+		@Override
 		public void addAll(MigrationResults right) {
 			erreurs.putAll(right.erreurs);
 		}

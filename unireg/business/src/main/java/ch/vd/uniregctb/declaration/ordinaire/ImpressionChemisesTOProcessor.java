@@ -64,8 +64,10 @@ public class ImpressionChemisesTOProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 						return getIdDesDIPourTO(session);
 					}

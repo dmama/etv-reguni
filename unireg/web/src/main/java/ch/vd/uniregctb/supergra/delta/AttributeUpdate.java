@@ -29,6 +29,7 @@ public class AttributeUpdate extends Delta {
 		this.newValue = newValue;
 	}
 
+	@Override
 	public EntityKey getKey() {
 		return key;
 	}

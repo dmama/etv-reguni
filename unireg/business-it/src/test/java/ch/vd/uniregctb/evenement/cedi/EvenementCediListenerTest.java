@@ -97,6 +97,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
 
 		listener.setHandler(new EvenementCediHandler() {
+			@Override
 			public void onEvent(EvenementCedi event) {
 				events.add(event);
 			}
@@ -138,6 +139,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
 
 		listener.setHandler(new EvenementCediHandler() {
+			@Override
 			public void onEvent(EvenementCedi event) {
 				events.add(event);
 			}

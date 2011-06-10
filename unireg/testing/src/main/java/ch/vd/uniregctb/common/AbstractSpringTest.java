@@ -70,6 +70,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	/**
 	 * Set the {@link ApplicationContext} to be used by this test instance, provided via {@link ApplicationContextAware} semantics.
 	 */
+	@Override
 	public final void setApplicationContext(final ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 		afterContextInitialization();
@@ -306,6 +307,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 		public abstract T execute(TransactionStatus status) throws Exception;
 
+		@Override
 		public final T doInTransaction(TransactionStatus status) {
 			try {
 				return execute(status);

@@ -22,6 +22,7 @@ public class TypeEtatPMImpl implements TypeEtatPM {
 		return new TypeEtatPMImpl(type.getCode(), type.getLibelle());
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}
@@ -30,6 +31,7 @@ public class TypeEtatPMImpl implements TypeEtatPM {
 		this.code = code;
 	}
 
+	@Override
 	public String getLibelle() {
 		return libelle;
 	}

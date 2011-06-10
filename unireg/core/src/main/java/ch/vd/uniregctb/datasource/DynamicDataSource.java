@@ -24,18 +24,22 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 
 	private BasicDataSource instance;
 
+	@Override
 	public Object getObject() throws Exception {
 		return instance;
 	}
 
+	@Override
 	public Class getObjectType() {
 		return BasicDataSource.class;
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {
@@ -67,6 +71,7 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (instance != null) {
 			instance.close();

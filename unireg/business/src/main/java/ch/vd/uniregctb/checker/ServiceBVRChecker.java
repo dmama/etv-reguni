@@ -11,6 +11,7 @@ public class ServiceBVRChecker implements ServiceChecker {
 	private BVRPlusClient bvrClient;
 	private String details;
 
+	@Override
 	public Status getStatus() {
 		try {
 			final BvrDemande demande = new BvrDemande();
@@ -27,6 +28,7 @@ public class ServiceBVRChecker implements ServiceChecker {
 		}
 	}
 
+	@Override
 	public String getStatusDetails() {
 		return details;
 	}

@@ -26,6 +26,7 @@ public class CapitalView implements DateRange {
 		this.editionFosc = new EditionFoscView(capital.getEditionFosc());
 	}
 	
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -34,6 +35,7 @@ public class CapitalView implements DateRange {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -74,6 +76,7 @@ public class CapitalView implements DateRange {
 		this.editionFosc = editionFosc;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

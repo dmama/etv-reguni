@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.GentilComparator;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -43,6 +42,7 @@ public final class AdresseViewComparator implements Comparator<AdresseView> {
 		}
 	}
 
+	@Override
 	public int compare(AdresseView o1, AdresseView o2) {
 		int compare = Boolean.valueOf(o1.isAnnule()).compareTo(o2.isAnnule());
 

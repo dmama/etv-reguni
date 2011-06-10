@@ -435,6 +435,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			// tri selon le numéro de séquence
 			final List<DeclarationImpotOrdinaire> diTriees = new ArrayList<DeclarationImpotOrdinaire>(dis);
 			Collections.sort(diTriees, new Comparator<DeclarationImpotOrdinaire>() {
+				@Override
 				public int compare(DeclarationImpotOrdinaire o1, DeclarationImpotOrdinaire o2) {
 					return o1.getNumero() - o2.getNumero();
 				}

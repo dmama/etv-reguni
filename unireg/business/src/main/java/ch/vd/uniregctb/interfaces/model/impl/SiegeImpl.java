@@ -28,18 +28,22 @@ public class SiegeImpl implements Siege {
 		this.type = TypeNoOfs.valueOf(target.getType().name());
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public int getNoOfsSiege() {
 		return noOfsSiege;
 	}
 
+	@Override
 	public TypeNoOfs getType() {
 		return type;
 	}

@@ -41,83 +41,99 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 		this.target = null;
 	}
 
+	@Override
 	public AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 		assertTargetNotNull();
 		return target.getAdresses(noIndividu, date, strict);
 	}
 
+	@Override
 	public AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 		assertTargetNotNull();
 		return target.getAdressesHisto(noIndividu, strict);
 	}
 
+	@Override
 	public Collection<Adresse> getAdresses(long noTechniqueIndividu, int anneeValidite) {
 		assertTargetNotNull();
 		return target.getAdresses(noTechniqueIndividu, anneeValidite);
 	}
 
+	@Override
 	public Individu getIndividu(long noTechniqueIndividu, int anneeValidite, AttributeIndividu... attributs) {
 		assertTargetNotNull();
 		return target.getIndividu(noTechniqueIndividu, anneeValidite, attributs);
 	}
 
+	@Override
 	public Individu getIndividu(long noTechniqueIndividu, int anneeValidite) {
 		assertTargetNotNull();
 		return target.getIndividu(noTechniqueIndividu, anneeValidite);
 	}
 
+	@Override
 	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividu(noIndividu, date, parties);
 	}
 
+	@Override
 	public Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
 		assertTargetNotNull();
 		return target.getConjoint(noIndividuPrincipal,date);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
 		assertTargetNotNull();
 		return target.getNumeroIndividuConjoint(noIndividuPrincipal,date);  
 	}
 
+	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividus(nosIndividus, date, parties);
 	}
 
+	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividus(nosIndividus, annee, parties);
 	}
 
+	@Override
 	public Origine getOrigine(long noTechniqueIndividu, int anneeValidite) {
 		assertTargetNotNull();
 		return target.getOrigine(noTechniqueIndividu, anneeValidite);
 	}
 
+	@Override
 	public Collection<Permis> getPermis(long noTechniqueIndividu, int anneeValidite) {
 		assertTargetNotNull();
 		return target.getPermis(noTechniqueIndividu, anneeValidite);
 	}
 
+	@Override
 	public Tutelle getTutelle(long noTechniqueIndividu, int anneeValidite) {
 		assertTargetNotNull();
 		return target.getTutelle(noTechniqueIndividu, anneeValidite);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection getNationalites(long noTechniqueIndividu, int anneeValidite) {
 		assertTargetNotNull();
 		return target.getNationalites(noTechniqueIndividu, anneeValidite);
 	}
 
+	@Override
 	public String getNomPrenom(Individu individu) {
 		assertTargetNotNull();
 		return target.getNomPrenom(individu);
 	}
 
+	@Override
 	public NomPrenom getDecompositionNomPrenom(Individu individu) {
 		assertTargetNotNull();
 		return target.getDecompositionNomPrenom(individu);
@@ -127,21 +143,25 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 		Assert.notNull(target, "Le service civil n'a pas été défini !");
 	}
 
+	@Override
 	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
 		assertTargetNotNull();
 		return target.getEtatCivilActif(noIndividu, date);
 	}
 
+	@Override
 	public Permis getPermisActif(long noIndividu, RegDate date) {
 		assertTargetNotNull();
 		return target.getPermisActif(noIndividu, date);
 	}
 
+	@Override
 	public boolean isWarmable() {
 		assertTargetNotNull();
 		return target.isWarmable();
 	}
 
+	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}

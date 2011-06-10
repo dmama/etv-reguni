@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.document;
 
-import java.io.InputStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -68,6 +67,7 @@ public class DocumentController extends AbstractSimpleFormController {
 
 		// On veut que la réponse provoque un téléchargement de fichier
 		docService.readDoc(doc, new DocumentService.ReadDocCallback<Document>() {
+			@Override
 			public void readDoc(Document doc, InputStream is) throws Exception {
 				servletService.downloadAsFile(doc.getFileName(), is, (int) doc.getFileSize(), response);
 			}

@@ -35,6 +35,7 @@ public class AdresseMixer {
 			this.forceSurcharge = forceSurcharge;
 		}
 
+		@Override
 		public AdresseGenerique adapt(AdresseGenerique range, RegDate debut, RegDate fin) {
 			if (forceSurcharge || (debut == null && fin == null)) {
 				// si ces deux dates sont nulles, cela signifie que 'range' est une adresse de surcharge => on veut appliquer les valeurs 'source' et 'default' demandées dans ces cas-là.

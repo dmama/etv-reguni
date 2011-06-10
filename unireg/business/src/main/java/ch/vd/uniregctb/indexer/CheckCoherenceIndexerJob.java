@@ -48,6 +48,7 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 
 		// Charge les ids des tiers existants dans la base de données
 		final Set<Long> existingIds = template.execute(new TransactionCallback<Set<Long>>() {
+			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
 				return new HashSet<Long>(tiersDAO.getAllIds());
 			}
@@ -66,11 +67,13 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 
 		// Vérifie la cohérence de l'index
 		searcher.checkCoherenceIndex(existingIds, statusManager, new CheckCallback() {
+			@Override
 			public void onError(long id, String message) {
 				counts.errors++;
 				LOGGER.error(message);
 			}
 
+			@Override
 			public void onWarning(long id, String message) {
 				counts.warnings++;
 				LOGGER.warn(message);

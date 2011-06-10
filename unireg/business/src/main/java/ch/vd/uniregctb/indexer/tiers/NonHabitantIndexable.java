@@ -19,6 +19,7 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 		super(adresseService, tiersService, serviceInfra, nonHabitant);
 	}
 
+	@Override
 	public String getSubType() {
 		return SUB_TYPE;
 	}

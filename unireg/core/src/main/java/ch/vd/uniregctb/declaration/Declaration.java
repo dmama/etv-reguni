@@ -279,6 +279,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	 * @return the dateDebut
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -305,6 +306,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	 * @return the dateFin
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_FIN", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -501,10 +503,12 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return tiers == null ? null : Arrays.asList(tiers);

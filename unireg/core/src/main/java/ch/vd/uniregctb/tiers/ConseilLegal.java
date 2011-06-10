@@ -46,6 +46,7 @@ public class ConseilLegal extends RepresentationLegale {
 		super(dateDebut, dateFin, pupille, conseiller, autoriteTutelaire);
 	}
 
+	@Override
 	public RapportEntreTiers duplicate() {
 		return new ConseilLegal(this);
 	}

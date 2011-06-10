@@ -15,6 +15,7 @@ public class MockEvenementFiscalSender implements EvenementFiscalSender {
 		this.count = 0;
 	}
 
+	@Override
 	public void sendEvent(EvenementFiscal evenement) throws EvenementFiscalException {
 		count++;
 		trace.add(evenement.toString());

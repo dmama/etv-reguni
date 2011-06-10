@@ -31,6 +31,7 @@ public class SourcierMixte extends Sourcier {
 		return "Imposition mixte";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new SourcierMixte(this, (SourcierMixte) next);
 	}

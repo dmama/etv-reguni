@@ -24,14 +24,17 @@ public class CoupleRecapPickerFilter implements TiersPickerFilterWithPostFilteri
 		this.tiersDAO = tiersDAO;
 	}
 
+	@Override
 	public String getDescription() {
 		return "recherche limitée aux non-habitants avec for principal ouvert sans situation de famille active ni code sexe renseigné et aux ménages communs sans aucun lien d'appartenance ménage";
 	}
 
+	@Override
 	public TiersCriteria.TypeVisualisation getTypeVisualisation() {
 		return TiersCriteria.TypeVisualisation.COMPLETE;
 	}
 
+	@Override
 	public Set<TiersCriteria.TypeTiers> getTypesTiers() {
 		final Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
 		set.add(TiersCriteria.TypeTiers.NON_HABITANT);
@@ -39,22 +42,27 @@ public class CoupleRecapPickerFilter implements TiersPickerFilterWithPostFilteri
 		return set;
 	}
 
+	@Override
 	public boolean isInclureI107() {
 		return false;
 	}
 
+	@Override
 	public boolean isInclureTiersAnnules() {
 		return false;
 	}
 
+	@Override
 	public boolean isTiersAnnulesSeulement() {
 		return false;
 	}
 
+	@Override
 	public Boolean isTiersActif() {
 		return null;
 	}
 
+	@Override
 	public void postFilter(List<TiersIndexedData> list) {
 		for (int i = list.size() - 1; i >= 0; i--) {
 			final TiersIndexedData tiersIndexedData = list.get(i);

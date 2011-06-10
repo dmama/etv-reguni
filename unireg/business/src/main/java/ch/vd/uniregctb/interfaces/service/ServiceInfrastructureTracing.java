@@ -42,6 +42,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		this.statsService = statsService;
 	}
 
+	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		List<Canton> result;
 		long time = tracing.start();
@@ -55,6 +56,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws ServiceInfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();
@@ -73,6 +75,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		List<CollectiviteAdministrative> result;
 		long time = tracing.start();
@@ -86,6 +89,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<EnumTypeCollectivite> typesCollectivite)
 			throws ServiceInfrastructureException {
 		List<CollectiviteAdministrative> result;
@@ -124,6 +128,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public Commune getCommuneByLocalite(final Localite localite) throws ServiceInfrastructureException {
 		Commune result;
 		long time = tracing.start();
@@ -161,6 +166,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
@@ -174,6 +180,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
@@ -192,6 +199,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		List<Commune> result;
 		long time = tracing.start();
@@ -205,6 +213,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public Localite getLocaliteByONRP(final int onrp) throws ServiceInfrastructureException {
 		Localite result;
 		long time = tracing.start();
@@ -223,6 +232,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		List<Localite> result;
 		long time = tracing.start();
@@ -236,6 +246,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public OfficeImpot getOfficeImpot(final int noColAdm) throws ServiceInfrastructureException {
 		OfficeImpot result;
 		long time = tracing.start();
@@ -254,6 +265,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public OfficeImpot getOfficeImpotDeCommune(final int noCommune) throws ServiceInfrastructureException {
 		OfficeImpot result;
 		long time = tracing.start();
@@ -272,6 +284,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		List<OfficeImpot> result;
 		long time = tracing.start();
@@ -285,6 +298,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		List<Pays> result;
 		long time = tracing.start();
@@ -317,6 +331,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public Rue getRueByNumero(final int numero) throws ServiceInfrastructureException {
 		Rue result;
 		long time = tracing.start();
@@ -335,6 +350,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Rue> getRues(final Localite localite) throws ServiceInfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
@@ -353,6 +369,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Rue> getRues(final Canton canton) throws ServiceInfrastructureException {
 		List<Rue> result;
 		long time = tracing.start();
@@ -371,6 +388,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(final int id) throws ServiceInfrastructureException {
 		InstitutionFinanciere result;
 		long time = tracing.start();
@@ -389,6 +407,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(final String noClearing) throws ServiceInfrastructureException {
 		List<InstitutionFinanciere> result;
 		long time = tracing.start();
@@ -407,12 +426,14 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(ServiceInfrastructureService.SERVICE_NAME, tracing);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(ServiceInfrastructureService.SERVICE_NAME);
@@ -423,6 +444,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return null;
 	}
 
+	@Override
 	public Localite getLocaliteByNPA(final int npa) throws ServiceInfrastructureException {
 		Localite result;
 		long time = tracing.start();
@@ -441,6 +463,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		List<TypeRegimeFiscal> result;
 		long time = tracing.start();
@@ -454,6 +477,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public TypeRegimeFiscal getTypeRegimeFiscal(final String code) throws ServiceInfrastructureException {
 		TypeRegimeFiscal result;
 		long time = tracing.start();
@@ -472,6 +496,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		List<TypeEtatPM> result;
 		long time = tracing.start();
@@ -485,6 +510,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public TypeEtatPM getTypeEtatPM(final String code) throws ServiceInfrastructureException {
 		TypeEtatPM result;
 		long time = tracing.start();
@@ -503,6 +529,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public String getUrlVers(final ApplicationFiscale application, final Long tiersId) {
 		String result;
 		final long time = tracing.start();
@@ -521,6 +548,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public Logiciel getLogiciel(final Long idLogiciel) throws ServiceInfrastructureException {
 		Logiciel result;
 		long time = tracing.start();
@@ -539,6 +567,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		return result;
 	}
 
+	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		List<Logiciel> result;
 		long time = tracing.start();

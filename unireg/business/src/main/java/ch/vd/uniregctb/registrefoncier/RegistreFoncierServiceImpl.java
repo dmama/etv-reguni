@@ -34,6 +34,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 
 
+	@Override
 	public RapprocherCtbResults rapprocherCtbRegistreFoncier(List<ProprietaireFoncier> listeProprietaireFoncier,StatusManager s, RegDate dateTraitement) {
 		RapprocherCtbProcessor processor = new RapprocherCtbProcessor(hibernateTemplate, transactionManager,tiersDAO,adresseService, tiersService);
 		return processor.run(listeProprietaireFoncier, s, dateTraitement);
@@ -41,19 +42,23 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	}
 
+	@Override
 	public TiersDAO getTiersDAO() {
 		return tiersDAO;
 	}
 
+	@Override
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 
 
+	@Override
 	public ServiceCivilService getServiceCivilService() {
 		return serviceCivilService;
 	}
 
+	@Override
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
@@ -86,11 +91,13 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	private PlatformTransactionManager transactionManager;
 
+	@Override
 	public AdresseService getAdresseService() {
 
 		return adresseService;
 	}
 
+	@Override
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
 

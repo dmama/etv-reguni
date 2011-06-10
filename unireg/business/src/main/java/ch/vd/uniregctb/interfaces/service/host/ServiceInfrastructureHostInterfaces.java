@@ -78,6 +78,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		List<Canton> cantons = new ArrayList<Canton>();
 		try {
@@ -99,6 +100,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		try {
 			final List<?> list = serviceInfrastructure.getCommunes(canton.getSigleOFS());
@@ -125,6 +127,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		try {
@@ -148,6 +151,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		List<Commune> communes = new ArrayList<Commune>();
 		for (Canton canton : getAllCantons()) {
@@ -157,6 +161,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		return Collections.unmodifiableList(communes);
 	}
 
+	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		if (localitesByNPA==null) {
 			initLocaliteByNPA();
@@ -191,6 +196,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		List<Pays> pays = new ArrayList<Pays>();
 		try {
@@ -217,6 +223,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		int numOrdreP = localite.getNoOrdre();
 		try {
@@ -257,6 +264,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 
 		List<Localite> localites = new ArrayList<Localite>();
@@ -281,6 +289,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		List<Rue> rues = new ArrayList<Rue>();
 		try {
@@ -302,6 +311,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		try {
 			ArrayList<Rue> rues = new ArrayList<Rue>();
@@ -323,6 +333,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		try {
 			return RueImpl.get(serviceInfrastructure.getRueByNumero(numero));
@@ -338,6 +349,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Localite getLocaliteByONRP(int numeroOrdre) throws ServiceInfrastructureException {
 		try {
 			return LocaliteImpl.get(serviceInfrastructure.getLocalite(numeroOrdre));
@@ -353,6 +365,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		try {
 			return CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noColAdm));
@@ -368,6 +381,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		final CollectiviteAdministrative coll = getCollectivite(noColAdm);
 		if (coll instanceof OfficeImpot) {
@@ -381,6 +395,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		try {
 			CollectiviteAdministrativeImpl oid = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getOidDeCommune(noCommune));
@@ -397,6 +412,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 
 		List<OfficeImpot> offices = new ArrayList<OfficeImpot>();
@@ -435,6 +451,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 
@@ -460,6 +477,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
 			throws ServiceInfrastructureException {
@@ -484,6 +502,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 
 	}
 
+	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 		try {
 			return InstitutionFinanciereImpl.get(serviceInfrastructure.getInstitutionFinanciere(id));
@@ -496,6 +515,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		}
 	}
 
+	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		try {
 			List<?> l = serviceInfrastructure.getInstitutionsFinancieres(noClearing);
@@ -514,6 +534,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		}
 	}
 
+	@Override
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		try {
 			ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal[] types = serviceInfrastructureFiscal.getTypeRegimesFiscaux();
@@ -531,6 +552,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		}
 	}
 
+	@Override
 	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 		final List<TypeRegimeFiscal> list = getTypesRegimesFiscaux();
 		if (list != null) {
@@ -543,6 +565,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		return null;
 	}
 
+	@Override
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		try {
 			ch.vd.infrastructure.fiscal.model.TypeEtatPM[] types = serviceInfrastructureFiscal.getTypesEtatsPM();
@@ -560,6 +583,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		}
 	}
 
+	@Override
 	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 		final List<TypeEtatPM> list = getTypesEtatsPM();
 		if (list != null) {
@@ -572,14 +596,17 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		return null;
 	}
 
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
 		throw new NotImplementedException("La méthode 'getUrlVers' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getLogiciel' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
+	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getTousLesLogiciels' ne doit pas être appelée sur le service host-interfaces.");
 	}

@@ -168,6 +168,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 
+	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		return cantons;
 	}
@@ -180,14 +181,17 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return communesHorsCanton;
 	}
 
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		return communes;
 	}
 
+	@Override
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		return communesVaud;
 	}
 
+	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		return communesVaud;
 	}
@@ -199,10 +203,12 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			return communesHorsCanton;
 	}
 
+	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		return localites;
 	}
 
+	@Override
 	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
 		Localite localite = null;
 		for (Localite loc : getLocalites()) {
@@ -214,6 +220,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return localite;
 	}
 
+	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		Localite localite = null;
 		for (Localite loc : getLocalites()) {
@@ -225,6 +232,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return localite;
 	}
 
+	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		return pays;
 	}
@@ -239,10 +247,12 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return null;
 	}
 
+	@Override
 	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		List<Rue> locRues = new ArrayList<Rue>();
 		for (Rue r : rues) {
@@ -253,6 +263,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return locRues;
 	}
 
+	@Override
 	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		Rue rue = null;
 		for (Rue r : rues) {
@@ -308,6 +319,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return list;
 	}
 
+	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		Commune commune = null;
 		int numOrdreP = localite.getNoOrdre();
@@ -377,6 +389,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return commune.getNoOFSEtendu();
 	}
 
+	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		return collectivitesAdministrative.get(noColAdm);
 	}
@@ -384,6 +397,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
 		return oidByNoColAdm.get(noColAdm);
 	}
@@ -391,18 +405,22 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		return oidByNoOfsCommune.get(noCommune);
 	}
 
+	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		return new ArrayList<OfficeImpot>(oidByNoOfsCommune.values());
 	}
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		return new ArrayList<CollectiviteAdministrative>(collectivitesAdministrative.values());
 	}
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 
 		final Set<String> sigles = new HashSet<String>();
@@ -419,38 +437,47 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return list;
 	}
 
+	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
 		return null;
 	}
 
+	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		return null;
 	}
 
+	@Override
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		return null;
 	}
 
+	@Override
 	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
 		return null;
 	}
 
+	@Override
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		return null;
 	}
 
+	@Override
 	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
 		return null;
 	}
 
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
 		return null;
 	}
 
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		return null;
 	}
 
+	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		return null;
 	}

@@ -43,6 +43,7 @@ public class ContactImpotSource extends RapportEntreTiers {
 		super(dateDebut, dateFin, sujet, objet);
 	}
 
+	@Override
 	public RapportEntreTiers duplicate() {
 		return new ContactImpotSource(this);
 	}

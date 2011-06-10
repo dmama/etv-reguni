@@ -116,6 +116,7 @@ public class ProduireStatsJob extends JobDefinition {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(false);
 			rapport = template.execute(new TransactionCallback<StatistiquesDIsRapport>() {
+				@Override
 				public StatistiquesDIsRapport doInTransaction(TransactionStatus status) {
 					return rapportService.generateRapport(results, statusManager);
 				}
@@ -130,6 +131,7 @@ public class ProduireStatsJob extends JobDefinition {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(false);
 			rapport = template.execute(new TransactionCallback<StatistiquesCtbsRapport>() {
+				@Override
 				public StatistiquesCtbsRapport doInTransaction(TransactionStatus status) {
 					return rapportService.generateRapport(results, statusManager);
 				}

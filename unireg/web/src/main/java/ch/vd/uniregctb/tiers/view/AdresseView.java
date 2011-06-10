@@ -405,6 +405,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 		this.localiteNpa = localiteNpa;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}
@@ -429,6 +430,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 		this.nature = nature;
 	}
 
+	@Override
 	public int compareTo(AdresseView o) {
 		int value = -  getDateDebut().compareTo(o.getDateDebut());
 		return value;

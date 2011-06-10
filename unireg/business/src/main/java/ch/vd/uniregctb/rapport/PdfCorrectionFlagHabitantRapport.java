@@ -1,18 +1,19 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantAbstractResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Rapport PDF d'exécution du batch de correction des flags "habitant"
@@ -42,6 +43,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(pp.getNombreElementsInspectes()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(pp.getErreurs().size()));
@@ -61,6 +63,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(mc.getNombreElementsInspectes()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(mc.getErreurs().size()));

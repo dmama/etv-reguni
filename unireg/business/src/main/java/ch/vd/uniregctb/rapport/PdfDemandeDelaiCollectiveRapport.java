@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs.
@@ -35,6 +36,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Période fiscale:", String.valueOf(results.annee));
 					table.addLigne("Date de délai:", RegDateHelper.dateToDisplayString(results.dateDelai));
@@ -57,6 +59,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de contribuables traités:", String.valueOf(results.nbCtbsTotal));
 					table.addLigne("Nombre de déclarations traitées:", String.valueOf(results.traites.size()));

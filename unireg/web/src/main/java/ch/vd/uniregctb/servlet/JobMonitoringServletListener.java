@@ -20,9 +20,11 @@ public class JobMonitoringServletListener implements ServletContextListener {
 
 	private final static String beanName = "batchScheduler";
 
+	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 	}
 
+	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		final Object objCtxt = sce.getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (objCtxt instanceof WebApplicationContext) {

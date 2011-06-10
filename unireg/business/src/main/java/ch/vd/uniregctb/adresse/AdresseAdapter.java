@@ -14,6 +14,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		this.service = service;
 	}
 
+	@Override
 	public String getLocalite() {
 		String nomLocalite = null;
 
@@ -32,6 +33,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		return nomLocalite;
 	}
 
+	@Override
 	public String getLocaliteComplete() {
 		String nomLocalite = null;
 
@@ -50,6 +52,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		return nomLocalite;
 	}
 
+	@Override
 	public String getRue() {
 		String rue = null;
 
@@ -88,6 +91,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	/**
 	 * Extrait le numero postal d'un numero de rue existant
 	 */
+	@Override
 	public String getNumeroPostal() {
 		String numero = null;
 		final Integer numeroRue = getNumeroRue();
@@ -102,6 +106,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	/**
 	 * Extrait le numéro d'ordre postal d'un numéro de rue existant
 	 */
+	@Override
 	public int getNumeroOrdrePostal() {
 		int noOrdrePostal = 0;
 		final Integer numeroRue = getNumeroRue();

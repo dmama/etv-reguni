@@ -131,6 +131,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 *
 	 * @param id
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public void controleDI(Long id) {
 		DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -144,6 +145,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 *
 	 * @param diEditView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerDI(DeclarationImpotDetailView diEditView) {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
@@ -169,6 +171,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 *
 	 * @param diEditView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerDelai(DeclarationImpotDetailView diEditView, Long idDelai) {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
@@ -188,6 +191,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView diEditView) {
 
@@ -265,6 +269,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException {
 
@@ -300,6 +305,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		// [UNIREG-1742][UNIREG-2051] dans certain cas, les déclarations sont remplacées par une note à l'administration fiscale de l'autre canton
 		// [UNIREG-1742] les diplomates suisses ne reçoivent pas de déclaration
 		CollectionUtils.filter(ranges, new Predicate() {
+			@Override
 			public boolean evaluate(Object object) {
 				final PeriodeImposition periode = (PeriodeImposition) object;
 				return !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble();
@@ -458,6 +464,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return derniere;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public RegDate getDateNewDi(Long numero){
 		RegDate dateNewDi = null;
@@ -484,6 +491,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @param diImpressionView
 	 * @throws DeclarationException
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException {
 		final DeclarationImpotOrdinaire declaration = diDAO.get(diImpressionView.getIdDI());
@@ -518,6 +526,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * Alimente la vue DeclarationImpotListView en fonction d'un contribuable
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public void findByNumero(Long numero, DeclarationImpotListView diListView) {
 
@@ -547,6 +556,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return une vue DeclarationImpotEditView
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public void get(Long id, DeclarationImpotDetailView diEditView) {
 
@@ -594,6 +604,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		diEditView.setWasSommee(wasSommee);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Long getTiersId(Long idDI) {
 		final DeclarationImpotOrdinaire di = diDAO.get(idDI);
@@ -652,6 +663,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView) {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
@@ -679,6 +691,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @param diEditView
 	 * @throws Exception
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception {
 		//Sauvegarde de la DI
@@ -693,6 +706,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Persiste en base et indexe le tiers modifie
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception {
 		final Contribuable ctb = (Contribuable) tiersDAO.get(diEditView.getContribuable().getNumero());
@@ -872,6 +886,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @param idDeclaration
 	 * @return
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public DelaiDeclarationView creerDelai(Long idDeclaration) {
 		DelaiDeclarationView  delaiView = new DelaiDeclarationView();
@@ -898,6 +913,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 *
 	 * @param delaiView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveDelai(DelaiDeclarationView delaiView) {
 		DeclarationImpotOrdinaire di = diDAO.get(delaiView.getIdDeclaration());
@@ -917,6 +933,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersGeneralView creerCtbDI(Long numero) {
 
@@ -934,6 +951,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 *
 	 * @throws EditiqueException
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException {
 
@@ -956,6 +974,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView diEditView, Long idDelai) throws EditiqueException {
 		try {
@@ -1001,6 +1020,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @param typeDocument
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DeclarationImpotImpressionView getView(Long id, String typeDocument) {
 
@@ -1115,6 +1135,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
@@ -1139,6 +1160,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		this.validationService = validationService;
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean) throws EditiqueException {
 		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
@@ -1153,6 +1175,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void maintenirDI(Long idTache) {
 		Tache tache = tacheDAO.get(idTache);

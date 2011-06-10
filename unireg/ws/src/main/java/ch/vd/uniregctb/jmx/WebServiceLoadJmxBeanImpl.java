@@ -37,6 +37,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 		this.statsService = statsService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(services);
 		if (services.size() > 0) {
@@ -51,10 +52,12 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 
 				statsService.registerLoadMonitor(serviceName, new LoadMonitor() {
 
+					@Override
 					public int getLoad() {
 						return service.getLoad();
 					}
 
+					@Override
 					public double getFiveMinuteAverageLoad() {
 						return averager.getAverageLoad();
 					}
@@ -63,6 +66,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (averagers != null && averagers.size() > 0) {
 			for (LoadAverager averager : averagers.values()) {
@@ -79,6 +83,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 		services = null;
 	}
 
+	@Override
 	@ManagedAttribute
 	public Map<String, Integer> getLoad() {
 		final Map<String, Integer> map = new HashMap<String, Integer>(services.size());
@@ -88,6 +93,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 		return map;
 	}
 
+	@Override
 	@ManagedAttribute
 	public Map<String, Double> getAverageLoad() {
 		final Map<String, Double> map = new HashMap<String, Double>(averagers.size());
@@ -97,12 +103,14 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 		return map;
 	}
 
+	@Override
 	@ManagedOperation
 	public Integer getLoad(String serviceName) {
 		final LoadMonitorable service = services.get(serviceName);
 		return service != null ? service.getLoad() : null;
 	}
 
+	@Override
 	@ManagedOperation
 	public Double getAverageLoad(String serviceName) {
 		final LoadAverager averager = averagers.get(serviceName);

@@ -88,6 +88,7 @@ public class DroitAcces extends HibernateEntity implements DateRange, Duplicable
 		this.id = id;
 	}
 
+	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
 	@org.hibernate.annotations.Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -98,6 +99,7 @@ public class DroitAcces extends HibernateEntity implements DateRange, Duplicable
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	@Column(name = "DATE_FIN", nullable = true)
 	@org.hibernate.annotations.Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -163,10 +165,12 @@ public class DroitAcces extends HibernateEntity implements DateRange, Duplicable
 				'}';
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public DroitAcces duplicate() {
 		return new DroitAcces(this);
 	}

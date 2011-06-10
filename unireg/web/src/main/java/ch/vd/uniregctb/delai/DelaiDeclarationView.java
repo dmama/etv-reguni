@@ -177,6 +177,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(DelaiDeclarationView delaiDeclarationView) {
 		RegDate autreDelaiAccordeAu = delaiDeclarationView.getDelaiAccordeAu();
 		int value = (-1) * delaiAccordeAu.compareTo(autreDelaiAccordeAu);

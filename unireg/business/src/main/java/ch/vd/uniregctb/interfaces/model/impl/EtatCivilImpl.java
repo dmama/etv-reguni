@@ -29,18 +29,22 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 		this.numeroConjoint = ((ch.vd.registre.civil.model.impl.EtatCivilImpl)target).getNoTechniqueConjoint(); // cast : hack en attendant la résolution de [INTER-158]
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebut;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
 
+	@Override
 	public TypeEtatCivil getTypeEtatCivil() {
 		return typeEtatCivil;
 	}
 
+	@Override
 	public Long getNumeroConjoint() {
 		return numeroConjoint;
 	}

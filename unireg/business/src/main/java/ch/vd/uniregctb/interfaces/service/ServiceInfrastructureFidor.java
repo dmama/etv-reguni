@@ -303,6 +303,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
 		if (urlsApplication == null) {
 			initUrls();
@@ -385,6 +386,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 		}
 	}
 
+	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		try {
 			final Collection<ch.vd.fidor.ws.v2.Logiciel> list = fidorClient.getTousLesLogiciels();

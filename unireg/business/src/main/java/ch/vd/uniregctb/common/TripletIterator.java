@@ -60,16 +60,19 @@ public class TripletIterator<E> implements Iterator<Triplet<E>> {
 		}
 	}
 
+	@Override
 	public boolean hasNext() {
 		return next != null;
 	}
 
+	@Override
 	public Triplet<E> next() {
 		Triplet<E> result = next;
 		next = buildNext();
 		return result;
 	}
 
+	@Override
 	public void remove() {
 		throw new NotImplementedException();
 	}

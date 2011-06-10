@@ -141,6 +141,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		}
 	}
 	
+	@Override
 	public Collection<AdresseEntreprise> getAdresses() {
 		return adresses;
 	}
@@ -156,14 +157,17 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return adresses;
 	}
 
+	@Override
 	public RegDate getDateConstitution() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFinActivite() {
 		return dateFin;
 	}
 
+	@Override
 	public List<FormeJuridique> getFormesJuridiques() {
 		return formesJuridiques;
 	}
@@ -179,10 +183,12 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return formesJuridiques;
 	}
 
+	@Override
 	public String getNomContact() {
 		return nomContact;
 	}
 
+	@Override
 	public List<CompteBancaire> getComptesBancaires() {
 		return comptesBancaires;
 	}
@@ -198,50 +204,62 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return comptesBancaires;
 	}
 
+	@Override
 	public long getNumeroEntreprise() {
 		return numeroEntreprise;
 	}
 
+	@Override
 	public String getRaisonSociale() {
 		return raisonSociale;
 	}
 
+	@Override
 	public String getRaisonSociale1() {
 		return raisonSociale1;
 	}
 
+	@Override
 	public String getRaisonSociale2() {
 		return raisonSociale2;
 	}
 
+	@Override
 	public String getRaisonSociale3() {
 		return raisonSociale3;
 	}
 
+	@Override
 	public String getTelecopieContact() {
 		return telecopieContact;
 	}
 
+	@Override
 	public String getDesignationAbregee() {
 		return designationAbregee;
 	}
 
+	@Override
 	public String getTelephoneContact() {
 		return telephoneContact;
 	}
 
+	@Override
 	public String getTitulaireCompte() {
 		return titulaireCompte;
 	}
 
+	@Override
 	public RegDate getDateBouclementFuture() {
 		return dateBouclementFuture;
 	}
 
+	@Override
 	public String getNumeroIPMRO() {
 		return numeroIPMRO;
 	}
 
+	@Override
 	public List<Capital> getCapitaux() {
 		return capitaux;
 	}
@@ -257,6 +275,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return capitaux;
 	}
 
+	@Override
 	public List<EtatPM> getEtats() {
 		return etats;
 	}
@@ -272,6 +291,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return etats;
 	}
 
+	@Override
 	public List<RegimeFiscal> getRegimesVD() {
 		return regimesVD;
 	}
@@ -287,6 +307,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return regimesVD;
 	}
 
+	@Override
 	public List<RegimeFiscal> getRegimesCH() {
 		return regimesCH;
 	}
@@ -302,6 +323,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return regimesCH;
 	}
 
+	@Override
 	public List<Siege> getSieges() {
 		return sieges;
 	}
@@ -317,6 +339,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return sieges;
 	}
 
+	@Override
 	public List<AssujettissementPM> getAssujettissementsLIC() {
 		return assujettissementsLIC;
 	}
@@ -332,6 +355,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return assujettissementsLIC;
 	}
 
+	@Override
 	public List<AssujettissementPM> getAssujettissementsLIFD() {
 		return assujettissementsLIFD;
 	}
@@ -347,6 +371,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return assujettissementsLIFD;
 	}
 
+	@Override
 	public List<ForPM> getForsFiscauxPrincipaux() {
 		return forsFiscauxPrincipaux;
 	}
@@ -362,6 +387,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return forsFiscauxPrincipaux;
 	}
 
+	@Override
 	public List<ForPM> getForsFiscauxSecondaires() {
 		return forsFiscauxSecondaires;
 	}
@@ -377,6 +403,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return forsFiscauxSecondaires;
 	}
 
+	@Override
 	public List<Mandat> getMandats() {
 		return mandats;
 	}

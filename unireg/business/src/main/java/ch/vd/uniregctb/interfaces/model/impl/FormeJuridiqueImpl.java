@@ -26,6 +26,7 @@ public class FormeJuridiqueImpl implements FormeJuridique {
 		this.code = target.getCode();
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -34,6 +35,7 @@ public class FormeJuridiqueImpl implements FormeJuridique {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -42,6 +44,7 @@ public class FormeJuridiqueImpl implements FormeJuridique {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}

@@ -157,6 +157,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<String>() {
+			@Override
 			public String doInTransaction(TransactionStatus status) {
 				String tiersCount;
 				try {
@@ -297,6 +298,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 		return response;
 	}
 
+	@Override
 	public AjaxResponse handle(AjaxEvent event) {
 		if ("loadJobActif".equals(event.getEventId())) {
 			return loadJobActif((AjaxActionEvent) event);
@@ -308,6 +310,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 		throw new UnsupportedEventException("You need to call the supports() method first!");
 	}
 
+	@Override
 	public boolean supports(AjaxEvent event) {
 		if (!(event instanceof AjaxActionEvent)) {
 			return false;
@@ -316,6 +319,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 		return ("loadJobActif".equals(id) || ("updateTailLog".equals(id)));
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		inMemoryAppender = (RollingInMemoryAppender) Logger.getRootLogger().getAppender("IN_MEMORY");
 	}

@@ -78,6 +78,7 @@ public class AcomptesJob  extends JobDefinition {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final AcomptesRapport rapport = template.execute(new TransactionCallback<AcomptesRapport>() {
+			@Override
 			public AcomptesRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}

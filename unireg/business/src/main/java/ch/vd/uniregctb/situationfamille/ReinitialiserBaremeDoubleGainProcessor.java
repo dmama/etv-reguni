@@ -16,10 +16,10 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.type.TarifImpotSource;
@@ -152,8 +152,10 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query query = session.createQuery(QUERY_STRING);
 						query.setParameter("date", dateValidite.index());

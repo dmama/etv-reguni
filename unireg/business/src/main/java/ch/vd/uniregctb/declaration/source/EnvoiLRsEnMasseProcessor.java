@@ -19,11 +19,11 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -166,8 +166,10 @@ public class EnvoiLRsEnMasseProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> i = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final String queryDPI =
 								"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +

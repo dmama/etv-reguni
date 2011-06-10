@@ -1,15 +1,16 @@
 package ch.vd.uniregctb.evenement;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
-import ch.vd.uniregctb.tiers.Tiers;
+import java.sql.SQLException;
+import java.util.Collection;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import java.sql.SQLException;
-import java.util.Collection;
+import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.tiers.Tiers;
 
 /**
  * DAO des événements fiscaux..
@@ -28,9 +29,11 @@ public class EvenementFiscalDAOImpl extends GenericDAOImpl<EvenementFiscal, Long
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<EvenementFiscal> getEvenementFiscals(final Tiers tiers)  {
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Collection<EvenementFiscal>>() {
+			@Override
 			public Collection<EvenementFiscal> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Criteria criteria = session.createCriteria(EvenementFiscal.class);
 				criteria.add(Restrictions.eq("tiers", tiers));

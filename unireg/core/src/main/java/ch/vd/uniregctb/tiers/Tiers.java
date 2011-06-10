@@ -1666,6 +1666,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)
 			return true;

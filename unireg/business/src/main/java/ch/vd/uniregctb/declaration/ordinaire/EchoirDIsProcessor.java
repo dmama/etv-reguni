@@ -155,9 +155,11 @@ public class EchoirDIsProcessor {
 		final String sql = b.toString();
 
 		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
+			@Override
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
 				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
 				return hibernateTemplate.execute(new HibernateCallback<List<IdentifiantDeclaration>>() {
+					@Override
 					public List<IdentifiantDeclaration> doInHibernate(Session session) throws HibernateException {
 
 						final Query query = session.createSQLQuery(sql);

@@ -1,12 +1,20 @@
 package ch.vd.uniregctb.common;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.util.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -125,13 +133,16 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 		final DataHolder<Boolean> interrupted = new DataHolder<Boolean>(false);
 		final StatusManager status = new StatusManager() {
+			@Override
 			public boolean interrupted() {
 				return interrupted.get();
 			}
 
+			@Override
 			public void setMessage(String msg) {
 			}
 
+			@Override
 			public void setMessage(String msg, int percentProgression) {
 			}
 		};
@@ -280,10 +291,12 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 			traites.add(element);
 		}
 
+		@Override
 		public void addErrorException(Long element, Exception e) {
 			erreurs.add(element);
 		}
 
+		@Override
 		public void addAll(Rapport right) {
 			this.traites.addAll(right.traites);
 			this.erreurs.addAll(right.erreurs);

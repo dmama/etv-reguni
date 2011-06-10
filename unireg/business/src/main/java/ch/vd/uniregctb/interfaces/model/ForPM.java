@@ -8,8 +8,10 @@ import ch.vd.registre.base.date.RegDate;
  */
 public interface ForPM extends DateRange {
 
+	@Override
 	RegDate getDateDebut();
     
+	@Override
 	RegDate getDateFin();
     
 	int getNoOfsAutoriteFiscale();

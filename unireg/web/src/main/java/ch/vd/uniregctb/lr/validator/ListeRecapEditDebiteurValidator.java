@@ -12,11 +12,13 @@ public class ListeRecapEditDebiteurValidator implements Validator {
 
 	private TiersDAO tiersDAO;
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return ListeRecapListView.class.equals(clazz);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object target, Errors errors) {
 		ListeRecapListView lrListView = (ListeRecapListView) target;

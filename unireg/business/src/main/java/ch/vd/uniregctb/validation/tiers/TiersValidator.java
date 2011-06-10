@@ -22,6 +22,7 @@ import ch.vd.uniregctb.validation.ValidationService;
  */
 public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImpl<T> {
 
+	@Override
 	public ValidationResults validate(T tiers) {
 
 		final ValidationResults results = new ValidationResults();

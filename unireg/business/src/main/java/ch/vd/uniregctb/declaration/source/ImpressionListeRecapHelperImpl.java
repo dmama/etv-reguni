@@ -115,6 +115,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public FichierImpressionDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		TypFichierImpression impressionIS = mainDocument.addNewFichierImpression();
@@ -209,6 +210,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * @return le prefixe
 	 */
 
+	@Override
 	public String calculPrefixe() {
 		String prefixe = PREFIXE_LR;
 		return prefixe;
@@ -386,6 +388,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * @param lr
 	 * @return
 	 */
+	@Override
 	public String construitIdDocument(DeclarationImpotSource lr) {
 		return String.format(
 				"%s %s",

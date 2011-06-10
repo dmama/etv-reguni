@@ -36,6 +36,7 @@ public final class MockTextMessage extends MockMessage implements TextMessage {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getText() throws JMSException {
         return text;
     }
@@ -43,6 +44,7 @@ public final class MockTextMessage extends MockMessage implements TextMessage {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setText(String text) throws JMSException {
         this.text = text;
     }

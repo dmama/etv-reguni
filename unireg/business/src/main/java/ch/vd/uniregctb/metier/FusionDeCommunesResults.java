@@ -91,6 +91,7 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		this.dateTraitement = dateTraitement;
 	}
 
+	@Override
 	public void addAll(FusionDeCommunesResults right) {
 		this.nbTiersTotal += right.nbTiersTotal;
 		this.tiersTraites.addAll(right.tiersTraites);
@@ -110,6 +111,7 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		tiersIgnores.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), IgnoreType.FORS_DEJA_SUR_COMMUNE_RESULTANTE, null));
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		addOnCommitException(element, e);
 	}

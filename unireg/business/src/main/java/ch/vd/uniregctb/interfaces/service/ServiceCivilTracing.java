@@ -43,6 +43,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		this.statsService = statsService;
 	}
 
+	@Override
 	public AdressesCivilesActives getAdresses(final long noIndividu, final RegDate date, final boolean strict) throws DonneesCivilesException {
 		AdressesCivilesActives result;
 		long time = tracing.start();
@@ -60,6 +61,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Collection<Adresse> getAdresses(final long noIndividu, final int annee) {
 		Collection<Adresse> result;
 		long time = tracing.start();
@@ -78,6 +80,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public AdressesCivilesHistoriques getAdressesHisto(final long noIndividu, final boolean strict) throws DonneesCivilesException {
 		AdressesCivilesHistoriques result;
 		long time = tracing.start();
@@ -96,6 +99,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public EtatCivil getEtatCivilActif(final long noIndividu, final RegDate date) {
 		EtatCivil result;
 		long time = tracing.start();
@@ -114,6 +118,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Individu getIndividu(final long noIndividu, final int annee) {
 		Individu result;
 		long time = tracing.start();
@@ -132,6 +137,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Individu getIndividu(final long noIndividu, final int annee, final AttributeIndividu... parties) {
 		Individu result;
 		long time = tracing.start();
@@ -150,6 +156,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Individu getIndividu(final long noIndividu, final RegDate date, final AttributeIndividu... parties) {
 		Individu result;
 		long time = tracing.start();
@@ -168,6 +175,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Individu getConjoint(final Long noIndividuPrincipal, final RegDate date) {
 		Individu result;
 		long time = tracing.start();
@@ -186,6 +194,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Long getNumeroIndividuConjoint(final Long noIndividuPrincipal, final RegDate date) {
 		Long result;
 		long time = tracing.start();
@@ -204,6 +213,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final RegDate date, final AttributeIndividu... parties) {
 		List<Individu> result;
 		long time = tracing.start();
@@ -222,6 +232,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final int annee, final AttributeIndividu... parties) {
 		List<Individu> result;
 		long time = tracing.start();
@@ -240,6 +251,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Collection<Nationalite> getNationalites(final long noIndividu, final int annee) {
 		Collection<Nationalite> result;
 		long time = tracing.start();
@@ -258,6 +270,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Origine getOrigine(final long noIndividu, final int annee) {
 		Origine result;
 		long time = tracing.start();
@@ -276,6 +289,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Collection<Permis> getPermis(final long noIndividu, final int annee) {
 		Collection<Permis> result;
 		long time = tracing.start();
@@ -294,6 +308,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Permis getPermisActif(final long noIndividu, final RegDate date) {
 		Permis result;
 		long time = tracing.start();
@@ -312,6 +327,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public Tutelle getTutelle(final long noIndividu, final int annee) {
 		Tutelle result;
 		long time = tracing.start();
@@ -330,6 +346,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public String getNomPrenom(final Individu individu) {
 		String result;
 		long time = tracing.start();
@@ -348,6 +365,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public NomPrenom getDecompositionNomPrenom(final Individu individu) {
 		NomPrenom result;
 		long time = tracing.start();
@@ -365,6 +383,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(final RegDate depuis, final long noIndividu, final boolean strict, final boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		final List<HistoriqueCommune> result;
 		final long time = tracing.start();
@@ -382,6 +401,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	@Override
 	public boolean isWarmable() {
 		long time = tracing.start();
 		try {
@@ -392,12 +412,14 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);

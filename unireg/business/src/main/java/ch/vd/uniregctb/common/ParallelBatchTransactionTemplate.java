@@ -228,11 +228,13 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 			done = true;
 		}
 
+		@Override
 		public boolean hasNext() {
 			// on ne peut pas deviner à l'avance s'il restera des données dans la queue, on retourne oui ici et on retournera null dans 'next' s'il n'y a plus de données
 			return !done;
 		}
 
+		@Override
 		public List<E> next() {
 			try {
 				List<E> list = null;
@@ -247,6 +249,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 			}
 		}
 
+		@Override
 		public int getPercent() {
 			return percent;
 		}

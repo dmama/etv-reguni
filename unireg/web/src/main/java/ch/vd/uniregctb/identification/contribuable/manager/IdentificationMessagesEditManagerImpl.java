@@ -73,6 +73,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	 * @return la vue
 	 * @throws Exception
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public IdentificationMessagesEditView getView(Long id) throws Exception {
 		IdentificationMessagesEditView identificationMessagesEditView = new IdentificationMessagesEditView();
@@ -125,6 +126,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	 * @return la vue du cartouche
 	 * @throws Exception
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DemandeIdentificationView getDemandeIdentificationView (Long id) throws Exception {
 
@@ -176,6 +178,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	 * @param idPersonne
 	 * @throws Exception
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceIdentification(Long idIdentification, Long idPersonne, Etat etat) throws Exception {
 		IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
@@ -187,6 +190,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	 * Donne à expertiser
 	 * @param idIdentification
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void expertiser(Long idIdentification) {
 		IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
@@ -196,6 +200,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	/**
 	 * Impossible à identifier
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void impossibleAIdentifier(IdentificationMessagesEditView bean) throws Exception {
 
@@ -205,6 +210,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		Erreur erreur = new Erreur(TypeErreur.METIER, "01", bean.getErreurMessage().getLibelle());
 		identCtbService.impossibleAIdentifier(identificationContribuable, erreur);
 	}
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public  void verouillerMessage(Long idIdentification) throws Exception {
 		IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
@@ -213,6 +219,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void deVerouillerMessage(Long idIdentification) throws Exception {
 		IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
@@ -222,6 +229,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		}
 	}
 
+	@Override
 	public FichierOrigine getMessageFile(String businessId) throws AciComClientException {
 		return aciComService.getMessageFile(businessId);
 	}

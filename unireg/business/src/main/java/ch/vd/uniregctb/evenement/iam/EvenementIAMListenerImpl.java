@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import ch.vd.fiscalite.empaci.demandeUtilisateurV2.DemandeUtilisateurDocument;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
@@ -13,6 +12,7 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
+import ch.vd.fiscalite.empaci.demandeUtilisateurV2.DemandeUtilisateurDocument;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
@@ -141,6 +141,7 @@ public class EvenementIAMListenerImpl extends EsbMessageListener implements Moni
 		}
 	}
 
+	@Override
 	public int getNombreMessagesRecus() {
 		return nbMessagesRecus.intValue();
 	}

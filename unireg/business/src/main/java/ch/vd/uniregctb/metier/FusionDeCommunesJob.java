@@ -1,17 +1,24 @@
 package ch.vd.uniregctb.metier;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.FusionDeCommunesRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.*;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamCommune;
+import ch.vd.uniregctb.scheduler.JobParamRegDate;
+import ch.vd.uniregctb.scheduler.JobParamString;
 
 /**
  * Job qui effectue les changements sur les fors fiscaux suite à une fusion de communes.
@@ -75,6 +82,7 @@ public class FusionDeCommunesJob extends JobDefinition {
 		// Exécution du rapport dans une transaction.
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		FusionDeCommunesRapport rapport = template.execute(new TransactionCallback<FusionDeCommunesRapport>() {
+			@Override
 			public FusionDeCommunesRapport doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());

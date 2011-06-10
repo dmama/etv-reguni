@@ -69,6 +69,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	private DebiteurPrestationImposable debiteur;
 
 
+	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -89,6 +90,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	/**
 	 * @return the dateFin
 	 */
+	@Override
 	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -142,6 +144,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
@@ -214,10 +217,12 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 		this.debiteur = debiteur;
 	}
 
+	@Override
 	public boolean isCollatable(DateRange next) {
 		return DateRangeHelper.isCollatable(this, next) && periodiciteDecompte == ((Periodicite) next).getPeriodiciteDecompte();
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, next.getDateFin());
 	}
@@ -253,6 +258,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 		this.periodeDecompte = periodeDecompte;
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return debiteur == null ? null : Arrays.asList(debiteur);

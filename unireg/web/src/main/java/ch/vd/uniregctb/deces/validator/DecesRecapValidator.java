@@ -21,11 +21,13 @@ public class DecesRecapValidator implements Validator {
 	private MetierService metierService;
 	private TiersService tiersService;
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return DecesRecapView.class.equals(clazz) ;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 

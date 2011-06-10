@@ -34,6 +34,7 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 
 	private final JdbcEtatDeclarationDao etatDeclarationDao = new JdbcEtatDeclarationDaoImpl();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Declaration get(long forId, boolean withEtats, JdbcTemplate template) {
 		final DeclarationMapper mapper = new DeclarationMapper(template);
@@ -55,6 +56,7 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 		return declaration;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<Declaration> getForTiers(long tiersId, boolean withEtats, JdbcTemplate template) {
 		final DeclarationMapper mapper = new DeclarationMapper(template);
@@ -91,6 +93,7 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<Declaration>> getForTiers(Collection<Long> tiersId, boolean withEtats, final JdbcTemplate template) {
 
@@ -98,6 +101,7 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, Declaration>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, Declaration>>() {
+			@Override
 			public List<Pair<Long, Declaration>> process(List<Long> ids) {
 				return template.query(DeclarationMapper.selectByTiersIds(ids), mapper);
 			}
@@ -192,6 +196,7 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 			return BASE_SELECT + " where TIERS_ID in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final String documentType = rs.getString(1);

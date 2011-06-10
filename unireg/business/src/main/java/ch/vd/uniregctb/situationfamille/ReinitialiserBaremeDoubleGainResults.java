@@ -117,11 +117,13 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 				IgnoreType.BAREME_NON_DOUBLE_GAIN, message));
 	}
 
+	@Override
 	public void addErrorException(Long situationDI, Exception e) {
 		++nbSituationsTotal;
 		situationsEnErrors.add(new Erreur(0, null, situationDI, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(ReinitialiserBaremeDoubleGainResults rapport) {
 		nbSituationsTotal += rapport.nbSituationsTotal;
 		situationsTraitees.addAll(rapport.situationsTraitees);

@@ -74,6 +74,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		}
 	}
 
+	@Override
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
 
 		if (entity instanceof Tiers) {
@@ -153,22 +154,27 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		}
 	}
 
+	@Override
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
 	}
 
+	@Override
 	public void preTransactionCommit() {
 		// rien à faire ici
 	}
 
+	@Override
 	public void postTransactionCommit() {
 		clearThreadData();
 	}
 
+	@Override
 	public void postTransactionRollback() {
 		clearThreadData();
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
 	}

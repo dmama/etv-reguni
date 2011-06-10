@@ -35,6 +35,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 
+	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
 	                                             boolean nonTraiteAndSuspendu, TypeDemande typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
@@ -71,6 +72,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		final int maxResult = paramPagination.getTaillePage();
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
+			@Override
 			public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				Query queryObject = session.createQuery(query);
@@ -102,6 +104,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @see ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO#count(ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria, boolean, boolean)
 	 */
 
+	@Override
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu, TypeDemande typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
@@ -116,12 +119,14 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return count;
 	}
 
+	@Override
 	public List<String> getTypesMessageEtatsNonTraites() {
 			String query = " select distinct identificationContribuable.demande.typeMessage" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 				return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<String> getTypesMessageEtatsTraites() {
 		String query = " select distinct identificationContribuable.demande.typeMessage" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
@@ -134,6 +139,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 *
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<String> getTypesMessage() {
 		String query = " select distinct identificationContribuable.demande.typeMessage from IdentificationContribuable identificationContribuable";
@@ -145,12 +151,14 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 *
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<String> getEmetteursId() {
 		String query = " select distinct identificationContribuable.demande.emetteurId from IdentificationContribuable identificationContribuable";
 		return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<String> getEmetteursIdEtatsNonTraites() {
 		String query = " select distinct identificationContribuable.demande.emetteurId" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
@@ -159,23 +167,27 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 
 
+	@Override
 	public List<String> getEmetteursIdEtatsTraites() {
 		String query = " select distinct identificationContribuable.demande.emetteurId" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
 		return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<Integer> getPeriodeEtatsTraites() {
 		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
 		return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<Integer> getPeriodes() {
 		String query = " select distinct identificationContribuable.demande.periodeFiscale from IdentificationContribuable identificationContribuable";
 		return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<Integer> getPeriodeEtatsNonTraites() {
 
 		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
@@ -184,6 +196,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<String> getTraitementUser() {
 		String query = " select distinct identificationContribuable.traitementUser " +
 				"from IdentificationContribuable identificationContribuable where identificationContribuable.traitementUser is not null " +
@@ -191,12 +204,14 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<Etat> getListeEtatsMessagesNonTraites() {
 		String query = " select distinct identificationContribuable.etat" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 		return getHibernateTemplate().find(query);
 	}
 
+	@Override
 	public List<Etat> getListeEtatsMessagesTraites() {
 		String query = " select distinct identificationContribuable.etat" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;

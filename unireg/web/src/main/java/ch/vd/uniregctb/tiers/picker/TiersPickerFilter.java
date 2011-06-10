@@ -12,15 +12,21 @@ public interface TiersPickerFilter extends TiersFilter {
 	 */
 	String getDescription();
 
+	@Override
 	TiersCriteria.TypeVisualisation getTypeVisualisation();
 
+	@Override
 	Set<TiersCriteria.TypeTiers> getTypesTiers();
 
+	@Override
 	boolean isInclureI107();
 
+	@Override
 	boolean isInclureTiersAnnules();
 
+	@Override
 	boolean isTiersAnnulesSeulement();
 
+	@Override
 	Boolean isTiersActif();
 }

@@ -34,12 +34,14 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 
 	private static final ForFiscalMapper ROW_MAPPER = new ForFiscalMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public ForFiscal get(long forId, JdbcTemplate template) {
 		final Pair<Long, ForFiscal> pair = (Pair<Long, ForFiscal>) DataAccessUtils.uniqueResult(template.query(ForFiscalMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<ForFiscal> getForTiers(long tiersId, JdbcTemplate template) {
 		final List<Pair<Long, ForFiscal>> list = template.query(ForFiscalMapper.selectByTiersId(), new Object[]{tiersId}, ROW_MAPPER);
@@ -50,11 +52,13 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<ForFiscal>> getForTiers(Collection<Long> tiersId, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, ForFiscal>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, ForFiscal>>() {
+			@Override
 			public List<Pair<Long, ForFiscal>> process(List<Long> ids) {
 				return template.query(ForFiscalMapper.selectByTiersIds(ids), ROW_MAPPER);
 			}
@@ -106,6 +110,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 			return BASE_SELECT + " where TIERS_ID in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final String forType = rs.getString(1);

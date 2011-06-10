@@ -63,10 +63,12 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		this.dataEventService = dataEventService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataEventService.register(this);
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onDroitAccessChange(long tiersId) {
 		try {
@@ -80,6 +82,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		}
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onTiersChange(long id) {
 		try {
@@ -93,6 +96,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		}
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onIndividuChange(long id) {
 		try {
@@ -106,6 +110,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		}
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onLoadDatabase() {
 		try {
@@ -119,6 +124,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		}
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onTruncateDatabase() {
 		try {

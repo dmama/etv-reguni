@@ -10,11 +10,13 @@ import ch.vd.uniregctb.activation.view.TiersReactivationRecapView;
 public class TiersReactivationRecapValidator implements Validator {
 
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return TiersReactivationRecapView.class.equals(clazz) ;
 	}
 
+	@Override
 	public void validate(Object obj, Errors errors) {
 
 		Assert.isTrue(obj instanceof TiersReactivationRecapView);

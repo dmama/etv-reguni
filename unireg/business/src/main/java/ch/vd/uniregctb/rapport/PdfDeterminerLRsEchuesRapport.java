@@ -36,6 +36,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
@@ -52,6 +53,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[] {70f, 30f}, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de débiteurs analysés :", String.valueOf(results.getNbDebiteursAnalyses()));
 					table.addLigne("Nombre de débiteurs ignorés :", String.valueOf(results.ignores.size()));

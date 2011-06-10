@@ -45,14 +45,17 @@ public class ListeAssujettisProcessor extends ListesProcessor<ListeAssujettisRes
 
 		return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ListeAssujettisResults, ListeAssujettisThreads>() {
 
+			@Override
 			public Iterator<Long> getIdIterator(Session session) {
 				return getIteratorOnCtbs(session, anneeFiscale);
 			}
 
+			@Override
 			public ListeAssujettisResults createResults(RegDate dateTraitement) {
 				return new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, tiersService);
 			}
 
+			@Override
 			public ListeAssujettisThreads createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 				return new ListeAssujettisThreads(queue, status, compteur, dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee,
 				                                  serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate);

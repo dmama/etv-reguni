@@ -20,25 +20,30 @@ public class FormRenderingCallback implements ErrorRenderingCallback, SuccessRen
 
 
 
+	@Override
 	public AjaxAction[] getErrorActions(AjaxSubmitEvent event, ObjectError error) {
 		return null;
 	}
 
+	@Override
 	public Component getErrorComponent(AjaxSubmitEvent event, ObjectError error, MessageSource messageSource, Locale locale) {
 		TaggedText text = new TaggedText(messageSource.getMessage(error.getCode(), error.getArguments(), error.getDefaultMessage(), locale), TaggedText.Tag.SPAN);
         text.addAttribute("style","color : red;");
         return text;
 	}
 
+	@Override
 	public AjaxAction getRenderingAction(ObjectError error) {
 		AjaxAction[] actions = this.getErrorActions(null, error);
         return actions[0];
 	}
 
+	@Override
 	public Component getRenderingComponent(ObjectError error, MessageSource messageSource, Locale locale) {
 		 return this.getErrorComponent(null, error, messageSource, locale);
 	}
 
+	@Override
 	public AjaxAction[] getSuccessActions(AjaxSubmitEvent event) {
 		return null;
 	}

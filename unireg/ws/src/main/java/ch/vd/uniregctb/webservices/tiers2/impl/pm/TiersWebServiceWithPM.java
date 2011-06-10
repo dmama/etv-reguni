@@ -117,10 +117,12 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		noOfsTranslator = translator;
 	}
 
+	@Override
 	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		return target.searchTiers(params);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Tiers.Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -131,6 +133,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -142,6 +145,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -153,6 +157,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -163,6 +168,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -228,6 +234,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return batch;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public BatchTiersHisto getBatchTiersHisto(GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -291,6 +298,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return batch;
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void setTiersBlocRembAuto(SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		
@@ -304,6 +312,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		target.setTiersBlocRembAuto(params);
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<EvenementPM> searchEvenementsPM(final SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -312,11 +321,13 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return events2web(list);
 	}
 
+	@Override
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws
 			BusinessException, AccessDeniedException, TechnicalException {
 		return target.getDebiteurInfo(params);
 	}
 
+	@Override
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
 		return target.quittancerDeclarations(params);
 	}
@@ -326,6 +337,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return target.getListeCtbModifies(params);
 	}
 
+	@Override
 	public void doNothing(AllConcreteTiersClasses dummy) {
 	}
 

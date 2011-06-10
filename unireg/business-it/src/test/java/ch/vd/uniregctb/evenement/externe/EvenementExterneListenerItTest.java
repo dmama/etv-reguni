@@ -101,6 +101,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
 
 		listener.setHandler(new EvenementExterneHandler() {
+			@Override
 			public void onEvent(EvenementExterne event) {
 				events.add(event);
 			}

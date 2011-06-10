@@ -1,13 +1,12 @@
 package ch.vd.uniregctb.servlet;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -24,6 +23,7 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void downloadAsFile(String fileName, InputStream is, Integer contentLength, HttpServletResponse response) throws IOException {
 
 		ServletOutputStream out = response.getOutputStream();
@@ -44,6 +44,7 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void downloadAsFile(String fileName, byte[] bytes, HttpServletResponse response) throws IOException {
 		final InputStream in = new ByteArrayInputStream(bytes);
 		try {
@@ -57,6 +58,7 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void downloadAsFile(String fileName, String content, HttpServletResponse response) throws IOException {
 		downloadAsFile(fileName, content.getBytes("ISO-8859-1"), response);
 	}
@@ -105,6 +107,7 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 		}
 	}
 
+	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext;
 	}

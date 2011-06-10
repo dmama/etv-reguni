@@ -38,6 +38,7 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de déclarations inspectées :", String.valueOf(results.nbDeclarationsTotal));
 					table.addLigne("Nombre d'états inspectés :", String.valueOf(results.nbEtatsTotal));

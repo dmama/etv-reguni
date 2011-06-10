@@ -114,6 +114,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 		
 		final List<ForFiscalPrincipal> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<ForFiscalPrincipal>>(){
 
+			@Override
 			public List<ForFiscalPrincipal> doInHibernate(Session session) throws HibernateException, SQLException {
 				Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
 				criteria.add(Restrictions.in("id", ids));

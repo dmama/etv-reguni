@@ -37,6 +37,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.sexe = sexe;
 	}
 
+	@Override
 	public String getAutresPrenoms() {
 		return autresPrenoms;
 	}
@@ -45,6 +46,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.autresPrenoms = autresPrenoms;
 	}
 
+	@Override
 	public String getComplementIdentification() {
 		return complementIdentification;
 	}
@@ -53,6 +55,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.complementIdentification = complementIdentification;
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
@@ -61,6 +64,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.dateDebutValidite = dateDebutValidite;
 	}
 
+	@Override
 	public String getNoAVS() {
 		return noAVS;
 	}
@@ -69,6 +73,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.noAVS = noAVS;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
@@ -77,6 +82,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.noSequence = noSequence;
 	}
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
@@ -85,6 +91,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getNomCourrier1() {
 		return nomCourrier1;
 	}
@@ -93,6 +100,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.nomCourrier1 = nomCourrier1;
 	}
 
+	@Override
 	public String getNomCourrier2() {
 		return nomCourrier2;
 	}
@@ -101,6 +109,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.nomCourrier2 = nomCourrier2;
 	}
 
+	@Override
 	public String getNomNaissance() {
 		return nomNaissance;
 	}
@@ -109,6 +118,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.nomNaissance = nomNaissance;
 	}
 
+	@Override
 	public String getPrenom() {
 		return prenom;
 	}
@@ -117,6 +127,7 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 		this.prenom = prenom;
 	}
 
+	@Override
 	public String getProfession() {
 		return profession;
 	}

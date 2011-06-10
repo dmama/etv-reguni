@@ -47,6 +47,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	public Destinataire remplitDestinataire(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
 		final Destinataire destinataire = remplitAdresseEnvoiDestinataire(tiers, infoEnteteDocument);
 		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
@@ -62,10 +63,12 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		return destinataire;
 	}
 
+	@Override
 	public Destinataire remplitDestinataire(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
 		return remplitAdresseEnvoiDestinataire(collAdm, infoEnteteDocument);
 	}
 
+	@Override
 	public Destinataire remplitDestinataireArchives(InfoEnteteDocument infoEnteteDocument) {
 		final Destinataire destinataire = infoEnteteDocument.addNewDestinataire();
 		final TypAdresse.Adresse adresseDestinataire = destinataire.addNewAdresse();
@@ -86,6 +89,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	public TypAdresse remplitPorteAdresse(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
 		//
 		// Porte adresse
@@ -126,6 +130,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	 * @throws ServiceInfrastructureException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aci = infraService.getACI();
 		return remplitExpediteur(aci, infoEnteteDocument);
@@ -169,16 +174,19 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	 * @throws ServiceInfrastructureException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative cat = infraService.getCAT();
 		return remplitExpediteur(cat, infoEnteteDocument);
 	}
 
+	@Override
 	public Expediteur remplitExpediteur(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = infraService.getCollectivite(collAdm.getNumeroCollectiviteAdministrative());
 		return remplitExpediteur(ca, infoEnteteDocument);
 	}
 
+	@Override
 	public String getCommune(Declaration di) throws EditiqueException {
 		ForGestion forGestion = tiersService.getForGestionActif(di.getTiers(), di.getDateDebut());
 		if (forGestion == null) {
@@ -212,6 +220,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	/**
 	 * Alimente la partie expéditeur d'une sommation de LR
 	 */
+	@Override
 	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException {
 		//
 		// Expediteur
@@ -252,6 +261,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		/**
 	 * Alimente la partie expéditeur d'une LR
 	 */
+	@Override
 	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException {
 		//
 		// Expediteur

@@ -33,6 +33,7 @@ public class IdentificationMessagesStatsResultView implements Comparable{
 		this.nombre = nombre;
 	}
 
+	@Override
 	public int compareTo(Object o) {
 		String otherEtat = ((IdentificationMessagesStatsResultView)o).getEtat();
 		return etat.compareToIgnoreCase(otherEtat);

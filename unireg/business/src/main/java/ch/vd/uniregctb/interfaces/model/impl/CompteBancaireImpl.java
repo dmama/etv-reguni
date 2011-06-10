@@ -24,14 +24,17 @@ public class CompteBancaireImpl implements CompteBancaire {
 		this.nomInstitution = target.getNomInstitution();
 	}
 
+	@Override
 	public String getNumero() {
 		return numero;
 	}
 
+	@Override
 	public Format getFormat() {
 		return format;
 	}
 
+	@Override
 	public String getNomInstitution() {
 		return nomInstitution;
 	}

@@ -15,18 +15,22 @@ public class DynamicHibernateDialect implements FactoryBean, InitializingBean {
 	private Class<?> postgresqlDialectClass;
 	private Dialect instance;
 
+	@Override
 	public Object getObject() throws Exception {
 		return instance;
 	}
 
+	@Override
 	public Class getObjectType() {
 		return Dialect.class;
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {

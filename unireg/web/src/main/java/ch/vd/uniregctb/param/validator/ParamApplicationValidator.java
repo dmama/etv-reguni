@@ -13,11 +13,13 @@ public class ParamApplicationValidator implements Validator {
 	
 	private static final Logger L = Logger.getLogger(ParamApplicationValidator.class);
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return clazz.isAssignableFrom(ParamApplicationView.class);
 	}
 
+	@Override
 	public void validate(Object objForm, Errors errors) {
 		ParamApplicationView form =  (ParamApplicationView) objForm;
 		if (ParamApplicationView.Action.reset == form.getAction()) {

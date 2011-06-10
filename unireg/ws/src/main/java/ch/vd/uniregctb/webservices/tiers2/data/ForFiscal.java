@@ -238,18 +238,22 @@ public class ForFiscal implements Range {
 		}
 	}
 
+	@Override
 	public Date getDateDebut() {
 		return dateOuverture;
 	}
 
+	@Override
 	public Date getDateFin() {
 		return dateFermeture;
 	}
 
+	@Override
 	public void setDateDebut(Date v) {
 		dateOuverture = v;
 	}
 
+	@Override
 	public void setDateFin(Date v) {
 		dateFermeture = v;
 	}

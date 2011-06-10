@@ -175,8 +175,10 @@ public class DeterminerLRsEchuesProcessor {
 		final String sql = b.toString();
 
 		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = template.execute(new TransactionCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
+			@Override
 			public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.execute(new HibernateCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
+					@Override
 					public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInHibernate(Session session) throws HibernateException {
 
 						final Query query = session.createSQLQuery(sql);

@@ -19,6 +19,7 @@ public class SituationFamilleValidatorTest extends AbstractValidatorTest<Situati
 	public void testValidateSituationAnnule() {
 
 		final SituationFamille situation = new SituationFamille() {
+			@Override
 			public SituationFamille duplicate() {
 				throw new NotImplementedException();
 			}

@@ -49,6 +49,7 @@ public class ParamPeriodeController extends AbstractController {
 		model.put("parametrePeriodeFiscaleDiplomateSuisse", manager.getDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
 		List<ModeleDocument> modeles = new ArrayList<ModeleDocument>(periodeSelectionnee.getModelesDocument());
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
+			@Override
 			public int compare(ModeleDocument o1, ModeleDocument o2) {
 				if (o1.getTypeDocument() == null && o2.getTypeDocument() == null) {
 					return 0;
@@ -69,6 +70,7 @@ public class ParamPeriodeController extends AbstractController {
 		if (modeleSelectionne != null) {
 			List<ModeleFeuilleDocument> feuilles = new ArrayList<ModeleFeuilleDocument>(modeleSelectionne.getModelesFeuilleDocument());
 			Collections.sort(feuilles, new Comparator<ModeleFeuilleDocument>() {
+				@Override
 				public int compare(ModeleFeuilleDocument o1, ModeleFeuilleDocument o2) {
 					if (o1.getNumeroFormulaire() == null && o2.getNumeroFormulaire() == null) {
 						return 0;
@@ -116,6 +118,7 @@ public class ParamPeriodeController extends AbstractController {
 
 		if (isPeriodeIdInRequest(request)) {
 			periodeSelectionnee = (PeriodeFiscale) CollectionUtils.find(periodes, new Predicate(){
+				@Override
 				public boolean evaluate(Object o) {
 					return ((PeriodeFiscale)o).getId().equals(Long.valueOf(getPeriodeIdFromRequest(request))); 
 				}
@@ -142,6 +145,7 @@ public class ParamPeriodeController extends AbstractController {
 
 		if (isModeleIdInRequest(request)) {
 			modeleSelectionne = (ModeleDocument) CollectionUtils.find(modeles, new Predicate(){
+				@Override
 				public boolean evaluate(Object o) {
 					return ((ModeleDocument)o).getId().equals(Long.valueOf(getModeleIdFromRequest(request))); 
 				}

@@ -79,6 +79,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 	 */
 	private int cleanupPeriod;
 
+	@Override
 	public void setCleanupPeriod(int cleanupPeriod) {
 		if (cleanupPeriod <= 0) {
 			throw new IllegalArgumentException("La valeur doit être strictement positive");
@@ -107,6 +108,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 	}
 
+	@Override
 	public int getCleanupPeriod() {
 		return cleanupPeriod;
 	}
@@ -189,6 +191,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (cleanupPeriod <= 0) {
 			throw new IllegalArgumentException("La valeur de 'cleanupPeriod' doit être strictement positive");
@@ -201,6 +204,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		triggerManagerThread.start();
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		triggerManagerThread.stopIt();
 
@@ -217,6 +221,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 	 * @param nomDocument ID du document déclencheur
 	 * @param trigger action à lancer à la réception du document voulu
 	 */
+	@Override
 	public void registerTrigger(String nomDocument, RetourImpressionTrigger trigger) {
 
 		synchronized (impressionsRecues) {
@@ -230,6 +235,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 	}
 
+	@Override
 	public void onArriveeRetourImpression(EditiqueResultatRecu resultat) {
 
 		// ah ? un retour d'impression ? il faut le mettre dans la map
@@ -257,6 +263,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		return System.nanoTime() / 1000000L;
 	}
 
+	@Override
 	public EditiqueResultat getDocument(String nomDocument, long timeout) {
 
 		Assert.isTrue(timeout > 0);
@@ -307,20 +314,24 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 	}
 
+	@Override
 	public int getDocumentsEnAttenteDeDispatch() {
 		synchronized (impressionsRecues) {
 			return impressionsRecues.size();
 		}
 	}
 
+	@Override
 	public int getDocumentsPurges() {
 		return purgedDocuments;
 	}
 
+	@Override
 	public Date getDateDernierePurgeEffective() {
 		return dateDernierePurgeEffective;
 	}
 
+	@Override
 	public int getDocumentsRecus() {
 		return receivedDocuments;
 	}

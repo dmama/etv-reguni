@@ -37,10 +37,12 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 		this.target = target;
 	}
 
+	@Override
 	public DataSource getTarget() {
 		return target;
 	}
 
+	@Override
 	public DataSource getUltimateTarget() {
 		if (target != null && target instanceof WrappingDataSource) {
 			return ((WrappingDataSource) target).getUltimateTarget();
@@ -61,10 +63,12 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 		this.statsService = statsService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		statsService.registerService(SERVICE_NAME, tracing);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		statsService.unregisterService(SERVICE_NAME);
 	}
@@ -72,6 +76,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Connection getConnection() throws SQLException {
 		if (enabled) {
 			return new TracingConnection(target.getConnection(), tracing);
@@ -84,6 +89,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Connection getConnection(String username, String password) throws SQLException {
 		if (enabled) {
 			return new TracingConnection(target.getConnection(username, password), tracing);
@@ -96,6 +102,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public PrintWriter getLogWriter() throws SQLException {
 		return target.getLogWriter();
 	}
@@ -103,6 +110,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getLoginTimeout() throws SQLException {
 		return target.getLoginTimeout();
 	}
@@ -110,6 +118,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		target.setLogWriter(out);
 	}
@@ -117,6 +126,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setLoginTimeout(int seconds) throws SQLException {
 		target.setLoginTimeout(seconds);
 	}

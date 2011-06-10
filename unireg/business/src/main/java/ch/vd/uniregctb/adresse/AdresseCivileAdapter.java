@@ -164,10 +164,12 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public String getCasePostale() {
 		return adresse.getCasePostale();
 	}
 
+	@Override
 	public final RegDate getDateDebut() {
 		if (debutValiditeSurcharge == null) {
 			return adresse.getDateDebut();
@@ -177,6 +179,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public final RegDate getDateFin() {
 		if (finValiditeSurcharge == null) {
 			return adresse.getDateFin();
@@ -208,18 +211,22 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public String getNumero() {
 		return adresse.getNumero();
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return adresse.getNumeroAppartement();
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return adresse.getNumeroRue();
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		final int noOrdreFourni = adresse.getNumeroOrdrePostal();
 		if (noOrdreFourni == 0) {
@@ -242,10 +249,12 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	}
 
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return adresse.getNumeroPostalComplementaire();
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		return adresse.getNoOfsPays();
 	}
@@ -262,14 +271,17 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	}
 
+	@Override
 	public String getComplement() {
 		return complement;
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}
 
+	@Override
 	public boolean isDefault() {
 		return isDefault;
 	}
@@ -277,6 +289,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
@@ -298,34 +311,42 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return null;
 	}
 
+	@Override
 	public String getAnnulationUser() {
 		return null;
 	}
 
+	@Override
 	public Date getLogCreationDate() {
 		return null;
 	}
 
+	@Override
 	public String getLogCreationUser() {
 		return null;
 	}
 
+	@Override
 	public Timestamp getLogModifDate() {
 		return null;
 	}
 
+	@Override
 	public String getLogModifUser() {
 		return null;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return false;
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		return adresse.getCommuneAdresse();
 	}
@@ -335,10 +356,12 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		return adresse.getEgid();
 	}
 
+	@Override
 	public Long getId() {
 		return null;
 	}
 
+	@Override
 	public boolean isPermanente() {
 		return false; // par définition, seules les adresses tiers peuvent être permanentes
 	}

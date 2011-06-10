@@ -39,9 +39,11 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	 * @param criterion
 	 * @return
 	 */
+	@Override
 	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, final ParamPagination paramPagination) {
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<DeclarationImpotSource>>() {
+			@Override
 			public List<DeclarationImpotSource> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final List<Object> parameters = new ArrayList<Object>();
@@ -108,6 +110,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	/**
 	 * @see ch.vd.uniregctb.declaration.ListeRecapitulativeDAO#count(ch.vd.uniregctb.declaration.ListeRecapCriteria)
 	 */
+	@Override
 	public int count(ListeRecapCriteria criterion) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of ListeRecapitulativeDAO : count");
@@ -204,6 +207,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<DeclarationImpotSource> findByNumero(Long numero) {
 		if (LOGGER.isTraceEnabled()) {
@@ -224,6 +228,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	 * @param lrId
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public EtatDeclaration findDerniereLrEnvoyee(Long numeroDpi) {
 		if (LOGGER.isTraceEnabled()) {
@@ -253,6 +258,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	 * @param range
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<DateRange> findIntersection(long numeroDpi, DateRange range) {
 

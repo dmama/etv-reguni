@@ -35,34 +35,42 @@ public class InstitutionFinanciereImpl implements InstitutionFinanciere, Seriali
 		return new InstitutionFinanciereImpl(institutionFinanciere);
 	}
 
+	@Override
 	public String getAdresse1() {
 		return adresse1;
 	}
 
+	@Override
 	public String getAdresse2() {
 		return adresse2;
 	}
 
+	@Override
 	public String getAdresse3() {
 		return adresse3;
 	}
 
+	@Override
 	public Integer getCode() {
 		return code;
 	}
 
+	@Override
 	public String getNoClearing() {
 		return noClearing;
 	}
 
+	@Override
 	public String getNoCompte() {
 		return noCompte;
 	}
 
+	@Override
 	public String getNoIdentificationDTA() {
 		return noIdentificationDTA;
 	}
 
+	@Override
 	public String getNomInstitutionFinanciere() {
 		return nomInstitutionFinanciere;
 	}

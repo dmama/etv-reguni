@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.web.xt.component;
 
-import java.io.StringWriter;
-import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.StringWriter;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springmodules.xt.ajax.component.Component;
@@ -35,6 +34,7 @@ public class InternalJspComponent implements Component {
 		this.path = path;
 	}
 
+	@Override
 	public String render() {
 		StringWriter writer = null;
 		String str = null;

@@ -85,6 +85,7 @@ public class IdentificationMessagesResultView implements Annulable{
 	public void setNavs13(String navs13) {
 		this.navs13 = navs13;
 	}
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

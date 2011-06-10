@@ -59,6 +59,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		this.statsService = statsService;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new EhCacheStats(cache);
 	}
@@ -70,12 +71,14 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		initCache();
 		if (statsService != null) {
@@ -84,14 +87,17 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		uniregCacheManager.register(this);
 	}
 
+	@Override
 	public String getName() {
 		return "PM";
 	}
 
+	@Override
 	public String getDescription() {
 		return "service PM";
 	}
 
+	@Override
 	public void reset() {
 		cache.removeAll();
 	}
@@ -112,6 +118,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getAllIds() {
 		final List<Long> ids;
@@ -155,6 +162,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 
 		final PersonneMorale pm;
@@ -186,6 +194,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts) {
 		// pas caché : cela en vaut-il vraiment la peine ?
 		return target.getPersonnesMorales(ids, parts);
@@ -218,6 +227,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Etablissement getEtablissement(long id) {
 
 		final Etablissement pm;
@@ -239,11 +249,13 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Etablissement> getEtablissements(List<Long> ids) {
 		// pas caché : cela en vaut-il vraiment la peine ?
 		return target.getEtablissements(ids);
 	}
 
+	@Override
 	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		// pas caché : cela en vaut-il vraiment la peine ?
 		return target.findEvenements(numeroEntreprise, code, minDate, maxDate);

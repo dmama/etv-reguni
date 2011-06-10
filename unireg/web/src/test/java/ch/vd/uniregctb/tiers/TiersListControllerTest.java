@@ -286,6 +286,7 @@ public class TiersListControllerTest extends WebTest {
 	private void loadDatabase() throws Exception {
 		globalTiersIndexer.overwriteIndex();
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				TestData.loadTiersBasic(hibernateTemplate);
 				return null;

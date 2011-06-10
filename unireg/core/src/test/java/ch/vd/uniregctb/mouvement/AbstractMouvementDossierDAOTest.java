@@ -36,6 +36,7 @@ public abstract class AbstractMouvementDossierDAOTest extends CoreDAOTest {
 		return (CollectiviteAdministrative) tiersDAO.save(ca);
 	}
 
+	@Override
 	protected PersonnePhysique addNonHabitant(String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 		final PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setPrenom(prenom);

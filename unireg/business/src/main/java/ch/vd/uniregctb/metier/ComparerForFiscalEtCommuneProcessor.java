@@ -104,6 +104,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
 		final List<Contribuable> list = tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
+			@Override
 			public List<Contribuable> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(Contribuable.class);
 				crit.add(Restrictions.in("id", batch));
@@ -152,9 +153,11 @@ public class ComparerForFiscalEtCommuneProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> idsMessage = tiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);
 						//noinspection unchecked

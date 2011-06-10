@@ -141,6 +141,7 @@ public class SourcierListController  extends  AbstractTiersListController implem
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

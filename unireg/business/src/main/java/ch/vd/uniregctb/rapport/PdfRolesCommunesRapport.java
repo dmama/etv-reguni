@@ -54,6 +54,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		addEntete1("Paramètres");
 		{
 		    addTableSimple(2, new TableSimpleCallback() {
+		        @Override
 		        public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Année fiscale :", String.valueOf(results.annee));
 		            table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
@@ -77,6 +78,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 			}
 
 		    addTableSimple(2, new TableSimpleCallback() {
+		        @Override
 		        public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Nombre de communes traitées:", String.valueOf(nbCommunesTraitees));
 		            table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites));
@@ -153,6 +155,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		    {
 		        final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoCommune.getInfosContribuables().values());
 		        addTableSimple(2, new TableSimpleCallback() {
+		            @Override
 		            public void fillTable(PdfTableSimple table) throws DocumentException {
 		                table.setWidths(new float[]{2.0f, 1.0f});
 		                table.addLigne("Nombre total de contribuables traités:", String.valueOf(totalContribuables));
@@ -184,6 +187,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		status.setMessage(String.format("Génération du rapport pour la commune de %s...", nomCommune));
 
 		return traiteListeContribuable(infos, nomsCommunes, new AccesCommune() {
+			@Override
 			public int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable) {
 				return noOfsCommune;
 			}

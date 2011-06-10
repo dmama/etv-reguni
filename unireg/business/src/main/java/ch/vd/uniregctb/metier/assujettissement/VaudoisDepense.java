@@ -26,6 +26,7 @@ public class VaudoisDepense extends Assujettissement {
 		return "Imposition d'après la dépense";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new VaudoisDepense(this, (VaudoisDepense) next);
 	}

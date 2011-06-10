@@ -126,12 +126,14 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
 			// comme ça on est certain de recréer une session à chaque fois
 			hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+				@Override
 				public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 					// read-only transaction
 					session.setFlushMode(FlushMode.MANUAL);
 					transactionTemplate.setReadOnly(true);
 					transactionTemplate.execute(new TransactionCallback<Object>() {
+						@Override
 						public Object doInTransaction(TransactionStatus transactionStatus) {
 							final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);
 
@@ -191,11 +193,13 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
 			// comme ça on est certain de recréer une session à chaque fois
 			hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+				@Override
 				public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 					// read-only transaction
 					transactionTemplate.setReadOnly(true);
 					transactionTemplate.execute(new TransactionCallback<Object>() {
+						@Override
 						public Object doInTransaction(TransactionStatus transactionStatus) {
 							try {
 								final Tiers tiers = tiersDAO.get(id);

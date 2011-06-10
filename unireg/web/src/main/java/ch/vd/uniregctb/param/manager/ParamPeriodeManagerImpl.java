@@ -35,6 +35,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	private ParametrePeriodeFiscaleDAO parametrePeriodeFiscaleDAO;
 	private PeriodeFiscaleService periodeFiscaleService;
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<PeriodeFiscale> getAllPeriodeFiscale() {
 		List<PeriodeFiscale> list = periodeFiscaleDAO.getAllDesc();
@@ -45,11 +46,13 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return list;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<ModeleDocument> getModeleDocuments (PeriodeFiscale periodeFiscale) {
 		 return modeleDocumentDAO.getByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<ModeleFeuilleDocument> getModeleFeuilleDocuments(ModeleDocument modeleDocument) {
 		return modeleFeuilleDocumentDAO.getByModeleDocument(modeleDocument);
@@ -60,6 +63,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		Collections.sort(
 			list,
 			new Comparator<ParametrePeriodeFiscale>() {
+				@Override
 				public int compare(ParametrePeriodeFiscale o1, ParametrePeriodeFiscale o2) {
 					return o1.getTypeContribuable().compareTo(o2.getTypeContribuable());
 				}
@@ -68,32 +72,38 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return list;
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public PeriodeFiscale initNouvellePeriodeFiscale() {
 		return periodeFiscaleService.initNouvellePeriodeFiscale();
 
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getDepenseByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getHorsCantonByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getHorsSuisseByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getDiplomateSuisseByPeriodeFiscale(periodeFiscale);
 	}
 	
+	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getVaudByPeriodeFiscale(periodeFiscale);
@@ -119,6 +129,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		this.parametrePeriodeFiscaleDAO = parametrePeriodeFiscaleDAO;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscaleView createParametrePeriodeFiscaleViewEdit(Long idPeriode) {
 		ParametrePeriodeFiscaleView ppfv = new ParametrePeriodeFiscaleView();
@@ -154,6 +165,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return ppfv;
 	}
 
+	@Override
 	public ModeleDocumentView createModeleDocumentViewAdd(Long idPeriode) {
 		ModeleDocumentView mdv = new ModeleDocumentView();
 		PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
@@ -162,6 +174,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return mdv;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ModeleFeuilleDocumentView createModeleFeuilleDocumentViewAdd(Long periodeId, Long modeleId) {
 		ModeleFeuilleDocumentView mfdv = new ModeleFeuilleDocumentView();
@@ -174,6 +187,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return mfdv;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ModeleFeuilleDocumentView createModeleFeuilleDocumentViewEdit(Long periodeId, Long modeleId, Long feuilleId) {
 		ModeleFeuilleDocumentView mfdv = createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
@@ -184,6 +198,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return mfdv;
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscaleView ppfv) {
 
@@ -230,6 +245,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveModeleDocumentView(ModeleDocumentView mdv) {
 		ModeleDocument md = new ModeleDocument();
@@ -238,6 +254,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		pf.addModeleDocument(md);
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveModeleFeuilleDocumentViewAdd(ModeleFeuilleDocumentView mfdv) {
 		ModeleFeuilleDocument mfd = new ModeleFeuilleDocument();
@@ -247,6 +264,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		md.addModeleFeuilleDocument(mfd);
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveModeleFeuilleDocumentViewEdit(ModeleFeuilleDocumentView mfdv) {
 		ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(mfdv.getIdFeuille());
@@ -254,11 +272,13 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		mfd.setIntituleFeuille(mfdv.getIntituleFeuille());
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void deleteModeleDocument(Long idModeleDocument) {
 		modeleDocumentDAO.remove(idModeleDocument);
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void deleteModeleFeuilleDocument(Long idModeleFeuilleDocument) {
 		modeleFeuilleDocumentDAO.remove(idModeleFeuilleDocument);

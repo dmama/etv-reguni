@@ -155,6 +155,7 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 	/**
 	 * @see org.springframework.context.MessageSourceAware#setMessageSource(org.springframework.context.MessageSource)
 	 */
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		JspTagRaccourci.messageSource = messageSource;
 	}

@@ -17,6 +17,7 @@ public class SimpleText implements Component {
     	this.text = (text == null ? "" :StringEscapeUtils.unescapeHtml(text));
     }
 
+    @Override
     public String render() {
     	if ( text == null)
     		return "";

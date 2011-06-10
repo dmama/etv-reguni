@@ -59,6 +59,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		return adresse;
 	}
 
+	@Override
 	public String getCasePostale() {
 		final TexteCasePostale cp = adresse.getTexteCasePostale();
 		final Integer no = adresse.getNumeroCasePostale();
@@ -68,10 +69,12 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		return cp.format(no);
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return adresse.getDateDebut();
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return adresse.getDateFin();
 	}
@@ -124,14 +127,17 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public String getNumero() {
 		return adresse.getNumeroMaison();
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return adresse.getNumeroAppartement();
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		if (adresseSuisse != null) {
 			return adresseSuisse.getNumeroRue();
@@ -141,6 +147,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		if (adresseSuisse != null) {
 			return getNumeroOrdreLocalite(adresseSuisse);
@@ -156,6 +163,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		return getNpa();
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		if (adresseSuisse != null) {
 			final Localite localite = getLocalite(adresseSuisse);
@@ -168,6 +176,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		if (adresseSuisse != null) {
 			return ServiceInfrastructureService.noOfsSuisse;
@@ -189,14 +198,17 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		return rue;
 	}
 
+	@Override
 	public String getComplement() {
 		return adresse.getComplement();
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}
 
+	@Override
 	public boolean isDefault() {
 		return isDefault;
 	}
@@ -228,47 +240,58 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		// [UNIREG-2895] on ignore les adresses annulées ne doivent pas être considérées comme valides
 		return !isAnnule() && RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return adresse.getAnnulationDate();
 	}
 
+	@Override
 	public String getAnnulationUser() {
 		return adresse.getAnnulationUser();
 	}
 
+	@Override
 	public Date getLogCreationDate() {
 		return adresse.getLogCreationDate();
 	}
 
+	@Override
 	public String getLogCreationUser() {
 		return adresse.getLogCreationUser();
 	}
 
+	@Override
 	public Timestamp getLogModifDate() {
 		return adresse.getLogModifDate();
 	}
 
+	@Override
 	public String getLogModifUser() {
 		return adresse.getLogModifUser();
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return adresse.isAnnule();
 	}
 
+	@Override
 	public Long getId() {
 		return adresse.getId();
 	}
 
+	@Override
 	public boolean isPermanente() {
 		return adresse.isPermanente();
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		// les adresses purement fiscales ne sont pas attachées à des communes directement
 		// -> il faut donc passer par la localité postale

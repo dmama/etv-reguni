@@ -54,6 +54,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		this.statsService = statsService;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new EhCacheStats(cache);
 	}
@@ -65,6 +66,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
@@ -72,6 +74,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		uniregCacheManager.register(this);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
@@ -124,6 +127,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		final List<CollectiviteAdministrative>  resultat;
@@ -179,6 +183,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite) {
 		final List<ProfilOperateur>  resultat;
@@ -237,6 +242,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 
 	}
 
+	@Override
 	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		final ProfilOperateur  resultat;
 		final KeyGetProfileUtilisateurVisaOperateurCodeCollectivite key = new KeyGetProfileUtilisateurVisaOperateurCodeCollectivite(visaOperateur, codeCollectivite);
@@ -289,6 +295,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) {
 
@@ -336,6 +343,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 
 	}
 
+	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
 		final Operateur resultat;
 
@@ -387,6 +395,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		}
 	}
 
+	@Override
 	public Operateur getOperateur(String visa) {
 		final Operateur resultat;
 
@@ -406,6 +415,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getDescription() {
 		return "service securité";
 	}
@@ -413,6 +423,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return "SECURITE";
 	}
@@ -420,6 +431,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void reset() {
 		cache.removeAll();
 	}

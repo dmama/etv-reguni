@@ -86,6 +86,7 @@ public class Property implements Comparable<Property> {
 		this.index = index;
 	}
 
+	@Override
 	public int compareTo(Property o) {
 		if (discriminatorValue != null) {
 			return -1;

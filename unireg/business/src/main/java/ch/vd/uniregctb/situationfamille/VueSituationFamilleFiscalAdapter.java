@@ -22,38 +22,47 @@ public abstract class VueSituationFamilleFiscalAdapter implements VueSituationFa
 		this.source = source;
 	}
 
+	@Override
 	public Long getId() {
 		return situation.getId();
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return situation.getDateDebut();
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return situation.getDateFin();
 	}
 
+	@Override
 	public Integer getNombreEnfants() {
 		return situation.getNombreEnfants();
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return situation.isAnnule();
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return situation.getAnnulationDate();
 	}
 
+	@Override
 	public EtatCivil getEtatCivil() {
 		return situation.getEtatCivil();
 	}

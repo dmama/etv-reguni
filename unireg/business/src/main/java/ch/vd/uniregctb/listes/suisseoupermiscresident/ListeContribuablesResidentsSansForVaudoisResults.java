@@ -1,16 +1,15 @@
 package ch.vd.uniregctb.listes.suisseoupermiscresident;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResults<ListeContribuablesResidentsSansForVaudoisResults> {
 
@@ -65,6 +64,7 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 		contribuablesIgnores.add(new InfoContribuableIgnore(ctb.getNumero(), cause));
 	}
 
+	@Override
 	public void addAll(ListeContribuablesResidentsSansForVaudoisResults sources) {
 		super.addAll(sources);
 		contribuablesIdentifies.addAll(sources.contribuablesIdentifies);
@@ -89,6 +89,7 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 
 		Collections.sort(contribuablesIdentifies);
 		Collections.sort(contribuablesIgnores, new Comparator<InfoContribuableIgnore>() {
+			@Override
 			public int compare(InfoContribuableIgnore o1, InfoContribuableIgnore o2) {
 				return o1.ctbId < o2.ctbId ? -1 : (o1.ctbId > o2.ctbId ? 1 : 0);
 			}

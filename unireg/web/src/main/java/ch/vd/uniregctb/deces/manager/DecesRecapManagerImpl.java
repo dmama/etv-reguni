@@ -42,6 +42,7 @@ public class DecesRecapManagerImpl implements DecesRecapManager  {
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DecesRecapView get(Long numero) {
 		DecesRecapView decesRecapView =  new DecesRecapView();
@@ -61,6 +62,7 @@ public class DecesRecapManagerImpl implements DecesRecapManager  {
 	 *
 	 * @param decesRecapView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(DecesRecapView decesRecapView) throws MetierServiceException {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(decesRecapView.getPersonne().getNumero());
@@ -74,6 +76,7 @@ public class DecesRecapManagerImpl implements DecesRecapManager  {
 
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isDecede(long numeroCtb) {
 		final Tiers tiers = tiersService.getTiers(numeroCtb);

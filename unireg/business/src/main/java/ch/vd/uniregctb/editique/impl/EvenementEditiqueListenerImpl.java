@@ -91,6 +91,7 @@ public class EvenementEditiqueListenerImpl extends EsbMessageListener implements
 		return resultat;
 	}
 
+	@Override
 	public int getNombreMessagesRecus() {
 		return nbMessagesRecus.intValue();
 	}

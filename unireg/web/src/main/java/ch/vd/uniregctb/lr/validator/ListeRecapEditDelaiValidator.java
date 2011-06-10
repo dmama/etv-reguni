@@ -9,11 +9,13 @@ import ch.vd.uniregctb.delai.DelaiDeclarationView;
 
 public class ListeRecapEditDelaiValidator implements Validator {
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return DelaiDeclarationView.class.equals(clazz);
 	}
 
+	@Override
 	public void validate(Object obj, Errors errors) {
 		Assert.isTrue(obj instanceof DelaiDeclarationView);
 		DelaiDeclarationView delai = (DelaiDeclarationView) obj;

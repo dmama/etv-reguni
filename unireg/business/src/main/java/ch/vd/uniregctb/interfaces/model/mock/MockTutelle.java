@@ -18,6 +18,7 @@ public class MockTutelle implements Tutelle {
 	private TuteurGeneral tuteurGeneral;
 	private TypeTutelle typeTutelle;
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -26,6 +27,7 @@ public class MockTutelle implements Tutelle {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -34,6 +36,7 @@ public class MockTutelle implements Tutelle {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public String getLibelleMotif() {
 		return libelleMotif;
 	}
@@ -42,6 +45,7 @@ public class MockTutelle implements Tutelle {
 		this.libelleMotif = libelleMotif;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
@@ -50,6 +54,7 @@ public class MockTutelle implements Tutelle {
 		this.noSequence = noSequence;
 	}
 
+	@Override
 	public String getNomAutoriteTutelaire() {
 		return nomAutoriteTutelaire;
 	}
@@ -58,6 +63,7 @@ public class MockTutelle implements Tutelle {
 		this.nomAutoriteTutelaire = nomAutoriteTutelaire;
 	}
 
+	@Override
 	public Individu getTuteur() {
 		return tuteur;
 	}
@@ -66,6 +72,7 @@ public class MockTutelle implements Tutelle {
 		this.tuteur = tuteur;
 	}
 
+	@Override
 	public TuteurGeneral getTuteurGeneral() {
 		return tuteurGeneral;
 	}
@@ -74,6 +81,7 @@ public class MockTutelle implements Tutelle {
 		this.tuteurGeneral = tuteurGeneral;
 	}
 
+	@Override
 	public TypeTutelle getTypeTutelle() {
 		return typeTutelle;
 	}
@@ -82,6 +90,7 @@ public class MockTutelle implements Tutelle {
 		this.typeTutelle = typeTutelle;
 	}
 
+	@Override
 	public Long getNumeroCollectiviteAutoriteTutelaire() {
 		return numeroCollectiviteAutoriteTutelaire;
 	}

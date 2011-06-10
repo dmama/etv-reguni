@@ -39,6 +39,7 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 	 * @param date date de référence pour le cache
 	 * @param parties parties des individus à mémoriser dans le cache
 	 */
+	@Override
 	public void warmIndividusPourTiers(Collection<Long> noTiers, RegDate date, AttributeIndividu... parties) {
 
 		if (serviceCivilService.isWarmable()) {

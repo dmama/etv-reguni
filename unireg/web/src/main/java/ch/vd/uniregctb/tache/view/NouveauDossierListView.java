@@ -89,6 +89,7 @@ public class NouveauDossierListView implements Comparable<NouveauDossierListView
 		this.annule = annule;
 	}
 
+	@Override
 	public int compareTo(NouveauDossierListView o) {
 		return o.numero.compareTo(numero);
 	}

@@ -36,6 +36,7 @@ public class CollectiviteAdministrativeValidator extends ContribuableValidator<C
 		return results;
 	}
 
+	@Override
 	public Class<CollectiviteAdministrative> getValidatedClass() {
 		return CollectiviteAdministrative.class;
 	}

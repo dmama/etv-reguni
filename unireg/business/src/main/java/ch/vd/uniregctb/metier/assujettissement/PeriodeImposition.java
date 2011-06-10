@@ -565,10 +565,12 @@ public class PeriodeImposition implements CollatableDateRange {
 		this.causeFermeture = causeFermeture;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return debut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return fin;
 	}
@@ -620,6 +622,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		return adresseRetour;
 	}
 
+	@Override
 	public DateRange collate(DateRange n) {
 		final PeriodeImposition next = (PeriodeImposition) n;
 		final TypeAdresseRetour adresseRetour = next.adresseRetour; // [UNIREG-1741] en prenant le second type, on est aussi correct en cas de décès. 
@@ -628,6 +631,7 @@ public class PeriodeImposition implements CollatableDateRange {
 				optionnelle && next.optionnelle, remplaceeParNote && next.remplaceeParNote, next.causeFermeture);
 	}
 
+	@Override
 	public boolean isCollatable(DateRange n) {
 		final PeriodeImposition next = (PeriodeImposition) n;
 		return isEquivalent(categorieEnvoiDI, next.categorieEnvoiDI) && isRangeCollatable(next);
@@ -664,6 +668,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		}
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
 	}

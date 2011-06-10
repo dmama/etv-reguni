@@ -42,6 +42,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DroitAcces ajouteDroitAcces(long operateurId, long tiersId, TypeDroitAcces type, Niveau niveau) throws DroitAccesException {
 
 		final RegDate aujourdhui = RegDate.get();
@@ -68,6 +69,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 * @param ppDestination dossier auquel les droits d'accès doivent être ajoutés
 	 * @throws DroitAccesException en cas de conflit entre les droits existant sur le dossier de destination et ceux sur le dossier source
 	 */
+	@Override
 	public void copieDroitsAcces(final PersonnePhysique ppSource, final PersonnePhysique ppDestination) throws DroitAccesException {
 
 		final Set<DroitAcces> droitsSource = ppSource.getDroitsAccesAppliques();
@@ -75,14 +77,17 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		final RegDate aujourdhui = RegDate.get();
 
 		copieDroitsAcces(droitsSource, droitsDestination, aujourdhui, new CopieDroitCallback() {
+			@Override
 			public boolean adapteExistant(DroitAcces src, DroitAcces dst) throws DroitAccesException {
 				return adapteExistantPourTransfertDossier(src, dst, aujourdhui);
 			}
 
+			@Override
 			public void fillDestinationContext(DroitAcces droit) {
 				droit.setTiers(ppDestination);
 			}
 
+			@Override
 			public void postTraiteSource(DroitAcces droit) {
 				// rien de spécial à faire
 			}
@@ -245,6 +250,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void annuleDroitAcces(long id) throws DroitAccesException {
 
 		final DroitAcces da = droitAccesDAO.get(id);
@@ -258,6 +264,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void copieDroitsAcces(long operateurSourceId, long operateurTargetId) throws DroitAccesException {
 		copie(operateurSourceId, operateurTargetId, false);
 	}
@@ -265,6 +272,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void transfereDroitsAcces(long operateurSourceId, long operateurTargetId) throws DroitAccesException {
 		copie(operateurSourceId, operateurTargetId, true);
 	}
@@ -276,14 +284,17 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		final RegDate dateReference = RegDate.get();
 
 		copieDroitsAcces(source, target, dateReference, new CopieDroitCallback() {
+			@Override
 			public boolean adapteExistant(DroitAcces src, DroitAcces dst) throws DroitAccesException {
 				return adapteExistantPourTransfertOperateur(src, dst, dateReference);
 			}
 
+			@Override
 			public void fillDestinationContext(DroitAcces droit) {
 				droit.setNoIndividuOperateur(operateurTargetId);
 			}
 
+			@Override
 			public void postTraiteSource(DroitAcces droit) {
 				if (fermeSource) {
 					droit.setDateFin(dateReference);

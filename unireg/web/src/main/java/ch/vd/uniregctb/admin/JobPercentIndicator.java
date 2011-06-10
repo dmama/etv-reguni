@@ -15,6 +15,7 @@ public class JobPercentIndicator implements Component {
 		this.percent = percent;
 	}
 
+	@Override
 	public String render() {
 		int width = 100;
 		final int pixels = (width * percent) / 100;

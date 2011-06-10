@@ -131,6 +131,7 @@ public class DataEventJmsListener extends EsbMessageListener implements Monitora
 		dataEventService.onTruncateDatabase();
 	}
 
+	@Override
 	public int getNombreMessagesRecus() {
 		return nbMessagesRecus.intValue();
 	}

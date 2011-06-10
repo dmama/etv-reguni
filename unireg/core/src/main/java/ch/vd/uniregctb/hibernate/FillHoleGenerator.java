@@ -48,6 +48,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		this.maxId = maxId;
 	}
 
+	@Override
 	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
 		Properties properties = new Properties();
 		properties.putAll(params);
@@ -61,6 +62,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		sqlCreate = generator.sqlCreateStrings(dialect);
 	}
 
+	@Override
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
 
 		//return randomNumber(session, object);
@@ -141,6 +143,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		return (long) l;
 	}
 
+	@Override
 	public Object generatorKey() {
 		return seqName;
 	}
@@ -176,10 +179,12 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		}
 	}
 
+	@Override
 	public String[] sqlCreateStrings(Dialect dialect) throws HibernateException {
 		return generator.sqlCreateStrings(dialect);
 	}
 
+	@Override
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
 		return generator.sqlDropStrings(dialect);
 	}

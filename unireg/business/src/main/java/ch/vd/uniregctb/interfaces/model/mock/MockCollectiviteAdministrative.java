@@ -111,6 +111,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the adresse
 	 */
+	@Override
 	public Adresse getAdresse() {
 		return adresse;
 	}
@@ -126,6 +127,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the adresseEmail
 	 */
+	@Override
 	public String getAdresseEmail() {
 		return adresseEmail;
 	}
@@ -141,6 +143,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the dateFinValidite
 	 */
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
 	}
@@ -156,6 +159,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the noCCP
 	 */
+	@Override
 	public String getNoCCP() {
 		return noCCP;
 	}
@@ -171,6 +175,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the noColAdm
 	 */
+	@Override
 	public int getNoColAdm() {
 		return (int) noColAdm;
 	}
@@ -186,6 +191,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the noFax
 	 */
+	@Override
 	public String getNoFax() {
 		return noFax;
 	}
@@ -201,6 +207,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the noTelephone
 	 */
+	@Override
 	public String getNoTelephone() {
 		return noTelephone;
 	}
@@ -216,6 +223,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the nomComplet1
 	 */
+	@Override
 	public String getNomComplet1() {
 		return nomComplet1;
 	}
@@ -231,6 +239,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the nomComplet2
 	 */
+	@Override
 	public String getNomComplet2() {
 		return nomComplet2;
 	}
@@ -246,6 +255,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the nomComplet3
 	 */
+	@Override
 	public String getNomComplet3() {
 		return nomComplet3;
 	}
@@ -261,6 +271,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the nomCourt
 	 */
+	@Override
 	public String getNomCourt() {
 		return nomCourt;
 	}
@@ -276,6 +287,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the sigle
 	 */
+	@Override
 	public String getSigle() {
 		return sigle;
 	}
@@ -291,6 +303,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the sigleCanton
 	 */
+	@Override
 	public String getSigleCanton() {
 		return sigleCanton;
 	}
@@ -321,6 +334,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the isACI
 	 */
+	@Override
 	public boolean isACI() {
 		return isACI;
 	}
@@ -336,6 +350,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the isOID
 	 */
+	@Override
 	public boolean isOID() {
 		return isOID;
 	}
@@ -351,6 +366,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	/**
 	 * @return the isValide
 	 */
+	@Override
 	public boolean isValide() {
 		return isValide;
 	}

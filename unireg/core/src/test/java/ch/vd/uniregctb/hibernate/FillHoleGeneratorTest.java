@@ -153,6 +153,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 */
 	private void addIds(final Long... ids) throws Exception {
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				for (Long id : ids) {
 					final PersonnePhysique pp = new PersonnePhysique(false);
@@ -179,6 +180,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 */
 	private void addErrorIds(final Long... ids) throws Exception {
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				for (Long id : ids) {
 					MigrationError e = new MigrationError();

@@ -22,6 +22,7 @@ class TimeRange implements Comparable<TimeRange> {
 		return start <= milliseconds && milliseconds <= end;
 	}
 
+	@Override
 	public int compareTo(TimeRange o) {
 		return (start < o.start ? -1 : (start == o.start ? 0 : 1));
 	}

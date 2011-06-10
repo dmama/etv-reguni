@@ -17,6 +17,7 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 		super(adresseService, tiersService, serviceInfra, collectivite);
 	}
 
+	@Override
 	public String getSubType() {
 		return SUB_TYPE;
 	}

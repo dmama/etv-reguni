@@ -77,6 +77,7 @@ public class JsonView extends BaseExportView {
 	/**
 	 * @see org.displaytag.export.BaseExportView#getMimeType()
 	 */
+	@Override
 	public String getMimeType() {
 		return "text/plain";
 	}

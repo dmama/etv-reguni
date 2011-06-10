@@ -83,6 +83,7 @@ public class TiersIndexableData extends IndexableData {
 		super(id, type, subType);
 	}
 
+	@Override
 	public Document asDoc() {
 
 		Document d = super.asDoc();
@@ -143,10 +144,12 @@ public class TiersIndexableData extends IndexableData {
 		return value == null ? "" : value;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
 
+	@Override
 	public String getSubType() {
 		return subType;
 	}

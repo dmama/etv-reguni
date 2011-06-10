@@ -39,6 +39,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Niveau getAcces(long tiersId) throws ObjectNotFoundException {
 
@@ -52,6 +53,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Niveau getAcces(Tiers tiers) {
 
@@ -73,6 +75,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Niveau getAcces(String visaOperateur, long tiersId) {
 
@@ -94,6 +97,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Niveau> getAcces(String visa, List<Long> ids) {
 

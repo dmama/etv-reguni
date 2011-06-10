@@ -32,6 +32,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 		this.serviceSecurite = serviceSecurite;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		try {
@@ -50,6 +51,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite) {
 		try {
@@ -65,6 +67,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 		}
 	}
 
+	@Override
 	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		try {
 			return serviceSecurite.getProfileUtilisateur(visaOperateur, codeCollectivite);
@@ -117,6 +120,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	 * @param typesCollectivite
 	 * @return la liste des utilisateurs
 	 */
+	@Override
 	public List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) {
 		try {
 			EnumTypeCollectivite[] tabTypesCollectivite = new EnumTypeCollectivite[typesCollectivite.size()];
@@ -146,6 +150,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
 		try {
 			return serviceSecurite.getOperateur(individuNoTechnique);
@@ -159,6 +164,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Operateur getOperateur(String visa) {
 		try {
 			return serviceSecurite.getOperateur(visa);

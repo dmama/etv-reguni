@@ -11,36 +11,43 @@ public class ApplicationMonitoringJMXBeanImpl implements ApplicationMonitoringJm
 
 	private ApplicationChecker checker;
 
+	@Override
 	@ManagedAttribute
 	public String getDescription() {
 		return "Unireg (ws)";
 	}
 
+	@Override
 	@ManagedAttribute
 	public String getInformations() {
 		return "Web-services du registre cantonal vaudois des contribuables";
 	}
 
+	@Override
 	@ManagedAttribute
 	public String getStatus() {
 		return checker.getStatus();
 	}
 
+	@Override
 	@ManagedAttribute
 	public String getStatusJSON() {
 		return checker.getStatusJSON();
 	}
 
+	@Override
 	@ManagedAttribute
 	public long getUptime() {
 		return ApplicationChecker.getUptimeSeconds();
 	}
 
+	@Override
 	@ManagedAttribute
 	public String getUptimeInformations() {
 		return ApplicationChecker.getUptimeString();
 	}
 
+	@Override
 	@ManagedAttribute
 	public String getVersion() {
 		return checker.getVersion();

@@ -279,8 +279,10 @@ public class ProduireStatsCtbsProcessor {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				final List<Long> i = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryCtbs);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());

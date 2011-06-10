@@ -136,6 +136,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<PersonnePhysique> identifie(CriteresPersonne criteres) {
 
 		// Recherche dans l'indexeur
@@ -201,6 +202,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé. Dans tous les autres cas (0, >1 ou en cas d'erreur), la
 	 * demande est stockée pour traitement manuel.
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void handleDemande(IdentificationContribuable message) {
 
@@ -445,6 +447,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param typeDemande
 	 * @return
 	 */
+	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria,
 	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
 		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
@@ -458,6 +461,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param typeDemande
 	 * @return
 	 */
+	@Override
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
 	                 boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
 		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
@@ -470,6 +474,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param personne
 	 * @throws Exception
 	 */
+	@Override
 	public void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat)
 			throws Exception {
 
@@ -482,6 +487,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 */
+	@Override
 	public void soumettre(IdentificationContribuable message) {
 		final Demande demande = message.getDemande();
 		Assert.notNull(demande, "Le message ne contient aucune demande.");
@@ -576,6 +582,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param identificationContribuable
 	 * @throws Exception
 	 */
+	@Override
 	public void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception {
 		nonIdentifie(identificationContribuable, erreur);
 	}
@@ -631,6 +638,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final Sexe sexeCritere = criteres.getSexe();
 		if (sexeCritere != null) {
 			CollectionUtils.filter(list, new Predicate() {
+				@Override
 				public boolean evaluate(Object object) {
 					final PersonnePhysique pp = (PersonnePhysique) object;
 					final Sexe sexe = tiersService.getSexe(pp);
@@ -654,6 +662,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final CriteresAdresse adresseCritere = criteres.getAdresse();
 		if (adresseCritere != null) {
 			CollectionUtils.filter(list, new Predicate() {
+				@Override
 				public boolean evaluate(Object object) {
 					return matchAdresses((PersonnePhysique) object, adresseCritere);
 				}
@@ -673,6 +682,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final String criteresNAVS11 = criteres.getNAVS11();
 		if (criteresNAVS11 != null){
 			CollectionUtils.filter(list, new Predicate() {
+				@Override
 				public boolean evaluate(Object object) {
 					return matchNavs11((PersonnePhysique) object, criteresNAVS11);
 				}
@@ -712,6 +722,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final RegDate critereDateNaissance = criteres.getDateNaissance();
 		if (critereDateNaissance != null) {
 			CollectionUtils.filter(list, new Predicate() {
+				@Override
 				public boolean evaluate(Object object) {
 					return matchDateNaissance((PersonnePhysique) object, critereDateNaissance);
 				}
@@ -966,6 +977,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return concat;
 	}
 
+	@Override
 	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria, TypeDemande typeDemande) {
 		int res = 0;
 		Map<IdentificationContribuable.Etat, Integer> resultatStats = new HashMap<IdentificationContribuable.Etat, Integer>();
@@ -981,6 +993,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
+	@Override
 	public String getNomCantonFromEmetteurId(String emetteurId) {
 
 		String sigle = StringUtils.substring(emetteurId, 2, 4);
@@ -1004,6 +1017,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
+	@Override
 	public IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser) {
 
 		String nom = visaUser;
@@ -1024,6 +1038,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return new IdentifiantUtilisateur(visaUser,nom);
 	}
 
+	@Override
 	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception {
 		// Ensuite : effectuer l'identification
 
@@ -1053,6 +1068,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
+	@Override
 	public IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage) {
 		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this, identCtbDAO, transactionManager);
 		return processor.run(dateTraitement, nbThreads, status, idMessage);

@@ -26,6 +26,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 	private ModeleDocumentDAO modeleDocumentDAO;
 	private ValidationService validationService;
 
+	@Override
 	public void onEvent(EvenementCedi event) throws EvenementCediException {
 
 		if (event instanceof RetourDI) {

@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -27,6 +26,7 @@ public class DivorceModeImpositionResolver extends TiersModeImpositionResolver {
 		this.numeroEvenement = numeroEvenement;
 	}
 
+	@Override
 	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition imposition) throws ModeImpositionResolverException {
 
 		Assert.isTrue(contribuable instanceof PersonnePhysique);

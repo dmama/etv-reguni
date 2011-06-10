@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Rapport PDF contenant les résultats de la réinitialisation des barèmes double-gain.
@@ -35,6 +36,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 				}
@@ -50,6 +52,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de situations de familles inspectées:", String.valueOf(results.nbSituationsTotal));
 					table.addLigne("Nombre de situations réinitialisées:", String.valueOf(results.situationsTraitees.size()));

@@ -326,71 +326,88 @@ public class MockPersonneMorale implements PersonneMorale {
 		adresses.add(adresse);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection getAdresses() {
 		return adresses;
 	}
 
+	@Override
 	public RegDate getDateConstitution() {
 		return debut;
 	}
 
+	@Override
 	public RegDate getDateFinActivite() {
 		return fin;
 	}
 
+	@Override
 	public List<FormeJuridique> getFormesJuridiques() {
 		return formesJuridiques;
 	}
 
+	@Override
 	public String getNomContact() {
 		return nomContact;
 	}
 
+	@Override
 	public long getNumeroEntreprise() {
 		return numeroEntreprise;
 	}
 
+	@Override
 	public String getRaisonSociale() {
 		return raisonSociale;
 	}
 
+	@Override
 	public String getRaisonSociale1() {
 		return raisonSociale1;
 	}
 
+	@Override
 	public String getRaisonSociale2() {
 		return raisonSociale2;
 	}
 
+	@Override
 	public String getRaisonSociale3() {
 		return raisonSociale3;
 	}
 
+	@Override
 	public String getTelecopieContact() {
 		return telecopieContact;
 	}
 
+	@Override
 	public String getDesignationAbregee() {
 		return designationAbregee;
 	}
 
+	@Override
 	public String getTelephoneContact() {
 		return telephoneContact;
 	}
 
+	@Override
 	public String getTitulaireCompte() {
 		return titulaireCompte;
 	}
 
+	@Override
 	public RegDate getDateBouclementFuture() {
 		return dateBouclementFuture;
 	}
 
+	@Override
 	public String getNumeroIPMRO() {
 		return numeroIPMRO;
 	}
 
+	@Override
 	public List<CompteBancaire> getComptesBancaires() {
 		return comptesBancaires;
 	}
@@ -479,38 +496,47 @@ public class MockPersonneMorale implements PersonneMorale {
 		this.numeroIPMRO = numeroIPMRO;
 	}
 
+	@Override
 	public List<Capital> getCapitaux() {
 		return capitaux;
 	}
 
+	@Override
 	public List<EtatPM> getEtats() {
 		return etats;
 	}
 
+	@Override
 	public List<RegimeFiscal> getRegimesVD() {
 		return regimesVD;
 	}
 
+	@Override
 	public List<RegimeFiscal> getRegimesCH() {
 		return regimesCH;
 	}
 
+	@Override
 	public List<Siege> getSieges() {
 		return sieges;
 	}
 
+	@Override
 	public List<AssujettissementPM> getAssujettissementsLIC() {
 		return assujettissementsLIC;
 	}
 
+	@Override
 	public List<AssujettissementPM> getAssujettissementsLIFD() {
 		return assujettissementsLIFD;
 	}
 
+	@Override
 	public List<ForPM> getForsFiscauxPrincipaux() {
 		return forsFiscauxPrincipaux;
 	}
 
+	@Override
 	public List<ForPM> getForsFiscauxSecondaires() {
 		return forsFiscauxSecondaires;
 	}
@@ -530,6 +556,7 @@ public class MockPersonneMorale implements PersonneMorale {
 		this.forsFiscauxSecondaires = forsFiscauxSecondaires;
 	}
 
+	@Override
 	public List<Mandat> getMandats() {
 		return null;
 	}

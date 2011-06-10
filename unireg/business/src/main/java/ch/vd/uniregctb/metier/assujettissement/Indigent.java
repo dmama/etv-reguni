@@ -26,6 +26,7 @@ public class Indigent extends Assujettissement {
 		return "Indigent";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new Indigent(this, (Indigent) next);
 	}

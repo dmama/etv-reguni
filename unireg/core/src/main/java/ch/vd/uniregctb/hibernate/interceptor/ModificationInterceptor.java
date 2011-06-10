@@ -235,10 +235,12 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 			this.transaction = transaction;
 		}
 
+		@Override
 		public void beforeCompletion() {
 			preTransactionCommit();
 		}
 
+		@Override
 		public void afterCompletion(int status) {
 
 			Assert.isTrue(status == Status.STATUS_COMMITTED || status == Status.STATUS_ROLLEDBACK); // il me semble que tous les autres status n'ont pas de sens ici

@@ -81,6 +81,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		// crée un contribuable assujetti entre 2008 et 2009, avec une seule déclaration 2009 (celle de 2008 manque) et qui ne possède pas de tâche d'envoi de DI (= création automatique à la prochaine modification)
 		setWantSynchroTache(false); // on désactive l'intercepteur pour éviter de créer les tâches d'envoi automatiquement
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// des trucs d'infrastructure
@@ -109,6 +110,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
 		// on s'assure qu'il manque bien une tâche d'envoi de DI pour 2008 sur le contribuable
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final Contribuable ralf = (Contribuable) hibernateTemplate.get(Contribuable.class, CTB_ID);
 				assertNotNull(ralf);
@@ -138,6 +140,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 			// simule l'envoi d'un événement de retour de DI sur le contribuable n°12500001
 			// (cet événement de retour de DI est normalement englobé dans une transaction JTA gérée par Géronimo)
 			doInNewTransaction(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					try {
 						final EsbMessage message = esbMessageFactory.createMessage();
@@ -157,6 +160,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
 		// on s'assure que la tâche a bien été créée
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
 				final List<Tache> list = tacheDAO.find(CTB_ID);

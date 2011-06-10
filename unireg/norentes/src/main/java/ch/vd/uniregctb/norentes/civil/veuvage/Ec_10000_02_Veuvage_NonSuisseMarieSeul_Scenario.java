@@ -130,6 +130,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 	public void step2() throws Exception {
 
 		doModificationIndividu(noIndMikkel, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				final EtatCivilList etatsCivils = individu.getEtatsCivils();
 				final MockEtatCivil etatCivil = new MockEtatCivil();

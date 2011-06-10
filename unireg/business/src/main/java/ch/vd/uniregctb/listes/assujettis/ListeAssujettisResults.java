@@ -36,6 +36,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 			this.noCtb = noCtb;
 		}
 
+		@Override
 		public int compareTo(T o) {
 			return (noCtb < o.noCtb ? -1 : (noCtb > o.noCtb ? 1 : 0));
 		}

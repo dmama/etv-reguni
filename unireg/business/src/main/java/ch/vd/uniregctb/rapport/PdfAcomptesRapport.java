@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.rapport;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.acomptes.AcomptesResults;
-import ch.vd.uniregctb.common.GentilIterator;
-import ch.vd.uniregctb.common.StatusManager;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.acomptes.AcomptesResults;
+import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.StatusManager;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -43,6 +44,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total traité :", String.valueOf(results.getNombreContribuablesAssujettisTraites()));
 					table.addLigne("Nombre total en erreur :", String.valueOf(results.getListeErreurs().size()));

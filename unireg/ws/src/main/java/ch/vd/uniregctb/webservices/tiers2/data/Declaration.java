@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
@@ -62,18 +61,22 @@ public class Declaration implements Range {
 		}
 	}
 
+	@Override
 	public Date getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public Date getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public void setDateDebut(Date v) {
 		dateDebut = v;
 	}
 
+	@Override
 	public void setDateFin(Date v) {
 		dateFin = v;
 	}

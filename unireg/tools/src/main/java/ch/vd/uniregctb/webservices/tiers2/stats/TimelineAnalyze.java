@@ -25,6 +25,7 @@ class TimelineAnalyze extends Analyze {
 		this.excludeCache = excludeCache;
 	}
 
+	@Override
 	public void addCall(Call call) {
 
 		final long milliseconds = call.getMilliseconds() / call.getTiersCount();
@@ -74,6 +75,7 @@ class TimelineAnalyze extends Analyze {
 	/**
 	 * Voir http://code.google.com/apis/chart/docs/chart_wizard.html
 	 */
+	@Override
 	@SuppressWarnings({"JavaDoc"})
 	Chart buildGoogleChart(String method) {
 
@@ -134,6 +136,7 @@ class TimelineAnalyze extends Analyze {
 		return new Chart(url, 1000, 200);
 	}
 
+	@Override
 	public void print() {
 		final List<String> methods = new ArrayList<String>(results.keySet());
 		Collections.sort(methods);

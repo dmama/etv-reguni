@@ -12,6 +12,7 @@ public class MockEtatPM implements EtatPM {
 	private RegDate dateFin;
 	private String code;
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -20,6 +21,7 @@ public class MockEtatPM implements EtatPM {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -28,6 +30,7 @@ public class MockEtatPM implements EtatPM {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}

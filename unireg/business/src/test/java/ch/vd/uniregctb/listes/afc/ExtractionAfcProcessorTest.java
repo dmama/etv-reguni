@@ -67,6 +67,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place fiscale
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 
 				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
@@ -166,6 +167,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place fiscale
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 
 				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
@@ -247,6 +249,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
@@ -281,6 +284,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
@@ -315,6 +319,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
@@ -350,6 +355,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
@@ -384,6 +390,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
@@ -415,6 +422,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
@@ -443,6 +451,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
@@ -475,6 +484,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
@@ -508,6 +518,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
@@ -540,6 +551,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
@@ -572,6 +584,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
@@ -605,6 +618,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
@@ -644,6 +658,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long mcId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -686,6 +701,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long mcId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -736,6 +752,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -808,6 +825,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -879,6 +897,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -943,6 +962,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -1005,6 +1025,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -1075,6 +1096,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique toto = addHabitant(noIndToto);
 				final PersonnePhysique tata = addHabitant(noIndTata);
@@ -1135,6 +1157,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);
@@ -1172,6 +1195,7 @@ public class ExtractionAfcProcessorTest extends BusinessTest {
 
 		// mise en place
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);

@@ -24,6 +24,7 @@ public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long>
 	 *
 	 * @return une liste de PeriodeFiscale
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<PeriodeFiscale> getAllDesc() {
 		if (LOGGER.isTraceEnabled()) {
@@ -41,6 +42,7 @@ public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long>
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public PeriodeFiscale getPeriodeFiscaleByYear(final int year) {
 
 		final Object[] params = new Object[] {

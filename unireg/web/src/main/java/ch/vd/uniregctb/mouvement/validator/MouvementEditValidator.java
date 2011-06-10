@@ -9,11 +9,13 @@ import ch.vd.uniregctb.type.TypeMouvement;
 
 public class MouvementEditValidator implements Validator {
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return MouvementDetailView.class.equals(clazz);
 	}
 
+	@Override
 	public void validate(Object obj, Errors errors) {
 		MouvementDetailView mvtView = (MouvementDetailView) obj;
 		if (mvtView.getTypeMouvement() == TypeMouvement.EnvoiDossier) {

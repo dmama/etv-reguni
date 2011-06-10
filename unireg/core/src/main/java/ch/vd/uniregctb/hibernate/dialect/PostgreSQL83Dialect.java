@@ -335,6 +335,7 @@ public class PostgreSQL83Dialect extends Dialect {
 	 * Orginally contributed by Denny Bartelt.
 	 */
 	private static final ViolatedConstraintNameExtracter EXTRACTER = new TemplatedViolatedConstraintNameExtracter() {
+		@Override
 		public String extractConstraintName(SQLException sqle) {
 			try {
 				int sqlState = Integer.valueOf(JDBCExceptionHelper.extractSqlState(sqle));

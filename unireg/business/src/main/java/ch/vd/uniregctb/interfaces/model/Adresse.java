@@ -18,6 +18,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
      *
      * @return la date de fin de validité de l'adresse.
      */
+    @Override
     RegDate getDateDebut();
 
     /**
@@ -25,6 +26,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
      *
      * @return la date de début de validité de l'adresse.
      */
+    @Override
     RegDate getDateFin();
 
     /**
@@ -106,6 +108,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
 	/**
 	 * @return le numéro Ofs de bâtiment (Gebäude) ou <b>null</b> s'il est inconnu.
 	 */
+	@Override
 	Integer getEgid();
 
 	/**

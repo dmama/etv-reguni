@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite à celle du canton de Vaud, et le calendrier est
@@ -127,6 +126,7 @@ public class Date implements Comparable<Date> {
 		return day == other.day && month == other.month && year == other.year;
 	}
 
+	@Override
 	public int compareTo(Date o) {
 		if (this.year == o.year) {
 			if (this.month == o.month) {

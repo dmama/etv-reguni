@@ -70,6 +70,7 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 	private void envoyerDIsEnMasseEnTransaction(TransactionTemplate template, final CategorieEnvoiDI categorie) {
 
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					LOGGER.info("Envoi des DIS vaudois ordinaires...");

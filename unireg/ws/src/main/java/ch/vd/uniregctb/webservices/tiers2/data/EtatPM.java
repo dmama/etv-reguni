@@ -25,18 +25,22 @@ public class EtatPM implements Range {
 	/** Le code de l'état de la PM, tel que défini dans le table ETAT du Host. */
 	public String code;
 
+	@Override
 	public Date getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public Date getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public void setDateDebut(Date v) {
 		dateDebut = v;
 	}
 
+	@Override
 	public void setDateFin(Date v) {
 		dateFin = v;
 	}

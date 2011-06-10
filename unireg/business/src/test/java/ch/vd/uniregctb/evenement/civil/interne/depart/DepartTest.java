@@ -846,6 +846,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des fors
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, dateDepart.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
@@ -896,6 +897,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				addHabitant(noIndividu);
 				return null;
@@ -935,6 +937,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Bex);
@@ -981,6 +984,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, date(2007, 12, 31), MotifFor.DEPART_HS, MockCommune.Bex);
@@ -1037,6 +1041,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Bex);
@@ -1094,6 +1099,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp, null, date(1974, 5, 1), null);
@@ -1163,6 +1169,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des habitants et de leurs fors (ici : aucun for)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 
@@ -1223,6 +1230,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise en place des fors
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
@@ -1273,6 +1281,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		// mais d'un point de vue métier, je ne sais pas. Dans tous les cas, j'utilise cette configuration dans le seul but pour tester la règle
 		// de décalage des dates de fin d'année.
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -1320,6 +1329,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		// mais d'un point de vue métier, je ne sais pas. Dans tous les cas, j'utilise cette configuration dans le seul but pour tester la règle
 		// de décalage des dates de fin d'année.
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -1364,6 +1374,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, MockCommune.Lausanne);

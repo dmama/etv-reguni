@@ -16,6 +16,7 @@ class LoadAnalyze extends Analyze {
 
 	private final Map<String, LoadData> results = new HashMap<String, LoadData>();
 
+	@Override
 	public void addCall(Call call) {
 
 		final String method = call.getMethod();
@@ -32,6 +33,7 @@ class LoadAnalyze extends Analyze {
 	/**
 	 * Voir http://code.google.com/apis/chart/docs/chart_wizard.html
 	 */
+	@Override
 	@SuppressWarnings({"JavaDoc"})
 	Chart buildGoogleChart(String method) {
 
@@ -93,6 +95,7 @@ class LoadAnalyze extends Analyze {
 		// Trie par ordre décroissant du nombre d'appels les données d'appels par méthode
 		final List<Map.Entry<String, ChartValues>> entries = new ArrayList<Map.Entry<String, ChartValues>>(valuesPerUser.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<String, ChartValues>>() {
+			@Override
 			public int compare(Map.Entry<String, ChartValues> o1, Map.Entry<String, ChartValues> o2) {
 				return o2.getValue().getTotal().compareTo(o1.getValue().getTotal());
 			}
@@ -114,6 +117,7 @@ class LoadAnalyze extends Analyze {
 		return new Chart(url, 1000, 200);
 	}
 
+	@Override
 	public void print() {
 		final List<String> methods = new ArrayList<String>(results.keySet());
 		Collections.sort(methods);

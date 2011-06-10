@@ -1,13 +1,5 @@
 package ch.vd.uniregctb.database;
 
-import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.DatabaseDump;
-import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.scheduler.*;
-import org.apache.commons.lang.StringUtils;
-
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.commons.lang.StringUtils;
+
+import ch.vd.registre.base.date.DateHelper;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.document.DatabaseDump;
+import ch.vd.uniregctb.document.DocumentService;
+import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
+import ch.vd.uniregctb.scheduler.JobParamFile;
+import ch.vd.uniregctb.scheduler.JobParamString;
 
 public class DumpTiersListJob extends JobDefinition {
 
@@ -119,6 +124,7 @@ public class DumpTiersListJob extends JobDefinition {
 
 		DatabaseDump doc = docService.newDoc(DatabaseDump.class, name, description, extension,
 				new DocumentService.WriteDocCallback<DatabaseDump>() {
+					@Override
 					public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
 
 						int count;

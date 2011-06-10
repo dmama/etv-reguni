@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.stats.evenements;
 
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -89,10 +88,12 @@ public class StatsEvenementsIdentificationContribuableResults {
 			this.sexe = sexe;
 		}
 
+		@Override
 		public String[] getNomsColonnes() {
 			return NOMS_COLONNES;
 		}
 
+		@Override
 		public String[] getValeursColonnes() {
 			final String dateDemandeStr = getDatePresentation(dateDemande);
 			final String etatStr = getStringValue(etat);

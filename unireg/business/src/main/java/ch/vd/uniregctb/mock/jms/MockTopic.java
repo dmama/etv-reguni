@@ -1,10 +1,10 @@
 
 package ch.vd.uniregctb.mock.jms;
 
-import java.util.ArrayList;
 import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.Topic;
+import java.util.ArrayList;
 
 /**
  * Stub implementation of the {@link javax.jms.Topic} interface.
@@ -48,6 +48,7 @@ public final class MockTopic implements Topic, Destination {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getTopicName() {
         return this.topicName;
     }

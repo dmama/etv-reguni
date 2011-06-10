@@ -51,6 +51,7 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Component> components = template.execute(new TransactionCallback<List<Component>>() {
+			@Override
 			public List<Component> doInTransaction(TransactionStatus status) {
 
 				final List<Component> list = new ArrayList<Component>();
@@ -110,6 +111,7 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 
 		// On affiche les remarques les plus récentes en premier
 		Collections.sort(remarques, new Comparator<Remarque>() {
+			@Override
 			public int compare(Remarque o1, Remarque o2) {
 				return o2.getLogCreationDate().compareTo(o1.getLogCreationDate());
 			}
@@ -132,6 +134,7 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Component> components = template.execute(new TransactionCallback<List<Component>>() {
+			@Override
 			public List<Component> doInTransaction(TransactionStatus status) {
 
 				final List<Component> list = new ArrayList<Component>();
@@ -163,6 +166,7 @@ public class RemarqueHandler extends AbstractAjaxHandler {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Component> components = template.execute(new TransactionCallback<List<Component>>() {
+			@Override
 			public List<Component> doInTransaction(TransactionStatus status) {
 
 				if (StringUtils.isNotBlank(texte)) {

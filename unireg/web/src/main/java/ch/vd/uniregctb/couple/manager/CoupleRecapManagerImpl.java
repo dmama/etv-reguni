@@ -64,6 +64,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param numeroPremier
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP)  {
 		CoupleRecapView coupleRecapView = new CoupleRecapView();
@@ -78,6 +79,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param numeroSecond
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP, Long numeroSecondPP)  {
 		CoupleRecapView coupleRecapView = new CoupleRecapView();
@@ -88,6 +90,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.couple.manager.CoupleRecapManager#get(java.lang.Long, java.lang.Long, java.lang.Long)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP, Long numeroSecondPP, Long numeroCTB) {
 		CoupleRecapView coupleRecapView = new CoupleRecapView();
@@ -209,6 +212,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public boolean estDejaEnMenage(Long numero) {
 		PersonnePhysique personne = (PersonnePhysique) tiersService.getTiers(numero);
@@ -220,6 +224,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * Persiste le rapport de travail
 	 * @param rapportView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public MenageCommun save(CoupleRecapView coupleRecapView) throws MetierServiceException {
 
@@ -321,6 +326,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param dateDebut
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isMajeurAt(TiersGeneralView tiersGeneralView, RegDate dateDebut) {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersGeneralView.getNumero());

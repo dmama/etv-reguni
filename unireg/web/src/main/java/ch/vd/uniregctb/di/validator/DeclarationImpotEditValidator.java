@@ -24,12 +24,14 @@ public class DeclarationImpotEditValidator implements Validator {
 		this.diDAO = diDAO;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return DeclarationImpotDetailView.class.equals(clazz) || DeclarationImpotListView.class.equals(clazz)
 				|| DeclarationImpotSelectView.class.equals(clazz);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object target, Errors errors) {
 

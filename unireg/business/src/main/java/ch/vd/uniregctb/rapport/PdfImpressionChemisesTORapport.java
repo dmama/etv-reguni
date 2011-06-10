@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -35,6 +36,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	    addEntete1("Paramètres");
 	    {
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+	            @Override
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
 	                table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 	                table.addLigne("Nombre maximal de chemises à imprimer :", Integer.toString(results.getNbMax()));
@@ -52,6 +54,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	        }
 
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+	            @Override
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
 	                table.addLigne("Nombre total d'impressions :", Integer.toString(results.getNbChemisesImprimees()));
 	                table.addLigne("Nombre total d'erreurs :", Integer.toString(results.getErreurs().size()));
@@ -91,10 +94,12 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 		final int size = list.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(list, filename, status, 300, new CsvHelper.Filler<ImpressionChemisesTOResults.Erreur>() {
+				@Override
 				public void fillHeader(StringBuilder b) {
 					b.append("ID_DECLARATION").append(COMMA).append("MESSAGE");
 				}
 
+				@Override
 				public void fillLine(StringBuilder b, ImpressionChemisesTOResults.Erreur elt) {
 					b.append(elt.getIdDeclaration()).append(COMMA);
 					b.append(asCsvField(elt.getDetails()));
@@ -110,6 +115,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	    final int size = list.size();
 	    if (size > 0) {
 		    contenu = CsvHelper.asCsvFile(list, filename, status, 300, new CsvHelper.Filler<ImpressionChemisesTOResults.ChemiseTO>() {
+			    @Override
 			    public void fillHeader(StringBuilder b) {
 				    b.append("OID").append(COMMA);
 				    b.append("NO_CTB").append(COMMA);
@@ -119,6 +125,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 				    b.append("DATE_SOMMATION");
 			    }
 
+			    @Override
 			    public void fillLine(StringBuilder b, ImpressionChemisesTOResults.ChemiseTO elt) {
 				    b.append(elt.officeImpotID).append(COMMA);
 				    b.append(elt.noCtb).append(COMMA);

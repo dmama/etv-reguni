@@ -43,6 +43,7 @@ public class JdbcForFiscalDaoTest extends CoreDAOTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique raoul = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
 				ids.raoul = raoul.getNumero();
@@ -77,6 +78,7 @@ public class JdbcForFiscalDaoTest extends CoreDAOTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique raoul = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
 				ids.raoul = raoul.getNumero();
@@ -144,6 +146,7 @@ public class JdbcForFiscalDaoTest extends CoreDAOTest {
 		final Ids ids = new Ids();
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique raoul = addNonHabitant("Raoul", "Laplanche", date(1967, 3, 4), Sexe.MASCULIN);
 				ids.raoul = raoul.getNumero();

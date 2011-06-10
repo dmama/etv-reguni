@@ -31,6 +31,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 		this.lrService = lrService;
 	}
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public InputStream getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException {
 

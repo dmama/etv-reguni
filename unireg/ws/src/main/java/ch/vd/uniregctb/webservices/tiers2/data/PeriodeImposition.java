@@ -45,18 +45,22 @@ public class PeriodeImposition implements Range {
 		this.idDI = idDI;
 	}
 
+	@Override
 	public Date getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public Date getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public void setDateDebut(Date v) {
 		dateDebut = v;
 	}
 
+	@Override
 	public void setDateFin(Date v) {
 		dateFin = v;
 	}

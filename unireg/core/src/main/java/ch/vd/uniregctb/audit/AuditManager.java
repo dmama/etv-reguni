@@ -30,6 +30,7 @@ public class AuditManager implements InitializingBean, DisposableBean {
 		this.delaiPurge = delaiPurge;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Audit.setAuditLineDao(dao);
 
@@ -50,6 +51,7 @@ public class AuditManager implements InitializingBean, DisposableBean {
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);

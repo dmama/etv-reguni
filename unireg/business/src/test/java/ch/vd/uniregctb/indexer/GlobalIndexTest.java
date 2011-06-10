@@ -60,6 +60,7 @@ public class GlobalIndexTest extends BusinessTest {
 			this.date = date;
 		}
 
+		@Override
 		public String getSubType() {
 			return subType;
 		}
@@ -96,6 +97,7 @@ public class GlobalIndexTest extends BusinessTest {
 	private GlobalIndexInterface globalIndex;
 
 	private static final SearchCallback NULL_CALLBACK = new SearchCallback() {
+		@Override
 		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 		}
 	};
@@ -216,6 +218,7 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(2, "DESCR:Solutions");
 
 		globalIndex.search("DESCR:Solutions AND NOT RAISON:sope", maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				assertEquals(1, hits.totalHits);
 				final Document document = docGetter.get(hits.scoreDocs[0].doc);
@@ -562,6 +565,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 	private void assertHits(final int count, Query query) {
 		globalIndex.search(query, maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				assertEquals(count, hits.totalHits);
 			}
@@ -570,6 +574,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 	private void assertHits(final int count, String query) {
 		globalIndex.search(query, maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				assertEquals(count, hits.totalHits);
 			}
@@ -583,6 +588,7 @@ public class GlobalIndexTest extends BusinessTest {
 	public void testMultithreadAccess() throws Exception {
 
 		Runnable command = new Runnable() {
+			@Override
 			public void run() {
 				for (int i = 1; i < 10; ++i) {
 					for (Data d : data) {
@@ -595,6 +601,7 @@ public class GlobalIndexTest extends BusinessTest {
 		final List<Throwable> throwables = new ArrayList<Throwable>();
 
 		UncaughtExceptionHandler handler = new UncaughtExceptionHandler() {
+			@Override
 			public void uncaughtException(Thread t, Throwable e) {
 				throwables.add(e);
 			}
@@ -646,6 +653,7 @@ public class GlobalIndexTest extends BusinessTest {
 		localIndex.afterPropertiesSet();
 
 		Runnable command = new Runnable() {
+			@Override
 			public void run() {
 
 				LuceneWriter writer = null;
@@ -672,6 +680,7 @@ public class GlobalIndexTest extends BusinessTest {
 		final List<Throwable> throwables = new ArrayList<Throwable>();
 
 		UncaughtExceptionHandler handler = new UncaughtExceptionHandler() {
+			@Override
 			public void uncaughtException(Thread t, Throwable e) {
 				throwables.add(e);
 			}

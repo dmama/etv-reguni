@@ -105,6 +105,7 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Création du message
@@ -168,6 +169,7 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			this.simul = simul;
 		}
 
+		@Override
 		public Object doInTransaction(TransactionStatus status) {
 
 			if (simul) {

@@ -254,6 +254,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
         return this.tiers.size();
     }
 
+    @Override
     public void addAll(ListesNominativesResults source) {
 	    super.addAll(source);
         this.tiers.addAll(source.tiers);
@@ -263,6 +264,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
     public void sort() {
         super.sort();
         Collections.sort(this.tiers, new Comparator<InfoTiers>() {
+            @Override
             public int compare(InfoTiers o1, InfoTiers o2) {
                 final long numero1 = o1.numeroTiers;
                 final long numero2 = o2.numeroTiers;

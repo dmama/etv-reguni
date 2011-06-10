@@ -17,14 +17,17 @@ public class ManagedTableIterator implements ITableIterator {
 		this.status = status;
 	}
 
+	@Override
 	public boolean next() throws DataSetException {
 		return target.next() && !status.interrupted();
 	}
 
+	@Override
 	public ITableMetaData getTableMetaData() throws DataSetException {
 		return target.getTableMetaData();
 	}
 
+	@Override
 	public ITable getTable() throws DataSetException {
 		ITable table = target.getTable();
 		status.setMessage("Traitement de la table " + table.getTableMetaData().getTableName() + "...");

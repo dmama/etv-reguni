@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.editique.impl;
 
 import javax.activation.DataHandler;
-
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
@@ -55,6 +54,7 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 		this.application = application;
 	}
 
+	@Override
 	public InputStream getPdfCopieConforme(long numeroTiers, String typeDocument, String nomDocument, String contexte) throws EditiqueException {
 
 		try {

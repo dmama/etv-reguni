@@ -65,6 +65,7 @@ public abstract class AbstractEnhancedSimpleFormController extends SimpleFormCon
 
 	protected MessageSource messageSource;
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
@@ -166,6 +167,7 @@ public abstract class AbstractEnhancedSimpleFormController extends SimpleFormCon
 	 *
 	 * @see AjaxHandler#handle(AjaxEvent )
 	 */
+	@Override
 	public AjaxResponse handle(AjaxEvent event) {
 		if (event == null || event.getEventId() == null) {
 			logger.error("Event and event id cannot be null.");
@@ -231,6 +233,7 @@ public abstract class AbstractEnhancedSimpleFormController extends SimpleFormCon
 	 *
 	 * @see AjaxHandler#supports(AjaxEvent )
 	 */
+	@Override
 	public boolean supports(AjaxEvent event) {
 		String id = event.getEventId();
 

@@ -17,6 +17,7 @@ public class IndexationManagerImpl implements IndexationManager {
 	private DataEventService dataEventService;
 	private TiersDAO tiersDAO;
 
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void reindexTiers(long id) {
 

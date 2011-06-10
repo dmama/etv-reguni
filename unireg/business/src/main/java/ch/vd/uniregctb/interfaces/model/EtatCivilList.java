@@ -35,117 +35,141 @@ public class EtatCivilList implements List<EtatCivil>, Serializable {
 
 	private void sort() {
 		Collections.sort(this.list, new Comparator<EtatCivil>() {
+			@Override
 			public int compare(EtatCivil o1, EtatCivil o2) {
 				return o1.getNoSequence() - o2.getNoSequence();
 			}
 		});
 	}
 
+	@Override
 	public boolean add(EtatCivil o) {
 		boolean res = list.add(o);
 		sort();
 		return res;
 	}
 
+	@Override
 	public void add(int index, EtatCivil element) {
 		list.add(index, element);
 		sort();
 	}
 
+	@Override
 	public boolean addAll(Collection<? extends EtatCivil> c) {
 		boolean res = list.addAll(c);
 		sort();
 		return res;
 	}
 
+	@Override
 	public boolean addAll(int index, Collection<? extends EtatCivil> c) {
 		boolean res = list.addAll(index, c);
 		sort();
 		return res;
 	}
 
+	@Override
 	public void clear() {
 		list.clear();
 	}
 
+	@Override
 	public boolean contains(Object o) {
 		return list.contains(o);
 	}
 
+	@Override
 	public boolean containsAll(Collection<?> c) {
 		return list.containsAll(c);
 	}
 
+	@Override
 	public EtatCivil get(int index) {
 		return list.get(index);
 	}
 
+	@Override
 	public int indexOf(Object o) {
 		return list.indexOf(o);
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return list.isEmpty();
 	}
 
+	@Override
 	public Iterator<EtatCivil> iterator() {
 		return list.iterator();
 	}
 
+	@Override
 	public int lastIndexOf(Object o) {
 		return list.lastIndexOf(o);
 	}
 
+	@Override
 	public ListIterator<EtatCivil> listIterator() {
 		return list.listIterator();
 	}
 
+	@Override
 	public ListIterator<EtatCivil> listIterator(int index) {
 		return list.listIterator(index);
 	}
 
+	@Override
 	public boolean remove(Object o) {
 		boolean res = list.remove(o);
 		sort();
 		return res;
 	}
 
+	@Override
 	public EtatCivil remove(int index) {
 		EtatCivil res = list.remove(index);
 		sort();
 		return res;
 	}
 
+	@Override
 	public boolean removeAll(Collection<?> c) {
 		boolean res = list.removeAll(c);
 		sort();
 		return res;
 	}
 
+	@Override
 	public boolean retainAll(Collection<?> c) {
 		boolean res = list.retainAll(c);
 		sort();
 		return res;
 	}
 
+	@Override
 	public EtatCivil set(int index, EtatCivil element) {
 		EtatCivil res = list.set(index, element);
 		sort();
 		return res;
 	}
 
+	@Override
 	public int size() {
 		return list.size();
 	}
 
+	@Override
 	public List<EtatCivil> subList(int fromIndex, int toIndex) {
 		return list.subList(fromIndex, toIndex);
 	}
 
+	@Override
 	public Object[] toArray() {
 		return list.toArray();
 	}
 
+	@Override
 	public <T> T[] toArray(T[] a) {
 		return list.toArray(a);
 	}

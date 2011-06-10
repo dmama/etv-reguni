@@ -7,11 +7,13 @@ import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
 
 public class DeclarationImpotImpressionValidator implements Validator {
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return DeclarationImpotImpressionView.class.equals(clazz);
 	}
 
+	@Override
 	public void validate(Object target, Errors errors) {
 /*		DeclarationImpotImpressionView diImpressionView = (DeclarationImpotImpressionView) target;
 		List<ModeleDocumentView> modelesDocumentView = diImpressionView.getModelesDocumentView();

@@ -19,6 +19,7 @@ public class PerformanceInterceptor implements MethodInterceptor, ConstructorInt
 	 *
 	 * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
 	 */
+	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		long start = System.nanoTime();
 		Object rval = invocation.proceed();
@@ -35,6 +36,7 @@ public class PerformanceInterceptor implements MethodInterceptor, ConstructorInt
 	 *
 	 * @see org.aopalliance.intercept.ConstructorInterceptor#construct(org.aopalliance.intercept.ConstructorInvocation)
 	 */
+	@Override
 	public Object construct(ConstructorInvocation invocation) throws Throwable {
 		long start = System.nanoTime();
 		Object rval = invocation.proceed();

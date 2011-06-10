@@ -62,10 +62,12 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 		this.dataEventService = dataEventService;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return cache.buildStats();
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerCache(CACHE_NAME, this);
@@ -74,6 +76,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 		dataEventService.register(this);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		uniregCacheManager.unregister(this);
 		if (statsService != null) {
@@ -84,6 +87,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getDescription() {
 		return "service civil persistent";
 	}
@@ -91,6 +95,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return "CIVIL-PERSISTENT";
 	}
@@ -98,6 +103,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void reset() {
 		cache.clear();
 	}
@@ -114,10 +120,12 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 			this.annee = annee;
 		}
 
+		@Override
 		public long getId() {
 			return noIndividu;
 		}
 
+		@Override
 		public String getComplement() {
 			return String.valueOf(annee);
 		}
@@ -126,6 +134,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 
 		final Individu individu;
@@ -158,6 +167,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
@@ -214,6 +224,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isWarmable() {
 		return true;
 	}
@@ -221,6 +232,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void onIndividuChange(long numero) {
 
 		if (LOGGER.isDebugEnabled()) {
@@ -229,18 +241,22 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 		cache.removeAll(numero);
 	}
 
+	@Override
 	public void onTiersChange(long id) {
 		// rien à faire
 	}
 
+	@Override
 	public void onDroitAccessChange(long tiersId) {
 		// rien à faire
 	}
 
+	@Override
 	public void onTruncateDatabase() {
 		// rien à faire
 	}
 
+	@Override
 	public void onLoadDatabase() {
 		// rien à faire
 	}

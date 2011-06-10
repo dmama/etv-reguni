@@ -8,6 +8,7 @@ public class CoupleRecapPickerFilterFactory implements TiersPickerFilterFactory 
 
 	private TiersDAO tiersDAO;
 
+	@Override
 	public TiersPickerFilter parse(String paramsString) {
 		return new CoupleRecapPickerFilter(tiersDAO);
 	}

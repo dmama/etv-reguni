@@ -70,10 +70,12 @@ public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSi
 		return dateTraitement;
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		erreurs.add(new Erreur(element, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(ComparerSituationFamilleResults right) {
 		this.nbSituationTotal += right.nbSituationTotal;
 		listeSituationsDifferentes.addAll(right.listeSituationsDifferentes);

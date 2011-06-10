@@ -26,6 +26,7 @@ public class HorsSuisse extends Assujettissement {
 		return "Imposition ordinaire HS";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new HorsSuisse(this, (HorsSuisse) next);
 	}

@@ -25,6 +25,7 @@ public class SimpleCacheStats implements CacheStats {
 		missCount.incrementAndGet();
 	}
 
+	@Override
 	public Long getHitsPercent() {
 		final long total = hitsCount.longValue() + missCount.longValue();
 		if (total > 0) {
@@ -35,22 +36,27 @@ public class SimpleCacheStats implements CacheStats {
 		}
 	}
 
+	@Override
 	public long getHitsCount() {
 		return hitsCount.longValue();
 	}
 
+	@Override
 	public long getTotalCount() {
 		return hitsCount.longValue() + missCount.longValue();
 	}
 
+	@Override
 	public Long getTimeToIdle() {
 		return null;
 	}
 
+	@Override
 	public Long getTimeToLive() {
 		return null;
 	}
 
+	@Override
 	public Integer getMaxElements() {
 		return null;
 	}

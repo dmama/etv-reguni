@@ -31,22 +31,27 @@ public class AdoptionReconnaissanceImpl implements AdoptionReconnaissance, Seria
 		this.dateReconnaissance = RegDate.get(target.getDateReconnaissance());
 	}
 
+	@Override
 	public Individu getAdopteReconnu() {
 		return adopte;
 	}
 
+	@Override
 	public RegDate getDateAccueilAdoption() {
 		return dateAccueil;
 	}
 
+	@Override
 	public RegDate getDateAdoption() {
 		return dateAdoption;
 	}
 
+	@Override
 	public RegDate getDateDesaveu() {
 		return dateDesaveu;
 	}
 
+	@Override
 	public RegDate getDateReconnaissance() {
 		return dateReconnaissance;
 	}

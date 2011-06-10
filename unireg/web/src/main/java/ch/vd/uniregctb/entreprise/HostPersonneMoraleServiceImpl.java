@@ -50,6 +50,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 	 *
 	 * @return un objet EntrepriseView
 	 */
+	@Override
 	public EntrepriseView get(Long numeroEntreprise) {
 
 		EntrepriseView entrepriseView = new EntrepriseView();

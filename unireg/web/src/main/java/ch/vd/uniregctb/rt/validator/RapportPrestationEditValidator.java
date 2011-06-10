@@ -8,11 +8,13 @@ import ch.vd.uniregctb.rt.view.RapportPrestationView;
 
 public class RapportPrestationEditValidator implements Validator {
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return RapportPrestationView.class.equals(clazz) ;
 	}
 
+	@Override
 	public void validate(Object obj, Errors errors) {
 
 		RapportPrestationView rapportView = (RapportPrestationView) obj;

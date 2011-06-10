@@ -9,6 +9,7 @@ public class TypeAdresseCivilLegacyPropertyType extends UserTypePropertyType {
 		super(TypeAdresseCivil.class, userType);
 	}
 
+	@Override
 	public String getConvertMethod(String value) {
 		return "TypeAdresseCivil.get(EnumTypeAdresse.getEnum(" + value + "))";
 	}

@@ -179,6 +179,7 @@ public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 		}
 	}
 
+	@Override
 	public Collection<Adresse> getAdresses() {
 		return adresses;
 	}

@@ -35,6 +35,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 		    addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+		        @Override
 		        public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			        table.addLigne("Archives seulements :", String.valueOf(results.archivesSeulement));
@@ -51,6 +52,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 			}
 
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNbContribuablesInspectes()));
 					table.addLigne("Nombre de contribuables ignorés :", String.valueOf(results.ignores.size()));

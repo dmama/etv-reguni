@@ -57,18 +57,22 @@ public class ForGestion implements Range {
 		this.nomCommune = DataHelper.getNomCommune(this.noOfsCommune, forGestion.getDateFin(), context.infraService);
 	}
 
+	@Override
 	public Date getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public Date getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public void setDateDebut(Date v) {
 		dateDebut = v;
 	}
 
+	@Override
 	public void setDateFin(Date v) {
 		dateFin = v;
 	}

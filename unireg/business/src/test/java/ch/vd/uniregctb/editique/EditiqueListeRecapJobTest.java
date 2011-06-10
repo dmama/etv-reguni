@@ -90,6 +90,7 @@ public class EditiqueListeRecapJobTest extends JobTest {
 	 */
 	private void checkLRs() throws Exception {
 		this.doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				checkLRsInTransaction();
 				return null;

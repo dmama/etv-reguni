@@ -57,6 +57,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersEditView getComplementView(Long numero) throws AdresseException, ServiceInfrastructureException {
 
@@ -121,6 +122,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		if (numero == null) {
@@ -146,6 +148,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException{
 		TiersEditView tiersEditView = new TiersEditView();
 		refresh(tiersEditView, numero);
@@ -161,6 +164,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	public TiersEditView refresh(TiersEditView tiersEditView, Long numero) throws AdresseException, ServiceInfrastructureException {
 		if ( numero == null) {
 			return null;
@@ -296,6 +300,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 *
 	 * @return un objet TiersView
 	 */
+	@Override
 	public TiersEditView creePersonne() {
 		TiersEditView tiersView = new TiersEditView();
 		IdentificationPersonneView idpersonneView = new IdentificationPersonneView();
@@ -318,6 +323,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 *
 	 * @return un objet TiersView
 	 */
+	@Override
 	public TiersEditView creeOrganisation() {
 		TiersEditView tiersView = new TiersEditView();
 		AutreCommunaute autreCommunaute = new AutreCommunaute();
@@ -339,6 +345,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	public TiersEditView creeDebiteur(Long numeroCtbAssocie) throws AdressesResolutionException {
 		final TiersEditView tiersView = new TiersEditView();
 		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
@@ -512,11 +519,13 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 	}
 
+	@Override
 	public Tiers save(TiersEditView tiersEditView) {
 		final Tiers tiersEnrichi = enrichiTiers(tiersEditView);
 		return getTiersDAO().save(tiersEnrichi);
 	}
 
+	@Override
 	public void save(DebiteurEditView view) {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getId());
 		dpi.setCategorieImpotSource(view.getCategorieImpotSource());

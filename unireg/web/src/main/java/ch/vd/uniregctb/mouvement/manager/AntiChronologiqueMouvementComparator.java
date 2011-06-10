@@ -18,6 +18,7 @@ import ch.vd.uniregctb.mouvement.MouvementDossier;
  */
 public class AntiChronologiqueMouvementComparator implements Comparator<MouvementDossier> {
 
+	@Override
 	public int compare(MouvementDossier mvt1, MouvementDossier mvt2) {
 
 		if (mvt1.isAnnule() || mvt2.isAnnule()) {

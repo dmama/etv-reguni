@@ -117,6 +117,7 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 		this.tarifImpotSource = tarifImpotSource;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}
@@ -189,6 +190,7 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 		this.nomCourrier1Tiers2 = nomCourrier1Tiers2;
 	}
 
+	@Override
 	public int compareTo(SituationFamilleView o) {
 		int value = -  getDateDebut().compareTo(o.getDateDebut());
 		return value;

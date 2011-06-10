@@ -37,6 +37,7 @@ public class TiersReactivationRecapManagerImpl implements TiersReactivationRecap
 	 * @param numeroTiers
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersReactivationRecapView get(Long numeroTiers)  {
 		final TiersReactivationRecapView tiersReactivationRecapView = new TiersReactivationRecapView();
@@ -56,6 +57,7 @@ public class TiersReactivationRecapManagerImpl implements TiersReactivationRecap
 	 *
 	 * @param tiersReactivationRecapView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(TiersReactivationRecapView tiersReactivationRecapView) throws ActivationServiceException {
 		final Tiers tiers = tiersService.getTiers(tiersReactivationRecapView.getTiers().getNumero());

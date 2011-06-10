@@ -52,6 +52,7 @@ public class DroitAccesUtilisateurView implements Annulable {
 		return id;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

@@ -51,7 +51,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -187,6 +186,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param id
 	 * @return une vue ListeRecapEditView
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ListeRecapDetailView get(Long id) {
 		ListeRecapDetailView lrEditView = new ListeRecapDetailView();
@@ -227,6 +227,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param view
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ListeRecapDetailView refresh(ListeRecapDetailView view) {
 		if ( view.getId() == null)
@@ -248,6 +249,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * Alimente la vue ListeRecapListView en fonction d'un debiteur
 	 * @return une vue ListeRecapListView
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ListeRecapListView findByNumero(Long numero) {
 		ListeRecapListView lrListView = new ListeRecapListView();
@@ -293,6 +295,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		return nvelleDate;
 	}
 
+	@Override
 	public DelaiDeclarationView creerDelai(Long idLr) {
 		DelaiDeclarationView  delaiView = new DelaiDeclarationView();
 		delaiView.setIdDeclaration(idLr);
@@ -317,6 +320,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ListeRecapDetailView creerLr(Long numero) {
 		final ListeRecapDetailView lrEditView = new ListeRecapDetailView();
@@ -536,6 +540,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 *
 	 * @param lrEditView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public DeclarationImpotSource save(ListeRecapDetailView lrEditView) {
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(lrEditView.getDpi().getNumero());
@@ -594,6 +599,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 *
 	 * @param lrEditView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerDelai (ListeRecapDetailView lrEditView, Long idDelai) {
 		DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
@@ -610,6 +616,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 *
 	 * @param lrEditView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveDelai(DelaiDeclarationView view) {
 		DeclarationImpotSource lr = lrDAO.get(view.getIdDeclaration());
@@ -627,6 +634,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 *
 	 * @param id
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public void controleLR(Long id) {
 		DeclarationImpotSource lr = lrDAO.get(id);
@@ -653,10 +661,12 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
+	@Override
 	public EditiqueResultat envoieImpressionLocalLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		//Sauvegarde de la DI
 		final DeclarationImpotSource lr = save(lrEditView);
@@ -672,6 +682,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	}
 
 
+	@Override
 	public EditiqueResultat envoieImpressionLocalSommationLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		//Sauvegarde de la DI
 		final RegDate dateDuJour = RegDate.get();
@@ -689,6 +700,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		}
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public EditiqueResultat envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		try {
@@ -711,6 +723,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 *
 	 * @param lrEditView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerLR (ListeRecapDetailView lrEditView) {
 		DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());

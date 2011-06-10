@@ -15,11 +15,8 @@ import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.Echue;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.Erreur;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.ErreurType;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -228,6 +225,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		assertEquals(id.longValue(), echue.diId);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 				assertNotNull(di);

@@ -59,18 +59,22 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			}
 		}
 
+		@Override
 		public long getLastCallTime() {
 			return lastCallTime;
 		}
 
+		@Override
 		public long getTotalTime() {
 			return time;
 		}
 
+		@Override
 		public long getTotalCount() {
 			return calls;
 		}
 
+		@Override
 		public long getTotalPing() {
 			long ping = 0;
 			synchronized (this) {
@@ -81,6 +85,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			return ping;
 		}
 
+		@Override
 		public long getRecentTime() {
 			long time = 0;
 			synchronized (this) {
@@ -91,6 +96,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			return time;
 		}
 
+		@Override
 		public long getRecentPing() {
 			long calls = 0;
 			long time = 0;
@@ -109,6 +115,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			return ping;
 		}
 
+		@Override
 		public long getRecentCount() {
 			long calls = 0;
 
@@ -121,10 +128,12 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			return calls;
 		}
 
+		@Override
 		public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 			return null;
 		}
 
+		@Override
 		public void onTick() {
 			throw new NotImplementedException();
 		}
@@ -157,34 +166,42 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		this.detailLogger = Logger.getLogger(String.format("%s.%s", ServiceTracing.class.getSimpleName(), serviceName));
 	}
 
+	@Override
 	public long getLastCallTime() {
 		return lastCallTime;
 	}
 
+	@Override
 	public long getTotalTime() {
 		return total.getTotalTime();
 	}
 
+	@Override
 	public long getTotalPing() {
 		return total.getTotalPing();
 	}
 
+	@Override
 	public long getTotalCount() {
 		return total.getTotalCount();
 	}
 
+	@Override
 	public long getRecentTime() {
 		return total.getRecentTime();
 	}
 
+	@Override
 	public long getRecentPing() {
 		return total.getRecentPing();
 	}
 
+	@Override
 	public long getRecentCount() {
 		return total.getRecentCount();
 	}
 
+	@Override
 	public void onTick() {
 		synchronized (total) {
 			shiftRecent();
@@ -296,6 +313,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		return detailLogger.isDebugEnabled();
 	}
 
+	@Override
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		Map<String, Data> copy;
 		// fait une copie complète des données pour éviter des problèmes d'accès concurrents

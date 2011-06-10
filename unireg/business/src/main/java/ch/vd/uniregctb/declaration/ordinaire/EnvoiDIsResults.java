@@ -108,6 +108,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 		ctbsIndigents.add(noCtb);
 	}
 
+	@Override
 	public void addErrorException(Long idCtb, Exception e) {
 		ctbsEnErrors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
 	}
@@ -144,6 +145,7 @@ public void addIgnoreCtbExcluDecede(Contribuable ctb, RegDate dateDebut, RegDate
 	}
 
 
+	@Override
 	public void addAll(R rapport) {
 		if (rapport != null) {
 			this.nbCtbsTotal += rapport.nbCtbsTotal;

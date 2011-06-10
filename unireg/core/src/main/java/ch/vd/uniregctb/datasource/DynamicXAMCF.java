@@ -27,18 +27,22 @@ public class DynamicXAMCF implements FactoryBean, InitializingBean, DisposableBe
 
 	private AbstractXADataSourceMCF<?> instance;
 
+	@Override
 	public Object getObject() throws Exception {
 		return instance;
 	}
 
+	@Override
 	public Class getObjectType() {
 		return AbstractXADataSourceMCF.class;
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {
@@ -70,6 +74,7 @@ public class DynamicXAMCF implements FactoryBean, InitializingBean, DisposableBe
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (instance instanceof DisposableBean) {
 			((DisposableBean) instance).destroy();

@@ -40,6 +40,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport{
         addEntete1("Paramètres");
         {
             addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+                @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
                 }
@@ -55,6 +56,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport{
             }
 
             addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+                @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
                     table.addLigne("Nombre d'Individu trouvés avec correspondance exacte:", String.valueOf(results.nbIndividuTrouvesExact));

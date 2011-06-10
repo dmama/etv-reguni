@@ -145,6 +145,7 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DONNEES_INCOHERENTES, details));
 	}
 
+	@Override
 	public void addErrorException(Long idCtb, Exception e) {
 		erreurs.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
 	}
@@ -185,6 +186,7 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.REMPLACEE_PAR_NOTE, null));
 	}
 
+	@Override
 	public void addAll(DeterminationDIsResults right) {
 		this.nbCtbsTotal += right.nbCtbsTotal;
 		this.traites.addAll(right.traites);

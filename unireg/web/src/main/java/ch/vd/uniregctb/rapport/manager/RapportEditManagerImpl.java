@@ -50,6 +50,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * @return une RapportView
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public RapportView get(Long numeroTiers, Long numeroTiersLie) throws AdressesResolutionException{
 		//création d'un rapport autre que travail
@@ -81,6 +82,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		return rapportView;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public RapportView get(Long idRapport, SensRapportEntreTiers editingFrom) throws AdresseException {
 
@@ -159,6 +161,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * Persiste le rapport entre tiers
 	 * @param rapportView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(RapportView rapportView) {
 
@@ -242,6 +245,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 *
 	 * @param idRapport
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerRapport(Long idRapport) {
 		RapportEntreTiers rapport = rapportEntreTiersDAO.get(idRapport);
@@ -257,6 +261,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
@@ -296,6 +301,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();

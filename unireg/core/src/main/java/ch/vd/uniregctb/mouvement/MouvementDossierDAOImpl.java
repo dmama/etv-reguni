@@ -37,6 +37,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	 * @param inclureMouvementsAnnules
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<MouvementDossier> findByNumeroDossier(long numero, boolean seulementTraites, boolean inclureMouvementsAnnules) {
 		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
@@ -259,12 +260,14 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		b.append(" mvt");
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<MouvementDossier> find(MouvementDossierCriteria criteria, final ParamPagination paramPagination) {
 
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildFindHql(criteria, false, paramPagination != null ? paramPagination.getSorting() : null, params);
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<MouvementDossier>>() {
+			@Override
 			public List<MouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query query = session.createQuery(hql);
@@ -282,6 +285,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		});
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> findIds(MouvementDossierCriteria criteria, ParamSorting sorting) {
 		final List<Object> params = new ArrayList<Object>();
@@ -298,10 +302,12 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		});
 	}
 
+	@Override
 	public long count(MouvementDossierCriteria criteria) {
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildCountHql(criteria, params);
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Long>() {
+			@Override
 			public Long doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(hql);
 				for (int i = 0 ; i < params.size() ; ++ i) {
@@ -312,6 +318,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		});
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<MouvementDossier> get(final long[] ids) {
 		final StringBuilder builder = new StringBuilder();
@@ -332,6 +339,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 		final String hql = builder.toString();
 		final List<MouvementDossier> found = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<MouvementDossier>>() {
+			@Override
 			public List<MouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(hql);
 				if (ids != null) {
@@ -387,10 +395,12 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 					" AND MD.ETAT = 'A_ENVOYER' AND MD.ANNULATION_DATE IS NULL" +
 					" GROUP BY MD.MVT_TYPE, MD.COLL_ADMIN_RECEPTRICE_ID, CA.NUMERO_CA";
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<ProtoBordereauMouvementDossier> getAllProtoBordereaux(final Integer noCollAdmInitiatricePourFiltrage) {
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<ProtoBordereauMouvementDossier>>() {
+			@Override
 			public List<ProtoBordereauMouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(PROTO_BORDEREAUX_SQL);
 				final List<Object[]> rows = (List<Object[]>) query.list();

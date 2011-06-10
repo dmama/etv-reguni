@@ -48,54 +48,67 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		this.type = TypeAdressePM.get(target.getType());
 	}
 
+	@Override
 	public String getComplement() {
 		return complement;
 	}
 
+	@Override
 	public Integer getNumeroTechniqueRue() {
 		return numeroTechniqueRue;
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFin;
 	}
 
+	@Override
 	public String getLocaliteAbregeMinuscule() {
 		return localiteAbregeMinuscule;
 	}
 
+	@Override
 	public String getLocaliteCompletMinuscule() {
 		return localiteCompletMinuscule;
 	}
 
+	@Override
 	public Pays getPays() {
 		return pays;
 	}
 
+	@Override
 	public String getNumeroMaison() {
 		return numeroMaison;
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return numeroPostal;
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return numeroPostalComplementaire;
 	}
 
+	@Override
 	public String getRue() {
 		return rue;
 	}
 
+	@Override
 	public TypeAdressePM getType() {
 		return type;
 	}

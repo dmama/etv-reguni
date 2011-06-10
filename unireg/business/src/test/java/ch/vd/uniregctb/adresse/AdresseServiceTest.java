@@ -120,6 +120,7 @@ public class AdresseServiceTest extends BusinessTest {
 	public void testGetAdressesFiscalesNonHabitantAvecAdressesAnnulees() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique axelle = addNonHabitant("Axelle", "Herren Clot", date(1970, 1, 1), Sexe.FEMININ);
 				final AdresseSuisse adresse = addAdresseSuisse(axelle, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Geneve.AvenueGuiseppeMotta);
@@ -5941,6 +5942,7 @@ public class AdresseServiceTest extends BusinessTest {
 		validationInterceptor.setEnabled(false); // pour permettre l'ajout d'une curatelle avec date de début nulle
 		try {
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					PersonnePhysique tiia = addHabitant(noIndividuTiia);
 					addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
@@ -6413,6 +6415,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// mise en place fiscale
 		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndividuM);
 				final PersonnePhysique mme = addHabitant(noIndividuMme);
@@ -6424,6 +6427,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// vérification du nom complet du ménage et assignation de la surcharge d'adresse
 		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
 				final List<String> nom = adresseService.getNomCourrier(mc, null, false);
@@ -6444,6 +6448,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// vérification du nom complet du ménage
 		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
 				final List<String> nom = adresseService.getNomCourrier(mc, null, false);

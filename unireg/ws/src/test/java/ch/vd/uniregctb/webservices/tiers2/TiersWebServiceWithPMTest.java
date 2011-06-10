@@ -114,6 +114,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noNestle = MockPersonneMorale.NestleSuisse.getNumeroEntreprise();
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntreprise(noNestle);
 				entreprise.setBlocageRemboursementAutomatique(true);
@@ -161,6 +162,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noBCV = MockPersonneMorale.BCV.getNumeroEntreprise();
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				addEntreprise(noBCV);
 				return null;
@@ -203,6 +205,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noJal = MockPersonneMorale.JalHolding.getNumeroEntreprise();
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				addEntreprise(noJal);
 				return null;
@@ -245,6 +248,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noEvian = MockPersonneMorale.EvianRussie.getNumeroEntreprise();
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				addEntreprise(noEvian);
 				return null;
@@ -291,6 +295,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				addEntreprise(noPM);
 				return null;
@@ -325,6 +330,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noPM = MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise();
 
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				addEntreprise(noPM);
 				return null;
@@ -359,6 +365,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noPM = MockPersonneMorale.KhatAnstalt.getNumeroEntreprise();
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				addEntreprise(noPM);
 				return null;
@@ -390,6 +397,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				addEntreprise(noPM);
 				final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);
@@ -431,6 +439,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				addEntreprise(noPM);
 				final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);

@@ -16,11 +16,13 @@ public interface AssujettissementPM extends DateRange {
 	/**
 	 * @return la date de début de l'assujettissement.
 	 */
+	@Override
 	RegDate getDateDebut();
 
 	/**
 	 * @return la date de fin de l'assujettissement.
 	 */
+	@Override
 	RegDate getDateFin();
 
 	/**

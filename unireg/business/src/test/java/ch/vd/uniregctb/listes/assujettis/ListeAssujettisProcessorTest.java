@@ -47,6 +47,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
@@ -87,6 +88,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 3, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
@@ -128,6 +130,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		}
 
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, date(2010, 3, 11), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
@@ -181,6 +184,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
@@ -222,6 +226,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Colombie);
@@ -263,6 +268,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2010, 3, 11), MotifFor.ARRIVEE_HS, MockPays.Colombie);
@@ -313,6 +319,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
@@ -353,6 +360,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
@@ -389,6 +397,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
@@ -429,6 +438,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle);

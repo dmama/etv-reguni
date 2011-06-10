@@ -35,6 +35,7 @@ public class ForDebiteurPrestationImposable extends ForFiscal {
 		return true;
 	}
 
+	@Override
 	public ForFiscal duplicate() {
 		return new ForDebiteurPrestationImposable(this);
 	}

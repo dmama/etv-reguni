@@ -1,15 +1,14 @@
 package ch.vd.uniregctb.common;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
-import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
 
@@ -67,6 +66,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	 * @return the logCreationUser
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4odM8EdyUI9FDt56-Qw?GETTER"
 	 */
+	@Override
 	@Column(name = "LOG_CUSER", length = LengthConstants.HIBERNATE_LOGUSER)
 	public String getLogCreationUser() {
 		// begin-user-code
@@ -92,6 +92,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	 * @return the logCreationDate
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cSMSAOxDEdyck8Nd0o6HOA?GETTER"
 	 */
+	@Override
 	@Column(name = "LOG_CDATE")
 	public Date getLogCreationDate() {
 		// begin-user-code
@@ -118,6 +119,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	 * @return the logModifUser
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4o9M8EdyUI9FDt56-Qw?GETTER"
 	 */
+	@Override
 	@Column(name = "LOG_MUSER", length = LengthConstants.HIBERNATE_LOGUSER)
 	public String getLogModifUser() {
 		// begin-user-code
@@ -143,6 +145,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	 * @return the logModifDate
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4otM8EdyUI9FDt56-Qw?GETTER"
 	 */
+	@Override
 	@Version
 	@Column(name = "LOG_MDATE")
 	public Timestamp getLogModifDate() {
@@ -182,6 +185,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	 * @return the annulationDate
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_860LQCsTEd2YRbfoCS2w9g?GETTER"
 	 */
+	@Override
 	@Column(name = "ANNULATION_DATE")
 	public Date getAnnulationDate() {
 		// begin-user-code
@@ -203,6 +207,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 
 	private String annulationUser;
 
+	@Override
 	@Column(name = "ANNULATION_USER", length = LengthConstants.HIBERNATE_LOGUSER)
 	public String getAnnulationUser() {
 		return annulationUser;
@@ -302,6 +307,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 		}
 	}
 
+	@Override
 	@Transient
 	public boolean isAnnule() {
 		return annulationDate != null;

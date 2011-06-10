@@ -43,6 +43,7 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	 * @param <T>
 	 */
 	public static class CtbComparator<T extends Info> implements Comparator<T> {
+		@Override
 		public int compare(T o1, T o2) {
 			return (int) (o1.noCtb - o2.noCtb);
 		}

@@ -54,6 +54,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public SeparationRecapView get(Long numero) {
 		SeparationRecapView separationRecapView =  new SeparationRecapView();
@@ -71,6 +72,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 	 *
 	 * @param separationRecapView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(SeparationRecapView separationRecapView) throws MetierServiceException {
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getCouple().getNumero());
@@ -99,6 +101,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 		metierService.separe(menage, dateSeparation, separationRecapView.getRemarque(), etatCivilFamille, true, null);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isAvecForFiscalPrincipalActif(long noTiers) {
 		final Tiers tiers = tiersService.getTiers(noTiers);

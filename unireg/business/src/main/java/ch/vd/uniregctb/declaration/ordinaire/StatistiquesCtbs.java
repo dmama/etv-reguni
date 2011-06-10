@@ -105,6 +105,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		/**
 		 * Ordre de tri naturel: oid, commune et typeCtb.
 		 */
+		@Override
 		public int compareTo(Key o) {
 
 			if (oid != null && o.oid != null && !oid.equals(o.oid)) {
@@ -169,10 +170,12 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		ctbsEnErrors.add(new Erreur(numero != null ? numero : -1, officeImpotId, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
+	@Override
 	public void addErrorException(Long numero, Exception e) {
 		ctbsEnErrors.add(new Erreur(numero, null, ErreurType.EXCEPTION, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(StatistiquesCtbs rapport) {
 		this.nbCtbsTotal += rapport.nbCtbsTotal;
 		this.ctbsEnErrors.addAll(rapport.ctbsEnErrors);

@@ -18,6 +18,7 @@ public class MockIndexable extends IndexableData {
 		this.champ1 = champ1;
 	}
 
+	@Override
 	public String getSubType() {
 		return subType;
 	}

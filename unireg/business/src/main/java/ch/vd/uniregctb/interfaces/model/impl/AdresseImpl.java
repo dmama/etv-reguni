@@ -80,62 +80,77 @@ public class AdresseImpl implements Adresse, Serializable {
 		}
 	}
 
+	@Override
 	public String getCasePostale() {
 		return casePostale;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public String getLocalite() {
 		return localiteAbregeMinuscule;
 	}
 
+	@Override
 	public String getNumero() {
 		return numero;
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return numeroAppartement;
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return numeroRue;
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return numeroPostal;
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return numeroPostalComplementaire;
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		return noOfsPays;
 	}
 
+	@Override
 	public String getRue() {
 		return rue;
 	}
 
+	@Override
 	public String getTitre() {
 		return titre;
 	}
 
+	@Override
 	public TypeAdresseCivil getTypeAdresse() {
 		return typeAdresse;
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		return communeAdresse;
 	}
@@ -153,6 +168,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

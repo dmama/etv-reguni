@@ -618,6 +618,7 @@ public class Depart extends Mouvement {
 		return paysInconnu;
 	}
 
+	@Override
 	public Adresse getNouvelleAdressePrincipale() {
 		return getAdressePrincipale();
 	}

@@ -115,6 +115,7 @@ public class ProduireRolesProcessor {
 	}
 
 	private static class CommuneParCommune implements GroupementCommunes {
+		@Override
 		public boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference) {
 			return ofsCandidat != null && ofsCandidat.equals(ofsReference);
 		}
@@ -127,6 +128,7 @@ public class ProduireRolesProcessor {
 			this.ofsCommunes = ofsCommunes;
 		}
 
+		@Override
 		public boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference) {
 			return ofsCommunes.contains(ofsCandidat) && ofsCommunes.contains(ofsReference);
 		}
@@ -284,14 +286,17 @@ public class ProduireRolesProcessor {
 		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
 		return doRun(anneePeriode, nbThreads, null, status, new VarianteProductionRole<ProduireRolesCommunesResults>() {
+			@Override
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuables(anneePeriode);
 			}
 
+			@Override
 			public ProduireRolesCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
 				return new ProduireRolesCommunesResults(anneePeriode, nbThreads, today);
 			}
 
+			@Override
 			public GroupementCommunes getGroupementCommunes() {
 				return communeParCommune;
 			}
@@ -316,14 +321,17 @@ public class ProduireRolesProcessor {
 		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
 		return doRun(anneePeriode, nbThreads, null, status, new VarianteProductionRole<ProduireRolesCommunesResults>() {
+			@Override
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuablesSurCommunes(anneePeriode, Arrays.asList(noOfsCommune));
 			}
 
+			@Override
 			public ProduireRolesCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
 				return new ProduireRolesCommunesResults(anneePeriode, noOfsCommune, nbThreads, today);
 			}
 
+			@Override
 			public GroupementCommunes getGroupementCommunes() {
 				return communeParCommune;
 			}
@@ -365,14 +373,17 @@ public class ProduireRolesProcessor {
 			final GroupementCommunes groupement = new GroupementCommunesPourOID(nosOfsCommunes);
 			return doRun(anneePeriode, nbThreads, statusMessagePrefixe, status, new VarianteProductionRole<ProduireRolesOIDsResults>() {
 
+				@Override
 				public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 					return getIdsOfAllContribuablesSurCommunes(anneePeriode, nosOfsCommunes);
 				}
 
+				@Override
 				public ProduireRolesOIDsResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
 					return new ProduireRolesOIDsResults(anneePeriode, oid, nbThreads, today);
 				}
 
+				@Override
 				public GroupementCommunes getGroupementCommunes() {
 					return groupement;
 				}
@@ -400,6 +411,7 @@ public class ProduireRolesProcessor {
 			final List<OfficeImpot> oids = infraService.getOfficesImpot();
 			final List<OfficeImpot> oidsTries = new ArrayList<OfficeImpot>(oids);
 			Collections.sort(oidsTries, new Comparator<OfficeImpot>() {
+				@Override
 				public int compare(OfficeImpot o1, OfficeImpot o2) {
 					return o1.getNoColAdm() - o2.getNoColAdm();
 				}
@@ -859,8 +871,10 @@ public class ProduireRolesProcessor {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
 						final RegDate debutPeriode = RegDate.get(annee, 1, 1);
@@ -901,8 +915,10 @@ public class ProduireRolesProcessor {
 			template.setReadOnly(true);
 
 			return template.execute(new TransactionCallback<List<Long>>() {
+				@Override
 				public List<Long> doInTransaction(TransactionStatus status) {
 					return hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Long>>() {
+						@Override
 						public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
 							final RegDate debutPeriode = RegDate.get(annee, 1, 1);

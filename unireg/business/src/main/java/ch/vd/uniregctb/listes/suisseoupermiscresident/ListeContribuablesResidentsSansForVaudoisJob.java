@@ -75,6 +75,7 @@ public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final ListeContribuablesResidentsSansForVaudoisRapport rapport = template.execute(new TransactionCallback<ListeContribuablesResidentsSansForVaudoisRapport>() {
+			@Override
 			public ListeContribuablesResidentsSansForVaudoisRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}

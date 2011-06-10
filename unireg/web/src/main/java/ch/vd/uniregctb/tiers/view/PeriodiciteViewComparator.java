@@ -1,11 +1,6 @@
 package ch.vd.uniregctb.tiers.view;
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-
-import ch.vd.uniregctb.common.GentilComparator;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 /**
  * Compare les vues sur les periodicites compte tenu de l'algorithme de tri suivant:
@@ -34,6 +29,7 @@ public class PeriodiciteViewComparator implements Comparator<PeriodiciteView> {
 
 
 
+	@Override
 	public int compare(PeriodiciteView o1, PeriodiciteView o2) {
 		int compare = Boolean.valueOf(o1.isAnnule()).compareTo(o2.isAnnule());	
 		if (compare == 0) {

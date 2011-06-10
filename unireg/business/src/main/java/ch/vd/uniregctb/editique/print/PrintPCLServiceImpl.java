@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.editique.print;
 
-import java.io.InputStream;
-
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -17,11 +15,13 @@ import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.PrinterName;
 import javax.print.attribute.standard.Sides;
+import java.io.InputStream;
 
 import ch.vd.securite.model.ProfilOperateur;
 
 public class PrintPCLServiceImpl implements PrintPCLService {
 
+	 @Override
 	 public void printLocalStream(ProfilOperateur profilOperateur, InputStream inputStream) throws PrintPCLException {
 		 final DocFlavor                 oFlavor = DocFlavor.INPUT_STREAM.AUTOSENSE;  			//defini un type de document
 	     final Doc                       oDoc    = new SimpleDoc(inputStream, oFlavor, null); 	//defini le document a imprimer

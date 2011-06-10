@@ -33,22 +33,27 @@ public class AssujettissementPMImpl implements AssujettissementPM, Serializable 
 		this.type = Type.valueOf(target.getTypeAssujettissement().getName());
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
 
+	@Override
 	public Type getType() {
 		return type;
 	}

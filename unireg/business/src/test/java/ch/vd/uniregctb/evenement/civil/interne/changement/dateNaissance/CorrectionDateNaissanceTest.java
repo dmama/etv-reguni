@@ -95,6 +95,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		// changement de la date de naissance dans le registre civil
 		doModificationIndividu(NO_INDIVIDU, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE);
 			}
@@ -156,6 +157,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		// changement de la date de naissance dans le registre civil
 		doModificationIndividu(NO_INDIVIDU_ERREUR, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE_ERREUR);
 			}

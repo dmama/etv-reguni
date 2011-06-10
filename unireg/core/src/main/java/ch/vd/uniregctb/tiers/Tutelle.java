@@ -46,6 +46,7 @@ public class Tutelle extends RepresentationLegale {
 		super(dateDebut, dateFin, pupille, tuteur, autoriteTutelaire);
 	}
 
+	@Override
 	public RapportEntreTiers duplicate() {
 		return new Tutelle(this);
 	}

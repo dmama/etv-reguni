@@ -40,12 +40,14 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		this.statsService = statsService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, this);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);
@@ -84,6 +86,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return "<unknown>";
 	}
 
+	@Override
 	public long getLastCallTime() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -92,6 +95,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getLastCallTime();
 	}
 
+	@Override
 	public long getRecentPing() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -100,6 +104,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getRecentPing();
 	}
 
+	@Override
 	public long getRecentTime() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -108,6 +113,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getRecentTime();
 	}
 
+	@Override
 	public long getRecentCount() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -116,6 +122,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getRecentCount();
 	}
 
+	@Override
 	public void onTick() {
 		if (globalCounter != null) {
 			globalCounter.onTick();
@@ -125,6 +132,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		}
 	}
 
+	@Override
 	public long getTotalPing() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -133,6 +141,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getTotalPing();
 	}
 
+	@Override
 	public long getTotalTime() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -141,6 +150,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getTotalTime();
 	}
 
+	@Override
 	public long getTotalCount() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -149,6 +159,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getTotalCount();
 	}
 
+	@Override
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		refreshCounters();
 		return counterByOperation;

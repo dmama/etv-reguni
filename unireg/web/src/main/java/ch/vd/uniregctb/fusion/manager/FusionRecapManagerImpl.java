@@ -74,6 +74,7 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 	 * @param numeroHabitant
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public FusionRecapView get (Long numeroNonHabitant, Long numeroHabitant) {
 		FusionRecapView fusionRecapView =  new FusionRecapView();
@@ -104,6 +105,7 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 	 * Persiste le rapport de travail
 	 * @param rapportView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(FusionRecapView fusionRecapView) {
 		PersonnePhysique nonHabitant = (PersonnePhysique) tiersService.getTiers(fusionRecapView.getNonHabitant().getNumero());
@@ -120,6 +122,7 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

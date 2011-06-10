@@ -14,6 +14,7 @@ public class MockMessageListener implements MessageListener {
 		this.messageListener = messageListener;
 	}
 
+	@Override
 	public void onMessage(Message message) {
 		if ( messageListener instanceof MessageListener){
 			((MessageListener)messageListener).onMessage(message);

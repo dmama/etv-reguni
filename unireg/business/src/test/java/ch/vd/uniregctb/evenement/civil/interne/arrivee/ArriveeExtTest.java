@@ -2895,6 +2895,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Ids ids = new Ids();
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique roger = addNonHabitant("Roger", "Dupneu", null, Sexe.MASCULIN);
 				addForPrincipal(roger, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);

@@ -12,6 +12,7 @@ public class MockPermis implements Permis {
 	private int noSequence;
 	private TypePermis typePermis;
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
@@ -20,6 +21,7 @@ public class MockPermis implements Permis {
 		this.dateDebutValidite = dateDebutValidite;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
 	}
@@ -28,6 +30,7 @@ public class MockPermis implements Permis {
 		this.dateFinValidite = dateFinValidite;
 	}
 
+	@Override
 	public RegDate getDateAnnulation() {
 		return dateAnnulation;
 	}
@@ -36,6 +39,7 @@ public class MockPermis implements Permis {
 		this.dateAnnulation = dateAnnulation;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
@@ -44,6 +48,7 @@ public class MockPermis implements Permis {
 		this.noSequence = noSequence;
 	}
 
+	@Override
 	public TypePermis getTypePermis() {
 		return typePermis;
 	}

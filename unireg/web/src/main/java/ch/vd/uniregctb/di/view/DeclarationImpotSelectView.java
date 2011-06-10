@@ -54,6 +54,7 @@ public class DeclarationImpotSelectView implements DeclarationImpotView {
 
 	private List<ViewRange> ranges;
 
+	@Override
 	public TiersGeneralView getContribuable() {
 		return contribuable;
 	}

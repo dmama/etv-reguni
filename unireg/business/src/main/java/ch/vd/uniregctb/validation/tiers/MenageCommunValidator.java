@@ -108,6 +108,7 @@ public class MenageCommunValidator extends ContribuableValidator<MenageCommun> {
 		return results;
 	}
 
+	@Override
 	public Class<MenageCommun> getValidatedClass() {
 		return MenageCommun.class;
 	}

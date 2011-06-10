@@ -15,10 +15,12 @@ public class UniregJobListener implements JobListener {
 		this.job = job;
 	}
 
+	@Override
 	public String getName() {
 		return job.getName();
 	}
 
+	@Override
 	public void jobExecutionVetoed(JobExecutionContext context) {
 		if (!job.isLogDisabled()) {
 			LOGGER.info("Job <" + getName() + "> execution is VETOED");
@@ -26,6 +28,7 @@ public class UniregJobListener implements JobListener {
 		job.interrupt();
 	}
 
+	@Override
 	public void jobToBeExecuted(JobExecutionContext context) {
 		if (!job.isLogDisabled()) {
 			LOGGER.info("Job <" + getName() + "> is to be executed");
@@ -33,6 +36,7 @@ public class UniregJobListener implements JobListener {
 		job.toBeExecuted();
 	}
 
+	@Override
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
 		job.wasExecuted();
 		if (!job.isLogDisabled()) {

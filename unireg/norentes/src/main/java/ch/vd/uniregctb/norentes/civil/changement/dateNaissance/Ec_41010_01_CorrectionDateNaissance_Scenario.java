@@ -101,6 +101,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 	public void step2() throws Exception {
 
 		doModificationIndividu(noIndMomo, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				individu.setDateNaissance(dateNaissanceCorrigee);
 			}

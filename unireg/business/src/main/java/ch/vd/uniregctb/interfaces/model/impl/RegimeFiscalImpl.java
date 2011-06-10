@@ -25,14 +25,17 @@ public class RegimeFiscalImpl implements RegimeFiscal {
 		this.code = target.getCode();
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}

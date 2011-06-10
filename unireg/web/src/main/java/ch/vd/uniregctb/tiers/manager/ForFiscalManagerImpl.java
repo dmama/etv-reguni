@@ -84,6 +84,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
@@ -148,6 +149,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @param id
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ForFiscalView get(Long id) throws Exception {
 		final ForFiscal forFiscal = forFiscalDAO.get(id);
@@ -213,6 +215,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @param id
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ForFiscalView create(Long numeroCtb, boolean dpi) {
 		final ForFiscalView forFiscalView = new ForFiscalView();
@@ -250,6 +253,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return forFiscalView;
 	}
 
+	@Override
 	public ForFiscal updateFor(ForFiscalView view) {
 
 		final ForFiscal forFiscal = forFiscalDAO.get(view.getId());
@@ -337,12 +341,14 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return updated;
 	}
 
+	@Override
 	public ForFiscalPrincipal updateModeImposition(ForFiscalView forFiscalView) {
 		Assert.notNull(forFiscalView.getRegDateChangement());
 		Contribuable contribuable = (Contribuable) tiersDAO.get(forFiscalView.getNumeroCtb());
 		return tiersService.changeModeImposition(contribuable, forFiscalView.getRegDateChangement(), forFiscalView.getModeImposition(), forFiscalView.getMotifImposition());
 	}
 
+	@Override
 	public ForFiscal addFor(ForFiscalView forFiscalView) {
 		if (forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
 			if (forFiscalView.getMotifRattachement() == MotifRattachement.DOMICILE ||
@@ -462,6 +468,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 *
 	 * @param idFor
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerFor(Long idFor) {
 		ForFiscal forFiscal = forFiscalDAO.get(idFor);
@@ -471,12 +478,14 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		tiersService.annuleForFiscal(forFiscal, true);
 	}
 
+	@Override
 	public Component buildSynchronizeActionsTableSurModificationDeFor(final long forId, final RegDate dateOuverture, final MotifFor motifOuverture, final RegDate dateFermeture, final MotifFor motifFermeture, final int noOfsAutoriteFiscale) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<Component>() {
+			@Override
 			public Component doInTransaction(TransactionStatus status) {
 
 				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
@@ -520,12 +529,14 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		});
 	}
 
+	@Override
 	public Component buildSynchronizeActionsTableSurModificationDuModeImposition(final long forId, final RegDate dateChangement, final ModeImposition modeImposition, final MotifFor motifChangement) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<Component>() {
+			@Override
 			public Component doInTransaction(TransactionStatus status) {
 
 				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement

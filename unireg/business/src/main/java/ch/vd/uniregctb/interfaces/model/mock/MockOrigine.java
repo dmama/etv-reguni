@@ -13,6 +13,7 @@ public class MockOrigine implements Origine {
 
 	private Pays pays;
 
+	@Override
 	public Commune getCommune() {
 		return commune;
 	}
@@ -21,6 +22,7 @@ public class MockOrigine implements Origine {
 		this.commune = commune;
 	}
 
+	@Override
 	public RegDate getDebutValidite() {
 		return debutValidite;
 	}
@@ -29,6 +31,7 @@ public class MockOrigine implements Origine {
 		this.debutValidite = debutValidite;
 	}
 
+	@Override
 	public Pays getPays() {
 		return pays;
 	}

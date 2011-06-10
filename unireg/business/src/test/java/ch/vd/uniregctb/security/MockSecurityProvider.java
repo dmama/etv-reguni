@@ -25,14 +25,17 @@ public class MockSecurityProvider implements SecurityProviderInterface {
 		this(Arrays.asList(roles));
 	}
 
+	@Override
 	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite) {
 		return roles.contains(role);
 	}
 
+	@Override
 	public Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException {
 		return Niveau.ECRITURE;
 	}
 
+	@Override
 	public List<Niveau> getDroitAcces(String visa, List<Long> ids) {
 		final List<Niveau> res = new ArrayList<Niveau>(ids.size());
 		for (Long id : ids) {

@@ -27,6 +27,7 @@ public class SourcierPur extends Sourcier {
 		return "Imposition à la source";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new SourcierPur(this, (SourcierPur) next);
 	}

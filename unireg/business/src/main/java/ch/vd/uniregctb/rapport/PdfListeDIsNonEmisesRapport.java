@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -36,6 +37,7 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 		// Paramètres
 		document.addEntete1("Paramètres");
 		document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+			@Override
 			public void fillTable(PdfTableSimple table) throws DocumentException {
 				table.addLigne("Période fiscale considérée: ", String.valueOf(results.annee));
 				table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.dateTraitement));
@@ -50,6 +52,7 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 			}
 
 			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de contribuables sans DI: ", String.valueOf(results.getNombreDeDIsNonEmises()));
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));

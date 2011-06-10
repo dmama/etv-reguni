@@ -94,6 +94,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.id = id;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}
@@ -251,6 +252,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.natureRapportEntreTiers = natureRapportEntreTiers;
 	}
 
+	@Override
 	public int compareTo(RapportView o) {
 		return comparator.compare(this, o);
 	}

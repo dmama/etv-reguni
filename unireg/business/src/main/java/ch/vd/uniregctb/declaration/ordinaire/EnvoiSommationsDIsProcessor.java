@@ -20,10 +20,10 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -121,6 +121,7 @@ public class EnvoiSommationsDIsProcessor  {
 				return new EnvoiSommationsDIsResults();
 			}
 
+			@Override
 			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationsDIsResults r) {
 				currentBatch++;
 				List<Long> numerosDis = getListNumerosDis(batch);
@@ -345,9 +346,11 @@ public class EnvoiSommationsDIsProcessor  {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
+			@Override
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
 				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
 				final List<Object[]> declarationsASommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
+					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();

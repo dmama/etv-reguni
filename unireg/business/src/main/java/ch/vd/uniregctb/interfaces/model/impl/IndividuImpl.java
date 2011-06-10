@@ -108,6 +108,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 
+	@Override
 	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
 		return adoptions;
 	}
@@ -123,22 +124,27 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return list;
 	}
 
+	@Override
 	public RegDate getDateDeces() {
 		return deces;
 	}
 
+	@Override
 	public RegDate getDateNaissance() {
 		return naissance;
 	}
 
+	@Override
 	public boolean isMineur(RegDate date) {
 		return naissance != null && naissance.addYears(18).compareTo(date) > 0;
 	}
 
+	@Override
 	public HistoriqueIndividu getDernierHistoriqueIndividu() {
 		return dernierHistorique;
 	}
 
+	@Override
 	public Collection<Individu> getEnfants() {
 		return enfants;
 	}
@@ -154,6 +160,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return list;
 	}
 
+	@Override
 	public EtatCivilList getEtatsCivils() {
 		return etatsCivils;
 	}
@@ -174,6 +181,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return new EtatCivilList(individu.getNoTechnique(), etatsCivils);
 	}
 
+	@Override
 	public EtatCivil getEtatCivilCourant() {
 
 		EtatCivil etatCivilCourant = null;
@@ -189,14 +197,17 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return etatCivilCourant;
 	}
 
+	@Override
 	public EtatCivil getEtatCivil(RegDate date) {
 		return getEtatsCivils().getEtatCivilAt(date);
 	}
 
+	@Override
 	public Collection<HistoriqueIndividu> getHistoriqueIndividu() {
 		return historique;
 	}
 
+	@Override
 	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
 		HistoriqueIndividu candidat = null;
 		for (HistoriqueIndividu histo : historique) {
@@ -219,10 +230,12 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return list;
 	}
 
+	@Override
 	public Individu getMere() {
 		return mere;
 	}
 
+	@Override
 	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
@@ -238,10 +251,12 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return list;
 	}
 
+	@Override
 	public long getNoTechnique() {
 		return noTechnique;
 	}
 
+	@Override
 	public String getNouveauNoAVS() {
 		return nouveauNoAVS;
 	}
@@ -255,18 +270,22 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return numero;
 	}
 
+	@Override
 	public String getNumeroRCE() {
 		return numeroRCE;
 	}
 
+	@Override
 	public Origine getOrigine() {
 		return origine;
 	}
 
+	@Override
 	public Individu getPere() {
 		return pere;
 	}
 
+	@Override
 	public Collection<Permis> getPermis() {
 		return permis;
 	}
@@ -282,14 +301,17 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return permis;
 	}
 
+	@Override
 	public Tutelle getTutelle() {
 		return tutelle;
 	}
 
+	@Override
 	public boolean isSexeMasculin() {
 		return isMasculin;
 	}
 
+	@Override
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
 		super.copyPartsFrom(individu, parts);
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
@@ -319,10 +341,12 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		}
 	}
 
+	@Override
 	public Individu clone(Set<AttributeIndividu> parts) {
 		return new IndividuImpl(this, parts);
 	}
 
+	@Override
 	public Permis getPermisActif(RegDate date) {
 		return IndividuHelper.getPermisActif(this, date);
 	}

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.hibernate.meta;
 
-import ch.vd.uniregctb.hibernate.meta.UserTypePropertyType;
 import ch.vd.uniregctb.hibernate.EnumUserType;
 
 public class EnumUserTypePropertyType extends UserTypePropertyType {
@@ -8,6 +7,7 @@ public class EnumUserTypePropertyType extends UserTypePropertyType {
 		super(javaType, enumUserType);
 	}
 
+	@Override
 	public String getConvertMethod(String value) {
 		return "Enum.valueOf(" + javaType.getSimpleName() + ".class, " + value + ")";
 	}

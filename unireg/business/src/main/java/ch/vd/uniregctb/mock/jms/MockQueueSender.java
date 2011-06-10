@@ -47,6 +47,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Queue getQueue() throws JMSException {
 		return queue;
 	}
@@ -54,6 +55,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void send(Message amessage) throws JMSException {
 		send(queue, amessage, deliveryMode, priority, timeToLive);
 	}
@@ -61,6 +63,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void send(Queue aqueue, Message amessage) throws JMSException {
 		send(aqueue, amessage, deliveryMode, priority, timeToLive);
 	}
@@ -68,6 +71,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void send(Message amessage, int adeliveryMode, int apriority, long atimeToLive) throws JMSException {
 		send(queue, amessage, deliveryMode, priority, timeToLive);
 	}
@@ -75,6 +79,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void send(Queue aqueue, Message amessage, int adeliveryMode, int apriority, long atimeToLive) throws JMSException {
 		if (aqueue instanceof MockQueue) {
 			((MockQueue) aqueue).onMessage(amessage);
@@ -84,12 +89,14 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void close() throws JMSException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getDeliveryMode() throws JMSException {
 		return deliveryMode;
 	}
@@ -97,6 +104,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean getDisableMessageID() throws JMSException {
 		return false;
 	}
@@ -104,6 +112,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean getDisableMessageTimestamp() throws JMSException {
 		return false;
 	}
@@ -111,6 +120,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getPriority() throws JMSException {
 		return priority;
 	}
@@ -118,6 +128,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public long getTimeToLive() throws JMSException {
 		return timeToLive;
 	}
@@ -125,6 +136,7 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setDeliveryMode(int deliveryMode) throws JMSException {
 		this.deliveryMode = deliveryMode;
 	}
@@ -132,18 +144,21 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setDisableMessageID(boolean arg0) throws JMSException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setDisableMessageTimestamp(boolean arg0) throws JMSException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setPriority(int priority) throws JMSException {
 		this.priority = priority;
 	}
@@ -151,20 +166,24 @@ public final class MockQueueSender implements QueueSender {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setTimeToLive(long timeToLive) throws JMSException {
 		this.timeToLive = timeToLive;
 	}
 
+	@Override
 	public Destination getDestination() throws JMSException {
 		return queue;
 	}
 
+	@Override
 	public void send(Destination queue, Message message) throws JMSException {
 		if (queue instanceof MockQueue) {
 			((MockQueue) queue).onMessage(message);
 		}
 	}
 
+	@Override
 	public void send(Destination queue, Message message, int arg2, int arg3, long arg4) throws JMSException {
 		if (queue instanceof MockQueue) {
 			((MockQueue) queue).onMessage(message);

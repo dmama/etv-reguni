@@ -102,6 +102,7 @@ public class TacheServiceImpl implements TacheService {
 		this.parametres = parametres;
 	}
 
+	@Override
 	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	public void updateStats() {
 
@@ -112,6 +113,7 @@ public class TacheServiceImpl implements TacheService {
 
 		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
 		final Map<Integer, TacheStats> stats = template.execute(new TransactionCallback<Map<Integer, TacheStats>>() {
+			@Override
 			public Map<Integer, TacheStats> doInTransaction(TransactionStatus status) {
 				return tacheDAO.getTacheStats();
 			}
@@ -136,6 +138,7 @@ public class TacheServiceImpl implements TacheService {
 				// trie la liste par OID
 				List<Map.Entry<Integer, TacheStats>> list = new ArrayList<Map.Entry<Integer, TacheStats>>(stats.entrySet());
 				Collections.sort(list, new Comparator<Map.Entry<Integer, TacheStats>>() {
+					@Override
 					public int compare(Map.Entry<Integer, TacheStats> o1, Map.Entry<Integer, TacheStats> o2) {
 						return o1.getKey().compareTo(o2.getKey());
 					}
@@ -159,6 +162,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param contribuable le contribuable sur lequel un for principal a été fermé
 	 * @param forPrincipal le for fiscal principal qui vient d'être fermé
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisFermetureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forPrincipal) {
 
@@ -244,6 +248,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param contribuable le contribuable sur lequel un for secondaire a été fermé.
 	 * @param forSecondaire le for secondaire qui vient d'être fermé.
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisFermetureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forSecondaire) {
 
@@ -304,6 +309,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param forFiscal            le for fiscal principal qui vient d'être ouvert
 	 * @param ancienModeImposition nécessaire en cas d'ouverture de for pour motif "CHGT_MODE_IMPOSITION"
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisOuvertureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forFiscal, ModeImposition ancienModeImposition) {
 
@@ -391,6 +397,7 @@ public class TacheServiceImpl implements TacheService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
 		// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
@@ -406,6 +413,7 @@ public class TacheServiceImpl implements TacheService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void synchronizeTachesDIs(Contribuable contribuable) {
 
 		Assert.notNull(contribuable);
@@ -438,6 +446,7 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
+	@Override
 	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
 
 		// On récupère les données brutes
@@ -904,6 +913,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param contribuable le contribuable sur lequel un for secondaire a été ouvert
 	 * @param forFiscal    le for fiscal secondaire qui vient d'être ouvert
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisOuvertureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscal) {
 
@@ -923,6 +933,7 @@ public class TacheServiceImpl implements TacheService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getTachesEnInstanceCount(Integer oid) {
 		final TacheStats stats = tacheStatsPerOid.get(oid);
 		return stats == null ? 0: stats.tachesEnInstance;
@@ -931,6 +942,7 @@ public class TacheServiceImpl implements TacheService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getDossiersEnInstanceCount(Integer oid) {
 		final TacheStats stats = tacheStatsPerOid.get(oid);
 		return stats == null ? 0: stats.dossiersEnInstance;
@@ -943,6 +955,7 @@ public class TacheServiceImpl implements TacheService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void onAnnulationContribuable(Contribuable contribuable) {
 
 		TacheCriteria criteria = new TacheCriteria();
@@ -964,6 +977,7 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
+	@Override
 	public ListeTachesEnInstanceParOID produireListeTachesEnInstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception {
 		final ProduireListeTachesEnInstanceParOIDProcessor processor = new ProduireListeTachesEnInstanceParOIDProcessor(hibernateTemplate, serviceInfra, transactionManager);
 		return processor.run(dateTraitement, status);

@@ -26,6 +26,7 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
 
 	private boolean createdTransactionLog;
 
+	@Override
 	public Object getObject() throws Exception {
 		if (transactionManager == null) {
 			transactionManager = new TransactionManager(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
@@ -33,20 +34,24 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
 		return transactionManager;
 	}
 
+	@Override
 	public Class getObjectType() {
 		return TransactionManager.class;
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (createdTransactionLog && transactionLog instanceof HOWLLog) {
 		    ((HOWLLog)transactionLog).doStop();
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (transactionLog == null) {
 		    transactionLog = GeronimoDefaults.createTransactionLog(xidFactory, transactionLogDir);

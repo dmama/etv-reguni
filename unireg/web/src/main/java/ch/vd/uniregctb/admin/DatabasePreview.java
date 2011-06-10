@@ -27,6 +27,7 @@ public class DatabasePreview {
 			tiersTypes.add(clazz);
 		}
 		Collections.sort(tiersTypes, new Comparator<Class>() {
+			@Override
 			public int compare(Class o1, Class o2) {
 				return o1.getSimpleName().compareTo(o2.getSimpleName());
 			}

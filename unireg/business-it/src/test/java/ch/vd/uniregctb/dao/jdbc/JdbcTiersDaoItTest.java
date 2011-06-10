@@ -92,6 +92,7 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 		}
 	}
 
+	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
@@ -168,6 +169,7 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 	private List<Tiers> getTiersJdbc(final List<Long> ids, final Set<TiersDAO.Parts> parts) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		return template.execute(new TransactionCallback<List<Tiers>>() {
+			@Override
 			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
 				final List<Tiers> list = new ArrayList<Tiers>(ids.size());
@@ -185,9 +187,11 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 	private List<Tiers> getTiersHibernate(final List<Long> ids) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		return template.execute(new TransactionCallback<List<Tiers>>() {
+			@Override
 			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
 				return tiersDAO.getHibernateTemplate().execute(new HibernateCallback<List<Tiers>>() {
+					@Override
 					public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
 						session.setFlushMode(FlushMode.MANUAL);
 						final List<Tiers> list = new ArrayList<Tiers>(ids.size());
@@ -236,6 +240,7 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 	private List<Tiers> getTiersBatchJdbc(final List<Long> ids, final Set<TiersDAO.Parts> parts) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		return template.execute(new TransactionCallback<List<Tiers>>() {
+			@Override
 			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
 				return jdbcTiersDao.getBatch(ids, parts);
@@ -247,9 +252,11 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		return template.execute(new TransactionCallback<List<Tiers>>() {
+			@Override
 			public List<Tiers> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly(); // on ne veut pas modifier la base
 				return tiersDAO.getHibernateTemplate().execute(new HibernateCallback<List<Tiers>>() {
+					@Override
 					public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
 						session.setFlushMode(FlushMode.MANUAL);
 						final List<Tiers> list = tiersDAO.getBatch(ids, parts);
@@ -314,6 +321,7 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 	}
 
 	private static class TiersIdComparator implements Comparator<Tiers> {
+		@Override
 		public int compare(Tiers o1, Tiers o2) {
 			return o1.getId().compareTo(o2.getId());
 		}

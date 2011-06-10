@@ -29,6 +29,7 @@ public class LogoutController implements Controller {
 	 * @see org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
+	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		final AbstractAuthenticationToken auth = AuthenticationHelper.getAuthentication();

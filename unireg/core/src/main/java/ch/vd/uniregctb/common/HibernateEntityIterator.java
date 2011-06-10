@@ -18,10 +18,12 @@ public class HibernateEntityIterator<T extends HibernateEntity> implements Itera
 		this.iter = iter;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return iter.hasNext();
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public T next() {
 
@@ -37,6 +39,7 @@ public class HibernateEntityIterator<T extends HibernateEntity> implements Itera
 		return n;
 	}
 
+	@Override
 	public void remove() {
 		iter.remove();
 	}

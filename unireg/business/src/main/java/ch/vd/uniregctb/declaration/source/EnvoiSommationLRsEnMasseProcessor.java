@@ -150,8 +150,10 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 		template.setReadOnly(true);
 
 		final List<IdentifiantDeclaration> ids = template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
+			@Override
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
 				final List<Object[]> aSommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
+					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();

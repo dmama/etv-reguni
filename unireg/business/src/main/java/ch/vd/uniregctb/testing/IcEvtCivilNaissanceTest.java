@@ -28,6 +28,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 		TransactionTemplate tmpl = new TransactionTemplate(getTransactionManager());
         tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 		tmpl.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				EvenementCivilExterne evt = new EvenementCivilExterne();
 				evt.setId(9006L);
@@ -44,6 +45,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 		evenementCivilProcessor.traiteEvenementCivil(9006L, true);
 
 		tmpl.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique tiers = getTiersDAO().getHabitantByNumeroIndividu(noInd);
 				Assert.notNull(tiers, "Pas de Tiers créé");

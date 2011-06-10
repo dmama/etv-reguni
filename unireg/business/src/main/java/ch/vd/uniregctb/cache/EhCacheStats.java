@@ -41,6 +41,7 @@ public class EhCacheStats implements CacheStats {
 	/**
 	 * @return le percentage de hits sur le cache du service
 	 */
+	@Override
 	public Long getHitsPercent() {
 		return hitsPercent;
 	}
@@ -48,6 +49,7 @@ public class EhCacheStats implements CacheStats {
 	/**
 	 * @return le nombre de hits sur le cache du service
 	 */
+	@Override
 	public long getHitsCount() {
 		return hitsCount;
 	}
@@ -55,6 +57,7 @@ public class EhCacheStats implements CacheStats {
 	/**
 	 * @return le nombre d'appels sur le cache du service
 	 */
+	@Override
 	public long getTotalCount() {
 		return totalCount;
 	}
@@ -62,6 +65,7 @@ public class EhCacheStats implements CacheStats {
 	/**
 	 * @return time-to-idle en secondes
 	 */
+	@Override
 	public Long getTimeToIdle() {
 		return timeToIdle;
 	}
@@ -69,6 +73,7 @@ public class EhCacheStats implements CacheStats {
 	/**
 	 * @return time-to-live en secondes
 	 */
+	@Override
 	public Long getTimeToLive() {
 		return timeToLive;
 	}
@@ -76,6 +81,7 @@ public class EhCacheStats implements CacheStats {
 	/**
 	 * @return nombre maximum d'éléments en mémoire
 	 */
+	@Override
 	public Integer getMaxElements() {
 		return maxElements;
 	}

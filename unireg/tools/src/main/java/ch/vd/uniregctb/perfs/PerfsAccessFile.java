@@ -135,6 +135,7 @@ public class PerfsAccessFile {
 
 		// les temps d'accès dans le fichier ne sont pas forcément triés, on le fait maintenant
 		Collections.sort(calls, new Comparator<Call>() {
+			@Override
 			public int compare(Call o1, Call o2) {
 				if (o1.getMillisecondes() < o2.getMillisecondes()) {
 					return -1;

@@ -66,6 +66,7 @@ public class NorentesController extends AbstractEnhancedSimpleFormController {
 			try {
 				Thread thread = new Thread(new Runnable() {
 
+					@Override
 					public void run() {
 						norentesManager.runToStep(currentNorentesScenario, etapeIndex);
 					}

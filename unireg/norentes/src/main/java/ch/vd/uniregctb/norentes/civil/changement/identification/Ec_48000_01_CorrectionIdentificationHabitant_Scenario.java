@@ -113,6 +113,7 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 	public void step2() throws Exception {
 
 		doModificationIndividu(noIndMomo, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				individu.setNouveauNoAVS(avsNouveau);
 			}

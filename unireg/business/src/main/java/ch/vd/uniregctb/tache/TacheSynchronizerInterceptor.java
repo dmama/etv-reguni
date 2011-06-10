@@ -45,6 +45,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>();
 	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
 
+	@Override
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
 
 		if (isDisabled()) {
@@ -69,14 +70,17 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		return false;
 	}
 
+	@Override
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
 	}
 
+	@Override
 	public void preTransactionCommit() {
 		// rien à faire ici
 	}
 
+	@Override
 	public void postTransactionCommit() {
 
 		final HashSet<Long> set = getModifiedCtbIds();
@@ -102,6 +106,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			template.execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					synchronizeTaches(set);
 					return null;
@@ -130,6 +135,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 
 	private void synchronizeTaches(final HashSet<Long> ctbIds) {
 		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				for (Long id : ctbIds) {
 					final Contribuable ctb = (Contribuable) session.get(Contribuable.class, id);
@@ -142,6 +148,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		});
 	}
 
+	@Override
 	public void postTransactionRollback() {
 		final HashSet<Long> set = getModifiedCtbIds();
 		set.clear();
@@ -197,6 +204,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		this.tiersService = tiersService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
 	}

@@ -56,6 +56,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	 * @param criteria les critères de recherche
 	 * @return la liste des tiers repondant aux criteres de recherche
 	 */
+	@Override
 	public List<TiersIndexedData> search(TiersCriteria criteria) {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -82,6 +83,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return list;
 	}
 
+	@Override
 	public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -103,6 +105,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return list;
 	}
 
+	@Override
 	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException {
 
 		final int tokenMinLength = 3;
@@ -211,6 +214,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			this.list = list;
 		}
 
+		@Override
 		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 			if (hits.totalHits > maxHits) {
 				throw new TooManyResultsIndexerException("Le nombre max de résultats ne peut pas excéder "
@@ -238,6 +242,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			this.list = list;
 		}
 
+		@Override
 		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 			list.setTotalHits(hits.totalHits);
 			try {
@@ -256,6 +261,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean exists(Long numero) throws IndexerException {
 		if (numero == null) {
 			return false;
@@ -274,6 +280,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		Query query = new QueryConstructor(criteria).constructQuery();
 		if (query != null) {
 			globalIndex.search(query, maxHits, new SearchCallback() {
+				@Override
 				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 					results.exists = (hits.totalHits > 0);
 				}
@@ -286,6 +293,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public TiersIndexedData get(final Long numero) throws IndexerException {
 		if (numero == null) {
 			return null;
@@ -304,6 +312,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		Query query = new QueryConstructor(criteria).constructQuery();
 		if (query != null) {
 			globalIndex.search(query, maxHits, new SearchCallback() {
+				@Override
 				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 					try {
 						/*
@@ -332,12 +341,14 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Set<Long> getAllIds() {
 
 		final Set<Long> ids = new HashSet<Long>();
 
 		// [UNIREG-2597] on veut explicitement tous les ids, sans limite de recherche
 		globalIndex.searchAll(new MatchAllDocsQuery(), new SearchAllCallback() {
+			@Override
 			public void handle(int docId, DocGetter docGetter) throws Exception {
 				final Document doc = docGetter.get(docId);
 				final long id = extractTiersId(doc);
@@ -351,6 +362,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void checkCoherenceIndex(final Set<Long> existingIds, final StatusManager statusManager, final CheckCallback callback) {
 
 		final Set<Long> indexedIds = new HashSet<Long>();
@@ -359,6 +371,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 		// Vérifie la cohérence des tiers indexés
 		globalIndex.search(new MatchAllDocsQuery(), maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				for (ScoreDoc h : hits.scoreDocs) {
 
@@ -403,10 +416,12 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		return Long.parseLong(idAsString);
 	}
 
+	@Override
 	public int getApproxDocCount() {
 		return globalIndex.getApproxDocCount();
 	}
 
+	@Override
 	public int getExactDocCount() {
 		return globalIndex.getExactDocCount();
 	}
@@ -420,6 +435,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		this.parametreAppService = parametreAppService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		maxHits = parametreAppService.getNbMaxParListe();
 	}

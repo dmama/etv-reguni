@@ -32,6 +32,7 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getNoOfsCommuneDomicile();
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return data.isAnnule();
 	}

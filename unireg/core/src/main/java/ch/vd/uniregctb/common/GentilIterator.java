@@ -35,10 +35,12 @@ public class GentilIterator<T> implements Iterator<T> {
 		this.iter = iterator;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return iter.hasNext();
 	}
 
+	@Override
 	public T next() {
 		previous_percent = current_percent;
 		current_percent = (++i * 100) / size;
@@ -73,6 +75,7 @@ public class GentilIterator<T> implements Iterator<T> {
 		return i >= 0 && !hasNext();
 	}
 
+	@Override
 	public void remove() {
 		throw new NotImplementedException();
 	}

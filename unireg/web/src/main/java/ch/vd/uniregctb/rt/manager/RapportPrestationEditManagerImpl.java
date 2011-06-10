@@ -87,6 +87,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public RapportPrestationView get (Long numeroSrc, Long numeroDpi, String provenance) {
 		RapportPrestationView rapportView =  new RapportPrestationView();
@@ -173,6 +174,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	 * Persiste le rapport de travail
 	 * @param rapportView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(RapportPrestationView rapportView) {
 
@@ -188,6 +190,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	 * @param numeroSrc
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DebiteurListView getDebiteurList(Long numeroSrc) {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroSrc) ;
@@ -206,6 +209,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	 * @param numeroDpi
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public SourcierListView getSourcierList(Long numeroDpi) {
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi) ;
@@ -218,18 +222,21 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		return bean;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Niveau getAccessLevel(long tiersId) {
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		return SecurityProvider.getDroitAcces(tiers);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isExistingTiers(long tiersId) {
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		return tiers != null;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

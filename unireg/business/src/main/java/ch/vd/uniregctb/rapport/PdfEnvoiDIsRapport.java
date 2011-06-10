@@ -38,6 +38,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
         addEntete1("Paramètres");
         {
             addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+                @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Période fiscale considérée :", String.valueOf(results.annee));
                     table.addLigne("Catégorie de contribuables :", results.categorie.getDescription());
@@ -61,6 +62,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             }
 
             addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+                @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
                     table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites.size()));

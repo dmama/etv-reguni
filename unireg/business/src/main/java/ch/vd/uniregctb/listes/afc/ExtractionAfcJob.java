@@ -96,6 +96,7 @@ public class ExtractionAfcJob extends JobDefinition {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final ExtractionAfcRapport rapport = template.execute(new TransactionCallback<ExtractionAfcRapport>() {
+			@Override
 			public ExtractionAfcRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}

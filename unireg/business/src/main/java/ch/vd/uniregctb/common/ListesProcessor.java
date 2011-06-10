@@ -69,6 +69,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 		// 20 threads (voir constante "nbThreads" plus bas également)
 
 		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Iterator<Long> idIterator = customizer.getIdIterator(session);

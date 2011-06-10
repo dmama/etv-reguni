@@ -46,6 +46,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 *
 	 * @return
 	 */
+	@Override
 	public IdentificationMessagesListView getView(String parametreTypeMessage, String parametrePeriode, String parametreEtat) {
 		IdentificationMessagesListView identificationMessagesListView = new IdentificationMessagesListView();
 		identificationMessagesListView.setUserCourant(AuthenticationHelper.getCurrentPrincipal());
@@ -85,6 +86,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
 	                                                boolean nonTraiterAndSuspendu, TypeDemande typeDemande)
@@ -108,6 +110,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination)
 			throws AdressesResolutionException, ServiceInfrastructureException {
@@ -123,6 +126,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param typeDemande
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
 		return identCtbService.count(criterion, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
@@ -135,6 +139,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param typeDemande
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande typeDemande) {
 		criterion.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
@@ -148,6 +153,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void suspendreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
@@ -172,6 +178,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void ResoumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
@@ -195,6 +202,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void soumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());

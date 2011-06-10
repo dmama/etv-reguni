@@ -79,6 +79,7 @@ public class RepresentationConventionnelle extends RapportEntreTiers {
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.tiers.RapportEntreTiers#duplicate()
 	 */
+	@Override
 	public RapportEntreTiers duplicate() {
 		return new RepresentationConventionnelle(this);
 	}

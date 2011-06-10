@@ -2619,6 +2619,7 @@ public class TiersServiceTest extends BusinessTest {
 	public void testAnnuleDernierForFiscalPrincipalDeuxFois() throws Exception {
 
 		final long ffpId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Albert", "Simon", date(1930, 4, 3), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 5, 2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -2628,6 +2629,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// première annulation
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
 				assertNotNull(ffp);
@@ -2639,6 +2641,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// deuxième annulation
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
 				assertNotNull(ffp);
@@ -3149,6 +3152,7 @@ public class TiersServiceTest extends BusinessTest {
 			// on désactive temporairement la validation pour permettre de sauver un ménage-commun qui ne valide pas (manque les rapports d'appartenance ménage)
 			validationInterceptor.setEnabled(false);
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Crée un non-habitant tout nu
@@ -3348,6 +3352,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place des données fiscales
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				dpi.setNom1("Tartempion");
@@ -3359,6 +3364,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification de la raison sociale d'un débiteur sans tiers référent
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
@@ -3385,6 +3391,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place des données fiscales
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				dpi.setNom1("Tartempion");
@@ -3401,6 +3408,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
@@ -3420,6 +3428,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place des données fiscales
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				dpi.setNom1("Tartempion");
@@ -3436,6 +3445,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
@@ -3453,6 +3463,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place des données fiscales
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				dpi.setNom1("Tartempion");
@@ -3471,6 +3482,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
@@ -3489,6 +3501,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place des données fiscales
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				dpi.setNom1("Tartempion");
@@ -3505,6 +3518,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
@@ -3522,6 +3536,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place des données fiscales
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				dpi.setNom1("Tartempion");
@@ -3538,6 +3553,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
@@ -3557,6 +3573,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
@@ -3567,6 +3584,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// ouverture d'un for hors-canton
 		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
@@ -3585,6 +3603,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
@@ -3595,6 +3614,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// ouverture d'un for hors-canton
 		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
@@ -3613,6 +3633,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
@@ -3623,6 +3644,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// ouverture d'un for hors-canton
 		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
@@ -3641,6 +3663,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -3651,6 +3674,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// annulation du for vaudois -> le contribuable se retrouve sans aucun for (le blocage devrait alors être réactivé)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
@@ -3671,6 +3695,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, date(2005, 6, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE);
@@ -3682,6 +3707,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// annulation du dernier for vaudois -> le contribuable a encore un for vaudois ouvert -> pas de nouveau blocage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
@@ -3706,6 +3732,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
@@ -3718,6 +3745,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// annulation du dernier for vaudois -> le contribuable n'a plus de for vaudois ouvert -> blocage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
@@ -3742,6 +3770,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
@@ -3754,6 +3783,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// annulation du dernier for vaudois -> le contribuable n'a plus de for vaudois ouvert -> blocage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
@@ -3778,6 +3808,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
@@ -3788,6 +3819,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// fermeture du for vaudois pour décès -> blocage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
@@ -3810,6 +3842,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
@@ -3820,6 +3853,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// fermeture du for vaudois pour décès -> blocage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
@@ -3842,6 +3876,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
@@ -3852,6 +3887,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// fermeture du for vaudois pour décès -> blocage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
@@ -3874,6 +3910,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place d'un contribuable
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
@@ -3884,6 +3921,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// fermeture du for vaudois pour déménagement vaudois (avec ré-ouverture d'un autre for vaudois) -> déblocage
 		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
@@ -3922,6 +3960,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place fiscale
 		final long idMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndM);
 				final PersonnePhysique mme = addHabitant(noIndMme);
@@ -3932,6 +3971,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// test
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
 				final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
@@ -3962,6 +4002,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place fiscale
 		final long idMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique m = addHabitant(noIndM);
 				final PersonnePhysique mme = addHabitant(noIndMme);
@@ -3981,6 +4022,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// test
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
 				final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
@@ -4065,6 +4107,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
@@ -4081,6 +4124,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// fermeture du for débiteur
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				assertNotNull(dpi);
@@ -4095,6 +4139,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification des rapports de travail : ils ne doivent pas avoir bougé
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				assertNotNull(dpi);
@@ -4137,6 +4182,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mise en place
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
@@ -4153,6 +4199,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// fermeture du for débiteur
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				assertNotNull(dpi);
@@ -4167,6 +4214,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// vérification des rapports de travail : ils ne doivent pas avoir bougé
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				assertNotNull(dpi);
@@ -4216,6 +4264,7 @@ public class TiersServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1974, 8, 3), Sexe.FEMININ);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
@@ -4230,6 +4279,7 @@ public class TiersServiceTest extends BusinessTest {
 		// pour l'instant, le rapport existant n'est pas annulé -> on ne doit pas être capable d'en ajouter un entre les même personnes aux mêmes dates
 		try {
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
@@ -4250,6 +4300,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// mais si on l'annule, alors tout doit bien se passer
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);

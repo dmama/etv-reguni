@@ -34,6 +34,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		this.infraService = infraService;
 	}
 
+	@Override
 	public final AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 
 		final int year = (date == null ? 2400 : date.year());
@@ -57,6 +58,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return resultat;
 	}
 
+	@Override
 	public final AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
 		final int all = 2400;
@@ -76,6 +78,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return resultat;
 	}
 
+	@Override
 	public final Collection<Nationalite> getNationalites(long noIndividu, int annee) {
 
 		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.NATIONALITE);
@@ -86,6 +89,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return individu.getNationalites();
 	}
 
+	@Override
 	public final Origine getOrigine(long noIndividu, int annee) {
 
 		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.ORIGINE);
@@ -96,6 +100,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return individu.getOrigine();
 	}
 
+	@Override
 	public final Collection<Permis> getPermis(long noIndividu, int annee) {
 
 		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.PERMIS);
@@ -106,6 +111,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return individu.getPermis();
 	}
 
+	@Override
 	public final Tutelle getTutelle(long noIndividu, int annee) {
 
 		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.TUTELLE);
@@ -116,6 +122,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return individu.getTutelle();
 	}
 
+	@Override
 	public final Collection<Adresse> getAdresses(long noIndividu, int annee) {
 		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.ADRESSES);
 		if (individu == null) {
@@ -124,20 +131,24 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return individu.getAdresses();
 	}
 
+	@Override
 	public final Individu getIndividu(long noIndividu, int annee) {
 		return getIndividu(noIndividu, annee, (AttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
 	}
 
+	@Override
 	public final Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		final int annee = (date == null ? 2400 : date.year());
 		return getIndividu(noIndividu, annee, parties);
 	}
 
+	@Override
 	public final List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		final int annee = (date == null ? 2400 : date.year());
 		return getIndividus(nosIndividus, annee, parties);
 	}
 
+	@Override
 	public final Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
 
 		final Long noConjoint = getNumeroIndividuConjoint(noIndividuPrincipal, date);
@@ -154,6 +165,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 *            la date de référence, ou null pour obtenir l'état-civil actif
 	 * @return l'état civil actif d'un individu à une date donnée.
 	 */
+	@Override
 	public final EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
 
 		final Individu individu = getIndividu(noIndividu, date);
@@ -161,6 +173,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return individu.getEtatCivil(date);
 	}
 
+	@Override
 	public final Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
 		final EtatCivil etat = getEtatCivilActif(noIndividuPrincipal, date);
 		if (etat == null) {
@@ -174,12 +187,14 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 * @param date       la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
 	 * @return le permis actif d'un individu à une date donnée.
 	 */
+	@Override
 	public final Permis getPermisActif(long noIndividu, RegDate date) {
 		final int year = (date == null ? 2400 : date.year());
 		final Individu individu = getIndividu(noIndividu, year, AttributeIndividu.PERMIS);
 		return (individu == null ? null : individu.getPermisActif(date));
 	}
 
+	@Override
 	public String getNomPrenom(Individu individu) {
 		final String resultat;
 		final NomPrenom nomPrenom = getDecompositionNomPrenom(individu);
@@ -197,6 +212,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 * @param individu un individu
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu
 	 */
+	@Override
 	public NomPrenom getDecompositionNomPrenom(Individu individu) {
 
 		if (individu == null) {
@@ -218,6 +234,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 * @param seulementVaud <code>true</code> si on ne s'intéresse qu'aux communes vaudoises (i.e. commune <code>null</code> pour HC/HS)
 	 * @return une liste des communes de domiciles fréquentées
 	 */
+	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		final AdressesCivilesHistoriques histo = getAdressesHisto(noIndividu, strict);
 		final List<HistoriqueCommune> result = new ArrayList<HistoriqueCommune>();

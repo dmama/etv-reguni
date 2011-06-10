@@ -68,6 +68,7 @@ public class RoleServiceImpl implements RoleService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ProduireRolesCommunesResults produireRolesPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourToutesCommunes(anneePeriode, nbThreads, status);
@@ -76,6 +77,7 @@ public class RoleServiceImpl implements RoleService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ProduireRolesCommunesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourUneCommune(anneePeriode, noOfsCommune, nbThreads, status);
@@ -84,6 +86,7 @@ public class RoleServiceImpl implements RoleService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ProduireRolesOIDsResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourUnOfficeImpot(anneePeriode, oid, nbThreads, status);
@@ -92,6 +95,7 @@ public class RoleServiceImpl implements RoleService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ProduireRolesOIDsResults[] produireRolesPourTousOfficesImpot(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourTousOfficesImpot(anneePeriode, nbThreads, status);

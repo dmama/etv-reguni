@@ -13,6 +13,7 @@ public class ParametrePeriodeFiscaleDAOImpl extends GenericDAOImpl<ParametrePeri
 		super(ParametrePeriodeFiscale.class);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<ParametrePeriodeFiscale> getByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		List list = find(
@@ -22,6 +23,7 @@ public class ParametrePeriodeFiscaleDAOImpl extends GenericDAOImpl<ParametrePeri
 		Collections.sort(
 				list,
 				new Comparator<ModeleDocument>() {
+					@Override
 					public int compare(ModeleDocument o1, ModeleDocument o2) {
 						return o1.getTypeDocument().compareTo(o2.getTypeDocument());
 					}}
@@ -40,22 +42,27 @@ public class ParametrePeriodeFiscaleDAOImpl extends GenericDAOImpl<ParametrePeri
 		return list.get(0);
 	}
 
+	@Override
 	public ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_DEPENSE);
 	}
 
+	@Override
 	public ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_CANTON);
 	}
 
+	@Override
 	public ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_SUISSE);
 	}
 
+	@Override
 	public ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.DIPLOMATE_SUISSE);
 	}
 	
+	@Override
 	public ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_ORDINAIRE);
 	}

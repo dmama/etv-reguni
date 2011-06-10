@@ -99,6 +99,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 		template.setReadOnly(true);
 
 		final ConsultLogView consultLogView = template.execute(new TransactionCallback<ConsultLogView>() {
+			@Override
 			public ConsultLogView doInTransaction(TransactionStatus status) {
 				if (nature.equals(NATURE_FOR_PARAMETER_VALUE)) {
 					ForFiscal forFiscal = forFiscalDAO.get(id);

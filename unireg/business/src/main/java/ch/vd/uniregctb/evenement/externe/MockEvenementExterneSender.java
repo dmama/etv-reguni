@@ -10,6 +10,7 @@ import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
  */
 public class MockEvenementExterneSender implements EvenementExterneSender {
 
+	@Override
 	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception {
 	}
 }

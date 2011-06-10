@@ -74,6 +74,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
 	                             WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
@@ -144,15 +145,18 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			}
 
 			resolveAdressesHisto(new AdressesResolverCallback() {
+				@Override
 				public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
 					return service.getAdressesFiscalHisto(tiers, false);
 				}
 
+				@Override
 				public void setAdressesView(List<AdresseView> adresses) {
 					List<AdresseView> adressesResultat = removeAdresseFromCivil(adresses);
 					tiersVisuView.setHistoriqueAdresses(adressesResultat);
 				}
 
+				@Override
 				public void onException(String message, List<AdresseView> adressesEnErreur) {
 					tiersVisuView.setAdressesEnErreurMessage(message);
 					tiersVisuView.setAdressesEnErreur(adressesEnErreur);
@@ -277,6 +281,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		return mvtsView;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void fillRapportsPrestationView(long noDebiteur, RapportsPrestationView view) {
 
@@ -361,6 +366,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				final List<Long> ids = it.next();
 
 				final List<Object[]> ancienNosAvs = tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Object[]>>() {
+					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
 						final Query query = session.createQuery(
 								"select ip.personnePhysique.id, ip.identifiant from IdentificationPersonne ip where ip.categorieIdentifiant = 'CH_AHV_AVS' and ip.personnePhysique.id in (:ids)");

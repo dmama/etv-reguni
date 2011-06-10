@@ -101,6 +101,7 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 * @return the dateDebut
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi96lx9Edygsbnw9h5bVw?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
@@ -127,6 +128,7 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 * @return the dateFin
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi97Fx9Edygsbnw9h5bVw?GETTER"
 	 */
+	@Override
 	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
@@ -206,6 +208,7 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(AdresseTiers other) {
 		return DateRangeComparator.compareRanges(this, other);
 	}
@@ -224,10 +227,12 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return tiers == null ? null : Arrays.asList(tiers);

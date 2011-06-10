@@ -111,6 +111,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 		);
 	}
 
+	@Override
 	public void addErrorException(Long idCtb, Exception e) {
 		diNonEmises.add(
 				new LigneRapport(
@@ -236,6 +237,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 			);
 	}
 
+	@Override
 	public void addAll(ListeDIsNonEmises rapport) {
 		super.addAll(rapport);
 		diNonEmises.addAll(rapport.diNonEmises);

@@ -29,18 +29,22 @@ public class NationaliteImpl implements Nationalite, Serializable {
 		this.pays = PaysImpl.get(target.getPays());
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFin;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
 
+	@Override
 	public Pays getPays() {
 		return pays;
 	}

@@ -13,6 +13,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 	private String noIdentificationDTA;
 	private String nomInstitutionFinanciere;
 
+	@Override
 	public Integer getCode() {
 		return code;
 	}
@@ -21,6 +22,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 		this.code = code;
 	}
 
+	@Override
 	public String getAdresse1() {
 		return adresse1;
 	}
@@ -29,6 +31,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 		this.adresse1 = adresse1;
 	}
 
+	@Override
 	public String getAdresse2() {
 		return adresse2;
 	}
@@ -37,6 +40,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 		this.adresse2 = adresse2;
 	}
 
+	@Override
 	public String getAdresse3() {
 		return adresse3;
 	}
@@ -45,6 +49,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 		this.adresse3 = adresse3;
 	}
 
+	@Override
 	public String getNoClearing() {
 		return noClearing;
 	}
@@ -53,6 +58,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 		this.noClearing = noClearing;
 	}
 
+	@Override
 	public String getNoCompte() {
 		return noCompte;
 	}
@@ -61,6 +67,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 		this.noCompte = noCompte;
 	}
 
+	@Override
 	public String getNoIdentificationDTA() {
 		return noIdentificationDTA;
 	}
@@ -69,6 +76,7 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 		this.noIdentificationDTA = noIdentificationDTA;
 	}
 
+	@Override
 	public String getNomInstitutionFinanciere() {
 		return nomInstitutionFinanciere;
 	}

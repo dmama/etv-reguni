@@ -54,6 +54,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @param full
 	 * @return TiersGeneralView
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersGeneralView getTiers(Tiers tiers, boolean full) {
 		final TiersGeneralView tiersGeneralView = new TiersGeneralView();
@@ -73,6 +74,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @param etendu
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersGeneralView getDebiteur(DebiteurPrestationImposable dpi, boolean etendu) {
 		TiersGeneralView tiersGeneralView = getTiers(dpi, true);
@@ -87,6 +89,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @param etendu
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersGeneralView getPersonnePhysique(PersonnePhysique pp, boolean etendu) {
 		TiersGeneralView tiersGeneralView = getTiers(pp, true);

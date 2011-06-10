@@ -24,6 +24,7 @@ public class SiegeView implements DateRange {
 		this.type = siege.getType();
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -32,6 +33,7 @@ public class SiegeView implements DateRange {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -56,6 +58,7 @@ public class SiegeView implements DateRange {
 		this.type = type;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

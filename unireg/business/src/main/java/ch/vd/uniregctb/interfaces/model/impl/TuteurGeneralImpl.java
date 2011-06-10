@@ -27,18 +27,22 @@ public class TuteurGeneralImpl implements TuteurGeneral, Serializable {
 		this.prenomContact = target.getPrenomContact();
 	}
 
+	@Override
 	public String getNoTelephoneContact() {
 		return noTelephoneContact;
 	}
 
+	@Override
 	public String getNomContact() {
 		return nomContact;
 	}
 
+	@Override
 	public String getNomOffice() {
 		return nomOffice;
 	}
 
+	@Override
 	public String getPrenomContact() {
 		return prenomContact;
 	}

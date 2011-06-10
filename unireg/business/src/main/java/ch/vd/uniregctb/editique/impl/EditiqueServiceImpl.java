@@ -149,10 +149,12 @@ public final class EditiqueServiceImpl implements EditiqueService {
 		return resultat;
 	}
 
+	@Override
 	public void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException {
 		sender.envoyerDocument(nomDocument, typeDocument, document, null, archive);
 	}
 
+	@Override
 	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument, String contexte) throws EditiqueException {
 		return copieConformeService.getPdfCopieConforme(noContribuable, typeDocument, nomDocument, contexte);
 	}

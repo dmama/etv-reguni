@@ -14,6 +14,7 @@ public class MockSiege implements Siege {
 	private int noOfsSiege;
 	private TypeNoOfs type;
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -22,6 +23,7 @@ public class MockSiege implements Siege {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -30,6 +32,7 @@ public class MockSiege implements Siege {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public int getNoOfsSiege() {
 		return noOfsSiege;
 	}
@@ -38,6 +41,7 @@ public class MockSiege implements Siege {
 		this.noOfsSiege = noOfsSiege;
 	}
 
+	@Override
 	public TypeNoOfs getType() {
 		return type;
 	}

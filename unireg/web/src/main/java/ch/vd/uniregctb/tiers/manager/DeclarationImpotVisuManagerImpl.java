@@ -45,6 +45,7 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 	 * @param numero
 	 * @return un objet DeclarationImpotOrdinaireView
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public DeclarationImpotDetailView get(Long numero) {
 		DeclarationImpotDetailView diView = new DeclarationImpotDetailView();
@@ -115,6 +116,7 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 		return messageSource;
 	}
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 

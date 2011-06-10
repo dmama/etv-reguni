@@ -34,6 +34,7 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 		}
 	}
 
+	@Override
 	public String getSubType() {
 		return SUB_TYPE;
 	}

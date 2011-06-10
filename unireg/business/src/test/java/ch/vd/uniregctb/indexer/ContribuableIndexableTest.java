@@ -894,161 +894,201 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			map.put(id,  tiers);
 		}
 		
+		@Override
 		public Tiers get(long id, boolean doNotAutoFlush) {
 			return map.get(id);
 		}
 
+		@Override
 		public Map<Class, List<Tiers>> getFirstGroupedByClass(int count) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public RapportEntreTiers save(RapportEntreTiers object) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Long> getAllIds() {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Long> getDirtyIds() {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Long> getAllNumeroIndividu() {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Long> getHabitantsForMajorite(RegDate dateReference) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public Contribuable getContribuableByNumero(Long numeroContribuable) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<PersonnePhysique> getSourciers(int noSourcier) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<PersonnePhysique> getAllMigratedSourciers() {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public Tiers getTiersForIndexation(long id) {
 			return map.get(id);
 		}
 
+		@Override
 		public List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Tiers> getAll() {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public Tiers get(Long id) {
 			return map.get(id);
 		}
 
+		@Override
 		public boolean exists(Long id) {
 			return map.containsKey(id);
 		}
 
+		@Override
 		public boolean exists(Long id, FlushMode flushModeOverride) {
 			return map.containsKey(id);
 		}
 
+		@Override
 		public Tiers save(Tiers object) {
 			return object;
 		}
 
+		@Override
 		public Object saveObject(Object object) {
 			return object;
 		}
 
+		@Override
 		public void remove(Long id) {
 			map.remove(id);
 		}
 
+		@Override
 		public void removeAll() {
 			map.clear();
 		}
 
+		@Override
 		public HibernateTemplate getHibernateTemplate() {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public Iterator<Tiers> iterate(String query) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public int getCount(Class<?> clazz) {
 			return 0;
 		}
 
+		@Override
 		public void clearSession() {
 		}
 
+		@Override
 		public void evict(Object o) {
 		}
 
+		@Override
 		public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
 			final Long ctbId = debiteur.getContribuableId();
 			return (Contribuable) get(ctbId);
 		}
 
+		@Override
 		public void updateOids(Map<Long, Integer> tiersOidsMapping) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public List<Long> getListeDebiteursSansPeriodicites() {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 			throw new NotImplementedException();
 		}

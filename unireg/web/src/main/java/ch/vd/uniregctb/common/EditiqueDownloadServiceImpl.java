@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,6 +104,7 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 	 * @param response réponse HTTP à remplir avec le contenu du fichier
 	 * @throws IOException en cas de procblème
 	 */
+	@Override
 	public void download(EditiqueResultatDocument resultat, String filenameRadical, HttpServletResponse response) throws IOException {
 		Downloader downloader = downloaders.get(resultat.getContentType());
 		if (downloader == null) {

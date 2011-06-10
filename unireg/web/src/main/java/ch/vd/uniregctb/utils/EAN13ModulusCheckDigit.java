@@ -60,6 +60,7 @@ public abstract class EAN13ModulusCheckDigit implements EAN13CheckDigit {
      * @return <code>true</code> if the check digit is valid, otherwise
      * <code>false</code>
      */
+    @Override
     public boolean isValid(String code) {
         if (code == null || code.length() == 0) {
             return false;
@@ -80,6 +81,7 @@ public abstract class EAN13ModulusCheckDigit implements EAN13CheckDigit {
      * @throws EAN13CheckDigitException if an error occurs calculating
      * the check digit for the specified code
      */
+    @Override
     public String calculate(String code) throws EAN13CheckDigitException {
         if (code == null || code.length() == 0) {
             throw new EAN13CheckDigitException("Code is missing");

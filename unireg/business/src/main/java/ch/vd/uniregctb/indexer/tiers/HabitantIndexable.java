@@ -27,6 +27,7 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		this.individu = individu;
 	}
 
+	@Override
 	public String getSubType() {
 		return SUB_TYPE;
 	}

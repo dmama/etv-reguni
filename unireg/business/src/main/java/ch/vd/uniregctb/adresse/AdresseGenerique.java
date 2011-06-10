@@ -97,11 +97,13 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     /**
      * @return la date de fin de validité de l'adresse.
      */
+    @Override
     RegDate getDateDebut();
 
     /**
      * @return la date de début de validité de l'adresse.
      */
+    @Override
     RegDate getDateFin();
 
     /**
@@ -162,6 +164,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     /**
      * @return si l'adresse est annulée ou pas.
      */
+    @Override
     boolean isAnnule();
 
 	/**

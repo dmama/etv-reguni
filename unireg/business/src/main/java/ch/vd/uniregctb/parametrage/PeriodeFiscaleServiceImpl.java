@@ -31,6 +31,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 	private ParametreAppService parametreAppService;
 	private PlatformTransactionManager transactionManager;
 
+	@Override
 	public PeriodeFiscale initNouvellePeriodeFiscale() {
 		List<PeriodeFiscale> list = dao.getAllDesc();
 		if (list == null || list.size() == 0) {
@@ -121,12 +122,14 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 		this.transactionManager = transactionManager;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					// [UNIREG-1976] on ajoute à la volée les paramètres pour les diplomates suisses
 					final List<PeriodeFiscale> periodes = dao.getAll();

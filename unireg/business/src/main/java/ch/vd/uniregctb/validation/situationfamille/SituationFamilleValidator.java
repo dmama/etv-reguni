@@ -15,6 +15,7 @@ public class SituationFamilleValidator extends EntityValidatorImpl<SituationFami
 		return SituationFamille.class;
 	}
 
+	@Override
 	public ValidationResults validate(SituationFamille sf) {
 		final ValidationResults results = new ValidationResults();
 		if (!sf.isAnnule()) {

@@ -12,10 +12,12 @@ public class VueSituationFamilleMenageCommunAdapter extends VueSituationFamilleA
 		super(target, dateDebut, dateFin);
 	}
 
+	@Override
 	public Long getNumeroContribuablePrincipal() {
 		return getTarget().getNumeroContribuablePrincipal();
 	}
 
+	@Override
 	public TarifImpotSource getTarifApplicable() {
 		return getTarget().getTarifApplicable();
 	}

@@ -16,6 +16,7 @@ public class VueSituationFamillePersonnePhysiqueFiscalAdapter extends VueSituati
 		this.situation = situation;
 	}
 
+	@Override
 	public EtatCivil getEtatCivil() {
 		return situation.getEtatCivil();
 	}

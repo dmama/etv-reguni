@@ -82,6 +82,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		return cache;
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new EhCacheStats(cache);
 	}
@@ -93,6 +94,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
@@ -100,6 +102,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		uniregCacheManager.register(this);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
@@ -399,6 +402,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getDescription() {
 		return "web-service tiers v3";
 	}
@@ -406,6 +410,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return "WS-TIERS-3";
 	}
@@ -413,6 +418,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void reset() {
 		cache.removeAll();
 	}

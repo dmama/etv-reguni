@@ -1,5 +1,13 @@
 package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
+import java.util.List;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
@@ -7,13 +15,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import java.util.List;
 
 /**
  * Processeur utilisé lors des tentatives de remettre d'aplomb les
@@ -47,6 +48,7 @@ public class CorrectionFlagHabitantProcessor {
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
 				return hibernateTemplate.find(hql);
@@ -199,14 +201,17 @@ public class CorrectionFlagHabitantProcessor {
 	private void traiteMenagesVaudoisSansMembreHabitant(int nbThreads, CorrectionFlagHabitantSurMenagesResults rapportFinal, int numeroPhase) {
 
 		traiteMenages(nbThreads, rapportFinal, numeroPhase, new TraitementMenages() {
+			@Override
 			public String getMessageInitial() {
 				return "Identification des ménages communs vaudois sans membre habitant";
 			}
 
+			@Override
 			public List<Long> getIdsMenagesATraiter() {
 				return getIdsMCsurVDsansHabitant();
 			}
 
+			@Override
 			public void traite(CorrectionFlagHabitantSurMenagesResults rapport, long ctbId) {
 				rapport.addMenageVaudoisSansHabitant(ctbId);
 			}
@@ -216,14 +221,17 @@ public class CorrectionFlagHabitantProcessor {
 	private void traiteMenagesNonVaudoisAvecMembreHabitant(int nbThreads, CorrectionFlagHabitantSurMenagesResults rapportFinal, int numeroPhase) {
 
 		traiteMenages(nbThreads, rapportFinal, numeroPhase, new TraitementMenages() {
+			@Override
 			public String getMessageInitial() {
 				return "Identification des ménages communs non-vaudois avec membre habitant";
 			}
 
+			@Override
 			public List<Long> getIdsMenagesATraiter() {
 				return getIdsMCnonVaudoisAvecHabitant();
 			}
 
+			@Override
 			public void traite(CorrectionFlagHabitantSurMenagesResults rapport, long ctbId) {
 				rapport.addMenageNonVaudoisAvecHabitant(ctbId);
 			}

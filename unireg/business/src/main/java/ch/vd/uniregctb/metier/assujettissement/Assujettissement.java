@@ -94,6 +94,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return contribuable;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -103,6 +104,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -112,6 +114,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 	}
 
+	@Override
 	public boolean isCollatable(DateRange next) {
 		// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements
 		final boolean departHSEtArriveeHC = (this.getMotifFractFin() == MotifFor.DEPART_HS && ((Assujettissement) next).getMotifFractDebut() == MotifFor.ARRIVEE_HC);
@@ -139,6 +142,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return fors;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
@@ -1134,14 +1138,17 @@ public abstract class Assujettissement implements CollatableDateRange {
 			this.typeAut = right.typeAut;
 		}
 
+		@Override
 		public boolean isValidAt(RegDate date) {
 			return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
 		}
 
+		@Override
 		public RegDate getDateDebut() {
 			return debut;
 		}
 
+		@Override
 		public RegDate getDateFin() {
 			return fin;
 		}
@@ -1478,6 +1485,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	}
 
 	private static class Adapter implements DateRangeHelper.AdapterCallback<Assujettissement> {
+		@Override
 		public Assujettissement adapt(Assujettissement assujettissement, RegDate debut, RegDate fin) {
 			if (debut != null && assujettissement.dateDebut != debut) {
 				assujettissement.dateDebut = debut;

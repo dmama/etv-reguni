@@ -112,6 +112,7 @@ public class MockLocalite implements Localite {
 		DefaultMockServiceInfrastructureService.addLocalite(this);
 	}
 
+	@Override
 	public Integer getChiffreComplementaire() {
 		return chiffreComplementaire;
 	}
@@ -120,6 +121,7 @@ public class MockLocalite implements Localite {
 		this.chiffreComplementaire = chiffreComplementaire;
 	}
 
+	@Override
 	public Integer getComplementNPA() {
 		return complementNPA;
 	}
@@ -128,6 +130,7 @@ public class MockLocalite implements Localite {
 		this.complementNPA = complementNPA;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
 	}
@@ -136,6 +139,7 @@ public class MockLocalite implements Localite {
 		this.dateFinValidite = dateFinValidite;
 	}
 
+	@Override
 	public Integer getNoCommune() {
 		return noCommune;
 	}
@@ -144,6 +148,7 @@ public class MockLocalite implements Localite {
 		this.noCommune = noCommune;
 	}
 
+	@Override
 	public String getNomAbregeMajuscule() {
 		return nomAbregeMajuscule;
 	}
@@ -152,6 +157,7 @@ public class MockLocalite implements Localite {
 		this.nomAbregeMajuscule = nomAbregeMajuscule;
 	}
 
+	@Override
 	public String getNomAbregeMinuscule() {
 		return nomAbregeMinuscule;
 	}
@@ -160,6 +166,7 @@ public class MockLocalite implements Localite {
 		this.nomAbregeMinuscule = nomAbregeMinuscule;
 	}
 
+	@Override
 	public String getNomCompletMajuscule() {
 		return nomCompletMajuscule;
 	}
@@ -168,6 +175,7 @@ public class MockLocalite implements Localite {
 		this.nomCompletMajuscule = nomCompletMajuscule;
 	}
 
+	@Override
 	public String getNomCompletMinuscule() {
 		return nomCompletMinuscule;
 	}
@@ -176,6 +184,7 @@ public class MockLocalite implements Localite {
 		this.nomCompletMinuscule = nomCompletMinuscule;
 	}
 
+	@Override
 	public Integer getNoOrdre() {
 		return noOrdre;
 	}
@@ -184,6 +193,7 @@ public class MockLocalite implements Localite {
 		this.noOrdre = noOrdre;
 	}
 
+	@Override
 	public Integer getNPA() {
 		return nPA;
 	}
@@ -192,6 +202,7 @@ public class MockLocalite implements Localite {
 		nPA = npa;
 	}
 
+	@Override
 	public boolean isValide() {
 		return valide;
 	}
@@ -200,6 +211,7 @@ public class MockLocalite implements Localite {
 		this.valide = valide;
 	}
 
+	@Override
 	public Commune getCommuneLocalite() {
 		return communeLocalite;
 	}

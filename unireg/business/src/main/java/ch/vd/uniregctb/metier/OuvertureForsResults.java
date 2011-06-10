@@ -81,6 +81,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		this.dateTraitement = dateTraitement;
 	}
 
+	@Override
 	public void addAll(OuvertureForsResults right) {
 		this.nbHabitantsTotal += right.nbHabitantsTotal;
 		this.nbHabitantsMineurs += right.nbHabitantsMineurs;
@@ -130,6 +131,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), e.getType(), e.getMessage()));
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		addOnCommitException(element, e);
 	}

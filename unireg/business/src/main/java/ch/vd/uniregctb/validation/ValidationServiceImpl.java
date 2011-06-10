@@ -39,6 +39,7 @@ public class ValidationServiceImpl implements ValidationService {
 			return chainedValidators.isEmpty();
 		}
 
+		@Override
 		public ValidationResults validate(T entity) {
 			final ValidationResults results = new ValidationResults();
 			for (EntityValidator<T> validator : chainedValidators) {
@@ -48,6 +49,7 @@ public class ValidationServiceImpl implements ValidationService {
 		}
 	}
 
+	@Override
 	public <T> void registerValidator(Class<T> clazz, EntityValidator<T> validator) {
 		final Lock lock = rwLock.writeLock();
 		lock.lock();
@@ -59,6 +61,7 @@ public class ValidationServiceImpl implements ValidationService {
 		}
 	}
 
+	@Override
 	public <T> void unregisterValidator(Class<T> clazz, EntityValidator<T> validator) {
 		final Lock lock = rwLock.writeLock();
 		lock.lock();
@@ -127,6 +130,7 @@ public class ValidationServiceImpl implements ValidationService {
 		return validator;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public ValidationResults validate(Object object) {
 		final EntityValidator validator = findValidator(object);

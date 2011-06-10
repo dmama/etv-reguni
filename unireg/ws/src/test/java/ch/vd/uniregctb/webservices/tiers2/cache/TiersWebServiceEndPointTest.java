@@ -1,35 +1,34 @@
 package ch.vd.uniregctb.webservices.tiers2.cache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
-import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
-import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebserviceTest;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
 public class TiersWebServiceEndPointTest extends WebserviceTest {
@@ -129,6 +128,7 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 		assertEquals(3, list.size());
 
 		Collections.sort(list, new Comparator<BatchTiersEntry>() {
+			@Override
 			public int compare(BatchTiersEntry o1, BatchTiersEntry o2) {
 				if (o1.number == null) {
 					return -1;

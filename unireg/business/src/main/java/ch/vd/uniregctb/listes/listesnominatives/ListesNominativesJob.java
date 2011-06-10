@@ -106,6 +106,7 @@ public class ListesNominativesJob extends JobDefinition {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final ListesNominativesRapport rapport = template.execute(new TransactionCallback<ListesNominativesRapport>() {
+			@Override
 			public ListesNominativesRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}

@@ -112,8 +112,10 @@ public class MigrationCoquillesPM extends JobDefinition {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 						final Query query = session.createQuery("select e.id from Entreprise as e");
 						//noinspection unchecked
@@ -226,10 +228,12 @@ public class MigrationCoquillesPM extends JobDefinition {
 			traitees.add(id);
 		}
 
+		@Override
 		public void addErrorException(Long element, Exception e) {
 			erreurs.add(new Erreur(element, null, ErreurType.EXCEPTION, e.getMessage()));
 		}
 
+		@Override
 		public void addAll(MigrationResults right) {
 			this.total += right.total;
 			this.traitees.addAll(right.traitees);

@@ -15,6 +15,7 @@ public class MockCapital implements Capital {
 	private Long capitalLibere;
 	private EditionFosc editionFosc;
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -23,6 +24,7 @@ public class MockCapital implements Capital {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -31,6 +33,7 @@ public class MockCapital implements Capital {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public Long getCapitalAction() {
 		return capitalAction;
 	}
@@ -39,6 +42,7 @@ public class MockCapital implements Capital {
 		this.capitalAction = capitalAction;
 	}
 
+	@Override
 	public Long getCapitalLibere() {
 		return capitalLibere;
 	}
@@ -47,6 +51,7 @@ public class MockCapital implements Capital {
 		this.capitalLibere = capitalLibere;
 	}
 
+	@Override
 	public EditionFosc getEditionFosc() {
 		return editionFosc;
 	}

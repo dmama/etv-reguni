@@ -30,9 +30,11 @@ public class PermisView implements DateRange {
 	public void setTypePermis(String typePermis) {
 		this.typePermis = typePermis;
 	}
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebutValidite;
 	}
+	@Override
 	public RegDate getDateFin() {
 		return dateFinValidite;
 	}
@@ -42,6 +44,7 @@ public class PermisView implements DateRange {
 	public void setAnnule(boolean annule) {
 		this.annule = annule;
 	}
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
 	}

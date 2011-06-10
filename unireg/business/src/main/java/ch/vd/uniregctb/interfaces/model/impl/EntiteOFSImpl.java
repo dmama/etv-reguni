@@ -27,18 +27,22 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 		this.sigleOFS = target.getSigleOFS();
 	}
 
+	@Override
 	public int getNoOFS() {
 		return noOFS;
 	}
 
+	@Override
 	public String getNomMajuscule() {
 		return nomMajuscule;
 	}
 
+	@Override
 	public String getNomMinuscule() {
 		return nomMinuscule;
 	}
 
+	@Override
 	public String getSigleOFS() {
 		return sigleOFS;
 	}

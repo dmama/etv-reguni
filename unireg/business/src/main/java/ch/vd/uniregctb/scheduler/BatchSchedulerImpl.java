@@ -52,16 +52,19 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	private int timeoutOnStopAll = 5;       // en minutes, le temps d'attente maximal lors d'un appel à stopAllRunningJobs()
 	private final Map<String, JobDefinition> jobs = new HashMap<String, JobDefinition>();
 
+	@Override
 	public boolean isStarted() throws SchedulerException {
 		return !scheduler.isShutdown();
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (timeoutOnStopAll <= 0) {
 			throw new IllegalArgumentException("La valeur du timeout (minutes) doit être strictement positive");
 		}
 	}
 
+	@Override
 	public void register(JobDefinition job) throws SchedulerException {
 
 		if (job.getSortOrder() < 1) {
@@ -89,6 +92,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	 * @throws SchedulerException en cas d'exception dans le scheduler
 	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
 	 */
+	@Override
 	public void registerCron(JobDefinition job, String cronExpression) throws SchedulerException, ParseException {
 		registerCron(job, null, cronExpression);
 	}
@@ -102,6 +106,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	 * @throws SchedulerException en cas d'exception dans le scheduler
 	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
 	 */
+	@Override
 	public void registerCron(JobDefinition job, Map<String, Object> params, String cronExpression) throws SchedulerException, ParseException {
 
 		AuthenticationHelper.pushPrincipal("[cron]");
@@ -123,6 +128,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	 * @throws SchedulerException         en cas d'erreur de scheduling Quartz
 	 * @throws JobAlreadyStartedException si le job est déjà démarré
 	 */
+	@Override
 	public JobDefinition startJob(String jobName, Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 		Assert.notNull(jobName, "Pas de nom de Job défini");
 
@@ -217,10 +223,12 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		}
 	}
 
+	@Override
 	public Map<String, JobDefinition> getJobs() {
 		return jobs;
 	}
 
+	@Override
 	public JobDefinition getJob(String name) {
 		return jobs.get(name);
 	}
@@ -230,6 +238,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	 *
 	 * @return les jobs
 	 */
+	@Override
 	public List<JobDefinition> getSortedJobs() {
 		ArrayList<JobDefinition> list = new ArrayList<JobDefinition>(jobs.values());
 		Collections.sort(list);
@@ -242,6 +251,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	 * @param name le nom du job à arrêter
 	 * @throws SchedulerException en cas d'erreur de scheduling Quartz
 	 */
+	@Override
 	public void stopJob(String name) throws SchedulerException {
 
 		final JobDefinition job = jobs.get(name);
@@ -308,6 +318,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	/**
 	 * Demande à tous les jobs encore en cours de s'arrêter et leur laisse 5 minutes (max) pour ce faire
 	 */
+	@Override
 	public boolean stopAllRunningJobs() {
 
 		boolean tousMorts = true;
@@ -395,6 +406,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		return b.toString();
 	}
 
+	@Override
 	public Object getAttribute(String attribute) throws AttributeNotFoundException, MBeanException, ReflectionException {
 		final JobDefinition def = jobs.get(attribute);
 		if (def == null) {
@@ -405,10 +417,12 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		}
 	}
 
+	@Override
 	public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public AttributeList getAttributes(String[] attributes) {
 		final AttributeList list = new AttributeList(attributes.length);
 		for (String attribute : attributes) {
@@ -423,10 +437,12 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		return list;
 	}
 
+	@Override
 	public AttributeList setAttributes(AttributeList attributes) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public Object invoke(String actionName, Object[] params, String[] signature) throws MBeanException, ReflectionException {
 		try {
 			if (actionName.startsWith("stop")) {
@@ -469,6 +485,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		}
 	}
 
+	@Override
 	public MBeanInfo getMBeanInfo() {
 
 		final List<JobDefinition> shownJobs = new ArrayList<JobDefinition>(jobs.size());
@@ -482,6 +499,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		// (car jconsole montre les attributs par ordre alphabétique quel que soit l'ordre d'apparition
 		// dans le tableau fourni ici)
 		Collections.sort(shownJobs, new Comparator<JobDefinition>() {
+			@Override
 			public int compare(JobDefinition o1, JobDefinition o2) {
 				return o1.getName().compareTo(o2.getName());
 			}

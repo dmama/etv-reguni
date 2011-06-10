@@ -26,34 +26,42 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 	 */
 	private static class DummyStatsService implements StatsService {
 
+		@Override
 		public void registerService(String serviceName, ServiceTracingInterface tracing) {
 			// celle-ci est censée être appelée dans le onSetup()
 		}
 
+		@Override
 		public void registerCache(String serviceName, UniregCacheInterface cache) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public void unregisterService(String serviceName) {
 			// celle-ci est censée être appelée dans le onTearDown()
 		}
 
+		@Override
 		public void unregisterCache(String serviceName) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public void unregisterLoadMonitor(String serviceName) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public ServiceStats getServiceStats(String serviceName) {
 			throw new NotImplementedException();
 		}
 
+		@Override
 		public String buildStats() {
 			throw new NotImplementedException();
 		}
@@ -108,6 +116,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocument = "Mon document tant attendu";
 		final EditiqueResultatRecu envoi = buildResultat(nomDocument);
 		final Thread thread = new Thread(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Thread.sleep(200);
@@ -140,6 +149,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocument = "Mon document tant attendu";
 		final EditiqueResultatRecu envoi = buildResultat(nomDocument);
 		final Thread thread = new Thread(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Thread.sleep(200);
@@ -239,6 +249,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final EditiqueResultatRecu envoi = buildResultat(nomDocumentEvoye);
 		final Thread thread = new Thread(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Thread.sleep(200);
@@ -273,6 +284,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final EditiqueResultatRecu documentAttendu = buildResultat(nomDocumentAttendu);
 		final EditiqueResultatRecu autreDocument = buildResultat(nomDocumentEvoye);
 		final Thread thread = new Thread(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Thread.sleep(200);

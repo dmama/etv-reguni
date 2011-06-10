@@ -1,17 +1,18 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -37,6 +38,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		// Paramètres
 		document.addEntete1("Paramètres");
 		document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+			@Override
 			public void fillTable(PdfTableSimple table) throws DocumentException {
 				table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			}
@@ -50,6 +52,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 			}
 
 			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					DecimalFormat df = new DecimalFormat("###,###,###.#");
 					table.addLigne("Nombre moyen de tâche par contribuable: ", df.format(results.getNombreTacheMoyen()) + " tâche(s)");

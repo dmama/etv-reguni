@@ -63,6 +63,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		this.cachePercent = cachePercent;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		final EnvironmentConfig envConfig = new EnvironmentConfig();
@@ -109,6 +110,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		map = new StoredMap<ObjectKey, T>(mainDb, keyBinding, valueBinding, true);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		secDb.close();
 		catalogDb.close();
@@ -116,6 +118,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		env.close();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public T get(ObjectKey key) {
 		final T o = map.get(key);
@@ -128,14 +131,17 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		return o;
 	}
 
+	@Override
 	public void put(ObjectKey key, T object) {
 		map.put(key, object);
 	}
 
+	@Override
 	public void putAll(Map<? extends ObjectKey, T> m) {
 		map.putAll(m);
 	}
 
+	@Override
 	public void removeAll(long id) {
 
 		//final long start = System.nanoTime();
@@ -175,6 +181,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		}
 	}
 
+	@Override
 	public void clear() {
 		map.clear();
 	}
@@ -192,6 +199,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 			this.primareyKeyBinding = primareyKeyBinding;
 		}
 
+		@Override
 		public boolean createSecondaryKey(SecondaryDatabase secondary, DatabaseEntry key, DatabaseEntry data, DatabaseEntry result) {
 			final ObjectKey k = primareyKeyBinding.entryToObject(key);
 			final long id = k.getId();
@@ -200,6 +208,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		}
 	}
 
+	@Override
 	public CacheStats buildStats() {
 		return new SimpleCacheStats(stats);
 	}

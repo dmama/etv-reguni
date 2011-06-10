@@ -63,12 +63,14 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
+	@Override
 	public ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuables, boolean avecDebiteurs,
 	                                                          StatusManager statusManager) {
 		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilCacheWarmer);
 		return processor.run(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, statusManager);
 	}
 
+	@Override
 	public ListeContribuablesResidentsSansForVaudoisResults produireListeContribuablesSuissesOuPermisCResidentsMaisSansForVd(RegDate dateTraitement, int nbThreads, StatusManager statusManager) {
 		final ListeContribuablesResidentsSansForVaudoisProcessor processor = new ListeContribuablesResidentsSansForVaudoisProcessor(hibernateTemplate,
 				tiersService, adresseService, transactionManager, tiersDAO, infraService, serviceCivilCacheWarmer);

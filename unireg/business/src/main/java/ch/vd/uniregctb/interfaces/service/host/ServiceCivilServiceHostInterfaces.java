@@ -37,6 +37,7 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 		this.serviceCivil = serviceCivil;
 	}
 
+	@Override
 	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Calling getIndividu(" + noIndividu + ", " + annee + ")");
@@ -59,6 +60,7 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 		}
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 		try {
@@ -86,6 +88,7 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 		}
 	}
 
+	@Override
 	public boolean isWarmable() {
 		return false;
 	}

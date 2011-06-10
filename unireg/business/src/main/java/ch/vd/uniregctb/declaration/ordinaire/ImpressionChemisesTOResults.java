@@ -83,6 +83,7 @@ public class ImpressionChemisesTOResults extends JobResults<Long, ImpressionChem
 		this.nomOID = nomOID;
 	}
 
+	@Override
 	public void addAll(ImpressionChemisesTOResults autre) {
 		chemisesImprimees.addAll(autre.chemisesImprimees);
 		erreurs.addAll(autre.erreurs);
@@ -130,6 +131,7 @@ public class ImpressionChemisesTOResults extends JobResults<Long, ImpressionChem
 		return dateTraitement;
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		addOnCommitException(element, e);
 	}

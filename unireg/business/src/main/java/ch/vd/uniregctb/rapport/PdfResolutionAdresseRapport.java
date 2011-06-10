@@ -12,7 +12,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 
 /**
  * Rapport PDF d'exécution du batch d'échéance des LRs
@@ -36,6 +35,7 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 				}
@@ -51,6 +51,7 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre d'adresses traitées :", String.valueOf(results.nbAdresseTotal));
 					table.addLigne("Nombre d'adresses résolues :", String.valueOf(results.listeAdresseResolues.size()));

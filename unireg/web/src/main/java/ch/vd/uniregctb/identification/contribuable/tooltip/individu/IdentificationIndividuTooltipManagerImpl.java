@@ -14,6 +14,7 @@ public class IdentificationIndividuTooltipManagerImpl implements IdentificationI
 		this.tiersDAO = tiersDAO;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Long getNumeroIndividuFromCtb(Long noCtb) {
 		if (noCtb == null) {

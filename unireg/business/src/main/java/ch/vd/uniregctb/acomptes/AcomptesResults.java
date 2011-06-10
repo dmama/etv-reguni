@@ -311,6 +311,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 	    this.contribuablesIgnores.add(new InfoContribuableNonSoumisAuxAcomptes(ctb.getNumero(), anneeFiscale, assujettissement));
     }
 
+    @Override
     public void addAll(AcomptesResults source) {
 	    super.addAll(source);
         this.contribuablesAssujettis.addAll(source.contribuablesAssujettis);
@@ -322,6 +323,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
         super.sort();
 
         Collections.sort(this.contribuablesAssujettis, new Comparator<InfoContribuableAssujetti>() {
+            @Override
             public int compare(InfoContribuableAssujetti o1, InfoContribuableAssujetti o2) {
                 final long numero1 = o1.getNumeroCtb();
                 final long numero2 = o2.getNumeroCtb();
@@ -330,6 +332,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
         });
 
 	    Collections.sort(this.contribuablesIgnores, new Comparator<InfoContribuableIgnore>() {
+		    @Override
 		    public int compare(InfoContribuableIgnore o1, InfoContribuableIgnore o2) {
 			    final long numero1 = o1.getNumeroCtb();
 			    final long numero2 = o2.getNumeroCtb();

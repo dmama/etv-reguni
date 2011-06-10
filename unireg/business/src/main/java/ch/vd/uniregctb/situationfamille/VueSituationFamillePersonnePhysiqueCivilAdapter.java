@@ -53,38 +53,47 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public Long getId() {
 		return null; // par définition
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public Integer getNombreEnfants() {
 		return null;
 	}
 
+	@Override
 	public Source getSource() {
 		return Source.CIVILE;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public EtatCivil getEtatCivil() {
 		return etatCivil;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return false; // par définition
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return null; // par définition
 	}

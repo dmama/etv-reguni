@@ -49,6 +49,7 @@ public class UniregModeHelper implements InitializingBean {
 		UniregModeHelper.environnement = environnement;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (DateConstants.TIME_OFFSET != 0) {
 			if (testMode) {

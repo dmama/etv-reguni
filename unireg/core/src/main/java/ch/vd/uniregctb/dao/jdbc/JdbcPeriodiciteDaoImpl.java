@@ -26,12 +26,14 @@ public class JdbcPeriodiciteDaoImpl implements JdbcPeriodiciteDao {
 
 	private static final PeriodiciteMapper ROW_MAPPER = new PeriodiciteMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Periodicite get(long forId, JdbcTemplate template) {
 		final Pair<Long, Periodicite> pair = (Pair<Long, Periodicite>) DataAccessUtils.uniqueResult(template.query(PeriodiciteMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<Periodicite> getForTiers(long tiersId, JdbcTemplate template) {
 		final List<Pair<Long, Periodicite>> list = template.query(PeriodiciteMapper.selectByTiersId(), new Object[]{tiersId}, ROW_MAPPER);
@@ -42,11 +44,13 @@ public class JdbcPeriodiciteDaoImpl implements JdbcPeriodiciteDao {
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<Periodicite>> getForTiers(Collection<Long> tiersId, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, Periodicite>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, Periodicite>>() {
+			@Override
 			public List<Pair<Long, Periodicite>> process(List<Long> ids) {
 				return template.query(PeriodiciteMapper.selectByTiersIds(ids), ROW_MAPPER);
 			}
@@ -92,6 +96,7 @@ public class JdbcPeriodiciteDaoImpl implements JdbcPeriodiciteDao {
 			return BASE_SELECT + " where DEBITEUR_ID in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final long temp6 = rs.getLong(6);

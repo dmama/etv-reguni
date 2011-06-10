@@ -41,6 +41,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 		this.identCtbService = identCtbService;
 	}
 
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.messageSourceAccessor = new MessageSourceAccessor(applicationContext);
 	}
@@ -50,6 +51,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 	 *
 	 * @return
 	 */
+	@Override
 	public IdentificationMessagesStatsView getView() {
 		IdentificationMessagesStatsView identificationMessagesStatsView = new IdentificationMessagesStatsView();
 		identificationMessagesStatsView.setTypeMessage(TOUS);
@@ -57,6 +59,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 		return identificationMessagesStatsView;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesStatsResultView> calculerStats(IdentificationContribuableCriteria bean) {
 		List<IdentificationMessagesStatsResultView> statsView = new ArrayList<IdentificationMessagesStatsResultView>();

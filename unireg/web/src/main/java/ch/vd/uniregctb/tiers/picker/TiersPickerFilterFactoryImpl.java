@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class TiersPickerFilterFactoryImpl implements TiersPickerFilterFactory {
 
+	@Override
 	public TiersPickerFilter parse(String paramsString) {
 		final Map<String, String> params = mapParams(paramsString);
 		return new BasicTiersPickerFilter(params);

@@ -2,12 +2,12 @@ package ch.vd.uniregctb.norentes.common;
 
 import java.util.Collection;
 
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
-
 import annotation.AfterClass;
 import annotation.BeforeClass;
 import annotation.EtapeAttribute;
+import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.InitializingBean;
+
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -24,6 +24,7 @@ public  abstract class NorentesScenario implements InitializingBean, BeanNameAwa
 		return beanName;
 	}
 
+	@Override
 	public void setBeanName(String name) {
 		this.beanName = name;
 	}
@@ -36,6 +37,7 @@ public  abstract class NorentesScenario implements InitializingBean, BeanNameAwa
 		return getEtapeAttributes().size();
 	}
 
+	@Override
 	public void afterPropertiesSet() {
 		registrar.register(this);
 	}

@@ -80,11 +80,13 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 		this.editiqueHelper = editiqueHelper;
 	}
 
+	@Override
 	public String calculPrefixe() {
 		String prefixe = PREFIXE_CHEMISE_TO;
 		return prefixe;
 	}
 
+	@Override
 	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
 		return String.format(
 				"%s %s %s %s" ,
@@ -95,6 +97,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 		);
 	}
 
+	@Override
 	public FichierImpressionDocument remplitTaxationOffice(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 
 		final Contribuable contribuable = (Contribuable) declaration.getTiers();

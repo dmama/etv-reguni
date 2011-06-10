@@ -46,6 +46,7 @@ public class AcomptesServiceImpl implements AcomptesService {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
+	@Override
 	public AcomptesResults produireAcomptes(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
 		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO);
 		return processor.run(dateTraitement, nbThreads, annee, statusManager);

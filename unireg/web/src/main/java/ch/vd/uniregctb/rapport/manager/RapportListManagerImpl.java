@@ -24,6 +24,7 @@ public class RapportListManagerImpl extends TiersManager implements RapportListM
 	 * @param numero
 	 * @return une vue RapportListView
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public RapportListView get(Long numero) {
 		Tiers tiers = tiersService.getTiers(numero);

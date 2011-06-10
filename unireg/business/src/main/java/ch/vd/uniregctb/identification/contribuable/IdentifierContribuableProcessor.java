@@ -95,6 +95,7 @@ public class IdentifierContribuableProcessor {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
         final List<IdentificationContribuable> list = identCtbDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
+            @Override
             public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException {
                 Criteria crit = session.createCriteria(IdentificationContribuable.class);
                 crit.add(Restrictions.in("id", batch));
@@ -131,9 +132,11 @@ public class IdentifierContribuableProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> idsMessage = identCtbDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryMessage);
 						final List<String> etats = new ArrayList<String>();

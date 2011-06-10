@@ -44,6 +44,7 @@ public class AnnuleEtRemplace extends RapportEntreTiers {
 		return TypeRapportEntreTiers.ANNULE_ET_REMPLACE;
 	}
 
+	@Override
 	public RapportEntreTiers duplicate() {
 		return new AnnuleEtRemplace(this);
 	}

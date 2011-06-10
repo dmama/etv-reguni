@@ -217,14 +217,17 @@ public class RapprochementCtbTestApp extends BusinessItTestApplication {
 		public JobStatusManager() {
 		}
 
+		@Override
 		public synchronized boolean interrupted() {
 			return false;
 		}
 
+		@Override
 		public synchronized void setMessage(String msg) {
 
 		}
 
+		@Override
 		public void setMessage(String msg, int percentProgression) {
 
 		}

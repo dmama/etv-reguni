@@ -107,6 +107,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 			GestionIndexation bean = (GestionIndexation)command;
 			try {
 				globalIndex.search(bean.getRequete(), maxHits, new SearchCallback() {
+					@Override
 					public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 						// on n'est pas intéressé par les résultats
 					}
@@ -166,6 +167,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		final List<IndexDocument> listIndexDocument = new ArrayList<IndexDocument>();
 
 		globalIndex.search(bean.getRequete(), maxHits, new SearchCallback() {
+			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				for (ScoreDoc h : hits.scoreDocs) {
 					Document doc;

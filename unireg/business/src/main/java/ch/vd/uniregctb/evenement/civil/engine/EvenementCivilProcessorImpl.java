@@ -53,6 +53,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public void traiteEvenementsCivils(StatusManager status) {
 
@@ -60,6 +61,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return evenementCivilExterneDAO.getEvenementCivilsNonTraites();
 			}
@@ -71,6 +73,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Long traiteEvenementCivil(final Long evenementCivilId, boolean refreshCache) {
 		traiteEvenements(Arrays.asList(evenementCivilId), true, refreshCache, null);
 		return 0L;
@@ -79,6 +82,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Long recycleEvenementCivil(final Long evenementCivilId) {
 		traiteEvenements(Arrays.asList(evenementCivilId), false, false, null);
 		return 0L;
@@ -103,6 +107,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 			// Tout d'abord, on essaie de traiter l'événement
 			result = template.execute(new CheckedTransactionCallback<Long>() {
+				@Override
 				public Long doInTransaction(TransactionStatus status) throws Exception {
 
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -151,6 +156,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		t.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 
 		return t.execute(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
@@ -326,6 +332,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return evenementCivilExterneDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
 			}
@@ -363,6 +370,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				final TransactionTemplate template = new TransactionTemplate(transactionManager);
 				template.setReadOnly(true);
 				final Long numIndividu = template.execute(new TransactionCallback<Long>() {
+					@Override
 					public Long doInTransaction(TransactionStatus status) {
 						return evenementCivilExterneDAO.get(id).getNumeroIndividuPrincipal();
 					}

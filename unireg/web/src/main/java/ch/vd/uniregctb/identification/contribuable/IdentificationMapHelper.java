@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -63,6 +62,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<PrioriteEmetteur> listesPriorites = template.execute(new TransactionCallback<List<PrioriteEmetteur>>() {
+			@Override
 			public List<PrioriteEmetteur> doInTransaction(TransactionStatus status) {
 				if (isTraite) {
 					return identCtbDAO.getListePrioriteMessagesTraites();
@@ -139,6 +139,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		final Map<Etat, String> mapEtat = new HashMap<Etat, String>();
 		final List<Etat> typesMessage = template.execute(new TransactionCallback<List<Etat>>() {
+			@Override
 			public List<Etat> doInTransaction(TransactionStatus status) {
 				if (isTraite) {
 					return identCtbDAO.getListeEtatsMessagesTraites();
@@ -169,6 +170,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		final Map<String, String> mapMessage = new HashMap<String, String>();
 		final List<String> typesMessage = template.execute(new TransactionCallback<List<String>>() {
+			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getTypesMessage();
 			}
@@ -195,6 +197,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		final Map<String, String> mapMessage = new HashMap<String, String>();
 		final List<String> typesMessage = template.execute(new TransactionCallback<List<String>>() {
+			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
 				if (isTraite) {
 					return identCtbDAO.getTypesMessageEtatsTraites();
@@ -225,6 +228,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		final Map<String, String>	mapUtilisateur = new HashMap<String, String>();
 		final List<String> listVisaUser = template.execute(new TransactionCallback<List<String>>() {
+			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getTraitementUser();
 			}
@@ -256,6 +260,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<String> emetteurs = template.execute(new TransactionCallback<List<String>>() {
+			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
 				if(isTraite){
 					return identCtbDAO.getEmetteursIdEtatsTraites();
@@ -296,6 +301,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Integer> periodes = template.execute(new TransactionCallback<List<Integer>>() {
+			@Override
 			public List<Integer> doInTransaction(TransactionStatus status) {
 				if (isTraite) {
 					return identCtbDAO.getPeriodeEtatsTraites();
@@ -325,6 +331,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Integer> periodes = template.execute(new TransactionCallback<List<Integer>>() {
+			@Override
 			public List<Integer> doInTransaction(TransactionStatus status) {
 				return identCtbDAO.getPeriodes();
 			}

@@ -26,6 +26,7 @@ class Periode implements Comparable<Periode> {
 		return start.compareTo(timespamp) <= 0 && timespamp.compareTo(end) <= 0;
 	}
 
+	@Override
 	public int compareTo(Periode o) {
 		return Integer.valueOf(start.getHour()).compareTo(o.start.getHour());
 	}

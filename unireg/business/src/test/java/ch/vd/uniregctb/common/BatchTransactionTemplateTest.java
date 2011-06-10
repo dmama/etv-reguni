@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -27,7 +27,11 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class BatchTransactionTemplateTest extends BusinessTest {
 
@@ -116,11 +120,13 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
 				final List<Tiers> lines = tiersDAO.getAll();
 				Collections.sort(lines, new Comparator<Tiers>() {
+					@Override
 					public int compare(Tiers o1, Tiers o2) {
 						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 					}
@@ -173,11 +179,13 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
 				final List<Tiers> lines = tiersDAO.getAll();
 				Collections.sort(lines, new Comparator<Tiers>() {
+					@Override
 					public int compare(Tiers o1, Tiers o2) {
 						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 					}
@@ -224,11 +232,13 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
 				final List<Tiers> lines = tiersDAO.getAll();
 				Collections.sort(lines, new Comparator<Tiers>() {
+					@Override
 					public int compare(Tiers o1, Tiers o2) {
 						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 					}
@@ -290,6 +300,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				/**
@@ -302,6 +313,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 				 */
 				final List<Tiers> lines = tiersDAO.getAll();
 				Collections.sort(lines, new Comparator<Tiers>() {
+					@Override
 					public int compare(Tiers o1, Tiers o2) {
 						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
 					}
@@ -373,6 +385,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				/*
 				 * On vérifie que la base est toujours vide
@@ -389,6 +402,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 	private void assertTiersCountHorsTransaction(final int count) throws Exception {
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				assertEquals(count, tiersDAO.getCount(Tiers.class));
 				return null;
@@ -484,10 +498,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			traites.add(element);
 		}
 
+		@Override
 		public void addErrorException(Long element, Exception e) {
 			erreurs.add(element);
 		}
 
+		@Override
 		public void addAll(Rapport right) {
 			this.traites.addAll(right.traites);
 			this.erreurs.addAll(right.erreurs);

@@ -1,16 +1,11 @@
 package ch.vd.uniregctb.rapport;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.*;
-
-import org.apache.log4j.Logger;
 
 import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
@@ -26,6 +21,15 @@ import com.lowagie.text.pdf.PdfAnnotation;
 import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.codec.PngImage;
+import org.apache.log4j.Logger;
+
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.ApplicationInfo;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.TimeHelper;
 
 /**
  * Classe de base des rapports au format PDF du projet Unireg.
@@ -236,10 +240,12 @@ public abstract class PdfRapport extends Document {
 	 */
 	protected static String ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(ctbsTraites, filename, status, 10, new CsvHelper.Filler<Long>() {
+			@Override
 			public void fillHeader(StringBuilder b) {
 				b.append("NO_CTB");
 			}
 
+			@Override
 			public void fillLine(StringBuilder b, Long elt) {
 				b.append(elt);
 			}
@@ -251,11 +257,13 @@ public abstract class PdfRapport extends Document {
 	 */
 	protected static <T extends JobResults.Info> String asCsvFile(List<T> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, AVG_LINE_LEN, new CsvHelper.Filler<T>() {
+			@Override
 			public void fillHeader(StringBuilder b) {
 				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")
 						.append(COMMA).append("RAISON").append(COMMA).append("COMMENTAIRE");
 			}
 
+			@Override
 			public void fillLine(StringBuilder b, T elt) {
 				b.append(elt.officeImpotID).append(COMMA);
 				b.append(elt.noCtb).append(COMMA);

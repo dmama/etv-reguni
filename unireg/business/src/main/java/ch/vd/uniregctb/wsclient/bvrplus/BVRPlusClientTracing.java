@@ -28,6 +28,7 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 		this.statsService = statsService;
 	}
 
+	@Override
 	public BvrReponse getBVRDemande(final BvrDemande bvrDemande) throws BVRPlusClientException {
 		final long start = tracing.start();
 		try {
@@ -48,6 +49,7 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 		}
 	}
 
+	@Override
 	public void ping() throws BVRPlusClientException {
 		final long start = tracing.start();
 		try {
@@ -58,12 +60,14 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);

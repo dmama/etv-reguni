@@ -20,6 +20,7 @@ public class InMemoryDataSourceMCF extends AbstractXADataSourceMCF<StandardXADat
 	private static final long serialVersionUID = -6861985984667770096L;
 
 	private static final ExceptionSorter exceptionSorter = new ExceptionSorter() {
+		@Override
 		public boolean isExceptionFatal(Exception e) {
 			boolean fatal = true;
 			final String message = e.getMessage();
@@ -42,6 +43,7 @@ public class InMemoryDataSourceMCF extends AbstractXADataSourceMCF<StandardXADat
 			return fatal;
 		}
 
+		@Override
 		public boolean rollbackOnFatalException() {
 			return true;
 		}
@@ -54,6 +56,7 @@ public class InMemoryDataSourceMCF extends AbstractXADataSourceMCF<StandardXADat
 	/**
 	 * @see org.tranql.connector.UserPasswordManagedConnectionFactory#getUserName()
 	 */
+	@Override
 	public String getUserName() {
 		return ((StandardXADataSource) xaDataSource).getUser();
 	}
@@ -61,6 +64,7 @@ public class InMemoryDataSourceMCF extends AbstractXADataSourceMCF<StandardXADat
 	/**
 	 * @see org.tranql.connector.UserPasswordManagedConnectionFactory#getPassword()
 	 */
+	@Override
 	public String getPassword() {
 		return ((StandardXADataSource) xaDataSource).getPassword();
 	}

@@ -1,13 +1,12 @@
 package ch.vd.uniregctb.webservices.securite.impl;
 
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +33,12 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 
 	private final AtomicInteger appelsEnCours = new AtomicInteger(0);
 
+	@Override
 	public int getLoad() {
 		return appelsEnCours.intValue();
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security")
@@ -63,6 +64,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 		}
 	}
 
+	@Override
 	@Deprecated
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod

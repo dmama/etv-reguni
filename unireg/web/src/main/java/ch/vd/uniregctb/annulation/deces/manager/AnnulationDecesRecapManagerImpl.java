@@ -58,6 +58,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public AnnulationDecesRecapView get(Long numero) {
 		AnnulationDecesRecapView annulationDecesRecapView = new AnnulationDecesRecapView();
@@ -93,6 +94,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	 *
 	 * @param annulationDecesRecapView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(AnnulationDecesRecapView annulationDecesRecapView) throws MetierServiceException {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(annulationDecesRecapView.getPersonne().getNumero());
@@ -111,12 +113,14 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 		return tiersService.isVeuvageMarieSeul(pp);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isVeuvageMarieSeul(long noTiers) {
 		final Tiers tiers = tiersService.getTiers(noTiers);
 		return tiers instanceof PersonnePhysique && tiersService.isVeuvageMarieSeul((PersonnePhysique) tiers);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isDecede(long noTiers) {
 		final Tiers tiers = tiersService.getTiers(noTiers);
@@ -131,6 +135,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	}
 
 
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

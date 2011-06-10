@@ -28,6 +28,7 @@ public class AciComClientTracing implements AciComClient, InitializingBean, Disp
 		this.statsService = statsService;
 	}
 
+	@Override
 	public ContenuMessage recupererMessage(final RecupererContenuMessage infosMessage) throws AciComClientException {
 		final long start = tracing.start();
 		try {
@@ -43,12 +44,14 @@ public class AciComClientTracing implements AciComClient, InitializingBean, Disp
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);

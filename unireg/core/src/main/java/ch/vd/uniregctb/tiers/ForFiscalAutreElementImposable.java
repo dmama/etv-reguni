@@ -24,6 +24,7 @@ public class ForFiscalAutreElementImposable extends ForFiscalRevenuFortune {
 		super(ffaei);
 	}
 
+	@Override
 	public ForFiscal duplicate() {
 		return new ForFiscalAutreElementImposable(this);
 	}

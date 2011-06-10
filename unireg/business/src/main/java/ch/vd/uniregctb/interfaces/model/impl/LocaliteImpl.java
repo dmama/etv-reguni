@@ -45,14 +45,17 @@ public class LocaliteImpl implements Localite, Serializable {
 		this.valide = target.isValide();
 	}
 
+	@Override
 	public Integer getChiffreComplementaire() {
 		return chiffreComplementaire;
 	}
 
+	@Override
 	public Commune getCommuneLocalite() {
 		return commune;
 	}
 
+	@Override
 	public Integer getComplementNPA() {
 		return complementNPA;
 	}
@@ -66,38 +69,47 @@ public class LocaliteImpl implements Localite, Serializable {
 		}
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFin;
 	}
 
+	@Override
 	public Integer getNPA() {
 		return npa;
 	}
 
+	@Override
 	public Integer getNoCommune() {
 		return noCommune;
 	}
 
+	@Override
 	public Integer getNoOrdre() {
 		return noOrdre;
 	}
 
+	@Override
 	public String getNomAbregeMajuscule() {
 		return nomAbregeMajuscule;
 	}
 
+	@Override
 	public String getNomAbregeMinuscule() {
 		return nomAbregeMinuscule;
 	}
 
+	@Override
 	public String getNomCompletMajuscule() {
 		return nomCompletMajuscule;
 	}
 
+	@Override
 	public String getNomCompletMinuscule() {
 		return nomCompletMinuscule;
 	}
 
+	@Override
 	public boolean isValide() {
 		return valide;
 	}

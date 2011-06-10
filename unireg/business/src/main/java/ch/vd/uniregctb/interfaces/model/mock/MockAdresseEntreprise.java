@@ -40,10 +40,12 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.numeroPostalComplementaire = numeroPostalComplementaire;
 	}
 
+	@Override
 	public String getComplement() {
 		return complement;
 	}
 
+	@Override
 	public Integer getNumeroTechniqueRue() {
 		return numeroTechniqueRue;
 	}
@@ -52,6 +54,7 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.complement = complement;
 	}
 
+	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
@@ -60,6 +63,7 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.dateDebutValidite = dateDebutValidite;
 	}
 
+	@Override
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
 	}
@@ -68,14 +72,17 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.dateFinValidite = dateFinValidite;
 	}
 
+	@Override
 	public String getLocaliteAbregeMinuscule() {
 		return localite;
 	}
 
+	@Override
 	public String getLocaliteCompletMinuscule() {
 		return localite;
 	}
 
+	@Override
 	public Pays getPays() {
 		return pays;
 	}
@@ -84,18 +91,22 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.localite = localite;
 	}
 
+	@Override
 	public String getNumeroMaison() {
 		return numeroMaison;
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return numeroPostal;
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return numeroPostalComplementaire;
 	}
@@ -104,6 +115,7 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.numeroMaison = numeroMaison;
 	}
 
+	@Override
 	public String getRue() {
 		return rue;
 	}
@@ -112,6 +124,7 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 		this.rue = rue;
 	}
 
+	@Override
 	public TypeAdressePM getType() {
 		return type;
 	}

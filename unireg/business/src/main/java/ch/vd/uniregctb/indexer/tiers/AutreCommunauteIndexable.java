@@ -22,6 +22,7 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 		super(adresseService, tiersService, serviceInfra, autreCommunaute);
 	}
 
+	@Override
 	public String getSubType() {
 		return SUB_TYPE;
 	}

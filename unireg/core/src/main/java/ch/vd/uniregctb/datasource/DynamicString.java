@@ -15,18 +15,22 @@ public class DynamicString implements FactoryBean, InitializingBean {
 
 	private String instance;
 
+	@Override
 	public Object getObject() throws Exception {
 		return instance;
 	}
 
+	@Override
 	public Class getObjectType() {
 		return String.class;
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {

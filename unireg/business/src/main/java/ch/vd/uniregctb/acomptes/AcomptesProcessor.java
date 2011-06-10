@@ -55,15 +55,18 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 		// lance le vrai boulot!
 		return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<AcomptesResults, AcomptesThread>() {
 
+			@Override
 			public AcomptesResults createResults(RegDate dateTraitement) {
 				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService);
 			}
 
+			@Override
 			public AcomptesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilCacheWarmer, tiersService,
 						status, compteur, transactionManager, tiersDAO, hibernateTemplate);
 			}
 
+			@Override
 			public Iterator<Long> getIdIterator(Session session) {
 				return createIteratorOnIDsOfCtbs(session, annee);
 			}

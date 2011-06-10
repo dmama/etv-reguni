@@ -241,6 +241,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 
 		// création des contribuables
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique leon = addHabitant(INDIVIDU_MARIE2);
 				final PersonnePhysique helene = addHabitant(INDIVIDU_MARIE2_CONJOINT);

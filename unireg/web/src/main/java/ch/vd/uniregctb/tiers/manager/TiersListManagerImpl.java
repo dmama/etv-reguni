@@ -31,6 +31,7 @@ public class TiersListManagerImpl implements TiersListManager {
 	 * @throws ServiceInfrastructureException
 	 * @throws NumberFormatException
 	 */
+	@Override
 	public void initFieldsWithParams(	TiersCriteriaView tiersCriteriaView,
 										TypeTiers typeTiers,
 										String numero,

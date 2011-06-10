@@ -100,6 +100,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
 		listener.setHandler(new EvenementIAMHandler() {
+			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
 			}
@@ -132,6 +133,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
 		listener.setHandler(new EvenementIAMHandler() {
+			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
 			}

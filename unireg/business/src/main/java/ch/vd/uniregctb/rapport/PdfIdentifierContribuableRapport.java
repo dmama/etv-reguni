@@ -35,6 +35,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 				}
@@ -50,6 +51,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre de messages identifiés :", String.valueOf(results.identifies.size()));
 					table.addLigne("Nombre de messages non identifiés :", String.valueOf(results.nonIdentifies.size()));

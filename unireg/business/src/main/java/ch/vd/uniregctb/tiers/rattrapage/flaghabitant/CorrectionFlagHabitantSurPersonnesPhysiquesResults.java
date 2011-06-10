@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class CorrectionFlagHabitantSurPersonnesPhysiquesResults extends CorrectionFlagHabitantAbstractResults<CorrectionFlagHabitantSurPersonnesPhysiquesResults> {
 
@@ -27,11 +28,13 @@ public class CorrectionFlagHabitantSurPersonnesPhysiquesResults extends Correcti
 		erreurs.add(new ContribuableErreur(pp.getNumero(), Message.PP_NON_HABITANT_SANS_NUMERO_INDIVIDU));
 	}
 
+	@Override
 	public void addErrorException(Long noCtb, Exception e) {
 		final String message = (StringUtils.isEmpty(e.getMessage()) ? e.getClass().getName() : e.getMessage());
 		erreurs.add(new ContribuableException(noCtb, message));
 	}
 
+	@Override
 	public void addAll(CorrectionFlagHabitantSurPersonnesPhysiquesResults contribution) {
 		nouveauxHabitants.addAll(contribution.nouveauxHabitants);
 		nouveauxNonHabitants.addAll(contribution.nouveauxNonHabitants);

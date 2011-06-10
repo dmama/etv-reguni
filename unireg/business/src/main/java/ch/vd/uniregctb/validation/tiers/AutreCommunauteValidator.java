@@ -50,6 +50,7 @@ public class AutreCommunauteValidator extends ContribuableValidator<AutreCommuna
 		return results;
 	}
 
+	@Override
 	public Class<AutreCommunaute> getValidatedClass() {
 		return AutreCommunaute.class;
 	}

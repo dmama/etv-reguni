@@ -30,6 +30,7 @@ public class EtablissementValidator extends ContribuableValidator<Etablissement>
 		return results;
 	}
 
+	@Override
 	public Class<Etablissement> getValidatedClass() {
 		return Etablissement.class;
 	}

@@ -36,10 +36,12 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 	private String serviceDestination;
 	private String serviceReplyTo;
 
+	@Override
 	public String envoyerDocumentImmediatement(String nomDocument, String typeDocument, XmlObject document, TypeFormat typeFormat, boolean archive) throws EditiqueException {
 		return envoyer(nomDocument, typeDocument, document, TypeImpression.DIRECT, typeFormat, archive, noTxEsbTemplate);
 	}
 
+	@Override
 	public String envoyerDocument(String nomDocument, String typeDocument, XmlObject document, TypeFormat typeFormat, boolean archive) throws EditiqueException {
 		return envoyer(nomDocument, typeDocument, document, TypeImpression.BATCH, typeFormat, archive, esbTemplate);
 	}

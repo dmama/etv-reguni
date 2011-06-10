@@ -30,6 +30,7 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	public void testSave() {
 
 		final Long mvtId = getHibernateTemplate().executeWithNewSession(new HibernateCallback<Long>() {
+			@Override
 			public Long doInHibernate(Session session) throws HibernateException, SQLException {
 				final CollectiviteAdministrative oid = addCollectiviteAdministrative(7);
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1960, 3, 12), Sexe.FEMININ);

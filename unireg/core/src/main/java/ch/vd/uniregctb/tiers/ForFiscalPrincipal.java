@@ -125,6 +125,7 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.common.Duplicable#duplicate()
 	 */
+	@Override
 	public ForFiscal duplicate() {
 		return new ForFiscalPrincipal(this);
 	}

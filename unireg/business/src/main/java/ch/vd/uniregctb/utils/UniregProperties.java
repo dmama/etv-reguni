@@ -50,6 +50,7 @@ public class UniregProperties implements InitializingBean {
 		return map;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		LOGGER.info("Unireg Properties filename: " + filename);
 

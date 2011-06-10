@@ -7,11 +7,13 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.SelectUtilisateurView;
 
 public class SelectUtilisateurValidator implements Validator {
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return SelectUtilisateurView.class.equals(clazz) ;
 	}
 
+	@Override
 	public void validate(Object obj, Errors errors) {
 		SelectUtilisateurView selectUtilisateurView = (SelectUtilisateurView) obj;
 		if(selectUtilisateurView.getNumeroUtilisateur() == null) {

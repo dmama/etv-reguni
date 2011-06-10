@@ -112,6 +112,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 	}
 
 	private class StringEditor implements Editor {
+		@Override
 		public void generate(TagWriter tagWriter, String value) throws JspException {
 
 			final String v = value == null ? "" : StringEscapeUtils.escapeHtml(value);
@@ -141,6 +142,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 	}
 
 	private class NumberEditor implements Editor {
+		@Override
 		public void generate(TagWriter tagWriter, String value) throws JspException {
 
 			final String v = value == null ? "" : value;
@@ -170,6 +172,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 	}
 
 	private class BooleanEditor implements Editor {
+		@Override
 		public void generate(TagWriter tagWriter, String value) throws JspException {
 
 			tagWriter.startTag("input");
@@ -215,6 +218,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 	}
 
 	private class DateEditor implements Editor {
+		@Override
 		public void generate(TagWriter tagWriter, String value) throws JspException {
 
 			if (readonly) {
@@ -251,6 +255,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 
 	private class EnumEditor implements Editor {
 
+		@Override
 		public void generate(TagWriter tagWriter, String value) throws JspException {
 
 			Assert.isTrue(clazz.isEnum());

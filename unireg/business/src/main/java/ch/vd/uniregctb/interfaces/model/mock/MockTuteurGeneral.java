@@ -9,6 +9,7 @@ public class MockTuteurGeneral implements TuteurGeneral {
 	private String nomOffice;
 	private String prenomContact;
 
+	@Override
 	public String getNoTelephoneContact() {
 		return noTelephoneContact;
 	}
@@ -17,6 +18,7 @@ public class MockTuteurGeneral implements TuteurGeneral {
 		this.noTelephoneContact = noTelephoneContact;
 	}
 
+	@Override
 	public String getNomContact() {
 		return nomContact;
 	}
@@ -25,6 +27,7 @@ public class MockTuteurGeneral implements TuteurGeneral {
 		this.nomContact = nomContact;
 	}
 
+	@Override
 	public String getNomOffice() {
 		return nomOffice;
 	}
@@ -33,6 +36,7 @@ public class MockTuteurGeneral implements TuteurGeneral {
 		this.nomOffice = nomOffice;
 	}
 
+	@Override
 	public String getPrenomContact() {
 		return prenomContact;
 	}

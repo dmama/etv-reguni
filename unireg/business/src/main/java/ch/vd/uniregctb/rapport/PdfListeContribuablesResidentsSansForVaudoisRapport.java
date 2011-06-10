@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Rapport PDF du batch qui liste les contribuables résidents suisses ou permis C sans for vaudois
@@ -39,6 +40,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		    }
 
 		    addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+		        @Override
 		        public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Nombre total de contribuables inspectés :", String.valueOf(results.getNombreContribuablesInspectes()));
 		            table.addLigne("Nombre de contribuables identifiés :", String.valueOf(results.getContribuablesIdentifies().size()));

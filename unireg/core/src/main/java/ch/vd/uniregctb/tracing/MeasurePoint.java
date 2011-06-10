@@ -105,6 +105,7 @@ public class MeasurePoint implements Comparable<MeasurePoint> {
 		}
 	}
 
+	@Override
 	public int compareTo(MeasurePoint other) {
 		// Compares as milliseconds, else we loose too much when truncating to int!
 		return (int)((other.getCallsTime() - getCallsTime()) / 1000000);

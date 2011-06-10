@@ -54,11 +54,13 @@ public class CoupleRecapValidator implements Validator {
 		this.validatorHelper = validatorHelper;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return CoupleRecapView.class.equals(clazz) ;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 

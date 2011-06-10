@@ -121,6 +121,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 	@Etape(id = 3, descr = "Obtention permis C d'Antoine")
 	public void etape3() throws Exception {
 		doModificationIndividu(noIndAntoine, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				final MockPermis permis = new MockPermis();
 				permis.setTypePermis(TypePermis.ETABLISSEMENT);

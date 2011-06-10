@@ -26,6 +26,7 @@ public class VaudoisOrdinaire extends Assujettissement {
 		return "Imposition ordinaire VD";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new VaudoisOrdinaire(this, (VaudoisOrdinaire) next);
 	}

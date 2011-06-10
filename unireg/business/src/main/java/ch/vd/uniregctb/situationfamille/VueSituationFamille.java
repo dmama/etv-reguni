@@ -30,11 +30,13 @@ public interface VueSituationFamille extends DateRange {
 	/**
 	 * @return la date de début de validité de la situation de famille.
 	 */
+	@Override
 	RegDate getDateDebut();
 
 	/**
 	 * @return la date de fin de validité de la situation de famille, ou <b>null</b> s'il s'agit de la situation de famille courante.
 	 */
+	@Override
 	RegDate getDateFin();
 
 	/**

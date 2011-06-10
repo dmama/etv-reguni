@@ -152,6 +152,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			this.creationDate = DateHelper.getCurrentDate();
 		}
 
+		@Override
 		public ExtractionResult getResult() {
 			return result;
 		}
@@ -174,10 +175,12 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			this.endTimestamp = System.nanoTime();
 		}
 
+		@Override
 		public UUID getUuid() {
 			return uuid;
 		}
 
+		@Override
 		public String getVisa() {
 			return visa;
 		}
@@ -186,14 +189,17 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			return extractor;
 		}
 
+		@Override
 		public boolean isRunning() {
 			return state == JobState.RUNNING;
 		}
 
+		@Override
 		public boolean wasInterrupted() {
 			return extractor.wasInterrupted();
 		}
 
+		@Override
 		public Date getCreationDate() {
 			return creationDate;
 		}
@@ -201,6 +207,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		/**
 		 * @return la durée d'exécution du job en millisecondes depuis son démarrage jusqu'à sa fin (ou, s'il n'est pas terminé, jusqu'à maintenant) ; <code>null</code> si le job n'est pas commencé
 		 */
+		@Override
 		public Long getDuration() {
 			final Long duration;
 			if (startTimestamp == null) {

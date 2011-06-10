@@ -10,11 +10,13 @@ import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class TacheListValidator implements Validator {
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return TacheCriteriaView.class.equals(clazz) ;
 	}
 
+	@Override
 	public void validate(Object target, Errors errors) {
 
 		TacheCriteriaView bean = (TacheCriteriaView) target;

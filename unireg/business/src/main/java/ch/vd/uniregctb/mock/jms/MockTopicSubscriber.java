@@ -42,6 +42,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean getNoLocal() throws JMSException {
         return false;
     }
@@ -49,6 +50,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Topic getTopic() throws JMSException {
         return topic;
     }
@@ -56,12 +58,14 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void close() throws JMSException {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public MessageListener getMessageListener() throws JMSException {
         return messageListener;
     }
@@ -69,6 +73,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getMessageSelector() throws JMSException {
         throw new UnsupportedOperationException();
     }
@@ -76,6 +81,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Message receive() throws JMSException {
         return receive(-1);
     }
@@ -83,6 +89,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Message receive(long timeout) throws JMSException {
         try {
             long lastTime = System.currentTimeMillis();
@@ -104,6 +111,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Message receiveNoWait() throws JMSException {
         return receive(0);
     }
@@ -111,6 +119,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setMessageListener(MessageListener messageListener) throws JMSException {
         this.messageListener = messageListener;
     }
@@ -118,6 +127,7 @@ public final class MockTopicSubscriber implements TopicSubscriber , Reciever {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void onRecieve(Message amessage) {
         this.message = amessage;
         if (this.messageListener != null) {

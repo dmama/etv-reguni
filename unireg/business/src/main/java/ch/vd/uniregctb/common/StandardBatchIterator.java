@@ -59,10 +59,12 @@ public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterato
 		return size;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return next != null;
 	}
 
+	@Override
 	public List<E> next() {
 		List<E> result = next;
 		next = buildNext();
@@ -75,6 +77,7 @@ public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterato
 	/**
 	 * @return le pourcentage de progression; ou <b>-1</b> si l'itérateur a été construit à partir d'un autre itérateur.
 	 */
+	@Override
 	public int getPercent() {
 		return percent;
 	}
@@ -93,6 +96,7 @@ public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterato
 		}
 	}
 
+	@Override
 	public void remove() {
 		throw new NotImplementedException();
 	}

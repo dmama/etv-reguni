@@ -65,6 +65,7 @@ public class OuvertureForsContribuablesMajeursJob extends JobDefinition {
 		// Exécution du rapport dans une transaction.
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		MajoriteRapport rapport = template.execute(new TransactionCallback<MajoriteRapport>() {
+			@Override
 			public MajoriteRapport doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());

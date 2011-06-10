@@ -17,8 +17,10 @@ public class RemarqueDAOImpl extends GenericDAOImpl<Remarque, Long> implements R
 		super(Remarque.class);
 	}
 
+	@Override
 	public List<Remarque> getRemarques(final Long tiersId) {
 		return getHibernateTemplate().execute(new HibernateCallback<List<Remarque>>() {
+			@Override
 			public List<Remarque> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery("from Remarque r where r.tiers.id = :tiersId");
 				query.setParameter("tiersId", tiersId);

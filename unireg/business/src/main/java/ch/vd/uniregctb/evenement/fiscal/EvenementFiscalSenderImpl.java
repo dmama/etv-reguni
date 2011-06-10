@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +65,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 	 *
 	 * @throws EvenementFiscalException
 	 */
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public void sendEvent(EvenementFiscal evenement) throws EvenementFiscalException {
 

@@ -151,66 +151,82 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		}
 	}
 
+	@Override
 	public String getCasePostale() {
 		return target.getCasePostale();
 	}
 
+	@Override
 	public final RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public final RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public String getLocalite() {
 		return target.getLocalite();
 	}
 
+	@Override
 	public String getLocaliteComplete() {
 		return target.getLocaliteComplete();
 	}
 
+	@Override
 	public String getNumero() {
 		return target.getNumero();
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return target.getNumeroAppartement();
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return target.getNumeroRue();
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return target.getNumeroOrdrePostal();
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return target.getNumeroPostal();
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return target.getNumeroPostalComplementaire();
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		return target.getNoOfsPays();
 	}
 
+	@Override
 	public String getRue() {
 		return target.getRue();
 	}
 
+	@Override
 	public String getComplement() {
 		return target.getComplement();
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}
 
+	@Override
 	public boolean isDefault() {
 		return isDefault;
 	}
@@ -218,6 +234,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		// [UNIREG-2895] les adresses annulées ne doivent pas être considérées comme valides
 		return !isAnnule() && RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
@@ -241,30 +258,37 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		return target;
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return target.getAnnulationDate();
 	}
 
+	@Override
 	public String getAnnulationUser() {
 		return target.getAnnulationUser();
 	}
 
+	@Override
 	public Date getLogCreationDate() {
 		return target.getLogCreationDate();
 	}
 
+	@Override
 	public String getLogCreationUser() {
 		return target.getLogCreationUser();
 	}
 
+	@Override
 	public Timestamp getLogModifDate() {
 		return target.getLogModifDate();
 	}
 
+	@Override
 	public String getLogModifUser() {
 		return target.getLogModifUser();
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return isAnnule;
 	}
@@ -274,6 +298,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		return DateRangeHelper.toString(this);
 	}
 
+	@Override
 	public Long getId() {
 		if (source.getType() == SourceType.FISCALE) {
 			// [UNIREG-2927] dans le cas où l'adresse est de source fiscale, on expose l'id de manière à permettre l'édition de l'adresse dans la GUI
@@ -284,10 +309,12 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 		}
 	}
 
+	@Override
 	public boolean isPermanente() {
 		return source.getType() == SourceType.FISCALE && target.isPermanente();
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		return target.getCommuneAdresse();
 	}

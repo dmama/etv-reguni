@@ -41,6 +41,7 @@ public class RamasseDocumentJob extends JobDefinition {
 		// Exécution du job dans une transaction.
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		final Collection<Document> docs = template.execute(new TransactionCallback<Collection<Document>>() {
+			@Override
 			public Collection<Document> doInTransaction(TransactionStatus status) {
 				return docService.ramasseDocs();
 			}

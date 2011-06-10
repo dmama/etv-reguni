@@ -38,6 +38,7 @@ public class ForFiscalViewComparator implements Comparator<ForFiscalView> {
 		}
 	}
 
+	@Override
 	public int compare(ForFiscalView o1, ForFiscalView o2) {
 		int compare = Boolean.valueOf(o1.isAnnule()).compareTo(o2.isAnnule());
 		if (compare == 0) {

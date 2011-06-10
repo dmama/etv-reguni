@@ -3,7 +3,6 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -11,6 +10,7 @@ import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
+import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.
@@ -32,6 +32,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		this.statsService = statsService;
 	}
 
+	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) {
 		List<CollectiviteAdministrative> result;
 		long time = tracing.start();
@@ -49,6 +50,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		return result;
 	}
 
+	@Override
 	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(final String codeFonction, final int noCollectivite) {
 		List<ProfilOperateur> result;
 		long time = tracing.start();
@@ -66,6 +68,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		return result;
 	}
 
+	@Override
 	public Operateur getOperateur(final long individuNoTechnique) {
 		Operateur result;
 		long time = tracing.start();
@@ -83,6 +86,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		return result;
 	}
 
+	@Override
 	public Operateur getOperateur(final String visa) {
 		Operateur result;
 		long time = tracing.start();
@@ -100,6 +104,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		return result;
 	}
 
+	@Override
 	public ProfilOperateur getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) {
 		ProfilOperateur result;
 		long time = tracing.start();
@@ -117,6 +122,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		return result;
 	}
 
+	@Override
 	public List<Operateur> getUtilisateurs(final List<EnumTypeCollectivite> typesCollectivite) {
 		List<Operateur> result;
 		long time = tracing.start();
@@ -138,12 +144,14 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		return null;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);

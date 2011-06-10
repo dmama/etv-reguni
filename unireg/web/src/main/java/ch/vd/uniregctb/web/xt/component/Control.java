@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.web.xt.component;
 
-import java.lang.reflect.Method;
-
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 
 import org.springframework.util.ReflectionUtils;
 import org.springmodules.xt.ajax.component.Component;
@@ -103,6 +102,7 @@ public class Control implements Component {
 	/**
 	 * Render the start and end tags of the HTML component, delegating the rendering of the body to the {@link #renderBody()} method..
 	 */
+	@Override
 	final public String render() {
 		TextWriter output = new StringWriter();
 		HtmlTextWriter writer = new HtmlTextWriter(output);

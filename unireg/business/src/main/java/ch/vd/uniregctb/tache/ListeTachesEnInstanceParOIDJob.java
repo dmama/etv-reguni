@@ -47,6 +47,7 @@ public class ListeTachesEnInstanceParOIDJob extends JobDefinition {
 		// Exécution de l'envoi dans une transaction.
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		final ListeTachesEnInstanceParOID results = template.execute(new TransactionCallback<ListeTachesEnInstanceParOID>() {
+			@Override
 			public ListeTachesEnInstanceParOID doInTransaction(TransactionStatus status) {
 				try {
 					return service.produireListeTachesEnInstanceParOID(dateTraitement, getStatusManager());
@@ -57,6 +58,7 @@ public class ListeTachesEnInstanceParOIDJob extends JobDefinition {
 			}
 		});
 		final Document report = template.execute(new TransactionCallback<Document>() {
+			@Override
 			public Document doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());

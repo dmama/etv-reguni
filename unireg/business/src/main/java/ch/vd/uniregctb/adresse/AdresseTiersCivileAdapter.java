@@ -86,16 +86,19 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public String getCasePostale() {
 		return adresse.getCasePostale();
 	}
 
+	@Override
 	public final RegDate getDateDebut() {
 
 		return adresseCivileSurcharge.getDateDebut();
 
 	}
 
+	@Override
 	public final RegDate getDateFin() {
 
 		return adresseCivileSurcharge.getDateFin();
@@ -124,18 +127,22 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public String getNumero() {
 		return adresse.getNumero();
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return adresse.getNumeroAppartement();
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return adresse.getNumeroRue();
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		final int noOrdreFourni = adresse.getNumeroOrdrePostal();
 		if (noOrdreFourni == 0) {
@@ -158,10 +165,12 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	}
 
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return adresse.getNumeroPostalComplementaire();
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		return adresse.getNoOfsPays();
 	}
@@ -178,14 +187,17 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 
 	}
 
+	@Override
 	public String getComplement() {
 		return complement;
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}
 
+	@Override
 	public boolean isDefault() {
 		return isDefault;
 	}
@@ -193,6 +205,7 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
@@ -216,31 +229,38 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		}
 	}
 
+	@Override
 	public Date getAnnulationDate() {
 		return adresseCivileSurcharge.getAnnulationDate();
 
 	}
 
+	@Override
 	public String getAnnulationUser() {
 		return adresseCivileSurcharge.getAnnulationUser();
 	}
 
+	@Override
 	public Date getLogCreationDate() {
 		return adresseCivileSurcharge.getLogCreationDate();
 	}
 
+	@Override
 	public String getLogCreationUser() {
 		return adresseCivileSurcharge.getLogCreationUser();
 	}
 
+	@Override
 	public Timestamp getLogModifDate() {
 		return adresseCivileSurcharge.getLogModifDate();
 	}
 
+	@Override
 	public String getLogModifUser() {
 		return adresseCivileSurcharge.getAnnulationUser();
 	}
 
+	@Override
 	public boolean isAnnule() {
 		if (adresseCivileSurcharge.getAnnulationDate() != null) {
 			return true;
@@ -248,6 +268,7 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		return false;
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		return adresse.getCommuneAdresse();
 	}
@@ -257,10 +278,12 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		return adresse.getEgid();
 	}
 
+	@Override
 	public Long getId() {
 		return adresseCivileSurcharge.getId();
 	}
 
+	@Override
 	public boolean isPermanente() {
 		return false;
 	}

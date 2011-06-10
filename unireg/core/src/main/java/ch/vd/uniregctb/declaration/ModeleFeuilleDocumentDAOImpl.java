@@ -10,6 +10,7 @@ public class ModeleFeuilleDocumentDAOImpl extends GenericDAOImpl<ModeleFeuilleDo
 		super(ModeleFeuilleDocument.class);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<ModeleFeuilleDocument> getByModeleDocument(ModeleDocument modeleDocument) {
 		Object[] values = new Object[] {

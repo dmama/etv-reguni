@@ -1,5 +1,18 @@
 package ch.vd.uniregctb.stats.evenements;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
@@ -8,14 +21,6 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-
-import java.sql.SQLException;
-import java.util.*;
 
 public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenementsService {
 
@@ -30,6 +35,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	/**
 	 * Renvoie les statistiques sur les événements civils
 	 */
+	@Override
 	public StatsEvenementsCivilsResults getStatistiquesEvenementsCivils(RegDate debutActivite) {
 		final Map<EtatEvenementCivil, Integer> etats = getEtatsEvenementsCivils(null);
 		final Map<EtatEvenementCivil, Integer> etatsNouveaux = getEtatsEvenementsCivils(debutActivite);
@@ -78,6 +84,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				" GROUP BY REPLACE(SUBSTR(MESSAGE, INSTR(MESSAGE, 'code ') + 5), ')')";
 
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<Integer, Integer>>() {
+			@Override
 			public Map<Integer, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query query = session.createSQLQuery(sql);
@@ -108,6 +115,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				+ " FROM EVENEMENT_CIVIL R JOIN EVENEMENT_CIVIL_ERREUR E ON E.EVT_CIVIL_ID = R.ID WHERE R.ETAT != 'TRAITE' ORDER BY R.ID, R.DATE_TRAITEMENT";
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo>() {
+			@Override
 			public StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
 
 				Assert.isEqual(9, row.length);
@@ -132,6 +140,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				+ " WHERE LOG_MUSER LIKE '" + VISA_HUMAIN_TEMPLATE + "' AND LOG_MDATE > TO_DATE('" + debutActivite.index() + "', 'YYYYMMDD') ORDER BY ID";
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsResults.EvenementCivilTraiteManuellementInfo>() {
+			@Override
 			public StatsEvenementsCivilsResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
 
 				Assert.isEqual(10, row.length);
@@ -154,6 +163,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	/**
 	 * Renvoie les statistiques sur les événements externes
 	 */
+	@Override
 	public StatsEvenementsExternesResults getStatistiquesEvenementsExternes() {
 		final Map<EtatEvenementExterne, Integer> etats = getEtatsEvenementsExternes();
 		final List<StatsEvenementsExternesResults.EvenementExterneErreur> erreurs = getErreursEvenementsExternes();
@@ -165,6 +175,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final String sql = "SELECT ID, MESSAGE FROM EVENEMENT_EXTERNE WHERE ETAT='EN_ERREUR'";
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsExternesResults.EvenementExterneErreur>() {
+			@Override
 			public StatsEvenementsExternesResults.EvenementExterneErreur onRow(Object[] row) {
 
 				Assert.isEqual(2, row.length);
@@ -181,6 +192,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		return getNombreParModalite(EtatEvenementExterne.class, sql, null);
 	}
 
+	@Override
 	public StatsEvenementsIdentificationContribuableResults getStatistiquesEvenementsIdentificationContribuable(RegDate debutActivite) {
 		final Map<IdentificationContribuable.Etat, Integer> etats = getEtatsEvenementsIdentificationContribuable(null);
 		final Map<IdentificationContribuable.Etat, Integer> etatsNouveaux = getEtatsEvenementsIdentificationContribuable(debutActivite);
@@ -232,6 +244,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final String sql = b.toString();
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsIdentificationContribuableResults.EvenementInfo>() {
+			@Override
 			public StatsEvenementsIdentificationContribuableResults.EvenementInfo onRow(Object[] row) {
 
 				final Date dateDemande = (Date) row[0];
@@ -279,6 +292,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	private <T> List<T> executeSelect(final String sql, final SelectCallback<T> callback) {
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<T>>() {
 
+			@Override
 			public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
 				final List<Object[]> results = query.list();
@@ -302,6 +316,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	@SuppressWarnings({"unchecked"})
 	private <T extends Enum<T>> Map<T, Integer> getNombreParModalite(final Class<T> enumClass, final String sql, final Map<String, Object> sqlParameters) {
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<T, Integer>>() {
+			@Override
 			public Map<T, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
 				if (sqlParameters != null && sqlParameters.size() > 0) {

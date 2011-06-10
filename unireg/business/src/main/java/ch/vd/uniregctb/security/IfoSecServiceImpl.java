@@ -20,6 +20,7 @@ public class IfoSecServiceImpl implements IfoSecService {
 		this.securiteService = securiteService;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite) {
 
@@ -61,6 +62,7 @@ public class IfoSecServiceImpl implements IfoSecService {
 		return false;
 	}
 
+	@Override
 	public void addBypass(IfoSecBypass bypass) {
 		if (bypass.getUser() == null) {
 			this.globalBypass = bypass;

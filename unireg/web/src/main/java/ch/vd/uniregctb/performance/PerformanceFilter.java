@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.performance;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -11,6 +7,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +33,7 @@ public class PerformanceFilter implements Filter {
 	 *
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
+	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		LOGGER.debug("init");
 		this.filterConfig = filterConfig;
@@ -44,6 +44,7 @@ public class PerformanceFilter implements Filter {
 	 *
 	 * @see javax.servlet.Filter#destroy()
 	 */
+	@Override
 	public void destroy() {
 		LOGGER.debug("destroy");
 		this.filterConfig = null;
@@ -55,6 +56,7 @@ public class PerformanceFilter implements Filter {
 	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
 	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
+	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		if (filterConfig == null)
 			return;

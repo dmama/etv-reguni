@@ -15,6 +15,7 @@ class DistributionAnalyze extends Analyze {
 
 	private final Map<String, List<DistributionData>> results = new HashMap<String, List<DistributionData>>();
 
+	@Override
 	public void addCall(Call call) {
 
 		final String method = call.getMethod();
@@ -40,6 +41,7 @@ class DistributionAnalyze extends Analyze {
 		Assert.isTrue(found);
 	}
 
+	@Override
 	public void print() {
 
 		final List<String> methods = new ArrayList<String>(results.keySet());
@@ -66,6 +68,7 @@ class DistributionAnalyze extends Analyze {
 	/**
 	 * Voir http://code.google.com/apis/chart/docs/chart_wizard.html
 	 */
+	@Override
 	@SuppressWarnings({"JavaDoc"})
 	Chart buildGoogleChart(String method) {
 

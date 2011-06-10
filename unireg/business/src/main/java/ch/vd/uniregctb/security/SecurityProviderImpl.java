@@ -29,6 +29,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite) {
 
 		// bypass pour les tests unitaires
@@ -42,6 +43,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException {
 
 		// bypass pour les tests unitaires
@@ -56,6 +58,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Niveau> getDroitAcces(String visa, List<Long> ids) {
 
 		// bypass pour les tests unitaires
@@ -84,6 +87,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 		this.ifoSecService = ifosSecService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		bypassUnitTest = SecurityDebugConfig.isIfoSecBypassUnitTest();
 

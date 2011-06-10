@@ -12,6 +12,7 @@ public class EvenementCriteriaValidator implements Validator  {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return EvenementCriteriaView.class.equals(clazz);
@@ -21,6 +22,7 @@ public class EvenementCriteriaValidator implements Validator  {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 */
+	@Override
 	public void validate(Object target, Errors errors) {
 		EvenementCriteriaView bean = (EvenementCriteriaView) target;
 

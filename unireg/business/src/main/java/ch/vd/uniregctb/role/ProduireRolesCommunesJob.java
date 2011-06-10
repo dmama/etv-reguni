@@ -60,6 +60,7 @@ public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
 		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setReadOnly(false);
 		final RolesCommunesRapport rapport = template.execute(new TransactionCallback<RolesCommunesRapport>() {
+			@Override
 			public RolesCommunesRapport doInTransaction(TransactionStatus status) {
 				return getRapportService().generateRapport(results, statusManager);
 			}

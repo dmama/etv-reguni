@@ -28,14 +28,17 @@ public class OrigineImpl implements Origine, Serializable {
 		this.pays = PaysImpl.get(target.getPays());
 	}
 
+	@Override
 	public Commune getCommune() {
 		return commune;
 	}
 
+	@Override
 	public RegDate getDebutValidite() {
 		return dateDebut;
 	}
 
+	@Override
 	public Pays getPays() {
 		return pays;
 	}

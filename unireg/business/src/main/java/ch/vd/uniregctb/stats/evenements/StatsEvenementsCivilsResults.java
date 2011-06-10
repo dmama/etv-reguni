@@ -1,14 +1,14 @@
 package ch.vd.uniregctb.stats.evenements;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class StatsEvenementsCivilsResults {
 
@@ -49,10 +49,12 @@ public class StatsEvenementsCivilsResults {
 			this.message = message;
 		}
 
+		@Override
 		public String[] getNomsColonnes() {
 			return COLONNES;
 		}
 
+		@Override
 		public String[] getValeursColonnes() {
 			return new String[] { Long.toString(id), type.getName(), RegDateHelper.dateToDashString(dateEvenement), dateTraitement.toString(), etat.name(),
 								  Long.toString(individuPrincipal), individuConjoint != null ? Long.toString(individuConjoint) : null,
@@ -75,10 +77,12 @@ public class StatsEvenementsCivilsResults {
 			this.dateReception = dateReception;
 		}
 
+		@Override
 		public String[] getNomsColonnes() {
 			return COLONNES;
 		}
 
+		@Override
 		public String[] getValeursColonnes() {
 			return new String[] { Long.toString(id), type.getName(), RegDateHelper.dateToDashString(dateEvenement), dateReception.toString(),
 								  dateTraitement.toString(), visaOperateur, etat.name(),

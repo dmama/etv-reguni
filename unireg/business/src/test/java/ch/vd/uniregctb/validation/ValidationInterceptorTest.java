@@ -48,6 +48,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	public void testValidationEntiteValide() throws Exception {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
@@ -65,6 +66,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 
 		try {
 			doInNewTransaction(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 					jean.setNom(null); // le nom est obligatoire
@@ -92,6 +94,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	public void testValidationSousEntiteValideEtParentValide() throws Exception {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
@@ -115,6 +118,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 
 		try {
 			doInNewTransaction(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
@@ -145,6 +149,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	public void testValidationJoinEntiteValideEtParentsValides() throws Exception {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(1985, 2, 2), Sexe.MASCULIN);
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
@@ -172,6 +177,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 
 		try {
 			doInNewTransaction(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
@@ -210,6 +216,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 			validationInterceptor.setEnabled(false); // on désactive temporairement l'interception pour permettre de sauver un tiers invalide
 
 			return doInNewTransaction(new TransactionCallback<Long>() {
+				@Override
 				public Long doInTransaction(TransactionStatus status) {
 					final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 					jean.setNom(null); // le nom est obligatoire

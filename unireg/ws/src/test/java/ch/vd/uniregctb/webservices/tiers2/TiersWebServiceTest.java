@@ -136,6 +136,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(2, batch.entries.size());
 
 		Collections.sort(batch.entries, new Comparator<BatchTiersHistoEntry>() {
+			@Override
 			public int compare(BatchTiersHistoEntry o1, BatchTiersHistoEntry o2) {
 				return o1.number.compareTo(o2.number);
 			}
@@ -368,6 +369,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		validationInterceptor.setEnabled(false); // pour permettre l'ajout d'une curatelle avec date de début nulle
 		try {
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					PersonnePhysique tiia = addHabitant(noIndividuTiia);
 					addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
@@ -542,6 +544,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(CodeQuittancement.OK, retour.code);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
@@ -569,6 +572,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		validationInterceptor.setEnabled(false);
 		try {
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					final RegDate debutAnnee = date(annee, 1, 1);
@@ -633,6 +637,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(expectedMessage, retour.exceptionMessage);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
@@ -666,6 +671,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		validationInterceptor.setEnabled(false);
 		try {
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					final PeriodeFiscale pf = addPeriodeFiscale(annee);
@@ -746,6 +752,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(expectedMessage, retourInvalide.exceptionMessage);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire diValide = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
 				assertNotNull(diValide);
@@ -768,6 +775,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	public void testGetForFiscauxVirtuelsPersonnePhysiqueAvecAppartenanceMenageAnnulee() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
 				final RegDate veilleMariage = date(1995, 7, 30);
@@ -796,6 +804,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		// on vérifie que les données en base sont bien comme on pense
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique arnold = (PersonnePhysique) hibernateTemplate.get(Tiers.class, id);
 				assertNotNull(arnold);

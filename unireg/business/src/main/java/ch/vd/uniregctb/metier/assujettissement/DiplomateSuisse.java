@@ -26,6 +26,7 @@ public class DiplomateSuisse extends Assujettissement {
 		return "Diplomate Suisse";
 	}
 
+	@Override
 	public DateRange collate(DateRange next) {
 		return new DiplomateSuisse(this, (DiplomateSuisse) next);
 	}

@@ -48,32 +48,38 @@ public class TiersWebServiceCrashing implements TiersWebService {
 		this.idsToCrash.addAll(Arrays.asList(idsToCrash));
 	}
 
+	@Override
 	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(Long.valueOf(params.numero));
 		return target.searchTiers(params);
 	}
 
+	@Override
 	public Tiers.Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(params.tiersNumber);
 		return target.getTiersType(params);
 	}
 
+	@Override
 	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(params.tiersNumber);
 		return target.getTiers(params);
 	}
 
+	@Override
 	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(params.tiersNumber);
 		return target.getTiersPeriode(params);
 	}
 
+	@Override
 	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(params.tiersNumber);
 		return target.getTiersHisto(params);
 
 	}
 
+	@Override
 	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		// on détermine quels sont les ids dont on veut simuler le crash
@@ -100,6 +106,7 @@ public class TiersWebServiceCrashing implements TiersWebService {
 		return res;
 	}
 
+	@Override
 	public BatchTiersHisto getBatchTiersHisto(GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		// on détermine quels sont les ids dont on veut simuler le crash
@@ -126,23 +133,27 @@ public class TiersWebServiceCrashing implements TiersWebService {
 		return res;
 	}
 
+	@Override
 	public void setTiersBlocRembAuto(SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(params.tiersNumber);
 		target.setTiersBlocRembAuto(params);
 	}
 
+	@Override
 	public List<EvenementPM> searchEvenementsPM(SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(params.tiersNumber);
 		return target.searchEvenementsPM(params);
 
 	}
 
+	@Override
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws BusinessException, AccessDeniedException, TechnicalException {
 		check(params.numeroDebiteur);
 		return target.getDebiteurInfo(params);
 
 	}
 
+	@Override
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
 		throw new NotImplementedException();
 	}
@@ -152,6 +163,7 @@ public class TiersWebServiceCrashing implements TiersWebService {
 		return target.getListeCtbModifies(params);
 	}
 
+	@Override
 	public void doNothing(AllConcreteTiersClasses dummy) {
 		throw new NotImplementedException();
 	}

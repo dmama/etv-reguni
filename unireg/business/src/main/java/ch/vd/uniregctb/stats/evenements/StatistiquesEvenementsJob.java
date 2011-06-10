@@ -1,16 +1,20 @@
 package ch.vd.uniregctb.stats.evenements;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.*;
+import java.util.Map;
+
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Map;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
+import ch.vd.uniregctb.scheduler.JobParamInteger;
 
 /**
  * Job qui génère des statistiques pour les événements reçus et traités par
@@ -121,6 +125,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final StatistiquesEvenementsRapport rapport = template.execute(new TransactionCallback<StatistiquesEvenementsRapport>() {
+			@Override
 			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(resultatsCivils, resultatsExternes, resultatsIdentCtb, debutActivite, getStatusManager());
 			}

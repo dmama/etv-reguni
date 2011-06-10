@@ -59,6 +59,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	public void sendMessage(final Message amessage) throws JMSException {
 		TaskExecutor task = new SyncTaskExecutor();
 		task.execute(new Runnable() {
+			@Override
 			public void run() {
 				messageListener.onMessage(amessage);
 				try {
@@ -78,6 +79,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getMessageSelector() throws JMSException {
 		throw new UnsupportedOperationException();
 	}
@@ -85,6 +87,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public MessageListener getMessageListener() throws JMSException {
 		return this.messageListener;
 	}
@@ -92,6 +95,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setMessageListener(MessageListener messageListener) {
 		this.messageListener = messageListener;
 	}
@@ -99,6 +103,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Message receive() throws JMSException {
 		return receive(-1);
 	}
@@ -106,6 +111,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Message receive(long timeout) throws JMSException {
 		try {
 			long lastTime = System.currentTimeMillis();
@@ -129,6 +135,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Message receiveNoWait() throws JMSException {
 		throw new UnsupportedOperationException();
 	}
@@ -136,6 +143,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void close() throws JMSException {
 		throw new UnsupportedOperationException();
 	}
@@ -143,6 +151,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Queue getQueue() throws JMSException {
 		return queue;
 	}
@@ -150,6 +159,7 @@ public final class MockQueueReceiver implements QueueReceiver, Reciever {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void onRecieve(Message amessage) {
 		this.message = amessage;
 		if (this.messageListener != null) {

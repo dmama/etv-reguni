@@ -202,6 +202,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * @return
 	 */
 
+	@Override
 	public String calculPrefixe() {
 		String prefixe = PREFIXE_FIC_OUV_DOS;
 		return prefixe;
@@ -262,6 +263,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
+	@Override
 	public FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		TypFichierImpression typFichierImpression = mainDocument.addNewFichierImpression();
@@ -297,6 +299,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * @param declaration
 	 * @return
 	 */
+	@Override
 	public String construitIdDocument(Contribuable contribuable) {
 		return String.format(
 				"%s %s %s",

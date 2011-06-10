@@ -13,6 +13,7 @@ public class TiersSearcherChecker implements ServiceChecker {
 	private GlobalTiersSearcher searcher;
 	private String details;
 
+	@Override
 	public Status getStatus() {
 		try {
 			final TiersCriteria criteria = new TiersCriteria();
@@ -28,6 +29,7 @@ public class TiersSearcherChecker implements ServiceChecker {
 		}
 	}
 
+	@Override
 	@SuppressWarnings({"UnusedDeclaration"})
 	public String getStatusDetails() {
 		return details;

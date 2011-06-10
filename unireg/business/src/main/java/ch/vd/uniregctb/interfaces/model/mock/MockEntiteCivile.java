@@ -21,6 +21,7 @@ public abstract class MockEntiteCivile implements EntiteCivile {
 		}
 	}
 
+	@Override
 	public Collection<Adresse> getAdresses() {
 		return adresses;
 	}

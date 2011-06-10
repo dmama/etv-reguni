@@ -142,6 +142,7 @@ public class SecurityDebugConfig implements InitializingBean {
 		return value != null && Boolean.parseBoolean(value);
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (properties != null) {
 			reloadEachTime = getStringProp("extprop.security.reload.each.time");

@@ -59,6 +59,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 
 	private DataSource dataSource;
 
+	@Override
 	public Tiers get(long tiersId, Set<TiersDAO.Parts> parts) {
 
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
@@ -141,6 +142,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 		return tiers;
 	}
 
+	@Override
 	public List<Tiers> getBatch(Collection<Long> ids, Set<TiersDAO.Parts> parts) {
 
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
@@ -282,14 +284,17 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 		return list;
 	}
 
+	@Override
 	public Tiers get(long tiersId, JdbcTemplate template) {
 		return (Tiers) DataAccessUtils.uniqueResult(template.query(TiersMapper.selectById(), new Object[]{tiersId}, ROW_MAPPER));
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Tiers> getList(final Collection<Long> tiersId, final JdbcTemplate template) {
 		// Découpe la requête en sous-requêtes si nécessaire
 		return CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Tiers>() {
+			@Override
 			public List<Tiers> process(List<Long> ids) {
 				return template.query(TiersMapper.selectByIds(ids), ROW_MAPPER);
 			}
@@ -358,6 +363,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 			return BASE_SELECT + " where NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final String tiersType = rs.getString(1);
@@ -853,6 +859,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 		}
 	}
 
+    @Override
     @SuppressWarnings("unchecked")
     public Set<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
 
@@ -863,6 +870,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 	    if (includesComposantsMenage) {
 			// Découpe la requête en sous-requêtes si nécessaire
 			numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+				@Override
 				public List<Long> process(List<Long> ids) {
 					return template.query(NumerosComposantsMapper.selectByIds(ids), new NumerosComposantsMapper());
 				}
@@ -870,6 +878,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 	    }
 
 	    numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+		    @Override
 		    public List<Long> process(List<Long> ids) {
 			    return template.query(NumerosIndividusMapper.selectByIds(ids), new NumerosIndividusMapper());
 		    }
@@ -892,6 +901,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 			return BASE_SELECT + " and r.TIERS_OBJET_ID in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return rs.getLong(1);
 		}
@@ -908,6 +918,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 			return BASE_SELECT + " and t.NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return rs.getLong(1);
 		}

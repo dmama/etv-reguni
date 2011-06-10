@@ -55,6 +55,7 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 	 * @param numero
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public AnnulationCoupleRecapView get(Long numero) {
 
@@ -79,6 +80,7 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 	 *
 	 * @param annulationCoupleRecapView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(AnnulationCoupleRecapView annulationCoupleRecapView) throws MetierServiceException {
 		final EnsembleTiersCouple couple = getEnsembleTiersCouple(annulationCoupleRecapView.getCouple().getNumero(), annulationCoupleRecapView.getDateMenageCommun());
@@ -96,6 +98,7 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 		return null;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public boolean isMenageCommunAvecPrincipal(long noCtb, RegDate date) {
 		final EnsembleTiersCouple couple = getEnsembleTiersCouple(noCtb, date);

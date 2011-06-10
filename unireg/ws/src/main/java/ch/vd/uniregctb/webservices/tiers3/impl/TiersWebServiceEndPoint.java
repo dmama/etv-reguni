@@ -72,6 +72,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		this.service = service;
 	}
 
+	@Override
 	public int getLoad() {
 		return appelsEnCours.intValue();
 	}
@@ -102,6 +103,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public TypeTiers getTiersType(GetTiersTypeRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
@@ -131,6 +133,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Tiers getTiers(GetTiersRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
@@ -158,6 +161,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	public BatchTiers getBatchTiers(GetBatchTiersRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
@@ -221,6 +225,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	public void setTiersBlocRembAuto(SetTiersBlocRembAutoRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
@@ -247,6 +252,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public SearchEvenementsPMResponse searchEvenementsPM(SearchEvenementsPMRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
@@ -270,6 +276,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfoRequest params) throws
 			WebServiceException {
 		final long start = System.nanoTime();
@@ -298,6 +305,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	public QuittancerDeclarationsResponse quittancerDeclarations(QuittancerDeclarationsRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {

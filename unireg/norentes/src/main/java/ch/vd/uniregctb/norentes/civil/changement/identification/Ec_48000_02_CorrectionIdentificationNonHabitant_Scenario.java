@@ -122,6 +122,7 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 	public void step2() throws Exception {
 
 		doModificationIndividu(noIndMomo, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				individu.setNouveauNoAVS(avsNouveau);
 			}

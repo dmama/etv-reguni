@@ -551,6 +551,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final int nbDocs = nbMaxParListe + 20;
 
 		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				final List<Long> ids = new ArrayList<Long>(2000);
 				for (long i = 0; i < nbDocs; i++) {
@@ -590,6 +591,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final int nbDocs = nbMaxParListe + 20;
 
 		final Set<Long> idsDb = doInNewTransactionAndSession(new TransactionCallback<Set<Long>>() {
+			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
 				final Set<Long> ids = new HashSet<Long>();
 				for (long i = 0; i < nbDocs; i++) {
@@ -687,6 +689,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	public void testRechercheCriteresTropCommuns() throws Exception {
 
 		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> ids = new ArrayList<Long>(2000);
@@ -733,6 +736,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 			// Trie par ordre des noms croissant
 			Collections.sort(list, new Comparator<TiersIndexedData>() {
+				@Override
 				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
 					return o1.getNom1().compareTo(o2.getNom1());
 				}

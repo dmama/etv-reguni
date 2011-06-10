@@ -85,6 +85,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		this.service = service;
 	}
 
+	@Override
 	public int getLoad() {
 		return appelsEnCours.intValue();
 	}
@@ -92,6 +93,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -130,6 +132,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -172,6 +175,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -215,6 +219,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -258,6 +263,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -298,6 +304,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -363,6 +370,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -431,6 +439,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -470,6 +479,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -506,6 +516,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -546,6 +557,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 	}
 
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
@@ -626,6 +638,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	/**
 	 * Cette méthode s'assure que les classes concrètes dérivant de Tiers sont exposées dans le WSDL. Elle ne fait rien proprement dit.
 	 */
+	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")

@@ -63,6 +63,7 @@ public class TacheMapHelper extends CommonMapHelper {
 			final Map<Integer, String> map = new TreeMap<Integer, String>();
 
 			template.execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					final List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();
 					for (PeriodeFiscale periode : periodes) {
@@ -166,6 +167,7 @@ public class TacheMapHelper extends CommonMapHelper {
 		/**
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
+		@Override
 		public int compare(Integer o1, Integer o2) {
 			final T value1 = map.get(o1);
 			final T value2 = map.get(o2);

@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.hibernate;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -20,6 +16,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 public class OptimisticLockingTest extends CoreDAOTest {
 
@@ -45,6 +45,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 
 		// Créée un Habitant dans le base
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -59,6 +60,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 
 		// Teste que l'Habitant est bien dans la base
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -73,6 +75,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 		// On recupère l'Habitant dans la session1
 		// Puis on le modifie dans la session2
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -85,6 +88,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 		});
 
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -101,6 +105,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 
 		// Teste que l'Habitant a bien été modifié
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();
@@ -115,6 +120,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 		// Modification après coup => Exception
 		try {
 			template.execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					Session session = sessionFactory.getCurrentSession();
 					Query q1 = session.createQuery("from PersonnePhysique");
@@ -126,6 +132,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 					TransactionTemplate templateNew = new TransactionTemplate(transactionManager);
 					templateNew.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 					templateNew.execute(new TransactionCallback<Object>() {
+						@Override
 						public Object doInTransaction(TransactionStatus status) {
 
 							Session session = sessionFactory.getCurrentSession();
@@ -155,6 +162,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 
 		// Teste que l'Habitant a le bon numéro
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				Session session = sessionFactory.getCurrentSession();

@@ -31,16 +31,13 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -54,7 +51,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests du service (qu'attendiez-vous d'autre ?).
@@ -81,6 +77,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		private TestMessageHandler() {
 		}
 
+		@Override
 		public void sendReponse(IdentificationContribuable message) throws Exception {
 			if (throwExceptionOnSend) {
 				throw new RuntimeException("Exception de test.");
@@ -88,6 +85,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			sentMessages.add(message);
 		}
 
+		@Override
 		public void setDemandeHandler(DemandeHandler handler) {
 		}
 
@@ -101,6 +99,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	private final class PPComparator implements Comparator<PersonnePhysique> {
+		@Override
 		public int compare(PersonnePhysique o1, PersonnePhysique o2) {
 			return o1.getNumero().compareTo(o2.getNumero());
 		}
@@ -1068,6 +1067,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Arnold Duchoux ne doit pas être trouvé
@@ -1115,6 +1115,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// Zora doit avoir été trouvée, et traitée automatiquement
@@ -1170,6 +1171,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora n'est pas trouvée
@@ -1225,6 +1227,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora n'est pas trouvé
@@ -1281,6 +1284,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora n'est pas trouvé
@@ -1330,6 +1334,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// Plus de un contribuable doivent avoir été trouvés, et le message doit être passé en mode manuel
@@ -1385,6 +1390,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Zora doit avoir été trouvée, mais le traitement interrompu à cause de l'exception
@@ -1448,6 +1454,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode
@@ -1507,6 +1514,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on doit quand même trouver le contribuable
@@ -1575,6 +1583,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// Zora doit avoir été trouvée, et traitée automatiquement
@@ -1681,6 +1690,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	private void assertCountDemandes(final int count) throws Exception {
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				assertEquals(count, identCtbDAO.getCount(IdentificationContribuable.class));
 				return null;

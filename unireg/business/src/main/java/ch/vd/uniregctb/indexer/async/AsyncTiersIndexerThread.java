@@ -168,6 +168,7 @@ public class AsyncTiersIndexerThread extends Thread {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				/*
 				 * On crée à la main une nouvelle session hibernate avec un intercepteur vide (HibernateFakeInterceptor). Cela permet de désactiver

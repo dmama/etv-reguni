@@ -174,6 +174,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 
 	private Long createTiers(final RegDate reindexOn) throws Exception {
 		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jean", "Test", date(1960, 3, 3), Sexe.MASCULIN);
 				pp.scheduleReindexationOn(reindexOn);
@@ -184,8 +185,10 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 
 	private void resetDirtyFlag(final Long id) throws Exception {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				hibernateTemplate.execute(new HibernateCallback<Object>() {
+					@Override
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 						final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = " + id);
 						query.executeUpdate();
@@ -199,6 +202,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 
 	private void assertTiers(final boolean isDirty, final RegDate reindexOn, final Long id) throws Exception {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertNotNull(pp);

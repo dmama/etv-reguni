@@ -43,6 +43,7 @@ public final class StringComparator implements Comparator<String> {
 		this.decoder = decoder;
 	}
 
+	@Override
 	public int compare(String o1, String o2) {
 
 		// le test facile et rapide

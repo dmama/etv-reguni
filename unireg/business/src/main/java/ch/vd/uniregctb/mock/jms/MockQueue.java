@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.mock.jms;
 
-import java.util.ArrayList;
 import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.Queue;
+import java.util.ArrayList;
 
 /**
  * Stub implementation of the {@link javax.jms.Queue} interface.
@@ -48,6 +48,7 @@ public final class MockQueue implements Queue, Destination {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getQueueName() {
 		return this.queueName;
 	}

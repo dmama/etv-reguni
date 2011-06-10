@@ -30,34 +30,41 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		this.groupName = groupName;
 	}
 
+	@Override
 	public void registerService(String serviceName, ServiceTracingInterface tracing) {
 		synchronized (subServices) {
 			subServices.put(serviceName, tracing);
 		}
 	}
 
+	@Override
 	public void registerCache(String serviceName, UniregCacheInterface cache) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void unregisterService(String serviceName) {
 		synchronized (subServices) {
 			subServices.remove(serviceName);
 		}
 	}
 
+	@Override
 	public void unregisterCache(String serviceName) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public void unregisterLoadMonitor(String serviceName) {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public long getLastCallTime() {
 		long last = 0;
 		synchronized (subServices) {
@@ -68,6 +75,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return last;
 	}
 
+	@Override
 	public long getTotalTime() {
 		long total = 0;
 		synchronized (subServices) {
@@ -78,6 +86,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return total;
 	}
 
+	@Override
 	public long getTotalPing() {
 		long total = 0;
 		long count = 0;
@@ -93,6 +102,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return count > 0 ? (total / count) : 0;
 	}
 
+	@Override
 	public long getTotalCount() {
 		long count = 0;
 		synchronized (subServices) {
@@ -103,6 +113,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return count;
 	}
 
+	@Override
 	public long getRecentTime() {
 		long recent = 0;
 		synchronized (subServices) {
@@ -113,6 +124,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return recent;
 	}
 
+	@Override
 	public long getRecentPing() {
 		long total = 0;
 		long count = 0;
@@ -128,6 +140,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return count > 0 ? (total / count) : 0;
 	}
 
+	@Override
 	public long getRecentCount() {
 		long count = 0;
 		synchronized (subServices) {
@@ -138,6 +151,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return count;
 	}
 
+	@Override
 	public void onTick() {
 		synchronized (subServices) {
 			for (ServiceTracingInterface s : subServices.values()) {
@@ -146,26 +160,31 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		}
 	}
 
+	@Override
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		return subServices;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(groupName, this);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(groupName);
 		}
 	}
 
+	@Override
 	public String buildStats() {
 		throw new NotImplementedException();
 	}
 
+	@Override
 	public ServiceStats getServiceStats(String serviceName) {
 		throw new NotImplementedException();
 	}

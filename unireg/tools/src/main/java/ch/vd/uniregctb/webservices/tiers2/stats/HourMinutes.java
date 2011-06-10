@@ -35,6 +35,7 @@ class HourMinutes implements Comparable<HourMinutes> {
 		return minutes;
 	}
 
+	@Override
 	public int compareTo(HourMinutes o) {
 		if (this.hour < o.hour) {
 			return -1;

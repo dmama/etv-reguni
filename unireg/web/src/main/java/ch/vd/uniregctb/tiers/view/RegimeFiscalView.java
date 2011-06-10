@@ -12,6 +12,7 @@ public class RegimeFiscalView implements DateRange {
 	public String code;
 	public String libelle;
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -20,6 +21,7 @@ public class RegimeFiscalView implements DateRange {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -44,6 +46,7 @@ public class RegimeFiscalView implements DateRange {
 		this.libelle = libelle;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}

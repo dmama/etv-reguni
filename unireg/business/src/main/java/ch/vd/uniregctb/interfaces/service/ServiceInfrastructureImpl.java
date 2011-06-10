@@ -75,6 +75,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Canton getCantonBySigle(String sigle) throws ServiceInfrastructureException {
 		Canton canton = null;
 		for (Canton c : getAllCantons()) {
@@ -91,6 +92,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * @return la liste des communes du canton de Vaud
 	 */
+	@Override
 	public List<Commune> getListeCommunes(int cantonOFS) throws ServiceInfrastructureException {
 		Canton canton = getCanton(cantonOFS);
 		if (canton == null) {
@@ -102,6 +104,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException {
 		List<Commune> communes = new ArrayList<Commune>();
 		for (Commune c : getCommunesDeVaud()) {
@@ -163,6 +166,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Pays getPays(String codePays) throws ServiceInfrastructureException {
 
 		// note : cette méthode est horriblement inefficace, mais comme le service infrastructure est sensé se trouver derrière un cache, on
@@ -272,6 +276,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public synchronized List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
 		if (allLocaliteCommune == null) {
 			allLocaliteCommune = new HashMap<Integer, List<Localite>>();
@@ -372,6 +377,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
@@ -384,6 +390,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws ServiceInfrastructureException {
 		if (adresse != null) {
 			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
@@ -411,6 +418,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return getCommuneByNumeroOfsEtendu(noOfs, date);
 	}
 
+	@Override
 	public Commune getCommuneFaitiere(Commune commune, RegDate dateReference) throws ServiceInfrastructureException {
 		if (commune == null || !commune.isFraction()) {
 			return commune;
@@ -442,6 +450,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException {
 		List<Rue> locRues = new ArrayList<Rue>();
 		for (Localite localite : localites) {
@@ -479,6 +488,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException {
 		final Commune commune = getCommuneByNumeroOfsEtendu(noOfsCommune, null);
 		if (commune == null) {
@@ -507,6 +517,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Canton getCanton(int cantonOFS) throws ServiceInfrastructureException {
 		Canton canton = null;
 		for (Canton c : getAllCantons()) {
@@ -523,6 +534,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean estDansLeCanton(final Rue rue) throws ServiceInfrastructureException {
 		final Integer onrp = rue.getNoLocalite();
 		final Localite localite = getLocaliteByONRP(onrp);
@@ -532,6 +544,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean estDansLeCanton(final Commune commune) throws ServiceInfrastructureException {
 		final String sigle = commune.getSigleCanton();
 		if (sigle == null || sigle.equals("")) {
@@ -547,6 +560,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean estDansLeCanton(AdresseGenerique adresse) throws ServiceInfrastructureException {
 
 		if (!estEnSuisse(adresse)) {
@@ -570,6 +584,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		}
 	}
 
+	@Override
 	public boolean estDansLeCanton(Adresse adresse) throws ServiceInfrastructureException {
 
 		if (!estEnSuisse(adresse)) {
@@ -590,6 +605,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean estEnSuisse(AdresseGenerique adresse) throws ServiceInfrastructureException {
 		if (adresse == null) {
 			throw new ServiceInfrastructureException("L'adresse est nulle");
@@ -601,6 +617,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException {
 		if (adresse == null) {
 			throw new ServiceInfrastructureException("L'adresse est nulle");
@@ -613,6 +630,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Zone getZone(AdresseGenerique adresse) throws ServiceInfrastructureException {
 
 		if (estEnSuisse(adresse)) {
@@ -713,6 +731,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		affEurope.add(8241); // Vatican
 	}
 
+	@Override
 	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
 
 		if (noOfsPays == noOfsSuisse) {
@@ -764,6 +783,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getTousLesLogiciels();
 	}
 
+	@Override
 	public List<Logiciel> getLogicielsPour(LogicielMetier metier) {
 		final List<Logiciel> list = new ArrayList<Logiciel>();
 		for (Logiciel l : getTousLesLogiciels()) {

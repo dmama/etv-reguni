@@ -28,19 +28,23 @@ public final class ForFiscalComparator implements Comparator<ForFiscal> {
 			this.dateFin = DataHelper.webToCore(f.getDateFin());
 		}
 
+		@Override
 		public RegDate getDateDebut() {
 			return dateDebut;
 		}
 
+		@Override
 		public RegDate getDateFin() {
 			return dateFin;
 		}
 
+		@Override
 		public boolean isValidAt(RegDate date) {
 			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 		}
 	}
 
+	@Override
 	public int compare(ForFiscal o1, ForFiscal o2) {
 		return DateRangeComparator.compareRanges(new ForFiscalWrapper(o1), new ForFiscalWrapper(o2));
 	}

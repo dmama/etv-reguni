@@ -26,58 +26,72 @@ public class MandatImpl implements Mandat {
 		this.typeMandataire = TypeMandataire.valueOf(target.getTypeMandataire().name());
 	}
 
+	@Override
 	public String getCode() {
 		return target.getCode();
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public String getPrenomContact() {
 		return target.getPrenomContact();
 	}
 
+	@Override
 	public String getNomContact() {
 		return target.getNomContact();
 	}
 
+	@Override
 	public String getNoTelephoneContact() {
 		return target.getNoTelephoneContact();
 	}
 
+	@Override
 	public String getNoFaxContact() {
 		return target.getNoFaxContact();
 	}
 
+	@Override
 	public String getCCP() {
 		return target.getCCP();
 	}
 
+	@Override
 	public String getCompteBancaire() {
 		return target.getCompteBancaire();
 	}
 
+	@Override
 	public String getIBAN() {
 		return target.getIBAN();
 	}
 
+	@Override
 	public String getBicSwift() {
 		return target.getBicSwift();
 	}
 
+	@Override
 	public Long getNumeroInstitutionFinanciere() {
 		return target.getNumeroInstitutionFinanciere();
 	}
 
+	@Override
 	public long getNumeroMandataire() {
 		return target.getNumeroMandataire();
 	}
 
+	@Override
 	public TypeMandataire getTypeMandataire() {
 		return typeMandataire;
 	}

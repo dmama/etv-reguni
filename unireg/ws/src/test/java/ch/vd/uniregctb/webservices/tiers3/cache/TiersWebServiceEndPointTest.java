@@ -128,6 +128,7 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 		assertEquals(2, list.size()); // dans la version 3 du web-service, les ids nuls sont ignorés
 
 		Collections.sort(list, new Comparator<BatchTiersEntry>() {
+			@Override
 			public int compare(BatchTiersEntry o1, BatchTiersEntry o2) {
 				return Long.valueOf(o1.getNumber()).compareTo(o2.getNumber());
 			}

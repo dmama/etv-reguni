@@ -21,6 +21,7 @@ public class MockOperateur implements Operateur {
 		this.individuNoTechnique = individuNoTechnique;
 	}
 
+	@Override
 	public String getNom() {
 		return nom != null ? nom :"Nom";
 	}
@@ -29,6 +30,7 @@ public class MockOperateur implements Operateur {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getPrenom() {
 		return prenom != null ? prenom : "Prénom";
 	}
@@ -37,6 +39,7 @@ public class MockOperateur implements Operateur {
 		this.prenom = prenom;
 	}
 
+	@Override
 	public String getEmail() {
 		return email != null ? email : "prenom.nom@vd.ch";
 	}
@@ -45,6 +48,7 @@ public class MockOperateur implements Operateur {
 		this.email = email;
 	}
 
+	@Override
 	public long getIndividuNoTechnique() {
 		return individuNoTechnique;
 	}
@@ -53,6 +57,7 @@ public class MockOperateur implements Operateur {
 		this.individuNoTechnique = individuNoTechnique;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}
@@ -61,6 +66,7 @@ public class MockOperateur implements Operateur {
 		this.code = code;
 	}
 
+	@Override
 	public CollectiviteOperateur[] getCollectivites() {
 		return null;
 	}

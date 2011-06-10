@@ -44,6 +44,7 @@ public class JmxAwareDefaultMessageListenerContainer extends EsbMessageListenerC
 		}
 	}
 
+	@Override
 	public int getReceivedMessages() {
 		final MonitorableMessageListener listener = (MonitorableMessageListener) getMessageListener();
 		return listener.getNombreMessagesRecus();

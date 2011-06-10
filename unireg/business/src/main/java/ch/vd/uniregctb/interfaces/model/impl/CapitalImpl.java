@@ -34,22 +34,27 @@ public class CapitalImpl implements Capital, Serializable {
 		this.editionFosc = EditionFoscImpl.get(target.getEditionFosc());
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public Long getCapitalAction() {
 		return capitalAction;
 	}
 
+	@Override
 	public Long getCapitalLibere() {
 		return capitalLibere;
 	}
 
+	@Override
 	public EditionFosc getEditionFosc() {
 		return editionFosc;
 	}

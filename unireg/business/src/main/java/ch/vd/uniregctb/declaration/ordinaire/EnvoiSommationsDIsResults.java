@@ -118,6 +118,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	private final List<Info> disContribuablesIndigents = new ArrayList<Info>();
 	private final List<Info> disOptionnelles = new ArrayList<Info>();
 
+	@Override
 	public void addAll(EnvoiSommationsDIsResults right) {
 		this.sommationsEnErreur.addAll(right.sommationsEnErreur);
 		this.disContribuablesNonAssujettis.addAll(right.disContribuablesNonAssujettis);
@@ -145,6 +146,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	}
 
 
+	@Override
 	public void addErrorException(IdentifiantDeclaration element, Exception e) {
 		String message = buildErrorMessage(e);
 		sommationsEnErreur.add(new ErrorInfo(element.getNumeroTiers(),message ));

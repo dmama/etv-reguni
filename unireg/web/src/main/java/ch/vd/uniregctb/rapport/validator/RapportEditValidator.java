@@ -26,11 +26,13 @@ public class RapportEditValidator implements Validator {
 
 	private AdresseService adresseService;
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return RapportView.class.equals(clazz) ;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 

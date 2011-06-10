@@ -32,6 +32,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 * @param numeroTiers
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers)  {
 
@@ -50,6 +51,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 * @param numeroTiersRemplacant
 	 * @return
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers, Long numeroTiersRemplacant)  {
 
@@ -67,6 +69,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 *
 	 * @param tiersAnnulationRecapView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(TiersAnnulationRecapView tiersAnnulationRecapView) {
 

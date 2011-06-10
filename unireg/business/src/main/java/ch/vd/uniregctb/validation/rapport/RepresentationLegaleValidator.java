@@ -19,6 +19,7 @@ public class RepresentationLegaleValidator extends RapportEntreTiersValidator<Re
 		return RepresentationLegale.class;
 	}
 
+	@Override
 	public ValidationResults validate(RepresentationLegale ret) {
 
 		final ValidationResults vr = super.validate(ret);

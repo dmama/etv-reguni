@@ -20,66 +20,82 @@ public class AdresseAdapter implements Adresse {
 		this.fin = fin;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public String getCasePostale() {
 		return target.getCasePostale();
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return debut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return fin;
 	}
 
+	@Override
 	public String getLocalite() {
 		return target.getLocalite();
 	}
 
+	@Override
 	public String getNumero() {
 		return target.getNumero();
 	}
 
+	@Override
 	public int getNumeroOrdrePostal() {
 		return target.getNumeroOrdrePostal();
 	}
 
+	@Override
 	public String getNumeroPostal() {
 		return target.getNumeroPostal();
 	}
 
+	@Override
 	public String getNumeroPostalComplementaire() {
 		return target.getNumeroPostalComplementaire();
 	}
 
+	@Override
 	public Integer getNoOfsPays() {
 		return target.getNoOfsPays();
 	}
 
+	@Override
 	public String getRue() {
 		return target.getRue();
 	}
 
+	@Override
 	public Integer getNumeroRue() {
 		return target.getNumeroRue();
 	}
 
+	@Override
 	public String getNumeroAppartement() {
 		return target.getNumeroAppartement();
 	}
 
+	@Override
 	public String getTitre() {
 		return target.getTitre();
 	}
 
+	@Override
 	public TypeAdresseCivil getTypeAdresse() {
 		return target.getTypeAdresse();
 	}
 
+	@Override
 	public Commune getCommuneAdresse() {
 		return target.getCommuneAdresse();
 	}

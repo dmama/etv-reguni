@@ -1,5 +1,16 @@
 package ch.vd.uniregctb.listes.suisseoupermiscresident;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
@@ -9,16 +20,6 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesProcessor<ListeContribuablesResidentsSansForVaudoisResults, ListeContribuablesResidentsSansForVaudoisThread> {
 
@@ -56,15 +57,18 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 		// lance le vrai boulot !
 		return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ListeContribuablesResidentsSansForVaudoisResults, ListeContribuablesResidentsSansForVaudoisThread>() {
 
+		    @Override
 		    public ListeContribuablesResidentsSansForVaudoisResults createResults(RegDate dateTraitement) {
 		        return new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nbThreads, tiersService);
 		    }
 
+		    @Override
 		    public ListeContribuablesResidentsSansForVaudoisThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
 		                                               AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, status, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService, serviceCivilCacheWarmer);
 		    }
 
+		    @Override
 		    public Iterator<Long> getIdIterator(Session session) {
 		        return createIterator(session);
 		    }

@@ -54,6 +54,7 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 	 * Retourne les evenements d'un individu
 	 * @see EvenementCivilExterneDAO#rechercheEvenementExistant(java.util.Date, java.lang.Long)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<EvenementCivilExterne> rechercheEvenementExistantEtTraitable(final RegDate dateEvenement, final TypeEvenementCivil typeEvenement, final Long noIndividu) {
 		final StringBuffer b = new StringBuffer();
@@ -64,6 +65,7 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 		final String sql = b.toString();
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilExterne>>() {
+			@Override
 			public List<EvenementCivilExterne> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(sql);
 				query.setParameter("date", dateEvenement.index());
@@ -75,6 +77,7 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 		});
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<EvenementCivilExterne> find(final EvenementCivilExterneCriteria criterion, final ParamPagination paramPagination) {
 		if (LOGGER.isTraceEnabled()) {
@@ -99,6 +102,7 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 		final String query = String.format("select evenement from EvenementCivilExterne evenement where 1=1 %s%s", queryWhere, queryOrder);
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilExterne>>() {
+			@Override
 			public List<EvenementCivilExterne> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Query queryObject = session.createQuery(query);
@@ -124,6 +128,7 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 	/**
 	 * @see EvenementCivilExterneDAO#count(EvenementCivilExterneCriteria)
 	 */
+	@Override
 	public int count(EvenementCivilExterneCriteria criterion){
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of EvenementCivilExterneDAO:count");
@@ -213,15 +218,18 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 		return queryWhere;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getEvenementCivilsNonTraites() {
 		return getHibernateTemplate().findByNamedParam("select evt.id from EvenementCivilExterne evt where evt.etat in (:etats) order by evt.dateTraitement desc", "etats", ETATS_NON_TRAITES);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<EvenementCivilExterne> getEvenementsCivilsNonTraites(final Collection<Long> nosIndividus) {
 		final String s = "SELECT e FROM EvenementCivilExterne e WHERE e.etat IN (:etats) AND (e.numeroIndividuPrincipal IN (:col) OR e.numeroIndividuConjoint IN (:col))";
 		return getHibernateTemplate().execute(new HibernateCallback<List<EvenementCivilExterne>>() {
+			@Override
 			public List<EvenementCivilExterne> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(s);
 				query.setParameterList("etats", ETATS_NON_TRAITES);
@@ -231,10 +239,12 @@ public class EvenementCivilExterneDAOImpl extends GenericDAOImpl<EvenementCivilE
 		});
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getIdsEvenementCivilsErreurIndividu(final Long numIndividu){
 		final String s ="select evt.id from EvenementCivilExterne evt where evt.etat in (:etats) and evt.numeroIndividuPrincipal = :ind order by evt.id asc";
 		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
+			@Override
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(s);
 				query.setParameterList("etats", ETATS_NON_TRAITES);

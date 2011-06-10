@@ -23,6 +23,7 @@ public class TiersCriteriaValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return TiersCriteriaView.class.isAssignableFrom(clazz);
@@ -32,6 +33,7 @@ public class TiersCriteriaValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 */
+	@Override
 	public void validate(Object target, Errors errors) {
 		// s'il y a deja des erreurs (ce sont des erreurs de binding), pas continuer les vérifications
 		if (errors.hasErrors())

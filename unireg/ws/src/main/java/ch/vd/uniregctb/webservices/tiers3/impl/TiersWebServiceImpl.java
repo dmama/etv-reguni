@@ -228,6 +228,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public BatchTiers getBatchTiers(final GetBatchTiersRequest params) throws WebServiceException {
 		try {
 			if (params.getTiersNumbers() == null || params.getTiersNumbers().isEmpty()) {
@@ -241,6 +242,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 
 			final Map<Long, Object> results = mapTiers(new HashSet<Long>(params.getTiersNumbers()), null, DataHelper.toSet(params.getParts()), new MapCallback() {
+				@Override
 				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, RegDate date, Context context) {
 					try {
 						final Tiers t;
@@ -415,6 +417,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public TypeTiers getTiersType(GetTiersTypeRequest params) throws WebServiceException {
 
@@ -440,6 +443,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void setTiersBlocRembAuto(final SetTiersBlocRembAutoRequest params) throws WebServiceException {
 
@@ -460,10 +464,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public SearchEvenementsPMResponse searchEvenementsPM(SearchEvenementsPMRequest params) throws WebServiceException {
 		throw ExceptionHelper.newTechnicalException("Fonctionnalité pas encore implémentée.");
 	}
 
+	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public DebiteurInfo getDebiteurInfo(GetDebiteurInfoRequest params) throws WebServiceException {
 
@@ -497,6 +503,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		private final QuittancerDeclarationsResponse reponses = new QuittancerDeclarationsResponse();
 
+		@Override
 		public void addErrorException(DemandeQuittancementDeclaration element, Exception e) {
 			if (e instanceof ValidationException) {
 				reponses.getItem()
@@ -510,6 +517,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 		}
 
+		@Override
 		public void addAll(QuittancementResults right) {
 			this.reponses.getItem().addAll(right.getReponses().getItem());
 		}
@@ -523,6 +531,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 	}
 
+	@Override
 	public QuittancerDeclarationsResponse quittancerDeclarations(QuittancerDeclarationsRequest params) throws WebServiceException {
 
 		try {
@@ -560,6 +569,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		// rien à faire
 	}
 
+	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public Long[] getListeCtbModifies(GetListeCtbModifiesRequest params) throws WebServiceException {
 

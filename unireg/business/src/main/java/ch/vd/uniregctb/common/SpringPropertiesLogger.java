@@ -44,6 +44,7 @@ public class SpringPropertiesLogger implements InitializingBean {
 		this.properties = properties;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		// Change les | en \n (EOL)

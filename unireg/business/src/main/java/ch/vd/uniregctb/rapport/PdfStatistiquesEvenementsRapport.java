@@ -1,5 +1,18 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang.mutable.MutableInt;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -13,18 +26,6 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-import org.apache.commons.lang.mutable.MutableInt;
-
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Rapport des statistiques des événements reçus par Unireg
@@ -61,6 +62,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Evénements civils:", String.valueOf(civils != null));
 					table.addLigne("Evénements externes:", String.valueOf(externes != null));
@@ -78,6 +80,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// Evénements civils : états
 			{
 				addTableSimple(3, new PdfRapport.TableSimpleCallback() {
+					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
 						table.addLigne("Etat", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
@@ -137,6 +140,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			addEntete1("Evenements civils ignorés depuis le " + RegDateHelper.dateToDisplayString(dateReference));
 			{
 				addTableSimple(2, new TableSimpleCallback() {
+					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 						final Map<Integer, Integer> ignores = civils.getIgnores();
 
@@ -166,6 +170,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			addEntete1("Evénements externes");
 			{
 				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
 						table.addLigne("Etat", "Total");
@@ -198,6 +203,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements d'identification de contribuable : états
 			{
 				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
+					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
 						table.addLigne("Etat", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
@@ -370,6 +376,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// tri des lignes dans l'ordre décroissant des nombres d'occurrence
 			final List<Map.Entry<MsgTypeKey, MutableInt>> stats = new ArrayList<Map.Entry<MsgTypeKey, MutableInt>>(map.entrySet());
 			Collections.sort(stats, new Comparator<Map.Entry<MsgTypeKey, MutableInt>>() {
+				@Override
 				public int compare(Map.Entry<MsgTypeKey, MutableInt> o1, Map.Entry<MsgTypeKey, MutableInt> o2) {
 					return o2.getValue().intValue() - o1.getValue().intValue();
 				}

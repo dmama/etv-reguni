@@ -23,6 +23,7 @@ public class IdentificationAdresseTooltipManagerImpl implements IdentificationAd
 		this.adresseService = adresseService;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public void fillDerniereAdresseVaudoiseConnue(Long tiersId, IdentificationAdresseTooltipView view) {
 

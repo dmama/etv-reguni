@@ -113,6 +113,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DeterminationDIsRapport generateRapport(final DeterminationDIsResults results, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -123,6 +124,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(DeterminationDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsRapport>() {
+				@Override
 				public void writeDoc(DeterminationDIsRapport doc, OutputStream os) throws Exception {
 					PdfDeterminationDIsRapport document = new PdfDeterminationDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -137,6 +139,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EnvoiDIsRapport generateRapport(final EnvoiDIsResults results, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -148,6 +151,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(EnvoiDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiDIsRapport>() {
+				@Override
 				public void writeDoc(EnvoiDIsRapport doc, OutputStream os) throws Exception {
 					PdfEnvoiDIsRapport document = new PdfEnvoiDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -159,12 +163,14 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ListeDIsNonEmisesRapport generateRapport(final ListeDIsNonEmises results, final StatusManager status) {
 		final String nom = "RapportListeDIsNonEmises" + results.dateTraitement.index();
 		final String description = String.format("Rapport de la liste des DIs non émises.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ListeDIsNonEmisesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeDIsNonEmisesRapport>() {
+				@Override
 				public void writeDoc(ListeDIsNonEmisesRapport doc, OutputStream os) throws Exception {
 					PdfListeDIsNonEmisesRapport document = new PdfListeDIsNonEmisesRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -179,6 +185,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public MajoriteRapport generateRapport(final OuvertureForsResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -189,6 +196,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(MajoriteRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MajoriteRapport>() {
+				@Override
 				public void writeDoc(MajoriteRapport doc, OutputStream os) throws Exception {
 					PdfMajoriteRapport document = new PdfMajoriteRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -203,6 +211,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public FusionDeCommunesRapport generateRapport(final FusionDeCommunesResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -213,6 +222,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(FusionDeCommunesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<FusionDeCommunesRapport>() {
+				@Override
 				public void writeDoc(FusionDeCommunesRapport doc, OutputStream os) throws Exception {
 					PdfFusionDeCommunesRapport document = new PdfFusionDeCommunesRapport(infraService);
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -227,6 +237,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public RolesCommunesRapport generateRapport(final ProduireRolesCommunesResults results, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -237,6 +248,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(RolesCommunesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesCommunesRapport>() {
+				@Override
 				public void writeDoc(RolesCommunesRapport doc, OutputStream os) throws Exception {
 					final PdfRolesCommunesRapport document = new PdfRolesCommunesRapport(infraService);
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -253,6 +265,7 @@ public class RapportServiceImpl implements RapportService {
 	 * @param results le résultat de l'exécution du job de production des rôles pour un ou plusieurs OID.
 	 * @return le rapport
 	 */
+	@Override
 	public RolesOIDsRapport generateRapport(final ProduireRolesOIDsResults[] results, RegDate dateTraitement, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -263,6 +276,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(RolesOIDsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesOIDsRapport>() {
+				@Override
 				public void writeDoc(RolesOIDsRapport doc, OutputStream os) throws Exception {
 					final PdfRolesOIDsRapport document = new PdfRolesOIDsRapport(infraService);
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -277,6 +291,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public StatistiquesDIsRapport generateRapport(final StatistiquesDIs results, final StatusManager status) {
 		final String nom = "RapportStatsDIs" + results.dateTraitement.index();
 		final String description = String.format("Rapport des statistiques des déclarations d'impôt ordinaires.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
@@ -284,6 +299,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(StatistiquesDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<StatistiquesDIsRapport>() {
+				@Override
 				public void writeDoc(StatistiquesDIsRapport doc, OutputStream os) throws Exception {
 					PdfStatsDIsRapport document = new PdfStatsDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -298,6 +314,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public StatistiquesCtbsRapport generateRapport(final StatistiquesCtbs results, final StatusManager status) {
 		final String nom = "RapportStatsCtbs" + results.dateTraitement.index();
 		final String description = String.format("Rapport des statistiques des contribuables assujettis.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
@@ -305,6 +322,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(StatistiquesCtbsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<StatistiquesCtbsRapport>() {
+				@Override
 				public void writeDoc(StatistiquesCtbsRapport doc, OutputStream os) throws Exception {
 					PdfStatsCtbsRapport document = new PdfStatsCtbsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -316,12 +334,14 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public EnvoiSommationsDIsRapport generateRapport(final EnvoiSommationsDIsResults results, final StatusManager statusManager) {
 		final String nom = "RapportSommationDI" + results.getDateTraitement().index();
 		final String description = String.format("Rapport de l'envoi de sommation des DIs. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(EnvoiSommationsDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsRapport>() {
+				@Override
 				public void writeDoc(EnvoiSommationsDIsRapport doc, OutputStream os) throws Exception {
 					PdfEnvoiSommationsDIsRapport document = new PdfEnvoiSommationsDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -334,12 +354,14 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ValidationJobRapport generateRapport(final ValidationJobResults results, final StatusManager statusManager) {
 		final String nom = "RapportValidationTiers" + results.dateTraitement.index();
 		final String description = String.format("Rapport de la validation de tous les tiers. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ValidationJobRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ValidationJobRapport>() {
+				@Override
 				public void writeDoc(ValidationJobRapport doc, OutputStream os) throws Exception {
 					PdfValidationRapport document = new PdfValidationRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -351,6 +373,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public EnvoiLRsRapport generateRapport(final EnvoiLRsResults results, final StatusManager statusManager) {
 		final String nom = "RapportEnvoiLR" + results.dateTraitement.index();
 		final RegDate month = RegDate.get(results.dateFinPeriode.year(), results.dateFinPeriode.month());
@@ -358,6 +381,7 @@ public class RapportServiceImpl implements RapportService {
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(EnvoiLRsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiLRsRapport>() {
+				@Override
 				public void writeDoc(EnvoiLRsRapport doc, OutputStream os) throws Exception {
 					PdfEnvoiLRsRapport document = new PdfEnvoiLRsRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -369,12 +393,14 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public EnvoiSommationLRsRapport generateRapport(final EnvoiSommationLRsResults results, final StatusManager statusManager) {
 		final String nom = "RapportSommationLR" + results.dateTraitement.index();
 		final String description = String.format("Rapport de l'envoi de sommation de LR. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(EnvoiSommationLRsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationLRsRapport>() {
+				@Override
 				public void writeDoc(EnvoiSommationLRsRapport doc, OutputStream os) throws Exception {
 					PdfEnvoiSommationsLRsRapport document = new PdfEnvoiSommationsLRsRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -392,12 +418,14 @@ public class RapportServiceImpl implements RapportService {
 	 * @param results le résultat de l'exécution du job
 	 * @return le rapport
 	 */
+	@Override
 	public ListesNominativesRapport generateRapport(final ListesNominativesResults results, final StatusManager statusManager) {
 		final String nom = "RapportListesNominatives" + results.getDateTraitement().index();
 		final String description = String.format("Rapport de la génération des listes nominatives au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ListesNominativesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListesNominativesRapport>() {
+				@Override
 				public void writeDoc(ListesNominativesRapport doc, OutputStream os) throws Exception {
 					final PdfListesNominativesRapport document = new PdfListesNominativesRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -409,12 +437,14 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public AcomptesRapport generateRapport(final AcomptesResults results, final StatusManager statusManager) {
 		final String nom = "RapportAcomptes" + results.getDateTraitement().index();
 		final String description = String.format("Rapport de la génération des populations pour les bases acomptes au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(AcomptesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AcomptesRapport>() {
+				@Override
 				public void writeDoc(AcomptesRapport doc, OutputStream os) throws Exception {
 					final PdfAcomptesRapport document = new PdfAcomptesRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -431,12 +461,14 @@ public class RapportServiceImpl implements RapportService {
 	 * @param results le résultat de l'exécution du job
 	 * @return le rapport
 	 */
+	@Override
 	public ExtractionAfcRapport generateRapport(final ExtractionAfcResults results, final StatusManager statusManager) {
 		final String nom = "RapportExtractionAfc" + results.getDateTraitement().index();
 		final String description = String.format("Rapport de l'extraction de la liste AFC au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ExtractionAfcRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionAfcRapport>() {
+				@Override
 				public void writeDoc(ExtractionAfcRapport doc, OutputStream os) throws Exception {
 					final PdfExtractionAfcRapport document = new PdfExtractionAfcRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -455,12 +487,14 @@ public class RapportServiceImpl implements RapportService {
 	 * @param results le résultat de l'exécution du job
 	 * @return le rapport
 	 */
+	@Override
 	public ImpressionChemisesTORapport generateRapport(final ImpressionChemisesTOResults results, final StatusManager statusManager) {
 		final String nom = "RapportChemisesTO" + results.getDateTraitement().index();
 		final String description = String.format("Rapport de l'impression des chemises de taxation d'office au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ImpressionChemisesTORapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ImpressionChemisesTORapport>() {
+				@Override
 				public void writeDoc(ImpressionChemisesTORapport doc, OutputStream os) throws Exception {
 					final PdfImpressionChemisesTORapport document = new PdfImpressionChemisesTORapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
@@ -475,6 +509,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public EchoirDIsRapport generateRapport(final EchoirDIsResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -485,6 +520,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(EchoirDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsRapport>() {
+				@Override
 				public void writeDoc(EchoirDIsRapport doc, OutputStream os) throws Exception {
 					PdfEchoirDIsRapport document = new PdfEchoirDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -499,6 +535,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReinitialiserBaremeDoubleGainRapport generateRapport(final ReinitialiserBaremeDoubleGainResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -509,6 +546,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(ReinitialiserBaremeDoubleGainRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ReinitialiserBaremeDoubleGainRapport>() {
+				@Override
 				public void writeDoc(ReinitialiserBaremeDoubleGainRapport doc, OutputStream os) throws Exception {
 					PdfReinitDoubleGainRapport document = new PdfReinitDoubleGainRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -520,12 +558,14 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ListeTachesEnIsntanceParOIDRapport generateRapport(final ListeTachesEnInstanceParOID results, final StatusManager status) {
 		final String nom = "RapportListeTacheEnInstanceParOID" + results.dateTraitement.index();
 		final String description = String.format("Rapport de la liste des Taches en instance par OID.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
 			return docService.newDoc(ListeTachesEnIsntanceParOIDRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeTachesEnIsntanceParOIDRapport>() {
+				@Override
 				public void writeDoc(ListeTachesEnIsntanceParOIDRapport doc, OutputStream os) throws Exception {
 					PdfListeTacheEnInstanceParOIDRapport document = new PdfListeTacheEnInstanceParOIDRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -537,6 +577,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ExclureContribuablesEnvoiRapport generateRapport(final ExclureContribuablesEnvoiResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -547,6 +588,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(ExclureContribuablesEnvoiRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExclureContribuablesEnvoiRapport>() {
+				@Override
 				public void writeDoc(ExclureContribuablesEnvoiRapport doc, OutputStream os) throws Exception {
 					PdfExclureContribuablesEnvoiRapport document = new PdfExclureContribuablesEnvoiRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -561,6 +603,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DemandeDelaiCollectiveRapport generateRapport(final DemandeDelaiCollectiveResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -571,6 +614,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(DemandeDelaiCollectiveRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DemandeDelaiCollectiveRapport>() {
+				@Override
 				public void writeDoc(DemandeDelaiCollectiveRapport doc, OutputStream os) throws Exception {
 					PdfDemandeDelaiCollectiveRapport document = new PdfDemandeDelaiCollectiveRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -582,6 +626,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public RapprocherCtbRapport generateRapport(final RapprocherCtbResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -591,6 +636,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(RapprocherCtbRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RapprocherCtbRapport>() {
+				@Override
 				public void writeDoc(RapprocherCtbRapport doc, OutputStream os) throws Exception {
 					PdfRapprochementCtbRapport document = new PdfRapprochementCtbRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -602,6 +648,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ListeContribuablesResidentsSansForVaudoisRapport generateRapport(final ListeContribuablesResidentsSansForVaudoisResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -612,6 +659,7 @@ public class RapportServiceImpl implements RapportService {
 
 	       try {
 	           return docService.newDoc(ListeContribuablesResidentsSansForVaudoisRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeContribuablesResidentsSansForVaudoisRapport>() {
+				   @Override
 				   public void writeDoc(ListeContribuablesResidentsSansForVaudoisRapport doc, OutputStream os) throws Exception {
 					   final PdfListeContribuablesResidentsSansForVaudoisRapport document = new PdfListeContribuablesResidentsSansForVaudoisRapport();
 					   document.write(results, nom, description, dateGeneration, os, status);
@@ -623,6 +671,7 @@ public class RapportServiceImpl implements RapportService {
 	       }
 	}
 
+	@Override
 	public CorrectionFlagHabitantRapport generateRapport(final CorrectionFlagHabitantSurPersonnesPhysiquesResults resultsPP, final CorrectionFlagHabitantSurMenagesResults resultsMC, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -634,6 +683,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(CorrectionFlagHabitantRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<CorrectionFlagHabitantRapport>() {
+				@Override
 				public void writeDoc(CorrectionFlagHabitantRapport doc, OutputStream os) throws Exception {
 					final PdfCorrectionFlagHabitantRapport document = new PdfCorrectionFlagHabitantRapport();
 					document.write(resultsPP, resultsMC, nom, description, dateGeneration, os, status);
@@ -645,6 +695,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public StatistiquesEvenementsRapport generateRapport(final StatsEvenementsCivilsResults civils, final StatsEvenementsExternesResults externes,
 	                                                     final StatsEvenementsIdentificationContribuableResults identCtb,
 	                                                     final RegDate dateReference, StatusManager s) {
@@ -656,6 +707,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(StatistiquesEvenementsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<StatistiquesEvenementsRapport>() {
+				@Override
 				public void writeDoc(StatistiquesEvenementsRapport doc, OutputStream os) throws Exception {
 					final PdfStatistiquesEvenementsRapport document = new PdfStatistiquesEvenementsRapport();
 					document.write(civils, externes, identCtb, dateReference, nom, description, dateGeneration, os, status);
@@ -667,6 +719,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public DeterminerMouvementsDossiersEnMasseRapport generateRapport(final DeterminerMouvementsDossiersEnMasseResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -677,6 +730,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(DeterminerMouvementsDossiersEnMasseRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminerMouvementsDossiersEnMasseRapport>() {
+				@Override
 				public void writeDoc(DeterminerMouvementsDossiersEnMasseRapport doc, OutputStream os) throws Exception {
 					final PdfDeterminerMouvementsDossiersEnMasseRapport document = new PdfDeterminerMouvementsDossiersEnMasseRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -688,6 +742,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public DeterminerLRsEchuesRapport generateRapport(final DeterminerLRsEchuesResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -698,6 +753,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(DeterminerLRsEchuesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminerLRsEchuesRapport>() {
+				@Override
 				public void writeDoc(DeterminerLRsEchuesRapport doc, OutputStream os) throws Exception {
 					final PdfDeterminerLRsEchuesRapport document = new PdfDeterminerLRsEchuesRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -710,6 +766,7 @@ public class RapportServiceImpl implements RapportService {
 
 	}
 
+	@Override
 	public IdentifierContribuableRapport generateRapport(final IdentifierContribuableResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -720,6 +777,7 @@ public class RapportServiceImpl implements RapportService {
 
 			try {
 				return docService.newDoc(IdentifierContribuableRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<IdentifierContribuableRapport>() {
+					@Override
 					public void writeDoc(IdentifierContribuableRapport doc, OutputStream os) throws Exception {
 						final PdfIdentifierContribuableRapport document = new PdfIdentifierContribuableRapport();
 						document.write(results, nom, description, dateGeneration, os, status);
@@ -732,6 +790,7 @@ public class RapportServiceImpl implements RapportService {
 
 	}
 
+	@Override
 	public TraiterEvenementExterneRapport generateRapport(final TraiterEvenementExterneResult results, StatusManager s) {
 			final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -741,6 +800,7 @@ public class RapportServiceImpl implements RapportService {
 
 			try {
 				return docService.newDoc(TraiterEvenementExterneRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<TraiterEvenementExterneRapport>() {
+					@Override
 					public void writeDoc(TraiterEvenementExterneRapport doc, OutputStream os) throws Exception {
 						final PdfTraiterEvenementExterneRapport document = new PdfTraiterEvenementExterneRapport();
 						document.write(results, nom, description, dateGeneration, os, status);
@@ -752,6 +812,7 @@ public class RapportServiceImpl implements RapportService {
 			}
 	}
 
+	@Override
 	public ResolutionAdresseRapport generateRapport(final ResolutionAdresseResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -761,6 +822,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(ResolutionAdresseRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ResolutionAdresseRapport>() {
+				@Override
 				public void writeDoc(ResolutionAdresseRapport doc, OutputStream os) throws Exception {
 					final PdfResolutionAdresseRapport document = new PdfResolutionAdresseRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -773,6 +835,7 @@ public class RapportServiceImpl implements RapportService {
 
 	}
 
+	@Override
 	public ComparerSituationFamilleRapport generateRapport(final ComparerSituationFamilleResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -782,6 +845,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(ComparerSituationFamilleRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ComparerSituationFamilleRapport>() {
+				@Override
 				public void writeDoc(ComparerSituationFamilleRapport doc, OutputStream os) throws Exception {
 					final PdfComparerSituationFamilleRapport document = new PdfComparerSituationFamilleRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -793,6 +857,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ListeNoteRapport generateRapport(final ListeNoteResults results, StatusManager s) {
 	final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -803,6 +868,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(ListeNoteRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeNoteRapport>() {
+				@Override
 				public void writeDoc(ListeNoteRapport doc, OutputStream os) throws Exception {
 					final PdfListeNoteRapport document = new PdfListeNoteRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -814,6 +880,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public MigrationCoquillesPMRapport generateRapport(final MigrationCoquillesPM.MigrationResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -823,6 +890,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(MigrationCoquillesPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MigrationCoquillesPMRapport>() {
+				@Override
 				public void writeDoc(MigrationCoquillesPMRapport doc, OutputStream os) throws Exception {
 					final PdfMigrationCoquillesPMRapport document = new PdfMigrationCoquillesPMRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -834,6 +902,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ComparerForFiscalEtCommuneRapport generateRapport(final ComparerForFiscalEtCommuneResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -844,6 +913,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(ComparerForFiscalEtCommuneRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ComparerForFiscalEtCommuneRapport>() {
+				@Override
 				public void writeDoc(ComparerForFiscalEtCommuneRapport doc, OutputStream os) throws Exception {
 					final PdfComparerForFiscalEtCommuneRapport document = new PdfComparerForFiscalEtCommuneRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -855,6 +925,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public CorrectionEtatDeclarationRapport generateRapport(final CorrectionEtatDeclarationResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -865,6 +936,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(CorrectionEtatDeclarationRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<CorrectionEtatDeclarationRapport>() {
+				@Override
 				public void writeDoc(CorrectionEtatDeclarationRapport doc, OutputStream os) throws Exception {
 					final PdfCorrectionEtatDeclarationRapport document = new PdfCorrectionEtatDeclarationRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
@@ -876,6 +948,7 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
 	public ListeAssujettisRapport generateRapport(final ListeAssujettisResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -885,6 +958,7 @@ public class RapportServiceImpl implements RapportService {
 
 		try {
 			return docService.newDoc(ListeAssujettisRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeAssujettisRapport>() {
+				@Override
 				public void writeDoc(ListeAssujettisRapport doc, OutputStream os) throws Exception {
 					final PdfListeAssujettisRapport document = new PdfListeAssujettisRapport();
 					document.write(results, nom, description, dateGeneration, os, status);

@@ -81,6 +81,7 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 		this.dateLimiteExclusion = dateLimiteExclusion;
 	}
 
+	@Override
 	public void addErrorException(Long ctbID, Exception e) {
 		++nbCtbsTotal;
 		ctbsEnErrors.add(new Erreur(0, null, ErreurType.EXCEPTION, e.getMessage()));
@@ -96,6 +97,7 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DATE_LIMITE_EXISTANTE, message));
 	}
 
+	@Override
 	public void addAll(ExclureContribuablesEnvoiResults rapport) {
 		nbCtbsTotal += rapport.nbCtbsTotal;
 		ctbsIgnores.addAll(rapport.ctbsIgnores);

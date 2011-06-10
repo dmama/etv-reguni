@@ -24,6 +24,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 		this.serviceInfra = serviceInfra;
 	}
 
+	@Override
 	public ValidationResults validate(T ff) {
 
 		final ValidationResults results = new ValidationResults();

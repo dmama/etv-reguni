@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.externe;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -21,8 +20,6 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 
 public class EvenementExterneProcessorImpl implements EvenementExterneProcessor {
 	private static final int BATCH_SIZE = 100;
@@ -34,6 +31,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private PlatformTransactionManager transactionManager;
 	private final ThreadLocal<TraiterEvenementExterneResult> rapport = new ThreadLocal<TraiterEvenementExterneResult>();
 
+	@Override
 	public TraiterEvenementExterneResult traiteEvenementExterne(final RegDate dateTraitement, int nbThreads, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final TraiterEvenementExterneResult rapportFinal = new TraiterEvenementExterneResult(dateTraitement);
@@ -87,6 +85,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private void traiterBatch(final List<Long> batch) throws EvenementExterneException {
 		//Chargement des evenement externes		
 		final List<EvenementExterne> list = evenementExterneDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementExterne>>() {
+			@Override
 			public List<EvenementExterne> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(EvenementExterne.class);
 				crit.add(Restrictions.in("id", batch));
@@ -119,9 +118,11 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> idsEvenement = evenementExterneDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);
 						List<String> etats = new ArrayList<String>();

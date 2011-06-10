@@ -73,10 +73,12 @@ public class IdentifierContribuableResults extends JobResults<Long, IdentifierCo
 		this.dateTraitement = dateTraitement;
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		erreurs.add(new Erreur( element, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(IdentifierContribuableResults right) {
 		this.nbMessagesTotal += right.nbMessagesTotal;
 		this.identifies.addAll(right.identifies);

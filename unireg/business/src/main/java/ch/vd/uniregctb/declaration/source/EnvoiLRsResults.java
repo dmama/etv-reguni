@@ -79,6 +79,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 		this.dateFinPeriode = dateFinPeriode;
 	}
 
+	@Override
 	public void addAll(EnvoiLRsResults right) {
 		this.nbDPIsTotal += right.nbDPIsTotal;
 		this.nbLrMensuellesTraitees += right.nbLrMensuellesTraitees;
@@ -128,6 +129,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 		return String.format("%02d.%04d", dateFinPeriode.month(), dateFinPeriode.year());
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		addOnCommitException(element, e);
 	}

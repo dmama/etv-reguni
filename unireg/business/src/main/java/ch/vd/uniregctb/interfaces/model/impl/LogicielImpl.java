@@ -39,51 +39,63 @@ public class LogicielImpl implements Logiciel {
 
 	}
 
+	@Override
 	public String getContactMetierMail() {
 		return contactMetierMail;
 	}
 
+	@Override
 	public String getContactMetierNom() {
 		return contactMetierNom;
 	}
 
+	@Override
 	public String getContactTechniqueMail() {
 		return contactTechniqueMail;
 	}
 
+	@Override
 	public String getContactTechniqueNom() {
 		return contactTechniqueNom;
 	}
 
+	@Override
 	public String getFournisseur() {
 		return fournisseur;
 	}
 
+	@Override
 	public String getFournisseurAdresse() {
 		return fournisseurAdresse;
 	}
 
+	@Override
 	public long getId() {
 		return id;
 	}
 
+	@Override
 	public String getLibelle() {
 		return libelle;
 	}
 
+	@Override
 	public LogicielMetier getMetier() {
 		return metier;
 	}
 
+	@Override
 	public String getVersion() {
 		return version;
 	}
 
 
+	@Override
 	public String getLibelleComplet() {
 		return fournisseur+" - "+libelle+" - "+version;
 	}
 
+	@Override
 	public boolean isCertifie() {
 		return certifie;
 	}

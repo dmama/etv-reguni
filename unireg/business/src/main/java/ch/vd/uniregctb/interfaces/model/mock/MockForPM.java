@@ -16,10 +16,12 @@ public class MockForPM implements ForPM {
 	private int noOfsAutoriteFiscale;
 	private TypeNoOfs typeAutoriteFiscale;
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
@@ -28,6 +30,7 @@ public class MockForPM implements ForPM {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -36,6 +39,7 @@ public class MockForPM implements ForPM {
 		this.dateFin = dateFin;
 	}
 
+	@Override
 	public int getNoOfsAutoriteFiscale() {
 		return noOfsAutoriteFiscale;
 	}
@@ -44,6 +48,7 @@ public class MockForPM implements ForPM {
 		this.noOfsAutoriteFiscale = noOfsAutoriteFiscale;
 	}
 
+	@Override
 	public TypeNoOfs getTypeAutoriteFiscale() {
 		return typeAutoriteFiscale;
 	}

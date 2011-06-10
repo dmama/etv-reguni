@@ -10,6 +10,7 @@ import ch.vd.uniregctb.validation.EntityValidatorImpl;
 
 public abstract class DeclarationValidator<T extends Declaration> extends EntityValidatorImpl<T> {
 
+	@Override
 	public ValidationResults validate(T declaration) {
 
 		final ValidationResults vr = new ValidationResults();

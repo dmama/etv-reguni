@@ -133,6 +133,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 		template.setReadOnly(true);
 
 		final TypeFor typeFor = template.execute(new TransactionCallback<TypeFor>() {
+			@Override
 			public TypeFor doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersDAO.get(numeroCtb);
 				if (tiers == null) {
@@ -177,6 +178,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 		return components;
 	}
 
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.messageSourceAccessor = new MessageSourceAccessor(applicationContext);
 	}

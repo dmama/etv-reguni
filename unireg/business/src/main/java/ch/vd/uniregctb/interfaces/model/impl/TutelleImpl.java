@@ -41,38 +41,47 @@ public class TutelleImpl implements Tutelle, Serializable {
 		this.typeTutelle = TypeTutelle.get(target.getTypeTutelle());
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public String getLibelleMotif() {
 		return libelleMotif;
 	}
 
+	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
 
+	@Override
 	public String getNomAutoriteTutelaire() {
 		return nomAutoriteTutelaire;
 	}
 
+	@Override
 	public Long getNumeroCollectiviteAutoriteTutelaire() {
 		return numeroCollectiviteAutoriteTutelaire;
 	}
 
+	@Override
 	public Individu getTuteur() {
 		return tuteur;
 	}
 
+	@Override
 	public TuteurGeneral getTuteurGeneral() {
 		return tuteurGeneral;
 	}
 
+	@Override
 	public TypeTutelle getTypeTutelle() {
 		return typeTutelle;
 	}

@@ -57,6 +57,7 @@ public class RegDateUserType extends GenericUserType implements UserType, Parame
 	 *
 	 * @see org.hibernate.usertype.UserType#sqlTypes()
 	 */
+	@Override
 	public int[] sqlTypes() {
 		return SQL_TYPES;
 	}
@@ -66,6 +67,7 @@ public class RegDateUserType extends GenericUserType implements UserType, Parame
 	 *
 	 * @see org.hibernate.usertype.UserType#returnedClass()
 	 */
+	@Override
 	public Class<?> returnedClass() {
 		return RegDate.class;
 	}
@@ -75,6 +77,7 @@ public class RegDateUserType extends GenericUserType implements UserType, Parame
 	 *
 	 * @see org.hibernate.usertype.UserType#nullSafeGet(java.sql.ResultSet, java.lang.String[], java.lang.Object)
 	 */
+	@Override
 	public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException, SQLException {
 		int index = resultSet.getInt(names[0]);
 		RegDate result = null;
@@ -89,6 +92,7 @@ public class RegDateUserType extends GenericUserType implements UserType, Parame
 	 *
 	 * @see org.hibernate.usertype.UserType#nullSafeSet(java.sql.PreparedStatement, java.lang.Object, int)
 	 */
+	@Override
 	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index) throws HibernateException, SQLException {
 		if (null == value) {
 			preparedStatement.setNull(index, Types.INTEGER);
@@ -102,6 +106,7 @@ public class RegDateUserType extends GenericUserType implements UserType, Parame
 		}
 	}
 
+	@Override
 	public void setParameterValues(Properties parameters) {
 		if (parameters != null) {
 			final String value = parameters.getProperty("allowPartial");

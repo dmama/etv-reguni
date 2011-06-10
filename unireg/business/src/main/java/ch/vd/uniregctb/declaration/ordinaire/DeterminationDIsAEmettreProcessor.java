@@ -153,6 +153,7 @@ public class DeterminationDIsAEmettreProcessor {
 		try {
 			TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.execute(new TransactionCallback<Object>() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Récupère la période fiscale
@@ -194,6 +195,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
         final List<Contribuable> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
+            @Override
             public List<Contribuable> doInHibernate(Session session) throws HibernateException {
                 final Criteria crit = session.createCriteria(Contribuable.class);
                 crit.add(Restrictions.in("numero", batch));
@@ -696,9 +698,11 @@ public class DeterminationDIsAEmettreProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
+			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
 				final List<Long> idsFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryIdsCtbWithFors);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
@@ -708,6 +712,7 @@ public class DeterminationDIsAEmettreProcessor {
 				});
 
 				final List<Long> idsTasks = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryIdsCtbWithTasks);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
@@ -717,6 +722,7 @@ public class DeterminationDIsAEmettreProcessor {
 				});
 
 				final List<Long> idsDIs = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());

@@ -60,6 +60,7 @@ public class TiersAdresseValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return Tiers.class.equals(clazz) || DebiteurPrestationImposable.class.equals(clazz) || TiersEditView.class.equals(clazz)
@@ -69,6 +70,7 @@ public class TiersAdresseValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 

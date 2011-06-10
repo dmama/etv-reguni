@@ -10,6 +10,7 @@ public class MockEditionFosc implements EditionFosc {
 	private int annee;
 	private int numero;
 
+	@Override
 	public int getAnnee() {
 		return annee;
 	}
@@ -18,6 +19,7 @@ public class MockEditionFosc implements EditionFosc {
 		this.annee = annee;
 	}
 
+	@Override
 	public int getNumero() {
 		return numero;
 	}

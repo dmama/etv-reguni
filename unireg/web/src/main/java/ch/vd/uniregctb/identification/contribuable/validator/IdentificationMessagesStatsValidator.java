@@ -8,11 +8,13 @@ import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesSt
 
 public class IdentificationMessagesStatsValidator implements Validator {
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
 		return IdentificationMessagesStatsView.class.equals(clazz) ;
 	}
 
+	@Override
 	public void validate(Object obj, Errors errors) {
 		Assert.isTrue(obj instanceof IdentificationMessagesStatsView);
 		IdentificationMessagesStatsView identificationMessagesStatsView = (IdentificationMessagesStatsView) obj;

@@ -30,22 +30,27 @@ public class ForPMImpl implements ForPM {
 		this.typeAutoriteFiscale = TypeNoOfs.valueOf(target.getTypeAutoriteFiscale().name());
 	}
 
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
+	@Override
 	public int getNoOfsAutoriteFiscale() {
 		return noOfsAutoriteFiscale;
 	}
 
+	@Override
 	public TypeNoOfs getTypeAutoriteFiscale() {
 		return typeAutoriteFiscale;
 	}

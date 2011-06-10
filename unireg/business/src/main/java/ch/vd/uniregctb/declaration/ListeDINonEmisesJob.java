@@ -73,6 +73,7 @@ public class ListeDINonEmisesJob extends JobDefinition {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		final Document report = template.execute(new TransactionCallback<Document>() {
+			@Override
 			public Document doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());

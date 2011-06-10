@@ -12,6 +12,7 @@ public class MockEvenementPM implements EvenementPM {
 	private Long numeroPM;
 	private String code;
 
+	@Override
 	public RegDate getDate() {
 		return date;
 	}
@@ -20,6 +21,7 @@ public class MockEvenementPM implements EvenementPM {
 		this.date = date;
 	}
 
+	@Override
 	public Long getNumeroPM() {
 		return numeroPM;
 	}
@@ -28,6 +30,7 @@ public class MockEvenementPM implements EvenementPM {
 		this.numeroPM = numeroPM;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}

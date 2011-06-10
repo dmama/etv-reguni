@@ -416,6 +416,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	/**
 	 * @return the typeVisualisation
 	 */
+	@Override
 	public TypeVisualisation getTypeVisualisation() {
 		return typeVisualisation;
 	}
@@ -435,6 +436,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.noOfsFor = noOfsFor;
 	}
 
+	@Override
 	public Set<TypeTiers> getTypesTiers() {
 		return typesTiers;
 	}
@@ -453,6 +455,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		}
 	}
 
+	@Override
 	public boolean isInclureI107() {
 		return inclureI107;
 	}
@@ -461,6 +464,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.inclureI107 = inclureI107;
 	}
 
+	@Override
 	public boolean isInclureTiersAnnules() {
 		return inclureTiersAnnules;
 	}
@@ -469,6 +473,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.inclureTiersAnnules = inclureTiersAnnules;
 	}
 
+	@Override
 	public boolean isTiersAnnulesSeulement() {
 		return tiersAnnulesSeulement;
 	}
@@ -509,6 +514,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.categorieDebiteurIs = categorieDebiteurIs;
 	}
 
+	@Override
 	public Boolean isTiersActif() {
 		return tiersActif;
 	}

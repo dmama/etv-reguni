@@ -133,6 +133,7 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 		this.validationService = validationService;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
 	}

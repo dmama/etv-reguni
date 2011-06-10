@@ -27,6 +27,7 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 
 	private final JdbcModeleFeuilleDocumentDao ppfDao = new JdbcModeleFeuilleDocumentDaoImpl();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public ModeleDocument get(long periodeId, JdbcTemplate template) {
 
@@ -45,11 +46,13 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 		return modele;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<ModeleDocument> getList(final Collection<Long> periodesId, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<ModeleDocument> list = CollectionsUtils.splitAndProcess(periodesId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, ModeleDocument>() {
+			@Override
 			public List<ModeleDocument> process(List<Long> ids) {
 				return template.query(ModeleDocumentMapper.selectByIds(ids), ROW_MAPPER);
 			}
@@ -93,6 +96,7 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 			return BASE_SELECT + " where NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final long temp8 = rs.getLong(8);

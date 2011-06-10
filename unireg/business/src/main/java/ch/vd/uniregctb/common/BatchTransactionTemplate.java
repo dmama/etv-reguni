@@ -284,6 +284,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 		try {
 			r.processNextBatch = template.execute(new TransactionCallback<Boolean>() {
+				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
 					action.afterTransactionStart(status);
 					return executeWithNewSession(batch, action, rapport);
@@ -298,6 +299,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 				// on re-crée une transaction ici au cas où on veut étoffer un peu le message d'erreur
 				try {
 					template.execute(new TransactionCallback<Object>() {
+						@Override
 						public Object doInTransaction(TransactionStatus status) {
 							addErrorExceptionInNewSession(rapportFinal, batch.get(0), e);
 							return null;
@@ -336,6 +338,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 	private void addErrorExceptionInNewSession(final R rapportFinal, final E elt, final Exception e) {
 		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+			@Override
 			@SuppressWarnings({"unchecked"})
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				rapportFinal.addErrorException(elt, e);
@@ -349,6 +352,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 */
 	private Boolean executeWithNewSession(final List<E> batch, final BatchCallback<E, R> action, final R rapport) {
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Boolean>() {
+			@Override
 			public Boolean doInHibernate(Session session) {
 				return BatchTransactionTemplate.this.doInTransaction(action, batch, rapport);
 			}

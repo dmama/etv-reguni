@@ -318,6 +318,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
@@ -351,6 +352,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
@@ -381,6 +383,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
@@ -414,6 +417,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
@@ -449,6 +453,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
@@ -486,6 +491,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
@@ -526,6 +532,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
@@ -561,6 +568,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);

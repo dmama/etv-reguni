@@ -53,6 +53,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ConfirmCopieView get(long noOperateurReference, long noOperateurDestination) throws AdresseException {
 		final ConfirmCopieView confirmCopieView = new ConfirmCopieView();
@@ -76,6 +77,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 *
 	 * @param confirmCopieView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void copie(ConfirmCopieView confirmCopieView) throws DroitAccesException {
 		long operateurSourceId = confirmCopieView.getUtilisateurReferenceView().getNumeroIndividu();
@@ -88,6 +90,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 *
 	 * @param confirmCopieView
 	 */
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void transfert(ConfirmCopieView confirmCopieView) throws DroitAccesException {
 		long operateurSourceId = confirmCopieView.getUtilisateurReferenceView().getNumeroIndividu();

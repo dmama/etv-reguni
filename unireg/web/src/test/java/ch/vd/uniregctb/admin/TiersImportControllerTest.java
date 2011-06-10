@@ -139,6 +139,7 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		assertEquals("redirect:/admin/dbpreview.do", view);
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
 				int nbTiers = tiersDAO.getCount(Tiers.class);
@@ -177,6 +178,7 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		assertEquals("redirect:/admin/dbpreview.do", view);
 
 		doInTransaction(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
 				int nbTiers = tiersDAO.getCount(Tiers.class);

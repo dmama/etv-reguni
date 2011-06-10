@@ -10,6 +10,7 @@ public class AciComServiceImpl implements AciComService {
 
 	private AciComClient aciComClient;
 
+	@Override
 	public FichierOrigine getMessageFile(String businessId) throws AciComClientException {
 		RecupererContenuMessage demande = new RecupererContenuMessage();
 		demande.setMessageId(businessId);

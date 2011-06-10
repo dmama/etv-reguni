@@ -93,6 +93,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		this.description = description;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (isVisible()) {
 			batchScheduler.register(this);
@@ -314,6 +315,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return sortOrder;
 	}
 
+	@Override
 	public int compareTo(JobDefinition arg) {
 		return getSortOrder() - arg.getSortOrder();
 	}
@@ -348,14 +350,17 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		public JobStatusManager() {
 		}
 
+		@Override
 		public synchronized boolean interrupted() {
 			return isInterrupted();
 		}
 
+		@Override
 		public synchronized void setMessage(String msg) {
 			setRunningMessage(msg);
 		}
 
+		@Override
 		public void setMessage(String msg, int percentProgression) {
 			setRunningMessage(msg, percentProgression);
 		}

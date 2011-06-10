@@ -62,6 +62,7 @@ public class LoadDatabaseJob extends JobDefinition {
 
 		status.setMessage("Ouverture du fichier...");
 		docService.readDoc(doc, new DocumentService.ReadDocCallback<Document>() {
+			@Override
 			public void readDoc(Document doc, InputStream is) throws Exception {
 
 				ZipInputStream zipstream = new ZipInputStream(is);

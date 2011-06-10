@@ -21,6 +21,7 @@ public class EvenementServiceImpl implements EvenementService{
 	/**
 	 * @see EvenementService#find(EvenementCivilExterneCriteria, ch.vd.uniregctb.common.ParamPagination)
 	 */
+	@Override
 	public List<EvenementCivilExterne> find(EvenementCivilExterneCriteria criterion, ParamPagination paramPagination) {
 		return evenementCivilExterneDAO.find(criterion, paramPagination);
 	}
@@ -28,12 +29,14 @@ public class EvenementServiceImpl implements EvenementService{
 	/**
 	 * @see EvenementService#count(EvenementCivilExterneCriteria)
 	 */
+	@Override
 	public int count(EvenementCivilExterneCriteria criterion){
 		return evenementCivilExterneDAO.count(criterion);
 	}
 	/**
 	 * @see EvenementService#get(java.lang.Long)
 	 */
+	@Override
 	public EvenementCivilExterne get(Long id) {
 		return evenementCivilExterneDAO.get(id);
 	}

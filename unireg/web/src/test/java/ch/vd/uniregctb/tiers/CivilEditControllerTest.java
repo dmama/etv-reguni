@@ -88,6 +88,7 @@ public class CivilEditControllerTest extends WebTest {
 	public void testOnSubmitWithNom() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -103,6 +104,7 @@ public class CivilEditControllerTest extends WebTest {
 		Assert.assertNotNull(model);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -119,6 +121,7 @@ public class CivilEditControllerTest extends WebTest {
 	public void testOnSubmitWithDateNaissancePartielle() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -138,6 +141,7 @@ public class CivilEditControllerTest extends WebTest {
 		Assert.assertNotNull(model);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -154,6 +158,7 @@ public class CivilEditControllerTest extends WebTest {
 	public void testOnSubmitWithWrongDateNaissance() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -169,6 +174,7 @@ public class CivilEditControllerTest extends WebTest {
 		Assert.assertNotNull(model);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -184,6 +190,7 @@ public class CivilEditControllerTest extends WebTest {
 	public void testOnSubmitWithDateNaissance() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -200,6 +207,7 @@ public class CivilEditControllerTest extends WebTest {
 		controller.handleRequest(request, response);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> l = tiersDAO.getAll();
 				Assert.assertEquals(1, l.size());
@@ -215,6 +223,7 @@ public class CivilEditControllerTest extends WebTest {
 	public void testModifyNonHabitant() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant(null, "Kamel", null, Sexe.MASCULIN);
 				return pp.getNumero();
@@ -222,6 +231,7 @@ public class CivilEditControllerTest extends WebTest {
 		});
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersDAO.get(ppId);
 				final PersonnePhysique nh = (PersonnePhysique)tiers;
@@ -239,6 +249,7 @@ public class CivilEditControllerTest extends WebTest {
 		controller.handleRequest(request, response);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final Tiers tiers = tiersDAO.get(ppId);
 				final PersonnePhysique nh = (PersonnePhysique)tiers;

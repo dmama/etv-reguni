@@ -68,10 +68,12 @@ public class ComparerForFiscalEtCommuneResults extends JobResults<Long, Comparer
 		return dateTraitement;
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		erreurs.add(new Erreur(element, e.getMessage()));
 	}
 
+	@Override
 	public void addAll(ComparerForFiscalEtCommuneResults right) {
 		this.nbCtbTotal += right.nbCtbTotal;
 		listeCommunesDifferentes.addAll(right.listeCommunesDifferentes);

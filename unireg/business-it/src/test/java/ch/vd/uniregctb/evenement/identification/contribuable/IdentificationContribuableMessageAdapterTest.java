@@ -315,6 +315,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
+			@Override
 			public void handleDemande(IdentificationContribuable message) {
 				messages.add(message);
 			}
@@ -384,6 +385,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
+			@Override
 			public void handleDemande(IdentificationContribuable message) {
 				messages.add(message);
 			}

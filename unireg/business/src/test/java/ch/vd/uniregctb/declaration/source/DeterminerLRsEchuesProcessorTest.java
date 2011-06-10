@@ -42,6 +42,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecLrNonSommees() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -68,6 +69,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecLrSommeeMaisUneLrNonEmise() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -97,6 +99,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecLrSommeeToutesEmises() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -129,6 +132,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecLrSommeeTresRecemment() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -157,6 +161,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecLrSommeeEtDejaEchue() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -186,6 +191,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecUneLrSommeeEtUneDejaEchue() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -223,6 +229,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecUneLrRetourneeApresSommation() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
@@ -254,6 +261,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	public void testDebiteurAvecPlusieursLrSommees() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);

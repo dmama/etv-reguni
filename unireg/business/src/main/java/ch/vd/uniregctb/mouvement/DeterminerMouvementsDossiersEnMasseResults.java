@@ -160,6 +160,7 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 		}
 	}
 
+	@Override
 	public void addErrorException(Long element, Exception e) {
 		final String msg;
 		if (!StringUtils.isBlank(e.getMessage())) {
@@ -171,6 +172,7 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 		erreurs.add(new NonTraite(element != null ? element : -1, Raison.EXCEPTION, msg));
 	}
 
+	@Override
 	public void addAll(DeterminerMouvementsDossiersEnMasseResults right) {
 		mouvements.addAll(right.mouvements);
 		erreurs.addAll(right.erreurs);

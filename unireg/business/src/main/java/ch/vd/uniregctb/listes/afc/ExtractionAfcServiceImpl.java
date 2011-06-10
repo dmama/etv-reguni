@@ -59,6 +59,7 @@ public class ExtractionAfcServiceImpl implements ExtractionAfcService {
 	 * @param nbThreads degré de parallélisation du traitement
 	 * @return extraction
 	 */
+	@Override
 	public ExtractionAfcResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionAfc mode, int nbThreads, StatusManager statusManager) {
 		final ExtractionAfcProcessor proc = new ExtractionAfcProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService);
 		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
