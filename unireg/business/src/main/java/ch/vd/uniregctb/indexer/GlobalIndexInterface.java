@@ -40,6 +40,13 @@ public interface GlobalIndexInterface {
 
 	void indexEntities(List<IndexableData> data);
 
+	/**
+	 * Supprime les éléments dupliqués (doublons).
+	 * @return le nombre d'éléments supprimés.
+	 */
+	int deleteDuplicate();
+
+
 	void removeEntity(Long id, String type) throws IndexerException;
 
 	/**

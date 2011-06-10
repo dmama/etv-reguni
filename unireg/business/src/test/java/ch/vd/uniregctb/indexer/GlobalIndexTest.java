@@ -16,11 +16,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.WildcardQuery;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 
@@ -340,6 +335,92 @@ public class GlobalIndexTest extends BusinessTest {
 			assertHits(1, baseQuery);
 		}
 
+	}
+
+	@NotTransactional
+	@Test
+	public void testDeleteDuplicateIndexeVide() throws Exception {
+
+		globalIndex.overwriteIndex();
+
+		// pas de données
+		assertHits(0, LuceneEngine.F_ENTITYID + ":123456");
+		assertEquals(0, globalIndex.deleteDuplicate());
+	}
+
+	@NotTransactional
+	@Test
+	public void testDeleteDuplicateIndexeSansDoublon() throws Exception {
+
+		globalIndex.overwriteIndex();
+
+		// des données non-dupliquées
+		globalIndex.indexEntity(new SimpleData(123L, "test1", null, "value1"));
+		globalIndex.indexEntity(new SimpleData(456L, "test2", null, "value2"));
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":456");
+
+		assertEquals(0, globalIndex.deleteDuplicate());
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":456");
+	}
+
+	@NotTransactional
+	@Test
+	public void testDeleteDuplicateIndexeAvecDoublons() throws Exception {
+
+		globalIndex.overwriteIndex();
+
+		// une donnée à double
+		globalIndex.indexEntity(new SimpleData(123456L, "test1", null, "value1"));
+		globalIndex.indexEntity(new SimpleData(123456L, "test2", null, "value2"));
+		assertHits(2, LuceneEngine.F_ENTITYID + ":123456");
+
+		assertEquals(1, globalIndex.deleteDuplicate());
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
+	}
+
+	@NotTransactional
+	@Test
+	public void testDeleteDuplicateIndexeAvecDocumentEfface() throws Exception {
+
+		globalIndex.overwriteIndex();
+
+		// un document effacé
+		globalIndex.indexEntity(new SimpleData(123456L, "test1", null, "value1"));
+		globalIndex.removeEntity(123456L, "test1");
+		globalIndex.indexEntity(new SimpleData(123456L, "test2", null, "value2"));
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
+
+		assertEquals(0, globalIndex.deleteDuplicate()); // le document effacé ne doit pas être considéré comme un doublon
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
+	}
+
+	@NotTransactional
+	@Test
+	public void testDeleteDuplicateIndexeAvecDoublonsEtDonneesCorrectes() throws Exception {
+
+		globalIndex.overwriteIndex();
+
+		// mélange des deux
+		globalIndex.indexEntity(new SimpleData(333L, "test1", null, "value1"));
+		globalIndex.indexEntity(new SimpleData(444L, "test2", null, "value2"));
+		globalIndex.indexEntity(new SimpleData(123456L, "test3", null, "value3"));
+		globalIndex.indexEntity(new SimpleData(123456L, "test4", null, "value4"));
+		globalIndex.indexEntity(new SimpleData(123555L, "test5", null, "value5"));
+		globalIndex.indexEntity(new SimpleData(123666L, "test6", null, "value6"));
+		assertHits(1, LuceneEngine.F_ENTITYID + ":333");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":444");
+		assertHits(2, LuceneEngine.F_ENTITYID + ":123456");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123555");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123666");
+
+		assertEquals(1, globalIndex.deleteDuplicate());
+		assertHits(1, LuceneEngine.F_ENTITYID + ":333");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":444");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123555");
+		assertHits(1, LuceneEngine.F_ENTITYID + ":123666");
 	}
 
 	/**

@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.indexer;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.indexer.Directory.ReadOnlyCallback;
-import ch.vd.uniregctb.indexer.Directory.WriteCallback;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -13,10 +15,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.FileSystemUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.indexer.Directory.ReadOnlyCallback;
+import ch.vd.uniregctb.indexer.Directory.WriteCallback;
 
 /**
  * Cette classe est le point d'entrée unique vers l'indexeur Lucene. Il gère notamment l'initialisation des ressources, l'accès concurrent
@@ -44,10 +45,12 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		IndexWriter.setDefaultWriteLockTimeout(WRITE_LOCK_TIMEOUT);
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		createDirectory();
 	}
 
+	@Override
 	public void destroy() throws Exception {
 
 		if (directory != null) {
@@ -122,9 +125,11 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void overwriteIndex() {
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				writer.close();
 
@@ -173,6 +178,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getExactDocCount() {
 		optimize();
 		return getApproxDocCount();
@@ -181,10 +187,12 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	public int getApproxDocCount() {
 
 		final Integer count = (Integer) directory.read(new ReadOnlyCallback() {
+			@Override
 			public Object doInReadOnly(LuceneSearcher searcher) {
 				return searcher.numDocs();
 			}
@@ -196,10 +204,12 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void optimize() throws IndexerException {
 		LOGGER.trace("Optimizing indexer...");
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				writer.optimize();
 				return null;
@@ -212,10 +222,12 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void flush() throws IndexerException {
 		LOGGER.trace("Flushing indexer...");
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				writer.commit();
 				return null;
@@ -228,6 +240,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void removeThenIndexEntity(final IndexableData data) {
 		Assert.notNull(data);
 
@@ -241,6 +254,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				writer.remove(data);
 				writer.index(data);
@@ -256,6 +270,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void removeThenIndexEntities(final List<IndexableData> data) {
 		Assert.notNull(data);
 
@@ -269,6 +284,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				for (IndexableData d : data) {
 					writer.remove(d);
@@ -286,6 +302,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void indexEntity(final IndexableData data) {
 		Assert.notNull(data);
 
@@ -299,6 +316,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				writer.index(data);
 				return null;
@@ -313,6 +331,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void indexEntities(final List<IndexableData> data) {
 		Assert.notNull(data);
 
@@ -326,6 +345,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				for (IndexableData d : data) {
 					writer.index(d);
@@ -339,9 +359,36 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
+	@Override
+	public int deleteDuplicate() {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Deleting duplicated entities...");
+		}
+
+		if (directory == null) {
+			LOGGER.warn("L'indexeur n'est pas initialisé" + hashCode());
+			return -1;
+		}
+
+		final int count = (Integer) directory.write(new WriteCallback() {
+			@Override
+			public Object doInWrite(LuceneWriter writer) {
+				return writer.deleteDuplicate();
+			}
+		});
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Deleting duplicated entities done.");
+		}
+
+		return count;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void removeEntity(final Long id, final String type) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -354,6 +401,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.write(new WriteCallback() {
+			@Override
 			public Object doInWrite(LuceneWriter writer) {
 				writer.remove(id, type);
 				return null;
@@ -368,6 +416,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void search(final Query query, final int maxHits, final SearchCallback callback) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -380,6 +429,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.read(new ReadOnlyCallback() {
+			@Override
 			public Object doInReadOnly(final LuceneSearcher searcher) {
 				try {
 					final TopDocs hits = searcher.search(query, maxHits);
@@ -404,6 +454,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void search(final String query, final int maxHits, final SearchCallback callback) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -416,6 +467,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.read(new ReadOnlyCallback(){
+			@Override
 			public Object doInReadOnly(LuceneSearcher searcher) {
 				try {
 					final TopDocs hits = searcher.search(query, maxHits);
@@ -437,6 +489,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 	}
 
+	@Override
 	public void searchAll(final Query query, final SearchAllCallback callback) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -449,6 +502,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		}
 
 		directory.read(new ReadOnlyCallback() {
+			@Override
 			public Object doInReadOnly(final LuceneSearcher searcher) {
 				try {
 					final Collector collector = new AllDocsCollector(callback, searcher.docGetter);
@@ -473,6 +527,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getIndexPath() throws Exception {
 		return provider.getIndexPath();
 	}

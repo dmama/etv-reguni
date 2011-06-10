@@ -3,13 +3,13 @@ package ch.vd.uniregctb.indexer;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.stats.StatsService;
 import org.apache.lucene.search.Query;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
+import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.
@@ -33,6 +33,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		this.statsService = statsService;
 	}
 
+	@Override
 	public void flush() throws IndexerException {
 		long time = tracing.start();
 		try {
@@ -43,6 +44,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public int getApproxDocCount() {
 		int result;
 		long time = tracing.start();
@@ -55,6 +57,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		return result;
 	}
 
+	@Override
 	public int getExactDocCount() {
 		int result;
 		long time = tracing.start();
@@ -67,6 +70,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		return result;
 	}
 
+	@Override
 	public String getIndexPath() throws Exception {
 		String result;
 		long time = tracing.start();
@@ -79,6 +83,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		return result;
 	}
 
+	@Override
 	public void indexEntity(IndexableData data) {
 		long time = tracing.start();
 		try {
@@ -89,6 +94,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void indexEntities(List<IndexableData> data) {
 		long time = tracing.start();
 		try {
@@ -99,6 +105,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void optimize() throws IndexerException {
 		long time = tracing.start();
 		try {
@@ -109,6 +116,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void overwriteIndex() {
 		long time = tracing.start();
 		try {
@@ -119,6 +127,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void removeEntity(Long id, String type) throws IndexerException {
 		long time = tracing.start();
 		try {
@@ -129,6 +138,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void removeThenIndexEntity(IndexableData data) {
 		long time = tracing.start();
 		try {
@@ -139,6 +149,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void removeThenIndexEntities(List<IndexableData> data) {
 		long time = tracing.start();
 		try {
@@ -149,6 +160,18 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
+	public int deleteDuplicate() {
+		long time = tracing.start();
+		try {
+			return target.deleteDuplicate();
+		}
+		finally {
+			tracing.end(time);
+		}
+	}
+
+	@Override
 	public void search(Query query, int maxHits, SearchCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
@@ -159,6 +182,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void search(String query, int maxHits, SearchCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
@@ -169,6 +193,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void searchAll(Query query, SearchAllCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
@@ -179,12 +204,14 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);

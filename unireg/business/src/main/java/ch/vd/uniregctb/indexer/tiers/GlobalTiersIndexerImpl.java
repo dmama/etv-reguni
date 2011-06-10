@@ -99,6 +99,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
     private TiersService tiersService;
 
+    @Override
     public void overwriteIndex() {
 	    onTheFlyTiersIndexer.reset();
         globalIndex.overwriteIndex();
@@ -193,10 +194,12 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         }
     }
 
+	@Override
 	public int indexAllDatabase() throws IndexerException {
 		return indexAllDatabase(null, 1, Mode.FULL, true);
 	}
 
+    @Override
     public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus)
             throws IndexerException {
 
@@ -218,6 +221,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	    try {
 		    int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, prefetchIndividus, statusManager);
 		    remove(deltaIds.toRemove, statusManager);
+
+		    // [SIFISC-1184] on détecte et supprime les doublons une fois l'indexation effectuée
+			statusManager.setMessage("Suppression des doublons...");
+			globalIndex.deleteDuplicate();
+
 		    return nbIndexed;
 	    }
 	    catch (Exception e) {
@@ -232,6 +240,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<DeltaIds>() {
+			@Override
 			public DeltaIds doInTransaction(TransactionStatus status) {
 				
 				final DeltaIds deltaIds;
@@ -346,6 +355,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final Set<Long> numerosIndividus = template.execute(new TransactionCallback<Set<Long>>() {
+			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
 				return tiersDAO.getNumerosIndividu(ids, true);
 			}
@@ -603,22 +613,27 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         globalIndex.removeEntity(id, type);
     }
 
+	@Override
 	public void schedule(long id) {
 		onTheFlyTiersIndexer.schedule(id);
 	}
 
+	@Override
 	public void schedule(Collection<Long> ids) {
 		onTheFlyTiersIndexer.schedule(ids);
 	}
 
+	@Override
 	public void sync() {
 		onTheFlyTiersIndexer.sync();
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory, dialect);
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		onTheFlyTiersIndexer.destroy();
 	}
@@ -632,10 +647,12 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         return behavior;
     }
 
+    @Override
     public boolean isOnTheFlyIndexation() {
         return getByThreadBehavior().onTheFlyIndexation;
     }
 
+    @Override
     public void setOnTheFlyIndexation(boolean onTheFlyIndexation) {
         getByThreadBehavior().onTheFlyIndexation = onTheFlyIndexation;
     }
