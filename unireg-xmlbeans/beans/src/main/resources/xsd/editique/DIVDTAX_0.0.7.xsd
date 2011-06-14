@@ -5,12 +5,12 @@
 <!--Version  0.0.3  - 25.01.10 : JVO - New structure XSD-->
 <!--Version 0.0.4  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DIRetourCivil_0.0.3.xsd"/>
+	<xs:include schemaLocation="DIRetourCivilEnfant_0.0.1.xsd"/>
 	<xs:element name="DIVDTAX">
 		<!-- Description du schema pour l'impression d'une DI VaudTax -->
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="DIRetourCivil">
+				<xs:extension base="DIRetourCivilEnfant">
 					<xs:sequence>
 						<xs:element name="Annexes">
 							<xs:complexType>

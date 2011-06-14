@@ -3,7 +3,7 @@
 <!--Version  0.0.1  - 29.04.09: JVO - Spécification Chemise TO UNIREG-->
 <!--Version  0.0.2  - 10.12.09: JVO - Nom de l' office-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DonneesTechniques_0.0.4.xsd"/>
+	<xs:include schemaLocation="DonneesTechniques_0.0.5.xsd"/>
 	<xs:element name="ChemiseTO">
 		<!-- Description du schema pour l'impression du document BVR-->
 		<xs:complexType>
