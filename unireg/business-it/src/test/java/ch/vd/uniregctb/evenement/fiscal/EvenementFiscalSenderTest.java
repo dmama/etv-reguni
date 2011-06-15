@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
 import junit.framework.Assert;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +36,6 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 	public void setUp() throws Exception {
 
 		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtFiscal");
-
-		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL("tcp://ssv0309v:50900");
-		jmsConnectionManager.setUserName("smx");
-		jmsConnectionManager.setPassword("smx");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");

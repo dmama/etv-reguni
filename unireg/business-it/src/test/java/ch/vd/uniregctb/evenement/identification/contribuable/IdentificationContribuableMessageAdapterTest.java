@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -80,11 +79,6 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.input");
 		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.output");
-
-		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL("tcp://ssv0309v:50900");
-		jmsConnectionManager.setUserName("smx");
-		jmsConnectionManager.setPassword("smx");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");

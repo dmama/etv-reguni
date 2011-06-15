@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.pm;
 
 import java.io.File;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -40,11 +39,6 @@ public class EntrepriseEventListenerTest extends EvenementTest {
 	public void setUp() throws Exception {
 
 		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.pm.event.input");
-
-		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL("tcp://ssv0309v:50900");
-		jmsConnectionManager.setUserName("smx");
-		jmsConnectionManager.setPassword("smx");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");

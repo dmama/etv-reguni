@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -24,10 +25,12 @@ public abstract class EvenementTest {
 
 	protected EsbMessageFactory esbMessageFactory;
 	protected UniregProperties uniregProperties;
+	protected ActiveMQConnectionFactory jmsConnectionManager;
 
 	protected EvenementTest() {
 		initLog4j();
 		initProps();
+		initConnectionManager();
 	}
 
 	private void initLog4j() {
@@ -48,6 +51,17 @@ public abstract class EvenementTest {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void initConnectionManager() {
+		final String url = uniregProperties.getProperty("testprop.esb.jms.url");
+		final String username = uniregProperties.getProperty("testprop.esb.jms.username");
+		final String password = uniregProperties.getProperty("testprop.esb.jms.password");
+
+		jmsConnectionManager = new ActiveMQConnectionFactory();
+		jmsConnectionManager.setBrokerURL(url);
+		jmsConnectionManager.setUserName(username);
+		jmsConnectionManager.setPassword(password);
 	}
 
 	protected void clearQueue(String queueName) throws Exception {
