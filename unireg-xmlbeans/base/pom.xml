@@ -10,7 +10,7 @@
 	<artifactId>uniregctb-xmlbeans-base</artifactId>
 	<packaging>pom</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>1.28</version>
+	<version>1.28-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>UniregCTB - XmlBeans - Base</name>

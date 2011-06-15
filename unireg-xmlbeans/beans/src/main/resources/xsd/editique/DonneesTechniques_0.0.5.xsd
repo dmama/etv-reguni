@@ -714,7 +714,7 @@
 			<xs:documentation>de type Code de contrôle pour le renvoi des DI électroniques</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:pattern value="^[0-9a-zA-Z]{4,6}$" />
+			<xs:pattern value="[0-9a-zA-Z]{4,6}" />
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

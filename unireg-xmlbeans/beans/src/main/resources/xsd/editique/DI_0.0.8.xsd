@@ -41,6 +41,11 @@
 												<xs:documentation>220 = Annexe 01 avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
+										<xs:element name="Annexe_230" type="typEntierPositif" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>230 = Annexe 02 – 03 avec le nombre de doc 1àN </xs:documentation>
+											</xs:annotation>
+										</xs:element>
 										<xs:element name="Annexe_240" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>240 = Annexe 04–05 avec le nombre de doc 1àN</xs:documentation>
@@ -54,7 +59,7 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -64,6 +69,11 @@
 												<xs:documentation>220 = Annexe 01 avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
+										<xs:element name="Annexe_230" type="typEntierPositif" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>230 = Annexe 02 – 03 avec le nombre de doc 1àN </xs:documentation>
+											</xs:annotation>
+										</xs:element>
 										<xs:element name="Annexe_240" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>240 = Annexe 04–05 avec le nombre de doc 1àN</xs:documentation>
@@ -77,12 +87,17 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
 									<xs:sequence>
-										<xs:element name="Annexe_240" type="typEntierPositif">
+										<xs:element name="Annexe_230" type="typEntierPositif">
+											<xs:annotation>
+												<xs:documentation>230 = Annexe 02 – 03 avec le nombre de doc 1àN </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Annexe_240" type="typEntierPositif"  minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>240 = Annexe 04–05 avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
@@ -95,7 +110,25 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+									<xs:sequence>
+										<xs:element name="Annexe_240" type="typEntierPositif">
+											<xs:annotation>
+												<xs:documentation>240 = Annexe 04–05 avec le nombre de doc 1àN</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Annexe_310" type="typEntierPositif"  minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>310 = Annexe 01–1(2009) avec le nombre de doc 1àN</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
+										<xs:element name="Annexe_330" type="typEntierPositif">
+											<xs:annotation>
+												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -105,25 +138,26 @@
 												<xs:documentation>310 = Annexe 01–1(2009) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
+
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
-										<xs:element name="Annexe_330" type="typEntierPositif">
-											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 avec le nombre de doc 1àN</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:sequence>
-									<xs:sequence>
-										<xs:element name="Annexe_320" type="Annexe_320_Type" />
 										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+									<xs:sequence>
+										<xs:element name="Annexe_320" type="Annexe_320_Type"/>
+										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
 									<xs:sequence>
 										<xs:element name="Annexe_330" type="typEntierPositif">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
