@@ -50,6 +50,11 @@
 								<xs:documentation>Code NIP :  6 caractères alphanumériques identifiant la DI</xs:documentation>
 							</xs:annotation>
 						</xs:element>
+						<xs:element name="CODETRAME" type="typCodeTrame">
+							<xs:annotation>
+								<xs:documentation>Code TRAME :  1 caractère alphanumérique utilisée pour déterminer le type de pliure</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

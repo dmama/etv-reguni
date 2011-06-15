@@ -9,15 +9,18 @@
 	<xs:include schemaLocation="DIRetourCivilEnfant_0.0.1.xsd" />
 
 	<xs:complexType name="Annexe_320_Type">
-
-		<xs:annotation>
-			<xs:documentation>320 = Annexe 07 avec le nombre de doc 1àN</xs:documentation>
-		</xs:annotation>
-		<xs:simpleContent>
-			<xs:extension base="typEntierPositif">
-				<xs:attribute name="AvecCourrierExplicatif" type="typOui_Non" use="required" />
-			</xs:extension>
-		</xs:simpleContent>
+		<xs:sequence>
+			<xs:element name="Nombre" type="typEntierPositif">
+				<xs:annotation>
+					<xs:documentation>320 = Annexe 07 avec le nombre de doc 1àN</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AvecCourrierExplicatif" type="typOui_Non">
+				<xs:annotation>
+					<xs:documentation>Annexe accompagnée du courrier explicative ou pas.(mode batch)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 
 
@@ -59,7 +62,7 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2011 - 2) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -87,7 +90,7 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2011 - 2) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -110,7 +113,7 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2011 - 2) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -128,7 +131,7 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2011 - 2) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -142,7 +145,7 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type" minOccurs="0" />
 										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2011 - 2) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -150,14 +153,14 @@
 										<xs:element name="Annexe_320" type="Annexe_320_Type"/>
 										<xs:element name="Annexe_330" type="typEntierPositif" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2011 - 2) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
 									<xs:sequence>
 										<xs:element name="Annexe_330" type="typEntierPositif">
 											<xs:annotation>
-												<xs:documentation>330 = Annexe 02 – 03 (2012) avec le nombre de doc 1àN</xs:documentation>
+												<xs:documentation>330 = Annexe 02 – 03 (2011 - 2) avec le nombre de doc 1àN</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>

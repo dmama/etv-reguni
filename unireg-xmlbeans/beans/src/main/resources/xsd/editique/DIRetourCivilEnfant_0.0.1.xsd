@@ -12,32 +12,32 @@
 					<xs:element name="enfants" minOccurs="0">
 						<xs:complexType>
 							<xs:sequence>
-							<xs:element name="enfant" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="NAVS13" type="typNumeroAvs13" nillable="true">
-											<xs:annotation>
-												<xs:documentation>Numéro AVS de l'enfant</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="PRENOM" type="typCdata" nillable="true">
-											<xs:annotation>
-												<xs:documentation>Prénom usuel de l'enfant</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="NOM" type="typCdata">
-											<xs:annotation>
-												<xs:documentation>Nom de l'enfant</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="DATENAISSANCE" type="typDat" nillable="true">
-											<xs:annotation>
-												<xs:documentation>Date de naissance de l'enfant</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
+								<xs:element name="enfant" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="NAVS13" type="typNumeroAvs13" nillable="true">
+												<xs:annotation>
+													<xs:documentation>Numéro AVS de l'enfant</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="PRENOM" type="typCdata" nillable="true">
+												<xs:annotation>
+													<xs:documentation>Prénom usuel de l'enfant</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="NOM" type="typCdata">
+												<xs:annotation>
+													<xs:documentation>Nom de l'enfant</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DATENAISSANCE" type="typDat" nillable="true">
+												<xs:annotation>
+													<xs:documentation>Date de naissance de l'enfant</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
