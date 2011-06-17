@@ -117,7 +117,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adresseCourrierFormattee" type="unireg:adresseFormatteeType">
+			<xs:element minOccurs="0" name="adresseCourrierFormattee" type="unireg:mailAddressType">
 				<xs:annotation>
 					<xs:documentation>Adresse courrier formattée pour l'envoi (six lignes).
 						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
@@ -125,7 +125,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="unireg:adresseFormatteeType">
+			<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="unireg:mailAddressType">
 				<xs:annotation>
 					<xs:documentation>Adresse poursuite formattée pour l'envoi (six lignes).
 						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
@@ -133,7 +133,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="unireg:adresseFormatteeType">
+			<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="unireg:mailAddressType">
 				<xs:annotation>
 					<xs:documentation>Adresse de représentation formattée pour l'envoi (six lignes).
 						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
@@ -141,7 +141,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adresseDomicileFormattee" type="unireg:adresseFormatteeType">
+			<xs:element minOccurs="0" name="adresseDomicileFormattee" type="unireg:mailAddressType">
 				<xs:annotation>
 					<xs:documentation>Adresse domicile formattée pour l'envoi (six lignes).
 						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.
@@ -149,7 +149,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="unireg:adresseFormatteeAutreTiersType">
+			<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="unireg:mailAddressOtherTiersType">
 				<xs:annotation>
 					<xs:documentation>Adresse poursuite 'autre tiers' formattée pour l'envoi (six lignes).
 						Attention ! Cette collection n'est renseignée que si la part ADRESSES_FORMATTEES est demandée.

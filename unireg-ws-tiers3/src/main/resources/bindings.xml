@@ -72,4 +72,10 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="data/eCH-0010-4-0f.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0010" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 </jxb:bindings>
