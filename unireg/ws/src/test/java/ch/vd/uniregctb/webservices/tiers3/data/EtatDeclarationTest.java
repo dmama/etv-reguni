@@ -3,13 +3,13 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.webservices.tiers3.EtatDeclaration;
+import ch.vd.unireg.webservices.tiers3.TypeEtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.webservices.tiers3.EnumTest;
-import ch.vd.uniregctb.webservices.tiers3.EtatDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 

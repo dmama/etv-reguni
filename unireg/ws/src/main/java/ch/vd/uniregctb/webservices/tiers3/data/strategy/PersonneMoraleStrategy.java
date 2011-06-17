@@ -5,9 +5,9 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.webservices.tiers3.PersonneMorale;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.PersonneMorale;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;
 
 public class PersonneMoraleStrategy extends ContribuableStrategy<PersonneMorale> {

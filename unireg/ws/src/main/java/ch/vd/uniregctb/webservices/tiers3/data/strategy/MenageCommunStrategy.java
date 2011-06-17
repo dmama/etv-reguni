@@ -4,10 +4,10 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.webservices.tiers3.MenageCommun;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.webservices.tiers3.MenageCommun;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.data.TiersBuilder;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;
 

@@ -6,14 +6,14 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.webservices.tiers3.Debiteur;
+import ch.vd.unireg.webservices.tiers3.MenageCommun;
+import ch.vd.unireg.webservices.tiers3.PersonneMorale;
+import ch.vd.unireg.webservices.tiers3.PersonnePhysique;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.webservices.tiers3.Debiteur;
-import ch.vd.uniregctb.webservices.tiers3.MenageCommun;
-import ch.vd.uniregctb.webservices.tiers3.PersonneMorale;
-import ch.vd.uniregctb.webservices.tiers3.PersonnePhysique;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.data.strategy.DebiteurStrategy;
 import ch.vd.uniregctb.webservices.tiers3.data.strategy.MenageCommunStrategy;
 import ch.vd.uniregctb.webservices.tiers3.data.strategy.PersonneMoraleStrategy;

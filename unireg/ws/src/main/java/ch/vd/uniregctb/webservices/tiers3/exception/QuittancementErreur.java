@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers3.exception;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
+import ch.vd.unireg.webservices.tiers3.CodeQuittancement;
 
 public class QuittancementErreur extends Exception {
 

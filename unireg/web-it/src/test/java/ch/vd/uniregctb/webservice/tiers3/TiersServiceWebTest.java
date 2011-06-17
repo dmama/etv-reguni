@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
-import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.webservices.tiers3.*;
+import ch.vd.unireg.webservices.tiers3.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -312,36 +311,41 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		params.setTiersNumber(12100003);
 		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
-		assertNotNull(personne);
+		final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+		assertNotNull(pp);
 
-		assertEmpty(personne.getAdressesCourrier());
-		assertEmpty(personne.getAdressesRepresentation());
-		assertEmpty(personne.getAdressesPoursuite());
+		assertEmpty(pp.getAdressesCourrier());
+		assertEmpty(pp.getAdressesRepresentation());
+		assertEmpty(pp.getAdressesPoursuite());
 
-		final AdresseFormattee adresse = personne.getAdresseCourrierFormattee();
+		final MailAddress courrier = pp.getAdresseCourrierFormattee();
+		assertNotNull(courrier);
+
+		final FormattedAddress adresse = courrier.getFormattedAddress();
 		assertNotNull(adresse);
+		assertEquals("Madame", adresse.getLine1());
+		assertEquals("Lyah Emery", trimValiPattern(adresse.getLine2()));
+		assertEquals("Chemin du Riau 2A", adresse.getLine3());
+		assertEquals("1162 St-Prex", adresse.getLine4());
+		assertNull(adresse.getLine5());
+		assertNull(adresse.getLine6());
 
-		assertEquals("Madame", adresse.getLigne1());
-		assertEquals("Lyah Emery", trimValiPattern(adresse.getLigne2()));
-		assertEquals("Chemin du Riau 2A", adresse.getLigne3());
-		assertEquals("1162 St-Prex", adresse.getLigne4());
-		assertNull(adresse.getLigne5());
-		assertNull(adresse.getLigne6());
-		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
-		assertEquals("Madame", adresse.getSalutations());
-		assertEquals("Madame", adresse.getFormuleAppel());
-		{
-			final List<String> nomsPrenoms = adresse.getNomsPrenoms();
-			Assert.assertEquals(1, nomsPrenoms.size());
-			assertEquals("Lyah Emery", trimValiPattern(nomsPrenoms.get(0)));
-		}
-		assertNull(adresse.getComplement());
-		assertNull(adresse.getPourAdresse());
-		assertEquals("Chemin du Riau 2A", adresse.getRueNumero());
-		assertNull(adresse.getCasePostale());
-		assertEquals("1162 St-Prex", adresse.getNpaLocalite());
-		assertNull(adresse.getPays());
+		final PersonMailAddressInfo person = courrier.getPerson();
+		assertNotNull(person);
+		assertEquals("1", person.getMrMrs());
+		assertEquals("Madame", person.getSalutation());
+		assertEquals("Madame", person.getFormalGreeting());
+		assertEquals("Lyah", trimValiPattern(person.getFirstName()));
+		assertEquals("Emery", trimValiPattern(person.getLastName()));
+
+		final AddressInformation info = courrier.getAddressInformation();
+		assertEquals(TypeAffranchissement.SUISSE, info.getTypeAffranchissement());
+		assertNull(info.getComplement());
+		assertNull(info.getPourAdresse());
+		assertEquals("Chemin du Riau 2A", info.getStreet());
+		assertNull(info.getPostOfficeBoxNumber());
+		assertEquals("1162 St-Prex", info.getTown());
+		assertNull(info.getCountry());
 	}
 
 	@Test
@@ -359,29 +363,36 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEmpty(personne.getAdressesRepresentation());
 		assertEmpty(personne.getAdressesPoursuite());
 
-		final AdresseFormattee adresse = personne.getAdresseCourrierFormattee();
-		assertNotNull(adresse);
+		final MailAddress courrier = personne.getAdresseCourrierFormattee();
+		assertNotNull(courrier);
 
-		assertEquals("Aux héritiers de", adresse.getLigne1());
-		assertEquals("Delano Boschung, défunt", trimValiPattern(adresse.getLigne2()));
-		assertEquals("Ch. du Devin 81", adresse.getLigne3());
-		assertEquals("1012 Lausanne", adresse.getLigne4());
-		assertNull(adresse.getLigne5());
-		assertNull(adresse.getLigne6());
-		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
-		assertEquals("Aux héritiers de", adresse.getSalutations());
-		assertEquals("Madame, Monsieur", adresse.getFormuleAppel()); // [UNIREG-1398]
-		{
-			final List<String> nomsPrenoms = adresse.getNomsPrenoms();
-			Assert.assertEquals(1, nomsPrenoms.size());
-			assertEquals("Delano Boschung, défunt", trimValiPattern(nomsPrenoms.get(0)));
-		}
-		assertNull(adresse.getComplement());
-		assertNull(adresse.getPourAdresse());
-		assertEquals("Ch. du Devin 81", adresse.getRueNumero());
-		assertNull(adresse.getCasePostale());
-		assertEquals("1012 Lausanne", adresse.getNpaLocalite());
-		assertNull(adresse.getPays());
+		final FormattedAddress adresse = courrier.getFormattedAddress();
+		assertNotNull(adresse);
+		assertEquals("Aux héritiers de", adresse.getLine1());
+		assertEquals("Delano Boschung, défunt", trimValiPattern(adresse.getLine2()));
+		assertEquals("Ch. du Devin 81", adresse.getLine3());
+		assertEquals("1012 Lausanne", adresse.getLine4());
+		assertNull(adresse.getLine5());
+		assertNull(adresse.getLine6());
+
+		final PersonMailAddressInfo person = courrier.getPerson();
+		assertNotNull(person);
+		assertNull(person.getMrMrs());
+		assertEquals("Aux héritiers de", person.getSalutation());
+		assertEquals("Madame, Monsieur", person.getFormalGreeting()); // [UNIREG-1398]
+		assertEquals("Delano", trimValiPattern(person.getFirstName()));
+		assertEquals("Boschung, défunt", trimValiPattern(person.getLastName()));
+
+		final AddressInformation info = courrier.getAddressInformation();
+		assertNotNull(info);
+		assertEquals(TypeAffranchissement.SUISSE, info.getTypeAffranchissement());
+		assertNull(info.getComplement());
+		assertNull(info.getPourAdresse());
+		assertEquals("Ch. du Devin", info.getStreet());
+		assertEquals("81", info.getHouseNumber());
+		assertNull(info.getPostOfficeBoxNumber());
+		assertEquals("1012 Lausanne", info.getTown());
+		assertNull(info.getCountry());
 	}
 
 	@Test
@@ -919,28 +930,33 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final Contribuable ctb = (Contribuable) service.getTiers(params);
 		assertNotNull(ctb);
 
-		final AdresseFormattee adresseEnvoi = ctb.getAdresseCourrierFormattee();
+		final MailAddress courrier = ctb.getAdresseCourrierFormattee();
+		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Madame, Monsieur", adresseEnvoi.getLigne1());
-		assertEquals("Tummers-De Wit Wouter", adresseEnvoi.getLigne2());
-		assertEquals("De Wit Tummers Elisabeth", adresseEnvoi.getLigne3());
-		assertEquals("Olympialaan 17", adresseEnvoi.getLigne4());
-		assertEquals("4624 Aa Bergem Op Zoom", adresseEnvoi.getLigne5());
-		assertEquals("Pays-Bas", adresseEnvoi.getLigne6());
-		assertEquals(TypeAffranchissement.EUROPE, adresseEnvoi.getTypeAffranchissement());
-		assertEquals("Madame, Monsieur", adresseEnvoi.getSalutations());
-		assertEquals("Madame, Monsieur", adresseEnvoi.getFormuleAppel());
-		{
-			final List<String> nomsPrenoms = adresseEnvoi.getNomsPrenoms();
-			Assert.assertEquals(1, nomsPrenoms.size());
-			assertEquals("Tummers-De Wit Wouter", trimValiPattern(nomsPrenoms.get(0)));
-		}
-		assertEquals("De Wit Tummers Elisabeth", adresseEnvoi.getComplement());
-		assertNull(adresseEnvoi.getPourAdresse());
-		assertEquals("Olympialaan 17", adresseEnvoi.getRueNumero());
-		assertNull(adresseEnvoi.getCasePostale());
-		assertEquals("4624 Aa Bergem Op Zoom", adresseEnvoi.getNpaLocalite());
-		assertEquals("Pays-Bas", adresseEnvoi.getPays());
+		assertEquals("Madame, Monsieur", adresseEnvoi.getLine1());
+		assertEquals("Tummers-De Wit Wouter", adresseEnvoi.getLine2());
+		assertEquals("De Wit Tummers Elisabeth", adresseEnvoi.getLine3());
+		assertEquals("Olympialaan 17", adresseEnvoi.getLine4());
+		assertEquals("4624 Aa Bergem Op Zoom", adresseEnvoi.getLine5());
+		assertEquals("Pays-Bas", adresseEnvoi.getLine6());
+
+		final PersonMailAddressInfo person = courrier.getPerson();
+		assertNotNull(person);
+		assertNull(person.getMrMrs());
+		assertEquals("Madame, Monsieur", person.getSalutation());
+		assertEquals("Madame, Monsieur", person.getFormalGreeting());
+		assertNull(trimValiPattern(person.getFirstName()));
+		assertEquals("Tummers-De Wit Wouter", trimValiPattern(person.getLastName()));
+
+		final AddressInformation info = courrier.getAddressInformation();
+		assertNotNull(info);
+		assertEquals(TypeAffranchissement.EUROPE, info.getTypeAffranchissement());
+		assertEquals("De Wit Tummers Elisabeth", info.getComplement());
+		assertNull(info.getPourAdresse());
+		assertEquals("Olympialaan 17", info.getStreet());
+		assertNull(info.getPostOfficeBoxNumber());
+		assertEquals("4624 Aa Bergem Op Zoom", info.getTown());
+		assertEquals("Pays-Bas", info.getCountry());
 
 		final List<Adresse> adressesCourrier = ctb.getAdressesCourrier();
 		assertNotNull(adressesCourrier);
@@ -1248,16 +1264,14 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseFormattee adresse = pm.getAdresseCourrierFormattee();
+		final FormattedAddress adresse = pm.getAdresseCourrierFormattee().getFormattedAddress();
 		assertNotNull(adresse);
-
-		assertEquals("Société immobilière de", trimValiPattern(adresse.getLigne1()));
-		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLigne2()));
-		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
-		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLigne4()));
-		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLigne5()));
-		assertEquals("1315 La Sarraz", trimValiPattern(adresse.getLigne6()));
-		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
+		assertEquals("Société immobilière de", trimValiPattern(adresse.getLine1()));
+		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLine2()));
+		assertEquals("en liquidation", trimValiPattern(adresse.getLine3()));
+		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLine4()));
+		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLine5()));
+		assertEquals("1315 La Sarraz", trimValiPattern(adresse.getLine6()));
 	}
 
 	/**
@@ -1274,15 +1288,14 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseFormattee adresse = pm.getAdresseCourrierFormattee();
+		final FormattedAddress adresse = pm.getAdresseCourrierFormattee().getFormattedAddress();
 		assertNotNull(adresse);
 
-		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLigne1()));
-		assertEquals("", trimValiPattern(adresse.getLigne2()));
-		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne4()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne5()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne6()));
-		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
+		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLine1()));
+		assertEquals("", trimValiPattern(adresse.getLine2()));
+		assertEquals("en liquidation", trimValiPattern(adresse.getLine3()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLine4()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLine5()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLine6()));
 	}
 }

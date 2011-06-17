@@ -2,9 +2,9 @@ package ch.vd.uniregctb.webservices.tiers3.cache;
 
 import java.util.Set;
 
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.cache.CacheValueWithParts;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.webservices.tiers3.data.TiersBuilder;
 
 class GetTiersValue extends CacheValueWithParts<Tiers, TiersPart> {

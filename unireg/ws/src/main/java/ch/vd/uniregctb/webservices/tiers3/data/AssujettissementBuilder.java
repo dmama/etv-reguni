@@ -3,16 +3,16 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.uniregctb.webservices.tiers3.Assujettissement;
-import ch.vd.uniregctb.webservices.tiers3.DiplomateSuisse;
-import ch.vd.uniregctb.webservices.tiers3.HorsCanton;
-import ch.vd.uniregctb.webservices.tiers3.HorsSuisse;
-import ch.vd.uniregctb.webservices.tiers3.Indigent;
-import ch.vd.uniregctb.webservices.tiers3.Sourcier;
-import ch.vd.uniregctb.webservices.tiers3.SourcierMixte;
-import ch.vd.uniregctb.webservices.tiers3.SourcierPur;
-import ch.vd.uniregctb.webservices.tiers3.VaudoisDepense;
-import ch.vd.uniregctb.webservices.tiers3.VaudoisOrdinaire;
+import ch.vd.unireg.webservices.tiers3.Assujettissement;
+import ch.vd.unireg.webservices.tiers3.DiplomateSuisse;
+import ch.vd.unireg.webservices.tiers3.HorsCanton;
+import ch.vd.unireg.webservices.tiers3.HorsSuisse;
+import ch.vd.unireg.webservices.tiers3.Indigent;
+import ch.vd.unireg.webservices.tiers3.Sourcier;
+import ch.vd.unireg.webservices.tiers3.SourcierMixte;
+import ch.vd.unireg.webservices.tiers3.SourcierPur;
+import ch.vd.unireg.webservices.tiers3.VaudoisDepense;
+import ch.vd.unireg.webservices.tiers3.VaudoisOrdinaire;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 

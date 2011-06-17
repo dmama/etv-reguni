@@ -911,7 +911,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	private AdresseEnvoi calculateAdresseEnvoi(ch.vd.uniregctb.tiers.Tiers destinataire, PersonneMoraleHisto pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.PM);
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM);
 
 		// [UNIREG-2302]
 		adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE);

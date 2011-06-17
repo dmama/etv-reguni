@@ -3,8 +3,8 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.unireg.webservices.tiers3.DebiteurInfo;
+import ch.vd.unireg.webservices.tiers3.GetDebiteurInfoRequest;
 
 public class DebiteurInfoBuilder {
 

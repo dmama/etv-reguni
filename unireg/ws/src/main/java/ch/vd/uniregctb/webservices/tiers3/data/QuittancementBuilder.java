@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.webservices.tiers3.data;
 
-import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
-import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionInfo;
-import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
-import ch.vd.uniregctb.webservices.tiers3.DeclarationImpotOrdinaireKey;
-import ch.vd.uniregctb.webservices.tiers3.ReponseQuittancementDeclaration;
+import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
+import ch.vd.unireg.webservices.tiers3.BusinessExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.CodeQuittancement;
+import ch.vd.unireg.webservices.tiers3.DeclarationImpotOrdinaireKey;
+import ch.vd.unireg.webservices.tiers3.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers3.exception.QuittancementErreur;
 
 public class QuittancementBuilder {

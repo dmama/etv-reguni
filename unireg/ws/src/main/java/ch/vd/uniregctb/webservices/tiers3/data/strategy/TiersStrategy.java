@@ -8,16 +8,16 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.webservices.tiers3.Adresse;
+import ch.vd.unireg.webservices.tiers3.AdresseAutreTiers;
+import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
+import ch.vd.unireg.webservices.tiers3.Declaration;
+import ch.vd.unireg.webservices.tiers3.ForFiscal;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.webservices.tiers3.Adresse;
-import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
-import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
-import ch.vd.uniregctb.webservices.tiers3.Declaration;
-import ch.vd.uniregctb.webservices.tiers3.ForFiscal;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.data.CompteBancaireBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.DeclarationBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.ForFiscalBuilder;
@@ -278,11 +278,11 @@ public abstract class TiersStrategy<T extends Tiers> {
 
 	private static void initAdressesFormattees(Tiers left, ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws WebServiceException {
 		try {
-			left.setAdresseCourrierFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.COURRIER));
-			left.setAdresseRepresentationFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.REPRESENTATION));
-			left.setAdresseDomicileFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.DOMICILE));
-			left.setAdressePoursuiteFormattee(DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.POURSUITE));
-			left.setAdressePoursuiteAutreTiersFormattee(DataHelper.createAdresseFormatteeAT(tiers, null, context, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS));
+			left.setAdresseCourrierFormattee(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.COURRIER));
+			left.setAdresseRepresentationFormattee(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.REPRESENTATION));
+			left.setAdresseDomicileFormattee(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.DOMICILE));
+			left.setAdressePoursuiteFormattee(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.POURSUITE));
+			left.setAdressePoursuiteAutreTiersFormattee(DataHelper.createMailAddressOtherTiers(tiers, null, context, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS));
 		}
 		catch (AdresseException e) {
 			LOGGER.error(e, e);

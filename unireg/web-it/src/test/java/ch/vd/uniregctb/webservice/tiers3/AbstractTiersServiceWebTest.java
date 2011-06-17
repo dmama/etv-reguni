@@ -10,12 +10,12 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;
 
+import ch.vd.unireg.webservices.tiers3.CompteBancaire;
+import ch.vd.unireg.webservices.tiers3.Date;
+import ch.vd.unireg.webservices.tiers3.FormatNumeroCompte;
+import ch.vd.unireg.webservices.tiers3.TiersWebService;
+import ch.vd.unireg.webservices.tiers3.TiersWebServiceFactory;
 import ch.vd.uniregctb.common.WebitTest;
-import ch.vd.uniregctb.webservices.tiers3.CompteBancaire;
-import ch.vd.uniregctb.webservices.tiers3.Date;
-import ch.vd.uniregctb.webservices.tiers3.FormatNumeroCompte;
-import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers3.TiersWebServiceFactory;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;

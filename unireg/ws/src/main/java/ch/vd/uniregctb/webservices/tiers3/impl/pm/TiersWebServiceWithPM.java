@@ -10,7 +10,46 @@ import java.util.Set;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.webservices.tiers3.Adresse;
+import ch.vd.unireg.webservices.tiers3.BatchTiers;
+import ch.vd.unireg.webservices.tiers3.BatchTiersEntry;
+import ch.vd.unireg.webservices.tiers3.Capital;
+import ch.vd.unireg.webservices.tiers3.CompteBancaire;
 import ch.vd.unireg.webservices.tiers3.DateHelper;
+import ch.vd.unireg.webservices.tiers3.DebiteurInfo;
+import ch.vd.unireg.webservices.tiers3.EditionFosc;
+import ch.vd.unireg.webservices.tiers3.EtatPM;
+import ch.vd.unireg.webservices.tiers3.EvenementPM;
+import ch.vd.unireg.webservices.tiers3.ForFiscal;
+import ch.vd.unireg.webservices.tiers3.FormatNumeroCompte;
+import ch.vd.unireg.webservices.tiers3.FormeJuridique;
+import ch.vd.unireg.webservices.tiers3.GenreImpot;
+import ch.vd.unireg.webservices.tiers3.GetBatchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.unireg.webservices.tiers3.GetListeCtbModifiesRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersTypeRequest;
+import ch.vd.unireg.webservices.tiers3.MailAddress;
+import ch.vd.unireg.webservices.tiers3.MotifRattachement;
+import ch.vd.unireg.webservices.tiers3.PeriodeAssujettissement;
+import ch.vd.unireg.webservices.tiers3.PersonneMorale;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsResponse;
+import ch.vd.unireg.webservices.tiers3.RegimeFiscal;
+import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMRequest;
+import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMResponse;
+import ch.vd.unireg.webservices.tiers3.SearchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.SearchTiersResponse;
+import ch.vd.unireg.webservices.tiers3.SetTiersBlocRembAutoRequest;
+import ch.vd.unireg.webservices.tiers3.Siege;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.TiersWebService;
+import ch.vd.unireg.webservices.tiers3.TypeAutoriteFiscale;
+import ch.vd.unireg.webservices.tiers3.TypePeriodeAssujettissement;
+import ch.vd.unireg.webservices.tiers3.TypeSiege;
+import ch.vd.unireg.webservices.tiers3.TypeTiers;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.RueEtNumero;
@@ -30,45 +69,6 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.TypeAdressePM;
-import ch.vd.uniregctb.webservices.tiers3.Adresse;
-import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
-import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
-import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
-import ch.vd.uniregctb.webservices.tiers3.Capital;
-import ch.vd.uniregctb.webservices.tiers3.CompteBancaire;
-import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.EditionFosc;
-import ch.vd.uniregctb.webservices.tiers3.EtatPM;
-import ch.vd.uniregctb.webservices.tiers3.EvenementPM;
-import ch.vd.uniregctb.webservices.tiers3.ForFiscal;
-import ch.vd.uniregctb.webservices.tiers3.FormatNumeroCompte;
-import ch.vd.uniregctb.webservices.tiers3.FormeJuridique;
-import ch.vd.uniregctb.webservices.tiers3.GenreImpot;
-import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifiesRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersTypeRequest;
-import ch.vd.uniregctb.webservices.tiers3.MotifRattachement;
-import ch.vd.uniregctb.webservices.tiers3.PeriodeAssujettissement;
-import ch.vd.uniregctb.webservices.tiers3.PersonneMorale;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsRequest;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsResponse;
-import ch.vd.uniregctb.webservices.tiers3.RegimeFiscal;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMRequest;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMResponse;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersResponse;
-import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAutoRequest;
-import ch.vd.uniregctb.webservices.tiers3.Siege;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers3.TypeAutoriteFiscale;
-import ch.vd.uniregctb.webservices.tiers3.TypePeriodeAssujettissement;
-import ch.vd.uniregctb.webservices.tiers3.TypeSiege;
-import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.webservices.tiers3.data.AdresseBuilder;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 
@@ -320,10 +320,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 
 		if (parts.contains(TiersPart.ADRESSES_FORMATTEES)) {
-			pm.setAdresseCourrierFormattee(calculateAdresseEnvoi(pm, pm.getAdressesCourrier()));
-			pm.setAdresseDomicileFormattee(calculateAdresseEnvoi(pm, pm.getAdressesDomicile()));
-			pm.setAdresseRepresentationFormattee(calculateAdresseEnvoi(pm, pm.getAdressesRepresentation()));
-			pm.setAdressePoursuiteFormattee(calculateAdresseEnvoi(pm, pm.getAdressesPoursuite()));
+			pm.setAdresseCourrierFormattee(calculateMailAddress(tiers, pm, pm.getAdressesCourrier()));
+			pm.setAdresseDomicileFormattee(calculateMailAddress(tiers, pm, pm.getAdressesDomicile()));
+			pm.setAdresseRepresentationFormattee(calculateMailAddress(tiers, pm, pm.getAdressesRepresentation()));
+			pm.setAdressePoursuiteFormattee(calculateMailAddress(tiers, pm, pm.getAdressesPoursuite()));
 		}
 
 		if (parts.contains(TiersPart.PERIODES_ASSUJETTISSEMENT)) {
@@ -805,8 +805,8 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return set.toArray(new PartPM[set.size()]);
 	}
 
-	private AdresseFormattee calculateAdresseEnvoi(PersonneMorale pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.PM);
+	private MailAddress calculateMailAddress(ch.vd.uniregctb.tiers.Tiers destinataire, PersonneMorale pm, List<Adresse> adresses) {
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM);
 
 		// [UNIREG-2302]
 		adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE);
@@ -856,6 +856,6 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			}
 		}
 
-		return AdresseBuilder.newAdresseFormattee(adresse);
+		return AdresseBuilder.newMailAddress(adresse);
 	}
 }

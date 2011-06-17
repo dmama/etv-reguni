@@ -2,10 +2,10 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import java.util.List;
 
+import ch.vd.unireg.webservices.tiers3.CompteBancaire;
+import ch.vd.unireg.webservices.tiers3.FormatNumeroCompte;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
-import ch.vd.uniregctb.webservices.tiers3.CompteBancaire;
-import ch.vd.uniregctb.webservices.tiers3.FormatNumeroCompte;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;
 
 public class CompteBancaireBuilder {

@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import ch.vd.unireg.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
 
 public class DataHelperTest extends WithoutSpringTest {
 

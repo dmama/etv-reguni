@@ -143,7 +143,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final Tiers tiersPourAdresse = (envoi.avecPourAdresse ? envoi.destination : null);
 
 		// Remplis l'adresse d'envoi
-		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(envoi.sourceType);
+		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType);
 		fillDestinataire(adresseEnvoi, envoi.destinataire, tiersPourAdresse, date, true);
 		fillDestination(adresseEnvoi, adresseDestination);
 
@@ -375,7 +375,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private AdresseEnvoiDetaillee createAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException {
 
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.CIVILE);
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE);
 		adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
 		adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
@@ -1781,7 +1781,7 @@ public class AdresseServiceImpl implements AdresseService {
 	@Override
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
-		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null);
+		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null);
 		fillDestinataire(adresse, tiers, null, date, false);
 
 		List<String> list = adresse.getNomsPrenomsOuRaisonsSociales();

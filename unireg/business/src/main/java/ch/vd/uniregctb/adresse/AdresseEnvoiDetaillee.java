@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormulePolitesse;
 
 /**
@@ -16,6 +19,7 @@ import ch.vd.uniregctb.type.FormulePolitesse;
 public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 
 	private static final long serialVersionUID = 8557039282754715615L;
+	private final Tiers destinataire;
 	private String salutations;
 	private String formuleAppel;
 	private final List<NomPrenom> nomsPrenoms = new ArrayList<NomPrenom>();
@@ -29,8 +33,13 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
 	private final AdresseGenerique.SourceType source;
 
-	public AdresseEnvoiDetaillee(AdresseGenerique.SourceType source) {
+	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source) {
 		this.source = source;
+		this.destinataire = destinataire;
+	}
+
+	public Tiers getDestinataire() {
+		return destinataire;
 	}
 
 	public void addFormulePolitesse(FormulePolitesse formule) {
@@ -164,10 +173,12 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 		return formuleAppel;
 	}
 
+	@NotNull
 	public List<NomPrenom> getNomsPrenoms() {
 		return Collections.unmodifiableList(nomsPrenoms);
 	}
 
+	@NotNull
 	public List<String> getRaisonsSociales() {
 		return Collections.unmodifiableList(raisonsSociales);
 	}
@@ -175,6 +186,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	/**
 	 * @return la concaténation des listes <i>nomsPrenoms</i> et <i>raisonsSociales</i> (en sachant que - logiquement - seule une des deux peut être remplie).
 	 */
+	@NotNull
 	public List<String> getNomsPrenomsOuRaisonsSociales() {
 		List<String> list = new ArrayList<String>();
 		for (NomPrenom nomPrenom : nomsPrenoms) {

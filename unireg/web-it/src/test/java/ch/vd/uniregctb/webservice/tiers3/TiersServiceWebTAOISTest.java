@@ -10,44 +10,47 @@ import java.util.List;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.webservices.tiers3.Adresse;
-import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
-import ch.vd.uniregctb.webservices.tiers3.CategorieDebiteur;
-import ch.vd.uniregctb.webservices.tiers3.Date;
-import ch.vd.uniregctb.webservices.tiers3.Debiteur;
-import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.Declaration;
-import ch.vd.uniregctb.webservices.tiers3.DeclarationImpotSource;
-import ch.vd.uniregctb.webservices.tiers3.EtatCivil;
-import ch.vd.uniregctb.webservices.tiers3.ForFiscal;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifiesRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.MenageCommun;
-import ch.vd.uniregctb.webservices.tiers3.ModeCommunication;
-import ch.vd.uniregctb.webservices.tiers3.ModeImposition;
-import ch.vd.uniregctb.webservices.tiers3.PeriodeImposition;
-import ch.vd.uniregctb.webservices.tiers3.Periodicite;
-import ch.vd.uniregctb.webservices.tiers3.PeriodiciteDecompte;
-import ch.vd.uniregctb.webservices.tiers3.PersonneMorale;
-import ch.vd.uniregctb.webservices.tiers3.PersonnePhysique;
-import ch.vd.uniregctb.webservices.tiers3.RapportEntreTiers;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersResponse;
-import ch.vd.uniregctb.webservices.tiers3.Sexe;
-import ch.vd.uniregctb.webservices.tiers3.SituationFamille;
-import ch.vd.uniregctb.webservices.tiers3.TarifImpotSource;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersInfo;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.TypeActivite;
-import ch.vd.uniregctb.webservices.tiers3.TypeAffranchissement;
-import ch.vd.uniregctb.webservices.tiers3.TypeAutoriteFiscale;
-import ch.vd.uniregctb.webservices.tiers3.TypeRapportEntreTiers;
-import ch.vd.uniregctb.webservices.tiers3.TypeRecherche;
-import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers3.UserLogin;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.AddressInformation;
+import ch.vd.unireg.webservices.tiers3.Adresse;
+import ch.vd.unireg.webservices.tiers3.CategorieDebiteur;
+import ch.vd.unireg.webservices.tiers3.Date;
+import ch.vd.unireg.webservices.tiers3.Debiteur;
+import ch.vd.unireg.webservices.tiers3.DebiteurInfo;
+import ch.vd.unireg.webservices.tiers3.Declaration;
+import ch.vd.unireg.webservices.tiers3.DeclarationImpotSource;
+import ch.vd.unireg.webservices.tiers3.EtatCivil;
+import ch.vd.unireg.webservices.tiers3.ForFiscal;
+import ch.vd.unireg.webservices.tiers3.FormattedAddress;
+import ch.vd.unireg.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.unireg.webservices.tiers3.GetListeCtbModifiesRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.MailAddress;
+import ch.vd.unireg.webservices.tiers3.MenageCommun;
+import ch.vd.unireg.webservices.tiers3.ModeCommunication;
+import ch.vd.unireg.webservices.tiers3.ModeImposition;
+import ch.vd.unireg.webservices.tiers3.OrganisationMailAddressInfo;
+import ch.vd.unireg.webservices.tiers3.PeriodeImposition;
+import ch.vd.unireg.webservices.tiers3.Periodicite;
+import ch.vd.unireg.webservices.tiers3.PeriodiciteDecompte;
+import ch.vd.unireg.webservices.tiers3.PersonneMorale;
+import ch.vd.unireg.webservices.tiers3.PersonnePhysique;
+import ch.vd.unireg.webservices.tiers3.RapportEntreTiers;
+import ch.vd.unireg.webservices.tiers3.SearchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.SearchTiersResponse;
+import ch.vd.unireg.webservices.tiers3.Sexe;
+import ch.vd.unireg.webservices.tiers3.SituationFamille;
+import ch.vd.unireg.webservices.tiers3.TarifImpotSource;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersInfo;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.TypeActivite;
+import ch.vd.unireg.webservices.tiers3.TypeAffranchissement;
+import ch.vd.unireg.webservices.tiers3.TypeAutoriteFiscale;
+import ch.vd.unireg.webservices.tiers3.TypeRapportEntreTiers;
+import ch.vd.unireg.webservices.tiers3.TypeRecherche;
+import ch.vd.unireg.webservices.tiers3.TypeTiers;
+import ch.vd.unireg.webservices.tiers3.UserLogin;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -597,15 +600,16 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		 * 1004 Lausanne Secteur de dist.
 		 * </pre>
 		 */
-		final AdresseFormattee adresseEnvoi = debiteur.getAdresseCourrierFormattee();
-		assertNotNull(adresseEnvoi);
-		assertEquals("Sabri Inanç Ertem", adresseEnvoi.getLigne1());
-		assertEquals("Café du Commerce", adresseEnvoi.getLigne2());
-		assertEquals("Avenue de Beaulieu 12", adresseEnvoi.getLigne3());
-		assertEquals("1004 Lausanne", adresseEnvoi.getLigne4());
-		assertNull(adresseEnvoi.getLigne5());
-		assertNull(adresseEnvoi.getLigne6());
-		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
+		final MailAddress courrier = debiteur.getAdresseCourrierFormattee();
+		final FormattedAddress formattee = courrier.getFormattedAddress();
+		assertNotNull(formattee);
+		assertEquals("Sabri Inanç Ertem", formattee.getLine1());
+		assertEquals("Café du Commerce", formattee.getLine2());
+		assertEquals("Avenue de Beaulieu 12", formattee.getLine3());
+		assertEquals("1004 Lausanne", formattee.getLine4());
+		assertNull(formattee.getLine5());
+		assertNull(formattee.getLine6());
+		assertEquals(TypeAffranchissement.SUISSE, courrier.getAddressInformation().getTypeAffranchissement());
 	}
 
 	@Test
@@ -929,34 +933,31 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
 
-		final AdresseFormattee adresseEnvoi = pm.getAdresseCourrierFormattee();
+		final MailAddress courrier = pm.getAdresseCourrierFormattee();
+		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
+		assertEquals("Banque Cantonale Vaudo", trimValiPattern(adresseEnvoi.getLine1()));
+		assertEquals("", trimValiPattern(adresseEnvoi.getLine2()));
+		assertEquals("", trimValiPattern(adresseEnvoi.getLine3()));
+		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLine4()));
+		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLine5()));
+		assertEquals("1001 Lausanne", adresseEnvoi.getLine6());
 
-		// l'adresse d'envoi n'a pas de salutations
-		assertNull(adresseEnvoi.getSalutations());
-		assertEquals("Banque Cantonale Vaudo", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLigne4()));
-		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLigne5()));
-		assertEquals("1001 Lausanne", adresseEnvoi.getLigne6());
-		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
-		{
-			final List<String> nomsPrenoms = adresseEnvoi.getNomsPrenoms();
-			assertEquals(3, nomsPrenoms.size());
-			assertEquals("Banque Cantonale Vaudo", trimValiPattern(nomsPrenoms.get(0)));
-			assertEquals("", trimValiPattern(nomsPrenoms.get(1)));
-			assertEquals("", trimValiPattern(nomsPrenoms.get(2)));
-		}
-		assertEquals("pa Comptabilité financière", adresseEnvoi.getComplement());
-		assertNull(adresseEnvoi.getPourAdresse());
-		assertEquals("M. Daniel Küffer / CP 300", adresseEnvoi.getRueNumero());
-		assertNull(adresseEnvoi.getCasePostale());
-		assertEquals("1001 Lausanne", adresseEnvoi.getNpaLocalite());
-		assertNull(adresseEnvoi.getPays());
+		final OrganisationMailAddressInfo organisation = courrier.getOrganisation();
+		assertNotNull(organisation);
+		assertEquals("Madame, Monsieur", organisation.getFormalGreeting());
+		assertEquals("Banque Cantonale Vaudo", trimValiPattern(organisation.getOrganisationName()));
+		assertEquals("", trimValiPattern(organisation.getOrganisationNameAddOn1()));
+		assertEquals("", trimValiPattern(organisation.getOrganisationNameAddOn2()));
 
-		// par contre, la formule d'appel est renseignée
-		assertEquals("Madame, Monsieur", adresseEnvoi.getFormuleAppel());
+		final AddressInformation info = courrier.getAddressInformation();
+		assertEquals(TypeAffranchissement.SUISSE, info.getTypeAffranchissement());
+		assertEquals("pa Comptabilité financière", info.getComplement());
+		assertNull(info.getPourAdresse());
+		assertEquals("M. Daniel Küffer / CP 300", info.getStreet());
+		assertNull(info.getPostOfficeBoxNumber());
+		assertEquals("1001 Lausanne", info.getTown());
+		assertNull(info.getCountry());
 	}
 
 	public static XMLGregorianCalendar regdate2xmlcal(RegDate date) {

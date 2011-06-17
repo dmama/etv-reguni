@@ -14,43 +14,43 @@ import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
+import ch.vd.unireg.webservices.tiers3.AccessDeniedExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.BatchTiers;
+import ch.vd.unireg.webservices.tiers3.BatchTiersEntry;
+import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
+import ch.vd.unireg.webservices.tiers3.CodeQuittancement;
+import ch.vd.unireg.webservices.tiers3.DebiteurInfo;
+import ch.vd.unireg.webservices.tiers3.GetBatchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.unireg.webservices.tiers3.GetListeCtbModifiesRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersTypeRequest;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsResponse;
+import ch.vd.unireg.webservices.tiers3.ReponseQuittancementDeclaration;
+import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMRequest;
+import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMResponse;
+import ch.vd.unireg.webservices.tiers3.SearchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.SearchTiersResponse;
+import ch.vd.unireg.webservices.tiers3.SetTiersBlocRembAutoRequest;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersWebService;
+import ch.vd.unireg.webservices.tiers3.TypeTiers;
+import ch.vd.unireg.webservices.tiers3.UserLogin;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.WebServiceExceptionInfo;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.webservices.common.LoadMonitorable;
-import ch.vd.uniregctb.webservices.tiers3.AccessDeniedExceptionInfo;
-import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
-import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
-import ch.vd.uniregctb.webservices.tiers3.BusinessExceptionCode;
-import ch.vd.uniregctb.webservices.tiers3.CodeQuittancement;
-import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifiesRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersTypeRequest;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsRequest;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsResponse;
-import ch.vd.uniregctb.webservices.tiers3.ReponseQuittancementDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMRequest;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMResponse;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersResponse;
-import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAutoRequest;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers3.UserLogin;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceExceptionInfo;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les appels vers l'implémentation concrète du service.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@WebService(targetNamespace = "http://www.vd.ch/unireg/webservices/tiers3", serviceName = "TiersWebServiceFactory", portName = "Service", endpointInterface = "ch.vd.uniregctb.webservices.tiers3.TiersWebService")
+@WebService(targetNamespace = "http://www.vd.ch/unireg/webservices/tiers3", serviceName = "TiersWebServiceFactory", portName = "Service", endpointInterface = "ch.vd.unireg.webservices.tiers3.TiersWebService")
 public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceEndPoint.class);

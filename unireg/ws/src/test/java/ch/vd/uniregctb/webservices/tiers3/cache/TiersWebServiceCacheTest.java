@@ -14,6 +14,25 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.webservices.tiers3.BatchTiers;
+import ch.vd.unireg.webservices.tiers3.BatchTiersEntry;
+import ch.vd.unireg.webservices.tiers3.Contribuable;
+import ch.vd.unireg.webservices.tiers3.Date;
+import ch.vd.unireg.webservices.tiers3.DebiteurInfo;
+import ch.vd.unireg.webservices.tiers3.DeclarationImpotOrdinaire;
+import ch.vd.unireg.webservices.tiers3.EtatDeclaration;
+import ch.vd.unireg.webservices.tiers3.ForFiscal;
+import ch.vd.unireg.webservices.tiers3.FormattedAddress;
+import ch.vd.unireg.webservices.tiers3.GetBatchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.MenageCommun;
+import ch.vd.unireg.webservices.tiers3.PersonneMorale;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.TiersWebService;
+import ch.vd.unireg.webservices.tiers3.TypeEtatDeclaration;
+import ch.vd.unireg.webservices.tiers3.UserLogin;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -35,24 +54,6 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
-import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
-import ch.vd.uniregctb.webservices.tiers3.Contribuable;
-import ch.vd.uniregctb.webservices.tiers3.Date;
-import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.webservices.tiers3.EtatDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.ForFiscal;
-import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.MenageCommun;
-import ch.vd.uniregctb.webservices.tiers3.PersonneMorale;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers3.TypeEtatDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.UserLogin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -288,12 +289,13 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		assertNotNull(menageAvant);
 
 		// On vérifie l'adresse d'envoi
-		assertEquals("Monsieur et Madame", menageAvant.getAdresseCourrierFormattee().getLigne1());
-		assertEquals("Eric Bolomey", menageAvant.getAdresseCourrierFormattee().getLigne2());
-		assertEquals("Monique Bolomey", menageAvant.getAdresseCourrierFormattee().getLigne3());
-		assertEquals("Av de Beaulieu", menageAvant.getAdresseCourrierFormattee().getLigne4());
-		assertEquals("1000 Lausanne", menageAvant.getAdresseCourrierFormattee().getLigne5());
-		assertNull(menageAvant.getAdresseCourrierFormattee().getLigne6());
+		final FormattedAddress adressesAvant = menageAvant.getAdresseCourrierFormattee().getFormattedAddress();
+		assertEquals("Monsieur et Madame", adressesAvant.getLine1());
+		assertEquals("Eric Bolomey", adressesAvant.getLine2());
+		assertEquals("Monique Bolomey", adressesAvant.getLine3());
+		assertEquals("Av de Beaulieu", adressesAvant.getLine4());
+		assertEquals("1000 Lausanne", adressesAvant.getLine5());
+		assertNull(adressesAvant.getLine6());
 
 		// On modifie le prénom de madame
 		doInNewTransaction(new TxCallback<Object>() {
@@ -329,12 +331,13 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		assertNotNull(menageApres);
 
 		// On vérifie l'adresse d'envoi
-		assertEquals("Monsieur et Madame", menageApres.getAdresseCourrierFormattee().getLigne1());
-		assertEquals("Eric Bolomey", menageApres.getAdresseCourrierFormattee().getLigne2());
-		assertEquals("Gudrun Bolomey", menageApres.getAdresseCourrierFormattee().getLigne3());
-		assertEquals("Av de Beaulieu", menageApres.getAdresseCourrierFormattee().getLigne4());
-		assertEquals("1000 Lausanne", menageApres.getAdresseCourrierFormattee().getLigne5());
-		assertNull(menageApres.getAdresseCourrierFormattee().getLigne6());
+		final FormattedAddress adressesApres = menageApres.getAdresseCourrierFormattee().getFormattedAddress();
+		assertEquals("Monsieur et Madame", adressesApres.getLine1());
+		assertEquals("Eric Bolomey", adressesApres.getLine2());
+		assertEquals("Gudrun Bolomey", adressesApres.getLine3());
+		assertEquals("Av de Beaulieu", adressesApres.getLine4());
+		assertEquals("1000 Lausanne", adressesApres.getLine5());
+		assertNull(adressesApres.getLine6());
 	}
 
 	@Test

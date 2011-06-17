@@ -2,10 +2,10 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
-import ch.vd.uniregctb.webservices.tiers3.BatchTiersEntry;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.BatchTiers;
+import ch.vd.unireg.webservices.tiers3.BatchTiersEntry;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 
 public class BatchTiersBuilder {
 	public static BatchTiers newBatchTiers(Map<Long, Object> map) {

@@ -3,24 +3,24 @@ package ch.vd.uniregctb.webservices.tiers3.cache;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.webservices.tiers3.BatchTiers;
-import ch.vd.uniregctb.webservices.tiers3.DebiteurInfo;
-import ch.vd.uniregctb.webservices.tiers3.GetBatchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetDebiteurInfoRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetListeCtbModifiesRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.GetTiersTypeRequest;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsRequest;
-import ch.vd.uniregctb.webservices.tiers3.QuittancerDeclarationsResponse;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMRequest;
-import ch.vd.uniregctb.webservices.tiers3.SearchEvenementsPMResponse;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersResponse;
-import ch.vd.uniregctb.webservices.tiers3.SetTiersBlocRembAutoRequest;
-import ch.vd.uniregctb.webservices.tiers3.Tiers;
-import ch.vd.uniregctb.webservices.tiers3.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.BatchTiers;
+import ch.vd.unireg.webservices.tiers3.DebiteurInfo;
+import ch.vd.unireg.webservices.tiers3.GetBatchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetDebiteurInfoRequest;
+import ch.vd.unireg.webservices.tiers3.GetListeCtbModifiesRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersTypeRequest;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsResponse;
+import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMRequest;
+import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMResponse;
+import ch.vd.unireg.webservices.tiers3.SearchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.SearchTiersResponse;
+import ch.vd.unireg.webservices.tiers3.SetTiersBlocRembAutoRequest;
+import ch.vd.unireg.webservices.tiers3.Tiers;
+import ch.vd.unireg.webservices.tiers3.TiersWebService;
+import ch.vd.unireg.webservices.tiers3.TypeTiers;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 
 /**
  * Cette implémentation du web-service tient le décompte de tous les appels (qui sont ensuite délégués à une implémentation target).

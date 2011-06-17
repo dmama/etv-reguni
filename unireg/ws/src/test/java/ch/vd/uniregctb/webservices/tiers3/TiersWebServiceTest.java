@@ -14,6 +14,31 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.webservices.tiers3.Adresse;
+import ch.vd.unireg.webservices.tiers3.BatchTiers;
+import ch.vd.unireg.webservices.tiers3.BatchTiersEntry;
+import ch.vd.unireg.webservices.tiers3.BusinessExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.CodeQuittancement;
+import ch.vd.unireg.webservices.tiers3.Date;
+import ch.vd.unireg.webservices.tiers3.DeclarationImpotOrdinaireKey;
+import ch.vd.unireg.webservices.tiers3.DemandeQuittancementDeclaration;
+import ch.vd.unireg.webservices.tiers3.ForFiscal;
+import ch.vd.unireg.webservices.tiers3.GenreImpot;
+import ch.vd.unireg.webservices.tiers3.GetBatchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.MenageCommun;
+import ch.vd.unireg.webservices.tiers3.ModeImposition;
+import ch.vd.unireg.webservices.tiers3.MotifFor;
+import ch.vd.unireg.webservices.tiers3.PersonnePhysique;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.QuittancerDeclarationsResponse;
+import ch.vd.unireg.webservices.tiers3.ReponseQuittancementDeclaration;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.TiersWebService;
+import ch.vd.unireg.webservices.tiers3.TypeAdressePoursuiteAutreTiers;
+import ch.vd.unireg.webservices.tiers3.TypeAutoriteFiscale;
+import ch.vd.unireg.webservices.tiers3.UserLogin;
+import ch.vd.unireg.webservices.tiers3.WebServiceExceptionInfo;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -106,34 +131,34 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final BatchTiers batch = service.getBatchTiers(params);
 		assertNotNull(batch);
-		assertEquals(2, batch.entries.size());
+		assertEquals(2, batch.getEntries().size());
 
-		Collections.sort(batch.entries, new Comparator<BatchTiersEntry>() {
+		Collections.sort(batch.getEntries(), new Comparator<BatchTiersEntry>() {
 			@Override
 			public int compare(BatchTiersEntry o1, BatchTiersEntry o2) {
-				return Long.valueOf(o1.number).compareTo(o2.number);
+				return Long.valueOf(o1.getNumber()).compareTo(o2.getNumber());
 			}
 		});
 
 		// On vérifie les fors fiscaux de Paul, il doit y en avoir 2 dont un virtuel
-		final BatchTiersEntry entry0 = batch.entries.get(0);
-		assertEquals(ids.paul, entry0.number);
+		final BatchTiersEntry entry0 = batch.getEntries().get(0);
+		assertEquals(ids.paul, entry0.getNumber());
 
-		final PersonnePhysique paulHisto = (PersonnePhysique) entry0.tiers;
+		final PersonnePhysique paulHisto = (PersonnePhysique) entry0.getTiers();
 		assertNotNull(paulHisto);
-		assertEquals(2, paulHisto.forsFiscauxPrincipaux.size());
+		assertEquals(2, paulHisto.getForsFiscauxPrincipaux().size());
 
-		final ForFiscal for0 = paulHisto.forsFiscauxPrincipaux.get(0);
+		final ForFiscal for0 = paulHisto.getForsFiscauxPrincipaux().get(0);
 		assertNotNull(for0);
 		assertEquals(newDate(1974, 3, 31), for0.getDateDebut());
 		assertEquals(newDate(1989, 12, 31), for0.getDateFin());
-		assertFalse(for0.virtuel);
+		assertFalse(for0.isVirtuel());
 
-		final ForFiscal for1 = paulHisto.forsFiscauxPrincipaux.get(1);
+		final ForFiscal for1 = paulHisto.getForsFiscauxPrincipaux().get(1);
 		assertNotNull(for1);
 		assertEquals(newDate(1990, 1, 1), for1.getDateDebut());
 		assertNull(for1.getDateFin());
-		assertTrue(for1.virtuel); // il s'agit donc du for du ménage reporté sur la personne physique
+		assertTrue(for1.isVirtuel()); // il s'agit donc du for du ménage reporté sur la personne physique
 	}
 
 	/**
@@ -182,23 +207,23 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetTiersRequest params = new GetTiersRequest();
 			params.setLogin(login);
-			params.tiersNumber = ids.menage;
+			params.setTiersNumber(ids.menage);
 			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_FORMATTEES));
 
 			final MenageCommun menage = (MenageCommun) service.getTiers(params);
 			assertNotNull(menage);
 
-			assertNotNull(menage.adressesCourrier);
-			assertEquals(2, menage.adressesCourrier.size());
-			assertAdresse(new Date(1947, 1, 1), new Date(2007, 9, 10), "Av de Beaulieu", "Lausanne", menage.adressesCourrier.get(0)); // adresse de monsieur
-			assertAdresse(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.adressesCourrier.get(1)); // adresse de madame (puisque monsieur est sous tutelle)
+			assertNotNull(menage.getAdressesCourrier());
+			assertEquals(2, menage.getAdressesCourrier().size());
+			assertAdresse(new Date(1947, 1, 1), new Date(2007, 9, 10), "Av de Beaulieu", "Lausanne", menage.getAdressesCourrier().get(0)); // adresse de monsieur
+			assertAdresse(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.getAdressesCourrier().get(1)); // adresse de madame (puisque monsieur est sous tutelle)
 
-			assertNotNull(menage.adressesPoursuite);
-			assertEquals(1, menage.adressesPoursuite.size());
+			assertNotNull(menage.getAdressesPoursuite());
+			assertEquals(1, menage.getAdressesPoursuite().size());
 			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne",
-					menage.adressesPoursuite.get(0)); // adresse de monsieur (non-impacté par la tutelle, car pas d'autorité tutelaire renseignée)
+					menage.getAdressesPoursuite().get(0)); // adresse de monsieur (non-impacté par la tutelle, car pas d'autorité tutelaire renseignée)
 
-			assertEmpty(menage.adressesPoursuiteAutreTiers); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
+			assertEmpty(menage.getAdressesPoursuiteAutreTiers()); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
 		}
 	}
 
@@ -248,22 +273,22 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetTiersRequest params = new GetTiersRequest();
 			params.setLogin(login);
-			params.tiersNumber = ids.menage;
+			params.setTiersNumber(ids.menage);
 			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_FORMATTEES));
 
 			final MenageCommun menage = (MenageCommun) service.getTiers(params);
 			assertNotNull(menage);
 
-			assertNotNull(menage.adressesCourrier);
-			assertEquals(2, menage.adressesCourrier.size());
-			assertAdresse(new Date(1947, 1, 1), new Date(2007, 9, 10), "Av de Beaulieu", "Lausanne", menage.adressesCourrier.get(0)); // adresse de monsieur
-			assertAdresse(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.adressesCourrier.get(1)); // adresse de madame (puisque monsieur est sous conseil légal)
+			assertNotNull(menage.getAdressesCourrier());
+			assertEquals(2, menage.getAdressesCourrier().size());
+			assertAdresse(new Date(1947, 1, 1), new Date(2007, 9, 10), "Av de Beaulieu", "Lausanne", menage.getAdressesCourrier().get(0)); // adresse de monsieur
+			assertAdresse(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.getAdressesCourrier().get(1)); // adresse de madame (puisque monsieur est sous conseil légal)
 
-			assertNotNull(menage.adressesPoursuite);
-			assertEquals(1, menage.adressesPoursuite.size());
-			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.adressesPoursuite.get(0)); // adresse de monsieur (non-impacté par le conseil légal)
+			assertNotNull(menage.getAdressesPoursuite());
+			assertEquals(1, menage.getAdressesPoursuite().size());
+			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.getAdressesPoursuite().get(0)); // adresse de monsieur (non-impacté par le conseil légal)
 
-			assertEmpty(menage.adressesPoursuiteAutreTiers); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
+			assertEmpty(menage.getAdressesPoursuiteAutreTiers()); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
 		}
 	}
 
@@ -326,46 +351,46 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetTiersRequest params = new GetTiersRequest();
 			params.setLogin(login);
-			params.tiersNumber = ids.tiia;
+			params.setTiersNumber(ids.tiia);
 			params.getParts().addAll(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_FORMATTEES));
 
 			final PersonnePhysique tiia = (PersonnePhysique) service.getTiers(params);
 			assertNotNull(tiia);
 
-			assertNotNull(tiia.adressesCourrier);
-			assertEquals(4, tiia.adressesCourrier.size());
-			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesCourrier.get(0));
-			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesCourrier.get(1));
-			assertAdresse(new Date(2009, 2, 1), new Date(2009, 7, 7), "Place Saint-François", "Lausanne", tiia.adressesCourrier.get(2));
+			assertNotNull(tiia.getAdressesCourrier());
+			assertEquals(4, tiia.getAdressesCourrier().size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.getAdressesCourrier().get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getAdressesCourrier().get(1));
+			assertAdresse(new Date(2009, 2, 1), new Date(2009, 7, 7), "Place Saint-François", "Lausanne", tiia.getAdressesCourrier().get(2));
 			assertAdresse(new Date(2009, 7, 8), null, "Place Saint-François", "Lausanne",
-					tiia.adressesCourrier.get(3)); // [UNIREG-3025] les adresses surchargées priment sur toutes les autres adresses
+					tiia.getAdressesCourrier().get(3)); // [UNIREG-3025] les adresses surchargées priment sur toutes les autres adresses
 
-			assertNotNull(tiia.adressesRepresentation);
-			assertEquals(3, tiia.adressesRepresentation.size());
-			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesRepresentation.get(0));
-			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesRepresentation.get(1));
-			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesRepresentation.get(2));
+			assertNotNull(tiia.getAdressesRepresentation());
+			assertEquals(3, tiia.getAdressesRepresentation().size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.getAdressesRepresentation().get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getAdressesRepresentation().get(1));
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.getAdressesRepresentation().get(2));
 
-			assertNotNull(tiia.adressesDomicile);
-			assertEquals(3, tiia.adressesDomicile.size());
-			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesDomicile.get(0));
-			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesDomicile.get(1));
-			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesDomicile.get(2));
+			assertNotNull(tiia.getAdressesDomicile());
+			assertEquals(3, tiia.getAdressesDomicile().size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.getAdressesDomicile().get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getAdressesDomicile().get(1));
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.getAdressesDomicile().get(2));
 
-			assertNotNull(tiia.adressesPoursuite);
-			assertEquals(3, tiia.adressesPoursuite.size());
-			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesPoursuite.get(0));
-			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesPoursuite.get(1));
-			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesPoursuite.get(2));
+			assertNotNull(tiia.getAdressesPoursuite());
+			assertEquals(3, tiia.getAdressesPoursuite().size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.getAdressesPoursuite().get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getAdressesPoursuite().get(1));
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.getAdressesPoursuite().get(2));
 
-			assertNotNull(tiia.adressesPoursuiteAutreTiers);
-			assertEquals(3, tiia.adressesPoursuiteAutreTiers.size());
-			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesPoursuiteAutreTiers.get(0));
-			assertEquals(TypeAdressePoursuiteAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(0).type);
-			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesPoursuiteAutreTiers.get(1));
-			assertEquals(TypeAdressePoursuiteAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(1).type);
-			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesPoursuiteAutreTiers.get(2));
-			assertEquals(TypeAdressePoursuiteAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(2).type);
+			assertNotNull(tiia.getAdressesPoursuiteAutreTiers());
+			assertEquals(3, tiia.getAdressesPoursuiteAutreTiers().size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.getAdressesPoursuiteAutreTiers().get(0));
+			assertEquals(TypeAdressePoursuiteAutreTiers.CURATELLE, tiia.getAdressesPoursuiteAutreTiers().get(0).getType());
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getAdressesPoursuiteAutreTiers().get(1));
+			assertEquals(TypeAdressePoursuiteAutreTiers.CURATELLE, tiia.getAdressesPoursuiteAutreTiers().get(1).getType());
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.getAdressesPoursuiteAutreTiers().get(2));
+			assertEquals(TypeAdressePoursuiteAutreTiers.CURATELLE, tiia.getAdressesPoursuiteAutreTiers().get(2).getType());
 		}
 	}
 
@@ -406,15 +431,15 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		// quittancement de la DI
 		final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
-		demande.dateRetour = DataHelper.coreToWeb(RegDate.get());
-		demande.key = new DeclarationImpotOrdinaireKey();
-		demande.key.ctbId = ids.ppId;
-		demande.key.numeroSequenceDI = 1;
-		demande.key.periodeFiscale = 2009;
+		demande.setDateRetour(DataHelper.coreToWeb(RegDate.get()));
+		demande.setKey(new DeclarationImpotOrdinaireKey());
+		demande.getKey().setCtbId(ids.ppId);
+		demande.getKey().setNumeroSequenceDI(1);
+		demande.getKey().setPeriodeFiscale(2009);
 
 		final QuittancerDeclarationsRequest quittances = new QuittancerDeclarationsRequest();
-		quittances.login = login;
-		quittances.demandes = Arrays.asList(demande);
+		quittances.setLogin(login);
+		quittances.getDemandes().add(demande);
 
 		final QuittancerDeclarationsResponse reponse = service.quittancerDeclarations(quittances);
 		assertNotNull(reponse);
@@ -425,10 +450,10 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final ReponseQuittancementDeclaration retour = retours.get(0);
 		assertNotNull(retour);
-		assertEquals(ids.ppId, retour.key.ctbId);
-		assertEquals(1, retour.key.numeroSequenceDI);
-		assertEquals(2009, retour.key.periodeFiscale);
-		assertEquals(CodeQuittancement.OK, retour.code);
+		assertEquals(ids.ppId, retour.getKey().getCtbId());
+		assertEquals(1, retour.getKey().getNumeroSequenceDI());
+		assertEquals(2009, retour.getKey().getPeriodeFiscale());
+		assertEquals(CodeQuittancement.OK, retour.getCode());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -499,15 +524,15 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		// quittancement de la DI
 		final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
-		demande.dateRetour = DataHelper.coreToWeb(RegDate.get());
-		demande.key = new DeclarationImpotOrdinaireKey();
-		demande.key.ctbId = ids.ppId;
-		demande.key.numeroSequenceDI = 1;
-		demande.key.periodeFiscale = annee;
+		demande.setDateRetour(DataHelper.coreToWeb(RegDate.get()));
+		demande.setKey(new DeclarationImpotOrdinaireKey());
+		demande.getKey().setCtbId(ids.ppId);
+		demande.getKey().setNumeroSequenceDI(1);
+		demande.getKey().setPeriodeFiscale(annee);
 
 		final QuittancerDeclarationsRequest quittances = new QuittancerDeclarationsRequest();
-		quittances.login = login;
-		quittances.demandes = Arrays.asList(demande);
+		quittances.setLogin(login);
+		quittances.getDemandes().add(demande);
 
 		final QuittancerDeclarationsResponse reponse = service.quittancerDeclarations(quittances);
 		assertNotNull(reponse);
@@ -518,12 +543,12 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final ReponseQuittancementDeclaration retour = retours.get(0);
 		assertNotNull(retour);
-		assertEquals(ids.ppId, retour.key.ctbId);
-		assertEquals(1, retour.key.numeroSequenceDI);
-		assertEquals(annee, retour.key.periodeFiscale);
-		assertEquals(CodeQuittancement.EXCEPTION, retour.code);
+		assertEquals(ids.ppId, retour.getKey().getCtbId());
+		assertEquals(1, retour.getKey().getNumeroSequenceDI());
+		assertEquals(annee, retour.getKey().getPeriodeFiscale());
+		assertEquals(CodeQuittancement.EXCEPTION, retour.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = retour.exceptionInfo;
+		final WebServiceExceptionInfo exceptionInfo = retour.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
@@ -608,21 +633,19 @@ public class TiersWebServiceTest extends WebserviceTest {
 		}
 
 		// quittancement des DI
-		final List<DemandeQuittancementDeclaration> demandes = new ArrayList<DemandeQuittancementDeclaration>();
+		final QuittancerDeclarationsRequest quittances = new QuittancerDeclarationsRequest();
+		quittances.setLogin(login);
+
 		for (Ids ids : liste) {
 			final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
-			demande.dateRetour = DataHelper.coreToWeb(RegDate.get());
-			demande.key = new DeclarationImpotOrdinaireKey();
-			demande.key.ctbId = ids.idCtb;
-			demande.key.numeroSequenceDI = 1;
-			demande.key.periodeFiscale = annee;
-			demandes.add(demande);
+			demande.setDateRetour(DataHelper.coreToWeb(RegDate.get()));
+			demande.setKey(new DeclarationImpotOrdinaireKey());
+			demande.getKey().setCtbId(ids.idCtb);
+			demande.getKey().setNumeroSequenceDI(1);
+			demande.getKey().setPeriodeFiscale(annee);
+			quittances.getDemandes().add(demande);
 		}
-
-		final QuittancerDeclarationsRequest quittances = new QuittancerDeclarationsRequest();
-		quittances.login = login;
-		quittances.demandes = demandes;
-
+		
 		final QuittancerDeclarationsResponse reponse = service.quittancerDeclarations(quittances);
 		assertNotNull(reponse);
 
@@ -632,19 +655,19 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final ReponseQuittancementDeclaration retourValide = retours.get(0);
 		assertNotNull(retourValide);
-		assertEquals(liste.get(0).idCtb, retourValide.key.ctbId);
-		assertEquals(1, retourValide.key.numeroSequenceDI);
-		assertEquals(annee, retourValide.key.periodeFiscale);
-		assertEquals(CodeQuittancement.OK, retourValide.code);
+		assertEquals(liste.get(0).idCtb, retourValide.getKey().getCtbId());
+		assertEquals(1, retourValide.getKey().getNumeroSequenceDI());
+		assertEquals(annee, retourValide.getKey().getPeriodeFiscale());
+		assertEquals(CodeQuittancement.OK, retourValide.getCode());
 
 		final ReponseQuittancementDeclaration retourInvalide = retours.get(1);
 		assertNotNull(retourInvalide);
-		assertEquals(liste.get(1).idCtb, retourInvalide.key.ctbId);
-		assertEquals(1, retourInvalide.key.numeroSequenceDI);
-		assertEquals(annee, retourInvalide.key.periodeFiscale);
-		assertEquals(CodeQuittancement.EXCEPTION, retourInvalide.code);
+		assertEquals(liste.get(1).idCtb, retourInvalide.getKey().getCtbId());
+		assertEquals(1, retourInvalide.getKey().getNumeroSequenceDI());
+		assertEquals(annee, retourInvalide.getKey().getPeriodeFiscale());
+		assertEquals(CodeQuittancement.EXCEPTION, retourInvalide.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = retourInvalide.exceptionInfo;
+		final WebServiceExceptionInfo exceptionInfo = retourInvalide.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
@@ -720,7 +743,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetTiersRequest params = new GetTiersRequest();
 			params.setLogin(login);
-			params.tiersNumber = id;
+			params.setTiersNumber(id);
 			params.getParts().addAll(Arrays.asList(TiersPart.FORS_FISCAUX_VIRTUELS));
 
 			// on s'assure que l'appartenance ménage annulé n'est pas pris en compte (s'il l'était, on recevrait une exception avec le message "Détecté 2 fors fiscaux principaux valides à la même date")
@@ -751,10 +774,10 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 	private static void assertAdresse(@Nullable Date dateDebut, @Nullable Date dateFin, String rue, String localite, Adresse adresse) {
 		assertNotNull(adresse);
-		assertEquals(dateDebut, adresse.dateDebut);
-		assertEquals(dateFin, adresse.dateFin);
-		assertEquals(rue, adresse.rue);
-		assertEquals(localite, adresse.localite);
+		assertEquals(dateDebut, adresse.getDateDebut());
+		assertEquals(dateFin, adresse.getDateFin());
+		assertEquals(rue, adresse.getRue());
+		assertEquals(localite, adresse.getLocalite());
 	}
 
 	private Date newDate(int year, int month, int day) {
@@ -798,15 +821,15 @@ public class TiersWebServiceTest extends WebserviceTest {
 		});
 
 		final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
-		demande.dateRetour = DataHelper.coreToWeb(RegDate.get());
-		demande.key = new DeclarationImpotOrdinaireKey();
-		demande.key.ctbId = ids.ppId;
-		demande.key.numeroSequenceDI = ids.noSequence;
-		demande.key.periodeFiscale = annee;
+		demande.setDateRetour(DataHelper.coreToWeb(RegDate.get()));
+		demande.setKey(new DeclarationImpotOrdinaireKey());
+		demande.getKey().setCtbId(ids.ppId);
+		demande.getKey().setNumeroSequenceDI(ids.noSequence);
+		demande.getKey().setPeriodeFiscale(annee);
 
 		final QuittancerDeclarationsRequest params = new QuittancerDeclarationsRequest();
 		params.setLogin(login);
-		params.demandes = Arrays.asList(demande);
+		params.getDemandes().add(demande);
 
 		final QuittancerDeclarationsResponse reponse = service.quittancerDeclarations(params);
 		assertNotNull(reponse);
@@ -817,6 +840,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 		final ReponseQuittancementDeclaration retour = retours.get(0);
 		assertNotNull(retour);
-		assertEquals(CodeQuittancement.OK, retour.code);
+		assertEquals(CodeQuittancement.OK, retour.getCode());
 	}
 }

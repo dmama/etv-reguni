@@ -511,7 +511,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	}
 
 	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.PM);
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.PM);
 
 		if (pm.designationAbregee != null) {
 			adresse.addRaisonSociale(pm.designationAbregee);

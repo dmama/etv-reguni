@@ -20,6 +20,16 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.webservices.tiers3.Adresse;
+import ch.vd.unireg.webservices.tiers3.AdresseAutreTiers;
+import ch.vd.unireg.webservices.tiers3.Date;
+import ch.vd.unireg.webservices.tiers3.MailAddress;
+import ch.vd.unireg.webservices.tiers3.MailAddressOtherTiers;
+import ch.vd.unireg.webservices.tiers3.SearchTiersRequest;
+import ch.vd.unireg.webservices.tiers3.TiersInfo;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.TypeTiers;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -38,16 +48,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.webservices.tiers3.Adresse;
-import ch.vd.uniregctb.webservices.tiers3.AdresseAutreTiers;
-import ch.vd.uniregctb.webservices.tiers3.AdresseFormattee;
-import ch.vd.uniregctb.webservices.tiers3.AdresseFormatteeAutreTiers;
-import ch.vd.uniregctb.webservices.tiers3.Date;
-import ch.vd.uniregctb.webservices.tiers3.SearchTiersRequest;
-import ch.vd.uniregctb.webservices.tiers3.TiersInfo;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
-import ch.vd.uniregctb.webservices.tiers3.TypeTiers;
-import ch.vd.uniregctb.webservices.tiers3.WebServiceException;
+import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.webservices.tiers3.data.AdresseBuilder;
 
 /**
@@ -444,23 +445,35 @@ public class DataHelper {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static AdresseFormattee createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
-		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
-		if (adressePoursuite == null) {
+	public static MailAddress createMailAddress(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+		final AdresseEnvoiDetaillee adresse = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
+		if (adresse == null) {
 			return null;
 		}
-		return AdresseBuilder.newAdresseFormattee(adressePoursuite);
+		return AdresseBuilder.newMailAddress(adresse);
 	}
 
-	public static AdresseFormatteeAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+	public static MailAddressOtherTiers createMailAddressOtherTiers(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
 		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;
 		}
-		return AdresseBuilder.newAdresseFormatteeAutreTiers(adressePoursuite);
+		return AdresseBuilder.newMailAddressOtherTiers(adressePoursuite);
 	}
 
 	public static Set<TiersPart> toSet(List<TiersPart> parts) {
 		return new HashSet<TiersPart>(parts);
+	}
+
+	public static String salutations2MrMrs(String salutations) {
+		if (FormulePolitesse.MADAME.salutations().equals(salutations)) {
+			return "1";
+		}
+		if (FormulePolitesse.MONSIEUR.salutations().equals(salutations)) {
+			return "2";
+		}
+		else {
+			return null;
+		}
 	}
 }

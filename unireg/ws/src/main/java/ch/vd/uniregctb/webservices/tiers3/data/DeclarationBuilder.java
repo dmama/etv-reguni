@@ -7,11 +7,11 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.webservices.tiers3.Declaration;
-import ch.vd.uniregctb.webservices.tiers3.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.webservices.tiers3.DeclarationImpotSource;
-import ch.vd.uniregctb.webservices.tiers3.EtatDeclaration;
-import ch.vd.uniregctb.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.Declaration;
+import ch.vd.unireg.webservices.tiers3.DeclarationImpotOrdinaire;
+import ch.vd.unireg.webservices.tiers3.DeclarationImpotSource;
+import ch.vd.unireg.webservices.tiers3.EtatDeclaration;
+import ch.vd.unireg.webservices.tiers3.TiersPart;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 

@@ -2,8 +2,8 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.webservices.tiers3.PeriodeAssujettissement;
-import ch.vd.uniregctb.webservices.tiers3.TypePeriodeAssujettissement;
+import ch.vd.unireg.webservices.tiers3.PeriodeAssujettissement;
+import ch.vd.unireg.webservices.tiers3.TypePeriodeAssujettissement;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 
 public class PeriodeAssujettissementBuilder {
