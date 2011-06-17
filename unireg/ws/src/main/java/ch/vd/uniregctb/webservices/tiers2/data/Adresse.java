@@ -87,7 +87,7 @@ public class Adresse implements Range {
 		this.numeroAppartement = adresse.getNumeroAppartement();
 		this.rue = adresse.getRue();
 		this.numeroRue = adresse.getNumero();
-		this.casePostale = adresse.getCasePostale();
+		this.casePostale = adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString();
 		this.localite = adresse.getLocalite();
 		this.numeroPostal = adresse.getNumeroPostal();
 

@@ -149,7 +149,7 @@ public class RapprocherCtbProcessor {
 
 				String salutations = adresseEnvoi.getSalutations();
 
-				List<String> nomCourrier = adresseEnvoi.getNomPrenom();
+				List<String> nomCourrier = adresseEnvoi.getNomsPrenomsOuRaisonsSociales();
 
 				proprietaireRapproche.setFormulePolitesse(salutations);
 

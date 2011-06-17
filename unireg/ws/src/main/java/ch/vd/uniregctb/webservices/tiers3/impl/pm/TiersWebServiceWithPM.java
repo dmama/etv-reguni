@@ -13,6 +13,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.tiers3.DateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -812,15 +813,15 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 		// [UNIREG-1974] On doit utiliser la raison sociale sur 3 lignes dans les adresses d'envoi des PMs (et ne pas prendre la raison sociale abbrégée)
 		if (pm.getRaisonSociale1() != null) {
-			adresse.addNomPrenom(pm.getRaisonSociale1());
+			adresse.addRaisonSociale(pm.getRaisonSociale1());
 		}
 
 		if (pm.getRaisonSociale2() != null) {
-			adresse.addNomPrenom(pm.getRaisonSociale2());
+			adresse.addRaisonSociale(pm.getRaisonSociale2());
 		}
 
 		if (pm.getRaisonSociale3() != null) {
-			adresse.addNomPrenom(pm.getRaisonSociale3());
+			adresse.addRaisonSociale(pm.getRaisonSociale3());
 		}
 
 // [UNIREG-1973] il ne faut pas utiliser la personne de contact dans les adresses
@@ -837,14 +838,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			}
 
 			if (adresseFiscale.getRue() != null) {
-				final String rueNumero;
-				if (adresseFiscale.getNumeroRue() != null) {
-					rueNumero = adresseFiscale.getRue() + " " + adresseFiscale.getNumeroRue();
-				}
-				else {
-					rueNumero = adresseFiscale.getRue();
-				}
-				adresse.addRueEtNumero(rueNumero);
+				adresse.addRueEtNumero(new RueEtNumero(adresseFiscale.getRue(), adresseFiscale.getNumeroRue()));
 			}
 
 			final String npaLocalite;

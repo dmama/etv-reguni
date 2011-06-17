@@ -7,6 +7,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -34,6 +35,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -318,7 +320,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 				// adresses courriers
 				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						"Case Postale 144", RegDate.get(1980, 1, 1), null);
+						new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -374,7 +376,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 				// adresses courriers
 				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						"Case Postale 144", RegDate.get(1980, 1, 1), null);
+						new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 				adresse.setTitre("chez Popol");
 			}
@@ -436,7 +438,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 				// adresses courriers
 				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						"Case Postale 144", RegDate.get(1980, 1, 1), null);
+						new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 				adresse.setTitre("chez Popol");
 			}

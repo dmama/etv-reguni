@@ -24,6 +24,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
@@ -797,13 +798,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			return true; // pas de critère valable
 		}
 
-		final String casePostale = adresse.getCasePostale();
-		if (StringUtils.isEmpty(casePostale)) {
+		final CasePostale casePostale = adresse.getCasePostale();
+		if (casePostale == null) {
 			return false; // critère non respecté
 		}
 
 		final String critereCasePostale = texteCasePostale + " " + numeroCasePostale;
-		return casePostale.equalsIgnoreCase(critereCasePostale);
+		return casePostale.toString().equalsIgnoreCase(critereCasePostale);
 	}
 
 	@SuppressWarnings({

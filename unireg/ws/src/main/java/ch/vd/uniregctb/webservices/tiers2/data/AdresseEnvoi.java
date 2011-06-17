@@ -160,11 +160,11 @@ public class AdresseEnvoi {
 		this.isSuisse = adresse.isSuisse();
 		this.salutations = adresse.getSalutations();
 		this.formuleAppel = adresse.getFormuleAppel();
-		this.nomsPrenoms = adresse.getNomPrenom();
+		this.nomsPrenoms = adresse.getNomsPrenomsOuRaisonsSociales();
 		this.complement = adresse.getComplement();
 		this.pourAdresse = adresse.getPourAdresse();
-		this.rueNumero = adresse.getRueEtNumero();
-		this.casePostale = adresse.getCasePostale();
+		this.rueNumero = adresse.getRueEtNumero() == null ? null : adresse.getRueEtNumero().getRueEtNumero();
+		this.casePostale = adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString();
 		this.npaLocalite = adresse.getNpaEtLocalite();
 		this.pays = adresse.getPays();
 		this.typeAffranchissement = EnumHelper.coreToWeb(adresse.getTypeAffranchissement());

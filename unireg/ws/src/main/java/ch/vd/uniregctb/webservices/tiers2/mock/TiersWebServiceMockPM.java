@@ -23,6 +23,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
@@ -513,7 +514,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.PM);
 
 		if (pm.designationAbregee != null) {
-			adresse.addNomPrenom(pm.designationAbregee);
+			adresse.addRaisonSociale(pm.designationAbregee);
 		}
 
 		if (pm.personneContact != null) {
@@ -532,14 +533,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 			}
 
 			if (adresseFiscale.rue != null) {
-				final String rueNumero;
-				if (adresseFiscale.numeroRue != null) {
-					rueNumero = adresseFiscale.rue + " " + adresseFiscale.numeroRue;
-				}
-				else {
-					rueNumero = adresseFiscale.rue;
-				}
-				adresse.addRueEtNumero(rueNumero);
+				adresse.addRueEtNumero(new RueEtNumero(adresseFiscale.rue, adresseFiscale.numeroRue));
 			}
 
 			final String npaLocalite;

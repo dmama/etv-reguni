@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
+import ch.vd.uniregctb.type.TexteCasePostale;
 
 public class MockOfficeImpot extends MockCollectiviteAdministrative implements OfficeImpot {
 
@@ -22,7 +24,7 @@ public class MockOfficeImpot extends MockCollectiviteAdministrative implements O
 	public static final MockOfficeImpot OID_PAYERNE = new MockOfficeImpot(15, null, "Office d'impôt du district", "de la Broye - Vully", null, "OID PAYERNE");
 	public static final MockOfficeImpot OID_PAYS_D_ENHAUT = new MockOfficeImpot(16, null, "Office d'impôt du district", "de la Riviera - Pays-d'Enhaut", "Bureau du Pays-d'Enhaut", "OID PAYS-D'ENHAUT");
 	public static final MockOfficeImpot OID_ROLLE_AUBONNE = new MockOfficeImpot(17, null, "Office d'impôt des districts", "de Nyon et Morges", "Bureau de Rolle-Aubonne", "OID ROLLE/AUBONNE");
-	public static final MockOfficeImpot OID_VEVEY = new MockOfficeImpot(18, new MockAdresse("Rue du Simplon", "22", "Case postale 1032", "1800", "Vevey 1"), "Office d'impôt du district", "de la Riviera - Pays-d'Enhaut", null, "OID VEVEY");
+	public static final MockOfficeImpot OID_VEVEY = new MockOfficeImpot(18, new MockAdresse("Rue du Simplon", "22", new CasePostale(TexteCasePostale.CASE_POSTALE, 1032), "1800", "Vevey 1"), "Office d'impôt du district", "de la Riviera - Pays-d'Enhaut", null, "OID VEVEY");
 	public static final MockOfficeImpot OID_YVERDON = new MockOfficeImpot(19, null, "Office d'impôt du district", "du Jura - Nord vaudois", null, "OID YVERDON");
 	public static final MockOfficeImpot OID_LAUSANNE_VILLE = new MockOfficeImpot(20, new MockAdresse("rue de la Paix", "1", "1000", "Lausanne"), "Office d'impôt des districts de", "Lausanne et Ouest lausannois", null, "OID LAUSANNE (VILLE)");
 	public static final MockOfficeImpot OID_PM = new MockOfficeImpot(21, null, "Administration cantonale des impôts", "Office d'impôt des Personnes Morales", null, "OI PERSONNES MORALES");

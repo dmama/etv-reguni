@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.mock;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -11,7 +12,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class MockAdresse implements Adresse {
 
-	public String casePostale;
+	public CasePostale casePostale;
 	public RegDate dateDebutValidite;
 	public RegDate dateFinValidite;
 	public String lieu;
@@ -41,7 +42,7 @@ public class MockAdresse implements Adresse {
 		this.localite = localite;
 	}
 
-	public MockAdresse(String rue, String numero, String casePostale, String numeroPostal, String localite) {
+	public MockAdresse(String rue, String numero, CasePostale casePostale, String numeroPostal, String localite) {
 		this.rue = rue;
 		this.numero = numero;
 		this.casePostale = casePostale;
@@ -50,11 +51,11 @@ public class MockAdresse implements Adresse {
 	}
 
 	@Override
-	public String getCasePostale() {
+	public CasePostale getCasePostale() {
 		return casePostale;
 	}
 
-	public void setCasePostale(String casePostale) {
+	public void setCasePostale(CasePostale casePostale) {
 		this.casePostale = casePostale;
 	}
 

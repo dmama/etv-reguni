@@ -35,6 +35,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -1908,7 +1909,8 @@ public class TiersManager implements MessageSourceAware {
 		adresseView.setAnnule(adresse.isAnnule());
 		adresseView.setId(adresse.getId());
 		adresseView.setPermanente(adresse.isPermanente());
-		adresseView.setRue(AdresseServiceImpl.buildRueEtNumero(adresse));
+		final RueEtNumero rueEtNumero = AdresseServiceImpl.buildRueEtNumero(adresse);
+		adresseView.setRue(rueEtNumero == null ? null : rueEtNumero.getRueEtNumero());
 		adresseView.setLocalite(AdresseServiceImpl.buildNpaEtLocalite(adresse));
 		adresseView.setUsage(type);
 		adresseView.setPaysOFS(adresse.getNoOfsPays());

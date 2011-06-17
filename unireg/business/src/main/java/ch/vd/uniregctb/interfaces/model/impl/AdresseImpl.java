@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -20,7 +21,7 @@ public class AdresseImpl implements Adresse, Serializable {
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private final String casePostale;
+	private final CasePostale casePostale;
 	private final String localiteAbregeMinuscule;
 	private final String numero;
 	private final String numeroAppartement;
@@ -52,7 +53,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	private AdresseImpl(ch.vd.common.model.Adresse target) {
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
-		this.casePostale = target.getCasePostale();
+		this.casePostale = CasePostale.parse(target.getCasePostale());
 		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
 		this.numero = target.getNumero();
 		this.numeroAppartement = target.getNumeroAppartement();
@@ -81,7 +82,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	}
 
 	@Override
-	public String getCasePostale() {
+	public CasePostale getCasePostale() {
 		return casePostale;
 	}
 

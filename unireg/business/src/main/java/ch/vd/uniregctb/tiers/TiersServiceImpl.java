@@ -2873,6 +2873,11 @@ public class TiersServiceImpl implements TiersService {
 		return serviceCivilService.getNomPrenom(individu);
 	}
 
+	@Override
+	public NomPrenom getDecompositionNomPrenom(Individu individu) {
+		return serviceCivilService.getDecompositionNomPrenom(individu);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public interface Adresse extends DateRange, AdresseAvecCommune {
@@ -11,7 +12,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
      *
      * @return la case postale de l'adresse.
      */
-    String getCasePostale();
+    CasePostale getCasePostale();
 
     /**
      * Retourne la date de fin de validité de l'adresse.

@@ -1,65 +1,41 @@
-/**
- *
- */
 package ch.vd.uniregctb.type;
 
-/** 
- * <!-- begin-user-doc -->
- * Longueur de colonne : 15
- * <!-- end-user-doc -->
+/**
+ * <!-- begin-user-doc --> Longueur de colonne : 15 <!-- end-user-doc -->
+ *
  * @author jec
- * 
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_y_mBoJOcEdy7DqR-SPIh9g"
+ * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_y_mBoJOcEdy7DqR-SPIh9g"
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_y_mBoJOcEdy7DqR-SPIh9g"
  */
 public enum TexteCasePostale {
-	/** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3K7ZoJOcEdy7DqR-SPIh9g"
-	 */
-	CASE_POSTALE("Case Postale %d"), /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_LOYg4JOdEdy7DqR-SPIh9g"
-	 */
-	BOITE_POSTALE("Boîte Postale %d"), /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_-dC8YJOcEdy7DqR-SPIh9g"
-	 */
-	POSTFACH("Postfach %d"), /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_QBpbkJOdEdy7DqR-SPIh9g"
-	 */
-	PO_BOX("PO Box %d"), /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_zijIQJOdEdy7DqR-SPIh9g"
-	 */
-	CASELLA_POSTALE("Casella Postale %d");
+	CASE_POSTALE("Case Postale %d", "Case Postale"),
+	BOITE_POSTALE("Boîte Postale %d", "Boîte Postale"),
+	POSTFACH("Postfach %d", "Postfach"),
+	PO_BOX("PO Box %d", "PO Box"),
+	CASELLA_POSTALE("Casella Postale %d", "Casella Postale");
 
-	private final String format;
+	private final String formatWithNumber;
+	private final String formatWithoutNumber;
 
-	TexteCasePostale(String format) {
-		this.format = format;
+	TexteCasePostale(String formatWithNumber, String formatWithoutNumber) {
+		this.formatWithNumber = formatWithNumber;
+		this.formatWithoutNumber = formatWithoutNumber;
+	}
+
+	/**
+	 * @return la designation de la boîte postale sans le numéro.
+	 */
+	public String format() {
+		return formatWithoutNumber;
 	}
 
 	/**
 	 * Formatte le numéro de la case postale en fonction du type de réprésentation.
 	 *
-	 * @param numeroCasePostale
-	 *            le numéro à formatter
+	 * @param numeroCasePostale le numéro à formatter
 	 * @return l'adresse formattée
 	 */
 	public String format(int numeroCasePostale) {
-		return String.format(format, numeroCasePostale);
+		return String.format(formatWithNumber, numeroCasePostale);
 	}
 }

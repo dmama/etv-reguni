@@ -39,7 +39,7 @@ public class IdentificationAdresseTooltipManagerImpl implements IdentificationAd
 			Assert.notNull(adresseEnvoi);
 
 			final String complements = adresseEnvoi.getComplement();
-			final String rue = adresseEnvoi.getRueEtNumero();
+			final String rue = (adresseEnvoi.getRueEtNumero() == null ? null : adresseEnvoi.getRueEtNumero().getRueEtNumero());
 			final String localite = adresseEnvoi.getNpaEtLocalite();
 			final String pays = adresseEnvoi.getPays();
 			final AdresseGenerique.SourceType source = adresseGenerique.getSource().getType();

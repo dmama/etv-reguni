@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -12,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -121,7 +123,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 		adresse.setLocalite("Mock Localite " + DateHelper.getCurrentDate());
-		adresse.setCasePostale("1234");
+		adresse.setCasePostale(new CasePostale(TexteCasePostale.CASE_POSTALE, 1234));
 		adresse.setNumeroPostal("4848");
 		adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));
 		adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
@@ -131,7 +133,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		adresse = new MockAdresse();
 		adresse.setTypeAdresse(TypeAdresseCivil.COURRIER);
 		adresse.setLocalite("Mock Localite " + DateHelper.getCurrentDate());
-		adresse.setCasePostale("4567");
+		adresse.setCasePostale(new CasePostale(TexteCasePostale.CASE_POSTALE, 4567));
 		adresse.setNumeroPostal("5252");
 		adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));
 		adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());

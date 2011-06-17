@@ -1,5 +1,22 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import noNamespace.DIBase;
+import noNamespace.DIDocument.DI;
+import noNamespace.DIHCDocument;
+import noNamespace.DIRetour;
+import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
+import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
+import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.TypAdresse.Adresse;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -20,27 +37,16 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.*;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
 
-import noNamespace.DIBase;
-import noNamespace.DIDocument.DI;
-import noNamespace.DIHCDocument;
-import noNamespace.DIRetour;
-import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
-import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
-import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
-import noNamespace.TypAdresse.Adresse;
-import org.apache.log4j.Logger;
-import org.junit.Test;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
 public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest {
@@ -467,7 +473,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("Office d'impôt du district", retour.getADRES1RETOUR());
 		assertEquals("de la Riviera - Pays-d'Enhaut", retour.getADRES2RETOUR());
 		assertEquals("Rue du Simplon 22", retour.getADRES3RETOUR());
-		assertEquals("Case postale 1032", retour.getADRES4RETOUR());
+		assertEquals("Case Postale 1032", retour.getADRES4RETOUR());
 		assertEquals("1800 Vevey 1", retour.getADRES5RETOUR());
 	}
 

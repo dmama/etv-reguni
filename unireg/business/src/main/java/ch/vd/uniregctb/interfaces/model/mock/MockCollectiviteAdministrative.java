@@ -7,10 +7,12 @@ import java.util.Map;
 
 import ch.vd.infrastructure.model.EnumTypeSupportEchangeInformation;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.uniregctb.type.TexteCasePostale;
 
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
 
@@ -24,7 +26,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	public static final MockCollectiviteAdministrative ACIIMPOTSOURCE = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACIImpotSource, new MockAdresse("Rue Caroline 9bis", "9bis", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts","IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE","0213162065","0213162898");
 	public static final class JusticePaix {
 		public static MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud = 
-				new MockCollectiviteAdministrative(970, new MockAdresse("Rue du Pré", "2", "Case Postale 693", "1400", "Yverdon-les-Bains"), "Justice de Paix des districts du",
+				new MockCollectiviteAdministrative(970, new MockAdresse("Rue du Pré", "2", new CasePostale(TexteCasePostale.CASE_POSTALE, 693), "1400", "Yverdon-les-Bains"), "Justice de Paix des districts du",
 						"Jura-Nord Vaudois et du Gros-de-Vaud", null, "JUSPX");
 	}
 

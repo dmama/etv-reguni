@@ -34,7 +34,7 @@ public class AdresseBuilder {
 		a.setNumeroAppartement(adresse.getNumeroAppartement());
 		a.setRue(adresse.getRue());
 		a.setNumeroRue(adresse.getNumero());
-		a.setCasePostale(adresse.getCasePostale());
+		a.setCasePostale(adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString());
 		a.setLocalite(adresse.getLocalite());
 		a.setNumeroPostal(adresse.getNumeroPostal());
 
@@ -103,11 +103,11 @@ public class AdresseBuilder {
 		a.setLigne6(adresse.getLigne6());
 		a.setSalutations(adresse.getSalutations());
 		a.setFormuleAppel(adresse.getFormuleAppel());
-		a.getNomsPrenoms().addAll(adresse.getNomPrenom());
+		a.getNomsPrenoms().addAll(adresse.getNomsPrenomsOuRaisonsSociales());
 		a.setComplement(adresse.getComplement());
 		a.setPourAdresse(adresse.getPourAdresse());
-		a.setRueNumero(adresse.getRueEtNumero());
-		a.setCasePostale(adresse.getCasePostale());
+		a.setRueNumero(adresse.getRueEtNumero() == null ? null : adresse.getRueEtNumero().getRueEtNumero());
+		a.setCasePostale(adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString());
 		a.setNpaLocalite(adresse.getNpaEtLocalite());
 		a.setPays(adresse.getPays());
 		a.setTypeAffranchissement(EnumHelper.coreToWeb(adresse.getTypeAffranchissement()));

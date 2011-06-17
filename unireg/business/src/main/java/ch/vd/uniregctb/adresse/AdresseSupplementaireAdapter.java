@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -60,13 +61,13 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	}
 
 	@Override
-	public String getCasePostale() {
+	public CasePostale getCasePostale() {
 		final TexteCasePostale cp = adresse.getTexteCasePostale();
 		final Integer no = adresse.getNumeroCasePostale();
 		if (cp == null || no == null) {
 			return null;
 		}
-		return cp.format(no);
+		return new CasePostale(cp, no);
 	}
 
 	@Override

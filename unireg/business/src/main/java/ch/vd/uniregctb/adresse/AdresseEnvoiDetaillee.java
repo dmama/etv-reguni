@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.vd.uniregctb.common.CasePostale;
+import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.type.FormulePolitesse;
 
@@ -15,11 +18,12 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	private static final long serialVersionUID = 8557039282754715615L;
 	private String salutations;
 	private String formuleAppel;
-	private final List<String> nomPrenom = new ArrayList<String>();
+	private final List<NomPrenom> nomsPrenoms = new ArrayList<NomPrenom>();
+	private final List<String> raisonsSociales = new ArrayList<String>();
 	private String complement;
 	private String pourAdresse;
-	private String rueEtNumero;
-	private String casePostale;
+	private RueEtNumero rueEtNumero;
+	private CasePostale casePostale;
 	private String npaEtLocalite;
 	private String pays;
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
@@ -45,13 +49,23 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 		}
 	}
 
-	public void addNomPrenom(String ligne) {
-		this.nomPrenom.add(ligne);
+	public void addNomPrenom(NomPrenom ligne) {
+		this.nomsPrenoms.add(ligne);
+		addLine(ligne.getNomPrenom());
+	}
+
+	public void addNomPrenom(NomPrenom ligne, int optionalite) {
+		this.nomsPrenoms.add(ligne);
+		addLine(ligne.getNomPrenom(), optionalite);
+	}
+
+	public void addRaisonSociale(String ligne) {
+		this.raisonsSociales.add(ligne);
 		addLine(ligne);
 	}
 
-	public void addNomPrenom(String ligne, int optionalite) {
-		this.nomPrenom.add(ligne);
+	public void addRaisonSociale(String ligne, int optionalite) {
+		this.raisonsSociales.add(ligne);
 		addLine(ligne, optionalite);
 	}
 
@@ -75,24 +89,24 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 		addLine(ligne, optionalite);
 	}
 
-	public void addRueEtNumero(String ligne) {
+	public void addRueEtNumero(RueEtNumero ligne) {
 		this.rueEtNumero = ligne;
-		addLine(ligne);
+		addLine(ligne.getRueEtNumero());
 	}
 
-	public void addRueEtNumero(String ligne, int optionalite) {
+	public void addRueEtNumero(RueEtNumero ligne, int optionalite) {
 		this.rueEtNumero = ligne;
-		addLine(ligne, optionalite);
+		addLine(ligne.getRueEtNumero(), optionalite);
 	}
 
-	public void addCasePostale(String ligne) {
+	public void addCasePostale(CasePostale ligne) {
 		this.casePostale = ligne;
-		addLine(ligne);
+		addLine(ligne.toString());
 	}
 
-	public void addCasePostale(String ligne, int optionalite) {
+	public void addCasePostale(CasePostale ligne, int optionalite) {
 		this.casePostale = ligne;
-		addLine(ligne, optionalite);
+		addLine(ligne.toString(), optionalite);
 	}
 
 	public void addNpaEtLocalite(String ligne) {
@@ -150,8 +164,26 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 		return formuleAppel;
 	}
 
-	public List<String> getNomPrenom() {
-		return Collections.unmodifiableList(nomPrenom);
+	public List<NomPrenom> getNomsPrenoms() {
+		return Collections.unmodifiableList(nomsPrenoms);
+	}
+
+	public List<String> getRaisonsSociales() {
+		return Collections.unmodifiableList(raisonsSociales);
+	}
+
+	/**
+	 * @return la concaténation des listes <i>nomsPrenoms</i> et <i>raisonsSociales</i> (en sachant que - logiquement - seule une des deux peut être remplie).
+	 */
+	public List<String> getNomsPrenomsOuRaisonsSociales() {
+		List<String> list = new ArrayList<String>();
+		for (NomPrenom nomPrenom : nomsPrenoms) {
+			list.add(nomPrenom.getNomPrenom());
+		}
+		for (String raison : raisonsSociales) {
+			list.add(raison);
+		}
+		return list;
 	}
 
 	public String getComplement() {
@@ -162,11 +194,11 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 		return pourAdresse;
 	}
 
-	public String getRueEtNumero() {
+	public RueEtNumero getRueEtNumero() {
 		return rueEtNumero;
 	}
 
-	public String getCasePostale() {
+	public CasePostale getCasePostale() {
 		return casePostale;
 	}
 

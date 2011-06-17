@@ -6,6 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -89,7 +90,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			marieIndividus(indCedric, indSandra, RegDate.get(2003, 7, 11));
 		}
 
-		private Adresse createAdresse(Individu individu, TypeAdresseCivil type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite,
+		private Adresse createAdresse(Individu individu, TypeAdresseCivil type, Rue rue, CasePostale casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite,
 		                              RegDate finValidite) {
 			MockAdresse adresse = new MockAdresse();
 			adresse.setTypeAdresse(type);
@@ -117,7 +118,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			return adresse;
 		}
 
-		public Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
+		public Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, Rue rue, CasePostale casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
 
 			final Adresse adresse = createAdresse(individu, type, rue, casePostale, localite, commune, pays, debutValidite, finValidite);
 			add(individu, adresse);

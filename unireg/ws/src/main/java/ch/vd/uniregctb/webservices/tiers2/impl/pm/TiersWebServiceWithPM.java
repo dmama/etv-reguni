@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -421,10 +422,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 
 		if (parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			pmHisto.adresseEnvoi = calculateAdresseEnvoi(pmHisto, pmHisto.adressesCourrier);
-			pmHisto.adresseDomicileFormattee = calculateAdresseEnvoi(pmHisto, pmHisto.adressesDomicile);
-			pmHisto.adresseRepresentationFormattee = calculateAdresseEnvoi(pmHisto, pmHisto.adressesRepresentation);
-			pmHisto.adressePoursuiteFormattee = calculateAdresseEnvoi(pmHisto, pmHisto.adressesPoursuite);
+			pmHisto.adresseEnvoi = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesCourrier);
+			pmHisto.adresseDomicileFormattee = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesDomicile);
+			pmHisto.adresseRepresentationFormattee = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesRepresentation);
+			pmHisto.adressePoursuiteFormattee = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesPoursuite);
 		}
 
 		if (parts.contains(TiersPart.ASSUJETTISSEMENTS)) {
@@ -909,7 +910,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return set.toArray(new PartPM[set.size()]);
 	}
 
-	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
+	private AdresseEnvoi calculateAdresseEnvoi(ch.vd.uniregctb.tiers.Tiers destinataire, PersonneMoraleHisto pm, List<Adresse> adresses) {
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.PM);
 
 		// [UNIREG-2302]
@@ -917,15 +918,15 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 		// [UNIREG-1974] On doit utiliser la raison sociale sur 3 lignes dans les adresses d'envoi des PMs (et ne pas prendre la raison sociale abbrégée)
 		if (pm.raisonSociale1 != null) {
-			adresse.addNomPrenom(pm.raisonSociale1);
+			adresse.addRaisonSociale(pm.raisonSociale1);
 		}
 
 		if (pm.raisonSociale2 != null) {
-			adresse.addNomPrenom(pm.raisonSociale2);
+			adresse.addRaisonSociale(pm.raisonSociale2);
 		}
 
 		if (pm.raisonSociale3 != null) {
-			adresse.addNomPrenom(pm.raisonSociale3);
+			adresse.addRaisonSociale(pm.raisonSociale3);
 		}
 
 // [UNIREG-1973] il ne faut pas utiliser la personne de contact dans les adresses
@@ -942,14 +943,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			}
 
 			if (adresseFiscale.rue != null) {
-				final String rueNumero;
-				if (adresseFiscale.numeroRue != null) {
-					rueNumero = adresseFiscale.rue + " " + adresseFiscale.numeroRue;
-				}
-				else {
-					rueNumero = adresseFiscale.rue;
-				}
-				adresse.addRueEtNumero(rueNumero);
+				adresse.addRueEtNumero(new RueEtNumero(adresseFiscale.rue, adresseFiscale.numeroRue));
 			}
 
 			final String npaLocalite;

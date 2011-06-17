@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -165,7 +166,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	}
 
 	@Override
-	public String getCasePostale() {
+	public CasePostale getCasePostale() {
 		return adresse.getCasePostale();
 	}
 

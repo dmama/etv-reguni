@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
@@ -26,7 +27,7 @@ public class AdresseAdapter implements Adresse {
 	}
 
 	@Override
-	public String getCasePostale() {
+	public CasePostale getCasePostale() {
 		return target.getCasePostale();
 	}
 

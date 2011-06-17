@@ -324,14 +324,12 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		MockAdresse ancienneAdresse = new MockAdresse();
 		ancienneAdresse.setDateDebutValidite(DATE_ANCIENNE_ADRESSE);
 		ancienneAdresse.setDateFinValidite(dateEvenement.getOneDayBefore());
-		ancienneAdresse.setCasePostale("1342 Le Pont");
 		ancienneAdresse.setCommuneAdresse(nouvelleCommune);
 		ancienneAdresse.setNumeroOrdrePostal(1342);
 
 		// Nouvelles adresses
 		MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateEvenement);
-		nouvelleAdresse.setCasePostale("1342 Le Pont");
 		nouvelleAdresse.setNumeroOrdrePostal(1342);
 
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);

@@ -20,7 +20,10 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
@@ -177,7 +180,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 	}
 
-	private EnvoiInfo determineEnvoiInfo(Tiers tiers, TypeAdresseFiscale type, AdresseGenerique adresseDestination) {
+	private static EnvoiInfo determineEnvoiInfo(Tiers tiers, TypeAdresseFiscale type, AdresseGenerique adresseDestination) {
 		final Tiers destinataire;
 		final Tiers destination;
 		final boolean avecPourAdresse;
@@ -231,8 +234,8 @@ public class AdresseServiceImpl implements AdresseService {
 	@Override
 	public AdresseCourrierPourRF getAdressePourRF(Contribuable ctb, RegDate date) throws AdresseException {
 
-		String nomPrenom1 = null;
-		String nomPrenom2 = null;
+		NomPrenom nomPrenom1 = null;
+		NomPrenom nomPrenom2 = null;
 		if (ctb instanceof PersonnePhysique) {
 			nomPrenom1 = getNomPrenom((PersonnePhysique) ctb, date);
 		}
@@ -248,7 +251,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final PersonnePhysique conjoint = ensemble.getConjoint();
 			if (conjoint != null) {
-				final String np = getNomPrenom(conjoint, date);
+				final NomPrenom np = getNomPrenom(conjoint, date);
 				if (nomPrenom1 == null) {
 					nomPrenom1 = np;
 				}
@@ -262,12 +265,15 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final AdresseGenerique adresse = getAdresseFiscale(ctb, TypeAdresseFiscale.COURRIER, date, false);
-		final String rueEtNumero = adresse != null ? buildRueEtNumero(adresse) : null;
+		final RueEtNumero rueEtNumero = adresse != null ? buildRueEtNumero(adresse) : null;
+		final String rueEtNumeroString = rueEtNumero == null ? null : rueEtNumero.getRueEtNumero();
 		final String npa = adresse != null ? adresse.getNumeroPostal() : null;
 		final String localite = adresse != null ? adresse.getLocalite() : null;
 		final String pays = adresse != null ? buildPays(adresse, true) : null;
+		final String nomPrenom1String = nomPrenom1 == null ? null : nomPrenom1.getNomPrenom();
+		final String nomPrenom2String = nomPrenom2 == null ? null : nomPrenom2.getNomPrenom();
 
-		return new AdresseCourrierPourRF(nomPrenom1, nomPrenom2, rueEtNumero, npa, localite, pays);
+		return new AdresseCourrierPourRF(nomPrenom1String, nomPrenom2String, rueEtNumeroString, npa, localite, pays);
 	}
 
 	/**
@@ -310,7 +316,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 			final List<String> raisonSociale = tiersService.getRaisonSociale(debiteur);
 			for (String ligne : raisonSociale) {
-				adresse.addNomPrenom(ligne);
+				adresse.addRaisonSociale(ligne);
 			}
 			if (debiteur.getComplementNom() != null) {
 				adresse.addPourAdresse(debiteur.getComplementNom());
@@ -320,18 +326,18 @@ public class AdresseServiceImpl implements AdresseService {
 			final CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiers;
 			final List<String> nomComplet = getRaisonSocialeLongue(collectivite);
 			for (String ligne : nomComplet) {
-				adresse.addNomPrenom(ligne);
+				adresse.addRaisonSociale(ligne);
 			}
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			final AutreCommunaute autre = (AutreCommunaute) tiers;
-			adresse.addNomPrenom(autre.getNom());
+			adresse.addRaisonSociale(autre.getNom());
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			final List<String> raisonComplete = getRaisonSocialeLongue(entreprise);
 			for (String ligne : raisonComplete) {
-				adresse.addNomPrenom(ligne);
+				adresse.addRaisonSociale(ligne);
 			}
 		}
 		else {
@@ -371,7 +377,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.SourceType.CIVILE);
 		adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
-		adresse.addNomPrenom(tiersService.getNomPrenom(individu));
+		adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
 		final AdressesCiviles adressesCourantes;
 		try {
@@ -561,24 +567,24 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date     la date de validité du nom et du prénom
 	 * @return la ligne du prénom et du nom pour la personne physique spécifiée.
 	 */
-	private String getNomPrenom(PersonnePhysique personne, RegDate date) {
+	private NomPrenom getNomPrenom(PersonnePhysique personne, RegDate date) {
 
-		String prenomNom = tiersService.getNomPrenom(personne);
+		NomPrenom prenomNom = tiersService.getDecompositionNomPrenom(personne);
 
 		// [UNIREG-749] on applique un suffixe 'défunt' aux personnes décédées
 		final boolean estDecede = estDecedeAt(personne, date);
 		if (estDecede) {
 			final Sexe sexe = tiersService.getSexe(personne);
 			if (sexe == null) {
-				prenomNom += SUFFIXE_DEFUNT_NEUTRE;
+				prenomNom = new NomPrenom(prenomNom.getNom() + SUFFIXE_DEFUNT_NEUTRE, prenomNom.getPrenom());
 			}
 			else {
 				switch (sexe) {
 				case MASCULIN:
-					prenomNom += SUFFIXE_DEFUNT_MASCULIN;
+					prenomNom = new NomPrenom(prenomNom.getNom() + SUFFIXE_DEFUNT_MASCULIN, prenomNom.getPrenom());
 					break;
 				case FEMININ:
-					prenomNom += SUFFIXE_DEFUNT_FEMININ;
+					prenomNom = new NomPrenom(prenomNom.getNom() + SUFFIXE_DEFUNT_FEMININ, prenomNom.getPrenom());
 					break;
 				}
 			}
@@ -699,22 +705,14 @@ public class AdresseServiceImpl implements AdresseService {
 		return nomsComplets;
 	}
 
-	public static String buildRueEtNumero(AdresseGenerique adresse) {
-		final String rueEtNumero;
+	public static RueEtNumero buildRueEtNumero(AdresseGenerique adresse) {
 		final String rue = adresse.getRue();
-		final String numeroRue = adresse.getNumero();
 		if (notEmpty(rue)) {
-			if (notEmpty(numeroRue)) {
-				rueEtNumero = String.format("%s %s", rue, numeroRue);
-			}
-			else {
-				rueEtNumero = rue;
-			}
+			return new RueEtNumero(rue, adresse.getNumero());
 		}
 		else {
-			rueEtNumero = null;
+			return null;
 		}
-		return rueEtNumero;
 	}
 
 	public static String buildNpaEtLocalite(AdresseGenerique adresse) {
@@ -762,13 +760,13 @@ public class AdresseServiceImpl implements AdresseService {
 			adresseEnvoi.addComplement(complement, OPTIONALITE_COMPLEMENT);
 		}
 
-		final String rueEtNumero = buildRueEtNumero(adresse);
-		if (StringUtils.isNotBlank(rueEtNumero)) {
+		final RueEtNumero rueEtNumero = buildRueEtNumero(adresse);
+		if (rueEtNumero != null) {
 			adresseEnvoi.addRueEtNumero(rueEtNumero);
 		}
 
-		final String casePostale = adresse.getCasePostale();
-		if (notEmpty(casePostale)) {
+		final CasePostale casePostale = adresse.getCasePostale();
+		if (casePostale != null) {
 			adresseEnvoi.addCasePostale(casePostale, OPTIONALITE_CASE_POSTALE);
 		}
 
@@ -1786,7 +1784,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null);
 		fillDestinataire(adresse, tiers, null, date, false);
 
-		List<String> list = adresse.getNomPrenom();
+		List<String> list = adresse.getNomsPrenomsOuRaisonsSociales();
 
 		/*
 		 * Cas spécial du débiteur où il est important d'afficher le complément du nom (ligne pour adresse) en plus des noms et prénoms

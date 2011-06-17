@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.Loggable;
 import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -92,7 +93,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     /**
      * @return la case postale de l'adresse.
      */
-    String getCasePostale();
+    CasePostale getCasePostale();
 
     /**
      * @return la date de fin de validité de l'adresse.

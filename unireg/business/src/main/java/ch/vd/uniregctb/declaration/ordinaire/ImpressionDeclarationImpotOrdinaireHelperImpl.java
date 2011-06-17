@@ -548,7 +548,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		AdresseSuite adresseSuite = di.addNewAdresseSuite();
 		final String npaLocalite = adresseEnvoi.getNpaEtLocalite();
-		final List<String> nomPrenom = adresseEnvoi.getNomPrenom();
+		final List<String> nomPrenom = adresseEnvoi.getNomsPrenomsOuRaisonsSociales();
 		switch (nomPrenom.size()) {
 		case 0:
 			adresseSuite.setAdresseCourrierLigne1(null);

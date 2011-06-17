@@ -839,6 +839,14 @@ public interface TiersService {
 	public void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant);
 
 	/**
+	 * Retourne les nom et prénoms de l'individu spécifié
+	 *
+	 * @param individu un individu
+	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
+	 */
+	public NomPrenom getDecompositionNomPrenom(Individu individu);
+
+	/**
 	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.
 	 *
 	 * @param individu un individu

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Commune;
 
 /**
@@ -39,7 +40,7 @@ public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseG
 	}
 
 	@Override
-	public String getCasePostale() {
+	public CasePostale getCasePostale() {
 		return null;
 	}
 

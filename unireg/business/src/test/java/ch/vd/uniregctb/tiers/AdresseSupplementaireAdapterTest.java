@@ -7,6 +7,7 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
+import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -41,7 +42,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 
 		final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(adresse, null, false, serviceInfra);
 		assertEquals(adresse, adapter.getAdresse());
-		assertEquals("Case Postale 1234", adapter.getCasePostale());
+		assertEquals(new CasePostale(TexteCasePostale.CASE_POSTALE, 1234), adapter.getCasePostale());
 
 		assertEquals(RegDate.get(1930, 1, 1), adapter.getDateDebut());
 		assertNull(adapter.getDateFin());
