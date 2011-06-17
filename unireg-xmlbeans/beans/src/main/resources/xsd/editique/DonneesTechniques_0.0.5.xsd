@@ -446,7 +446,7 @@
 											<xs:documentation>Texte notre référence</xs:documentation>
 										</xs:annotation>
 									</xs:element>
-									<xs:element name="  votreReference" type="typCdata" minOccurs="0">
+									<xs:element name="votreReference" type="typCdata" minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Texte votre référence</xs:documentation>
 										</xs:annotation>
