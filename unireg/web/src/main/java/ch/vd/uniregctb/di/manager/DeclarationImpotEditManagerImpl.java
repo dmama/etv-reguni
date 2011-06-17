@@ -719,7 +719,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			di = new DeclarationImpotOrdinaire();
 
 			final RegDate dateDebut = diEditView.getRegDateDebutPeriodeImposition();
-			di.setNumero(1);
+
+			// [SIFISC-1227] ce numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}
+			// di.setNumero(1);
+
 			di.setDateDebut(dateDebut);
 			di.setDateFin(RegDate.get(diEditView.getDateFinPeriodeImposition()));
 
@@ -810,11 +813,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			delai.setDateTraitement(RegDate.get());
 			di.addDelai(delai);
 
-			di.setTiers(ctb);
-			di = diDAO.save(di);
-
-			ctb.addDeclaration(di);
-			tiersDAO.save(ctb);
+			// persistence du lien entre le contribuable et la nouvelle DI
+			di = tiersService.addAndSave(ctb, di);
 
 			//Mise à jour de l'état de la tâche si il y en a une
 			final TacheCriteria criterion = new TacheCriteria();

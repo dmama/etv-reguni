@@ -12,6 +12,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -1078,6 +1079,15 @@ public interface TiersService {
 	 * @return une nouvelle instance du for fiscal avec son id renseigné.
 	 */
 	<T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal);
+
+	/**
+	 * Ajoute une nouvelle déclaration à un tiers
+	 * @param tiers le tiers auquel on veut ajouter la déclaration
+	 * @param declaration déclaration à ajouter
+	 * @param <T> classe de la déclaration
+	 * @return la déclaration une fois sauvegardée, avec son ID renseigné
+	 */
+	<T extends Declaration> T addAndSave(Tiers tiers, T declaration);
 
 	/**
 	 * Ajoute une nouvelle periodicite à un debiteur.

@@ -423,6 +423,24 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return addDeclarationImpot(tiers, periode, debut, fin, cedi, typeC, modele);
 	}
 
+	@Override
+	protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
+		if (useTiersServiceToCreateDeclarationImpot()) {
+			return tiersService.addAndSave(ctb, di);
+		}
+		else {
+			return super.assignerNumeroSequenceEtSaveDeclarationImpot(ctb, di);
+		}
+	}
+
+	/**
+	 * L'implémentation du tiersService est très bien, mais elle provoque une sauvegarde du tiers
+	 * et de la déclaration, ce qui n'est pas aprécié par tous les tests
+	 */
+	protected boolean useTiersServiceToCreateDeclarationImpot() {
+		return true;
+	}
+
 	protected SituationFamille addSituation(PersonnePhysique pp, RegDate debut, RegDate fin, Integer nombreEnfants) {
 		SituationFamille situation = new SituationFamillePersonnePhysique();
 		situation.setDateDebut(debut);

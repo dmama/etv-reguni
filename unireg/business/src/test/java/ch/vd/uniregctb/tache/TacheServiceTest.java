@@ -164,6 +164,11 @@ public class TacheServiceTest extends BusinessTest {
 		setWantSynchroTache(true);
 	}
 
+	@Override
+	protected boolean useTiersServiceToCreateDeclarationImpot() {
+		return false;
+	}
+
 	@Test
 	public void testGenereArriveeHSDepuisOuvertureForPrincipal() throws Exception {
 

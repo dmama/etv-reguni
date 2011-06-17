@@ -735,17 +735,21 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected DeclarationImpotOrdinaire addDeclarationImpot(Contribuable tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
 	                                                        CollectiviteAdministrative retourCollectiviteAdministrative, TypeContribuable typeC, ModeleDocument modele) {
 
-		DeclarationImpotOrdinaire d = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinaire d = new DeclarationImpotOrdinaire();
 		d.setPeriode(periode);
 		d.setDateDebut(debut);
 		d.setDateFin(fin);
 		d.setTypeContribuable(typeC);
 		d.setModeleDocument(modele);
 		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
+		return assignerNumeroSequenceEtSaveDeclarationImpot(tiers, d);
+	}
+
+	protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
 
 		int numero = 0;
-		final int annee = periode.getAnnee();
-		Set<Declaration> decls = tiers.getDeclarations();
+		final int annee = di.getPeriode().getAnnee();
+		Set<Declaration> decls = ctb.getDeclarations();
 		if (decls != null) {
 			for (Declaration dd : decls) {
 				if (dd.getPeriode().getAnnee() == annee) {
@@ -753,13 +757,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 				}
 			}
 		}
-		d.setNumero(numero + 1);
+		di.setNumero(numero + 1);
 
-		d.setTiers(tiers);
-		d = hibernateTemplate.merge(d);
+		di.setTiers(ctb);
+		di = hibernateTemplate.merge(di);
 
-		tiers.addDeclaration(d);
-		return d;
+		ctb.addDeclaration(di);
+		return di;
 	}
 
 	/**

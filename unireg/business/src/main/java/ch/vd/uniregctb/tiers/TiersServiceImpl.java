@@ -3509,7 +3509,53 @@ public class TiersServiceImpl implements TiersService {
 		return tiersDAO.addAndSave(tiers, forFiscal);
 	}
 
+	@SuppressWarnings({"ConstantConditions", "unchecked"})
 	@Override
+	public <T extends Declaration> T addAndSave(Tiers tiers, T declaration) {
+		if (declaration.getId() == null) {
+			// pas encore persistée
+
+			// on mémorise les ids des déclarations existantes
+			final Set<Long> ids;
+			final Set<Declaration> declarations = tiers.getDeclarations();
+			if (declarations == null || declarations.isEmpty()) {
+				ids = Collections.emptySet();
+			}
+			else {
+				ids = new HashSet<Long>(declarations.size());
+				for (Declaration d : declarations) {
+					final Long id = d.getId();
+					Assert.notNull(id, "Les déclarations existantes doivent être déjà persistées.");
+					ids.add(id);
+				}
+			}
+
+			// on ajoute la déclaration et on sauve le tout
+			tiers.addDeclaration(declaration);
+			tiers = tiersDAO.save(tiers);
+
+			// rebelotte pour trouvée la nouvelle declaration
+			Declaration nouvelleDeclaration = null;
+			for (Declaration d : tiers.getDeclarations()) {
+				if (!ids.contains(d.getId())) {
+					nouvelleDeclaration = d;
+					break;
+				}
+			}
+
+			Assert.notNull(nouvelleDeclaration);
+			Assert.isSame(declaration.getDateDebut(), nouvelleDeclaration.getDateDebut());
+			Assert.isSame(declaration.getDateFin(), nouvelleDeclaration.getDateFin());
+			declaration = (T) nouvelleDeclaration;
+		}
+		else {
+			tiers.addDeclaration(declaration);
+		}
+
+		Assert.notNull(declaration.getId());
+		return declaration;
+	}
+
 	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
 		if (periodicite.getId() == null) { // la périodicité n'a jamais été persistée
 
