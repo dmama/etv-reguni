@@ -175,26 +175,6 @@ public interface DeclarationImpotService {
 	public DeclarationImpotOrdinaire retourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
-	 * Sommation d'une DI
-	 *
-	 * @param contribuable
-	 * @param di
-	 * @param dateEvenement
-	 * @return
-	 */
-	public DeclarationImpotOrdinaire sommationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
-
-	/**
-	 * Taxation d'office
-	 *
-	 * @param contribuable
-	 * @param di
-	 * @param dateEvenement
-	 * @return
-	 */
-	public DeclarationImpotOrdinaire taxationOffice(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
-
-	/**
 	 * Annulation d'une DI
 	 *
 	 * @param contribuable

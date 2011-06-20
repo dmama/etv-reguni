@@ -356,38 +356,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	/**
-	 * Sommation d'une DI
-	 *
-	 * @param contribuable
-	 * @param di
-	 * @param dateEvenement
-	 * @return
-	 */
-	@Override
-	public DeclarationImpotOrdinaire sommationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		DeclarationImpotOrdinaire diRtr = null;
-		// TODO (fnr) Factorisation de la sommation d'une DI
-		evenementFiscalService.publierEvenementFiscalSommationDI(contribuable, di, dateEvenement);
-		return diRtr;
-	}
-
-	/**
-	 * Taxation d'office
-	 *
-	 * @param contribuable
-	 * @param di
-	 * @param dateEvenement
-	 * @return
-	 */
-	@Override
-	public DeclarationImpotOrdinaire taxationOffice(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		DeclarationImpotOrdinaire diRtr = null;
-		// TODO (fde) Factorisation de la taxation d'office
-		evenementFiscalService.publierEvenementFiscalTaxationOffice(contribuable, diRtr, dateEvenement);
-		return diRtr;
-	}
-
-	/**
 	 * Annulation d'une DI
 	 *
 	 * @param contribuable

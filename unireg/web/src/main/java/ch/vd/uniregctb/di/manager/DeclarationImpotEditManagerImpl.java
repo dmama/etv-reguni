@@ -988,17 +988,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	/**
-	 * Imprimer une taxation d'office
-	 *
-	 * @param diEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public void imprimerTO(DeclarationImpotDetailView diEditView) {
-		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
-		evenementFiscalService.publierEvenementFiscalTaxationOffice((Contribuable) di.getTiers(), di, RegDate.get());
-	}
-
-	/**
 	 * Renvoie le modèle de document du type recherché présent dans la liste, ou <code>null</code> s'il n'y en a pas
 	 * @param modeles les modèles à fouiller
 	 * @param type le type recherché
