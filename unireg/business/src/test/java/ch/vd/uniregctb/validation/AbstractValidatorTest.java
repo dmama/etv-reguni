@@ -2,6 +2,7 @@ package ch.vd.uniregctb.validation;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 
 import ch.vd.registre.base.validation.ValidationResults;
@@ -25,7 +26,7 @@ public abstract class AbstractValidatorTest<T> extends BusinessTest {
 		return validator.validate(entity);
 	}
 
-	protected static void assertValidation(List<String> erreurs, List<String> warnings, ValidationResults vr) {
+	protected static void assertValidation(List<String> erreurs, @Nullable List<String> warnings, ValidationResults vr) {
 		final int expectedErrorCount = (erreurs != null ? erreurs.size() : 0);
 		final int expectedWarningCount = (warnings != null ? warnings.size() : 0);
 		if (expectedErrorCount == vr.errorsCount()) {

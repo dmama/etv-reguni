@@ -6,21 +6,16 @@ import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
-public class RepresentationLegaleValidator extends RapportEntreTiersValidator<RepresentationLegale> {
+public abstract class RepresentationLegaleValidator<T extends RepresentationLegale> extends RapportEntreTiersValidator<T> {
 
-	private TiersDAO tiersDAO;
+	protected TiersDAO tiersDAO;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 
 	@Override
-	protected Class<RepresentationLegale> getValidatedClass() {
-		return RepresentationLegale.class;
-	}
-
-	@Override
-	public ValidationResults validate(RepresentationLegale ret) {
+	public ValidationResults validate(T ret) {
 
 		final ValidationResults vr = super.validate(ret);
 
