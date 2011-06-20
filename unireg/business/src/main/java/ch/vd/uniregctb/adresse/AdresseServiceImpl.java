@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
@@ -508,7 +509,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage des parties d'un ménage commun
 	 */
-	protected FormulePolitesse getFormulePolitesse(EnsembleTiersCouple ensemble, RegDate date) {
+	protected FormulePolitesse getFormulePolitesse(EnsembleTiersCouple ensemble, @Nullable RegDate date) {
 
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		final PersonnePhysique conjoint = ensemble.getConjoint();
@@ -1133,14 +1134,16 @@ public class AdresseServiceImpl implements AdresseService {
 	private List<AdresseGenerique> getAdresseCourrierConjointPourRepresentationMenage(MenageCommun menage, PersonnePhysique conjoint, List<DateRange> periodesTutellePrincipal, int callDepth,
 	                                                                                  boolean strict) throws AdresseException {
 
-		// [UNIREG-2644] [UNIREG-3279] il est nécessaire de limite la validité des adresses aux périodes d'appartenance ménage (notamment en cas de décès ou de séparation)
-		final List<DateRange> periodesAppartenance = getPeriodesAppartenanceMenage(menage, conjoint);
+		// [UNIREG-2644] [UNIREG-3279] il est nécessaire de limiter la validité des adresses aux périodes d'appartenance ménage (notamment en cas de décès ou de séparation)
+		// [SIFISC-1292] en fait non, on a finalement décidé que la base de validité des adresses s'étend à toute la période de vie du conjoint.
+		final DateRange periodeVieConjoint = getPeriodeVie(conjoint);
 
 		// On détermine les périodes de validité des adresses du conjoint comme adresse de représentation du ménage
-		List<DateRange> periodesRepresentation = DateRangeHelper.intersections(periodesAppartenance, periodesTutellePrincipal);
+		List<DateRange> periodesRepresentation = DateRangeHelper.intersections(periodeVieConjoint, periodesTutellePrincipal);
 		if (periodesRepresentation == null || periodesRepresentation.isEmpty()) {
 			return Collections.emptyList();
 		}
+
 		// On ignore toutes les adresses où le conjoint est lui-même sous représentation légale
 		final List<DateRange> periodesPupille = getPeriodesSousRepresentationLegale(conjoint);
 		if (!periodesPupille.isEmpty()) {
@@ -1160,6 +1163,28 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return adressesAdaptees;
+	}
+
+	/**
+	 * Détermine et retourne la période de vie d'une personne physique sous forme de DateRange. Si la date de naissance de la personne physique est partielle, celle-ci est arrondie en début de mois ou
+	 * d'année. La période est ouverte (date de fin = null) si la personne spécifiée est toujours vivante.
+	 *
+	 * @param pp une personne physique.
+	 * @return la période de vie de la personne physique.
+	 */
+	private DateRange getPeriodeVie(PersonnePhysique pp) {
+		RegDate dateNaissance = tiersService.getDateNaissance(pp);
+		if (dateNaissance != null && dateNaissance.isPartial()) {
+			// on converti (à la louche) la date de naissance partielle en une date non-partielle
+			if (dateNaissance.month() == RegDate.UNDEFINED) {
+				dateNaissance = RegDate.get(dateNaissance.year(), 1, 1);
+			}
+			else {
+				dateNaissance = RegDate.get(dateNaissance.year(), dateNaissance.month(), 1);
+			}
+		}
+		final RegDate dateDeces = tiersService.getDateDeces(pp);
+		return new DateRangeHelper.Range(dateNaissance, dateDeces);
 	}
 
 	/**
