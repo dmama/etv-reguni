@@ -426,7 +426,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	@Override
 	protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
 		if (useTiersServiceToCreateDeclarationImpot()) {
-			return tiersService.addAndSave(ctb, di);
+			return (DeclarationImpotOrdinaire) tiersService.addAndSave(ctb, di);
 		}
 		else {
 			return super.assignerNumeroSequenceEtSaveDeclarationImpot(ctb, di);

@@ -1084,10 +1084,9 @@ public interface TiersService {
 	 * Ajoute une nouvelle déclaration à un tiers
 	 * @param tiers le tiers auquel on veut ajouter la déclaration
 	 * @param declaration déclaration à ajouter
-	 * @param <T> classe de la déclaration
 	 * @return la déclaration une fois sauvegardée, avec son ID renseigné
 	 */
-	<T extends Declaration> T addAndSave(Tiers tiers, T declaration);
+	Declaration addAndSave(Tiers tiers, Declaration declaration);
 
 	/**
 	 * Ajoute une nouvelle periodicite à un debiteur.

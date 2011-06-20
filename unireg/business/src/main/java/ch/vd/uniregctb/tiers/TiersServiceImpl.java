@@ -3509,236 +3509,175 @@ public class TiersServiceImpl implements TiersService {
 		return tiersDAO.addAndSave(tiers, forFiscal);
 	}
 
-	@SuppressWarnings({"ConstantConditions", "unchecked"})
-	@Override
-	public <T extends Declaration> T addAndSave(Tiers tiers, T declaration) {
-		if (declaration.getId() == null) {
+	private static interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
+		Collection<E> getEntities(T tiers);
+		void addEntity(T tiers, E entity);
+		void assertSame(E entity1, E entity2);
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
+		if (entity.getKey() == null) {
 			// pas encore persistée
 
-			// on mémorise les ids des déclarations existantes
-			final Set<Long> ids;
-			final Set<Declaration> declarations = tiers.getDeclarations();
-			if (declarations == null || declarations.isEmpty()) {
-				ids = Collections.emptySet();
+			// on mémorise les clés des entités existantes
+			final Set<Object> keys;
+			final Collection<E> entities = accessor.getEntities(tiers);
+			if (entities == null || entities.isEmpty()) {
+				keys = Collections.emptySet();
 			}
 			else {
-				ids = new HashSet<Long>(declarations.size());
-				for (Declaration d : declarations) {
-					final Long id = d.getId();
-					Assert.notNull(id, "Les déclarations existantes doivent être déjà persistées.");
-					ids.add(id);
+				keys = new HashSet<Object>(entities.size());
+				for (E d : entities) {
+					final Object key = d.getKey();
+					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
+					keys.add(key);
 				}
 			}
 
-			// on ajoute la déclaration et on sauve le tout
-			tiers.addDeclaration(declaration);
-			tiers = tiersDAO.save(tiers);
+			// on ajoute la nouvelle entité et on sauve le tout
+			accessor.addEntity(tiers, entity);
+			tiers = (T) tiersDAO.save(tiers);
 
-			// rebelotte pour trouvée la nouvelle declaration
-			Declaration nouvelleDeclaration = null;
-			for (Declaration d : tiers.getDeclarations()) {
-				if (!ids.contains(d.getId())) {
-					nouvelleDeclaration = d;
+			// rebelotte pour trouver la nouvelle entité
+			E newEntity = null;
+			for (E d : accessor.getEntities(tiers)) {
+				if (!keys.contains(d.getKey())) {
+					newEntity = d;
 					break;
 				}
 			}
 
-			Assert.notNull(nouvelleDeclaration);
-			Assert.isSame(declaration.getDateDebut(), nouvelleDeclaration.getDateDebut());
-			Assert.isSame(declaration.getDateFin(), nouvelleDeclaration.getDateFin());
-			declaration = (T) nouvelleDeclaration;
+			Assert.notNull(newEntity);
+			accessor.assertSame(entity, newEntity);
+			entity = newEntity;
 		}
 		else {
-			tiers.addDeclaration(declaration);
+			accessor.addEntity(tiers, entity);
 		}
 
-		Assert.notNull(declaration.getId());
-		return declaration;
+		Assert.notNull(entity.getKey());
+		return entity;
 	}
+
+	private static final EntityAccessor<Tiers, Declaration> DECLARATION_ACCESSOR = new EntityAccessor<Tiers, Declaration>() {
+		@Override
+		public Collection<Declaration> getEntities(Tiers tiers) {
+			return tiers.getDeclarations();
+		}
+
+		@Override
+		public void addEntity(Tiers tiers, Declaration d) {
+			tiers.addDeclaration(d);
+		}
+
+		@Override
+		public void assertSame(Declaration d1, Declaration d2) {
+			Assert.isSame(d1.getDateDebut(), d2.getDateDebut());
+			Assert.isSame(d1.getDateFin(), d2.getDateFin());
+		}
+	};
+
+	@Override
+	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
+		return addAndSave(tiers, declaration, DECLARATION_ACCESSOR);
+	}
+
+	private static final EntityAccessor<DebiteurPrestationImposable, Periodicite> PERIODICITE_ACCESSOR = new EntityAccessor<DebiteurPrestationImposable, Periodicite>() {
+		@Override
+		public Collection<Periodicite> getEntities(DebiteurPrestationImposable dpi) {
+			return dpi.getPeriodicites();
+		}
+
+		@Override
+		public void addEntity(DebiteurPrestationImposable dpi, Periodicite p) {
+			dpi.addPeriodicite(p);
+		}
+
+		@Override
+		public void assertSame(Periodicite p1, Periodicite p2) {
+			Assert.isSame(p1.getDateDebut(), p2.getDateDebut());
+			Assert.isSame(p1.getDateFin(), p2.getDateFin());
+		}
+	};
 
 	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
-		if (periodicite.getId() == null) { // la périodicité n'a jamais été persistée
-
-			// on mémorise les ids des périodicités existantes
-			final Set<Long> ids;
-			final Set<Periodicite> periodicites = debiteur.getPeriodicites();
-			if (periodicites == null || periodicites.isEmpty()) {
-				ids = Collections.emptySet();
-			}
-			else {
-				ids = new HashSet<Long>(periodicites.size());
-				for (Periodicite p : periodicites) {
-					final Long id = p.getId();
-					Assert.notNull(id, "Les périodicités existantes doivent être persistées.");
-					ids.add(id);
-				}
-			}
-
-			// on ajoute la périodicité et on sauve le tout
-			debiteur.addPeriodicite(periodicite);
-			debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
-
-			// on recherche la périodicité nouvellement ajoutée
-			Periodicite nouvellePeriodicite = null;
-			for (Periodicite p : debiteur.getPeriodicites()) {
-				if (!ids.contains(p.getId())) {
-					nouvellePeriodicite = p;
-					break;
-				}
-			}
-
-			Assert.isSame(periodicite.getDateDebut(), nouvellePeriodicite.getDateDebut());
-			Assert.isSame(periodicite.getDateFin(), nouvellePeriodicite.getDateFin());
-			periodicite = nouvellePeriodicite;
-		}
-		else {
-			debiteur.addPeriodicite(periodicite);
-		}
-
-		Assert.notNull(periodicite.getId());
-		return periodicite;
+		return addAndSave(debiteur, periodicite, PERIODICITE_ACCESSOR);
 	}
+
+	private static final EntityAccessor<Contribuable, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<Contribuable, SituationFamille>() {
+		@Override
+		public Collection<SituationFamille> getEntities(Contribuable ctb) {
+			return ctb.getSituationsFamille();
+		}
+
+		@Override
+		public void addEntity(Contribuable ctb, SituationFamille entity) {
+			ctb.addSituationFamille(entity);
+		}
+
+		@Override
+		public void assertSame(SituationFamille entity1, SituationFamille entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+		}
+	};
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
-
-		if (situation.getId() == null) { // la situation n'a jamais été persistée
-
-			// on mémorise les ids des situations existantes
-			final Set<Long> ids;
-			final Set<SituationFamille> situations = contribuable.getSituationsFamille();
-			if (situations == null || situations.isEmpty()) {
-				ids = Collections.emptySet();
-			}
-			else {
-				ids = new HashSet<Long>(situations.size());
-				for (SituationFamille s : situations) {
-					final Long id = s.getId();
-					Assert.notNull(id, "Les situations de famille existantes doivent être persistées.");
-					ids.add(id);
-				}
-			}
-
-			// on ajoute la situation et sauve le tout
-			contribuable.addSituationFamille(situation);
-			contribuable = (Contribuable) tiersDAO.save(contribuable);
-
-			// on recherche la situation nouvellement ajoutée
-			SituationFamille nouvelleSituation = null;
-			for (SituationFamille s : contribuable.getSituationsFamille()) {
-				if (!ids.contains(s.getId())) {
-					nouvelleSituation = s;
-					break;
-				}
-			}
-
-			Assert.isSame(situation.getDateDebut(), nouvelleSituation.getDateDebut());
-			Assert.isSame(situation.getDateFin(), nouvelleSituation.getDateFin());
-			situation = nouvelleSituation;
-		}
-		else {
-			contribuable.addSituationFamille(situation);
-		}
-
-		Assert.notNull(situation.getId());
-		return situation;
+		return addAndSave(contribuable, situation, SITUATION_FAMILLE_ACCESSOR);
 	}
+
+	private static final EntityAccessor<Tiers, AdresseTiers> ADRESSE_TIERS_ACCESSOR = new EntityAccessor<Tiers, AdresseTiers>() {
+		@Override
+		public Collection<AdresseTiers> getEntities(Tiers tiers) {
+			return tiers.getAdressesTiers();
+		}
+
+		@Override
+		public void addEntity(Tiers tiers, AdresseTiers entity) {
+			tiers.addAdresseTiers(entity);
+		}
+
+		@Override
+		public void assertSame(AdresseTiers entity1, AdresseTiers entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+		}
+	};
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
-
-		if (adresse.getId() == null) { // l'adresse n'a jamais été persistée
-
-			// on mémorise les ids des adresses existantes
-			final Set<Long> ids;
-			final Set<AdresseTiers> adresses = tiers.getAdressesTiers();
-			if (adresses == null || adresses.isEmpty()) {
-				ids = Collections.emptySet();
-			}
-			else {
-				ids = new HashSet<Long>(adresses.size());
-				for (AdresseTiers a : adresses) {
-					final Long id = a.getId();
-					Assert.notNull(id, "Les adresses existantes doivent être persistées.");
-					ids.add(id);
-				}
-			}
-
-			// on ajoute l'adresse et sauve le tout
-			tiers.addAdresseTiers(adresse);
-			tiers = tiersDAO.save(tiers);
-
-			// on recherche l'adresse nouvellement ajoutée
-			AdresseTiers nouvelleAdresse = null;
-			for (AdresseTiers a : tiers.getAdressesTiers()) {
-				if (!ids.contains(a.getId())) {
-					nouvelleAdresse = a;
-					break;
-				}
-			}
-
-			Assert.isSame(adresse.getDateDebut(), nouvelleAdresse.getDateDebut());
-			Assert.isSame(adresse.getDateFin(), nouvelleAdresse.getDateFin());
-			adresse = nouvelleAdresse;
-		}
-		else {
-			tiers.addAdresseTiers(adresse);
-		}
-
-		Assert.notNull(adresse.getId());
-		return adresse;
+		return addAndSave(tiers, adresse, ADRESSE_TIERS_ACCESSOR);
 	}
+
+	private static final EntityAccessor<PersonnePhysique, IdentificationPersonne> IDENTIFICATION_PERSONNE_ACCESSOR = new EntityAccessor<PersonnePhysique, IdentificationPersonne>() {
+		@Override
+		public Collection<IdentificationPersonne> getEntities(PersonnePhysique pp) {
+			return pp.getIdentificationsPersonnes();
+		}
+
+		@Override
+		public void addEntity(PersonnePhysique pp, IdentificationPersonne entity) {
+			pp.addIdentificationPersonne(entity);
+		}
+
+		@Override
+		public void assertSame(IdentificationPersonne entity1, IdentificationPersonne entity2) {
+			Assert.isSame(entity1.getCategorieIdentifiant(), entity2.getCategorieIdentifiant());
+			Assert.isSame(entity1.getIdentifiant(), entity2.getIdentifiant());
+		}
+	};
 
 	@Override
 	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
-
-		if (ident.getId() == null) { // l'identifiant n'a jamais été persisté
-
-			// on mémorise les ids des identifiants existants
-			final Set<Long> ids;
-			Set<IdentificationPersonne> identifiants = pp.getIdentificationsPersonnes();
-			if (identifiants == null || identifiants.isEmpty()) {
-				ids = Collections.emptySet();
-			}
-			else {
-				ids = new HashSet<Long>(identifiants.size());
-				for (IdentificationPersonne i : identifiants) {
-					final Long id = i.getId();
-					Assert.notNull(id, "Les identifiants existants doivent être persistés.");
-					ids.add(id);
-				}
-			}
-
-			// on ajoute l'identifiant et sauve le tout
-			pp.addIdentificationPersonne(ident);
-			pp = (PersonnePhysique) tiersDAO.save(pp);
-
-			// on recherche l'identifiant nouvellement ajouté
-			IdentificationPersonne nouvelIdent = null;
-			for (IdentificationPersonne i : pp.getIdentificationsPersonnes()) {
-				if (!ids.contains(i.getId())) {
-					nouvelIdent = i;
-					break;
-				}
-			}
-
-			Assert.notNull(nouvelIdent);
-			Assert.isSame(ident.getCategorieIdentifiant(), nouvelIdent.getCategorieIdentifiant());
-			Assert.isSame(ident.getIdentifiant(), nouvelIdent.getIdentifiant());
-			ident = nouvelIdent;
-		}
-		else {
-			pp.addIdentificationPersonne(ident);
-		}
-
-		Assert.notNull(ident.getId());
-		return ident;
+		return addAndSave(pp, ident, IDENTIFICATION_PERSONNE_ACCESSOR);
 	}
 
 	/**
