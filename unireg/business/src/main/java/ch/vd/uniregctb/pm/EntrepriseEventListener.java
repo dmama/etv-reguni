@@ -91,9 +91,7 @@ public class EntrepriseEventListener extends EsbMessageListener implements Monit
 	private void onEvtEntreprise(EvtEntrepriseDocument doc) {
 		final EvtEntrepriseDocument.EvtEntreprise event = doc.getEvtEntreprise();
 		final int entrepriseId = event.getNoEntreprise();
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Arrivée d'un événement sur la PM n°" + entrepriseId);
-		}
+		LOGGER.info(String.format("Arrivée d'un événement sur la PM n°%d", entrepriseId));
 		indexer.schedule(entrepriseId);
 		dataEventService.onTiersChange(entrepriseId);
 	}
