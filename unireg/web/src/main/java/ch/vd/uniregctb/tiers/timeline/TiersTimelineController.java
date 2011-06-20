@@ -127,17 +127,14 @@ public class TiersTimelineController {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
-				final int anneeCourante = RegDate.get().year();
-				for (int annee = debutActivite.year(); annee <= anneeCourante; ++annee) {
-					try {
-						final List<PeriodeImposition> list = PeriodeImposition.determine(contribuable, annee);
-						if (list != null) {
-							periodesImposition.addAll(list);
-						}
+				try {
+					final List<PeriodeImposition> list = PeriodeImposition.determine(contribuable, null);
+					if (list != null) {
+						periodesImposition.addAll(list);
 					}
-					catch (AssujettissementException e) {
-						bean.addException(e);
-					}
+				}
+				catch (AssujettissementException e) {
+					bean.addException(e);
 				}
 			}
 		}
