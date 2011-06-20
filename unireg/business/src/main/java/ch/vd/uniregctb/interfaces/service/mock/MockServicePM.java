@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -48,7 +50,7 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 		return pm;
 	}
 
-	protected MockPersonneMorale addPM(long numero, String raisonSociale, String codeFormeJuridique, RegDate debut, RegDate fin) {
+	protected MockPersonneMorale addPM(long numero, String raisonSociale, String codeFormeJuridique, RegDate debut, @Nullable RegDate fin) {
 		Assert.isFalse(map.containsKey(numero));
 		MockPersonneMorale pm = new MockPersonneMorale();
 		pm.setNumeroEntreprise(numero);
@@ -67,8 +69,8 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 	 * @param casePostale
 	 */
 	@SuppressWarnings("unchecked")
-	protected AdresseEntreprise addAdresse(MockPersonneMorale pm, TypeAdressePM type, Rue rue, String complement,
-			Localite localite, RegDate debutValidite, RegDate finValidite) {
+	protected AdresseEntreprise addAdresse(MockPersonneMorale pm, TypeAdressePM type, Rue rue, @Nullable String complement,
+			Localite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
 
 		MockAdresseEntreprise adresse = new MockAdresseEntreprise();
 		adresse.setType(type);

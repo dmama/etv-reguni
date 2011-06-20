@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -143,7 +144,7 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 * @param theDateFin the dateFin to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi97Fx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setDateFin(RegDate theDateFin) {
+	public void setDateFin(@Nullable RegDate theDateFin) {
 		// begin-user-code
 		dateFin = theDateFin;
 		// end-user-code

@@ -16,6 +16,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -407,7 +408,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theSexe the sexe to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Qlx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setSexe(Sexe theSexe) {
+	public void setSexe(@Nullable Sexe theSexe) {
 		sexe = theSexe;
 	}
 

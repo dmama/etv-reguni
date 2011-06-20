@@ -2,6 +2,8 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 
@@ -14,7 +16,7 @@ public abstract class AdresseTestCase {
 	/**
 	 * Asserte le contenu d'une adresse.
 	 */
-	public static void assertAdresse(RegDate dateDebut, RegDate dateFin, String localite, SourceType source, boolean isDefault,
+	public static void assertAdresse(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String localite, SourceType source, boolean isDefault,
 			AdresseGenerique adresse) {
 		assertNotNull(adresse);
 		assertEquals(dateDebut, adresse.getDateDebut());

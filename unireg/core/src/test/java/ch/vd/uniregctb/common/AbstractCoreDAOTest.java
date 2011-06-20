@@ -847,7 +847,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Crée et ajoute dans la base de donnée un rapport d'appartenance ménage entre un ménage commun et une personne physique
 	 */
-	protected AppartenanceMenage addAppartenanceMenage(MenageCommun menage, PersonnePhysique pp, RegDate dateDebut, RegDate dateFin, boolean annule) {
+	protected AppartenanceMenage addAppartenanceMenage(MenageCommun menage, PersonnePhysique pp, RegDate dateDebut, @Nullable RegDate dateFin, boolean annule) {
 		AppartenanceMenage rapport = new AppartenanceMenage();
 		rapport.setDateDebut(dateDebut);
 		rapport.setDateFin(dateFin);

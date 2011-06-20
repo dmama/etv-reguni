@@ -18,6 +18,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -168,7 +169,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 * @param theDateFin the dateFin to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xEySsJNYEdygKK6Oe0tVlw?SETTER"
 	 */
-	public void setDateFin(RegDate theDateFin) {
+	public void setDateFin(@Nullable RegDate theDateFin) {
 		// begin-user-code
 		dateFin = theDateFin;
 		// end-user-code

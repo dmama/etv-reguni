@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -214,7 +215,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse étrangère pour l'individu spécifié
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, String rue, String numeroMaison, Integer numeroPostal, CasePostale casePostale, String localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable String rue, @Nullable String numeroMaison, @Nullable Integer numeroPostal, @Nullable CasePostale casePostale,
+	                             @Nullable String localite, @NotNull Pays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
 
 		Assert.isFalse(pays.isSuisse());
 
@@ -321,7 +323,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à l'étranger
 	 */
-	public static Adresse newAdresse(TypeAdresseCivil type, String rue, CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, RegDate finValidite) {
+	public static Adresse newAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
 		Assert.notNull(pays);
 		Assert.isFalse(pays.getNoOFS() == ServiceInfrastructureService.noOfsSuisse, "Pour la Suisse, il faut utiliser une autre méthode newAdresse");
 

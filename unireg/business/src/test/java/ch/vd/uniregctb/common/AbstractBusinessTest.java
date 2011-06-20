@@ -322,7 +322,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
-	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, RegDate fin, String rue, String numeroPostalEtLocalite, Pays pays) {
+	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, String numeroPostalEtLocalite, Pays pays) {
 		AdresseEtrangere adresse = new AdresseEtrangere();
 		adresse.setDateDebut(debut);
 		adresse.setDateFin(fin);
@@ -334,7 +334,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
-	protected AdresseAutreTiers addAdresseAutreTiers(Tiers tiers, TypeAdresseTiers usage, RegDate debut, RegDate fin, TypeAdresseTiers autreType, Tiers autreTiers) {
+	protected AdresseAutreTiers addAdresseAutreTiers(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, TypeAdresseTiers autreType, Tiers autreTiers) {
 		AdresseAutreTiers adresse = new AdresseAutreTiers();
 		adresse.setDateDebut(debut);
 		adresse.setDateFin(fin);

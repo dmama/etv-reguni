@@ -424,7 +424,7 @@ public interface TiersService {
 	 *            la date de fin de validité de la relation entre tiers (peut être nulle)
 	 * @return le rapport-entre-tiers avec les références mises-à-jour des objets sauvés
 	 */
-	public RapportEntreTiers addTiersToCouple(MenageCommun menage, PersonnePhysique tiers, RegDate dateDebut, RegDate dateFin);
+	public RapportEntreTiers addTiersToCouple(MenageCommun menage, PersonnePhysique tiers, RegDate dateDebut, @Nullable RegDate dateFin);
 
 	/**
 	 * Clôt l'appartenance menageCommun entre les 2 tiers à la date donnée.

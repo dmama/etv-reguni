@@ -2,6 +2,8 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -36,7 +38,7 @@ public interface AdresseService {
 	 * @return les adresses fiscales du tiers à la date donnée.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdressesFiscales getAdressesFiscales(Tiers tiers, RegDate date, boolean strict) throws AdresseException;
+	public abstract AdressesFiscales getAdressesFiscales(@Nullable Tiers tiers, @Nullable RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Extrait l'adresse fiscale (= adresse civile + adresse tiers) définie pour une date et un type d'adresse donné. Les adresses annulées sont ignorées et ne sont pas retournées.
@@ -49,7 +51,7 @@ public interface AdresseService {
 	 * @return l'adresse fiscale du tiers pour le type et la date spécifiés.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseFiscale type, RegDate date, boolean strict) throws AdresseException;
+	public abstract AdresseGenerique getAdresseFiscale(@Nullable Tiers tiers, TypeAdresseFiscale type, @Nullable RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Extrait l'historique des adresses fiscales (= adresses civils + adresse tiers) pour le tiers spécifié.
@@ -109,7 +111,7 @@ public interface AdresseService {
 	 * @return l'adresse d'envoi déjà formattée.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException;
+	public abstract AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, @Nullable RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException;
 
 	/**
 	 * Crée et retourne l'adresse d'envoi pour un individu donné.
@@ -168,7 +170,7 @@ public interface AdresseService {
 	 * @return le nom courrier du tiers.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException;
+	public List<String> getNomCourrier(Tiers tiers, @Nullable RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Calcul le nom courrier
