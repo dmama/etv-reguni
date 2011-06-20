@@ -5411,6 +5411,110 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
+	 * [SIFISC-1516] Vérifie que l'adresse courrier d'un ménage-commun avant sa création (oui, c'est possible) dans le cas où le principal est sous-tutelle est bien celle du conjoint.
+	 */
+	@Test
+	public void testGetAdressesFiscalesMenageCommunAvantMariageAvecPrincipalSousTutelle() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+		final long noIndividuTuteurPrincipal = 11;
+
+		final RegDate dateDebutTutelle = date(1972, 3, 1);
+		final RegDate dateFinTutelle = date(1975, 5, 31);
+		final RegDate dateMariage = date(1980, 7, 14);
+
+		// Un homme, une femme et le tuteur de monsieur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1953, 11, 2), null);
+
+				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(1957, 1, 23), null);
+
+				marieIndividus(paul, virginie, dateMariage);
+
+				final MockIndividu ronald = addIndividu(noIndividuTuteurPrincipal, date(1945, 3, 17), "MacDonald", "Ronald", false);
+				addAdresse(ronald, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
+			}
+		});
+
+		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
+		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				final PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+				addTutelle(principal, tuteurPrincipal, null, dateDebutTutelle, dateFinTutelle);
+
+				final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, null);
+				final MenageCommun menage = ensemble.getMenage();
+
+				return menage.getNumero();
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+
+		// Vérification des adresses
+		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
+		assertNotNull(adressesHisto);
+
+		assertEquals(3, adressesHisto.courrier.size());
+		assertAdresse(date(1953, 11, 2), dateDebutTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
+		assertAdresse(dateDebutTutelle, dateFinTutelle, "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+		assertAdresse(dateFinTutelle.getOneDayAfter(), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(2)); // adresse de Monsieur
+
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
+
+		// monsieur sans tutelle => adresse de monsieur
+		final AdresseEnvoiDetaillee adresseEnvoi1970 = adresseService.getAdresseEnvoi(menage, date(1970, 1, 1), TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi1970);
+		assertEquals("Monsieur et Madame", adresseEnvoi1970.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi1970.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi1970.getLigne3());
+		assertEquals("Av de Beaulieu", adresseEnvoi1970.getLigne4());
+		assertEquals("1000 Lausanne", adresseEnvoi1970.getLigne5());
+		assertNull(adresseEnvoi1970.getLigne6());
+
+		// monsieur sous tutelle => adresse de madame
+		final AdresseEnvoiDetaillee adresseEnvoi1973 = adresseService.getAdresseEnvoi(menage, date(1973, 1, 1), TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi1973);
+		assertEquals("Monsieur et Madame", adresseEnvoi1973.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi1973.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi1973.getLigne3());
+		assertEquals("Rue de l'Industrie", adresseEnvoi1973.getLigne4());
+		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1973.getLigne5());
+		assertNull(adresseEnvoi1973.getLigne6());
+
+		// monsieur fin de tutelle => adresse de monsieur
+		final AdresseEnvoiDetaillee adresseEnvoi1976 = adresseService.getAdresseEnvoi(menage, date(1976, 1, 1), TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi1976);
+		assertEquals("Monsieur et Madame", adresseEnvoi1976.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi1976.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi1976.getLigne3());
+		assertEquals("Av de Beaulieu", adresseEnvoi1976.getLigne4());
+		assertEquals("1000 Lausanne", adresseEnvoi1976.getLigne5());
+		assertNull(adresseEnvoi1976.getLigne6());
+
+		// mariage => toujours adresse de monsieur
+		final AdresseEnvoiDetaillee adresseEnvoi1981 = adresseService.getAdresseEnvoi(menage, date(1981, 1, 1), TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi1981);
+		assertEquals("Monsieur et Madame", adresseEnvoi1981.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi1981.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi1981.getLigne3());
+		assertEquals("Av de Beaulieu", adresseEnvoi1981.getLigne4());
+		assertEquals("1000 Lausanne", adresseEnvoi1981.getLigne5());
+		assertNull(adresseEnvoi1981.getLigne6());
+	}
+
+	/**
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
