@@ -865,14 +865,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
-	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
+	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, @Nullable PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
 		return addEnsembleTiersCouple(null, principal, conjoint, dateMariage, dateFin);
 	}
 
 	/**
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
-	protected EnsembleTiersCouple addEnsembleTiersCouple(Long noTiers, PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage, RegDate dateFin) {
+	protected EnsembleTiersCouple addEnsembleTiersCouple(Long noTiers, PersonnePhysique principal, @Nullable PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
 
 		MenageCommun menage = new MenageCommun();
 		menage.setNumero(noTiers);

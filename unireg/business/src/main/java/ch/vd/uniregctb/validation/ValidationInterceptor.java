@@ -36,6 +36,7 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 			return false;
 		}
 
+		// TODO (msi) mémoriser l'entité et déplacer la validation dans le preTransactionCommit.
 		validate(entity, isAnnulation);
 		return false;
 	}

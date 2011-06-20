@@ -11,6 +11,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
@@ -39,8 +40,31 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 	}
 
 	protected ValidationResults validateRapports(T tiers) {
-		// rien de spécial ici
-		return new ValidationResults();
+
+		final ValidationService validationService = getValidationService();
+		final ValidationResults results = new ValidationResults();
+
+		final Set<RapportEntreTiers> objets = tiers.getRapportsObjet();
+		if (objets != null) {
+			for (RapportEntreTiers rapport : objets) {
+				if (rapport.isAnnule()) {
+					continue;
+				}
+				results.merge(validationService.validate(rapport));
+			}
+		}
+
+		final Set<RapportEntreTiers> sujets = tiers.getRapportsSujet();
+		if (sujets != null) {
+			for (RapportEntreTiers rapport : sujets) {
+				if (rapport.isAnnule()) {
+					continue;
+				}
+				results.merge(validationService.validate(rapport));
+			}
+		}
+
+		return results;
 	}
 
 	protected ValidationResults validateDeclarations(T tiers) {
