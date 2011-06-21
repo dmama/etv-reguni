@@ -125,7 +125,7 @@
 											$('#rue').val('');
 
 											// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence
-											autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', false, function(i) {
+											autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
 												if (i) {
 													$('#numeroRue').val(i.id1);
 													$('#numeroOrdrePoste').val(i.id2);
@@ -168,7 +168,7 @@
 								<form:errors path="paysNpa" cssClass="error"/>
 								<script>
 									$(function() {
-										autocomplete_infra('etatOuTerritoire', '#pays', false, function(item) {
+										autocomplete_infra('etatOuTerritoire', '#pays', true, function(item) {
 											$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
 										});
 									});
@@ -183,7 +183,7 @@
 							<form:hidden path="numeroRue" id="numeroRue"/>
 							<script>
 								$(function() {
-									autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', false, function(i) {
+									autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
 										if (i) {
 											$('#numeroRue').val(i.id1);
 											$('#numeroOrdrePoste').val(i.id2);
