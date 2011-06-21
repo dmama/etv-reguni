@@ -393,6 +393,9 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		}
 		bvrstd.setLigneCodage(bvrReponse.getLigneCodage());
 
+		// [SIFISC-753] Tout débiteur "papier" reçoit son enveloppe retour, pas les autres
+		slrlcbvr.setEnveloppeRetour(dpi.getModeCommunication() == ModeCommunication.PAPIER ? "O" : "N");
+
 		return slrlcbvr;
 	}
 
