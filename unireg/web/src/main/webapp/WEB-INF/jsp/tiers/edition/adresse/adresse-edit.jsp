@@ -104,7 +104,7 @@
 						</td>
 						<td width="25%">
 							<div id="div_input_localite_suisse">
-								<form:input path="localiteSuisse"  id="localiteSuisse" cssErrorClass="input-with-errors" size ="25" />
+								<form:input path="localiteSuisse" id="localiteSuisse" cssErrorClass="input-with-errors" size ="25" />
 								<form:hidden path="numeroOrdrePoste" id="numeroOrdrePoste"  />
 								<form:hidden path="numCommune" id="numCommune"  />
 								<script>
@@ -113,6 +113,9 @@
 											if (item) {
 												$('#numeroOrdrePoste').val(item.id1);
 												$('#numCommune').val(item.id2);
+												// [SIFISC-1507] en cas de saisie correcte d'une localité, on supprime un éventuel message d'erreur Spring associé au champ
+												$('#localiteSuisse').removeClass('input-with-errors');
+												$('#localiteSuisse\\.errors').hide();
 											}
 											else {
 												$('#numeroOrdrePoste').val(null);
