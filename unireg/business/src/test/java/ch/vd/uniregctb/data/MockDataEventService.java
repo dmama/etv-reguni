@@ -8,6 +8,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 public class MockDataEventService implements DataEventService {
 
 	public final List<Long> changedTiers = new ArrayList<Long>();
+	public final List<Long> changedPMs = new ArrayList<Long>();
 
 	@Override
 	public void register(DataEventListener listener) {
@@ -16,6 +17,7 @@ public class MockDataEventService implements DataEventService {
 
 	public void clear() {
 		changedTiers.clear();
+		changedPMs.clear();
 	}
 
 	@Override
@@ -29,6 +31,7 @@ public class MockDataEventService implements DataEventService {
 
 	@Override
 	public void onPersonneMoraleChange(long id) {
+		changedPMs.add(id);
 	}
 
 	@Override

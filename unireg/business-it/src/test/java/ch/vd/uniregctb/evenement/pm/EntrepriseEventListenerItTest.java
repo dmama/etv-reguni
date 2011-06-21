@@ -111,13 +111,13 @@ public class EntrepriseEventListenerItTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (dataEventService.changedTiers.isEmpty()) {
+		while (dataEventService.changedPMs.isEmpty()) {
 			Thread.sleep(100);
 		}
 
 		// On vérifique que la PM est bien réindexée et que le service 'data event' est bien notifié du changement
-		assertEquals(1, dataEventService.changedTiers.size());
-		assertEquals(Long.valueOf(53220), dataEventService.changedTiers.get(0));
+		assertEquals(1, dataEventService.changedPMs.size());
+		assertEquals(Long.valueOf(53220), dataEventService.changedPMs.get(0));
 		assertEquals(1, indexer.scheduled.size());
 		assertEquals(Long.valueOf(53220), indexer.scheduled.get(0));
 	}
