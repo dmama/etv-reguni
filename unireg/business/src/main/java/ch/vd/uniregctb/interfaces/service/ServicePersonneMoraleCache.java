@@ -8,6 +8,7 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -17,6 +18,8 @@ import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.data.DataEventListener;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PartPM;
@@ -26,7 +29,9 @@ import ch.vd.uniregctb.stats.StatsService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implements UniregCacheInterface, InitializingBean, DisposableBean {
+public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implements UniregCacheInterface, InitializingBean, DisposableBean, DataEventListener {
+
+	private static final Logger LOGGER = Logger.getLogger(ServicePersonneMoraleCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -34,6 +39,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
+	private DataEventService dataEventService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTarget(ServicePersonneMoraleService target) {
@@ -57,6 +63,11 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	@Override
@@ -85,6 +96,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 			statsService.registerCache(SERVICE_NAME, this);
 		}
 		uniregCacheManager.register(this);
+		dataEventService.register(this);
 	}
 
 	@Override
@@ -281,5 +293,57 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 			array[i++] = a;
 		}
 		return array;
+	}
+
+	@Override
+	public void onTiersChange(long id) {
+		// rien à faire
+	}
+
+	@Override
+	public void onIndividuChange(long id) {
+		// rien à faire
+	}
+
+	@Override
+	public void onPersonneMoraleChange(long id) {
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Eviction des données cachées pour la personne morale n° " + id);
+		}
+		final List<?> keys = cache.getKeys();
+		for (Object k : keys) {
+			boolean remove = false;
+			if (k instanceof GetPersonneMoraleByIdKey) {
+				GetPersonneMoraleByIdKey ki = (GetPersonneMoraleByIdKey) k;
+				remove = (ki.id == id);
+			}
+			else if (k instanceof GetEtablissementByIdKey) {
+				GetEtablissementByIdKey ki = (GetEtablissementByIdKey) k;
+				remove = (ki.id == id);
+			}
+			else if (k instanceof GetAllIdsKey) {
+				// on ne finasse pas 
+				remove = true;
+			}
+			if (remove) {
+				cache.remove(k);
+			}
+		}
+	}
+
+	@Override
+	public void onDroitAccessChange(long tiersId) {
+		// rien à faire
+	}
+
+	@Override
+	public void onTruncateDatabase() {
+		// rien à faire
+	}
+
+	@Override
+	public void onLoadDatabase() {
+		// rien à faire
 	}
 }

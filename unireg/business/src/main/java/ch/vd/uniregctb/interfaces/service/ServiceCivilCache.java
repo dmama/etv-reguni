@@ -275,6 +275,11 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	}
 
 	@Override
+	public void onPersonneMoraleChange(long id) {
+		// rien à faire
+	}
+
+	@Override
 	public void onTiersChange(long id) {
 		// rien à faire
 	}

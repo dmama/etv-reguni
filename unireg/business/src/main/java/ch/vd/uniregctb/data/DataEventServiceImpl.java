@@ -69,6 +69,19 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	@Override
+	public void onPersonneMoraleChange(long id) {
+		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) {
+			final DataEventListener l = listeners.get(i);
+			try {
+				l.onPersonneMoraleChange(id);
+			}
+			catch (Exception e) {
+				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
+			}
+		}
+	}
+
+	@Override
 	public void onDroitAccessChange(long ppId) {
 		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) {
 			final DataEventListener l = listeners.get(i);

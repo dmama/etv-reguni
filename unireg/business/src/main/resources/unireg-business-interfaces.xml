@@ -99,6 +99,7 @@
 		<property name="cacheName" value="servicePM" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
 	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceCache"/>

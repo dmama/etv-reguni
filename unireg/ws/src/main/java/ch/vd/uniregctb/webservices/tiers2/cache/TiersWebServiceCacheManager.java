@@ -108,6 +108,11 @@ public class TiersWebServiceCacheManager implements DataEventListener, Initializ
 	}
 
 	@Override
+	public void onPersonneMoraleChange(long id) {
+		onTiersChange(id); // le numéro de contribuable est le même que celui de la PM
+	}
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataEventService.register(this);
 	}

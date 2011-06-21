@@ -242,6 +242,11 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	}
 
 	@Override
+	public void onPersonneMoraleChange(long id) {
+		// rien à faire
+	}
+
+	@Override
 	public void onTiersChange(long id) {
 		// rien à faire
 	}

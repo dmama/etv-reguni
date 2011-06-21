@@ -106,7 +106,21 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			sendChangeEvent(id, DataType.INDIVIDU);
 		}
 		catch (Exception e) {
-			LOGGER.error("Impossible d'envoyer un message de changement du tiers n°" + id, e);
+			LOGGER.error("Impossible d'envoyer un message de changement de l'individu n°" + id, e);
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public void onPersonneMoraleChange(long id) {
+		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement db de changement sur la PM n°" + id);
+			}
+			sendChangeEvent(id, DataType.PM);
+		}
+		catch (Exception e) {
+			LOGGER.error("Impossible d'envoyer un message de changement de la PM n°" + id, e);
 		}
 	}
 
@@ -141,6 +155,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	private enum DataType {
 		TIERS,
 		INDIVIDU,
+		PM,
 		DROIT_ACCES
 	}
 
@@ -159,6 +174,9 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			break;
 		case DROIT_ACCES:
 			event.setType(ch.vd.fiscalite.registre.databaseEvent.DataType.DROIT_ACCES);
+			break;
+		case PM:
+			event.setType(ch.vd.fiscalite.registre.databaseEvent.DataType.PM);
 			break;
 		default:
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");

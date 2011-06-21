@@ -109,6 +109,12 @@ public class DataEventJmsListener extends EsbMessageListener implements Monitora
 			}
 			dataEventService.onIndividuChange(id);
 		}
+		if (DataType.PM.equals(type)) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Réception d'un événement db de changement sur la PM n°" + id);
+			}
+			dataEventService.onPersonneMoraleChange(id);
+		}
 		else if (DataType.DROIT_ACCES.equals(type)) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Réception d'un événement db de changement sur les droits d'accès du tiers n°" + id);

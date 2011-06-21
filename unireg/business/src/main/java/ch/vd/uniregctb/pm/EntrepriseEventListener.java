@@ -109,8 +109,8 @@ public class EntrepriseEventListener extends EsbMessageListener implements Monit
 			hibernateTemplate.save(new Entreprise(entrepriseId));
 		}
 
+		dataEventService.onPersonneMoraleChange(entrepriseId);
 		indexer.schedule(entrepriseId);
-		dataEventService.onTiersChange(entrepriseId);
 	}
 
 	@Override

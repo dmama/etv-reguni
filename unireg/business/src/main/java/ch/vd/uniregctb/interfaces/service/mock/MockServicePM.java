@@ -50,6 +50,17 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 		return pm;
 	}
 
+	/**
+	 * Ajoute ou remplace une PM existante par une autre
+	 *
+	 * @param pm une personne morale
+	 */
+	public void replacePM(MockPersonneMorale pm) {
+		final long numero = pm.getNumeroEntreprise();
+		Assert.isTrue(numero > 0);
+		map.put(numero, pm);
+	}
+
 	protected MockPersonneMorale addPM(long numero, String raisonSociale, String codeFormeJuridique, RegDate debut, @Nullable RegDate fin) {
 		Assert.isFalse(map.containsKey(numero));
 		MockPersonneMorale pm = new MockPersonneMorale();

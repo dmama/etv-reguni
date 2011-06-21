@@ -28,6 +28,10 @@ public class MockDataEventService implements DataEventService {
 	}
 
 	@Override
+	public void onPersonneMoraleChange(long id) {
+	}
+
+	@Override
 	public void onDroitAccessChange(long ppId) {
 	}
 
