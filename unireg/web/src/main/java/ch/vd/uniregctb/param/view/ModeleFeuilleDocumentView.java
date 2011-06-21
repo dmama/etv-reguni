@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.param.view;
 
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeDocument;
 
 
@@ -9,9 +10,8 @@ public class ModeleFeuilleDocumentView {
 	private Integer periodeAnnee;
 	private Long idModele;
 	private Long idFeuille;
-	private String intituleFeuille; 
-	private String numeroFormulaire;
 	private TypeDocument modeleDocumentTypeDocument;
+	private ModeleFeuille modeleFeuille;
 	
 	
 	public void setModeleDocumentTypeDocument(TypeDocument modeleDocumentTypeDocument) {
@@ -44,18 +44,12 @@ public class ModeleFeuilleDocumentView {
 	public void setIdFeuille(Long idFeuille) {
 		this.idFeuille = idFeuille;
 	}
-	public String getIntituleFeuille() {
-		return intituleFeuille;
-	}
-	public void setIntituleFeuille(String intituleFeuille) {
-		this.intituleFeuille = intituleFeuille;
-	}
-	public String getNumeroFormulaire() {
-		return numeroFormulaire;
-	}
-	public void setNumeroFormulaire(String numeroFormulaire) {
-		this.numeroFormulaire = numeroFormulaire;
+
+	public ModeleFeuille getModeleFeuille() {
+		return modeleFeuille;
 	}
 
-	
+	public void setModeleFeuille(ModeleFeuille modeleFeuille) {
+		this.modeleFeuille = modeleFeuille;
+	}
 }

@@ -8,6 +8,7 @@
 		<td>
 			<c:out value="${command.periodeAnnee}"/>
 		<td>
+		<td width="50%">&nbsp;<td>
 	</tr>
 	<tr>
 		<th>
@@ -16,21 +17,31 @@
 		<td>
 			<fmt:message key="option.type.document.${command.modeleDocumentTypeDocument}" />
 		<td>
+		<td width="50%">&nbsp;<td>
 	</tr>
 	<tr>
 		<th>
-			<fmt:message key="title.param.num.form"/>
+			<fmt:message key="title.param.form"/>
 		</th>
 		<td>
-			<form:input path="numeroFormulaire" maxlength="10"/>
+			<form:select path="modeleFeuille">
+					<c:choose>
+						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_COMPLETE_BATCH') ||
+						(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_COMPLETE_LOCAL')}">
+							<form:options items="${modelesFeuillesForCompletes}" />
+						</c:when>
+						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_VAUDTAX')}">
+                            <form:options items="${modelesFeuillesForVaudTax}" />
+						</c:when>
+						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_DEPENSE')}">
+                            <form:options items="${modelesFeuillesForDepense}" />
+						</c:when>
+						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_HC_IMMEUBLE')}">
+                            <form:options items="${modelesFeuillesForHC}" />
+						</c:when>
+					</c:choose>
+			</form:select>
 		<td>
+	<td width="50%">&nbsp;<td>
 	</tr>
-	<tr>
-		<th>
-			<fmt:message key="title.param.int.feuille"/>
-		</th>
-		<td>
-			<form:input path="intituleFeuille" maxlength="50" size="80"/>
-		<td>
-	</tr>	
 </table>

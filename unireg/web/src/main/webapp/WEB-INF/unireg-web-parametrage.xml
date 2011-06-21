@@ -5,7 +5,7 @@
 	<!--
 		Configuration des beans pour : Paramètre d'application 
 	 -->
-	
+	<bean id="paramHelper" class="ch.vd.uniregctb.param.ParamHelper"/>
 	<bean id="paramApplicationManager" class="ch.vd.uniregctb.param.manager.ParamApplicationManagerImpl">
 		<property name="service" ref = "parametreAppService" />
 	</bean>
@@ -88,32 +88,34 @@
 		<property name="messageSource" ref="messageSource" />
 	</bean>
 	
-	<bean 	id="paramModeleFeuilleDocumentAddController"
+	<bean id="paramModeleFeuilleDocumentAddController"
 			class="ch.vd.uniregctb.param.ParamModeleFeuilleDocumentAddController"
-			parent="abstractSimpleFormController">
+			parent="abstractParamModeleFeuilleDocumentController">
 		<property name="sessionForm" value="false" />
 		<property name="commandClass" value="ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="param/feuille-add" />
 		<property name="successView" value="param/refresh-parent-periode" />
 		<property name="validator" ref="modeleFeuilleDocumentValidator" />
-		<property name="manager" ref="paramPeriodeManager" />
 	</bean>
 	
 	<bean 	id="paramModeleFeuilleDocumentEditController"
 			class="ch.vd.uniregctb.param.ParamModeleFeuilleDocumentEditController"
-			parent="abstractSimpleFormController">
+			parent="abstractParamModeleFeuilleDocumentController">
 		<property name="sessionForm" value="false" />
 		<property name="commandClass" value="ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="param/feuille-edit" />
 		<property name="validator" ref="modeleFeuilleDocumentValidator"/>
-		<property name="manager" ref="paramPeriodeManager" />
 	</bean>
 		
 	<bean id="paramModeleFeuilleDocumentSupprController" class="ch.vd.uniregctb.param.ParamModeleFeuilleDocumentSupprController">
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="messageSource" ref="messageSource" />
 	</bean>
-    
+
+	<bean id="abstractParamModeleFeuilleDocumentController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.param.AbstractParamModeleFeuilleDocumentController">
+		<property name="paramHelper" ref="paramHelper" />
+		<property name="manager" ref="paramPeriodeManager" />
+	</bean>
 </beans>

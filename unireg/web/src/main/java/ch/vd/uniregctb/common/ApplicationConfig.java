@@ -56,4 +56,5 @@ public class ApplicationConfig {
 	public static final String masterKeyEtatMessage = "option.etat.message.";
 	public static final String masterKeyErreurMessage = "option.erreur.message.";
 	public static final String masterKeyTypeMessage = "option.type.message.";
+	public static final String masterKeyModelFeuille = "option.modele.feuille.";
 }

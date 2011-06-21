@@ -21,6 +21,7 @@ import ch.vd.uniregctb.param.view.ModeleDocumentView;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView;
 import ch.vd.uniregctb.parametrage.PeriodeFiscaleService;
+import ch.vd.uniregctb.type.ModeleFeuille;
 
 public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
@@ -193,8 +194,8 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		ModeleFeuilleDocumentView mfdv = createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
 		ModeleFeuilleDocument mfd = retrieveFeuilleFromDAO(feuilleId);
 		mfdv.setIdFeuille(feuilleId);
-		mfdv.setNumeroFormulaire(mfd.getNumeroFormulaire());
-		mfdv.setIntituleFeuille(mfd.getIntituleFeuille());
+		ModeleFeuille modeleFeuille = ModeleFeuille.fromCode(mfd.getNumeroFormulaire());
+		mfdv.setModeleFeuille(modeleFeuille);
 		return mfdv;
 	}
 
@@ -258,8 +259,8 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveModeleFeuilleDocumentViewAdd(ModeleFeuilleDocumentView mfdv) {
 		ModeleFeuilleDocument mfd = new ModeleFeuilleDocument();
-		mfd.setNumeroFormulaire(mfdv.getNumeroFormulaire());
-		mfd.setIntituleFeuille(mfdv.getIntituleFeuille());
+		mfd.setNumeroFormulaire(mfdv.getModeleFeuille().getCode());
+		mfd.setIntituleFeuille(mfdv.getModeleFeuille().getDescription());
 		ModeleDocument md = modeleDocumentDAO.get(mfdv.getIdModele());
 		md.addModeleFeuilleDocument(mfd);
 	}
@@ -268,8 +269,8 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveModeleFeuilleDocumentViewEdit(ModeleFeuilleDocumentView mfdv) {
 		ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(mfdv.getIdFeuille());
-		mfd.setNumeroFormulaire(mfdv.getNumeroFormulaire());
-		mfd.setIntituleFeuille(mfdv.getIntituleFeuille());
+		mfd.setNumeroFormulaire(mfdv.getModeleFeuille().getCode());
+		mfd.setIntituleFeuille(mfdv.getModeleFeuille().getDescription());
 	}
 
 	@Override

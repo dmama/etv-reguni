@@ -16,10 +16,9 @@ import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
 import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
 import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
 
-public class ParamModeleFeuilleDocumentEditController extends AbstractSimpleFormController {
+public class ParamModeleFeuilleDocumentEditController extends AbstractParamModeleFeuilleDocumentController {
 
-	private ParamPeriodeManager manager;
-	
+
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		verifieLesDroits();
@@ -39,10 +38,6 @@ public class ParamModeleFeuilleDocumentEditController extends AbstractSimpleForm
 		return getModelAndViewToPeriode(getPeriodeIdFromRequest(request), getModeleIdFromRequest(request));
 	}
 
-
-	public void setManager(ParamPeriodeManager manager) {
-		this.manager = manager;
-	}
 
 
 	
