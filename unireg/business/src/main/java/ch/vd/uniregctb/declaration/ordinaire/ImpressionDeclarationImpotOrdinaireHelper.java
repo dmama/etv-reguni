@@ -22,12 +22,14 @@ public interface ImpressionDeclarationImpotOrdinaireHelper {
 	/**
 	 * Alimente un objet Document pour l'impression des DI
 	 *
+	 *
 	 * @param declaration
 	 * @param annexes
+	 * @param isFromBatch
 	 * @return
 	 */
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
-			TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException;
+	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException;
 
 	/**
 	 * Calcul le prefixe

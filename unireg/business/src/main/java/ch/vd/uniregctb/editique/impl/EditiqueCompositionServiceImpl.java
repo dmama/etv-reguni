@@ -131,7 +131,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata, boolean forceSynchrone) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes, false);
 		final TypFichierImpression.Document[] documents;
 		if (isDuplicata || declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			documents = new TypFichierImpression.Document[1];
@@ -159,7 +159,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final String typeDocument = impressionDIHelper.calculPrefixe(declaration);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration));
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration), true);
 		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
 		if (declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {

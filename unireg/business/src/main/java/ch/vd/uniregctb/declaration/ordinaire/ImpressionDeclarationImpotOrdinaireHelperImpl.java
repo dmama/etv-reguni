@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import noNamespace.Annexe320Type;
 import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.DIBase;
 import noNamespace.DIDPDocument;
@@ -55,6 +56,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.utils.UniregModeHelper;
 
 public class ImpressionDeclarationImpotOrdinaireHelperImpl implements ImpressionDeclarationImpotOrdinaireHelper {
 
@@ -262,7 +264,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 */
 	@Override
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
-	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
 		InfoDocument infoDocument = remplitInfoDocument(declaration);
 		InfoEnteteDocument infoEnteteDocument;
 		try {
@@ -276,7 +278,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			typeDocument = declaration.getModeleDocument().getTypeDocument();
 		}
 		if (typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-			DI di = remplitSpecifiqueDI(declaration, annexes);
+			DI di = remplitSpecifiqueDI(declaration, annexes, isFromBatch);
 			document.setDI(di);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
@@ -300,8 +302,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Alimente un objet DI
 	 */
-	protected DI remplitSpecifiqueDI(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
-
+	protected DI remplitSpecifiqueDI(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
+		final String avecCourrierExplicatif = (isFromBatch ? "O":"N");
 		final DI di = DIDocument.Factory.newInstance().addNewDI();
 		remplitDIRetour(declaration, di);
 		remplitAdresseSuite(declaration, di);
@@ -311,10 +313,12 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final int nbAnnexes230 = getNbOfAnnexes(annexes, "230", 0, 0);
 		final int nbAnnexes240 = getNbOfAnnexes(annexes, "240", 0, 0);
 		final int nbAnnexes310 = getNbOfAnnexes(annexes, "310", 0, 0);
+		final int nbAnnexes320 = getNbOfAnnexes(annexes, "320", 0, 0);
+		final int nbAnnexes330 = getNbOfAnnexes(annexes, "330", 0, 0);
 
 		// pour être certain d'imprimer toujours quelque chose!
 		int correctionAnnexes210 = 0;
-		if (nbAnnexes210 == 0 && nbAnnexes220 == 0 && nbAnnexes230 == 0 && nbAnnexes240 == 0 && nbAnnexes310 == 0) {
+		if (nbAnnexes210 == 0 && nbAnnexes220 == 0 && nbAnnexes230 == 0 && nbAnnexes240 == 0 && nbAnnexes310 == 0 && nbAnnexes320 == 0 && nbAnnexes330 == 0) {
 			correctionAnnexes210 = NBRE_COPIE_ANNEXE_DEFAUT;
 		}
 
@@ -334,6 +338,19 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		if (nbAnnexes310 > 0) {
 			a.setAnnexe310(nbAnnexes310);
 		}
+		if(UniregModeHelper.isTestAnnexeDiMode()){
+			if (nbAnnexes320 > 0) {
+				Annexe320Type annexe320 = a.addNewAnnexe320();
+				annexe320.setNombre(nbAnnexes320);
+				annexe320.setAvecCourrierExplicatif(avecCourrierExplicatif);
+				a.setAnnexe320(annexe320);
+			}
+			if (nbAnnexes330 > 0) {
+				a.setAnnexe330(nbAnnexes330);
+			}
+
+		}
+
 		return di;
 	}
 

@@ -42,6 +42,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.utils.UniregModeHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -177,11 +178,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008,null);
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008,null, false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009,null);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009,null, false);
 			assertNotNull(di2009);
-			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(declarationCourante,null);
+			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(declarationCourante,null, false);
 			assertNotNull(diCourante);
 
 			
@@ -296,9 +297,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008,null);
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008,null, false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009,null);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009,null, false);
 			assertNotNull(di2009);
 
 
@@ -394,7 +395,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNull(adresse.getAdresseCourrierLigne6());
 
 			// .. sur le code bar
-			final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2007, null);
+			final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2007, null, false);
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
@@ -428,7 +429,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNull(adresse.getAdresseCourrierLigne6());
 
 			// .. sur le code bar
-			final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null);
+			final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
@@ -465,7 +466,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
 		declaration2008.setRetourCollectiviteAdministrativeId(vevey.getId());
 
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null);
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
 		assertNotNull(di);
 
 		final DIRetour.AdresseRetour retour = di.getAdresseRetour();
@@ -496,7 +497,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
 		declaration2008.setRetourCollectiviteAdministrativeId(aci.getId());
 
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null);
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
 		assertNotNull(di);
 
 		final DIBase.InfoDI infoDi = di.getInfoDI();
@@ -552,7 +553,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testRempliQuelquesMachins() throws Exception {
 		loadDatabase("ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration));
+		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), false);
 		DIRetour.AdresseRetour cediImpression = di.getAdresseRetour();
 		assertEquals("Centre d'enregistrement", cediImpression.getADRES1RETOUR());
 		assertEquals("des déclarations d'impôt", cediImpression.getADRES2RETOUR());
@@ -581,5 +582,23 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals(1, di.getAnnexes().getAnnexe230());
 		assertEquals(1, di.getAnnexes().getAnnexe240());
 		assertFalse(di.getAnnexes().isSetAnnexe310());
+	}
+
+
+	@Test
+	public void testRemplitAnnexe320_Annexe_330() throws Exception {
+		UniregModeHelper testMode = getBean(UniregModeHelper.class, "uniregModeHelper");
+		testMode.setTestAnnexeDiMode("true");//sinon pas d'annexe 320 et 330
+		loadDatabase("ImpressionDeclarationAnnexe_320_330.xml");
+		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
+		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), false);
+		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
+		assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
+		assertEquals(1, di.getAnnexes().getAnnexe330());
+		di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), true);
+	    assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
+		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
+	    assertEquals(1, di.getAnnexes().getAnnexe330());
+		testMode.setTestAnnexeDiMode("false");
 	}
 }

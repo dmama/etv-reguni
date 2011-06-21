@@ -17,7 +17,7 @@ public class MockImpressionDeclarationImpotOrdinaireHelper implements Impression
 
 	@Override
 	public TypFichierImpression.Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression, TypeDocument typeDocument,
-	                                                                 List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	                                                                 List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
