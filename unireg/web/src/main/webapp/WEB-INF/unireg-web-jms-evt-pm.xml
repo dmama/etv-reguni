@@ -9,6 +9,7 @@
 	<bean id="entrepriseEventListener" class="ch.vd.uniregctb.pm.EntrepriseEventListener" parent="esbMessageListener">
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="indexer" ref="globalTiersIndexer" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="entrepriseEventListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">

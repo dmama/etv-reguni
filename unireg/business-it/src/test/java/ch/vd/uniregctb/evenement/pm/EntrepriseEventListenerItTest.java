@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EntrepriseEventListenerTest extends EvenementTest {
+public class EntrepriseEventListenerItTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
 	private DefaultMessageListenerContainer container;

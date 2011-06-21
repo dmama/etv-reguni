@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.fiscalite.registre.entrepriseEvent.EvtEntrepriseDocument;
 import ch.vd.technical.esb.ErrorType;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
  * Bean qui écoute les messages JMS en provenance du registre des entreprises (PMs).
@@ -29,6 +31,7 @@ public class EntrepriseEventListener extends EsbMessageListener implements Monit
 
 	private GlobalTiersIndexer indexer;
 	private DataEventService dataEventService;
+	private HibernateTemplate hibernateTemplate;
 
 	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
@@ -40,6 +43,10 @@ public class EntrepriseEventListener extends EsbMessageListener implements Monit
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIndexer(GlobalTiersIndexer indexer) {
 		this.indexer = indexer;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -91,7 +98,17 @@ public class EntrepriseEventListener extends EsbMessageListener implements Monit
 	private void onEvtEntreprise(EvtEntrepriseDocument doc) {
 		final EvtEntrepriseDocument.EvtEntreprise event = doc.getEvtEntreprise();
 		final int entrepriseId = event.getNoEntreprise();
+		onEvtEntreprise(entrepriseId);
+	}
+
+	protected void onEvtEntreprise(long entrepriseId) {
 		LOGGER.info(String.format("Arrivée d'un événement sur la PM n°%d", entrepriseId));
+
+		// [SIFISC-1526] création de la coquille PM vide, si nécessaire
+		if (hibernateTemplate.get(Entreprise.class, entrepriseId) == null) {
+			hibernateTemplate.save(new Entreprise(entrepriseId));
+		}
+
 		indexer.schedule(entrepriseId);
 		dataEventService.onTiersChange(entrepriseId);
 	}
