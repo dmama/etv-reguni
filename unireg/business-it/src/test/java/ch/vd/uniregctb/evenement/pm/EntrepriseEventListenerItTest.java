@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.pm;
 
 import java.io.File;
+import java.io.Serializable;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -8,7 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -55,10 +58,28 @@ public class EntrepriseEventListenerItTest extends EvenementTest {
 		dataEventService = new MockDataEventService();
 		indexer = new MockTiersIndexer();
 
+		// on crée un mock de l'hibernate template qui ne fait rien
+		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
+			@Override
+			public <T> T get(Class<T> entityClass, Serializable id) throws DataAccessException {
+				return null;
+			}
+
+			@Override
+			public Serializable save(Object entity) throws DataAccessException {
+				return null;
+			}
+
+			@Override
+			public void flush() throws DataAccessException {
+			}
+		};
+
 		final EntrepriseEventListener listener = new EntrepriseEventListener();
 		listener.setEsbTemplate(esbTemplate);
 		listener.setDataEventService(dataEventService);
 		listener.setIndexer(indexer);
+		listener.setHibernateTemplate(hibernateTemplate);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/pm/EvenementEntreprise.xsd")});
