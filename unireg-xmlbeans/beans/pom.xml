@@ -13,7 +13,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>uniregctb-xmlbeans-base</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>1.28</version>
+		<version>1.29</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>

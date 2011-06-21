@@ -43,6 +43,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="TIERS"/>
 			<xs:enumeration value="INDIVIDU"/>
+			<xs:enumeration value="PM"/>
 			<xs:enumeration value="DROIT_ACCES"/>
 		</xs:restriction>
 	</xs:simpleType>
