@@ -211,7 +211,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 * @param infoEnteteDocument l'entête du document XML dont il faut compléter les informations
 	 * @return les informations de l'expéditeur
 	 * @throws ServiceInfrastructureException en cas de problème avec le service infrastructure
-	 * @throws AdresseException        en cas de problème avec les adresses
+	 * @throws AdresseException               en cas de problème avec les adresses
 	 */
 	private Expediteur remplitExpediteur(Declaration declaration, InfoEnteteDocument infoEnteteDocument) throws AdresseException, ServiceInfrastructureException {
 		//
@@ -303,7 +303,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 * Alimente un objet DI
 	 */
 	protected DI remplitSpecifiqueDI(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
-		final String avecCourrierExplicatif = (isFromBatch ? "O":"N");
+		final String avecCourrierExplicatif = (isFromBatch ? "O" : "N");
 		final DI di = DIDocument.Factory.newInstance().addNewDI();
 		remplitDIRetour(declaration, di);
 		remplitAdresseSuite(declaration, di);
@@ -338,17 +338,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		if (nbAnnexes310 > 0) {
 			a.setAnnexe310(nbAnnexes310);
 		}
-		if(UniregModeHelper.isTestAnnexeDiMode()){
-			if (nbAnnexes320 > 0) {
-				Annexe320Type annexe320 = a.addNewAnnexe320();
-				annexe320.setNombre(nbAnnexes320);
-				annexe320.setAvecCourrierExplicatif(avecCourrierExplicatif);
-				a.setAnnexe320(annexe320);
-			}
-			if (nbAnnexes330 > 0) {
-				a.setAnnexe330(nbAnnexes330);
-			}
-
+		if (nbAnnexes320 > 0) {
+			Annexe320Type annexe320 = a.addNewAnnexe320();
+			annexe320.setNombre(nbAnnexes320);
+			annexe320.setAvecCourrierExplicatif(avecCourrierExplicatif);
+			a.setAnnexe320(annexe320);
+		}
+		if (nbAnnexes330 > 0) {
+			a.setAnnexe330(nbAnnexes330);
 		}
 
 		return di;
@@ -403,11 +400,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 
-
 	/**
-	 * UNIREG-3059  Pour ce qui concerne le gros numéro en gras, l'adresse CEDI XX, et le code à barre :
-	*l'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de laquel l'édition du document a lieu)
-	 *-> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre), alors l'OID doit être l'OID de gestion courant du moment de l'édition du docuement.
+	 * UNIREG-3059  Pour ce qui concerne le gros numéro en gras, l'adresse CEDI XX, et le code à barre : l'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de
+	 * laquel l'édition du document a lieu) -> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre), alors l'OID doit être l'OID de gestion courant du moment de
+	 * l'édition du docuement.
+	 *
 	 * @param declaration
 	 * @return
 	 */

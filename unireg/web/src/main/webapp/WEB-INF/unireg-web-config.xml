@@ -4,7 +4,6 @@
 
 	<bean id="uniregModeHelper" class="ch.vd.uniregctb.utils.UniregModeHelper">
 		<property name="testMode" value="${extprop.testMode}" />
-		<property name="testAnnexeDiMode" value="${extprop.testAnnexeDiMode}" />
 		<property name="standalone" value="${unireg.standalone}" />
 		<property name="environnement" value="${extprop.environnement}"/>
 	</bean>

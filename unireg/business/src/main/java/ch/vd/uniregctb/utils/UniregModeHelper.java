@@ -18,7 +18,6 @@ public class UniregModeHelper implements InitializingBean {
 	private static boolean testMode = false;
 	private static boolean standalone = false;
 	private static String environnement;
-	private static boolean testAnnexeDiMode = false;
 
 	/**
 	 * @return <i>vrai</i> si le mode testing est activé; <i>faux</i> autrement.
@@ -48,14 +47,6 @@ public class UniregModeHelper implements InitializingBean {
 
 	public void setEnvironnement(String environnement) {
 		UniregModeHelper.environnement = environnement;
-	}
-
-	public static boolean isTestAnnexeDiMode() {
-		return testAnnexeDiMode;
-	}
-
-	public void setTestAnnexeDiMode(String v) {
-		testAnnexeDiMode = ("true".equalsIgnoreCase(v) || "1".equals(v) || "yes".equalsIgnoreCase(v));
 	}
 
 	@Override

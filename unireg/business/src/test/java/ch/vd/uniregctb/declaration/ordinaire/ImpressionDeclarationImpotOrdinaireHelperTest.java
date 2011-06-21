@@ -587,8 +587,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	@Test
 	public void testRemplitAnnexe320_Annexe_330() throws Exception {
-		UniregModeHelper testMode = getBean(UniregModeHelper.class, "uniregModeHelper");
-		testMode.setTestAnnexeDiMode("true");//sinon pas d'annexe 320 et 330
 		loadDatabase("ImpressionDeclarationAnnexe_320_330.xml");
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
 		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), false);
@@ -599,6 +597,5 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	    assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 	    assertEquals(1, di.getAnnexes().getAnnexe330());
-		testMode.setTestAnnexeDiMode("false");
 	}
 }
