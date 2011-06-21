@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -144,7 +145,7 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 	 *            the motifFermeture to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_-4CyQPY0Edyw0I40oDFBsg?SETTER"
 	 */
-	public void setMotifFermeture(MotifFor theMotifFermeture) {
+	public void setMotifFermeture(@Nullable MotifFor theMotifFermeture) {
 		// begin-user-code
 		motifFermeture = theMotifFermeture;
 		// end-user-code

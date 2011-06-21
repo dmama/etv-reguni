@@ -939,4 +939,31 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			validationInterceptor.setEnabled(true);
 		}
 	}
+
+	// [SIFISC-719] on vérifie que les rapports de représentation conventionnels ne se chevauchent pas
+	@Test
+	public void testRapportsRepresentationConventionnels() throws Exception {
+
+		final PersonnePhysique representant = addNonHabitant("Lionel", "Schtroumpf", date(1954, 7, 23), Sexe.MASCULIN);
+
+		final PersonnePhysique pp = addNonHabitant("Gérard", "Stöpötz", date(1954, 7, 23), Sexe.MASCULIN);
+		assertFalse(validate(pp).hasErrors());
+
+		// on ajoute une première représentation conventionnelle : ok
+		addRepresentationConventionnelle(pp, representant, date(1990, 1, 1), date(1999, 12, 31), false);
+		assertFalse(validate(pp).hasErrors());
+
+		// on ajoute une deuxième représentation conventionnelle qui ne chevauche pas le premier : ok
+		addRepresentationConventionnelle(pp, representant, date(2005, 1, 1), date(2005, 12, 31), false);
+		assertFalse(validate(pp).hasErrors());
+
+		// on ajoute une troisième représentation conventionnelle qui chevauche le seconde : ok
+		addRepresentationConventionnelle(pp, representant, date(2005, 7, 1), date(2009, 12, 31), false);
+		final ValidationResults results = validate(pp);
+		assertTrue(results.hasErrors());
+
+		final List<String> errors = results.getErrors();
+		assertEquals(1, errors.size());
+		assertEquals("La période [01.07.2005 ; 31.12.2005] est couverte par plusieurs représentations conventionnelles", errors.get(0));
+	}
 }

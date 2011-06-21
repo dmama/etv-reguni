@@ -11,8 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
@@ -154,47 +152,15 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 					mesures.add(r);
 				}
 			}
-			if (mesures != null) {
-				final int size = mesures.size();
-				if (size > 1) {
-					final List<DateRange> intersectingRanges = new ArrayList<DateRange>(size);
-					for (int i = 0 ; i < size - 1 ; ++ i) {
-						final DateRange mesure = mesures.get(i);
-						for (DateRange autreMesure : mesures.subList(i + 1, size)) {
-							final DateRange intersection = DateRangeHelper.intersection(mesure, autreMesure);
-							if (intersection != null) {
-								intersectingRanges.add(intersection);
-							}
-						}
-					}
 
-					if (intersectingRanges.size() > 0) {
-						Collections.sort(intersectingRanges, new DateRangeComparator<DateRange>());
-
-						final List<DateRange> merge = new ArrayList<DateRange>(intersectingRanges.size());
-						DateRange current = null;
-						for (DateRange range : intersectingRanges) {
-							if (current == null) {
-								current = range;
-							}
-							else if (DateRangeHelper.intersect(current, range) || DateRangeHelper.isCollatable(current, range)) {
-								current = new DateRangeHelper.Range(RegDateHelper.minimum(current.getDateDebut(), range.getDateDebut(), NullDateBehavior.EARLIEST),
-								                                    RegDateHelper.maximum(current.getDateFin(), range.getDateFin(), NullDateBehavior.LATEST));
-							}
-							else {
-								merge.add(current);
-								current = range;
-							}
-						}
-						merge.add(current);
-
-						// génération des messages d'erreur
-						for (DateRange range : merge) {
-							results.addError(String.format("La période %s est couverte par plusieurs mesures tutélaires", DateRangeHelper.toDisplayString(range)));
-						}
-					}
+			final List<DateRange> intersections = determineIntersectingRanges(mesures);
+			if (intersections != null) {
+				// génération des messages d'erreur
+				for (DateRange range : intersections) {
+					results.addError(String.format("La période %s est couverte par plusieurs mesures tutélaires", DateRangeHelper.toDisplayString(range)));
 				}
 			}
+
 		}
 
 		return results;

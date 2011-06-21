@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,15 +15,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.dbunit.DatabaseUnitException;
-import org.dbunit.database.CachedResultSetTableFactory;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.ForwardOnlyResultSetTableFactory;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.database.IResultSetTableFactory;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.CachedDataSet;
-import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.csv.CsvProducer;
 import org.dbunit.dataset.stream.IDataSetProducer;
@@ -392,61 +386,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	}
 
-
-
-	/**
-	 *
-	 * @param connection
-	 * @param tables
-	 * @param forwardonly
-	 * @return
-	 * @throws DatabaseUnitException
-	 */
-	protected IDataSet getDatabaseDataSet(IDatabaseConnection connection, String[] tables, boolean forwardonly)
-			throws DatabaseUnitException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("getDatabaseDataSet(connection=" + connection + ", tables=" + Arrays.toString(tables) + ", forwardonly=" + forwardonly
-					+ ") - start");
-		}
-
-		try {
-			// Setup the ResultSet table factory
-			IResultSetTableFactory factory;
-			if (forwardonly) {
-				factory = new ForwardOnlyResultSetTableFactory();
-			}
-			else {
-				factory = new CachedResultSetTableFactory();
-			}
-			DatabaseConfig config = connection.getConfig();
-			config.setProperty(DatabaseConfig.PROPERTY_RESULTSET_TABLE_FACTORY, factory);
-
-			// Retrieve the complete database if no tables or queries specified.
-			if (tables == null || tables.length == 0) {
-				return connection.createDataSet();
-			}
-
-			List<QueryDataSet> queryDataSets = new ArrayList<QueryDataSet>();
-
-			QueryDataSet queryDataSet = new QueryDataSet(connection);
-
-			for (String item : tables) {
-				queryDataSet.addTable(item);
-			}
-
-			if (queryDataSet.getTableNames().length > 0)
-				queryDataSets.add(queryDataSet);
-
-			IDataSet[] dataSetsArray = new IDataSet[queryDataSets.size()];
-			return new CompositeDataSet(queryDataSets.toArray(dataSetsArray));
-		}
-		catch (SQLException e) {
-			logger.error("getDatabaseDataSet()", e);
-
-			throw new DatabaseUnitException(e);
-		}
-	}
-
 	/**
 	 *
 	 * @param src
@@ -542,7 +481,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertForDebiteur(debut, null, taf, noOFS, forFiscal);
 	}
 
-	protected static void assertForDebiteur(RegDate debut, RegDate fin, TypeAutoriteFiscale taf, int noOFS, ForDebiteurPrestationImposable forFiscal) {
+	protected static void assertForDebiteur(RegDate debut, @Nullable RegDate fin, TypeAutoriteFiscale taf, int noOFS, ForDebiteurPrestationImposable forFiscal) {
 		Assert.assertEquals(debut, forFiscal.getDateDebut());
 		Assert.assertEquals(fin, forFiscal.getDateFin());
 		Assert.assertEquals(taf, forFiscal.getTypeAutoriteFiscale());
@@ -598,7 +537,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpot tache) {
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, @Nullable CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpot tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
 		assertEquals(dateEcheance, tache.getDateEcheance());
@@ -618,7 +557,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
 	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpot tache) {
-		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour,null, tache);
+		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, null, tache);
 
 	}
 
@@ -698,7 +637,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		PeriodeFiscale periode = new PeriodeFiscale();
 		periode.setAnnee(annee);
 		periode.setAllPeriodeFiscaleParametres(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
-		return (PeriodeFiscale) hibernateTemplate.merge(periode);
+		return hibernateTemplate.merge(periode);
 	}
 
 	/**
@@ -710,7 +649,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		ModeleDocument doc = new ModeleDocument();
 		doc.setTypeDocument(type);
 		doc.setModelesFeuilleDocument(new HashSet<ModeleFeuilleDocument>());
-		doc = (ModeleDocument) hibernateTemplate.merge(doc);
+		doc = hibernateTemplate.merge(doc);
 		periode.addModeleDocument(doc);
 		return doc;
 	}
@@ -725,7 +664,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		feuille.setNumeroFormulaire(numero);
 		feuille.setIntituleFeuille(intitule);
 		feuille.setModeleDocument(modeleDoc);
-		feuille = (ModeleFeuilleDocument) hibernateTemplate.merge(feuille);
+		feuille = hibernateTemplate.merge(feuille);
 		return feuille;
 	}
 
@@ -773,7 +712,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	                                                     Contribuable contribuable, Qualification qualification, CollectiviteAdministrative colAdm) {
 		TacheEnvoiDeclarationImpot tache =
 				new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, TypeAdresseRetour.CEDI, colAdm);
-		tache = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(tache);
+		tache = hibernateTemplate.merge(tache);
 		return tache;
 	}
 
@@ -783,7 +722,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected TacheAnnulationDeclarationImpot addTacheAnnulDI(TypeEtatTache etat, RegDate dateEcheance, DeclarationImpotOrdinaire declaration, Contribuable contribuable,
 	                                                          CollectiviteAdministrative colAdm) {
 		TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(etat, dateEcheance, contribuable, declaration, colAdm);
-		tache = (TacheAnnulationDeclarationImpot) hibernateTemplate.merge(tache);
+		tache = hibernateTemplate.merge(tache);
 		return tache;
 	}
 
@@ -792,56 +731,56 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 */
 	protected TacheControleDossier addTacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, CollectiviteAdministrative colAdm) {
 		TacheControleDossier tache = new TacheControleDossier(etat, dateEcheance, contribuable, colAdm);
-		tache = (TacheControleDossier) hibernateTemplate.merge(tache);
+		tache = hibernateTemplate.merge(tache);
 		return tache;
 	}
 
 	protected TacheTransmissionDossier addTacheTransmission(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheTransmissionDossier transmission = new TacheTransmissionDossier(etat, date(2010, 1, 1), ctb, ca);
-		transmission = (TacheTransmissionDossier) hibernateTemplate.merge(transmission);
+		transmission = hibernateTemplate.merge(transmission);
 		return transmission;
 	}
 
 	protected TacheNouveauDossier addTacheNouveau(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheNouveauDossier nouveau = new TacheNouveauDossier(etat, date(2010, 1, 1), ctb, ca);
-		nouveau = (TacheNouveauDossier) hibernateTemplate.merge(nouveau);
+		nouveau = hibernateTemplate.merge(nouveau);
 		return nouveau;
 	}
 
 	protected TacheControleDossier addTacheControle(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheControleDossier controle = new TacheControleDossier(etat, date(2010, 1, 1), ctb, ca);
-		controle = (TacheControleDossier) hibernateTemplate.merge(controle);
+		controle = hibernateTemplate.merge(controle);
 		return controle;
 	}
 
 	protected PersonnePhysique addHabitant(long noIndividu) {
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(noIndividu);
-		return (PersonnePhysique) hibernateTemplate.merge(hab);
+		return hibernateTemplate.merge(hab);
 	}
 
 	protected PersonnePhysique addHabitant(long noTiers, long noIndividu) {
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(noTiers);
 		hab.setNumeroIndividu(noIndividu);
-		return (PersonnePhysique) hibernateTemplate.merge(hab);
+		return hibernateTemplate.merge(hab);
 	}
 
 	/**
 	 * Crée et ajoute dans la base de données un non-habitant minimal.
 	 */
-	protected PersonnePhysique addNonHabitant(@Nullable String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+	protected PersonnePhysique addNonHabitant(@Nullable String prenom, String nom, @Nullable RegDate dateNaissance, Sexe sexe) {
 		return addNonHabitant(null, prenom, nom, dateNaissance, sexe);
 	}
 
-	protected PersonnePhysique addNonHabitant(Long noTiers, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+	protected PersonnePhysique addNonHabitant(@Nullable Long noTiers, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNumero(noTiers);
 		nh.setPrenom(prenom);
 		nh.setNom(nom);
 		nh.setDateNaissance(dateNaissance);
 		nh.setSexe(sexe);
-		return (PersonnePhysique) hibernateTemplate.merge(nh);
+		return hibernateTemplate.merge(nh);
 	}
 
 	/**
@@ -854,7 +793,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		rapport.setObjet(menage);
 		rapport.setSujet(pp);
 		rapport.setAnnule(annule);
-		rapport = (AppartenanceMenage) hibernateTemplate.merge(rapport);
+		rapport = hibernateTemplate.merge(rapport);
 
 		menage.addRapportObjet(rapport);
 		pp.addRapportSujet(rapport);
@@ -872,14 +811,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
-	protected EnsembleTiersCouple addEnsembleTiersCouple(Long noTiers, PersonnePhysique principal, @Nullable PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
+	protected EnsembleTiersCouple addEnsembleTiersCouple(@Nullable Long noTiers, PersonnePhysique principal, @Nullable PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
 
 		MenageCommun menage = new MenageCommun();
 		menage.setNumero(noTiers);
-		menage = (MenageCommun) hibernateTemplate.merge(menage);
-		principal = (PersonnePhysique) hibernateTemplate.merge(principal);
+		menage = hibernateTemplate.merge(menage);
+		principal = hibernateTemplate.merge(principal);
 		if (conjoint != null) {
-			conjoint = (PersonnePhysique) hibernateTemplate.merge(conjoint);
+			conjoint = hibernateTemplate.merge(conjoint);
 		}
 
 		addAppartenanceMenage(menage, principal, dateMariage, dateFin, false);
@@ -897,7 +836,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, @Nullable CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, @Nullable RegDate dateFin) {
 		Tutelle rapport = new Tutelle(dateDebut, dateFin, pupille, tuteur, autoriteTutelaire);
-		rapport = (Tutelle) hibernateTemplate.merge(rapport);
+		rapport = hibernateTemplate.merge(rapport);
 		tuteur.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
 		return rapport;
@@ -905,7 +844,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 		Curatelle rapport = new Curatelle(dateDebut, dateFin, pupille, curateur, null);
-		rapport = (Curatelle) hibernateTemplate.merge(rapport);
+		rapport = hibernateTemplate.merge(rapport);
 		curateur.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
 		return rapport;
@@ -917,7 +856,20 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		rapport.setObjet(representant);
 		rapport.setSujet(represente);
 		rapport.setExtensionExecutionForcee(extensionExecutionForcee);
-		rapport = (RepresentationConventionnelle) hibernateTemplate.merge(rapport);
+		rapport = hibernateTemplate.merge(rapport);
+		representant.addRapportObjet(rapport);
+		represente.addRapportSujet(rapport);
+		return rapport;
+	}
+
+	protected RepresentationConventionnelle addRepresentationConventionnelle(Tiers represente, Tiers representant, RegDate dateDebut, @Nullable RegDate dateFin, boolean extensionExecutionForcee) {
+		RepresentationConventionnelle rapport = new RepresentationConventionnelle();
+		rapport.setDateDebut(dateDebut);
+		rapport.setDateFin(dateFin);
+		rapport.setObjet(representant);
+		rapport.setSujet(represente);
+		rapport.setExtensionExecutionForcee(extensionExecutionForcee);
+		rapport = hibernateTemplate.merge(rapport);
 		representant.addRapportObjet(rapport);
 		represente.addRapportSujet(rapport);
 		return rapport;
@@ -925,7 +877,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected ConseilLegal addConseilLegal(PersonnePhysique pupille, Tiers conseiller, RegDate dateDebut, @Nullable RegDate dateFin) {
 		ConseilLegal rapport = new ConseilLegal(dateDebut, dateFin, pupille, conseiller, null);
-		rapport = (ConseilLegal) hibernateTemplate.merge(rapport);
+		rapport = hibernateTemplate.merge(rapport);
 		conseiller.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
 		return rapport;
@@ -934,22 +886,22 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected AutreCommunaute addAutreCommunaute(String nom) {
 		final AutreCommunaute communaute = new AutreCommunaute();
 		communaute.setNom(nom);
-		return (AutreCommunaute) hibernateTemplate.merge(communaute);
+		return hibernateTemplate.merge(communaute);
 	}
 
 	protected DebiteurPrestationImposable addDebiteur() {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-		dpi = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi);
+		dpi = hibernateTemplate.merge(dpi);
 		return dpi;
 	}
 
 	protected DebiteurPrestationImposable addDebiteur(String complementNom, Contribuable ctbLie, RegDate dateDebutContact) {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setComplementNom(complementNom);
-		dpi = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi);
+		dpi = hibernateTemplate.merge(dpi);
 
 		ContactImpotSource rapport = new ContactImpotSource(dateDebutContact, null, ctbLie, dpi);
-		rapport = (ContactImpotSource) hibernateTemplate.merge(rapport);
+		rapport = hibernateTemplate.merge(rapport);
 
 		dpi.addRapportObjet(rapport);
 		ctbLie.addRapportSujet(rapport);
@@ -960,14 +912,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Entreprise addEntreprise(Long numeroEntreprise) {
 		Entreprise ent = new Entreprise();
 		ent.setNumero(numeroEntreprise);
-		ent = (Entreprise) hibernateTemplate.merge(ent);
+		ent = hibernateTemplate.merge(ent);
 		return ent;
 	}
 
 	protected CollectiviteAdministrative addCollAdm(int numero) {
 		CollectiviteAdministrative ca = new CollectiviteAdministrative();
 		ca.setNumeroCollectiviteAdministrative(numero);
-		ca = (CollectiviteAdministrative) hibernateTemplate.merge(ca);
+		ca = hibernateTemplate.merge(ca);
 		return ca;
 	}
 
@@ -1021,7 +973,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		da.setNiveau(niveau);
 		da.setTiers(pp);
 
-		da = (DroitAcces) hibernateTemplate.merge(da);
+		da = hibernateTemplate.merge(da);
 		return da;
 	}
 

@@ -358,7 +358,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param thePrenom the prenom to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8P1x9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setPrenom(String thePrenom) {
+	public void setPrenom(@Nullable String thePrenom) {
 		prenom = thePrenom;
 	}
 

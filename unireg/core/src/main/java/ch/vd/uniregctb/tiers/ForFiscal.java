@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -197,7 +198,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 * @param theDateFermeture the dateFermeture to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8yVx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setDateFin(RegDate date) {
+	public void setDateFin(@Nullable RegDate date) {
 		// begin-user-code
 		dateFin = date;
 		// end-user-code
