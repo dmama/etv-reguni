@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -47,6 +48,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -70,12 +72,13 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	private static final RegDate DATE_FUTURE = RegDate.get(2020, 11, 19);
 	private static final RegDate DATE_ANCIENNE_ADRESSE = RegDate.get(1970, 11, 19);
 	private static final RegDate DATE_ANTERIEURE_ANCIENNE_ADRESSE = RegDate.get(1940, 11, 19);
+	private ValidationService validationService;
 
 	@Override
 	public void onSetUp() throws Exception {
-
 		super.onSetUp();
 		serviceCivil.setUp(new DefaultMockServiceCivil());
+		validationService = getBean(ValidationService.class, "validationService");
 	}
 
 	@Test
@@ -571,6 +574,59 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
 		assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+	}
+
+	/**
+	 * Vérifie que un événement d'arrivée génère bien un warning si le contribuable arrive à dans Bourg-en-Lavaux pendant la période où les communes sont
+	 * fusionnées au civil, mais pas encore au fiscal et que l'egid n'est pas mentionné dans l'adresse.
+	 */
+	@Test
+	public void testArriveeDansUneCommuneFusionneeAuCivilMaisPasAuFiscalSansEgid() throws Exception {
+
+		final Long noInd = 1234L;
+		final RegDate dateDemenagement = date(2010, 9, 1); // fusion des communes au 1 juillet 2010
+
+		// Crée un individu qui arrive dans une commune fusionnée pendant la période où elles sont fusionnées au civil, mais pas encore au fiscal
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Zbinden", "Arnold", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
+				// note: la localité de Grandvaux fait partie de la commune fusionnée Bourg-en-Lavaux
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Riex.RueDuCollege, null, dateDemenagement, null);
+				addNationalite(ind, MockPays.Suisse, date(1970, 1, 1), null, 1);
+			}
+		});
+
+		final PersonnePhysique pp = addHabitant(noInd);
+		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+
+		// Simule un événement d'arrivée de la part de la commune fusionnée
+		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+
+		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
+		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
+		org.junit.Assert.assertNotNull(interne);
+		assertInstanceOf(Arrivee.class, interne);
+
+		final Arrivee arrivee = (Arrivee) interne;
+
+		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+
+		arrivee.checkCompleteness(erreurs, warnings);
+		arrivee.validate(erreurs, warnings);
+		arrivee.handle(warnings);
+
+		if (!erreurs.isEmpty()) {
+			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+		}
+
+		final ValidationResults results = validationService.validate(pp);
+		assertEquals(1, results.warningsCount());
+		assertEquals("La période de validité du for fiscal ForFiscalPrincipal (01.09.2010 - ?) dépasse " +
+				"la période de validité de la commune Bourg-en-Lavaux (5613) à laquelle il est assigné (31.12.2010 - ?)", results.getWarnings().get(0));
 	}
 
 	/**
