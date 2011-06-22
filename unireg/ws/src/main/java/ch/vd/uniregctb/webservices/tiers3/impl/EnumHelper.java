@@ -290,4 +290,18 @@ public abstract class EnumHelper {
 		Assert.notNull(type);
 		return type;
 	}
+
+	public static String coreToEch44(ch.vd.uniregctb.type.Sexe sexe) {
+		if (sexe == null) {
+			return null;
+		}
+		switch (sexe) {
+		case MASCULIN:
+			return "1";
+		case FEMININ:
+			return "2";
+		default:
+			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + "]");
+		}
+	}
 }

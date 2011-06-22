@@ -7,6 +7,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ech.xmlns.ech_0044._2.DatePartiallyKnown;
+import ch.ech.xmlns.ech_0044._2.PersonIdentification;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -37,7 +39,6 @@ import ch.vd.unireg.webservices.tiers3.PersonnePhysique;
 import ch.vd.unireg.webservices.tiers3.RapportEntreTiers;
 import ch.vd.unireg.webservices.tiers3.SearchTiersRequest;
 import ch.vd.unireg.webservices.tiers3.SearchTiersResponse;
-import ch.vd.unireg.webservices.tiers3.Sexe;
 import ch.vd.unireg.webservices.tiers3.SituationFamille;
 import ch.vd.unireg.webservices.tiers3.TarifImpotSource;
 import ch.vd.unireg.webservices.tiers3.Tiers;
@@ -125,7 +126,10 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final PersonnePhysique tiers = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(tiers);
-		assertEquals("7565789312435", tiers.getNouveauNumeroAssureSocial());
+
+		final PersonIdentification identification = tiers.getIdentification();
+		assertNotNull(identification);
+		assertEquals(Long.valueOf(7565789312435L), identification.getVn());
 	}
 
 	@Test
@@ -137,7 +141,10 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final PersonnePhysique tiers = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(tiers);
-		assertEquals("Pirez", tiers.getNom());
+
+		final PersonIdentification identification = tiers.getIdentification();
+		assertNotNull(identification);
+		assertEquals("Pirez", identification.getOfficialName());
 	}
 
 	@Test
@@ -149,7 +156,10 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final PersonnePhysique tiers = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(tiers);
-		assertEquals("Isidor", tiers.getPrenom());
+
+		final PersonIdentification identification = tiers.getIdentification();
+		assertNotNull(identification);
+		assertEquals("Isidor", identification.getFirstName());
 	}
 
 	@Test
@@ -162,6 +172,18 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final PersonnePhysique tiers = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(tiers);
 		assertSameDay(newDate(1971, 1, 23), tiers.getDateNaissance());
+
+		final PersonIdentification identification = tiers.getIdentification();
+		assertNotNull(identification);
+		final DatePartiallyKnown date = identification.getDateOfBirth();
+		assertNotNull(date);
+		assertNull(date.getYear());
+		assertNull(date.getYearMonth());
+		final XMLGregorianCalendar cal = date.getYearMonthDay();
+		assertNotNull(cal);
+		assertEquals(1971, cal.getYear());
+		assertEquals(1, cal.getMonth());
+		assertEquals(23, cal.getDay());
 	}
 
 	@Test
@@ -218,8 +240,11 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final PersonnePhysique tiers = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(tiers);
-		assertEquals("Pirez", tiers.getNom());
-		assertEquals("Isidor", tiers.getPrenom());
+
+		final PersonIdentification identification = tiers.getIdentification();
+		assertNotNull(identification);
+		assertEquals("Pirez", identification.getOfficialName());
+		assertEquals("Isidor", identification.getFirstName());
 
 		// Recherche de l'historique de la situation de famille du sourcier
 		final List<SituationFamille> situations = tiers.getSituationsFamille();
@@ -492,9 +517,12 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
 		assertNotNull(personne);
 
-		assertEquals("Sabri Inanç", personne.getPrenom());
-		assertEquals("Ertem", trimValiPattern(personne.getNom()));
-		assertEquals(Sexe.MASCULIN, personne.getSexe());
+		final PersonIdentification identification = personne.getIdentification();
+		assertNotNull(identification);
+
+		assertEquals("Sabri Inanç", identification.getFirstName());
+		assertEquals("Ertem", trimValiPattern(identification.getOfficialName()));
+		assertEquals("1", identification.getSex());
 	}
 
 	@Test

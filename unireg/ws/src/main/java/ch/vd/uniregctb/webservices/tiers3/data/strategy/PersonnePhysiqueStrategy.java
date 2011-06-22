@@ -2,16 +2,21 @@ package ch.vd.uniregctb.webservices.tiers3.data.strategy;
 
 import java.util.Set;
 
+import ch.ech.xmlns.ech_0044._2.NamedPersonId;
+import ch.ech.xmlns.ech_0044._2.PersonIdentification;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.unireg.webservices.tiers3.CategoriePersonnePhysique;
 import ch.vd.unireg.webservices.tiers3.PersonnePhysique;
-import ch.vd.unireg.webservices.tiers3.Sexe;
 import ch.vd.unireg.webservices.tiers3.TiersPart;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
@@ -43,17 +48,9 @@ public class PersonnePhysiqueStrategy extends ContribuableStrategy<PersonnePhysi
 
 		final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) from;
 		if (!personne.isHabitantVD()) {
-			to.setNom(personne.getNom());
-			to.setPrenom(personne.getPrenom());
+			to.setIdentification(newPersonIdentification(personne));
 			to.setDateNaissance(DataHelper.coreToWeb(personne.getDateNaissance()));
-			to.setSexe(EnumHelper.coreToWeb(personne.getSexe()));
 			to.setDateDeces(DataHelper.coreToWeb(personne.getDateDeces()));
-			for (ch.vd.uniregctb.tiers.IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
-				if (ident.getCategorieIdentifiant() == ch.vd.uniregctb.type.CategorieIdentifiant.CH_AHV_AVS) {
-					to.setAncienNumeroAssureSocial(ident.getIdentifiant());
-				}
-			}
-			to.setNouveauNumeroAssureSocial(personne.getNumeroAssureSocial());
 			to.setDateArrivee(DataHelper.coreToWeb(personne.getDateDebutActivite()));
 			to.setCategorie(EnumHelper.coreToWeb(personne.getCategorieEtranger()));
 		}
@@ -68,13 +65,9 @@ public class PersonnePhysiqueStrategy extends ContribuableStrategy<PersonnePhysi
 			}
 
 			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getDernierHistoriqueIndividu();
-			to.setNom(data.getNom());
-			to.setPrenom(data.getPrenom());
+			to.setIdentification(newPersonIdentification(individu, data));
 			to.setDateNaissance(DataHelper.coreToWeb(individu.getDateNaissance()));
-			to.setSexe((individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ));
 			to.setDateDeces(DataHelper.coreToWeb(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
-			to.setNouveauNumeroAssureSocial(individu.getNouveauNoAVS());
-			to.setAncienNumeroAssureSocial(data.getNoAVS());
 			to.setDateArrivee(DataHelper.coreToWeb(data.getDateDebutValidite()));
 
 			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermisActif(null);
@@ -85,20 +78,47 @@ public class PersonnePhysiqueStrategy extends ContribuableStrategy<PersonnePhysi
 				to.setCategorie(EnumHelper.coreToWeb(permis.getTypePermis()));
 			}
 		}
-
 	}
 
 	@Override
 	protected void copyBase(PersonnePhysique to, PersonnePhysique from) {
 		super.copyBase(to, from);
-		to.setNom(from.getNom());
-		to.setPrenom(from.getPrenom());
+		to.setIdentification(cloneIdentification(from.getIdentification()));
 		to.setDateNaissance(from.getDateNaissance());
-		to.setSexe(from.getSexe());
 		to.setDateDeces(from.getDateDeces());
-		to.setAncienNumeroAssureSocial(from.getAncienNumeroAssureSocial());
-		to.setNouveauNumeroAssureSocial(from.getNouveauNumeroAssureSocial());
 		to.setDateArrivee(from.getDateArrivee());
 		to.setCategorie(from.getCategorie());
+	}
+
+	private static PersonIdentification newPersonIdentification(ch.vd.uniregctb.tiers.PersonnePhysique personne) {
+		final PersonIdentification identification = new PersonIdentification();
+		identification.setOfficialName(personne.getNom());
+		identification.setFirstName(personne.getPrenom());
+		identification.setSex(EnumHelper.coreToEch44(personne.getSexe()));
+		identification.setVn(DataHelper.avs13ToEch44(personne.getNumeroAssureSocial()));
+		for (ch.vd.uniregctb.tiers.IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
+			identification.getOtherPersonId().add(new NamedPersonId(ident.getCategorieIdentifiant().name(), ident.getIdentifiant()));
+		}
+		identification.setDateOfBirth(DataHelper.coreToEch44(personne.getDateNaissance()));
+		return identification;
+	}
+
+	private static PersonIdentification newPersonIdentification(Individu individu, HistoriqueIndividu data) {
+		final PersonIdentification identification = new PersonIdentification();
+		identification.setOfficialName(data.getNom());
+		identification.setFirstName(data.getPrenom());
+		identification.setSex(EnumHelper.coreToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));
+		identification.setVn(DataHelper.avs13ToEch44(individu.getNouveauNoAVS()));
+		if (StringUtils.isNotBlank(data.getNoAVS())) {
+			identification.getOtherPersonId().add(new NamedPersonId(CategorieIdentifiant.CH_AHV_AVS.name(), data.getNoAVS()));
+		}
+		identification.setDateOfBirth(DataHelper.coreToEch44(individu.getDateNaissance()));
+		return identification;
+	}
+
+	private static PersonIdentification cloneIdentification(PersonIdentification identification) {
+		return new PersonIdentification(identification.getVn(), identification.getLocalPersonId(), DataHelper.deepClone(identification.getOtherPersonId()), DataHelper
+				.deepClone(identification.getEuPersonId()), identification.getOfficialName(), identification.getFirstName(), identification.getSex(),
+				DataHelper.clone(identification.getDateOfBirth()));
 	}
 }

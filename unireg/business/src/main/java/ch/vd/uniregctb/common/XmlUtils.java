@@ -55,7 +55,18 @@ public abstract class XmlUtils {
 		if (cal == null) {
 			return null;
 		}
-		return RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
+		final int year = cal.getYear();
+		final int month = cal.getMonth();
+		final int day = cal.getDay();
+		if (month == DatatypeConstants.FIELD_UNDEFINED) {
+			return RegDate.get(year);
+		}
+		else if (day == DatatypeConstants.FIELD_UNDEFINED) {
+			return RegDate.get(year, month);
+		}
+		else {
+			return RegDate.get(year, month, day);
+		}
 	}
 
 	public static Date xmlcal2date(XMLGregorianCalendar cal) {
@@ -69,7 +80,10 @@ public abstract class XmlUtils {
 		if (date == null) {
 			return null;
 		}
-		return getDataTypeFactory().newXMLGregorianCalendar(date.year(), date.month(), date.day(), 0, 0, 0, 0, DatatypeConstants.FIELD_UNDEFINED);
+		final int year = date.year();
+		final int month = (date.month() == RegDate.UNDEFINED ? DatatypeConstants.FIELD_UNDEFINED : date.month());
+		final int day = (date.day() == RegDate.UNDEFINED ? DatatypeConstants.FIELD_UNDEFINED : date.day());
+		return getDataTypeFactory().newXMLGregorianCalendar(year, month, day, 0, 0, 0, 0, DatatypeConstants.FIELD_UNDEFINED);
 	}
 
 	private static DatatypeFactory getDataTypeFactory() {
