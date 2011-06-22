@@ -631,6 +631,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 
 		infoDI.setCODBARR(codbarr);
+
+		// TODO BNM (affecter une valeur sensée à ce code trame, qui est obligatoire)
+		infoDI.setCODETRAME("T");       // T comme TEST
 	}
 
 	/**
