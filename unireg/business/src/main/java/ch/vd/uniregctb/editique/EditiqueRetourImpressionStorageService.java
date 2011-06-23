@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.editique;
 
+import java.util.Collection;
 import java.util.Date;
+
+import ch.vd.registre.base.utils.Pair;
 
 /**
  * Service qui maintient la donnée des impressions directes éditiques qui reviennent
@@ -62,5 +65,10 @@ public interface EditiqueRetourImpressionStorageService {
 	 * @return la date de la dernière purge de document (ou <code>null</null> si aucune purge n'a jamais été effectuée)
 	 */
 	Date getDateDernierePurgeEffective();
+
+	/**
+	 * @return les triggers enregistrés en attente de la réception de documents, le Long de la paire étant le timestamp {@link System#nanoTime()} au moment de l'enregistrement de chaque trigger
+	 */
+	Collection<Pair<Long, RetourImpressionTrigger>> getTriggersEnregistres();
 
 }

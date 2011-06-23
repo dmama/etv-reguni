@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -120,15 +121,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, dateEvenement, null, buildDefaultAnnexes(declaration), false, true);
+		return imprimeDIOnline(declaration, dateEvenement, declaration.getTypeDeclaration(), buildDefaultAnnexes(declaration), false);
 	}
 
 	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true, false);
+		return imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata, boolean forceSynchrone) throws EditiqueException, JMSException {
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes, false);
@@ -145,13 +146,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		editiqueDI.setDocumentArray(documents);
 		final String typeDocumentMessage = impressionDIHelper.calculPrefixe(declaration);
 		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
-		if (forceSynchrone) {
-			return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, TypeFormat.PCL, mainDocument, false);
-		}
-		else {
-			final String description = String.format("Document '%s %d' du contribuable %s", typeDocument.getDescription(), declaration.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-			return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, TypeFormat.PCL, mainDocument, false, description);
-		}
+
+		final String description = String.format("Document '%s %d' du contribuable %s", typeDocument.getDescription(), declaration.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, TypeFormat.PCL, mainDocument, false, description);
 	}
 
 	@Override
@@ -216,7 +213,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createOnlineParams(declaration, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur(), dateEvenement);
 		final FichierImpressionDocument document = impressionSommationDIHelper.remplitSommationDI(params);
 		final String nomDocument = impressionSommationDIHelper.construitIdDocument(declaration);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PDF, document, true);
+
+		final String description = String.format("Sommation de la déclaration d'impôt %d du contribuable %s", declaration.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, TypeFormat.PDF, document, true, description);
 	}
 
 	/**
@@ -270,7 +269,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1]);
 		final FichierImpressionDocument document = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params);
 		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(delai);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PDF, document, false);
+
+		final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",
+		                                         RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()), di.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, TypeFormat.PDF, document, false, description);
 	}
 
 	@Override
@@ -287,7 +289,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String prefixe = impressionTaxationOfficeHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionTaxationOfficeHelper.remplitTaxationOffice(declaration);
 		final String nomDocument = impressionTaxationOfficeHelper.construitIdDocument(declaration);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PCL, document, false);
+
+		final String description = String.format("TO de la déclaration d'impôt %d du contribuable %s", declaration.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, prefixe, TypeFormat.PCL, document, false, description);
 	}
 
 	@Override

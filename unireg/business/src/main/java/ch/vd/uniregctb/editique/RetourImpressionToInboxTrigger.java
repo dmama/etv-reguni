@@ -43,4 +43,12 @@ public class RetourImpressionToInboxTrigger implements RetourImpressionTrigger {
 		}
 		inboxService.addDocument(visa, "Impression locale", descriptionEffective, attachment, hoursUntilExpiration);
 	}
+
+	public String getVisa() {
+		return visa;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 }

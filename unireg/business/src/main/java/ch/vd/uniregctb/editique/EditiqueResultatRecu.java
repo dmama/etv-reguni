@@ -7,8 +7,7 @@ package ch.vd.uniregctb.editique;
 public interface EditiqueResultatRecu extends EditiqueResultat {
 
 	/**
-	 * @return le timestamp de la réception de l'événement.
-	 * @see System#currentTimeMillis()
+	 * @return le timestamp de la réception de l'événement (en millisecondes, calculé avec {@link ch.vd.uniregctb.common.TimeHelper#getPreciseCurrentTimeMillis()})
 	 */
 	long getTimestampReceived();
 }

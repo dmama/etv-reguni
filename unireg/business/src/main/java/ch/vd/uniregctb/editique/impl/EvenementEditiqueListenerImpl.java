@@ -12,6 +12,7 @@ import ch.vd.editique.service.enumeration.TypeMessagePropertiesNames;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.common.MimeTypeHelper;
+import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
@@ -69,7 +70,7 @@ public class EvenementEditiqueListenerImpl extends EsbMessageListener implements
 	private EditiqueResultatRecu createResultfromMessage(EsbMessage message) throws IOException {
 
 		final EditiqueResultatRecu resultat;
-		final long timestampReceived = System.currentTimeMillis();
+		final long timestampReceived = TimeHelper.getPreciseCurrentTimeMillis();
 		final String idDocument = message.getHeader(EditiqueHelper.DI_ID);
 		final String error = message.getHeader(TypeMessagePropertiesNames.ERROR_MESSAGE_PROPERTY_NAME.toString());
 		if (StringUtils.isNotBlank(error)) {

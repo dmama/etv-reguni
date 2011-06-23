@@ -2,6 +2,7 @@ package ch.vd.uniregctb.editique;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -125,6 +127,11 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 
 			@Override
 			public Date getDateDernierePurgeEffective() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public Collection<Pair<Long,RetourImpressionTrigger>> getTriggersEnregistres() {
 				throw new NotImplementedException();
 			}
 		});

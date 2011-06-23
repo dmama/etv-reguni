@@ -509,18 +509,26 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return new ModelAndView("redirect:/tache/list.do");
 	}
 
-	private ModelAndView sommerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, final BindException errors) throws Exception {
+	private ModelAndView sommerDI(HttpServletRequest request, HttpServletResponse response, final DeclarationImpotDetailView bean, final BindException errors) throws Exception {
 
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
+		final TraitementRetourEditique inbox = new TraitementRetourEditique() {
+			@Override
+			public ModelAndView doJob(EditiqueResultat resultat) {
+				return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
+			}
+		};
+
 		final TraitementRetourEditique erreurTimeout = new ErreurGlobaleCommunicationEditique(errors);
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalSommationDI(bean);
-		traiteRetourEditique(resultat, response, "sommationDi", null, erreurTimeout, erreurTimeout);
-
-		if (bean.getId() != null) {
-			diEditManager.refresh(bean);
+		final ModelAndView mav = traiteRetourEditique(resultat, response, "sommationDi", inbox, erreurTimeout, erreurTimeout);
+		if (mav == null) {
+			if (bean.getId() != null) {
+				diEditManager.refresh(bean);
+			}
 		}
-		return null;
+		return mav;
 	}
 
 	/**
@@ -541,19 +549,24 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		}
 	}
 
-	private ModelAndView imprimerDelai(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+	private ModelAndView imprimerDelai(HttpServletRequest request, HttpServletResponse response, final DeclarationImpotDetailView bean, BindException errors) throws Exception {
+
+		final TraitementRetourEditique inbox = new TraitementRetourEditique() {
+			@Override
+			public ModelAndView doJob(EditiqueResultat resultat) {
+				return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
+			}
+		};
 
 		final String delai = getEventArgument();
 		final Long idDelai = Long.parseLong(delai);
 		final TraitementRetourEditique erreurTimeout = new ErreurGlobaleCommunicationEditique(errors);
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalConfirmationDelai(bean, idDelai);
-		traiteRetourEditique(resultat, response, "delai", null, erreurTimeout, erreurTimeout);
-
-		if (bean.getId() != null) {
+		final ModelAndView mav = traiteRetourEditique(resultat, response, "delai", inbox, erreurTimeout, erreurTimeout);
+		if (mav == null && bean.getId() != null) {
 			diEditManager.refresh(bean);
 		}
-
-		return null;
+		return mav;
 	}
 
 	private ModelAndView ajouterDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotListView bean, BindException errors) throws Exception {

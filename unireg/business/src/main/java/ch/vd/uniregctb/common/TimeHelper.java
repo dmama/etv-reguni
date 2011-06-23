@@ -174,4 +174,14 @@ public abstract class TimeHelper {
 		}
 	}
 
+	/**
+	 * Renvoie un timestamp qui a la précision de la milliseconde mais qui est plus précis
+	 * que celui renvoyé par {@link System#currentTimeMillis()} - ce timestamp ne peut pas
+	 * être utilisé pour construire une {@link java.util.Date}, seulement pour calculer des
+	 * durées entre deux timestamps
+	 * @return valeur du timestamp
+	 */
+	public static long getPreciseCurrentTimeMillis() {
+		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
+	}
 }

@@ -1,17 +1,22 @@
 package ch.vd.uniregctb.editique.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
@@ -39,8 +44,9 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 
 	/**
 	 * Map des triggers enregistrés pour être déclenchés à la réception de nouveaux retours d'impression
+	 * (le Long est le timestamp donné par {@link System#nanoTime()} au moment de l'enregistrement du trigger)
 	 */
-	private final Map<String, RetourImpressionTrigger> delayedTriggers = new HashMap<String, RetourImpressionTrigger>();
+	private final Map<String, Pair<Long, RetourImpressionTrigger>> delayedTriggers = new HashMap<String, Pair<Long, RetourImpressionTrigger>>();
 
 	/**
 	 * Thread de surveillance du contenu de la map des impressions reçues (voir {@link #impressionsRecues}) et qui
@@ -120,7 +126,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 
 		@Override
 		public void run() {
-			final long tickPrecedent = getTimestampMillis() - cleanupPeriod * 1000L;
+			final long tickPrecedent = TimeHelper.getPreciseCurrentTimeMillis() - cleanupPeriod * 1000L;
 			synchronized (impressionsRecues) {
 				final Iterator<Map.Entry<String, EditiqueResultatRecu>> iterator = impressionsRecues.entrySet().iterator();
 				while (iterator.hasNext()) {
@@ -157,12 +163,17 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 						final Iterator<Map.Entry<String, EditiqueResultatRecu>> iterator = impressionsRecues.entrySet().iterator();
 						while (iterator.hasNext()) {
 							final Map.Entry<String, EditiqueResultatRecu> entry = iterator.next();
-							final RetourImpressionTrigger trigger = delayedTriggers.remove(entry.getKey());
+							final Pair<Long, RetourImpressionTrigger> trigger = delayedTriggers.remove(entry.getKey());
 							if (trigger != null) {
 								iterator.remove();
 								final EditiqueResultatRecu resultat = entry.getValue();
 								try {
-									trigger.trigger(resultat);
+									if (LOGGER.isDebugEnabled()) {
+										final long now = System.nanoTime();
+										final String duration = TimeHelper.formatDuree(TimeUnit.NANOSECONDS.toMillis(now - trigger.getFirst()));
+										LOGGER.debug(String.format("Exécution du trigger enregistré pour le document '%s' il y a %s", resultat.getIdDocument(), duration));
+									}
+									trigger.getSecond().trigger(resultat);
 								}
 								catch (Throwable e) {
 									LOGGER.error(String.format("Exception levée lors du traitement du document '%s' par le trigger associé", resultat.getIdDocument()), e);
@@ -227,7 +238,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		synchronized (impressionsRecues) {
 
 			// on enregistre le trigger ...
-			delayedTriggers.put(nomDocument, trigger);
+			delayedTriggers.put(nomDocument, new Pair<Long, RetourImpressionTrigger>(System.nanoTime(), trigger));
 
 			// .., et on réveille tout le monde : si le document
 			// est en fait déjà là, il sera alors traité par le réveil
@@ -256,13 +267,6 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 	}
 
-	/**
-	 * @return un timestamp correspondant à l'instant actuel en millisecondes
-	 */
-	private static long getTimestampMillis() {
-		return System.nanoTime() / 1000000L;
-	}
-
 	@Override
 	public EditiqueResultat getDocument(String nomDocument, long timeout) {
 
@@ -273,7 +277,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 
 		final long start = serviceTracing.start();
-		final long tsAttente = getTimestampMillis() + timeout;        // on n'attendra pas plus tard...
+		final long tsAttente = TimeHelper.getPreciseCurrentTimeMillis() + timeout;        // on n'attendra pas plus tard...
 
 		synchronized (impressionsRecues) {
 
@@ -285,7 +289,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 				if (resultat == null) {
 
 					// et non, on attends un peu... mais pas trop quand-même !
-					final long tempsRestant = tsAttente - getTimestampMillis();
+					final long tempsRestant = tsAttente - TimeHelper.getPreciseCurrentTimeMillis();
 					if (tempsRestant <= 0) {
 
 						if (LOGGER.isDebugEnabled()) {
@@ -334,5 +338,12 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 	@Override
 	public int getDocumentsRecus() {
 		return receivedDocuments;
+	}
+
+	@Override
+	public Collection<Pair<Long, RetourImpressionTrigger>> getTriggersEnregistres() {
+		synchronized(impressionsRecues) {
+			return new ArrayList<Pair<Long, RetourImpressionTrigger>>(delayedTriggers.values());
+		}
 	}
 }

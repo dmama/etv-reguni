@@ -65,8 +65,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 			public EditiqueResultat onTimeout(EditiqueResultat src) {
 				final String visa = AuthenticationHelper.getCurrentPrincipal();
 				if (LOGGER.isDebugEnabled()) {
-					final String msg = String.format("Retour d'impression un peu lent pour le document '%s', routage demandé vers l'inbox de l'utilisateur %s", nomDocument, visa);
-					LOGGER.debug(msg);
+					LOGGER.debug(String.format("Retour d'impression un peu lent pour le document '%s', routage demandé vers l'inbox de l'utilisateur %s", nomDocument, visa));
 				}
 
 				final RetourImpressionTrigger trigger = new RetourImpressionToInboxTrigger(inboxService, visa, description, hoursRetourImpressionExpiration);
@@ -82,8 +81,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 			@Override
 			public EditiqueResultat onTimeout(EditiqueResultat src) {
 				if (LOGGER.isDebugEnabled()) {
-					final String msg = String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument);
-					LOGGER.debug(msg);
+					LOGGER.debug(String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument));
 				}
 				return src;
 			}

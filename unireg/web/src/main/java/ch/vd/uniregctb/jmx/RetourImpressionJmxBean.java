@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.jmx;
 
+import java.util.List;
+
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 /**
@@ -27,4 +29,7 @@ public interface RetourImpressionJmxBean {
 
 	@ManagedAttribute(description = "Number of documents received since application start")
 	int getReceived();
+
+	@ManagedAttribute(description = "Print jobs re-routed to the users inboxes and still not received")
+	List<String> getAwaitingInboxRedirection();
 }
