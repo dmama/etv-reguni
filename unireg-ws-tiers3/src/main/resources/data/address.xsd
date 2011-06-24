@@ -3,17 +3,29 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4">
 	<xs:include schemaLocation="../common.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="eCH-0010-4-0f.xsd" />
-	<xs:simpleType name="typeAffranchissementType">
+	<xs:simpleType name="tariffZoneType">
 		<xs:annotation>
 			<xs:documentation>Le type d'affranchissement demandé par la poste pour envoyer un courrier à une adresse.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="SUISSE" />
-			<xs:enumeration value="EUROPE" />
-			<xs:enumeration value="MONDE" />
+			<xs:enumeration value="SWITZERLAND">
+				<xs:annotation>
+					<xs:documentation>Affranchissement pour la suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EUROPE">
+				<xs:annotation>
+					<xs:documentation>Affranchissement pour l'europe (hors Suisse).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER_COUNTRIES">
+				<xs:annotation>
+					<xs:documentation>Affranchissement pour le reste du monde (hors Europe et Suisse).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="adresseType">
+	<xs:complexType name="addressType">
 		<!-- TODO (msi) utiliser une adresse eCH -->
 		<xs:annotation>
 			<xs:documentation>Représente une adresse fiscale d'un tiers dans Unireg valide pendant une période déterminée. Généralement, un tiers possède plusieurs adresses en fonction de ses
@@ -21,101 +33,83 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element minOccurs="0" name="dateDebut" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateFrom" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de l'adresse. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de l'adresse. Si l'adresse est toujours active, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="titre" type="xs:string">
+			<xs:element minOccurs="0" name="title" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Titre de l'adresse. Exemple : "chez" ou "c/o"</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="numeroAppartement" type="xs:string">
+			<xs:element minOccurs="0" name="dwellingNumber" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Numéro de l'appartement</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="rue" type="xs:string">
+			<xs:element minOccurs="0" name="street" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Le nom de la rue (pas le numéro)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="numeroRue" type="xs:string">
+			<xs:element minOccurs="0" name="houseNumber" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Numéro du bâtiment dans la rue</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="casePostale" type="xs:string">
+			<xs:element minOccurs="0" name="postOfficeBox" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Case postale + numéro</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="localite" type="xs:string">
+			<xs:element name="town" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>La localité. Exemple : "Lausanne"</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="numeroPostal" type="xs:string">
+			<xs:element name="zipCode" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Le numéro postal de la localité. Exemple : "1001" pour "1001 Lausanne"</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="pays" type="xs:string">
+			<xs:element minOccurs="0" name="country" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon".</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="noOrdrePostal" type="xs:int">
+			<xs:element name="swissZipCodeId" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>[Technique] numéro d'ordre postal de l'adresse</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="noRue" type="xs:int">
+			<xs:element minOccurs="0" name="streetId" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>[Technique] numéro technique de la rue</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="noPays" type="xs:int">
+			<xs:element minOccurs="0" name="countryId" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>[Technique] numéro OFS du pays</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="adresseAutreTiersType">
+	<xs:complexType name="otherPartyAddressType">
 		<xs:annotation>
 			<xs:documentation>Spécialisation de l'adresse fiscale pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
 				poursuites).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:adresseType">
+			<xs:extension base="unireg:addressType">
 				<xs:sequence>
-					<xs:element name="type" type="unireg:typeAdressePoursuiteAutreTiersType">
-						<xs:annotation>
-							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType name="adresseFormatteeAutreTiersType">
-		<xs:annotation>
-			<xs:documentation>Spécialisation de l'adresse d'envoi pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
-				poursuites).
-			</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="unireg:adresseFormatteeType">
-				<xs:sequence>
-					<xs:element name="type" type="unireg:typeAdressePoursuiteAutreTiersType">
+					<xs:element name="type" type="unireg:otherPartyAddressTypeType">
 						<xs:annotation>
 							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
 						</xs:annotation>
@@ -140,7 +134,7 @@
 			<xs:element name="formattedAddress" type="unireg:formattedAddressType" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="mailAddressOtherTiersType">
+	<xs:complexType name="mailAddressOtherPartyType">
 		<xs:annotation>
 			<xs:documentation>Spécialisation de l'adresse d'envoi pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
 				poursuites).
@@ -149,7 +143,7 @@
 		<xs:complexContent>
 			<xs:extension base="unireg:mailAddressType">
 				<xs:sequence>
-					<xs:element name="type" type="unireg:typeAdressePoursuiteAutreTiersType">
+					<xs:element name="type" type="unireg:otherPartyAddressTypeType">
 						<xs:annotation>
 							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
 						</xs:annotation>
@@ -162,7 +156,7 @@
 		<xs:complexContent>
 			<xs:extension base="eCH-0010:addressInformationType">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="complement" type="xs:string">
+					<xs:element minOccurs="0" name="complementaryInformation" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Le complément d'adresse. Par exemple : "chez Huguette Bolomey" ou "c/o Famille Bertholey".
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
@@ -171,7 +165,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="pourAdresse" type="xs:string">
+					<xs:element minOccurs="0" name="careOf" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Le 'pour adresse'.
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
@@ -180,7 +174,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="typeAffranchissement" type="unireg:typeAffranchissementType">
+					<xs:element name="tariffZone" type="unireg:tariffZoneType">
 						<xs:annotation>
 							<xs:documentation>Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
@@ -297,133 +291,36 @@
 			<xs:element name="lastName" type="eCH-0010:lastNameType" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="adresseFormatteeType">
+	<xs:simpleType name="otherPartyAddressTypeType">
 		<xs:annotation>
-			<xs:documentation>Représente les 6 lignes d'adresses d'un tiers formattées selon les recommandations de la poste suisse + les informations détaillées utilisées pour la construction de ces
-				six lignes.
-			</xs:documentation>
+			<xs:documentation>La source d'une adresse de poursuite 'autre tiers'.</xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="ligne1" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La première ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="ligne2" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La deuxième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="ligne3" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La troisième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="ligne4" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La quatrième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="ligne5" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La cinquième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste. Cette ligne n'est pas forcément renseignée.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="ligne6" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La sixième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste. Cette ligne n'est pas forcément renseignée.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="salutations" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Les salutations selon les us et coutumes de l'ACI. Exemples : 'Monsieur', 'Madame', 'Aux héritiers de', ...
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="formuleAppel" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La formule d'appel stricte. C'est-à-dire les salutations mais sans formule spéciale propre à l'ACI (pas de 'Aux héritiers de'). Exemples : 'Monsieur', 'Madame',
-						'Madame, Monsieur', ...
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element maxOccurs="2" minOccurs="0" name="nomsPrenoms" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Les noms et prénoms (un nom + prénom par ligne, au maximum 2 lignes) pour les personnes physiques/ménages communs, ou les raisons sociales pour les débiteurs/PM.
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="complement" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Le complément d'adresse. Par exemple : "chez Huguette Bolomey" ou "c/o Famille Bertholey".
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="pourAdresse" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Le 'pour adresse'.
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="rueNumero" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La rue et son numéro, dans cet ordre.
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="casePostale" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La case postale et son numéro.
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="npaLocalite" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Le NPA et la localité.
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="pays" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Le pays si hors-Suisse, pas non-renseigné en cas de la Suisse.
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="typeAffranchissement" type="unireg:typeAffranchissementType">
-				<xs:annotation>
-					<xs:documentation>Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
-						Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse qui
-						serait utilisée pour envoyer du courrier par le poste !
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:simpleType name="typeAdressePoursuiteAutreTiersType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="SPECIFIQUE" />
-			<xs:enumeration value="MANDATAIRE" />
-			<xs:enumeration value="CURATELLE" />
-			<xs:enumeration value="CONSEIL_LEGAL" />
-			<xs:enumeration value="TUTELLE" />
+			<xs:enumeration value="SPECIFIC">
+				<xs:annotation>
+					<xs:documentation>Adresse spécifique du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPRESENTATIVE">
+				<xs:annotation>
+					<xs:documentation>Adresse du mandataire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WELFARE_ADVOCATE">
+				<xs:annotation>
+					<xs:documentation>Adresse du curateur.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGAL_ADVISER">
+				<xs:annotation>
+					<xs:documentation>Adresse du conseiller légal.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUARDIAN">
+				<xs:annotation>
+					<xs:documentation>Adresse du tuteur.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

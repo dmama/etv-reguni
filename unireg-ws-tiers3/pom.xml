@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-ws-tiers3</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0m-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService3.wsdl ! -->
+	<version>3.0n-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier PartyService3.wsdl ! -->
 
 	<name>Unireg - WS Tiers v3</name>
 	<description>Unireg - classes Java pour le web-service Tiers v3 de Unireg</description>
@@ -64,7 +64,7 @@
 				<version>${cxf.version}</version>
 				<executions>
 					<execution>
-						<id>generate-sources-tiers-service</id>
+						<id>generate-sources-service</id>
 						<phase>generate-sources</phase>
 						<configuration>
 							<sourceRoot>
@@ -73,11 +73,11 @@
 							<wsdlOptions>
 								<wsdlOption>
 									<wsdl>
-										${basedir}/src/main/resources/TiersService3.wsdl
+										${basedir}/src/main/resources/PartyService3.wsdl
 									</wsdl>
 									<extraargs> 
 										<extraarg>-wsdlLocation</extraarg>
-										<extraarg>${basedir}/src/main/resources/TiersService3.wsdl</extraarg>
+										<extraarg>${basedir}/src/main/resources/PartyService3.wsdl</extraarg>
 										<extraarg>-xjc-b,${basedir}/src/main/resources/bindings.xml</extraarg>
 										<extraarg>-xjc-Xpretty-classname</extraarg>
 										<extraarg>-xjc-Xunireg-ws</extraarg>

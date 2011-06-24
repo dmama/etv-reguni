@@ -2,21 +2,21 @@
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="base.xsd" />
-	<xs:complexType name="getListeCtbModifiesRequestType">
+	<xs:complexType name="getDebtorInfoRequestType">
 		<xs:annotation>
-			<xs:documentation>Requête qui demande la liste des contribuables modifiés dans Unireg dans une période (pas forcément fiscale) donnée.</xs:documentation>
+			<xs:documentation>Requête qui demande des informations spécifiques sur un débiteur de prestations imposables pour une période fiscale donnée.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="unireg:requestType">
 				<xs:sequence>
-					<xs:element name="dateDebutRecherche" type="xs:dateTime">
+					<xs:element name="debtorNumber" type="xs:long">
 						<xs:annotation>
-							<xs:documentation>Critère sur la date de début de recherche.</xs:documentation>
+							<xs:documentation>Le numéro de tiers du débiteur de prestations imposables.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="dateFinRecherche" type="xs:dateTime">
+					<xs:element name="taxPeriod" type="xs:int">
 						<xs:annotation>
-							<xs:documentation>Critère sur la date de fin de recherche.</xs:documentation>
+							<xs:documentation>La période fiscale considérée (1er janvier au 31 décembre).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>

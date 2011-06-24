@@ -1,77 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="contribuable.xsd" />
-	<xs:complexType name="personneMoraleType">
+	<xs:include schemaLocation="taxpayer.xsd" />
+	<xs:complexType name="corporationType">
 		<xs:annotation>
 			<xs:documentation>Classe concrète qui contient toutes les informations d'un contribuable de type personne morale.
 				Les collections sont renseignées en fonction des parts demandées lors de l'appel au service.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:contribuableType">
+			<xs:extension base="unireg:taxpayerType">
 				<xs:sequence>
-					<xs:element name="designationAbregee" type="xs:string">
+					<xs:element name="shortName" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Désignation abrégée de la PM.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="raisonSociale1" type="xs:string">
+					<xs:element name="name1" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Première ligne de la raison sociale.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="raisonSociale2" type="xs:string">
+					<xs:element minOccurs="0" name="name2" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Deuxième ligne de la raison sociale.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="raisonSociale3" type="xs:string">
+					<xs:element minOccurs="0" name="name3" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Troisième ligne de la raison sociale.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateFinDernierExerciceCommercial" type="unireg:dateType">
+					<xs:element minOccurs="0" name="endDateOfLastBusinessYear" type="unireg:dateType">
 						<xs:annotation>
 							<xs:documentation>Date de fin du dernier exercice commercial.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateBouclementFutur" type="unireg:dateType">
+					<xs:element minOccurs="0" name="endDateOfNextBusinessYear" type="unireg:dateType">
 						<xs:annotation>
 							<xs:documentation>Date de bouclement futur de la PM.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="numeroIPMRO" type="xs:string">
+					<xs:element minOccurs="0" name="ipmroNumber" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Numéro IPMRO (n'existe pas sur toutes les PMs).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="sieges" type="unireg:siegeType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalSeats" type="unireg:legalSeatType">
 						<xs:annotation>
 							<xs:documentation>L'historique des sièges.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="formesJuridiques" type="unireg:formeJuridiqueType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalForms" type="unireg:legalFormType">
 						<xs:annotation>
 							<xs:documentation>L'historique des formes juridiques.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="capitaux" type="unireg:capitalType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="capitals" type="unireg:capitalType">
 						<xs:annotation>
 							<xs:documentation>L'historique des capitaux.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="regimesFiscauxICC" type="unireg:regimeFiscalType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsVD" type="unireg:taxSystemType">
 						<xs:annotation>
 							<xs:documentation>L'historique des régimes fiscaux ICC (Impôt Canton-Commune).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="regimesFiscauxIFD" type="unireg:regimeFiscalType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsCH" type="unireg:taxSystemType">
 						<xs:annotation>
 							<xs:documentation>L'historique des régimes fiscaux IFD (Impôt Fédéral Direct).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="etats" type="unireg:etatPMType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="statuses" type="unireg:corporationStatusType">
 						<xs:annotation>
 							<xs:documentation>L'historique des états de la PM.</xs:documentation>
 						</xs:annotation>
@@ -80,44 +80,44 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="siegeType">
+	<xs:complexType name="legalSeatType">
 		<xs:annotation>
 			<xs:documentation>Contient les informations du siège d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateDebut" type="unireg:dateType">
+			<xs:element name="dateFrom" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du siège de la PM.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du siège de la PM. Si le siège est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="typeSiege" type="unireg:typeSiegeType">
+			<xs:element name="type" type="unireg:legalSeatTypeType">
 				<xs:annotation>
 					<xs:documentation>Cet enum permet d'interpréter le numéro OFS contenu dans noOfsSiege.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="noOfsSiege" type="xs:int">
+			<xs:element name="fsoId" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>Numéro OFS étendu de la commune suisse ou du pays de siège.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="formeJuridiqueType">
+	<xs:complexType name="legalFormType">
 		<xs:annotation>
 			<xs:documentation>Informations sur la forme juridique d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateDebut" type="unireg:dateType">
+			<xs:element name="dateFrom" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de la forme juridique.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de la forme juridique; ou non-renseigné si elle est toujours valide.</xs:documentation>
 				</xs:annotation>
@@ -129,10 +129,21 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="typeSiegeType">
+	<xs:simpleType name="legalSeatTypeType">
+		<xs:annotation>
+			<xs:documentation>Les localisations possibles pour un siège d'une personne morale.</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="COMMUNE_CH" />
-			<xs:enumeration value="PAYS_HS" />
+			<xs:enumeration value="SWISS_MUNICIPALITY">
+				<xs:annotation>
+					<xs:documentation>Une commune suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOREIGN_COUNTRY">
+				<xs:annotation>
+					<xs:documentation>Un pays hors-Suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="capitalType">
@@ -140,12 +151,12 @@
 			<xs:documentation>Informations sur le capital à disposition d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateDebut" type="unireg:dateType">
+			<xs:element name="dateFrom" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du régime fiscal.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du régime fiscal; ou
 						<i>null</i>
@@ -153,56 +164,56 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="capitalAction" type="xs:long">
+			<xs:element name="shareCapital" type="xs:long">
 				<xs:annotation>
 					<xs:documentation>La valeur du capital action de la PM.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="capitalLibere" type="xs:long">
+			<xs:element name="paidInCapital" type="xs:long">
 				<xs:annotation>
 					<xs:documentation>La valeur du capital libéré de la PM.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="absenceCapitalLibereNormale" type="xs:boolean">
+			<xs:element name="absentPaidInCapitalNormal" type="xs:boolean">
 				<xs:annotation>
 					<xs:documentation>Retourne vrai si l'absence de capital libéré est normale, ou faux si elle est anormale.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="editionFosc" type="unireg:editionFoscType">
+			<xs:element minOccurs="0" name="sogcEdition" type="unireg:sogcEditionType">
 				<xs:annotation>
 					<xs:documentation>L'édition de la Feuille officielle suisse du commerce dans laquelle ces informations sont parues.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="editionFoscType">
+	<xs:complexType name="sogcEditionType">
 		<xs:annotation>
 			<xs:documentation>Informations permettant d'identifier une édition de la Feuille officielle suisse du commerce.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element minOccurs="0" name="anneeFosc" type="xs:int">
+			<xs:element minOccurs="0" name="year" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>Année de parution.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="noFosc" type="xs:int">
+			<xs:element minOccurs="0" name="number" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>Numéro dans l'année de parution.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="regimeFiscalType">
+	<xs:complexType name="taxSystemType">
 		<xs:annotation>
 			<xs:documentation>Informations sur un régime fiscal d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateDebut" type="unireg:dateType">
+			<xs:element name="dateFrom" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du régime fiscal.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du régime fiscal; ou non-renseigné s'il est toujours valide.</xs:documentation>
 				</xs:annotation>
@@ -214,17 +225,17 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="etatPMType">
+	<xs:complexType name="corporationStatusType">
 		<xs:annotation>
 			<xs:documentation>Informations sur l'état d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateDebut" type="unireg:dateType">
+			<xs:element name="dateFrom" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de l'état de la PM.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de l'état de la PM; ou non-renseigné s'il est toujours valide.</xs:documentation>
 				</xs:annotation>
@@ -236,11 +247,26 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="evenementPMType">
+	<xs:complexType name="corporationEventType">
+		<xs:annotation>
+			<xs:documentation>Représente un événement d'une personne morale.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateEvenement" type="unireg:dateType" />
-			<xs:element minOccurs="0" name="tiersNumber" type="xs:long" />
-			<xs:element minOccurs="0" name="codeEvenement" type="xs:string" />
+			<xs:element name="date" type="unireg:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de valeur de l'événement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="partyNumber" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Le numéro de contribuable de la personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="code" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le code Reg-PM de l'événement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

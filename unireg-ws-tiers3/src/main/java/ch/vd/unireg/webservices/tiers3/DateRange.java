@@ -9,10 +9,10 @@ public interface DateRange {
 	/**
 	 * @return la date de début de la période (comprise dans la période); ou <b>null</b> pour dire que la période existe depuis l'aube des temps.
 	 */
-	Date getDateDebut();
+	Date getDateFrom();
 
 	/**
 	 * @return la date de fin de la période (comprise dans la période); ou <b>null</b> pour dire que la période existe jusqu'à la fin des temps.
 	 */
-	Date getDateFin();
+	Date getDateTo();
 }

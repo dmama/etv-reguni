@@ -55,9 +55,9 @@ public abstract class DateHelper {
 	 */
 	public static boolean isDateInRange(DateRange range, Date date) {
 		if (date == null) {
-			return range.getDateFin() == null;
+			return range.getDateTo() == null;
 		}
-		return (range.getDateDebut() == null || isAfterOrEqual(date, range.getDateDebut())) && (range.getDateFin() == null || isBeforeOrEqual(date, range.getDateFin()));
+		return (range.getDateFrom() == null || isAfterOrEqual(date, range.getDateFrom())) && (range.getDateTo() == null || isBeforeOrEqual(date, range.getDateTo()));
 	}
 
 	/**
@@ -114,8 +114,8 @@ public abstract class DateHelper {
 	 */
 	public static boolean intersect(DateRange premier, DateRange second) {
 
-		final boolean debutPremierAvantFinSecond = (premier.getDateDebut() == null || second.getDateFin() == null || isBeforeOrEqual(premier.getDateDebut(), second.getDateFin()));
-		final boolean finPremierApresDebutSecond = (premier.getDateFin() == null || second.getDateDebut() == null || isAfterOrEqual(premier.getDateFin(), second.getDateDebut()));
+		final boolean debutPremierAvantFinSecond = (premier.getDateFrom() == null || second.getDateTo() == null || isBeforeOrEqual(premier.getDateFrom(), second.getDateTo()));
+		final boolean finPremierApresDebutSecond = (premier.getDateTo() == null || second.getDateFrom() == null || isAfterOrEqual(premier.getDateTo(), second.getDateFrom()));
 
 		return (debutPremierAvantFinSecond && finPremierApresDebutSecond);
 	}

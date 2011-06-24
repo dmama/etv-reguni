@@ -2,32 +2,32 @@
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="../common.xsd" />
-	<xs:complexType name="rapportEntreTiersType">
+	<xs:complexType name="relationBetweenPartiesType">
 		<xs:annotation>
 			<xs:documentation>Permet de caractériser un rapport (par exemple: tutelle, appartenance ménage, ...) entre deux tiers.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="type" type="unireg:typeRapportEntreTiersType">
+			<xs:element name="type" type="unireg:relationBetweenPartiesTypeType">
 				<xs:annotation>
 					<xs:documentation>Le type de rapport entre tiers</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateDebut" type="unireg:dateType">
+			<xs:element name="dateFrom" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du rapport.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateFin" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du rapport. Si le rapport est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateAnnulation" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle le rapport a été annulé, ou null s'il n'est pas annulé.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="autreTiersNumero" type="xs:long">
+			<xs:element name="otherPartyNumber" type="xs:long">
 				<xs:annotation>
 					<xs:documentation>Numéro de tiers pointé par cette relation.
 					En fonction du type de rapport-entre-tiers, les tiers participants sont de types suivants:
@@ -42,53 +42,95 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="typeActivite" type="unireg:typeActiviteType">
+			<xs:element minOccurs="0" name="activityType" type="unireg:activityTypeType">
 				<xs:annotation>
 					<xs:documentation>Type d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="tauxActivite" type="xs:int">
+			<xs:element minOccurs="0" name="activityRate" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>Taux d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="finDernierElementImposable" type="unireg:dateType">
+			<xs:element minOccurs="0" name="endDateOfLastTaxableItem" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="extensionExecutionForcee" type="xs:boolean">
+			<xs:element minOccurs="0" name="extensionToForcedExecution" type="xs:boolean">
 				<xs:annotation>
 					<xs:documentation>Vrai si la représentation conventionnelle s'étend à l'exécution forcée; faux autrement. Seulement renseigné pour le type = REPRESENTATION.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="typeRapportEntreTiersType">
+	<xs:simpleType name="relationBetweenPartiesTypeType">
+		<xs:annotation>
+			<xs:documentation>Les différents types de rapports-entre-tiers.</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="TUTELLE" />
-			<xs:enumeration value="CURATELLE" />
-			<xs:enumeration value="CONSEIL_LEGAL" />
-			<xs:enumeration value="PRESTATION_IMPOSABLE" />
-			<xs:enumeration value="APPARTENANCE_MENAGE" />
-			<xs:enumeration value="REPRESENTATION" />
-			<xs:enumeration value="CONTACT_IMPOT_SOURCE">
+			<xs:enumeration value="GUARDIAN">
+				<xs:annotation>
+					<xs:documentation>Tutelle.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WELFARE_ADVOCATE">
+				<xs:annotation>
+					<xs:documentation>Curatelle.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGAL_ADVISER">
+				<xs:annotation>
+					<xs:documentation>Conseil légal.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAXABLE_REVENUE">
+				<xs:annotation>
+					<xs:documentation>Prestation imposable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HOUSEHOLD_MEMBER">
+				<xs:annotation>
+					<xs:documentation>Appartenance ménage.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPRESENTATIVE">
+				<xs:annotation>
+					<xs:documentation>Représentation conventionnelle.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WITHHOLDING_TAX_CONTACT">
 				<xs:annotation>
 					<xs:documentation>Rapport qui existe entre un débiteur et son contribuable lié.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ANNULE_ET_REMPLACE">
+			<xs:enumeration value="CANCELS_AND_REPLACES">
 				<xs:annotation>
 					<xs:documentation>Rapport qui existe lorsqu'un tiers à été annulé et remplacé par un autre tiers (correction de doublons)</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="typeActiviteType">
+	<xs:simpleType name="activityTypeType">
+		<xs:annotation>
+			<xs:documentation>Les différentes catégories d'activité d'un sourcier.</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="PRINCIPALE" />
-			<xs:enumeration value="ACCESSOIRE" />
-			<xs:enumeration value="COMPLEMENTAIRE" />
+			<xs:enumeration value="MAIN">
+				<xs:annotation>
+					<xs:documentation>Activité principale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCESSORY">
+				<xs:annotation>
+					<xs:documentation>Activité accessoire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COMPLEMENTARY">
+				<xs:annotation>
+					<xs:documentation>Activité complémentaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

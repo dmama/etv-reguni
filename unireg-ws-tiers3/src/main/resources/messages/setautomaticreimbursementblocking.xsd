@@ -2,21 +2,21 @@
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="base.xsd" />
-	<xs:complexType name="getDebiteurInfoRequestType">
+	<xs:complexType name="setAutomaticReimbursementBlockingRequestType">
 		<xs:annotation>
-			<xs:documentation>Requête qui demande des informations spécifiques sur un débiteur de prestations imposables pour une période fiscale donnée.</xs:documentation>
+			<xs:documentation>Requête qui demande de changer le bloquage du remboursement automatique sur un tiers donné.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="unireg:requestType">
 				<xs:sequence>
-					<xs:element name="numeroDebiteur" type="xs:long">
+					<xs:element name="partyNumber" type="xs:long">
 						<xs:annotation>
-							<xs:documentation>Le numéro de tiers du débiteur de prestations imposables.</xs:documentation>
+							<xs:documentation>L'id du tiers concerné par le changement.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="periodeFiscale" type="xs:int">
+					<xs:element name="blocked" type="xs:boolean">
 						<xs:annotation>
-							<xs:documentation>La période fiscale considérée (1er janvier au 31 décembre).</xs:documentation>
+							<xs:documentation>Vrai si le blocage doit être activé, ou faux s'il doit être désactivé.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
